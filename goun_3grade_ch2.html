@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>고운중학교 3학년 2챕터 영어 시험</title>
+  <style>
+    /* ─── 기본 리셋 ─── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+      background: #EFF3FB;
+      color: #1e293b;
+      min-height: 100vh;
+      padding-bottom: 40px;
+    }
+
+    /* ─── 헤더 ─── */
+    .header {
+      background: linear-gradient(135deg, #3B82F6, #1D4ED8);
+      color: white;
+      padding: 22px 20px 18px;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(30,64,175,0.25);
+    }
+    .header h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; }
+    .header .subtitle { font-size: 13px; opacity: 0.85; margin-top: 4px; }
+    .header .datetime {
+      font-size: 12px; opacity: 0.75; margin-top: 8px;
+      background: rgba(255,255,255,0.15); display: inline-block;
+      padding: 4px 12px; border-radius: 20px;
+    }
+
+    /* ─── 이름 입력 ─── */
+    .name-section {
+      background: white; margin: 14px 14px 0;
+      border-radius: 14px; padding: 16px 18px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+      display: flex; align-items: center; gap: 12px;
+    }
+    .name-section label { font-size: 15px; font-weight: 600; white-space: nowrap; }
+    .name-section input {
+      flex: 1; border: 2px solid #CBD5E1; border-radius: 8px;
+      padding: 9px 12px; font-size: 16px; outline: none;
+    }
+    .name-section input:focus { border-color: #3B82F6; }
+
+    /* ─── 문제 카드 ─── */
+    .question-card {
+      background: white; margin: 12px 14px 0;
+      border-radius: 14px; padding: 18px 18px 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    }
+    .q-num {
+      font-size: 12px; font-weight: 700; color: #3B82F6;
+      background: #EFF6FF; padding: 3px 10px;
+      border-radius: 20px; display: inline-block; margin-bottom: 12px;
+    }
+    .english-line {
+      font-size: 17px; line-height: 2.2; color: #0f172a;
+      font-weight: 500; word-break: break-word;
+    }
+    .korean-line {
+      font-size: 14px; color: #64748b; margin-top: 6px;
+      padding-top: 8px; border-top: 1px dashed #E2E8F0;
+    }
+
+    /* ─── 빈칸 (글자 박스) ─── */
+    .blank-group {
+      display: inline-flex; gap: 4px;
+      vertical-align: middle; margin: 0 2px;
+    }
+    .letter-box {
+      width: 28px; height: 34px;
+      border: 2px solid #3B82F6;
+      border-radius: 6px; text-align: center;
+      font-size: 16px; font-weight: 600; color: #1e40af;
+      outline: none; padding: 0; background: #F8FAFF;
+      -webkit-user-select: text;
+      user-select: text;
+      /* 자동완성/자동수정 전부 차단 */
+      autocomplete: "off";
+      -webkit-text-security: none;
+      IME-mode: disabled;
+    }
+    .letter-box:focus {
+      border-color: #1D4ED8;
+      background: #DBEAFE;
+      box-shadow: 0 0 0 3px rgba(59,130,246,0.2);
+    }
+    .letter-box.filled { background: #EFF6FF; }
+    .letter-box.correct-box { border-color: #22C55E; background: #F0FDF4; color: #15803D; }
+    .letter-box.wrong-box  { border-color: #EF4444; background: #FEF2F2; color: #DC2626; }
+
+    /* ─── 제출 버튼 ─── */
+    .submit-wrap { padding: 22px 14px 0; }
+    .submit-btn {
+      width: 100%; background: linear-gradient(135deg, #3B82F6, #1D4ED8);
+      color: white; border: none; border-radius: 14px;
+      padding: 17px; font-size: 18px; font-weight: 700;
+      cursor: pointer; letter-spacing: -0.3px;
+      box-shadow: 0 4px 14px rgba(29,78,216,0.35);
+    }
+    .submit-btn:active { transform: scale(0.98); }
+
+    /* ─── 결과 화면 ─── */
+    #result-screen { display: none; }
+
+    .result-header {
+      background: linear-gradient(135deg, #10B981, #059669);
+      color: white; padding: 28px 20px; text-align: center;
+      box-shadow: 0 4px 12px rgba(5,150,105,0.3);
+    }
+    .result-header.fail-header {
+      background: linear-gradient(135deg, #F59E0B, #D97706);
+      box-shadow: 0 4px 12px rgba(217,119,6,0.3);
+    }
+    .score-big { font-size: 64px; font-weight: 800; line-height: 1; }
+    .score-label { font-size: 15px; opacity: 0.9; margin-top: 6px; }
+    .result-meta { font-size: 12px; opacity: 0.8; margin-top: 10px; }
+
+    .result-card {
+      background: white; margin: 12px 14px 0;
+      border-radius: 14px; padding: 16px 16px 14px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    }
+    .result-card .q-num { margin-bottom: 8px; }
+    .result-eng { font-size: 15px; line-height: 2; color: #0f172a; font-weight: 500; }
+    .result-kor { font-size: 13px; color: #64748b; margin-top: 6px; }
+    .answer-row {
+      margin-top: 8px; padding-top: 8px;
+      border-top: 1px dashed #E2E8F0;
+      font-size: 13px;
+    }
+    .answer-row span { font-weight: 700; }
+    .ok  { color: #16A34A; }
+    .bad { color: #DC2626; }
+
+    /* ─── 스크린샷 안내 ─── */
+    .screenshot-guide {
+      margin: 14px 14px 0; background: #FFFBEB;
+      border: 2px solid #FCD34D; border-radius: 14px;
+      padding: 16px 16px; font-size: 14px; color: #78350F;
+      line-height: 1.6;
+    }
+    .screenshot-guide strong { display: block; font-size: 15px; margin-bottom: 6px; }
+
+    .retry-btn {
+      width: calc(100% - 28px); margin: 16px 14px 0;
+      background: white; border: 2px solid #3B82F6;
+      color: #3B82F6; border-radius: 14px; padding: 14px;
+      font-size: 16px; font-weight: 700; cursor: pointer;
+    }
+
+    /* ─── 안내 문구 ─── */
+    .tip {
+      text-align: center; font-size: 12px; color: #94A3B8;
+      margin: 12px 14px 0;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════ 시험 화면 ══════════════════ -->
+<div id="test-screen">
+
+  <div class="header">
+    <h1>📚 고운중학교 3학년 2챕터</h1>
+    <div class="subtitle">영어 문장 암기 시험 · 빈칸을 채워보세요</div>
+    <div class="datetime" id="test-datetime"></div>
+  </div>
+
+  <div class="name-section">
+    <label for="student-name">이름</label>
+    <input type="text" id="student-name" placeholder="이름을 입력하세요"
+      autocomplete="off" autocorrect="off" autocapitalize="words" spellcheck="false" />
+  </div>
+
+  <p class="tip">💡 각 칸에 글자를 하나씩 입력하세요. 자동완성은 지원되지 않습니다.</p>
+
+  <div id="questions-container"></div>
+
+  <div class="submit-wrap">
+    <button class="submit-btn" onclick="submitTest()">✅ 제출하고 채점받기</button>
+  </div>
+
+</div>
+
+<!-- ══════════════════ 결과 화면 ══════════════════ -->
+<div id="result-screen">
+  <div id="result-header-block"></div>
+  <div class="screenshot-guide">
+    <strong>📸 선생님께 결과를 보내주세요!</strong>
+    이 화면을 캡처(스크린샷)해서 선생님께 전송해 주세요.<br>
+    📱 아이폰: 전원 + 볼륨 올리기 버튼 / 안드로이드: 전원 + 볼륨 내리기 버튼
+  </div>
+  <div id="result-details"></div>
+  <button class="retry-btn" onclick="restartTest()">🔄 다시 시험 보기</button>
+</div>
+
+
+<script>
+/* ══════════════════════════════════════════════════════════
+   📝  선생님이 여기서 문장을 수정/추가하세요!
+   형식: { en: "영어 문장.", ko: "한국어 뜻." }
+   ══════════════════════════════════════════════════════════ */
+var QUIZ_INFO = { school: '고운중학교', grade: '3학년', chapter: '2챕터' };
+const SENTENCES = [
+  // ── 2과 본문 ──
+  { en: "I complained the whole day.", ko: "나는 온종일 불평했다." },
+  { en: "My parents were making me work on the neighborhood project, but I had far better things to do.", ko: "부모님은 나를 이웃 프로젝트에 참여하게 했지만 나는 더 좋은 할 일이 있다고 생각했다." },
+  { en: "I didn't understand why we were working on this place.", ko: "나는 우리가 왜 이곳에서 일하는지 이해하지 못했다." },
+  { en: "It was just the ugly, old, empty lot across from Johnny's Shop.", ko: "그곳은 Johnny의 가게 맞은편에 있는 볼품없고 오래된 빈터일 뿐이었다." },
+  { en: "It was full of wild plants, fast food wraps, old newspapers, broken glass, and every other kind of dirty trash you can imagine.", ko: "그곳은 잡초와 패스트푸드 포장지, 낡은 신문, 깨진 유리 등 상상할 수 있는 모든 더러운 쓰레기로 가득 차 있었다." },
+  { en: "There were twenty of us—all ages and sizes—ready to work that day.", ko: "그날은 나이를 불문하고 다양한 사람들이 포함된 20명이 일을 할 준비를 하고 있었다." },
+  { en: "I didn't think that we could clean up this awful mess and turn it into a garden.", ko: "나는 이 끔찍한 곳을 정원으로 바꿀 수 있을 거라고 생각하지 않았다." },
+  { en: "We were all wondering where to begin.", ko: "우리는 어디서부터 시작해야 할지 고민하고 있었다." },
+  { en: "Then Mr. Hernandez said, The only way to do it is just to start.", ko: "그때 Hernandez 씨가 그냥 시작하는 것이 유일한 방법이라고 말했다." },
+  { en: "Then, he divided the lot into four parts with string and assigned five people to each part.", ko: "그리고 그 지역을 끈으로 네 구역으로 나누고 각 구역에 다섯 명씩 배치했다." },
+  { en: "By lunchtime, I was hot, sweaty, and glad my dad had made me wear gloves.", ko: "점심때쯤 나는 덥고 땀이 났지만 아버지가 장갑을 끼게 해서 다행이라고 느꼈다." },
+  { en: "We filled fifty trash bags with waste and were ready to pull wild plants.", ko: "우리는 쓰레기봉투 50개를 채우고 잡초를 뽑을 준비를 했다." },
+  { en: "As we pulled and pulled, dust filled the air and made us sneeze.", ko: "우리가 계속 뽑자 먼지가 공기를 가득 채워 재채기가 나왔다." },
+  { en: "At the end of the day, I had to admit the lot looked much better.", ko: "하루가 끝날 무렵 나는 그곳이 훨씬 나아졌다는 것을 인정했다." },
+  { en: "That first day was the toughest.", ko: "첫날이 가장 힘들었다." },
+  { en: "On the weekends that followed, we made rows, planted flower and vegetable seeds, and watered them.", ko: "그 이후 주말마다 우리는 줄을 만들고 꽃과 채소 씨앗을 심고 물을 주었다." },
+  { en: "After about two weeks, I stopped complaining when I found the plants had started popping up!", ko: "약 2주 후 식물들이 싹트는 것을 보고 나는 불평을 멈췄다." },
+  { en: "First, the lettuce and then the beans and the tomatoes.", ko: "처음에는 상추, 그다음에는 콩과 토마토가 자랐다." },
+  { en: "They grew so fast.", ko: "그것들은 매우 빠르게 자랐다." },
+  { en: "I couldn't believe it!", ko: "나는 그것이 믿기지 않았다." },
+  { en: "The bean plants grew an inch, and the tomatoes doubled in size in just a few days.", ko: "콩은 1인치 자랐고 토마토는 며칠 만에 두 배로 커졌다." },
+  { en: "Now, two months later, I like to go there every day to see what new flowers are ready to pop up.", ko: "두 달이 지난 지금 나는 매일 새로운 꽃이 피는 것을 보러 그곳에 가는 것을 좋아한다." },
+  { en: "Lots of people in the neighborhood meet there to enjoy the sights and to talk together.", ko: "이웃 사람들도 그곳에 모여 풍경을 즐기고 이야기를 나눈다." },
+  { en: "Tonight, it suddenly hit me—what a good thing we did!", ko: "오늘 밤 나는 우리가 정말 좋은 일을 했다는 것을 깨달았다." },
+  { en: "I'm proud I have been a part of it.", ko: "나는 그 일에 참여했다는 것이 자랑스럽다." },
+  { en: "I'm in charge of picking flowers for the nursing home on Fourth Street.", ko: "나는 Fourth Street에 있는 요양원을 위해 꽃을 따는 일을 맡고 있다." },
+  { en: "The vegetables will go to every kitchen in our town.", ko: "채소는 우리 마을의 모든 집으로 전달될 것이다." },
+  { en: "But even better, an ugly and dirty lot that people didn't like has become a pretty garden for everyone.", ko: "하지만 더 좋은 것은 사람들이 싫어하던 더럽고 못생긴 곳이 모두를 위한 아름다운 정원이 되었다는 것이다." },
+  // ── 2과 대화문 ──
+  { en: "Let's talk about the volunteer work for our town. Who will guide visitors?", ko: "우리 마을을 위한 자원봉사에 대해 이야기해 보자. 누가 방문객들을 안내할래?" },
+  { en: "I will. I can do it well.", ko: "제가 할게요. 잘할 수 있어요." },
+  { en: "Thank you for volunteering.", ko: "지원해 줘서 고마워." },
+  { en: "What do we need in our club room? Let's talk about it.", ko: "우리 동아리실에 무엇이 필요할까? 그것에 대해 이야기해 보자." },
+  { en: "How about putting some flower pots by the windows?", ko: "창가에 화분을 두는 게 어때?" },
+  { en: "They'll make our room prettier.", ko: "그것들이 우리 방을 더 예쁘게 만들 거야." },
+  { en: "That's a good idea. Thank you, Jiu.", ko: "좋은 생각이야. 지우야, 고마워." },
+  { en: "How about hanging some pictures?", ko: "그림을 좀 거는 게 어때?" },
+  { en: "Good. Why don't you bring one of your pictures?", ko: "좋아. 네 그림 하나 가져오는 게 어때?" },
+  { en: "You're good at painting, Seho.", ko: "세호야, 너 그림 잘 그리잖아." },
+  { en: "Thank you for saying that. I'll bring one of mine.", ko: "그렇게 말해 줘서 고마워. 하나 가져올게." },
+  { en: "Let's talk about the corner this time. Any ideas?", ko: "이번에는 모퉁이에 대해 이야기해 보자. 아이디어 있어?" },
+  { en: "How about making a small library in the corner of the club room?", ko: "동아리실 모퉁이에 작은 도서관을 만드는 게 어때?" },
+  { en: "I will bring some books tomorrow.", ko: "내가 내일 책 몇 권 가져올게." },
+  { en: "Great idea! Thank you for suggesting it, Minju.", ko: "좋은 생각이야! 민주야, 제안해 줘서 고마워." },
+  { en: "Let's talk about how we can make our town better.", ko: "우리 마을을 더 좋게 만드는 방법에 대해 이야기해 보자." },
+  { en: "There's too much trash at the bus stop.", ko: "버스 정류장에 쓰레기가 너무 많아." },
+  { en: "I agree. Why don't we clean the place together?", ko: "나도 동의해. 같이 청소하는 게 어때?" },
+  { en: "Good. We can put a bench there, too.", ko: "좋아. 거기에 벤치도 놓을 수 있겠어." },
+  { en: "Great idea. It'll be helpful for the elderly.", ko: "좋은 생각이야. 어르신들에게 도움이 될 거야." },
+  { en: "How about putting some flower pots around the bench?", ko: "벤치 주변에 화분을 놓는 게 어때?" },
+  { en: "They'll make the bus stop more beautiful.", ko: "그것들이 버스 정류장을 더 아름답게 만들 거야." },
+  { en: "Thank you for suggesting great ideas, everyone.", ko: "모두 좋은 아이디어를 내줘서 고마워." },
+  { en: "Then, shall we start tomorrow?", ko: "그럼 내일 시작할까?" },
+  { en: "I think we need to put the club member list there.", ko: "내 생각에는 거기에 동아리 회원 명단을 붙여야 할 것 같아." },
+  { en: "It'll be helpful for us to learn the new members' names.", ko: "그것은 우리가 새 회원들의 이름을 아는 데 도움이 될 거야." },
+  { en: "We also need our plan for this school year on the wall.", ko: "이번 학년도 계획도 벽에 붙여야 해." },
+  { en: "Right! That'll really help us remember important school events.", ko: "맞아! 그러면 중요한 학교 행사를 기억하는 데 도움이 될 거야." },
+  { en: "Thank you for suggesting great ideas, everyone. We are a good team.", ko: "모두 좋은 아이디어를 내줘서 고마워. 우리는 좋은 팀이야." },
+];
+/* ══════════════════════════════════════════════════════════ */
+
+/* ─── 상태 변수 ─── */
+let currentBlanks = [];   // [{ word, blankId, length }, ...]
+let startDateTime = null;
+let tabSwitchCount = 0;
+let attemptCount = 0;
+
+/* ─── 날짜/시간 표시 ─── */
+function formatDT(d) {
+  const pad = n => String(n).padStart(2, '0');
+  return `${d.getFullYear()}.${pad(d.getMonth()+1)}.${pad(d.getDate())} `
+       + `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+}
+
+/* ─── 문장 토큰화 (단어 + 뒤에 붙는 구두점 분리) ─── */
+function tokenize(sentence) {
+  return sentence.trim().split(/\s+/).map(function(tok) {
+    // 끝에 붙은 구두점(.,!? 등)을 분리
+    var word = tok.replace(/[^A-Za-z]+$/, '');
+    var punct = tok.slice(word.length);
+    if (!word) { return { word: tok, punct: '' }; }
+    return { word: word, punct: punct };
+  });
+}
+
+/* ─── 빈칸 위치 랜덤 선택 (단어 3글자 이상 중 2개) ─── */
+function pickBlanks(tokens) {
+  const eligible = tokens
+    .map((t, i) => i)
+    .filter(i => tokens[i].word.length >= 3);
+
+  // Fisher–Yates shuffle
+  for (let i = eligible.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [eligible[i], eligible[j]] = [eligible[j], eligible[i]];
+  }
+  return new Set(eligible.slice(0, Math.min(2, eligible.length)));
+}
+
+/* ─── 글자 박스 HTML 생성 ─── */
+function buildLetterBoxes(blankId, word) {
+  let html = `<span class="blank-group" data-blank="${blankId}">`;
+  let inputIdx = 0;
+  for (let c = 0; c < word.length; c++) {
+    const ch = word[c];
+    if (ch === '-' || ch === '.' || ch === "'") {
+      html += `<span style="display:inline-flex;align-items:center;justify-content:center;width:10px;font-size:16px;font-weight:700;color:#3B82F6;">${ch}</span>`;
+    } else {
+      html += `<input
+        class="letter-box"
+        type="text" maxlength="2"
+        id="${blankId}_${inputIdx}"
+        data-blank="${blankId}"
+        data-idx="${inputIdx}"
+        data-charpos="${c}"
+        autocomplete="off"
+        autocorrect="off"
+        autocapitalize="none"
+        spellcheck="false"
+        inputmode="text"
+        aria-label="글자 ${inputIdx+1}"
+      />`;
+      inputIdx++;
+    }
+  }
+  html += `</span>`;
+  return html;
+}
+
+/* ─── 문제 렌더링 ─── */
+function renderQuestions() {
+  currentBlanks = [];
+  const container = document.getElementById('questions-container');
+  container.innerHTML = '';
+
+  SENTENCES.forEach((sent, si) => {
+    const tokens = tokenize(sent.en);
+    const blankSet = pickBlanks(tokens);
+
+    let engHtml = '';
+    tokens.forEach((tok, ti) => {
+      if (blankSet.has(ti)) {
+        const blankId = `q${si}_b${currentBlanks.length}`;
+        currentBlanks.push({ blankId, word: tok.word, sentIdx: si });
+        engHtml += buildLetterBoxes(blankId, tok.word);
+        if (tok.punct) engHtml += `<span>${tok.punct}</span>`;
+        engHtml += ' ';
+      } else {
+        engHtml += `<span>${tok.word}${tok.punct}</span> `;
+      }
+    });
+
+    const card = document.createElement('div');
+    card.className = 'question-card';
+    card.innerHTML = `
+      <div class="q-num">문제 ${si + 1}</div>
+      <div class="english-line">${engHtml}</div>
+      <div class="korean-line">🇰🇷 ${sent.ko}</div>
+    `;
+    container.appendChild(card);
+  });
+
+  /* 이벤트 등록 */
+  container.querySelectorAll('.letter-box').forEach(box => {
+    box.addEventListener('input', onLetterInput);
+    box.addEventListener('keydown', onLetterKeydown);
+    box.addEventListener('paste', e => e.preventDefault());   // 붙여넣기 차단
+  });
+}
+
+/* ─── 글자 입력 핸들러 ─── */
+function onLetterInput(e) {
+  const box = e.target;
+  let val = box.value;
+
+  /* 붙여넣기나 예측입력으로 2글자 이상 들어오면 첫 글자만 허용 */
+  if (val.length > 1) val = val[0];
+
+  /* 영문자만 허용 */
+  val = val.replace(/[^A-Za-z0-9']/g, '');
+  box.value = val;
+
+  if (val.length === 1) {
+    box.classList.add('filled');
+    /* 다음 칸으로 자동 이동 */
+    const blankId = box.dataset.blank;
+    const idx     = parseInt(box.dataset.idx);
+    const next    = document.getElementById(`${blankId}_${idx + 1}`);
+    if (next) next.focus();
+  } else {
+    box.classList.remove('filled');
+  }
+}
+
+/* ─── 백스페이스: 이전 칸으로 이동 ─── */
+function onLetterKeydown(e) {
+  const box = e.target;
+  if (e.key === 'Backspace' && box.value === '') {
+    const blankId = box.dataset.blank;
+    const idx     = parseInt(box.dataset.idx);
+    const prev    = document.getElementById(`${blankId}_${idx - 1}`);
+    if (prev) { prev.value = ''; prev.focus(); }
+  }
+}
+
+/* ─── 빈칸에서 학생 답 수집 ─── */
+function collectAnswer(blankInfo) {
+  let ans = '';
+  let inputIdx = 0;
+  for (let c = 0; c < blankInfo.word.length; c++) {
+    const ch = blankInfo.word[c];
+    if (ch === '-' || ch === '.' || ch === "'") {
+      ans += ch;
+    } else {
+      const box = document.getElementById(`${blankInfo.blankId}_${inputIdx}`);
+      ans += box ? (box.value || ' ') : ' ';
+      inputIdx++;
+    }
+  }
+  return ans.trim();
+}
+
+/* ─── 채점 ─── */
+function submitTest(auto) {
+  const name = document.getElementById('student-name').value.trim() || (auto ? '(자동제출)' : '');
+  if (!name) { alert('이름을 먼저 입력해 주세요!'); return; }
+
+  const incomplete = currentBlanks.some(b => {
+    const ans = collectAnswer(b);
+    const inputLen = b.word.split('').filter(ch => ch !== '-' && ch !== '.' && ch !== "'").length;
+    return ans.replace(/[\s\-\.']/g, '').length < inputLen;
+  });
+  if (!auto && incomplete) {
+    if (!confirm('아직 채우지 않은 칸이 있습니다. 그래도 제출할까요?')) return;
+  }
+
+  const endDT = new Date();
+  let correct = 0;
+
+  /* 결과 카드 생성 */
+  let detailsHtml = '';
+  const sentResults = {};  // sentIdx → [{blankId, word, userAns, ok}]
+
+  currentBlanks.forEach(b => {
+    const userAns = collectAnswer(b);
+    const ok = userAns.toLowerCase() === b.word.toLowerCase();
+    if (ok) correct++;
+    if (!sentResults[b.sentIdx]) sentResults[b.sentIdx] = [];
+    sentResults[b.sentIdx].push({ word: b.word, blankId: b.blankId, userAns, ok });
+  });
+
+  SENTENCES.forEach((sent, si) => {
+    if (!sentResults[si]) return;
+
+    /* 결과 영문장 재구성 */
+    const tokens = tokenize(sent.en);
+    const blankIds = sentResults[si].map(r => r.blankId);
+    let blankPtr = 0;
+
+    let engResult = '';
+    let usedBlanks = {};
+    // 어느 토큰이 어느 blankId에 매핑됐는지 역추적
+    const blankMap = {};
+    currentBlanks.forEach(b => {
+      if (b.sentIdx === si) blankMap[b.blankId] = b;
+    });
+
+    // 빈칸 위치를 다시 알아내기
+    tokens.forEach((tok, ti) => {
+      // sentResults[si] 중 tok.word와 매칭되는 것 찾기
+      const match = sentResults[si].find(r => !usedBlanks[r.blankId] && r.word === tok.word);
+      if (match) {
+        usedBlanks[match.blankId] = true;
+        const cls  = match.ok ? 'ok' : 'bad';
+        const mark = match.ok ? '✅' : '❌';
+        engResult += `<span class="${cls}"><u>${tok.word}</u>${tok.punct}</span> `;
+      } else {
+        engResult += `${tok.word}${tok.punct} `;
+      }
+    });
+
+    let answerRows = sentResults[si].map(r =>
+      r.ok
+        ? `<span class="ok">✅ "${r.word}" 정답!</span>`
+        : `<span class="bad">❌ 정답: <b>${r.word}</b> / 내 답: <b>${r.userAns || '(공백)'}</b></span>`
+    ).join('<br>');
+
+    detailsHtml += `
+      <div class="result-card">
+        <div class="q-num">문제 ${si + 1}</div>
+        <div class="result-eng">${engResult}</div>
+        <div class="result-kor">🇰🇷 ${sent.ko}</div>
+        <div class="answer-row">${answerRows}</div>
+      </div>`;
+  });
+
+  /* 점수 헤더 */
+  const total = currentBlanks.length;
+  const pct   = Math.round(correct / total * 100);
+  const emoji = pct === 100 ? '🏆' : pct >= 70 ? '😊' : '😢';
+  const isPass = pct >= 70;
+
+  document.getElementById('result-header-block').innerHTML = `
+    <div class="result-header ${isPass ? '' : 'fail-header'}">
+      <div style="font-size:36px;">${emoji}</div>
+      <div class="score-big">${correct} / ${total}</div>
+      <div class="score-label">${pct}점 &nbsp;·&nbsp; ${isPass ? '통과 🎉' : '다시 도전!'}</div>
+      <div class="result-meta">
+        👤 ${name} &nbsp;|&nbsp; 📅 ${formatDT(endDT)}
+        &nbsp;|&nbsp; 📝 ${attemptCount}회차 응시
+        &nbsp;|&nbsp; ${tabSwitchCount > 0 ? '⚠️ 탭 이탈 ' + tabSwitchCount + '회' : '✅ 탭 이탈 없음'}
+      </div>
+    </div>`;
+
+  document.getElementById('result-details').innerHTML = detailsHtml;
+
+
+  /* 구글 시트에 결과 전송 */
+  var wrongList = [];
+  Object.keys(sentResults).forEach(function(si) {
+    var hasWrong = sentResults[si].some(function(r) { return !r.ok; });
+    if (hasWrong) {
+      wrongList.push({ num: parseInt(si) + 1, en: SENTENCES[parseInt(si)].en });
+    }
+  });
+  submitToSheet(name, correct, total, wrongList);
+
+  /* 화면 전환 */
+  document.getElementById('test-screen').style.display   = 'none';
+  document.getElementById('result-screen').style.display = 'block';
+  window.scrollTo(0, 0);
+}
+
+/* ─── 다시 시작 ─── */
+function restartTest() {
+  document.getElementById('test-screen').style.display   = 'block';
+  document.getElementById('result-screen').style.display = 'none';
+  renderQuestions();
+  window.scrollTo(0, 0);
+}
+
+/* ─── 초기화 ─── */
+(function init() {
+  startDateTime = new Date();
+  document.getElementById('test-datetime').textContent = '시험 시작: ' + formatDT(startDateTime);
+  renderQuestions();
+
+  var storageKey = 'attemptCount_고운중_3학년_2챕터';
+  attemptCount = parseInt(localStorage.getItem(storageKey) || '0') + 1;
+  localStorage.setItem(storageKey, attemptCount);
+
+  document.addEventListener('visibilitychange', function() {
+    if (document.hidden) {
+      tabSwitchCount++;
+      if (document.getElementById('test-screen').style.display !== 'none') {
+        if (tabSwitchCount >= 3) {
+          setTimeout(function() {
+            alert('🚨 탭 이탈 3회 초과!\n\n부정행위 방지를 위해 시험이 자동 제출됩니다.');
+            submitTest(true);
+          }, 100);
+        } else {
+          setTimeout(function() {
+            alert('⚠️ 다른 탭/창으로 이동이 감지되었습니다!\n\n이탈 횟수: ' + tabSwitchCount + '회 / 3회\n3회 초과 시 자동 제출됩니다.');
+          }, 100);
+        }
+      }
+    }
+  });
+
+  document.addEventListener('copy',  function(e) { e.preventDefault(); });
+  document.addEventListener('cut',   function(e) { e.preventDefault(); });
+  document.addEventListener('paste', function(e) { e.preventDefault(); });
+  document.addEventListener('keydown', function(e) {
+    if (e.ctrlKey && ['c','v','x','a'].includes(e.key.toLowerCase())) { e.preventDefault(); }
+    if (e.metaKey && ['c','v','x','a'].includes(e.key.toLowerCase())) { e.preventDefault(); }
+  });
+})();
+
+/* ─── 구글 시트 전송 ─── */
+var SCRIPT_URL = 'SCRIPT_URL_HERE'; // ← 나중에 URL로 교체
+
+function submitToSheet(name, correct, total, wrongList) {
+  if (!SCRIPT_URL || SCRIPT_URL === 'SCRIPT_URL_HERE') return;
+  var now = new Date();
+  var pad = function(n) { return String(n).padStart(2, '0'); };
+  var dateStr = now.getFullYear() + '.' + pad(now.getMonth()+1) + '.' + pad(now.getDate());
+  var timeStr = pad(now.getHours()) + ':' + pad(now.getMinutes()) + ':' + pad(now.getSeconds());
+  var wrongNumbers = wrongList.length > 0 ? wrongList.map(function(w){ return w.num + '번'; }).join(', ') : '';
+  var wrongSentences = wrongList.length > 0
+    ? wrongList.map(function(w){ return w.num + '번: ' + w.en; }).join(' / ')
+    : '';
+  var payload = {
+    date: dateStr,
+    time: timeStr,
+    name: name,
+    school: QUIZ_INFO.school,
+    grade: QUIZ_INFO.grade,
+    chapter: QUIZ_INFO.chapter,
+    correct: correct,
+    total: total,
+    percent: Math.round(correct / total * 100),
+    wrongNumbers: wrongNumbers,
+    wrongSentences: wrongSentences
+  };
+  fetch(SCRIPT_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  }).catch(function(err) { console.log('전송 오류:', err); });
+}
+
+</script>
+</body>
+</html>

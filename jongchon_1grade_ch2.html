@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>종촌중학교 1학년 2챕터 영어 시험</title>
+  <style>
+    /* ─── 기본 리셋 ─── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+      background: #EFF3FB;
+      color: #1e293b;
+      min-height: 100vh;
+      padding-bottom: 40px;
+    }
+
+    /* ─── 헤더 ─── */
+    .header {
+      background: linear-gradient(135deg, #3B82F6, #1D4ED8);
+      color: white;
+      padding: 22px 20px 18px;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(30,64,175,0.25);
+    }
+    .header h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; }
+    .header .subtitle { font-size: 13px; opacity: 0.85; margin-top: 4px; }
+    .header .datetime {
+      font-size: 12px; opacity: 0.75; margin-top: 8px;
+      background: rgba(255,255,255,0.15); display: inline-block;
+      padding: 4px 12px; border-radius: 20px;
+    }
+
+    /* ─── 이름 입력 ─── */
+    .name-section {
+      background: white; margin: 14px 14px 0;
+      border-radius: 14px; padding: 16px 18px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+      display: flex; align-items: center; gap: 12px;
+    }
+    .name-section label { font-size: 15px; font-weight: 600; white-space: nowrap; }
+    .name-section input {
+      flex: 1; border: 2px solid #CBD5E1; border-radius: 8px;
+      padding: 9px 12px; font-size: 16px; outline: none;
+    }
+    .name-section input:focus { border-color: #3B82F6; }
+
+    /* ─── 문제 카드 ─── */
+    .question-card {
+      background: white; margin: 12px 14px 0;
+      border-radius: 14px; padding: 18px 18px 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    }
+    .q-num {
+      font-size: 12px; font-weight: 700; color: #3B82F6;
+      background: #EFF6FF; padding: 3px 10px;
+      border-radius: 20px; display: inline-block; margin-bottom: 12px;
+    }
+    .english-line {
+      font-size: 17px; line-height: 2.2; color: #0f172a;
+      font-weight: 500; word-break: break-word;
+    }
+    .korean-line {
+      font-size: 14px; color: #64748b; margin-top: 6px;
+      padding-top: 8px; border-top: 1px dashed #E2E8F0;
+    }
+
+    /* ─── 빈칸 (글자 박스) ─── */
+    .blank-group {
+      display: inline-flex; gap: 4px;
+      vertical-align: middle; margin: 0 2px;
+    }
+    .letter-box {
+      width: 28px; height: 34px;
+      border: 2px solid #3B82F6;
+      border-radius: 6px; text-align: center;
+      font-size: 16px; font-weight: 600; color: #1e40af;
+      outline: none; padding: 0; background: #F8FAFF;
+      -webkit-user-select: text;
+      user-select: text;
+      /* 자동완성/자동수정 전부 차단 */
+      autocomplete: "off";
+      -webkit-text-security: none;
+      IME-mode: disabled;
+    }
+    .letter-box:focus {
+      border-color: #1D4ED8;
+      background: #DBEAFE;
+      box-shadow: 0 0 0 3px rgba(59,130,246,0.2);
+    }
+    .letter-box.filled { background: #EFF6FF; }
+    .letter-box.correct-box { border-color: #22C55E; background: #F0FDF4; color: #15803D; }
+    .letter-box.wrong-box  { border-color: #EF4444; background: #FEF2F2; color: #DC2626; }
+
+    /* ─── 제출 버튼 ─── */
+    .submit-wrap { padding: 22px 14px 0; }
+    .submit-btn {
+      width: 100%; background: linear-gradient(135deg, #3B82F6, #1D4ED8);
+      color: white; border: none; border-radius: 14px;
+      padding: 17px; font-size: 18px; font-weight: 700;
+      cursor: pointer; letter-spacing: -0.3px;
+      box-shadow: 0 4px 14px rgba(29,78,216,0.35);
+    }
+    .submit-btn:active { transform: scale(0.98); }
+
+    /* ─── 결과 화면 ─── */
+    #result-screen { display: none; }
+
+    .result-header {
+      background: linear-gradient(135deg, #10B981, #059669);
+      color: white; padding: 28px 20px; text-align: center;
+      box-shadow: 0 4px 12px rgba(5,150,105,0.3);
+    }
+    .result-header.fail-header {
+      background: linear-gradient(135deg, #F59E0B, #D97706);
+      box-shadow: 0 4px 12px rgba(217,119,6,0.3);
+    }
+    .score-big { font-size: 64px; font-weight: 800; line-height: 1; }
+    .score-label { font-size: 15px; opacity: 0.9; margin-top: 6px; }
+    .result-meta { font-size: 12px; opacity: 0.8; margin-top: 10px; }
+
+    .result-card {
+      background: white; margin: 12px 14px 0;
+      border-radius: 14px; padding: 16px 16px 14px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    }
+    .result-card .q-num { margin-bottom: 8px; }
+    .result-eng { font-size: 15px; line-height: 2; color: #0f172a; font-weight: 500; }
+    .result-kor { font-size: 13px; color: #64748b; margin-top: 6px; }
+    .answer-row {
+      margin-top: 8px; padding-top: 8px;
+      border-top: 1px dashed #E2E8F0;
+      font-size: 13px;
+    }
+    .answer-row span { font-weight: 700; }
+    .ok  { color: #16A34A; }
+    .bad { color: #DC2626; }
+
+    /* ─── 스크린샷 안내 ─── */
+    .screenshot-guide {
+      margin: 14px 14px 0; background: #FFFBEB;
+      border: 2px solid #FCD34D; border-radius: 14px;
+      padding: 16px 16px; font-size: 14px; color: #78350F;
+      line-height: 1.6;
+    }
+    .screenshot-guide strong { display: block; font-size: 15px; margin-bottom: 6px; }
+
+    .retry-btn {
+      width: calc(100% - 28px); margin: 16px 14px 0;
+      background: white; border: 2px solid #3B82F6;
+      color: #3B82F6; border-radius: 14px; padding: 14px;
+      font-size: 16px; font-weight: 700; cursor: pointer;
+    }
+
+    /* ─── 안내 문구 ─── */
+    .tip {
+      text-align: center; font-size: 12px; color: #94A3B8;
+      margin: 12px 14px 0;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════ 시험 화면 ══════════════════ -->
+<div id="test-screen">
+
+  <div class="header">
+    <h1>📚 종촌중학교 1학년 2챕터</h1>
+    <div class="subtitle">영어 문장 암기 시험 · 빈칸을 채워보세요</div>
+    <div class="datetime" id="test-datetime"></div>
+  </div>
+
+  <div class="name-section">
+    <label for="student-name">이름</label>
+    <input type="text" id="student-name" placeholder="이름을 입력하세요"
+      autocomplete="off" autocorrect="off" autocapitalize="words" spellcheck="false" />
+  </div>
+
+  <p class="tip">💡 각 칸에 글자를 하나씩 입력하세요. 자동완성은 지원되지 않습니다.</p>
+
+  <div id="questions-container"></div>
+
+  <div class="submit-wrap">
+    <button class="submit-btn" onclick="submitTest()">✅ 제출하고 채점받기</button>
+  </div>
+
+</div>
+
+<!-- ══════════════════ 결과 화면 ══════════════════ -->
+<div id="result-screen">
+  <div id="result-header-block"></div>
+  <div class="screenshot-guide">
+    <strong>📸 선생님께 결과를 보내주세요!</strong>
+    이 화면을 캡처(스크린샷)해서 선생님께 전송해 주세요.<br>
+    📱 아이폰: 전원 + 볼륨 올리기 버튼 / 안드로이드: 전원 + 볼륨 내리기 버튼
+  </div>
+  <div id="result-details"></div>
+  <button class="retry-btn" onclick="restartTest()">🔄 다시 시험 보기</button>
+</div>
+
+
+<script>
+/* ══════════════════════════════════════════════════════════
+   📝  선생님이 여기서 문장을 수정/추가하세요!
+   형식: { en: "영어 문장.", ko: "한국어 뜻." }
+   ══════════════════════════════════════════════════════════ */
+var QUIZ_INFO = { school: '종촌중학교', grade: '1학년', chapter: '2챕터' };
+const SENTENCES = [
+  // ── 본문 ──
+  { en: "Irene Baker is my great-grandmother.", ko: "아이린 베이커는 나의 증조할머니이시다." },
+  { en: "Today is her 100th birthday.", ko: "오늘은 그녀의 100번째 생신이다." },
+  { en: "We are preparing a party for her.", ko: "우리는 그녀를 위한 파티를 준비하고 있다." },
+  { en: "I'm filming a video on this special day.", ko: "나는 이 특별한 날에 영상을 찍고 있다." },
+  { en: "My mom is putting strawberries on a cake.", ko: "나의 엄마는 케이크 위에 딸기를 올리고 계신다." },
+  { en: "My great-grandmother does not like strawberries.", ko: "나의 증조할머니는 딸기를 좋아하지 않으신다." },
+  { en: "That's strange.", ko: "그거 이상하다." },
+  { en: "My dad is holding pink roses.", ko: "나의 아빠는 분홍색 장미를 들고 계신다." },
+  { en: "But her favorite color is yellow, not pink.", ko: "하지만 그녀가 가장 좋아하는 색깔은 분홍색이 아니라 노란색이다." },
+  { en: "Something is not right.", ko: "무언가 맞지 않다." },
+  { en: "Dad says, Jimmy, there is a special guest today.", ko: "아빠가 지미야, 오늘 특별한 손님이 있어 라고 말씀하신다." },
+  { en: "Who is the special guest?", ko: "특별한 손님은 누구일까?" },
+  { en: "Now, the party is ready.", ko: "이제 파티가 준비되었다." },
+  { en: "My great-grandma joins us.", ko: "나의 증조할머니가 우리와 함께하신다." },
+  { en: "The door opens slowly.", ko: "문이 천천히 열린다." },
+  { en: "A woman is standing there.", ko: "한 여성이 그곳에 서 있다." },
+  { en: "She is my great-grandmother's twin sister, Margaret!", ko: "그녀는 나의 증조할머니의 쌍둥이 자매, 마가렛이다!" },
+  { en: "She is wearing a pink sweater.", ko: "그녀는 분홍색 스웨터를 입고 있다." },
+  { en: "Now, everything makes sense.", ko: "이제 모든 것이 이해가 된다." },
+  { en: "My mom and dad are lighting candles.", ko: "나의 엄마와 아빠가 초에 불을 붙이고 계신다." },
+  { en: "One hundred candles on the cake!", ko: "케이크 위에 100개의 초라니!" },
+  { en: "So we all blow out the candles.", ko: "그래서 우리 모두 초를 불어 끈다." },
+  // ── 대화문 ──
+  { en: "Hi, Sally. You come to school very early.", ko: "안녕, 샐리. 너는 학교에 아주 일찍 오는구나." },
+  { en: "Yes, Mr. Smith. I get up early.", ko: "네, 스미스 선생님. 저는 일찍 일어나요." },
+  { en: "What time do you get up?", ko: "몇 시에 일어나니?" },
+  { en: "I usually get up at 6 a.m.", ko: "저는 보통 오전 6시에 일어나요." },
+  { en: "Hello, Ms. Brown. Is James home?", ko: "안녕하세요, 브라운 선생님. 제임스는 집에 있나요?" },
+  { en: "No, Leo. He is taking a violin lesson now.", ko: "아니야, 레오야. 그는 지금 바이올린 수업을 받고 있어." },
+  { en: "He usually comes home at 5 p.m.", ko: "그는 보통 오후 5시에 집에 와." },
+  { en: "Do you exercise, Sam?", ko: "샘, 너 운동하니?" },
+  { en: "Yes. I go swimming every Friday.", ko: "응. 나는 매주 금요일마다 수영하러 가." },
+  { en: "I usually go to the swimming pool at 7 p.m.", ko: "나는 보통 오후 7시에 수영장에 가." },
+  { en: "What do you do on weekends?", ko: "주말마다 뭐 하니?" },
+  { en: "I usually watch movies at home.", ko: "나는 보통 집에서 영화를 봐." },
+  { en: "I go to the Han River with my family.", ko: "나는 가족이랑 한강에 가." },
+  { en: "We usually ride bikes together.", ko: "우리는 보통 같이 자전거를 타." },
+  { en: "Hi, Mike. Where is Betty?", ko: "안녕, 마이크. 베티는 어디에 있어?" },
+  { en: "She is playing the drums in the music room.", ko: "그녀는 음악실에서 드럼을 연주하고 있어." },
+  { en: "Is Sam in the classroom?", ko: "샘은 교실에 있어?" },
+  { en: "No, she's outside. She's in the playground.", ko: "아니, 그녀는 밖에 있어. 그녀는 운동장에 있어." },
+  { en: "What is she doing?", ko: "그녀는 무엇을 하고 있어?" },
+  { en: "She's playing soccer.", ko: "그녀는 축구를 하고 있어." },
+  { en: "Ann, what is Linda doing now?", ko: "앤, 린다는 지금 무엇을 하고 있어?" },
+  { en: "She's baking cookies for her friend.", ko: "그녀는 친구를 위해 쿠키를 굽고 있어." },
+  { en: "Oh, she's so nice.", ko: "와, 그녀는 정말 친절하네." },
+  { en: "What are you doing, Dylan?", ko: "딜런, 뭐 하고 있어?" },
+  { en: "I'm looking at my old pictures.", ko: "나는 내 옛날 사진들을 보고 있어." },
+  { en: "This little boy is you, right?", ko: "이 어린 소년이 너 맞지?" },
+  { en: "He is filming my brother and me.", ko: "그는 나와 내 형을 촬영하고 있어." },
+  { en: "We are dancing to K-pop music.", ko: "우리는 K-pop 음악에 맞춰 춤추고 있어." },
+  { en: "It's a great picture.", ko: "정말 멋진 사진이다." },
+];
+/* ══════════════════════════════════════════════════════════ */
+
+/* ─── 상태 변수 ─── */
+let currentBlanks = [];   // [{ word, blankId, length }, ...]
+let startDateTime = null;
+let tabSwitchCount = 0;   // 탭 이탈 횟수
+let attemptCount = 0;     // 응시 횟수
+
+/* ─── 날짜/시간 표시 ─── */
+function formatDT(d) {
+  const pad = n => String(n).padStart(2, '0');
+  return `${d.getFullYear()}.${pad(d.getMonth()+1)}.${pad(d.getDate())} `
+       + `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+}
+
+/* ─── 문장 토큰화 (단어 + 뒤에 붙는 구두점 분리) ─── */
+function tokenize(sentence) {
+  return sentence.trim().split(/\s+/).map(function(tok) {
+    // 끝에 붙은 구두점(.,!? 등)을 분리
+    var word = tok.replace(/[^A-Za-z]+$/, '');
+    var punct = tok.slice(word.length);
+    if (!word) { return { word: tok, punct: '' }; }
+    return { word: word, punct: punct };
+  });
+}
+
+/* ─── 빈칸 위치 랜덤 선택 (단어 3글자 이상 중 2개) ─── */
+function pickBlanks(tokens) {
+  const eligible = tokens
+    .map((t, i) => i)
+    .filter(i => tokens[i].word.length >= 3);
+
+  // Fisher–Yates shuffle
+  for (let i = eligible.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [eligible[i], eligible[j]] = [eligible[j], eligible[i]];
+  }
+  return new Set(eligible.slice(0, Math.min(2, eligible.length)));
+}
+
+/* ─── 글자 박스 HTML 생성 ─── */
+function buildLetterBoxes(blankId, word) {
+  let html = `<span class="blank-group" data-blank="${blankId}">`;
+  let inputIdx = 0;
+  for (let c = 0; c < word.length; c++) {
+    const ch = word[c];
+    if (ch === '-' || ch === '.' || ch === "'") {
+      html += `<span style="display:inline-flex;align-items:center;justify-content:center;width:10px;font-size:16px;font-weight:700;color:#3B82F6;">${ch}</span>`;
+    } else {
+      html += `<input
+        class="letter-box"
+        type="text" maxlength="2"
+        id="${blankId}_${inputIdx}"
+        data-blank="${blankId}"
+        data-idx="${inputIdx}"
+        data-charpos="${c}"
+        autocomplete="off"
+        autocorrect="off"
+        autocapitalize="none"
+        spellcheck="false"
+        inputmode="text"
+        aria-label="글자 ${inputIdx+1}"
+      />`;
+      inputIdx++;
+    }
+  }
+  html += `</span>`;
+  return html;
+}
+
+/* ─── 문제 렌더링 ─── */
+function renderQuestions() {
+  currentBlanks = [];
+  const container = document.getElementById('questions-container');
+  container.innerHTML = '';
+
+  SENTENCES.forEach((sent, si) => {
+    const tokens = tokenize(sent.en);
+    const blankSet = pickBlanks(tokens);
+
+    let engHtml = '';
+    tokens.forEach((tok, ti) => {
+      if (blankSet.has(ti)) {
+        const blankId = `q${si}_b${currentBlanks.length}`;
+        currentBlanks.push({ blankId, word: tok.word, sentIdx: si });
+        engHtml += buildLetterBoxes(blankId, tok.word);
+        if (tok.punct) engHtml += `<span>${tok.punct}</span>`;
+        engHtml += ' ';
+      } else {
+        engHtml += `<span>${tok.word}${tok.punct}</span> `;
+      }
+    });
+
+    const card = document.createElement('div');
+    card.className = 'question-card';
+    card.innerHTML = `
+      <div class="q-num">문제 ${si + 1}</div>
+      <div class="english-line">${engHtml}</div>
+      <div class="korean-line">🇰🇷 ${sent.ko}</div>
+    `;
+    container.appendChild(card);
+  });
+
+  /* 이벤트 등록 */
+  container.querySelectorAll('.letter-box').forEach(box => {
+    box.addEventListener('input', onLetterInput);
+    box.addEventListener('keydown', onLetterKeydown);
+    box.addEventListener('paste', e => e.preventDefault());   // 붙여넣기 차단
+  });
+}
+
+/* ─── 글자 입력 핸들러 ─── */
+function onLetterInput(e) {
+  const box = e.target;
+  let val = box.value;
+
+  /* 붙여넣기나 예측입력으로 2글자 이상 들어오면 첫 글자만 허용 */
+  if (val.length > 1) val = val[0];
+
+  /* 영문자 + 숫자 + 어퍼스트로피 허용 */
+  val = val.replace(/[^A-Za-z0-9']/g, '');
+  box.value = val;
+
+  if (val.length === 1) {
+    box.classList.add('filled');
+    /* 다음 칸으로 자동 이동 */
+    const blankId = box.dataset.blank;
+    const idx     = parseInt(box.dataset.idx);
+    const next    = document.getElementById(`${blankId}_${idx + 1}`);
+    if (next) next.focus();
+  } else {
+    box.classList.remove('filled');
+  }
+}
+
+/* ─── 백스페이스: 이전 칸으로 이동 ─── */
+function onLetterKeydown(e) {
+  const box = e.target;
+  if (e.key === 'Backspace' && box.value === '') {
+    const blankId = box.dataset.blank;
+    const idx     = parseInt(box.dataset.idx);
+    const prev    = document.getElementById(`${blankId}_${idx - 1}`);
+    if (prev) { prev.value = ''; prev.focus(); }
+  }
+}
+
+/* ─── 빈칸에서 학생 답 수집 ─── */
+function collectAnswer(blankInfo) {
+  let ans = '';
+  let inputIdx = 0;
+  for (let c = 0; c < blankInfo.word.length; c++) {
+    const ch = blankInfo.word[c];
+    if (ch === '-' || ch === '.' || ch === "'") {
+      ans += ch; // 특수문자는 자동 삽입
+    } else {
+      const box = document.getElementById(`${blankInfo.blankId}_${inputIdx}`);
+      ans += box ? (box.value || ' ') : ' ';
+      inputIdx++;
+    }
+  }
+  return ans.trim();
+}
+
+/* ─── 채점 ─── */
+function submitTest(auto) {
+  const name = document.getElementById('student-name').value.trim() || (auto ? '(자동제출)' : '');
+  if (!name) { alert('이름을 먼저 입력해 주세요!'); return; }
+
+  /* 모든 칸이 채워졌는지 확인 */
+  const incomplete = currentBlanks.some(b => {
+    const ans = collectAnswer(b);
+    const inputLen = b.word.split('').filter(ch => ch !== '-' && ch !== '.' && ch !== "'").length; return ans.replace(/[\s\-\.]/g, '').length < inputLen;
+  });
+  if (!auto && incomplete) {
+    if (!confirm('아직 채우지 않은 칸이 있습니다. 그래도 제출할까요?')) return;
+  }
+
+  const endDT = new Date();
+  let correct = 0;
+
+  /* 결과 카드 생성 */
+  let detailsHtml = '';
+  const sentResults = {};  // sentIdx → [{blankId, word, userAns, ok}]
+
+  currentBlanks.forEach(b => {
+    const userAns = collectAnswer(b);
+    const ok = userAns.toLowerCase() === b.word.toLowerCase();
+    if (ok) correct++;
+    if (!sentResults[b.sentIdx]) sentResults[b.sentIdx] = [];
+    sentResults[b.sentIdx].push({ word: b.word, blankId: b.blankId, userAns, ok });
+  });
+
+  SENTENCES.forEach((sent, si) => {
+    if (!sentResults[si]) return;
+
+    /* 결과 영문장 재구성 */
+    const tokens = tokenize(sent.en);
+    const blankIds = sentResults[si].map(r => r.blankId);
+    let blankPtr = 0;
+
+    let engResult = '';
+    let usedBlanks = {};
+    // 어느 토큰이 어느 blankId에 매핑됐는지 역추적
+    const blankMap = {};
+    currentBlanks.forEach(b => {
+      if (b.sentIdx === si) blankMap[b.blankId] = b;
+    });
+
+    // 빈칸 위치를 다시 알아내기
+    tokens.forEach((tok, ti) => {
+      // sentResults[si] 중 tok.word와 매칭되는 것 찾기
+      const match = sentResults[si].find(r => !usedBlanks[r.blankId] && r.word === tok.word);
+      if (match) {
+        usedBlanks[match.blankId] = true;
+        const cls  = match.ok ? 'ok' : 'bad';
+        const mark = match.ok ? '✅' : '❌';
+        engResult += `<span class="${cls}"><u>${tok.word}</u>${tok.punct}</span> `;
+      } else {
+        engResult += `${tok.word}${tok.punct} `;
+      }
+    });
+
+    let answerRows = sentResults[si].map(r =>
+      r.ok
+        ? `<span class="ok">✅ "${r.word}" 정답!</span>`
+        : `<span class="bad">❌ 정답: <b>${r.word}</b> / 내 답: <b>${r.userAns || '(공백)'}</b></span>`
+    ).join('<br>');
+
+    detailsHtml += `
+      <div class="result-card">
+        <div class="q-num">문제 ${si + 1}</div>
+        <div class="result-eng">${engResult}</div>
+        <div class="result-kor">🇰🇷 ${sent.ko}</div>
+        <div class="answer-row">${answerRows}</div>
+      </div>`;
+  });
+
+  /* 점수 헤더 */
+  const total = currentBlanks.length;
+  const pct   = Math.round(correct / total * 100);
+  const emoji = pct === 100 ? '🏆' : pct >= 70 ? '😊' : '😢';
+  const isPass = pct >= 70;
+
+  document.getElementById('result-header-block').innerHTML = `
+    <div class="result-header ${isPass ? '' : 'fail-header'}">
+      <div style="font-size:36px;">${emoji}</div>
+      <div class="score-big">${correct} / ${total}</div>
+      <div class="score-label">${pct}점 &nbsp;·&nbsp; ${isPass ? '통과 🎉' : '다시 도전!'}</div>
+      <div class="result-meta">
+        👤 ${name} &nbsp;|&nbsp; 📅 ${formatDT(endDT)}
+        &nbsp;|&nbsp; 📝 ${attemptCount}회차 응시
+        &nbsp;|&nbsp; ${tabSwitchCount > 0 ? '⚠️ 탭 이탈 ' + tabSwitchCount + '회' : '✅ 탭 이탈 없음'}
+      </div>
+    </div>`;
+
+  document.getElementById('result-details').innerHTML = detailsHtml;
+
+
+  /* 구글 시트에 결과 전송 */
+  var wrongList = [];
+  Object.keys(sentResults).forEach(function(si) {
+    var hasWrong = sentResults[si].some(function(r) { return !r.ok; });
+    if (hasWrong) {
+      wrongList.push({ num: parseInt(si) + 1, en: SENTENCES[parseInt(si)].en });
+    }
+  });
+  submitToSheet(name, correct, total, wrongList);
+
+  /* 화면 전환 */
+  document.getElementById('test-screen').style.display   = 'none';
+  document.getElementById('result-screen').style.display = 'block';
+  window.scrollTo(0, 0);
+}
+
+/* ─── 다시 시작 ─── */
+function restartTest() {
+  document.getElementById('test-screen').style.display   = 'block';
+  document.getElementById('result-screen').style.display = 'none';
+  renderQuestions();
+  window.scrollTo(0, 0);
+}
+
+/* ─── 초기화 ─── */
+(function init() {
+  startDateTime = new Date();
+  document.getElementById('test-datetime').textContent = '시험 시작: ' + formatDT(startDateTime);
+  renderQuestions();
+
+  /* ── 응시 횟수 로컬 저장 ── */
+  var storageKey = 'attemptCount_종촌중_1학년_2챕터';
+  attemptCount = parseInt(localStorage.getItem(storageKey) || '0') + 1;
+  localStorage.setItem(storageKey, attemptCount);
+
+  /* ── 탭 전환 감지 ── */
+  document.addEventListener('visibilitychange', function() {
+    if (document.hidden) {
+      tabSwitchCount++;
+      if (document.getElementById('test-screen').style.display !== 'none') {
+        if (tabSwitchCount >= 3) {
+          setTimeout(function() {
+            alert('🚨 탭 이탈 3회 초과!\n\n부정행위 방지를 위해 시험이 자동 제출됩니다.');
+            submitTest(true);
+          }, 100);
+        } else {
+          setTimeout(function() {
+            alert('⚠️ 다른 탭/창으로 이동이 감지되었습니다!\n\n이탈 횟수: ' + tabSwitchCount + '회 / 3회\n3회 초과 시 자동 제출됩니다.');
+          }, 100);
+        }
+      }
+    }
+  });
+
+  /* ── 복사/붙여넣기 차단 ── */
+  document.addEventListener('copy',  function(e) { e.preventDefault(); });
+  document.addEventListener('cut',   function(e) { e.preventDefault(); });
+  document.addEventListener('paste', function(e) { e.preventDefault(); });
+  document.addEventListener('keydown', function(e) {
+    if (e.ctrlKey && ['c','v','x','a'].includes(e.key.toLowerCase())) {
+      e.preventDefault();
+    }
+    if (e.metaKey && ['c','v','x','a'].includes(e.key.toLowerCase())) {
+      e.preventDefault();
+    }
+  });
+})();
+
+/* ─── 구글 시트 전송 ─── */
+var SCRIPT_URL = 'SCRIPT_URL_HERE'; // ← 나중에 URL로 교체
+
+function submitToSheet(name, correct, total, wrongList) {
+  if (!SCRIPT_URL || SCRIPT_URL === 'SCRIPT_URL_HERE') return;
+  var now = new Date();
+  var pad = function(n) { return String(n).padStart(2, '0'); };
+  var dateStr = now.getFullYear() + '.' + pad(now.getMonth()+1) + '.' + pad(now.getDate());
+  var timeStr = pad(now.getHours()) + ':' + pad(now.getMinutes()) + ':' + pad(now.getSeconds());
+  var wrongNumbers = wrongList.length > 0 ? wrongList.map(function(w){ return w.num + '번'; }).join(', ') : '';
+  var wrongSentences = wrongList.length > 0
+    ? wrongList.map(function(w){ return w.num + '번: ' + w.en; }).join(' / ')
+    : '';
+  var payload = {
+    date: dateStr,
+    time: timeStr,
+    name: name,
+    school: QUIZ_INFO.school,
+    grade: QUIZ_INFO.grade,
+    chapter: QUIZ_INFO.chapter,
+    correct: correct,
+    total: total,
+    percent: Math.round(correct / total * 100),
+    wrongNumbers: wrongNumbers,
+    wrongSentences: wrongSentences
+  };
+  fetch(SCRIPT_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  }).catch(function(err) { console.log('전송 오류:', err); });
+}
+
+</script>
+</body>
+</html>
