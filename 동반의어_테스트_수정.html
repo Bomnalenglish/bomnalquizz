@@ -1,0 +1,1429 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2027 수능특강 동반의어 테스트</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700&family=Noto+Sans+KR:wght@300;400;500&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #22263a;
+    --border: #2e3350;
+    --accent: #5b8dee;
+    --accent2: #a78bfa;
+    --correct: #34d399;
+    --wrong: #f87171;
+    --text: #e2e8f0;
+    --text-dim: #8892a4;
+    --text-muted: #4a5568;
+    --gold: #fbbf24;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans KR', sans-serif;
+    min-height: 100vh;
+    background-image: 
+      radial-gradient(ellipse at 20% 0%, rgba(91,141,238,0.08) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 100%, rgba(167,139,250,0.06) 0%, transparent 60%);
+  }
+
+  /* ── Header ── */
+  header {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(15,17,23,0.92);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 32px;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 16px;
+  }
+  .header-left { display: flex; align-items: center; gap: 14px; }
+  .logo {
+    width: 36px; height: 36px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 10px;
+    display: grid; place-items: center;
+    font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 600;
+    color: #fff; flex-shrink: 0;
+  }
+  .header-title { font-family: 'Noto Serif KR', serif; font-size: 15px; font-weight: 600; color: var(--text); }
+  .header-sub { font-size: 11px; color: var(--text-dim); margin-top: 1px; }
+
+  .header-right { display: flex; align-items: center; gap: 12px; }
+  .score-badge {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 20px; padding: 6px 16px;
+    font-size: 13px; color: var(--text-dim); white-space: nowrap;
+  }
+  .score-badge span { color: var(--accent); font-weight: 600; font-family: 'JetBrains Mono', monospace; }
+
+  /* ── Navigation ── */
+  nav {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 32px;
+    display: flex; gap: 0; overflow-x: auto;
+  }
+  nav::-webkit-scrollbar { height: 3px; }
+  nav::-webkit-scrollbar-track { background: transparent; }
+  nav::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  .nav-btn {
+    background: none; border: none; cursor: pointer;
+    color: var(--text-dim); font-size: 12px; font-family: 'JetBrains Mono', monospace;
+    padding: 12px 18px; white-space: nowrap;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s; flex-shrink: 0;
+  }
+  .nav-btn:hover { color: var(--text); }
+  .nav-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .nav-btn.done { color: var(--correct); }
+  .nav-btn.done.active { border-bottom-color: var(--correct); }
+
+  /* ── Main ── */
+  main { max-width: 900px; margin: 0 auto; padding: 32px 24px 80px; }
+
+  .section { display: none; }
+  .section.visible { display: block; animation: fadeUp 0.3s ease; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── Section header ── */
+  .section-header {
+    display: flex; align-items: flex-start; gap: 16px;
+    margin-bottom: 28px; padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-num {
+    width: 44px; height: 44px; flex-shrink: 0;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 12px; display: grid; place-items: center;
+    font-family: 'JetBrains Mono', monospace; font-weight: 600; font-size: 15px;
+    color: #fff;
+  }
+  .section-meta h2 { font-family: 'Noto Serif KR', serif; font-size: 17px; font-weight: 700; color: var(--text); }
+  .section-meta p  { font-size: 12px; color: var(--text-dim); margin-top: 4px; }
+
+  /* ── Passage ── */
+  .passage {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px 28px;
+    font-size: 14.5px; line-height: 2.0;
+    color: var(--text);
+    margin-bottom: 28px;
+    position: relative;
+  }
+  .passage::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 14px 14px 0 0;
+  }
+
+  /* ── Inline choice ── */
+  .choice-group {
+    display: inline-flex;
+    align-items: center;
+    gap: 0;
+    background: var(--surface2);
+    border: 1.5px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+    vertical-align: middle;
+    margin: 0 2px;
+    transition: border-color 0.2s;
+  }
+  .choice-group.answered { border-color: var(--border); }
+  .choice-group.correct  { border-color: var(--correct); background: rgba(52,211,153,0.07); }
+  .choice-group.wrong    { border-color: var(--wrong);   background: rgba(248,113,113,0.07); }
+
+  .choice-btn {
+    background: none; border: none; cursor: pointer;
+    padding: 3px 10px;
+    font-size: 13px; font-family: 'Noto Sans KR', sans-serif;
+    color: var(--text-dim);
+    transition: all 0.15s;
+    position: relative;
+    white-space: nowrap;
+  }
+  .choice-btn:not(:last-child)::after {
+    content: '';
+    position: absolute; right: 0; top: 20%; height: 60%;
+    width: 1px; background: var(--border);
+  }
+  .choice-btn:hover { background: rgba(91,141,238,0.12); color: var(--accent); }
+  .choice-btn.selected { background: var(--accent); color: #fff; font-weight: 500; }
+
+  .choice-group.correct .choice-btn.selected  { background: var(--correct); }
+  .choice-group.wrong   .choice-btn.selected  { background: var(--wrong); }
+  .choice-group.correct .choice-btn.answer-key { color: var(--correct); font-weight: 600; }
+  .choice-group.wrong   .choice-btn.answer-key {
+    background: rgba(52,211,153,0.2); color: var(--correct); font-weight: 600;
+  }
+
+  .num-label {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; color: var(--accent2);
+    vertical-align: super;
+    margin-right: 1px;
+    opacity: 0.7;
+  }
+
+  /* ── Controls ── */
+  .controls {
+    display: flex; align-items: center; gap: 12px;
+    flex-wrap: wrap; margin-top: 8px;
+  }
+  .btn {
+    border: none; cursor: pointer; border-radius: 10px;
+    font-family: 'Noto Sans KR', sans-serif; font-size: 13px; font-weight: 500;
+    padding: 10px 20px; transition: all 0.2s;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: #fff;
+  }
+  .btn-primary:hover { opacity: 0.88; transform: translateY(-1px); }
+  .btn-ghost {
+    background: var(--surface2); border: 1px solid var(--border);
+    color: var(--text-dim);
+  }
+  .btn-ghost:hover { color: var(--text); border-color: var(--accent); }
+
+  /* ── Result banner ── */
+  .result-banner {
+    display: none;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 16px 20px;
+    margin-top: 20px;
+    align-items: center; gap: 16px; flex-wrap: wrap;
+  }
+  .result-banner.show { display: flex; animation: fadeUp 0.3s ease; }
+  .result-score { font-family: 'JetBrains Mono', monospace; font-size: 28px; font-weight: 700; }
+  .result-score.perfect { color: var(--gold); }
+  .result-score.good    { color: var(--correct); }
+  .result-score.ok      { color: var(--accent); }
+  .result-score.bad     { color: var(--wrong); }
+  .result-detail { font-size: 13px; color: var(--text-dim); }
+  .result-detail strong { color: var(--text); }
+
+  /* ── Overall summary ── */
+  #summary-view { display: none; }
+  #summary-view.visible { display: block; }
+  .summary-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px; margin-bottom: 32px;
+  }
+  .summary-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 16px;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .summary-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .summary-card h4 { font-size: 13px; font-weight: 600; margin-bottom: 8px; }
+  .summary-card .sc-score { font-family: 'JetBrains Mono', monospace; font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+  .summary-card .sc-label { font-size: 11px; color: var(--text-dim); }
+  .summary-card.sc-perfect .sc-score { color: var(--gold); }
+  .summary-card.sc-good    .sc-score { color: var(--correct); }
+  .summary-card.sc-ok      .sc-score { color: var(--accent); }
+  .summary-card.sc-bad     .sc-score { color: var(--wrong); }
+  .summary-card.sc-none    .sc-score { color: var(--text-muted); }
+
+  .overall-score-box {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 16px; padding: 32px; text-align: center;
+    margin-bottom: 32px;
+  }
+  .overall-score-box h3 { font-family: 'Noto Serif KR', serif; font-size: 16px; color: var(--text-dim); margin-bottom: 12px; }
+  .overall-num { font-family: 'JetBrains Mono', monospace; font-size: 56px; font-weight: 700; 
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+  .overall-sub { font-size: 14px; color: var(--text-dim); margin-top: 8px; }
+
+  /* ── Progress dots in nav ── */
+  .nav-dot {
+    display: inline-block; width: 6px; height: 6px; border-radius: 50%;
+    background: var(--text-muted); margin-left: 6px; vertical-align: middle;
+  }
+  .nav-dot.done { background: var(--correct); }
+  .nav-dot.partial { background: var(--accent); }
+
+  /* scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <div class="logo">EN</div>
+    <div>
+      <div class="header-title">2027학년도 수능특강 동반의어</div>
+      <div class="header-sub">문맥상 적절한 어휘를 선택하시오</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="score-badge">채점 결과 <span id="total-score">—</span> / <span id="total-possible">—</span></div>
+    <button class="btn btn-ghost" onclick="showSummary()">📊 총정리</button>
+  </div>
+</header>
+
+<nav id="main-nav"></nav>
+
+<main>
+  <div id="sections-container"></div>
+  <div id="summary-view">
+    <div class="overall-score-box">
+      <h3>전체 점수</h3>
+      <div class="overall-num" id="overall-num">—</div>
+      <div class="overall-sub" id="overall-sub">아직 채점되지 않은 단원이 있습니다</div>
+    </div>
+    <div class="summary-grid" id="summary-grid"></div>
+    <div style="text-align:center">
+      <button class="btn btn-primary" onclick="resetAll()">🔄 전체 다시 풀기</button>
+    </div>
+  </div>
+</main>
+
+<script>
+/* ══════════════════════════════════════════════
+   DATA  — all units
+══════════════════════════════════════════════ */
+const UNITS = [
+/* ───── 03강 ───── */
+{
+  id: 'u03_수능', label: '03강-수능', title: '03강 [수능 21번]',
+  text: [
+    'Digital platforms have made a lot of work less sticky. As work becomes ever more modularised, ',
+    {q:1, opts:['commercialized','individualized']},
+    ' and ',
+    {q:2, opts:['customized','systematized']},
+    ', and as markets for digital work are created, ties between service work and particular places can be disconnected. While the business process of outsourcing that ',
+    {q:3, opts:['surfaced','vanished']},
+    ' in the 1990s allowed large companies to take advantage of a \'global reserve army\' by moving their call centres to cheap and distant labour markets, cloudwork changes the volume and granularity at which geographically non-proximate work can take place. A small business in New York can hire a freelance transcriber in Nairobi one day and New Delhi the next. No offices or factories need to be built, no local regulations are ',
+    {q:4, opts:['followed','violated']},
+    ', and ― in most cases ― no local taxes are paid. The switch in the production network of work happens by simply sending some emails or clicking some buttons on a digital work platform. And, in this way, the employer leaves behind no material ',
+    {q:5, opts:['erasures','signs']},
+    ' in the places where it was once an employer.'
+  ],
+  answers: {1:'commercialized', 2:'systematized', 3:'surfaced', 4:'followed', 5:'signs'}
+},
+{
+  id: 'u03_01', label: '03강-01', title: '03강 [01번]',
+  text: [
+    'Even outdoors, although climate (including temperature) is usually regarded as ',
+    {q:1, opts:['beyond','within']},
+    ' the control of man, localized temperature control is sometimes effective on a microclimate scale. Vancouver, Canada, is a few miles north of the 49th parallel, about 60 miles farther north than Minot, North Dakota, with its ',
+    {q:2, opts:['obscure','renowned']},
+    ' ',
+    {q:3, opts:['brutal','mild']},
+    ' winter temperatures. But constant foehn winds off the Pacific Ocean make Vancouver winters mild and wet, although sunshine is ',
+    {q:4, opts:['abundant','scarce']},
+    '. When I had a garden there in the late 1940s, a neighbor used to say that I "cheated God" to bring in my lettuce and tomatoes earlier than anyone else. The bed in which the vegetables grew was banked toward the south at ',
+    {q:5, opts:['precisely','roughly']},
+    ' 50 degrees, and the area between the plants was covered with flat stones, gathered from the nearby beach, to maximize soil heating from the weak late winter-early spring sun.'
+  ],
+  answers: {1:'beyond', 2:'renowned', 3:'brutal', 4:'scarce', 5:'roughly'}
+},
+{
+  id: 'u03_02', label: '03강-02', title: '03강 [02번]',
+  text: [
+    'Energy can always be ',
+    {q:1, opts:['extracted','inserted']},
+    ' into an organization to motivate people to do things. Bonuses, promotions, other carrots, and even a few sticks can get people to work harder, for sure, but the gains are, like all manipulations, ',
+    {q:2, opts:['long-term','short-term']},
+    '. Over time, such tactics cost more money and increase stress for employee and employer alike, and eventually will become the main reason people show up for work every day. That\'s not ',
+    {q:3, opts:['betrayal','devotion']},
+    '. That\'s the employee version of repeat business. Loyalty among employees is when they ',
+    {q:4, opts:['accept','reject']},
+    ' more money or benefits to continue working at the same company. Loyalty to a company trumps pay and benefits. And unless you\'re an astronaut, it\'s not the work we do that inspires us either. It\'s the ',
+    {q:5, opts:['cause','effect']},
+    ' that we come to work for. We don\'t want to come to work to build a wall; we want to come to work to build a cathedral.'
+  ],
+  answers: {1:'inserted', 2:'short-term', 3:'devotion', 4:'reject', 5:'cause'}
+},
+{
+  id: 'u03_03', label: '03강-03', title: '03강 [03번]',
+  text: [
+    'In the early 1960s the great American writer James Baldwin wrote: "People are ',
+    {q:1, opts:['confined','released']},
+    ' in history, and history is trapped in them." He was speaking to race when he penned those words. But the statement is equally true if the word "people" is replaced with "all of life on Earth, present and past," for each strand of DNA, in each of our cells, is an ancient record of ',
+    {q:2, opts:['biographic','biological']},
+    ' history, written in simple code and passed down from generation to generation. One could say that DNA is nothing but history, one with a physical ',
+    {q:3, opts:['concealment','expression']},
+    ' that was slowly blended and ',
+    {q:4, opts:['dispersed','piled up']},
+    ' over countless eons by the most ',
+    {q:5, opts:['cruel','merciful']},
+    ' of all phenomena — natural selection. DNA is a history that is inside us — and yet one that is our master as well, the blueprint for our bodies, and dictator of what we will pass on to our children, gifts that can be blessings ― or ',
+    {q:6, opts:['benign','fatal']},
+    ' time bombs. We are indeed trapped in this particular vehicle of history as much as it is trapped in us.'
+  ],
+  answers: {1:'confined', 2:'biological', 3:'expression', 4:'piled up', 5:'cruel', 6:'fatal'}
+},
+{
+  id: 'u03_04', label: '03강-04', title: '03강 [04번]',
+  text: [
+    'People may not think ',
+    {q:1, opts:['analytically','blindly']},
+    ' for a variety of reasons, such as laziness and inability, but fear is a big one. Why is that? People don\'t want to think not just because it\'s hard, but also because they\'re afraid it will make them question their long-held beliefs. Your students most likely do want to think about things that can be very ',
+    {q:2, opts:['certain','debatable']},
+    ', like politics, ethics, and philosophy. But ',
+    {q:3, opts:['investigate','overlook']},
+    ' even deeper. Once we start thinking deeply, long-held ',
+    {q:4, opts:['facts','hypotheses']},
+    ' are ',
+    {q:5, opts:['accepted','questioned']},
+    '. Thought makes us worry that we\'ll lose our balance and have to look at the world in a different way. We worry about thinking because we care about what we and other people think. Even the most ',
+    {q:6, opts:['realistic','unlikely']},
+    ' ideas have an effect on the world. Non-Euclidean geometry and symbolic logic are about as abstract as thinking can get, but you can\'t understand Einsteinian gravity without the first and run computers without the second. Thinking is important to us, to others, and to the world we live in. This is one reason why we are so afraid of it: it shakes us to the core.'
+  ],
+  answers: {1:'analytically', 2:'debatable', 3:'investigate', 4:'hypotheses', 5:'questioned', 6:'unlikely'}
+},
+/* ───── 04강 ───── */
+{
+  id: 'u04_수능', label: '04강-수능', title: '04강 [수능 22번]',
+  text: [
+    'A sport ecosystem exists based on the type and rate of coopetition existing. Coopetition is defined as "the ',
+    {q:1, opts:['concurrent','separate']},
+    ' pursuit of cooperation and competition among firms to ',
+    {q:2, opts:['utilize','waste']},
+    ' strategically important resources for ',
+    {q:3, opts:['better','inferior']},
+    ' value creation purposes". It is a useful way to understand the dynamic nature of sport businesses which need to collaborate for resource efficiency purposes but potentially compete with each other. This special relationship should be managed properly due to trust and confidence issues being ',
+    {q:4, opts:['trivial','supreme']},
+    '. It can be challenging to be collaborative and competitive in sport as they involve different forms of behaviour. This means a careful balancing act may be required in terms of the amount of emphasis placed on each activity. Often sport managers will try to be more competitive due to performance reasons and less collaborative. By necessity they may need to share information but do so in a ',
+    {q:5, opts:['careless','prudent']},
+    ' manner. This means it might be better to have plans in place about how to pursue both simultaneously. This will ',
+    {q:6, opts:['guarantee','jeopardize']},
+    ' one is not neglected at the expense of the other.'
+  ],
+  answers: {1:'concurrent', 2:'utilize', 3:'better', 4:'supreme', 5:'prudent', 6:'guarantee'}
+},
+{
+  id: 'u04_01', label: '04강-01', title: '04강 [01번]',
+  text: [
+    'There\'s a saying that "you can\'t eat information." That may be so, but the food we eat today is the fruit of thousands of years of increasingly ',
+    {q:1, opts:['high-quality','high-quantity']},
+    ' information — the knowledge of how to farm ― what seeds, what tools and how to use them, what times of year, what irrigation, what ',
+    {q:2, opts:['consequence','sequence']},
+    ' of one crop after another on the same land. What we eat is solar energy, filtered, concentrated, and distilled through the lens of human knowledge. The energy the Earth receives from the sun each year has remained more or less ',
+    {q:3, opts:['consistent','variable']},
+    ' through all of human civilization. What\'s allowed us to ',
+    {q:4, opts:['decline','thrive']},
+    ' is our increasingly ',
+    {q:5, opts:['advanced','primitive']},
+    ' knowledge of how to capture an ever-growing but still tiny fraction of that energy in a form that can fuel our bodies. Every step in the ',
+    {q:6, opts:['improvement','regression']},
+    ' of our knowledge has brought with it an increase in the amount of energy we can tap into.'
+  ],
+  answers: {1:'high-quality', 2:'sequence', 3:'consistent', 4:'thrive', 5:'advanced', 6:'improvement'}
+},
+{
+  id: 'u04_02', label: '04강-02', title: '04강 [02번]',
+  text: [
+    'Increased community engagement by professional journalists, on their own, will not solve the problem of making the news more ',
+    {q:1, opts:['irrelevant','related']},
+    ' to everyone because traditional news organizations already have ',
+    {q:2, opts:['discarded','kept']},
+    ' many communities, leaving behind news deserts. In those places, citizens must take up the responsibility for discovering information, holding the powerful ',
+    {q:3, opts:['irresponsible','responsible']},
+    ', and telling the news for themselves and their neighbors. The democratization of information — through the disruptions caused by computers and the internet — allows citizens to retake control of local news in ways that never have existed before, and it calls them to take greater care in the gathering and ',
+    {q:4, opts:['collection','spread']},
+    ' of what they discover or think they know. Journalism, perhaps like never before, belongs to the people rather than to professional journalists, wealthy publishers, or even ',
+    {q:5, opts:['cooperate','corporate']},
+    ' shareholders.'
+  ],
+  answers: {1:'related', 2:'discarded', 3:'responsible', 4:'spread', 5:'corporate'}
+},
+{
+  id: 'u04_03', label: '04강-03', title: '04강 [03번]',
+  text: [
+    'It is a myth that all ideas are equally ',
+    {q:1, opts:['groundless','justifiable']},
+    ', even those with little or no objective proof. The existence of science is the ',
+    {q:2, opts:['apathy','dedication']},
+    ' to objective truth. After all, science is true: fire is hot, the wheel is efficient, birds and planes can fly, we\'ve landed on a comet and traveled to the Moon, antibiotics treat illness, and immunizations keep us from getting sick. These accomplishments are made possible by objective truths. A(n) ',
+    {q:3, opts:['believable','unlikely']},
+    ' theory can, and frequently does, push science forward. However, an intuition must be followed with testing that ',
+    {q:4, opts:['contradicts','verifies']},
+    ' or disproves its ',
+    {q:5, opts:['falsehood','truthfulness']},
+    '. If a theory is disproved, one should consider it as a reason to ',
+    {q:6, opts:['decline','embrace']},
+    ' or alter the hypothesis, not a justification to just keep firmly holding to the hypothesis because you are instinctively wedded to it.'
+  ],
+  answers: {1:'justifiable', 2:'dedication', 3:'believable', 4:'verifies', 5:'truthfulness', 6:'decline'}
+},
+{
+  id: 'u04_04', label: '04강-04', title: '04강 [04번]',
+  text: [
+    'If you suffer from social ',
+    {q:1, opts:['anxiety','serenity']},
+    ', awkwardness, or dread, know that this is a perfectly normal response. No matter what it looks like, a lot of people are dealing with internal anxiety in social situations. But it is actually possible to build your social muscle and use it to ',
+    {q:2, opts:['diminish','enhance']},
+    ' your connections — and your anxiety is giving you clues to what icebreakers and lifelines other people might be grateful for you to extend. Truly listen to what your anxiety is signaling to you about where you feel uncertain or ',
+    {q:3, opts:['anxious','confident']},
+    ', and practice ',
+    {q:4, opts:['apathy','compassion']},
+    ' by offering a hand to others who might be in the same boat. Remember that flipping anxiety into compassion is something ',
+    {q:5, opts:['acquired','innate']},
+    ' in you — it is, in fact, what your anxiety was designed to do for you. Together, compassion and empathy can ',
+    {q:6, opts:['intensify','soften']},
+    ' against bad anxiety.'
+  ],
+  answers: {1:'anxiety', 2:'enhance', 3:'anxious', 4:'compassion', 5:'innate', 6:'soften'}
+},
+/* ───── 05강 ───── */
+{
+  id: 'u05_수능', label: '05강-수능', title: '05강 [수능 20번]',
+  text: [
+    'The study of literature has repeatedly failed to recognize the influence of modern musical lyricists and their contributions to the ',
+    {q:1, opts:['development','regression']},
+    ' of language. Unlike Shakespeare, who has been studied and celebrated for his development of the English language, particularly in vocabulary and grammatical structure, modern songwriters have experienced ',
+    {q:2, opts:['freedom','limitations']},
+    ' on the acknowledgement of their contributions and largely been ignored. Over the past century, we have ',
+    {q:3, opts:['observed','overlooked']},
+    ' an explosion of ',
+    {q:4, opts:['amazing','ordinary']},
+    ' literary works by these artists, who, through their music, have used linguistic manipulation and storytelling to ',
+    {q:5, opts:['impoverish','improve']},
+    ' our language and literature. Producing lyrics of distinct and complex imagery, songwriters have had an incredible literary impact on our language. Their ',
+    {q:6, opts:['insignificant','notable']},
+    ' works, including influences on modern language development, must be recognized in the field of modern literature.'
+  ],
+  answers: {1:'development', 2:'limitations', 3:'observed', 4:'amazing', 5:'improve', 6:'notable'}
+},
+{
+  id: 'u05_01', label: '05강-01', title: '05강 [01번]',
+  text: [
+    'Many crises today, such as the Great Recession, are simply too big and too ',
+    {q:1, opts:['manageable','uncontrollable']},
+    ' for you to completely ',
+    {q:2, opts:['misinterpret','understand']},
+    ', much less control. Crises of this ilk are precisely the kind that can easily engulf you with destructive reactions that ',
+    {q:3, opts:['facilitate','hinder']},
+    ' your ability to ',
+    {q:4, opts:['conquer','yield to']},
+    ' them. Focusing on these ',
+    {q:5, opts:['enormous','tiny']},
+    ' crises will ',
+    {q:6, opts:['improve','worsen']},
+    ' the natural psychological, emotional, and physical reactions you are going to experience. With these sorts of crises, your best chance is to ',
+    {q:7, opts:['miss','recognize']},
+    ' those aspects that are within your control. Then, you can ',
+    {q:8, opts:['combine','divide']},
+    ' the bigger crisis into smaller, more ',
+    {q:9, opts:['controllable','overwhelming']},
+    ' problems toward which you can direct your energy and find solutions. For example, think back to the Great Recession. Although you probably didn\'t have the ability to influence economic policy, you were able to ',
+    {q:10, opts:['bypass','reexamine']},
+    ' the distribution of your investments and choose to create a more diverse portfolio.'
+  ],
+  answers: {1:'uncontrollable', 2:'understand', 3:'hinder', 4:'conquer', 5:'enormous', 6:'worsen', 7:'recognize', 8:'divide', 9:'controllable', 10:'reexamine'}
+},
+{
+  id: 'u05_02', label: '05강-02', title: '05강 [02번]',
+  text: [
+    'Consumer surveys indicate that the ',
+    {q:1, opts:['majority','minority']},
+    ' of Americans (91%) believe they have some control over their health, and 72% believe that food and nutrition play the greatest role. However, 75% of consumers rely on media outlets including the Internet as their major sources of health and nutrition information, and only half use medical ',
+    {q:2, opts:['resources','sources']},
+    '. A Google search for "nutrition listservs" yielded over 100,000 sites, but it is likely that many of these writings are not ',
+    {q:3, opts:['previewed','reviewed']},
+    ' by nutrition experts. Internet sites marketing herbs, drugs, and health devices are not monitored by government regulatory agencies and often contain ',
+    {q:4, opts:['inaccurate','truthful']},
+    ' information. ',
+    {q:5, opts:['Reliable','Untrustworthy']},
+    ' food companies provide helpful facts about the nutrient content of their products, but commercial sites devoted to sales often post misleading health claims.'
+  ],
+  answers: {1:'majority', 2:'sources', 3:'reviewed', 4:'inaccurate', 5:'Reliable'}
+},
+{
+  id: 'u05_03', label: '05강-03', title: '05강 [03번]',
+  text: [
+    'My business partner Charles and I ',
+    {q:1, opts:['accepted','refused']},
+    ' the servant leader\'s way of doing things. In other words, nothing was ',
+    {q:2, opts:['above','beneath']},
+    ' us. We led by example and did the work. When any new salesman came into the store, he would look around, notice Charles ',
+    {q:3, opts:['polishing','polluting']},
+    ' some corner of the floor and me covered in flour, and assume the decision-maker was not present. He\'d then hand off whatever he was selling to me and say, "Can you give this to the owner?" Now, if Charles and I had remained in the bakery for too long, we wouldn\'t have been able to grow and scale, so I\'m not saying you should be sweeping the floors forever. It\'s more about modeling what\'s important. If cleanliness and details are important, be sure you aren\'t above doing the work and ',
+    {q:4, opts:['pitching in','hindering']},
+    '. Come into your workspace and ask how you can help. If it\'s clear your team is ',
+    {q:5, opts:['in control','in trouble']},
+    ', jump in without asking.'
+  ],
+  answers: {1:'accepted', 2:'beneath', 3:'polishing', 4:'pitching in', 5:'in trouble'}
+},
+{
+  id: 'u05_04', label: '05강-04', title: '05강 [04번]',
+  text: [
+    'Training and competition naturally speed the breath, which ',
+    {q:1, opts:['switches off','triggers']},
+    ' the sympathetic nervous system. In performance, this is ',
+    {q:2, opts:['improper','tolerable']},
+    ' because an athlete wants to produce adrenaline and compete and train in a ',
+    {q:3, opts:['calmed','stimulated']},
+    ' state. However, it is equally important for an athlete to learn how to mentally and physically ',
+    {q:4, opts:['decelerate','speed up']},
+    ' from the ',
+    {q:5, opts:['acute','chronic']},
+    ' sympathetic activity experienced in sport, and outside of performance focus their attention on slow breathing to reduce the sympathetic activity and ',
+    {q:6, opts:['address','worsen']},
+    ' the fight-or-flight state. In the Feinstein Institutes study, participants were able to use the pace of their breathing to activate specific regions of the brain. In a performance realm, this means athletes can use breathing pace to manage their state of arousal. During training and competition, the breathing rate increases with the introduction of adrenaline, and athletes must be able to control this to be able to ',
+    {q:7, opts:['adapt','adopt']},
+    ' and recover.'
+  ],
+  answers: {1:'triggers', 2:'tolerable', 3:'stimulated', 4:'decelerate', 5:'acute', 6:'address', 7:'adapt'}
+},
+/* ───── 06강 ───── */
+{
+  id: 'u06_수능', label: '06강-수능', title: '06강 [수능 23번]',
+  text: [
+    {q:1, opts:['Stressing','Understating']},
+    ' speed over frequency can make sense in contexts where everyone is expected to plan around the timetable, including peak-only commute services and very long trips with low ',
+    {q:2, opts:['demand','supply']},
+    '. In all other contexts, though, it seems to be a common motorist\'s error. Roads are there all the time, so their speed is the most important fact that ',
+    {q:3, opts:['distinguishes','extinguishes']},
+    ' them. But transit is only there if it\'s coming soon. If you have a car, you can use a road whenever you want and experience its speed. But transit has to exist when you need it (span), and it needs to be coming soon (frequency). Otherwise, waiting time will ',
+    {q:4, opts:['create','erase']},
+    ' any time savings from a faster service. Unless you\'re comfortable planning your life around a particular scheduled trip, speed is worthless without frequency, so a transit map that ',
+    {q:5, opts:['whispers','yells']},
+    ' about speed and whispers about frequency may simply be planting confusion.'
+  ],
+  answers: {1:'Stressing', 2:'demand', 3:'distinguishes', 4:'erase', 5:'yells'}
+},
+{
+  id: 'u06_01', label: '06강-01', title: '06강 [01번]',
+  text: [
+    'In the United States, the practice of permitting aliens to vote could be seen as ',
+    {q:1, opts:['conflicting','matching']},
+    ' with the idea of an exclusionary citizenship, but that is a hard balance to maintain. If the vote, of all rights, is in the hands of noncitizens, why should they not count as citizens, and the entire ',
+    {q:2, opts:['separation','unity']},
+    ' between resident alien and citizen be ',
+    {q:3, opts:['discarded','maintained']},
+    '? Indeed, something like this thought probably lay behind the disappearance of alien voting: with universal adult citizen suffrage after 1920, the only way to maintain an exclusionary kind of citizenship was to ',
+    {q:4, opts:['confine','expand']},
+    ' the vote to citizens and not residents. But no theory of "active" democracy can ',
+    {q:5, opts:['oppose','support']},
+    ' this distinction: the laws concerning our common life must be made by all those who are taking part in it, and residence is the only ',
+    {q:6, opts:['doubtful','persuasive']},
+    ' test of whether someone is taking part.'
+  ],
+  answers: {1:'matching', 2:'separation', 3:'discarded', 4:'confine', 5:'support', 6:'persuasive'}
+},
+{
+  id: 'u06_02', label: '06강-02', title: '06강 [02번]',
+  text: [
+    'When people are asked what any painting hanging on a gallery wall means, no matter how strange it might appear, as is the case with most ',
+    {q:1, opts:['abstract','concrete']},
+    '-expressionist paintings, they tend to find meaning in it because it is located in a gallery. Consider a soda can found thrown away on a city street. If we were to come across this item on the street, we would no doubt view it as a piece of garbage or rubbish. But if we saw the very same object on a pedestal, displayed in an art gallery, signed by some artist, and given a title such as "Waste," then we would ',
+    {q:2, opts:['misinterpret','translate']},
+    ' its meaning in a vastly different way. We would, in fact, be ',
+    {q:3, opts:['disinclined','likely']},
+    ' to interpret it as an artistic form, descrying a throw-away or ',
+    {q:4, opts:['spiritual','worldly']},
+    ' society.'
+  ],
+  answers: {1:'abstract', 2:'translate', 3:'likely', 4:'worldly'}
+},
+{
+  id: 'u06_03', label: '06강-03', title: '06강 [03번]',
+  text: [
+    'The reliance on the computer as a model for the operations of the human mind may well prove to be as ',
+    {q:1, opts:['complete','limited']},
+    ' as an earlier fascination with behaviorism. Psychologists have already begun to recognize the ',
+    {q:2, opts:['advantages','flaws']},
+    ' of the mind-as-computer metaphor. Some have turned to cultural anthropology as a way of understanding the factors outside any particular individual\'s brain that help the individual make sense out of the world. Others, such as Jerome Bruner, one of the founders of cognitive psychology, find that the computer analogy carries with it an unfortunate ',
+    {q:3, opts:['maintenance','transition']},
+    ' "from the construction of meaning to the processing of information." Bruner\'s reflections on the limits of the machine model lead him back to a humanistic emphasis on narrative and story-telling as ',
+    {q:4, opts:['optional','vital']},
+    ' ingredients in understanding human cognition, a fascinating intellectual journey that ',
+    {q:5, opts:['conceals','reveals']},
+    ' both the power and the limits of computers as guides to the way we think.'
+  ],
+  answers: {1:'limited', 2:'flaws', 3:'transition', 4:'vital', 5:'reveals'}
+},
+{
+  id: 'u06_04', label: '06강-04', title: '06강 [04번]',
+  text: [
+    'In the ',
+    {q:1, opts:['avoidance','confrontation']},
+    ' that reading literature provides through ',
+    {q:2, opts:['firsthand','indirect']},
+    ' identification and comparison with other lives, places, and times, we ',
+    {q:3, opts:['deactivate','stimulate']},
+    ' our imagination, that uniquely human ability to explore an alternative set of ideas and experiences that are outside our present environment and that may not even be real. As opposed to perception that receives and processes information from the outside world ― light, sound, shape — and finds meaning in it — a sunset, a symphony, a house — in imagination, the process is reversed. ',
+    {q:4, opts:['Translating','Memorizing']},
+    ' the words we read into what they signify, we populate an inner world in which imagery is created from the memory. For example, we read "house" and picture a representation of a house from memory. It is our imagination, the complex interweaving of perception and memory that literature activates, releasing a(n) ',
+    {q:5, opts:['dormant','obvious']},
+    ' creativity that pleases. The writer may provide the blueprint, but the reader builds literature\'s many rooms, and like any satisfying occupation, literature ',
+    {q:6, opts:['frustrates','satisfies']},
+    ' our imaginative and creative abilities.'
+  ],
+  answers: {1:'avoidance', 2:'indirect', 3:'stimulate', 4:'Translating', 5:'dormant', 6:'satisfies'}
+},
+/* ───── 07강 ───── */
+{
+  id: 'u07_수능', label: '07강-수능', title: '07강 [수능 24번]',
+  text: [
+    'The economic benefit of culturtainment makes it attractive to politicians and policy makers alike. A potential increase in ',
+    {q:1, opts:['inward','outbound']},
+    ' visitor numbers coupled with their demand for related goods and services (travel, accommodation, ',
+    {q:2, opts:['retail','wholesale']},
+    ') is a ',
+    {q:3, opts:['deterrent','motivation']},
+    ' for those within governments and authorities to work with cultural groups in order to develop celebrations and commemorations into larger and more high-profile events. However, such commercialization risks culturtainment becoming ',
+    {q:4, opts:['diverse','uniform']},
+    ' and losing its original \'message\' that could lead to a ',
+    {q:5, opts:['concentration','thinning']},
+    ' of audiences. This could also lead to smaller non-commercial independent events being set up that would only serve to divide audiences further. Changing political, social and religious landscapes will lead to the ',
+    {q:6, opts:['appearance','vanishing']},
+    ' of new cultures, and with them new culturtainment experiences. Overall this is a healthy growth sector of the entertainment industry, but one that by its very nature is ',
+    {q:7, opts:['fragile','sturdy']},
+    ' in the face of exploitation.'
+  ],
+  answers: {1:'inward', 2:'retail', 3:'motivation', 4:'uniform', 5:'thinning', 6:'appearance', 7:'fragile'}
+},
+{
+  id: 'u07_01', label: '07강-01', title: '07강 [01번]',
+  text: [
+    'You\'ve probably heard that it takes about ten thousand hours of practice to become an expert in anything — a musical instrument, a sport, chess, cooking, or a foreign language. The research by K. Anders Ericsson on this topic has been written about many times, and it was made even more famous when Malcolm Gladwell described it in his bestselling book Outliers. However, recently, a(n) ',
+    {q:1, opts:['cohort','individual']},
+    ' of researchers reexamined the studies and research behind the 10K figure and said, quite ',
+    {q:2, opts:['slightly','significantly']},
+    ', that the ten-thousand-hour rule was ',
+    {q:3, opts:['partial','total']},
+    ' nonsense. Specifically, there is nothing particularly special about ten thousand hours, and while practice is clearly important to boost performance, other factors may play an even more important role. What are those other factors that get us to expert levels of performance? Pure ',
+    {q:4, opts:['acquired','inborn']},
+    ' talent? Intelligence? Luck of the draw? ',
+    {q:5, opts:['Giving up','Endurance']},
+    '? Hard work?'
+  ],
+  answers: {1:'cohort', 2:'significantly', 3:'total', 4:'inborn', 5:'Endurance'}
+},
+{
+  id: 'u07_02', label: '07강-02', title: '07강 [02번]',
+  text: [
+    'In the old Soviet Union, a famous U.S. beverage company wanted to set up a bottling plant and ',
+    {q:1, opts:['contribution','distribution']},
+    ' network. The prevailing ideology in the old Soviet Union at the time stressed the importance of the group over the individual and the need to develop industrial capacity at the expense of consumer goods. Soft drinks hardly seemed to ',
+    {q:2, opts:['clash','suit']},
+    ' the country\'s ideological priorities. Indeed, one government official ',
+    {q:3, opts:['accepted','rejected']},
+    ' the product as a "useless drink." Eventually, the two sides struck a deal, but not on the basis that the drink would ',
+    {q:4, opts:['aggravate','satisfy']},
+    ' the local population\'s thirst. Instead, the U.S. negotiators justified the project on the grounds that it would contribute to the country\'s ',
+    {q:5, opts:['industrial','industrious']},
+    ' development.'
+  ],
+  answers: {1:'distribution', 2:'suit', 3:'rejected', 4:'satisfy', 5:'industrial'}
+},
+{
+  id: 'u07_03', label: '07강-03', title: '07강 [03번]',
+  text: [
+    'In 2012, the Yale School of Architecture held a symposium called "Is Drawing Dead?" The ',
+    {q:1, opts:['daring','timid']},
+    ' title reflects a growing sense that the architect\'s freehand sketch is being displaced by the computer. The ',
+    {q:2, opts:['persistence','shift']},
+    ' from sketchpad to screen ',
+    {q:3, opts:['excludes','involves']},
+    ', many architects believe, a loss of creativity, of adventurousness. Thanks to the ',
+    {q:4, opts:['accuracy','imprecision']},
+    ' and apparent completeness of screen renderings, a designer working at a computer has a tendency to lock in, visually and cognitively, on a design at an early stage. He bypasses much of the ',
+    {q:5, opts:['shallow','thoughtful']},
+    ' and exploratory playfulness that springs from the uncertainty and ambiguity of sketching. Researchers term this phenomenon "premature fixation" and trace its cause to "the ',
+    {q:6, opts:['discouragement','incentive']},
+    ' for design changes once a large amount of detail and interconnectedness is built too quickly into a CAD model." The designer at the computer also tends to ',
+    {q:7, opts:['ignore','stress']},
+    ' formal experimentation at the expense of expressiveness.'
+  ],
+  answers: {1:'daring', 2:'shift', 3:'involves', 4:'accuracy', 5:'thoughtful', 6:'discouragement', 7:'stress'}
+},
+{
+  id: 'u07_04', label: '07강-04', title: '07강 [04번]',
+  text: [
+    'Limited animation is a process of making animated cartoons that does not follow a "realistic" approach. The short cartoons and feature films of Walt Disney from the 1930s and 1940s are widely ',
+    {q:1, opts:['criticized','praised']},
+    ' for ',
+    {q:2, opts:['describing','misrepresenting']},
+    ' animated simulations of reality, with ',
+    {q:3, opts:['crude','delicate']},
+    ' detail in every frame. However, this style of animation is very time-consuming and expensive. "Limited" animation creates an image that uses abstract art, symbolism, and limited movement to create the same effect, but at a much lower production cost. This style of animation depends more upon suspension of disbelief to tell a story; the story exists more in the viewer\'s imagination. It also encourages the animators to indulge in artistic styles that are not necessarily ',
+    {q:4, opts:['confined','unbound']},
+    ' to the limits of the real world. The result is a new artistic style that could not have developed if animation was solely ',
+    {q:5, opts:['dedicated','neglected']},
+    ' to producing simulations of reality.'
+  ],
+  answers: {1:'praised', 2:'describing', 3:'delicate', 4:'confined', 5:'dedicated'}
+},
+/* ───── 11강 ───── */
+{
+  id: 'u11_수능', label: '11강-수능', title: '11강 [수능 29번]',
+  text: [
+    'We are ',
+    {q:1, opts:['normally','remarkably']},
+    ' smart, and this helps us ',
+    {q:2, opts:['adjust to','resist']},
+    ' a wide range of environments. But we are not nearly smart enough as individuals to solve the adaptive problems that confronted modern humans as they spread across the globe. The package of tools, foraging techniques, ecological knowledge, and social arrangements used by any group of foragers is far too complex for any individual to create. We are able to learn all the things we need to know in each of the many different environments in which we live only because we acquire information from others. We are much better at learning from others than other species are, and we are motivated to learn from others even when we do not understand why our models are doing what they are doing. This psychology allows human populations to ',
+    {q:3, opts:['collect','dissipate']},
+    ' pools of adaptive information that greatly ',
+    {q:4, opts:['outdo','trail']},
+    ' the inventive ',
+    {q:5, opts:['abilities','limitations']},
+    ' of individuals.'
+  ],
+  answers: {1:'remarkably', 2:'adjust to', 3:'collect', 4:'outdo', 5:'abilities'}
+},
+{
+  id: 'u11_01', label: '11강-01', title: '11강 [01번]',
+  text: [
+    'Here\'s an application of metaphors to research papers: Below-grade-level readers in my urban middle school have a great deal of difficulty doing research. Their answer when ',
+    {q:1, opts:['allocated','withdrawn']},
+    ' to do "a report" is to come to the media center and copy ',
+    {q:2, opts:['loosely','verbatim']},
+    ' everything in the encyclopedia article or whatever source they have ',
+    {q:3, opts:['found','lost']},
+    ', be it Internet, print, or whatever. To try to get the students to understand why it isn\'t necessary to copy everything in the articles, I use a comparison to a supermarket. I ask them if everything in the supermarket is useful, and we discuss this, with the usual ',
+    {q:4, opts:['beginning','inference']},
+    ' being that it is, but we don\'t buy everything all the time. Then I ask them why they don\'t buy everything each time they go and how they determine what to buy when they go with their parents. Someone usually mentions that they have a list. It sometimes helps them to understand that copying everything is a wasteful ',
+    {q:5, opts:['effort','neglect']},
+    '.'
+  ],
+  answers: {1:'allocated', 2:'verbatim', 3:'found', 4:'inference', 5:'effort'}
+},
+{
+  id: 'u11_02', label: '11강-02', title: '11강 [02번]',
+  text: [
+    'Reformist approaches assume that markets could operate in more ',
+    {q:1, opts:['biased','fair']},
+    ' and environmentally reasonable ways, and that a market is the most efficient option available. Yet the logic of market efficiencies generally rotates on purely monetary calculations, effectively reasoning in a hall of mirrors and ',
+    {q:2, opts:['centralizing','trivializing']},
+    ' real social and environmental values. Familiar examples are ',
+    {q:3, opts:['standard','unusual']},
+    ' food retailers, such as supermarkets, which purchase fruit and vegetables as cheaply as possible. By its very nature, one never manages to escape the ',
+    {q:4, opts:['enigmas','solutions']},
+    ' that production for trade entails. Real social and environmental values involved in caring for people and Earth ',
+    {q:5, opts:['emphasize','overlook']},
+    ' the inequities and damage of market-oriented activities.'
+  ],
+  answers: {1:'fair', 2:'trivializing', 3:'standard', 4:'enigmas', 5:'emphasize'}
+},
+{
+  id: 'u11_03', label: '11강-03', title: '11강 [03번]',
+  text: [
+    'There is no scientific basis for the term "race". Most humans are genetically very similar and there is so little ',
+    {q:1, opts:['difference','similarity']},
+    ' amongst us that it is not possible to draw neat ',
+    {q:2, opts:['borders','centers']},
+    ' around people and label them as a ',
+    {q:3, opts:['similar','distinct']},
+    ' racial group. Race is an example of social construction, where social processes create something that essentially does not exist but takes on real force in people\'s lives. Historical evidence that race has always been an issue is hard to find. For example, in ancient Rome there were various leading figures, such as Emperor Septimius Severus, who were black. Little is said of their skin colour in accounts written at the time, because the ancient Romans did not think it made any difference. They thought more in terms of judging people as being ',
+    {q:4, opts:['enlightened','primitive']},
+    ' or a barbarian.'
+  ],
+  answers: {1:'difference', 2:'borders', 3:'distinct', 4:'enlightened'}
+},
+{
+  id: 'u11_04', label: '11강-04', title: '11강 [04번]',
+  text: [
+    'Many factors contribute to Americans\' growing waistlines, but one observation in particular cannot be ',
+    {q:1, opts:['attended','neglected']},
+    ': The incidence of obesity has increased in parallel with increasing portion sizes. Consider this: Adults today consume an average of 300 more calories per day than they did in the year 1985. Is this just a coincidence, or do larger portion sizes have something to do with it? Americans have created the perception that large portion sizes are appropriate, creating an environment of portion ',
+    {q:2, opts:['accuracy','bias']},
+    '. We find portion distortions in restaurants, where the jumbo-sized portions are ',
+    {q:3, opts:['constantly','variably']},
+    ' 250 percent larger than the regular portions. Research shows that people ',
+    {q:4, opts:['accidentally','intentionally']},
+    ' consume more calories when offered larger portions. Consuming larger portion sizes can contribute to positive energy balance, which, over time, leads to weight gain and ',
+    {q:5, opts:['finally','initially']},
+    ' can result in obesity.'
+  ],
+  answers: {1:'neglected', 2:'bias', 3:'constantly', 4:'accidentally', 5:'finally'}
+},
+/* ───── 12강 ───── */
+{
+  id: 'u12_수능', label: '12강-수능', title: '12강 [수능 30번]',
+  text: [
+    'Situational ethics is a(n) ',
+    {q:1, opts:['moral','unethical']},
+    ' theory that takes into account the context of a situation or an act when judging whether it is ethical. Supporters of this theory willingly permit ',
+    {q:2, opts:['discarding','retaining']},
+    ' absolute moral standards. In the absence of a ',
+    {q:3, opts:['general','specific']},
+    ' standard or law, what matters is the outcome or consequences; so, the end ',
+    {q:4, opts:['criticizes','vindicates']},
+    ' the means. In a pickup game of basketball played among friends, everyone is expected to call his or her own fouls or ',
+    {q:5, opts:['admit','deny']},
+    ' knocking the ball out-of-bounds. Caring about one\'s friends and maybe getting to keep playing with the group leads to these actions. But, once an organized game is played with officials, most athletes will not admit to the same fouls or violations as the end goal of winning is more important than expressing concern for competitors.'
+  ],
+  answers: {1:'moral', 2:'discarding', 3:'general', 4:'vindicates', 5:'admit'}
+},
+{
+  id: 'u12_01', label: '12강-01', title: '12강 [01번]',
+  text: [
+    'Moral ',
+    {q:1, opts:['anger','calm']},
+    ' is the psychological tool that motivates people to punish wrongdoers, even at cost or risk to themselves. It is a "commitment device," something that commits people to punishment, even though trying to punish someone can be dangerous. When we ',
+    {q:2, opts:['observe','overlook']},
+    ' unjust harm, whether someone committing interpersonal violence or obvious cheating, we have an embodied physical reaction. We get angry, our blood pressure spikes, our heart beats faster; we thirst for ',
+    {q:3, opts:['penalty','reward']},
+    '. Outrage leads us to ignore the ',
+    {q:4, opts:['absurdity','logic']},
+    ' of risking our own safety to punish someone. But the powerful feeling of outrage leads us to ',
+    {q:5, opts:['eternally','temporarily']},
+    ' forget this unfavorable evaluation and get involved in a situation we would be better off avoiding, and science reveals how this feeling and forgetting is essential for maintaining a cooperative society.'
+  ],
+  answers: {1:'anger', 2:'observe', 3:'penalty', 4:'absurdity', 5:'temporarily'}
+},
+{
+  id: 'u12_02', label: '12강-02', title: '12강 [02번]',
+  text: [
+    'Why do humans have the ',
+    {q:1, opts:['detrimental','effective']},
+    ' ',
+    {q:2, opts:['deliberation','impulse']},
+    ' to favor natural products in the absence of knowledge of their benefits or their potential for harm? The answer likely lies in our genes. Our species, through most of its evolutionary history, relied heavily upon experience to judge whether ingestion of something was ',
+    {q:3, opts:['beneficial','harmful']},
+    ' (i.e., nutritional or medicinal) versus whether it was dangerous. We evolved the instinct to avoid plants that made us sick and favored those that made us well. Today, we trust that products of nature are safe to consume. But those pills coming off a pharmaceutical production line look nothing like what our instincts tell us is safe to eat. Thus, we treat them with caution just as our distant ancestors regarded a new plant. When in need of a remedy, we are drawn to derivatives of our food, plant products, which we ',
+    {q:4, opts:['overlook','regard']},
+    ' to be safe, and not ',
+    {q:5, opts:['natural','synthetic']},
+    ' products of science.'
+  ],
+  answers: {1:'detrimental', 2:'impulse', 3:'beneficial', 4:'regard', 5:'synthetic'}
+},
+{
+  id: 'u12_03', label: '12강-03', title: '12강 [03번]',
+  text: [
+    'Dietary supplements are not drugs. A drug is intended to diagnose, cure, ',
+    {q:1, opts:['alleviate','intensify']},
+    ', treat, or prevent disease. Before marketing, drugs must ',
+    {q:2, opts:['bypass','experience']},
+    ' extensive studies of effectiveness, safety, interactions with other substances, and dosing. The FDA gives formal premarket approval to a drug and monitors its safety after the drug is on the market. If a drug is ',
+    {q:3, opts:['afterwards','previously']},
+    ' shown to be dangerous, the FDA can act quickly to have it removed from the market. None of this is true for dietary supplements. The current law gives the FDA only limited authority over supplements. The FDA does not ',
+    {q:4, opts:['ignore','judge']},
+    ' the safety and effectiveness of supplements before they hit the marketplace.'
+  ],
+  answers: {1:'alleviate', 2:'experience', 3:'afterwards', 4:'judge'}
+},
+{
+  id: 'u12_04', label: '12강-04', title: '12강 [04번]',
+  text: [
+    'Literature is not a ',
+    {q:1, opts:['durable','replaceable']},
+    ' carrier of nuggets of information. Literature (as opposed to everyday reading) invites us back again and again to re-experience what it offers and to reassess its meanings. Literature continues to communicate meaning and ',
+    {q:2, opts:['importance','triviality']},
+    ' over time, and, most remarkably, to shift its meaning based on our perspective. One\'s ',
+    {q:3, opts:['perception','reception']},
+    ' of Shakespeare\'s grand drama on aging under existential threat, King Lear, is a different experience read in one\'s twenties than it is in one\'s seventies. This is true because reading literature, as opposed to everyday reading, requires full reader participation, ',
+    {q:4, opts:['suppressing','triggering']},
+    ' not just our informational processing skills but our analysis, imagination, and emotions.'
+  ],
+  answers: {1:'replaceable', 2:'importance', 3:'perception', 4:'triggering'}
+},
+/* ───── 14강 ───── */
+{
+  id: 'u14_수능', label: '14강-수능', title: '14강 [수능 33번]',
+  text: [
+    'Giving clients ',
+    {q:1, opts:['adequate','insufficient']},
+    ' opportunity to react to your designs while in progress is a key to professional success. Similarly, involving ',
+    {q:2, opts:['current','future']},
+    ' building users as well as clients is even more valuable in the long run. In addition, the experiences of patients and visitors who use the building ',
+    {q:3, opts:['regularly','irregularly']},
+    ', often as a result of life-threatening emergencies, are altogether different as well. Understanding how each type of user experiences the current medical environment as well as how each reacts to your prospective designs ',
+    {q:4, opts:['optionally','unavoidably']},
+    ' produces a better building. People are likely to be more satisfied with a new building or addition if they have been consulted in the design process.'
+  ],
+  answers: {1:'adequate', 2:'future', 3:'irregularly', 4:'unavoidably'}
+},
+{
+  id: 'u14_01', label: '14강-01', title: '14강 [01번]',
+  text: [
+    'Sharing meanings and experiences is not a simple, automatic process: whenever two or more people observe or participate in the same ongoing event they experience it from different perspectives, with different histories, with different background knowledge. These differences are most ',
+    {q:1, opts:['obvious','subtle']},
+    ' when the individuals involved include a ',
+    {q:2, opts:['grown-up','toddler']},
+    ' or very young child and an adult, although an adult ',
+    {q:3, opts:['canceling','organizing']},
+    ' an event for an infant may find it difficult to keep these differences in mind. When giving a bath, for example, a parent whose experience with water play has been fun, whose knowledge about the source of the water and its disposition provides ',
+    {q:4, opts:['assurance','doubt']},
+    ', and whose body control ensures that the baby is safely held and not in danger, expects the infant to enjoy splashing water. Yet the baby may make it clear (perhaps by terrified crying) that her perspective is quite different from that of the adult.'
+  ],
+  answers: {1:'obvious', 2:'toddler', 3:'organizing', 4:'assurance'}
+},
+{
+  id: 'u14_02', label: '14강-02', title: '14강 [02번]',
+  text: [
+    'A detailed anthropological study of daily scientific practice in the Salk Institute laboratory in La Jolla, California shows how difficult it is to assign credit and dates. Bruno Latour describes how scientists arrived at the ',
+    {q:1, opts:['clarification','confusion']},
+    ' of TRF (thyrotropin-releasing factor), a hormone that is secreted by the brain. He says that his observations led him to "the ',
+    {q:2, opts:['belief','doubt']},
+    ' that a body of practices widely regarded by outsiders as well organized, logical, and ',
+    {q:3, opts:['chaotic','consistent']},
+    ', in fact consists of a(n) ',
+    {q:4, opts:['messy','orderly']},
+    ' array of observations with which scientists struggle to produce order." The final ',
+    {q:5, opts:['accord','discord']},
+    ' formulation of TRF emerged some time between January 1968 and January 1970.'
+  ],
+  answers: {1:'clarification', 2:'belief', 3:'consistent', 4:'messy', 5:'accord'}
+},
+{
+  id: 'u14_03', label: '14강-03', title: '14강 [03번]',
+  text: [
+    'The idea of music direction, in the sense of someone shaping and leading a musical performance, goes back to the beginnings of music. Yet listening audiences are rarely aware of any musical leadership, and for good ',
+    {q:1, opts:['artistic','functional']},
+    ' reason. They need not be aware to fulfill their experience; indeed, the unnecessarily ',
+    {q:2, opts:['hidden','noticeable']},
+    ' presence of a musical leader will detract from it. An audience is ',
+    {q:3, opts:['better off','worse off']},
+    ', for the most part, taking in the whole of a stage work rather than being ',
+    {q:4, opts:['excluded from','involved in']},
+    ' the techniques that go into realizing it.'
+  ],
+  answers: {1:'artistic', 2:'noticeable', 3:'better off', 4:'involved in'}
+},
+{
+  id: 'u14_04', label: '14강-04', title: '14강 [04번]',
+  text: [
+    'The importance of what a reader brings to the page is ',
+    {q:1, opts:['emphasized','ignored']},
+    ' in a study discussed by Hirsch in The Knowledge ',
+    {q:2, opts:['Lack','Surplus']},
+    '. This study consisted of two groups of students who were asked to read a passage about baseball. The first group was made up of strong readers who knew little about baseball. The second group was composed of struggling readers who were knowledgeable about baseball. After reading the passage, students in each group had their ',
+    {q:3, opts:['ignorance','understanding']},
+    ' tested. Guess which group scored higher? The struggling readers. Though the second group of readers were not strong readers, their prior knowledge ',
+    {q:4, opts:['allowed','forbade']},
+    ' them to outscore readers with far better abilities.'
+  ],
+  answers: {1:'emphasized', 2:'Lack', 3:'understanding', 4:'allowed'}
+},
+/* ───── Test 01 ───── */
+{
+  id: 'ut01_12', label: 'Test01-12', title: 'Test01 [12번]',
+  text: [
+    'Jean Baudrillard, one of the best-known French social theorists, believes that the world of culture today is based on simulation, not reality. Many U.S. children, upon entering school for the first time, have already watched more hours of television than the total number of hours of classroom instruction they will ',
+    {q:1, opts:['avoid','experience']},
+    ' in their entire school careers. Baudrillard refers to this social creation as hyperreality — a situation where the simulation of reality is more real than the thing itself. For Baudrillard, everyday life has been ',
+    {q:2, opts:['released','seized']},
+    ' by the signs and symbols generated to ',
+    {q:3, opts:['depict','hide']},
+    ' it, and we ',
+    {q:4, opts:['eventually','originally']},
+    ' relate to simulations and models as if they were reality.'
+  ],
+  answers: {1:'experience', 2:'seized', 3:'depict', 4:'eventually'}
+},
+{
+  id: 'ut01_13', label: 'Test01-13', title: 'Test01 [13번]',
+  text: [
+    'Things become ',
+    {q:1, opts:['complex','simple']},
+    ' when we consider a task that involves multiple processes differing in automaticity. In a psychological task, people are required to name aloud the color of words while ignoring the words themselves. Sometimes, the words are ',
+    {q:2, opts:['conflicting','matching']},
+    ' with the color with which they are printed (e.g., "red" printed with red ink). In other conditions, the words are incompatible with their color (e.g., "red" printed in blue). People usually complete this task more slowly in incompatible than compatible conditions. They realize their attention is being drawn to the content of the words, despite its ',
+    {q:3, opts:['irrelevance','relevance']},
+    ' to the task at hand and their intention to ignore it. To ',
+    {q:4, opts:['comply with','surmount']},
+    ' this automatic draw on attention, people must assert control to report a judgment that has been made challenging by a competing automatic process.'
+  ],
+  answers: {1:'complex', 2:'matching', 3:'irrelevance', 4:'surmount'}
+},
+{
+  id: 'ut01_14', label: 'Test01-14', title: 'Test01 [14번]',
+  text: [
+    'If you told me that you don\'t like sharp cheeses, I would believe you. But if you say that you don\'t like any cheese, I don\'t believe you because cheeses simply don\'t taste, look, or feel the same. I\'m sure that he had a bad cheese experience in childhood. He ate something he didn\'t like and learned that "cheese" is bad. With that negative attitude, he quickly rejected anything else called "cheese," ',
+    {q:1, opts:['solidifying','weakening']},
+    ' his belief that "cheese" is bad. As a result, this friend, who is in other respects normal, cannot bear to eat anything that he believes is called "cheese." He actually thinks that there is some flavor or ',
+    {q:2, opts:['accident','quality']},
+    ' of cheese that makes it taste bad to him. But that is not the case: cheeses don\'t share a particular texture or flavor or source. He hates the category, not the actual stuff.'
+  ],
+  answers: {1:'solidifying', 2:'quality'}
+},
+{
+  id: 'ut01_15', label: 'Test01-15', title: 'Test01 [15번]',
+  text: [
+    'The issue of cultural variation in emotions has been ',
+    {q:1, opts:['certain','debatable']},
+    '. At first, it was widely believed that different cultures produced ',
+    {q:2, opts:['drastically','slightly']},
+    ' different emotional states, so that a person from one culture could not even begin to understand what someone from another culture was feeling. This view received a severe blow from evidence that people from very different cultures could translate emotion words effectively and even recognize facial expressions of emotion. A highly ',
+    {q:3, opts:['influential','insignificant']},
+    ' research program by Paul Ekman and his associates began with photographs of facial expressions. Ekman and his group traveled all over the world showing the photographs to people in widely different cultures. By and large, most people in every culture recognized the emotions expressed in those American faces. These results ',
+    {q:4, opts:['discouraged','persuaded']},
+    ' most doubters that some aspects of emotions are innate and universal.'
+  ],
+  answers: {1:'debatable', 2:'drastically', 3:'influential', 4:'persuaded'}
+},
+{
+  id: 'ut01_16', label: 'Test01-16', title: 'Test01 [16번]',
+  text: [
+    'Good thinkers rarely limit themselves to a single way of understanding the world. For example, when Galileo finally got around to doing some ',
+    {q:1, opts:['factual','hypothetical']},
+    ' studies of gravity, he was plagued by the inaccuracies of the current technology of measurement. Instead of waiting a couple of hundred years for the invention of a good stopwatch, he slowed things down by studying the behavior of bodies rolling down inclined planes. By doing so, Galileo was able to demonstrate quite ',
+    {q:2, opts:['doubtfully','plausibly']},
+    ' that heavy and light objects "fell" at the same rate. In addition, he was able to show something more ',
+    {q:3, opts:['delicate','obvious']},
+    ' and perhaps more important. Things don\'t simply fall at a ',
+    {q:4, opts:['steady','variable']},
+    ' rate: they constantly accelerate.'
+  ],
+  answers: {1:'factual', 2:'plausibly', 3:'delicate', 4:'steady'}
+},
+{
+  id: 'ut01_17', label: 'Test01-17', title: 'Test01 [17번]',
+  text: [
+    'Accustomed to bargains and overwhelmed with options, consumers must have a reason to buy now. Customization, an event, multiple uses for the product, entertaining pop-up stores, or a great story are more examples of plus-one ',
+    {q:1, opts:['deterrents','stimuli']},
+    ' that result in purchases. "Do-good" products such as those that tout being environmentally conscious or supporting communities offer not just one but three plus-one purchasing incentives: a(n) ',
+    {q:2, opts:['persuasive','unconvincing']},
+    ' and human story, rationalization, and an emotional boost for the consumer who feels ',
+    {q:3, opts:['selfish','selfless']},
+    ' while spending. Thus, in addition to their purchase, consumers also get to see themselves in a more positive light; they feel less ',
+    {q:4, opts:['suspicious','trusting']},
+    ' about these businesses, which have been humanized through a compelling story of need.'
+  ],
+  answers: {1:'stimuli', 2:'persuasive', 3:'selfless', 4:'suspicious'}
+},
+{
+  id: 'ut01_18', label: 'Test01-18', title: 'Test01 [18번]',
+  text: [
+    'Postage stamps were born bearing images of state sovereignty and authority. Taking their cue from coins and banknotes, postal officials understood that the stamps they were printing to ',
+    {q:1, opts:['hinder','promote']},
+    ' the circulation of letters and packages among the population could also be used for a different kind of circulation: that of state imagery. Postage stamps, tiny though they were, nonetheless had space enough for the state to use them to circulate messages announcing its own ',
+    {q:2, opts:['dominance','subordination']},
+    '. Iconic images of flags and coats of arms began to circulate on stamps, but, above all, stamps hosted portraits of the personages considered uniquely suitable to ',
+    {q:3, opts:['represent','hide']},
+    ' the nation-state: heads of state, allegorical figures, military heroes, and other historically important men. From the beginning, then, stamps depicted state power expressed in images of ',
+    {q:4, opts:['ideal','unworthy']},
+    ' personhood.'
+  ],
+  answers: {1:'promote', 2:'dominance', 3:'represent', 4:'ideal'}
+},
+{
+  id: 'ut01_19', label: 'Test01-19', title: 'Test01 [19번]',
+  text: [
+    'There\'s a difference between a story and a plot. A story, as opposed to a plot, is the ',
+    {q:1, opts:['direct','indirect']},
+    ' account of everything that happens in the order that it happens. A plot is the way events are selected and ',
+    {q:2, opts:['organized','scattered']},
+    ' with an emphasis not only on what happened but on why it happened. In other words, plots involve cause and effect, not just one event following another. The English novelist E. M. Forster ',
+    {q:3, opts:['confused','demonstrated']},
+    ' the difference between story and plot by this example. Here\'s a story: The king died and then the queen died. This is a ',
+    {q:4, opts:['discontinuity','succession']},
+    ' of events, simply organized temporally. Here\'s a plot: The king died and then the queen died of grief. Events are now connected by cause and effect.'
+  ],
+  answers: {1:'direct', 2:'organized', 3:'demonstrated', 4:'succession'}
+},
+{
+  id: 'ut01_20', label: 'Test01-20', title: 'Test01 [20번]',
+  text: [
+    'Married couples are highly motivated to empathize with one another; to do this, they ',
+    {q:1, opts:['imitate','originate']},
+    ' each other\'s facial expressions, which in turn facilitates similar emotional experiences. People who are on the same page get along better and are more likely to stay happily married. Over time, research ',
+    {q:2, opts:['refutes','verifies']},
+    ', this mimicry leads to ',
+    {q:3, opts:['everlasting','temporary']},
+    ' changes in how the face is shaped. The volunteers were asked to judge the physical similarity of the couples. Sure enough, there was an increase in similarity among the married couples at the twenty-five-year mark, but not the randomly matched pairs. So next time you are struggling to connect with your spouse, try to subtly mimic his or her facial expression; it is likely to make you feel in sync and ',
+    {q:4, opts:['reinforce','weaken']},
+    ' that emotional link that can weaken in times of strife.'
+  ],
+  answers: {1:'imitate', 2:'verifies', 3:'everlasting', 4:'reinforce'}
+},
+{
+  id: 'ut01_21', label: 'Test01-21', title: 'Test01 [21번]',
+  text: [
+    'In the 1960s, Richard Thompson, a neuroscientist at the University of California at Irvine, recorded the activity of single neurons in the cortex of cats while the animals were presented with series of tones or of light flashes. Some cells fired only after a certain number of events. One neuron, for instance, reacted after six events of any kind, ',
+    {q:1, opts:['dependent on','irrespective of']},
+    ' whether this was six flashes of light, six brief tones, or six longer tones. Sensory modality did not seem to matter: The neuron ',
+    {q:2, opts:['seemingly','secretly']},
+    ' cared only about number. Unlike a digital computer, it did not respond in a ',
+    {q:3, opts:['connected','separate']},
+    ' all-or-none manner, either. Rather, its ',
+    {q:4, opts:['initiation','termination']},
+    ' level grew after the fifth item, reached a peak for the sixth, and decreased for larger numbers of items.'
+  ],
+  answers: {1:'irrespective of', 2:'seemingly', 3:'separate', 4:'initiation'}
+},
+{
+  id: 'ut01_22', label: 'Test01-22', title: 'Test01 [22번]',
+  text: [
+    'Information technology can play an important role in both bringing communities together and splitting them apart. On the one hand, IT has the potential to increase shared information and norms across larger groups. But in the 2016 presidential election, many Americans got their news from social networking sites and other online media that created highly ',
+    {q:1, opts:['customized','uniform']},
+    ' news feeds for each individual. If you had ',
+    {q:2, opts:['conservative','progressive']},
+    ' friends and interests, you were rarely exposed to ',
+    {q:3, opts:['liberal','traditional']},
+    ' news outlets, and vice versa. In a community where each subgroup saw a different set of facts about the world and had a different value system for ',
+    {q:4, opts:['distorting','understanding']},
+    ' those facts, the shared norms needed for the overall community to function effectively were greatly weakened.'
+  ],
+  answers: {1:'customized', 2:'progressive', 3:'traditional', 4:'understanding'}
+},
+{
+  id: 'ut01_23', label: 'Test01-23', title: 'Test01 [23번]',
+  text: [
+    'Animals often compete: over food, a mate, a territory, or some other resource. But rather than jump immediately to physical fighting, individuals typically engage in ',
+    {q:1, opts:['aggressive','peaceful']},
+    ' communicative displays, like the roaring of red deer. Ethologists now have a good understanding of how these displays have evolved — that is, why they are evolutionarily ',
+    {q:2, opts:['fragile','steady']},
+    '. In red deer, for example, roaring is energetically costly, so only males in good physical condition can roar repeatedly, for long durations. Moreover, the acoustic features of a male\'s roar are ',
+    {q:3, opts:['allowed','limited']},
+    ' by his body size, so only large males can produce deep-pitched roars. And larger males are more successful fighters. As a consequence, a male\'s roaring cannot be ',
+    {q:4, opts:['counterfeited','verified']},
+    ' — because small males and males in poor condition cannot produce low-pitched roars at a high rate.'
+  ],
+  answers: {1:'peaceful', 2:'steady', 3:'limited', 4:'counterfeited'}
+}
+];
+
+/* ══════════════════════════════════════════════
+   STATE
+══════════════════════════════════════════════ */
+const state = {}; // { unitId: { qNum: selectedOpt } }
+
+UNITS.forEach(u => { state[u.id] = {}; });
+
+/* ══════════════════════════════════════════════
+   BUILD UI
+══════════════════════════════════════════════ */
+function buildNav() {
+  const nav = document.getElementById('main-nav');
+  // Group labels
+  const groups = ['03강','04강','05강','06강','07강','11강','12강','14강','Test01'];
+  const grouped = {};
+  UNITS.forEach(u => {
+    const g = groups.find(g => u.label.startsWith(g));
+    if (!grouped[g]) grouped[g] = [];
+    grouped[g].push(u);
+  });
+
+  groups.forEach(g => {
+    if (!grouped[g]) return;
+    const btn = document.createElement('button');
+    btn.className = 'nav-btn';
+    btn.dataset.group = g;
+    btn.textContent = g;
+    btn.onclick = () => showGroup(g);
+    nav.appendChild(btn);
+  });
+}
+
+function showGroup(g) {
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector(`[data-group="${g}"]`).classList.add('active');
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('visible'));
+  document.getElementById('summary-view').classList.remove('visible');
+  document.querySelectorAll(`.section[data-group="${g}"]`).forEach(s => s.classList.add('visible'));
+}
+
+function showSummary() {
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('visible'));
+  document.getElementById('summary-view').classList.add('visible');
+  buildSummary();
+}
+
+function buildSections() {
+  const container = document.getElementById('sections-container');
+  const groups = ['03강','04강','05강','06강','07강','11강','12강','14강','Test01'];
+
+  UNITS.forEach(unit => {
+    const g = groups.find(g => unit.label.startsWith(g));
+    const sec = document.createElement('div');
+    sec.className = 'section';
+    sec.dataset.group = g;
+    sec.id = 'sec-' + unit.id;
+
+    const totalQ = Object.keys(unit.answers).length;
+
+    sec.innerHTML = `
+      <div class="section-header">
+        <div class="section-num">${unit.label.replace('강-','<br>').replace('Test01-','T')}</div>
+        <div class="section-meta">
+          <h2>${unit.title}</h2>
+          <p>문항 수: ${totalQ}개 | 문맥상 적절한 어휘를 선택하세요</p>
+        </div>
+      </div>
+      <div class="passage" id="passage-${unit.id}">${buildPassage(unit)}</div>
+      <div class="controls">
+        <button class="btn btn-primary" onclick="gradeUnit('${unit.id}')">채점하기</button>
+        <button class="btn btn-ghost" onclick="resetUnit('${unit.id}')">다시 풀기</button>
+      </div>
+      <div class="result-banner" id="result-${unit.id}"></div>
+    `;
+    container.appendChild(sec);
+  });
+}
+
+function buildPassage(unit) {
+  let html = '';
+  unit.text.forEach(part => {
+    if (typeof part === 'string') {
+      html += part;
+    } else {
+      const q = part.q;
+      html += `<sup class="num-label">${q}</sup><span class="choice-group" id="cg-${unit.id}-${q}" data-unit="${unit.id}" data-q="${q}">`;
+      part.opts.forEach(opt => {
+        html += `<button class="choice-btn" onclick="select('${unit.id}',${q},'${opt.replace(/'/g,"\\'")}',this)">${opt}</button>`;
+      });
+      html += `</span>`;
+    }
+  });
+  return html;
+}
+
+function select(unitId, q, opt, btn) {
+  const cg = document.getElementById(`cg-${unitId}-${q}`);
+  if (cg.classList.contains('correct') || cg.classList.contains('wrong')) return;
+  cg.querySelectorAll('.choice-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  state[unitId][q] = opt;
+  // 점수는 채점하기 버튼을 눌러야만 반영됩니다
+}
+
+/* ══════════════════════════════════════════════
+   GRADING
+══════════════════════════════════════════════ */
+function gradeUnit(unitId) {
+  const unit = UNITS.find(u => u.id === unitId);
+  let correct = 0, total = 0;
+
+  Object.entries(unit.answers).forEach(([q, ans]) => {
+    total++;
+    const cg = document.getElementById(`cg-${unitId}-${q}`);
+    const selected = state[unitId][q];
+    const isCorrect = selected === ans;
+
+    if (isCorrect) {
+      correct++;
+      cg.classList.add('correct');
+    } else {
+      cg.classList.add('wrong');
+      // highlight answer
+      cg.querySelectorAll('.choice-btn').forEach(b => {
+        if (b.textContent === ans) b.classList.add('answer-key');
+      });
+    }
+  });
+
+  const pct = Math.round(correct / total * 100);
+  const banner = document.getElementById(`result-${unitId}`);
+  let cls = pct === 100 ? 'perfect' : pct >= 80 ? 'good' : pct >= 60 ? 'ok' : 'bad';
+  const msg = pct === 100 ? '🎉 완벽합니다!' : pct >= 80 ? '👍 잘했어요!' : pct >= 60 ? '📚 조금 더 노력해요' : '💪 다시 도전해보세요';
+  banner.innerHTML = `
+    <div class="result-score ${cls}">${correct}/${total}</div>
+    <div class="result-detail"><strong>${pct}점</strong> — ${msg}</div>
+  `;
+  banner.classList.add('show');
+  updateTotalScore();
+}
+
+function resetUnit(unitId) {
+  state[unitId] = {};
+  const unit = UNITS.find(u => u.id === unitId);
+  document.getElementById(`passage-${unitId}`).innerHTML = buildPassage(unit);
+  document.getElementById(`result-${unitId}`).classList.remove('show');
+  updateTotalScore();
+}
+
+function resetAll() {
+  UNITS.forEach(u => resetUnit(u.id));
+  buildSummary();
+}
+
+function updateTotalScore() {
+  let correct = 0, gradedPossible = 0;
+  UNITS.forEach(u => {
+    const isGraded = document.getElementById(`result-${u.id}`).classList.contains('show');
+    if (!isGraded) return;
+    Object.entries(u.answers).forEach(([q, ans]) => {
+      gradedPossible++;
+      if (state[u.id][q] === ans) correct++;
+    });
+  });
+  if (gradedPossible === 0) {
+    document.getElementById('total-score').textContent = '\u2014';
+    document.getElementById('total-possible').textContent = '\u2014';
+  } else {
+    document.getElementById('total-score').textContent = correct;
+    document.getElementById('total-possible').textContent = gradedPossible;
+  }
+}
+
+function buildSummary() {
+  const grid = document.getElementById('summary-grid');
+  grid.innerHTML = '';
+  let grandCorrect = 0, grandTotal = 0, allGraded = true;
+
+  UNITS.forEach(u => {
+    const answers = u.answers;
+    const total = Object.keys(answers).length;
+    const graded = document.getElementById(`result-${u.id}`).classList.contains('show');
+    let correct = 0;
+    if (graded) {
+      Object.entries(answers).forEach(([q, ans]) => {
+        if (state[u.id][q] === ans) correct++;
+      });
+    } else {
+      allGraded = false;
+    }
+    grandTotal += total;
+    if (graded) grandCorrect += correct;
+
+    const pct = graded ? Math.round(correct / total * 100) : null;
+    const cls = pct === null ? 'sc-none' : pct === 100 ? 'sc-perfect' : pct >= 80 ? 'sc-good' : pct >= 60 ? 'sc-ok' : 'sc-bad';
+    const g = ['03강','04강','05강','06강','07강','11강','12강','14강','Test01'].find(g => u.label.startsWith(g));
+
+    const card = document.createElement('div');
+    card.className = `summary-card ${cls}`;
+    card.innerHTML = `
+      <h4>${u.title}</h4>
+      <div class="sc-score">${pct !== null ? correct + '/' + total : '—'}</div>
+      <div class="sc-label">${pct !== null ? pct + '점' : '미채점'}</div>
+    `;
+    card.onclick = () => showGroup(g);
+    grid.appendChild(card);
+  });
+
+  const overallNum = document.getElementById('overall-num');
+  const overallSub = document.getElementById('overall-sub');
+  if (allGraded) {
+    const pct = Math.round(grandCorrect / grandTotal * 100);
+    overallNum.textContent = grandCorrect + ' / ' + grandTotal;
+    overallSub.textContent = pct + '점 — 전체 ' + UNITS.length + '개 단원 채점 완료';
+  } else {
+    overallNum.textContent = grandCorrect + ' / ?';
+    overallSub.textContent = '아직 채점되지 않은 단원이 있습니다';
+  }
+}
+
+/* ══════════════════════════════════════════════
+   INIT
+══════════════════════════════════════════════ */
+buildNav();
+buildSections();
+updateTotalScore();
+// show first group by default
+showGroup('03강');
+</script>
+</body>
+</html>

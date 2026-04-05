@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2025년 03월 고2 동반의어 테스트</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700&family=Noto+Sans+KR:wght@300;400;500&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface2: #1f2733;
+    --border: #2d3748;
+    --accent: #e2a84b;
+    --accent2: #c97d2e;
+    --correct: #34d399;
+    --wrong: #f87171;
+    --text: #e6edf3;
+    --text-dim: #8b949e;
+    --text-muted: #3d444d;
+    --gold: #fbbf24;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans KR', sans-serif;
+    min-height: 100vh;
+    background-image:
+      radial-gradient(ellipse at 10% 0%, rgba(226,168,75,0.07) 0%, transparent 55%),
+      radial-gradient(ellipse at 90% 100%, rgba(201,125,46,0.05) 0%, transparent 55%);
+  }
+
+  /* Header */
+  header {
+    position: sticky; top:0; z-index:100;
+    background: rgba(13,17,23,0.93);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 28px;
+    display: flex; align-items: center; justify-content: space-between; gap:16px;
+  }
+  .header-left { display:flex; align-items:center; gap:14px; }
+  .logo {
+    width:38px; height:38px; flex-shrink:0;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 10px;
+    display: grid; place-items: center;
+    font-family: 'JetBrains Mono', monospace; font-size:13px; font-weight:600; color:#fff;
+  }
+  .header-title { font-family:'Noto Serif KR',serif; font-size:15px; font-weight:700; color:var(--text); }
+  .header-sub { font-size:11px; color:var(--text-dim); margin-top:2px; }
+  .header-right { display:flex; align-items:center; gap:10px; }
+  .score-badge {
+    background:var(--surface2); border:1px solid var(--border);
+    border-radius:20px; padding:6px 16px;
+    font-size:13px; color:var(--text-dim); white-space:nowrap;
+  }
+  .score-badge span { color:var(--accent); font-weight:700; font-family:'JetBrains Mono',monospace; }
+
+  /* Nav */
+  nav {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 28px;
+    display: flex; gap:0; overflow-x:auto;
+  }
+  nav::-webkit-scrollbar { height:3px; }
+  nav::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+  .nav-btn {
+    background:none; border:none; cursor:pointer;
+    color:var(--text-dim); font-size:12px; font-family:'JetBrains Mono',monospace;
+    padding:12px 20px; white-space:nowrap;
+    border-bottom:2px solid transparent;
+    transition:all 0.2s; flex-shrink:0;
+  }
+  .nav-btn:hover { color:var(--text); }
+  .nav-btn.active { color:var(--accent); border-bottom-color:var(--accent); }
+
+  /* Main */
+  main { max-width:920px; margin:0 auto; padding:32px 24px 80px; }
+  .section { display:none; }
+  .section.visible { display:block; animation: fadeUp 0.3s ease; }
+  @keyframes fadeUp {
+    from { opacity:0; transform:translateY(10px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+
+  /* Section header */
+  .section-header {
+    display:flex; align-items:flex-start; gap:16px;
+    margin-bottom:24px; padding-bottom:18px;
+    border-bottom:1px solid var(--border);
+  }
+  .section-num {
+    width:46px; height:46px; flex-shrink:0;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius:12px; display:grid; place-items:center;
+    font-family:'JetBrains Mono',monospace; font-weight:700; font-size:15px; color:#fff;
+  }
+  .section-meta h2 { font-family:'Noto Serif KR',serif; font-size:17px; font-weight:700; }
+  .section-meta p  { font-size:12px; color:var(--text-dim); margin-top:4px; }
+
+  /* Passage */
+  .passage {
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:24px 28px;
+    font-size:14.5px; line-height:2.05;
+    margin-bottom:24px;
+    position:relative;
+  }
+  .passage::before {
+    content:'';
+    position:absolute; top:0; left:0; right:0; height:3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius:14px 14px 0 0;
+  }
+
+  /* Choice */
+  .choice-group {
+    display:inline-flex; align-items:center;
+    background:var(--surface2);
+    border:1.5px solid var(--border);
+    border-radius:6px; overflow:hidden;
+    vertical-align:middle; margin:0 2px;
+    transition:border-color 0.2s;
+  }
+  .choice-group.correct { border-color:var(--correct); background:rgba(52,211,153,0.07); }
+  .choice-group.wrong   { border-color:var(--wrong);   background:rgba(248,113,113,0.07); }
+
+  .choice-btn {
+    background:none; border:none; cursor:pointer;
+    padding:3px 10px;
+    font-size:13px; font-family:'Noto Sans KR',sans-serif;
+    color:var(--text-dim);
+    transition:all 0.15s;
+    position:relative; white-space:nowrap;
+  }
+  .choice-btn:not(:last-child)::after {
+    content:''; position:absolute; right:0; top:20%; height:60%;
+    width:1px; background:var(--border);
+  }
+  .choice-btn:hover { background:rgba(226,168,75,0.12); color:var(--accent); }
+  .choice-btn.selected { background:var(--accent); color:#fff; font-weight:500; }
+  .choice-group.correct .choice-btn.selected  { background:var(--correct); }
+  .choice-group.wrong   .choice-btn.selected  { background:var(--wrong); }
+  .choice-group.wrong   .choice-btn.answer-key { background:rgba(52,211,153,0.2); color:var(--correct); font-weight:600; }
+
+  .num-label {
+    display:inline-block;
+    font-family:'JetBrains Mono',monospace;
+    font-size:10px; color:var(--accent);
+    vertical-align:super; margin-right:1px; opacity:0.75;
+  }
+
+  /* Controls */
+  .controls { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-top:6px; }
+  .btn {
+    border:none; cursor:pointer; border-radius:10px;
+    font-family:'Noto Sans KR',sans-serif; font-size:13px; font-weight:500;
+    padding:10px 20px; transition:all 0.2s;
+  }
+  .btn-primary { background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#fff; }
+  .btn-primary:hover { opacity:0.88; transform:translateY(-1px); }
+  .btn-ghost { background:var(--surface2); border:1px solid var(--border); color:var(--text-dim); }
+  .btn-ghost:hover { color:var(--text); border-color:var(--accent); }
+
+  /* Result */
+  .result-banner {
+    display:none;
+    background:var(--surface); border:1px solid var(--border);
+    border-radius:12px; padding:16px 20px;
+    margin-top:18px;
+    align-items:center; gap:16px; flex-wrap:wrap;
+  }
+  .result-banner.show { display:flex; animation:fadeUp 0.3s ease; }
+  .result-score { font-family:'JetBrains Mono',monospace; font-size:30px; font-weight:700; }
+  .result-score.perfect { color:var(--gold); }
+  .result-score.good    { color:var(--correct); }
+  .result-score.ok      { color:var(--accent); }
+  .result-score.bad     { color:var(--wrong); }
+  .result-detail { font-size:13px; color:var(--text-dim); }
+  .result-detail strong { color:var(--text); }
+
+  /* Summary */
+  #summary-view { display:none; }
+  #summary-view.visible { display:block; }
+  .overall-score-box {
+    background:var(--surface2); border:1px solid var(--border);
+    border-radius:16px; padding:32px; text-align:center; margin-bottom:28px;
+  }
+  .overall-score-box h3 { font-family:'Noto Serif KR',serif; font-size:16px; color:var(--text-dim); margin-bottom:12px; }
+  .overall-num {
+    font-family:'JetBrains Mono',monospace; font-size:54px; font-weight:700;
+    background:linear-gradient(135deg,var(--accent),var(--accent2));
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+  }
+  .overall-sub { font-size:14px; color:var(--text-dim); margin-top:8px; }
+  .summary-grid {
+    display:grid; grid-template-columns:repeat(auto-fill,minmax(190px,1fr));
+    gap:12px; margin-bottom:28px;
+  }
+  .summary-card {
+    background:var(--surface); border:1px solid var(--border);
+    border-radius:12px; padding:16px;
+    cursor:pointer; transition:all 0.2s;
+  }
+  .summary-card:hover { border-color:var(--accent); transform:translateY(-2px); }
+  .summary-card h4 { font-size:13px; font-weight:600; margin-bottom:8px; }
+  .summary-card .sc-score { font-family:'JetBrains Mono',monospace; font-size:24px; font-weight:700; margin-bottom:3px; }
+  .summary-card .sc-label { font-size:11px; color:var(--text-dim); }
+  .sc-perfect .sc-score { color:var(--gold); }
+  .sc-good    .sc-score { color:var(--correct); }
+  .sc-ok      .sc-score { color:var(--accent); }
+  .sc-bad     .sc-score { color:var(--wrong); }
+  .sc-none    .sc-score { color:var(--text-muted); }
+
+  ::-webkit-scrollbar { width:6px; }
+  ::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <div class="logo">G2</div>
+    <div>
+      <div class="header-title">2025년 03월 고2 동반의어 테스트</div>
+      <div class="header-sub">학력평가 21~24번, 29~40번 | 문맥상 적절한 어휘를 선택하시오</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="score-badge">총점 <span id="total-score">0</span> / <span id="total-possible">0</span></div>
+    <button class="btn btn-ghost" onclick="showSummary()">📊 총정리</button>
+  </div>
+</header>
+
+<nav id="main-nav"></nav>
+
+<main>
+  <div id="sections-container"></div>
+  <div id="summary-view">
+    <div class="overall-score-box">
+      <h3>전체 점수</h3>
+      <div class="overall-num" id="overall-num">—</div>
+      <div class="overall-sub" id="overall-sub">채점 후 확인하세요</div>
+    </div>
+    <div class="summary-grid" id="summary-grid"></div>
+    <div style="text-align:center">
+      <button class="btn btn-primary" onclick="resetAll()">🔄 전체 다시 풀기</button>
+    </div>
+  </div>
+</main>
+
+<script>
+const UNITS = [
+{
+  id:'q21', label:'21번', title:'21번',
+  text:[
+    'The concept of ecosystem states should be familiar to anyone with a home vegetable garden. The garden is a small ecosystem that the grower attempts to keep in a specific state, namely the ',
+    {q:1,opts:['maximization','minimization']},
+    ' of fruit and vegetable production. To achieve this, the grower is almost always ',
+    {q:2,opts:['ignoring','stepping in']},
+    ' the dynamics of the ecosystem; they remove unwanted plants that begin to grow and perhaps spray insecticides and fence off the patch to stop insects and other animals from ',
+    {q:3,opts:['conserving','devouring']},
+    ' the vegetables. Since ',
+    {q:4,opts:['maximizing','minimizing']},
+    ' vegetable growth is an inherently ',
+    {q:5,opts:['stable','unsteady']},
+    ' state for the ecosystem, the grower is effectively keeping the ball on a slope. If the grower stops intervening, even for a day, the ecosystem, that small patch of ground, will naturally begin to shift to a more stable state. Vegetables may still grow, but yield will almost certainly be lower as other plants ',
+    {q:6,opts:['accommodate','push out']},
+    ' the vegetables and wildlife consume the produce.'
+  ],
+  answers:{1:'maximization',2:'stepping in',3:'devouring',4:'maximizing',5:'unsteady',6:'push out'}
+},
+{
+  id:'q22', label:'22번', title:'22번',
+  text:[
+    {q:1,opts:['Dedication','Indifference']},
+    ' is the glue holding together characteristically human forms of social life. Commitments make individuals\' behavior ',
+    {q:2,opts:['foreseeable','unpredictable']},
+    ' in the face of fluctuations in their desires and interests, thereby ',
+    {q:3,opts:['easing','hindering']},
+    ' the planning and coordination of joint actions involving multiple agents. Moreover, commitments make people ',
+    {q:4,opts:['eager','reluctant']},
+    ' to perform actions that they would not otherwise perform. For example, a taxi driver picks up his clients and transports them to their desired destination because they are committed to paying him afterwards for the service, and a construction worker performs her job every day because her employer has made a ',
+    {q:5,opts:['trustworthy','unbelievable']},
+    ' commitment to pay her at the end of the month. Indeed, the taxi driver and the construction worker are willing to accept money as payment only because a network of other agents (notably the central bank) is committed to taking various measures to ',
+    {q:6,opts:['exclude','sustain']},
+    ' the currency in question. Thus, social objects and institutions such as jobs, money, government, scientific collaborations and marriage depend for their origin and stability upon the ',
+    {q:7,opts:['trustworthiness','unbelievability']},
+    ' of commitments.'
+  ],
+  answers:{1:'Dedication',2:'foreseeable',3:'easing',4:'eager',5:'trustworthy',6:'sustain',7:'trustworthiness'}
+},
+{
+  id:'q23', label:'23번', title:'23번',
+  text:[
+    'If the brain has already stored someone\'s face and name, why do we still end up remembering one and not the other? This is because the brain has something of a two-tier memory system at work when it comes to ',
+    {q:1,opts:['forgetting','recalling']},
+    ' memories, and this gives rise to a common yet infuriating sensation: recognising someone, but not being able to remember how or why, or what their name is. This happens because the brain ',
+    {q:2,opts:['blurs the line','distinguishes']},
+    ' between familiarity and recall. To clarify, familiarity (or recognition) is when you ',
+    {q:3,opts:['avoid','come across']},
+    ' someone or something and you know you\'ve done so before. But beyond that, you\'ve got nothing; all you can say is this person/thing is already in your memories. Recall is when you can ',
+    {q:4,opts:['deny','reach']},
+    ' the original memory of how and why you know this person; recognition is just ',
+    {q:5,opts:['overlooking','pointing out']},
+    ' the fact that the memory exists.'
+  ],
+  answers:{1:'recalling',2:'distinguishes',3:'come across',4:'reach',5:'pointing out'}
+},
+{
+  id:'q24', label:'24번', title:'24번',
+  text:[
+    'Since their start in the early 1950s U.S. television sitcoms have charted many of the social ',
+    {q:1,opts:['agreements','clashes']},
+    ' in U.S. society: civil rights, women\'s rights in the home and in the workplace, children\'s rights, immigration and multiculturalism, as well as evolving conceptions of the family. Each of these issues has been ',
+    {q:2,opts:['evaded','handled']},
+    ' through humour in a way that has helped to make more ',
+    {q:3,opts:['progressive','traditional']},
+    ' values more ',
+    {q:4,opts:['tolerable','unacceptable']},
+    ' than previously. Often a character, usually someone marked as a bigot, ',
+    {q:5,opts:['accepted','opposed']},
+    ' one or more of these developments and was then made to appear ',
+    {q:6,opts:['absurd','reasonable']},
+    '. They were cut down either through their own ',
+    {q:7,opts:['cleverness','foolishness']},
+    ', a brief scolding from others, or both. In this way, the humour of sitcoms acted as a cost-effective means to ',
+    {q:8,opts:['discourage','promote']},
+    ' acceptance of a more pluralistic and tolerant society.'
+  ],
+  answers:{1:'clashes',2:'handled',3:'progressive',4:'tolerable',5:'opposed',6:'absurd',7:'foolishness',8:'promote'}
+},
+{
+  id:'q29', label:'29번', title:'29번',
+  text:[
+    'The ',
+    {q:1,opts:['insignificance','significance']},
+    ' of the social dimension in food writing might suggest that the flavor of food is taking a back seat. I suspect that most people view flavor as of ',
+    {q:2,opts:['primary','subsidiary']},
+    ' importance in social settings where food is served. Although our social gatherings coalesce around food, the meaning of these gatherings does not seem to depend on flavor. Flavor assists with the ',
+    {q:3,opts:['broad','limited']},
+    ' purpose of filling the belly, and once that is ',
+    {q:4,opts:['achieved','failed']},
+    ' it provides the backdrop for whatever social dynamics characterize the gathering. These can be understood independently of the flavor of the food on offer, the appreciation of which is understood to be personal and ',
+    {q:5,opts:['objective','subjective']},
+    '. According to this conventional wisdom, the ceremonies and rituals around food, the social events that supply food with its meaning, do not depend on the quality of sensations provided by the food. To focus excessively on flavor is to ',
+    {q:6,opts:['catch','overlook']},
+    ' the larger ',
+    {q:7,opts:['importance','unimportance']},
+    ' of these social relations.'
+  ],
+  answers:{1:'significance',2:'subsidiary',3:'limited',4:'achieved',5:'subjective',6:'overlook',7:'importance'}
+},
+{
+  id:'q30', label:'30번', title:'30번',
+  text:[
+    'There are reasons why science is not fully trusted and why healthy skepticism and critical thinking are ',
+    {q:1,opts:['optional','vital']},
+    '. In spite of professional standards, claims of objectivity, and the peer review process, the conduct of science can be ',
+    {q:2,opts:['impartial','prejudiced']},
+    '. All experts are not the same, nor do they ',
+    {q:3,opts:['present','withhold']},
+    ' their work to the same scrutiny. Knowing the source of funding can be important in evaluating scientific claims. For example, the Harvard researchers who made claims in the late 1960s about the problems with dietary fat were funded in part by the sugar industry. The authors did not ',
+    {q:4,opts:['conceal','disclose']},
+    ' their funding source to the New England Journal of Medicine, where their influential article appeared. Their article shaped a generation of changes in eating patterns that appears to have ',
+    {q:5,opts:['hindered','promoted']},
+    ' higher use of sugar, now widely implicated as a source of the rise in obesity and diabetes. Funding disclosures, although not required five decades ago, have since been made ',
+    {q:6,opts:['mandatory','optional']},
+    '.'
+  ],
+  answers:{1:'vital',2:'prejudiced',3:'present',4:'disclose',5:'promoted',6:'mandatory'}
+},
+{
+  id:'q31', label:'31번', title:'31번',
+  text:[
+    'The explosion of popular music in the second half of the twentieth century as well as the global circulation and dissemination of music by the creative industries propelled a new understanding of ',
+    {q:1,opts:['availability','inaccessibility']},
+    ' in relation to music. Suddenly, in the 1950s, anyone could pick up spoons, a couple of pans, a ',
+    {q:2,opts:['new','used']},
+    ' guitar and start a band. This led to specific genres such as skiffle, but also, more generally, reflected a much more relaxed and ',
+    {q:3,opts:['accepting','exclusive']},
+    ' attitude to music making. While ',
+    {q:4,opts:['extraordinary','typical']},
+    ' people had always sung and made music, the popular music movement was driven by a spirit of rebellion and freedom. Groups who had been entirely ',
+    {q:5,opts:['included','omitted']},
+    ' from music revelled in opportunities to create. This led to a sense of ',
+    {q:6,opts:['familiarity','originality']},
+    ' and empowerment in and beyond the music sphere.'
+  ],
+  answers:{1:'availability',2:'used',3:'accepting',4:'typical',5:'omitted',6:'originality'}
+},
+{
+  id:'q32', label:'32번', title:'32번',
+  text:[
+    'Great scientists are seldom one-hit wonders. Newton is a prime example: beyond the Newtonian mechanics, he developed the theory of gravitation, calculus, laws of motion, and ',
+    {q:1,opts:['improvement','inefficiency']},
+    '. In fact, well-known scientists are often involved in multiple discoveries, a phenomenon ',
+    {q:2,opts:['definitely','possibly']},
+    ' explained by the Matthew effect. Indeed, an initial success may offer a scientist legitimacy, improve peer perception, provide knowledge of how to score and win, ',
+    {q:3,opts:['diminish','improve']},
+    ' social status, and attract resources and quality collaborators, each of these payoffs further increasing her odds of scoring another win. Yet, there is an appealing alternative explanation: Great scientists have multiple hits and consistently succeed in their scientific endeavors simply because they\'re ',
+    {q:4,opts:['ordinarily','remarkably']},
+    ' talented. Therefore, future success again goes to those who have had success earlier, not because of advantages offered by the previous success, but because the earlier success was indicative of a ',
+    {q:5,opts:['concealed','obvious']},
+    ' talent. The Matthew effect posits that success alone ',
+    {q:6,opts:['decreases','raises']},
+    ' the future probability of success, raising the question: Does status dictate outcomes, or does it simply reflect an underlying talent or quality?'
+  ],
+  answers:{1:'improvement',2:'possibly',3:'improve',4:'remarkably',5:'concealed',6:'raises'}
+},
+{
+  id:'q33', label:'33번', title:'33번',
+  text:[
+    'When we realize we\'ve said something in error and we pause to go back to correct it, we stop gesturing a couple of hundred milliseconds before we stop speaking. Such sequences suggest the ',
+    {q:1,opts:['astonishing','ordinary']},
+    ' notion that our hands "know" what we\'re going to say before our conscious minds do, and in fact this is often the case. Gesture can ',
+    {q:2,opts:['cognitively','physically']},
+    ' prime a word so that the right term comes to our lips. When people are prevented from gesturing, they talk less fluently; their speech becomes ',
+    {q:3,opts:['fluent','hesitant']},
+    ' because their hands are no longer able to supply them with the next word, and the next. Not being able to gesture has other deleterious effects: without gesture to help our ',
+    {q:4,opts:['cognitive','physical']},
+    ' processes along, we remember less useful information, we solve problems less well, and we are less able to explain our thinking. Far from tagging along as speech\'s ',
+    {q:5,opts:['awkward','skillful']},
+    ' companion, gesture represents the leading edge of our thought.'
+  ],
+  answers:{1:'astonishing',2:'cognitively',3:'hesitant',4:'cognitive',5:'awkward'}
+},
+{
+  id:'q34', label:'34번', title:'34번',
+  text:[
+    'Despite the ',
+    {q:1,opts:['distinction','similarity']},
+    ' between the past and the future, between what has happened and what is to come, it can be suggested, that our sense of the past has always been influenced by our view of the future. Revolutionaries have always looked to the past to frame their future cause, as is ',
+    {q:2,opts:['fully','insufficiently']},
+    ' illustrated by examples from nationalism to communism. The future has often been seen as variously a ',
+    {q:3,opts:['decline','restoration']},
+    ' of a lost time, as a replication of what is established, or as a model bequeathed by a heroic age long gone. The writing of history is based on understanding or explaining future outcomes that were not known to contemporaries, since the historian has the benefit of hindsight and the past is nothing more than the ',
+    {q:4,opts:['amassing','dispersion']},
+    ' of futures that are now our past.'
+  ],
+  answers:{1:'distinction',2:'fully',3:'restoration',4:'amassing'}
+},
+{
+  id:'q35', label:'35번', title:'35번',
+  text:[
+    'Dictionaries are relatively good resources for anyone interested in finding out what a word means. Using one set of words to define another word is called a lexical definition. But it\'s important to understand the ',
+    {q:1,opts:['constraints','possibilities']},
+    ' of dictionary definitions. More often than not, a definition in a dictionary requires readers to have a fairly ',
+    {q:2,opts:['strong','weak']},
+    ' understanding of the language already at their disposal. In other words, a dictionary functions in many cases as a cross-reference or translator between words one knows and words that one doesn\'t yet know. Even the most ',
+    {q:3,opts:['familiar','unfamiliar']},
+    ' words in a dictionary, say, for example, "pulchritudinous" or "kalokagathia," must be defined using words that the reader already knows and understands. Otherwise, the dictionary isn\'t very ',
+    {q:4,opts:['useful','useless']},
+    '.'
+  ],
+  answers:{1:'constraints',2:'strong',3:'unfamiliar',4:'useful'}
+},
+{
+  id:'q36', label:'36번', title:'36번',
+  text:[
+    'The governments of virtually every country on the planet attach great importance to achieving food security and a wide variety of mechanisms have been developed to ',
+    {q:1,opts:['abandon','achieve']},
+    ' this goal. The first issue governments face in achieving national food security is the problem of insuring that ',
+    {q:2,opts:['insufficient','sufficient']},
+    ' amounts of food are available to the resident population. Some governments have set goals of food self-sufficiency, which means most if not all of the food ',
+    {q:3,opts:['accessible','unavailable']},
+    ' in a country comes from the domestic farming system. However, food security does not require food self-sufficiency because countries can import food items not easily produced within the country. Agricultural products are, after all, highly ',
+    {q:4,opts:['reactive to','resistant to']},
+    ' climatic, soil and other conditions that tend to vary around the world. Even countries with extremely ',
+    {q:5,opts:['efficient','unproductive']},
+    ' agricultural sectors are not fully self-sufficient in all food items. The United States, for example, depends on imports for its supply of coffee, tea, bananas and other tropical products. In general, the problem of assuring adequate food supplies is solved by relying on both ',
+    {q:6,opts:['international','national']},
+    ' production and imports.'
+  ],
+  answers:{1:'achieve',2:'sufficient',3:'accessible',4:'reactive to',5:'efficient',6:'national'}
+},
+{
+  id:'q37', label:'37번', title:'37번',
+  text:[
+    'Stress not only affects physical disease but also the very structure of our brains, making us even more likely to experience an ',
+    {q:1,opts:['energetic','exhausted']},
+    ' brain. A number of studies have been done to ',
+    {q:2,opts:['hide','show']},
+    ' what happens in healthy people\'s brains when they go through something stressful. One study demonstrated a link between a smaller hippocampus and people who had experienced long-lasting stress. Why does this matter? This part of the brain helps you remain ',
+    {q:3,opts:['flexible','vulnerable']},
+    ' in the face of stress and is involved in mood regulation. It also helps you to monitor the safety of your environment and store ',
+    {q:4,opts:['hazardous','safe']},
+    ' images in your long-term memory so you can avoid them in the future. But chronic stress can confuse the hippocampus and lead to turning signals for cortisol "on" instead of "off," which can trap you in an ',
+    {q:5,opts:['occasional','ongoing']},
+    ' state of fight, flight, or freeze.'
+  ],
+  answers:{1:'exhausted',2:'show',3:'flexible',4:'hazardous',5:'ongoing'}
+},
+{
+  id:'q38', label:'38번', title:'38번',
+  text:[
+    'It is important to recognize that although science is a rule-based procedure, it is very much an ',
+    {q:1,opts:['original','unoriginal']},
+    ' process. A conjecture is a philosophical invention, cooked up rather mystically by the mind through the mental computation we call ',
+    {q:2,opts:['careless','cautious']},
+    ' contemplation. However, until the hypothesis is tested against reality, it is not yet truly knowledge; it is just information that represents speculation. Knowledge is information that has demonstrated its ',
+    {q:3,opts:['effectiveness','uselessness']},
+    '. It is what is left over after cycles of experimental testing have ',
+    {q:4,opts:['removed','retained']},
+    ' false theories. As scientists continually test their hypotheses and ',
+    {q:5,opts:['maintain','revise']},
+    ' their models to account for new and surprising data, a kind of "learning loop" emerges that statisticians call Bayesian updating. Based on Bayes\' Rule, Bayesian updating refers to a mathematical process whereby an accepted theory or predictive model gets increasingly ',
+    {q:6,opts:['inaccurate','precise']},
+    ' through the repetitive testing of competing variants of that theory.'
+  ],
+  answers:{1:'original',2:'cautious',3:'effectiveness',4:'removed',5:'revise',6:'precise'}
+},
+{
+  id:'q39', label:'39번', title:'39번',
+  text:[
+    'As a general rule, it\'s better if your definition corresponds as closely as possible to the way in which the term is ordinarily used in the kinds of debates to which your claims are pertinent. There will be, however, occasions where it is ',
+    {q:1,opts:['inappropriate','suitable']},
+    ', even necessary, to coin special uses through what philosophers call stimulative definition. This would be the case where the current lexicon is not able to make ',
+    {q:2,opts:['differences','similarities']},
+    ' that you think are philosophically important. For example, we do not have a term in ',
+    {q:3,opts:['common','unusual']},
+    ' language that describes a memory that is not necessarily a memory of something the person having it has experienced. Such a thing would occur, for example, if I could somehow ',
+    {q:4,opts:['conceal','exchange']},
+    ' your memories: I would have a memory-type experience, but this would not be of something that I had actually experienced. To call this a memory would be ',
+    {q:5,opts:['accurate','confusing']},
+    '. For this reason, philosophers have coined the ',
+    {q:6,opts:['ordinary','unique']},
+    ' term \'quasi-memory\' to refer to these hypothetical memory-like experiences.'
+  ],
+  answers:{1:'suitable',2:'differences',3:'common',4:'exchange',5:'confusing',6:'unique'}
+},
+{
+  id:'q40', label:'40번', title:'40번',
+  text:[
+    'Quite often the interaction between groups is socially ',
+    {q:1,opts:['equal','unbalanced']},
+    ', and this is reflected in the fact that in many cases borrowing of words or constructions goes mostly or entirely in one direction, from the more powerful or ',
+    {q:2,opts:['lowly','powerful']},
+    ' group to the less favored one. The languages of socially ',
+    {q:3,opts:['dependent','dominant']},
+    ' groups may from quite an early period of contact provide terminology for objects or practices with which speakers of the more powerful group were previously ',
+    {q:4,opts:['familiar','unknown']},
+    ', but the effects of contact in that direction may not ',
+    {q:5,opts:['develop','regress']},
+    ' any further than this. In some cases, as with the Dharug language of Sydney, Australia, the source of some of the earliest loans from Indigenous Australian languages into English, the fate of the language system is extinction after the obliteration of many of its speakers. The remainder shifted to varieties of English, the language of the people who had ',
+    {q:6,opts:['liberated','oppressed']},
+    ' them.'
+  ],
+  answers:{1:'unbalanced',2:'powerful',3:'dependent',4:'unknown',5:'develop',6:'oppressed'}
+}
+];
+
+const state = {};
+UNITS.forEach(u => { state[u.id] = {}; });
+
+function buildNav() {
+  const nav = document.getElementById('main-nav');
+  UNITS.forEach(u => {
+    const btn = document.createElement('button');
+    btn.className = 'nav-btn';
+    btn.dataset.id = u.id;
+    btn.textContent = u.label;
+    btn.onclick = () => showUnit(u.id);
+    nav.appendChild(btn);
+  });
+  // 총정리 버튼
+  const sb = document.createElement('button');
+  sb.className = 'nav-btn';
+  sb.textContent = '📊 총정리';
+  sb.onclick = showSummary;
+  nav.appendChild(sb);
+}
+
+function showUnit(id) {
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  const nb = document.querySelector(`[data-id="${id}"]`);
+  if (nb) nb.classList.add('active');
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('visible'));
+  document.getElementById('summary-view').classList.remove('visible');
+  document.getElementById('sec-' + id).classList.add('visible');
+}
+
+function showSummary() {
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('visible'));
+  document.getElementById('summary-view').classList.add('visible');
+  buildSummary();
+}
+
+function buildPassage(unit) {
+  let html = '';
+  unit.text.forEach(part => {
+    if (typeof part === 'string') {
+      html += part;
+    } else {
+      const q = part.q;
+      html += `<sup class="num-label">${q}</sup><span class="choice-group" id="cg-${unit.id}-${q}" data-unit="${unit.id}" data-q="${q}">`;
+      part.opts.forEach(opt => {
+        html += `<button class="choice-btn" onclick="select('${unit.id}',${q},'${opt.replace(/'/g,"\\'")}',this)">${opt}</button>`;
+      });
+      html += `</span>`;
+    }
+  });
+  return html;
+}
+
+function buildSections() {
+  const container = document.getElementById('sections-container');
+  UNITS.forEach(unit => {
+    const totalQ = Object.keys(unit.answers).length;
+    const sec = document.createElement('div');
+    sec.className = 'section';
+    sec.id = 'sec-' + unit.id;
+    sec.innerHTML = `
+      <div class="section-header">
+        <div class="section-num">${unit.label}</div>
+        <div class="section-meta">
+          <h2>2025년 03월 고2 학력평가 [${unit.title}]</h2>
+          <p>문항 수: ${totalQ}개 | 문맥상 적절한 어휘를 선택하세요</p>
+        </div>
+      </div>
+      <div class="passage" id="passage-${unit.id}">${buildPassage(unit)}</div>
+      <div class="controls">
+        <button class="btn btn-primary" onclick="gradeUnit('${unit.id}')">채점하기</button>
+        <button class="btn btn-ghost" onclick="resetUnit('${unit.id}')">다시 풀기</button>
+      </div>
+      <div class="result-banner" id="result-${unit.id}"></div>
+    `;
+    container.appendChild(sec);
+  });
+}
+
+function select(unitId, q, opt, btn) {
+  const cg = document.getElementById(`cg-${unitId}-${q}`);
+  if (cg.classList.contains('correct') || cg.classList.contains('wrong')) return;
+  cg.querySelectorAll('.choice-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  state[unitId][q] = opt;
+  updateTotalScore();
+}
+
+function gradeUnit(unitId) {
+  const unit = UNITS.find(u => u.id === unitId);
+  let correct = 0, total = 0;
+  Object.entries(unit.answers).forEach(([q, ans]) => {
+    total++;
+    const cg = document.getElementById(`cg-${unitId}-${q}`);
+    const selected = state[unitId][q];
+    if (selected === ans) {
+      correct++;
+      cg.classList.add('correct');
+    } else {
+      cg.classList.add('wrong');
+      cg.querySelectorAll('.choice-btn').forEach(b => {
+        if (b.textContent === ans) b.classList.add('answer-key');
+      });
+    }
+  });
+  const pct = Math.round(correct / total * 100);
+  const banner = document.getElementById(`result-${unitId}`);
+  const cls = pct === 100 ? 'perfect' : pct >= 80 ? 'good' : pct >= 60 ? 'ok' : 'bad';
+  const msg = pct === 100 ? '🎉 완벽합니다!' : pct >= 80 ? '👍 잘했어요!' : pct >= 60 ? '📚 조금 더 노력해요' : '💪 다시 도전해보세요';
+  banner.innerHTML = `
+    <div class="result-score ${cls}">${correct}/${total}</div>
+    <div class="result-detail"><strong>${pct}점</strong> — ${msg}</div>
+  `;
+  banner.classList.add('show');
+  updateTotalScore();
+}
+
+function resetUnit(unitId) {
+  state[unitId] = {};
+  const unit = UNITS.find(u => u.id === unitId);
+  document.getElementById(`passage-${unitId}`).innerHTML = buildPassage(unit);
+  document.getElementById(`result-${unitId}`).classList.remove('show');
+  updateTotalScore();
+}
+
+function resetAll() {
+  UNITS.forEach(u => resetUnit(u.id));
+  buildSummary();
+}
+
+function updateTotalScore() {
+  let total = 0, possible = 0;
+  UNITS.forEach(u => {
+    Object.entries(u.answers).forEach(([q, ans]) => {
+      possible++;
+      if (state[u.id][q] === ans) total++;
+    });
+  });
+  document.getElementById('total-score').textContent = total;
+  document.getElementById('total-possible').textContent = possible;
+}
+
+function buildSummary() {
+  const grid = document.getElementById('summary-grid');
+  grid.innerHTML = '';
+  let grandCorrect = 0, grandTotal = 0, allGraded = true;
+  UNITS.forEach(u => {
+    const total = Object.keys(u.answers).length;
+    const graded = document.getElementById(`result-${u.id}`).classList.contains('show');
+    let correct = 0;
+    if (graded) {
+      Object.entries(u.answers).forEach(([q, ans]) => {
+        if (state[u.id][q] === ans) correct++;
+      });
+    } else { allGraded = false; }
+    grandTotal += total;
+    if (graded) grandCorrect += correct;
+    const pct = graded ? Math.round(correct / total * 100) : null;
+    const cls = pct === null ? 'sc-none' : pct === 100 ? 'sc-perfect' : pct >= 80 ? 'sc-good' : pct >= 60 ? 'sc-ok' : 'sc-bad';
+    const card = document.createElement('div');
+    card.className = `summary-card ${cls}`;
+    card.innerHTML = `
+      <h4>${u.title}</h4>
+      <div class="sc-score">${pct !== null ? correct + '/' + total : '—'}</div>
+      <div class="sc-label">${pct !== null ? pct + '점' : '미채점'}</div>
+    `;
+    card.onclick = () => showUnit(u.id);
+    grid.appendChild(card);
+  });
+  document.getElementById('overall-num').textContent = allGraded ? grandCorrect + ' / ' + grandTotal : grandCorrect + ' / ?';
+  document.getElementById('overall-sub').textContent = allGraded
+    ? Math.round(grandCorrect / grandTotal * 100) + '점 — 전체 ' + UNITS.length + '문항 채점 완료'
+    : '아직 채점되지 않은 문항이 있습니다';
+}
+
+buildNav();
+buildSections();
+updateTotalScore();
+showUnit('q21');
+</script>
+</body>
+</html>
