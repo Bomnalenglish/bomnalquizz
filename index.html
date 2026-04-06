@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>봄날 English Quiz Hub</title>
+  <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Black+Han+Sans&family=Noto+Sans+KR:wght@300;400;700&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { --ink: #1a2a3a; --soft: #5a7080; }
+
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background: #f0f6fb;
+      min-height: 100vh;
+      color: var(--ink);
+      overflow-x: hidden;
+    }
+
+    header {
+      background: linear-gradient(135deg, #d4edff 0%, #c8edd9 50%, #fde8d8 100%);
+      padding: 60px 24px 48px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    header::before {
+      content: '';
+      position: absolute;
+      top: -60px; left: -60px;
+      width: 220px; height: 220px;
+      background: radial-gradient(circle, #fff8 40%, transparent 70%);
+      border-radius: 50%;
+    }
+    .logo {
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: clamp(2rem, 6vw, 3.4rem);
+      color: var(--ink);
+      letter-spacing: -1px;
+    }
+    .logo span { color: #3b9ed8; }
+    .flower {
+      font-size: 1.6rem; margin: 0 6px;
+      display: inline-block;
+      animation: sway 3s ease-in-out infinite;
+    }
+    @keyframes sway {
+      0%, 100% { transform: rotate(-8deg); }
+      50%       { transform: rotate(8deg);  }
+    }
+    .subtitle {
+      font-family: 'Gowun Dodum', serif;
+      font-size: 1.05rem; color: var(--soft);
+      margin-top: 10px; letter-spacing: 1px;
+    }
+
+    main { max-width: 960px; margin: 0 auto; padding: 48px 20px 80px; }
+
+    /* 로딩 */
+    #loading {
+      text-align: center; padding: 60px 0;
+      font-family: 'Gowun Dodum', serif;
+      color: var(--soft); font-size: 1.1rem;
+    }
+    .spinner {
+      width: 40px; height: 40px;
+      border: 4px solid #c8e8f8; border-top-color: #3b9ed8;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 16px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* 섹션 */
+    .section { margin-bottom: 44px; opacity: 0; transform: translateY(20px); animation: fadeUp 0.5s ease forwards; }
+    @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+
+    .section-title {
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: 1.15rem; color: var(--ink);
+      margin-bottom: 16px; padding-left: 14px;
+      border-left: 5px solid var(--ink);
+    }
+
+    .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 14px; }
+
+    .card {
+      display: block; text-decoration: none;
+      border-radius: 20px; padding: 22px 18px 20px;
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
+      position: relative; overflow: hidden; cursor: pointer;
+    }
+    .card::before {
+      content: ''; position: absolute;
+      top: -30px; right: -30px;
+      width: 90px; height: 90px; border-radius: 50%;
+      background: rgba(255,255,255,0.35);
+      transition: transform 0.3s ease;
+    }
+    .card:hover::before { transform: scale(1.5); }
+    .card:hover { transform: translateY(-5px); box-shadow: 0 14px 32px rgba(0,0,0,0.13); }
+    .card:active { transform: translateY(-2px); }
+
+    .card-emoji { font-size: 1.8rem; margin-bottom: 10px; display: block; }
+    .card-title { font-family: 'Black Han Sans', sans-serif; font-size: 1rem; color: var(--ink); line-height: 1.4; }
+    .card-sub   { font-size: 0.78rem; color: var(--soft); margin-top: 5px; font-family: 'Gowun Dodum', serif; }
+    .badge {
+      display: inline-block; font-size: 0.68rem;
+      background: var(--ink); color: #fff;
+      border-radius: 30px; padding: 2px 10px; margin-top: 8px;
+    }
+
+    .c-0 { background: #daf0ff; } .c-1 { background: #cef0dc; }
+    .c-2 { background: #fde4cc; } .c-3 { background: #e8deff; }
+    .c-4 { background: #fdf5c0; } .c-5 { background: #ffd8d0; }
+    .c-6 { background: #c8f0ea; } .c-7 { background: #f0d8ff; }
+
+    footer { text-align: center; padding: 30px; color: #aabbc8; font-size: 0.82rem; font-family: 'Gowun Dodum', serif; }
+
+    @media (max-width: 480px) { .cards { grid-template-columns: 1fr 1fr; } }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo"><span class="flower">🌸</span>봄날 <span>English</span> Quiz<span class="flower">✨</span></div>
+  <p class="subtitle">시험을 선택하여 시작하세요</p>
+</header>
+
+<main>
+  <div id="loading"><div class="spinner"></div>시험 목록을 불러오는 중...</div>
+  <div id="hub"></div>
+</main>
+
+<footer>🌸 봄날 English &nbsp;·&nbsp; 모든 시험은 새 탭에서 열립니다</footer>
+
+<script>
+// ============================================================
+// 커스텀 매핑: 특수 파일명은 여기에 직접 정의
+// 새 특수 파일 추가 시 이 객체에 추가하면 됩니다
+// ============================================================
+const CUSTOM_MAP = {
+  'go2_march_test':    { title: '고2 3월 모의고사', sub: '모의고사 대비', badge: '모의고사', emoji: '📝', group: '⭐ 특별 시험' },
+  'companion_test_v2': { title: '2027 수능 동반의어', sub: '심화 학습',    badge: 'v2',       emoji: '🤝', group: '⭐ 특별 시험' },
+};
+
+// 학교 매핑
+const SCHOOL_MAP = {
+  jongchon: { label: '종촌', emoji: '🏫' },
+  bisang:   { label: '비상', emoji: '📚' },
+  eojin:    { label: '어진', emoji: '🏫' },
+  goun:     { label: '고운', emoji: '🏫' },
+};
+
+const GRADE_MAP  = { '1grade': '1학년', '2grade': '2학년', '3grade': '3학년' };
+const CHAPTER_EMOJI = ['📘','📗','📙','📕','📓'];
+const COLORS = ['c-0','c-1','c-2','c-3','c-4','c-5','c-6','c-7'];
+let colorIdx = 0;
+const nextColor = () => COLORS[(colorIdx++) % COLORS.length];
+
+// ============================================================
+// 파일명 파싱
+// ============================================================
+function parseFile(name) {
+  if (CUSTOM_MAP[name]) return { ...CUSTOM_MAP[name], name };
+
+  // 패턴: {school}_{grade}_ch{n}
+  const m = name.match(/^([a-z]+)_(\d+grade)_ch(\d+)$/);
+  if (m) {
+    const [, school, grade, ch] = m;
+    const s = SCHOOL_MAP[school] || { label: school, emoji: '📖' };
+    const g = GRADE_MAP[grade]   || grade;
+    const n = parseInt(ch);
+    return {
+      name,
+      title: `${s.label} Ch.${n}`,
+      sub:   `${s.label} ${g}`,
+      emoji: CHAPTER_EMOJI[(n - 1) % CHAPTER_EMOJI.length],
+      group: `${s.emoji} ${s.label} ${g}`,
+      badge: null,
+    };
+  }
+
+  // 파싱 불가 파일도 표시
+  return { name, title: name, sub: '', emoji: '📄', group: '📂 기타', badge: null };
+}
+
+// ============================================================
+// GitHub API → 파일 목록
+// ============================================================
+async function loadFiles() {
+  const res = await fetch('https://api.github.com/repos/bomnalenglish/bomnalquizz/contents/');
+  if (!res.ok) throw new Error('GitHub API 오류 ' + res.status);
+  const all = await res.json();
+  return all
+    .filter(f => f.name.endsWith('.html') && f.name !== 'index.html')
+    .map(f => f.name.replace('.html', ''));
+}
+
+// ============================================================
+// 렌더링
+// ============================================================
+function render(files) {
+  const parsed = files.map(parseFile);
+
+  // 그룹 묶기
+  const groups = {};
+  parsed.forEach(item => {
+    const g = item.group || '📂 기타';
+    (groups[g] = groups[g] || []).push(item);
+  });
+
+  // 정렬: 특별 시험 맨 뒤
+  const sorted = Object.keys(groups).sort((a, b) => {
+    if (a.includes('특별')) return 1;
+    if (b.includes('특별')) return -1;
+    return a.localeCompare(b, 'ko');
+  });
+
+  const hub = document.getElementById('hub');
+  hub.innerHTML = '';
+
+  sorted.forEach((groupName, gi) => {
+    const section = document.createElement('div');
+    section.className = 'section';
+    section.style.animationDelay = `${gi * 0.1}s`;
+
+    section.innerHTML = `<div class="section-title">${groupName}</div>`;
+    const cards = document.createElement('div');
+    cards.className = 'cards';
+
+    groups[groupName].forEach(item => {
+      const a = document.createElement('a');
+      a.className = `card ${nextColor()}`;
+      a.href = `https://bomnalenglish.github.io/bomnalquizz/${item.name}.html`;
+      a.target = '_blank';
+      a.innerHTML = `
+        <span class="card-emoji">${item.emoji}</span>
+        <div class="card-title">${item.title}</div>
+        ${item.sub   ? `<div class="card-sub">${item.sub}</div>`   : ''}
+        ${item.badge ? `<span class="badge">${item.badge}</span>` : ''}
+      `;
+      cards.appendChild(a);
+    });
+
+    section.appendChild(cards);
+    hub.appendChild(section);
+  });
+}
+
+// ============================================================
+// 실행
+// ============================================================
+(async () => {
+  try {
+    const files = await loadFiles();
+    document.getElementById('loading').style.display = 'none';
+    render(files);
+  } catch (e) {
+    document.getElementById('loading').innerHTML =
+      `<p style="color:#e07070;">목록을 불러오지 못했습니다 😢<br><small>${e.message}</small></p>`;
+  }
+})();
+</script>
+</body>
+</html>
