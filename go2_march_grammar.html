@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>2026 고2 3월 모의고사 – 어법·어휘</title>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Serif+KR:wght@400;600&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#f5f0e8;
+  --card:#fff;
+  --ink:#1c1a16;
+  --soft:#6b6456;
+  --accent:#c8522a;
+  --accent2:#3a7d6e;
+  --correct:#2e7d52;
+  --wrong:#c0392b;
+  --correct-bg:#e8f5ee;
+  --wrong-bg:#fdecea;
+  --border:#e0d8cc;
+  --num-bg:#1c1a16;
+}
+body{
+  font-family:'Noto Sans KR',sans-serif;
+  background:var(--bg);
+  color:var(--ink);
+  min-height:100vh;
+}
+
+/* HEADER */
+header{
+  background:var(--ink);
+  color:#fff;
+  padding:48px 24px 40px;
+  text-align:center;
+  position:relative;
+  overflow:hidden;
+}
+header::before{
+  content:'';
+  position:absolute;
+  top:-80px;left:-80px;
+  width:300px;height:300px;
+  border-radius:50%;
+  border:2px solid rgba(255,255,255,0.08);
+}
+header::after{
+  content:'';
+  position:absolute;
+  bottom:-60px;right:-60px;
+  width:240px;height:240px;
+  border-radius:50%;
+  border:2px solid rgba(200,82,42,0.3);
+}
+.header-tag{
+  display:inline-block;
+  font-size:0.72rem;
+  font-weight:500;
+  letter-spacing:3px;
+  text-transform:uppercase;
+  color:var(--accent);
+  border:1px solid var(--accent);
+  border-radius:2px;
+  padding:4px 12px;
+  margin-bottom:16px;
+}
+header h1{
+  font-family:'Black Han Sans',sans-serif;
+  font-size:clamp(1.6rem,5vw,2.6rem);
+  letter-spacing:-0.5px;
+  line-height:1.2;
+  color:#fff;
+}
+header h1 span{color:var(--accent);}
+.header-sub{
+  font-family:'Noto Serif KR',serif;
+  font-size:0.9rem;
+  color:rgba(255,255,255,0.5);
+  margin-top:10px;
+  letter-spacing:1px;
+}
+
+/* PROGRESS BAR */
+.progress-wrap{
+  background:#fff;
+  border-bottom:1px solid var(--border);
+  padding:14px 24px;
+  display:flex;
+  align-items:center;
+  gap:16px;
+  position:sticky;
+  top:0;
+  z-index:100;
+}
+.progress-bar-outer{
+  flex:1;
+  height:6px;
+  background:var(--border);
+  border-radius:3px;
+  overflow:hidden;
+}
+.progress-bar-inner{
+  height:100%;
+  background:linear-gradient(90deg,var(--accent2),var(--accent));
+  border-radius:3px;
+  width:0%;
+  transition:width 0.4s ease;
+}
+.progress-text{
+  font-size:0.78rem;
+  font-weight:700;
+  color:var(--soft);
+  white-space:nowrap;
+  min-width:60px;
+  text-align:right;
+}
+.score-badge{
+  font-size:0.78rem;
+  font-weight:700;
+  background:var(--ink);
+  color:#fff;
+  border-radius:20px;
+  padding:4px 12px;
+  white-space:nowrap;
+}
+
+/* MAIN */
+main{
+  max-width:820px;
+  margin:0 auto;
+  padding:40px 20px 80px;
+}
+
+/* QUESTION CARD */
+.q-card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:32px 28px 28px;
+  margin-bottom:24px;
+  box-shadow:0 2px 12px rgba(0,0,0,0.05);
+  animation:fadeUp 0.4s ease both;
+}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+
+.q-num{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:36px;height:36px;
+  background:var(--num-bg);
+  color:#fff;
+  border-radius:8px;
+  font-family:'Black Han Sans',sans-serif;
+  font-size:1rem;
+  margin-bottom:16px;
+  flex-shrink:0;
+}
+.q-header{
+  display:flex;
+  align-items:flex-start;
+  gap:12px;
+  margin-bottom:20px;
+}
+.q-status{
+  margin-left:auto;
+  font-size:0.72rem;
+  font-weight:700;
+  padding:3px 10px;
+  border-radius:20px;
+  white-space:nowrap;
+  opacity:0;
+  transition:opacity 0.3s;
+}
+.q-status.show{opacity:1;}
+.q-status.done-all{background:#e8f5ee;color:var(--correct);}
+.q-status.has-wrong{background:#fdecea;color:var(--wrong);}
+
+/* PASSAGE */
+.passage{
+  font-family:'Noto Serif KR',serif;
+  font-size:0.92rem;
+  line-height:2.0;
+  color:var(--ink);
+  word-break:keep-all;
+  margin-bottom:24px;
+}
+
+/* INLINE CHOICE */
+.choice-group{
+  display:inline-flex;
+  align-items:center;
+  gap:2px;
+  vertical-align:middle;
+  border:1.5px solid var(--border);
+  border-radius:6px;
+  overflow:hidden;
+  font-family:'Noto Sans KR',sans-serif;
+  font-size:0.82rem;
+  font-weight:500;
+  margin:0 2px;
+  transition:border-color 0.2s;
+}
+.choice-group.answered{border-color:transparent;}
+
+.choice-btn{
+  background:none;
+  border:none;
+  padding:3px 8px;
+  cursor:pointer;
+  font-family:inherit;
+  font-size:inherit;
+  font-weight:600;
+  color:var(--ink);
+  transition:background 0.15s,color 0.15s;
+  line-height:1.4;
+}
+.choice-btn:hover:not(:disabled){
+  background:var(--ink);
+  color:#fff;
+}
+.choice-btn.correct{
+  background:var(--correct);
+  color:#fff;
+  cursor:default;
+}
+.choice-btn.wrong{
+  background:var(--wrong);
+  color:#fff;
+  cursor:default;
+  text-decoration:line-through;
+  opacity:0.7;
+}
+.choice-btn.reveal-correct{
+  background:var(--correct);
+  color:#fff;
+  cursor:default;
+}
+.choice-btn:disabled{cursor:default;}
+
+.sep{
+  font-size:0.75rem;
+  color:#bbb;
+  padding:0 1px;
+  pointer-events:none;
+  font-weight:400;
+}
+
+/* SCORE SUMMARY */
+.summary{
+  background:var(--ink);
+  color:#fff;
+  border-radius:16px;
+  padding:40px 32px;
+  text-align:center;
+  margin-top:16px;
+  display:none;
+  animation:fadeUp 0.5s ease both;
+}
+.summary.show{display:block;}
+.summary-title{
+  font-family:'Black Han Sans',sans-serif;
+  font-size:1.8rem;
+  margin-bottom:8px;
+}
+.summary-title span{color:var(--accent);}
+.summary-score{
+  font-size:3.5rem;
+  font-weight:700;
+  color:var(--accent);
+  font-family:'Black Han Sans',sans-serif;
+  margin:20px 0 8px;
+}
+.summary-sub{
+  font-size:0.9rem;
+  color:rgba(255,255,255,0.55);
+  margin-bottom:28px;
+  font-family:'Noto Serif KR',serif;
+}
+.summary-msg{
+  font-size:1.05rem;
+  color:rgba(255,255,255,0.8);
+  margin-bottom:32px;
+}
+.btn-retry{
+  display:inline-block;
+  background:var(--accent);
+  color:#fff;
+  border:none;
+  border-radius:8px;
+  padding:12px 36px;
+  font-family:'Black Han Sans',sans-serif;
+  font-size:1rem;
+  cursor:pointer;
+  letter-spacing:1px;
+  transition:opacity 0.2s;
+}
+.btn-retry:hover{opacity:0.85;}
+
+/* CAPTURE NOTE */
+.capture-note{
+  margin-top:16px;
+  text-align:center;
+  font-size:0.85rem;
+  color:var(--soft);
+  font-family:'Noto Serif KR',serif;
+}
+
+/* DELAY ANIMATION */
+.q-card:nth-child(1){animation-delay:0.03s;}
+.q-card:nth-child(2){animation-delay:0.07s;}
+.q-card:nth-child(3){animation-delay:0.11s;}
+.q-card:nth-child(4){animation-delay:0.15s;}
+.q-card:nth-child(5){animation-delay:0.19s;}
+.q-card:nth-child(6){animation-delay:0.23s;}
+.q-card:nth-child(7){animation-delay:0.27s;}
+.q-card:nth-child(8){animation-delay:0.31s;}
+.q-card:nth-child(9){animation-delay:0.35s;}
+.q-card:nth-child(10){animation-delay:0.39s;}
+.q-card:nth-child(11){animation-delay:0.43s;}
+.q-card:nth-child(12){animation-delay:0.47s;}
+.q-card:nth-child(13){animation-delay:0.51s;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-tag">봄날 English</div>
+  <h1>2026 고2 3월 모의고사<br/><span>어법·어휘 고르기</span></h1>
+  <p class="header-sub">21~24 · 29~40번 &nbsp;|&nbsp; 선택지를 클릭하여 풀어보세요</p>
+</header>
+
+<div class="progress-wrap">
+  <div class="progress-bar-outer">
+    <div class="progress-bar-inner" id="progressBar"></div>
+  </div>
+  <div class="progress-text" id="progressText">0 / 0</div>
+  <div class="score-badge" id="scoreBadge">✓ 0</div>
+</div>
+
+<main id="main"></main>
+
+<script>
+// ============================================================
+// DATA
+// ============================================================
+const questions = [
+  {
+    num: 21,
+    items: [
+      {no:1, opts:["establishing","establishment"], ans:0},
+      {no:2, opts:["acceptance","rejection"], ans:0},
+      {no:3, opts:["in place","displaced"], ans:0},
+      {no:4, opts:["rooted","rooting"], ans:0},
+      {no:5, opts:["unless","if"], ans:0},
+      {no:6, opts:["be brought","bring"], ans:0},
+      {no:7, opts:["confront","avoiding"], ans:0},
+      {no:8, opts:["are","is"], ans:0},
+      {no:9, opts:["risk","avoid"], ans:0},
+      {no:10, opts:["derogatory","complimentary"], ans:0},
+      {no:11, opts:["recording","ignoring"], ans:0},
+      {no:12, opts:["giving","given"], ans:0},
+      {no:13, opts:["indicate","obscures"], ans:0},
+      {no:14, opts:["having","to have"], ans:0},
+      {no:15, opts:["as","for"], ans:0},
+      {no:16, opts:["shift","maintain"], ans:0},
+      {no:17, opts:["equipping","deprivation"], ans:0},
+    ],
+    parts: [
+      "A first step toward ",["establishing","establishment"]," a respectful classroom learning community is ",["acceptance","rejection"]," of all ideas and answers — regardless of any obvious errors. Rich mathematical discussions cannot occur if this expectation is not ",["in place","displaced"],". We must remember that wrong answers are often ",["rooted","rooting"]," in misconceptions, and ",["unless","if"]," these ideas are allowed to ",["be brought","bring"]," to the forefront, we cannot help students ",["confront","avoiding"]," their thinking. Students who ",["are","is"]," in safe learning environments are willing to ",["risk","avoid"]," sharing an incorrect answer with their peers in order to grow mathematically. It is important to model and expect the acceptance of all ideas without ",["derogatory","complimentary"]," comments. As educators we can model this by ",["recording","ignoring"]," all answers to be considered without ",["giving","given"]," any verbal or physical expressions that ",["indicate","obscures"]," agreement or disagreement with any answer. The teacher may need to practice ",["having","to have"]," a \"blank face.\" Students look to teachers ",["as","for"]," the source of correct answers. Part of building a safe learning community is to ",["shift","maintain"]," this source of knowledge to the students by ",["equipping","deprivation"]," them to defend the thinking behind their solutions."
+    ]
+  },
+  {
+    num: 22,
+    items: [
+      {no:1, opts:["slowly","rapidly"], ans:0},
+      {no:2, opts:["be familiar","unfamiliar"], ans:0},
+      {no:3, opts:["retrieve","discard"], ans:0},
+      {no:4, opts:["require","refuse"], ans:0},
+      {no:5, opts:["on the other hand","similarly"], ans:0},
+      {no:6, opts:["in a hurry","at leisure"], ans:0},
+      {no:7, opts:["direct","indirect"], ans:0},
+      {no:8, opts:["be kept","keep"], ans:0},
+      {no:9, opts:["conflict","cooperation"], ans:0},
+      {no:10, opts:["different","identical"], ans:0},
+      {no:11, opts:["separate","shared"], ans:0},
+      {no:12, opts:["be used","use"], ans:0},
+      {no:13, opts:["routed","routing"], ans:0},
+      {no:14, opts:["cross","parallel"], ans:0},
+      {no:15, opts:["concise","vague"], ans:0},
+      {no:16, opts:["desirable","unwanted"], ans:0},
+    ],
+    parts: [
+      "The usual intercity traveler moves ",["slowly","rapidly"]," through the station area. The passenger may not ",["be familiar","unfamiliar"]," with the routine, have baggage to handle and check or ",["retrieve","discard"],", have a long wait for connections or delayed trains, and may ",["require","refuse"]," information, food, and a comfortable place to sit. Commuters, ",["on the other hand","similarly"],", are familiar with the route through the station, have little or no luggage, and are usually ",["in a hurry","at leisure"],". They want ",["direct","indirect"]," access to or from local streets and transport. These two types of traffic should ",["be kept","keep"]," separate to avoid ",["conflict","cooperation"]," and confusion. In some large stations such as Grand Central Terminal in New York City, commuter and intercity trains arrive and depart on ",["different","identical"]," levels. In smaller stations, ",["separate","shared"]," platforms should ",["be used","use"]," and traffic ",["routed","routing"]," so that the two lines of movement do not ",["cross","parallel"],". In some instances, separate stations are in use. Clear and ",["concise","vague"]," direction and routing signs and other means of channelization are ",["desirable","unwanted"],"."
+    ]
+  },
+  {
+    num: 23,
+    items: [
+      {no:1, opts:["is made","makes"], ans:0},
+      {no:2, opts:["which","what"], ans:0},
+      {no:3, opts:["triggers","suppresses"], ans:0},
+      {no:4, opts:["motivation","hesitation"], ans:0},
+      {no:5, opts:["obvious","subtle"], ans:0},
+      {no:6, opts:["to brighten","brightening"], ans:0},
+      {no:7, opts:["increase","decrease"], ans:0},
+      {no:8, opts:["to provide","providing"], ans:0},
+      {no:9, opts:["subtle","dramatic"], ans:0},
+      {no:10, opts:["motivated","motivating"], ans:0},
+      {no:11, opts:["threatening","peaceful"], ans:0},
+      {no:12, opts:["be asked","ask"], ans:0},
+    ],
+    parts: [
+      "Most performance lighting ",["is made","makes"]," up of a number of different looks ",["which","what"]," we have called lighting states. Each lighting cue ",["triggers","suppresses"]," a change to a new state. Like actors, lighting cues usually need a ",["motivation","hesitation"],". This might be something very ",["obvious","subtle"]," such as a cue required ",["to brighten","brightening"]," a room setting when an actor turns on a light switch or the rapid ",["increase","decrease"]," in intensity at the end of a dance number in a traditional musical (known as a button cue). At other times we will need a cue ",["to provide","providing"]," a ",["subtle","dramatic"]," change in atmosphere over a number of minutes, ",["motivated","motivating"]," perhaps by the mention of a sunset or the intention to slowly change the feel of the performance from normal to ",["threatening","peaceful"],". The question, 'What will lighting do for this production?' needs to ",["be asked","ask"]," for each moment of the production, each dramatic unit or scene, and each transition."
+    ]
+  },
+  {
+    num: 24,
+    items: [
+      {no:1, opts:["impose","remove"], ans:0},
+      {no:2, opts:["contained","containing"], ans:0},
+      {no:3, opts:["remarkable","ordinary"], ans:0},
+      {no:4, opts:["coming","comes"], ans:0},
+      {no:5, opts:["same","different"], ans:0},
+      {no:6, opts:["what","how"], ans:0},
+      {no:7, opts:["that","what"], ans:0},
+      {no:8, opts:["But","Similarly"], ans:0},
+      {no:9, opts:["different","identical"], ans:0},
+      {no:10, opts:["cause","prevent"], ans:0},
+      {no:11, opts:["to be","being"], ans:0},
+      {no:12, opts:["dramatically","slightly"], ans:0},
+      {no:13, opts:["Also","However"], ans:0},
+      {no:14, opts:["is placed","places"], ans:0},
+      {no:15, opts:["Similarly","In contrast"], ans:0},
+      {no:16, opts:["receive","transmit"], ans:0},
+      {no:17, opts:["is moved","moves"], ans:0},
+    ],
+    parts: [
+      "Rooms have their own \"sound\" because they ",["impose","remove"]," their own characteristics on audio signals ",["contained","containing"]," within them. It's actually kind of ",["remarkable","ordinary"],". Sound such as music ",["coming","comes"]," from headphones will sound the ",["same","different"]," everywhere. No matter ",["what","how"]," acoustical environment we are in, the headphones sound the same. That's because the room is not part of ",["that","what"]," playback signal path. ",["But","Similarly"]," sound such as music from a loudspeaker will sound ",["different","identical"]," in every acoustical environment. Every room where you set up the loudspeaker will ",["cause","prevent"]," the sound you hear ",["to be","being"]," different — sometimes ",["dramatically","slightly"]," different; that is because the room is now part of the signal path. ",["Also","However"],", in the same room, the loudspeaker will sound different when it ",["is placed","places"]," in different locations in the room and it will sound different as you move around the room. ",["Similarly","In contrast"],", when you are recording a musical instrument, the sound you ",["receive","transmit"]," at the microphone will be different in every room and the recorded sound will sound different as the instrument or the microphone ",["is moved","moves"],"."
+    ]
+  },
+  {
+    num: 29,
+    items: [
+      {no:1, opts:["invent","inventing"], ans:0},
+      {no:2, opts:["apprentice","expertise"], ans:0},
+      {no:3, opts:["did","were"], ans:0},
+      {no:4, opts:["made","making"], ans:0},
+      {no:5, opts:["But","So"], ans:0},
+      {no:6, opts:["no more than","at least"], ans:0},
+      {no:7, opts:["were still made","still made"], ans:0},
+      {no:8, opts:["led","leading"], ans:0},
+      {no:9, opts:["improvements","decline"], ans:0},
+      {no:10, opts:["efficiency","waste"], ans:0},
+      {no:11, opts:["where","which"], ans:0},
+      {no:12, opts:["which","what"], ans:0},
+      {no:13, opts:["to be","being"], ans:0},
+    ],
+    parts: [
+      "The Industrial Revolution did more than just ",["invent","inventing"]," new materials or machines. It invented a new process for manufacturing: the modern factory. Prior to around 1850, most piano shops used an ",["apprentice","expertise"]," system in which a master builder taught younger workers the skills of the trade, usually over the course of many years. The larger piano shops ",["did","were"]," have specialists — for example, one person who specialized in soundboards, another who ",["made","making"]," hammers, and so on. ",["But","So"]," even the largest piano makers of that time produced ",["no more than","at least"]," 5-10 pianos per year per worker, as pianos ",["were still made","still made"]," essentially one at a time. The development of a true piano factory occurred first in the United States, ",["led","leading"]," by Jonas Chickering in Boston and later the Steinway family in New York City. These factories led to ",["improvements","decline"]," in both ",["efficiency","waste"]," and quality. For example, one of the factories of the time had its own iron casting facility ",["where","which"]," it made its metal plates, ",["which","what"]," were thought ",["to be","being"]," the best available."
+    ]
+  },
+  {
+    num: 30,
+    items: [
+      {no:1, opts:["significant","trivial"], ans:0},
+      {no:2, opts:["researching","to research"], ans:0},
+      {no:3, opts:["thorough","superficial"], ans:0},
+      {no:4, opts:["narrowing","broadening"], ans:0},
+      {no:5, opts:["absorbed","absorbing"], ans:0},
+      {no:6, opts:["less","more"], ans:0},
+      {no:7, opts:["Consequently","However"], ans:0},
+      {no:8, opts:["limit","expand"], ans:0},
+      {no:9, opts:["developed","developing"], ans:0},
+      {no:10, opts:["hindering","facilitating"], ans:0},
+      {no:11, opts:["recognised","ignored"], ans:0},
+      {no:12, opts:["structured","random"], ans:0},
+      {no:13, opts:["combine","separate"], ans:0},
+      {no:14, opts:["incorporating","excluding"], ans:0},
+      {no:15, opts:["to provide","providing"], ans:0},
+      {no:16, opts:["broader","narrower"], ans:0},
+      {no:17, opts:["beyond","within"], ans:0},
+    ],
+    parts: [
+      "In a thesis-based doctoral programme, students typically spend a ",["significant","trivial"]," amount of time and effort ",["researching","to research"]," a specific topic. While this deep dive into a particular area allows for ",["thorough","superficial"]," exploration and understanding, it can also result in ",["narrowing","broadening"]," the focus. As students become deeply ",["absorbed","absorbing"]," in their research, they may spend ",["less","more"]," time exploring related fields or acquiring skills outside their immediate area of study. ",["Consequently","However"],", this singular focus may ",["limit","expand"]," the breadth of knowledge and skills ",["developed","developing"]," during the programme, potentially ",["hindering","facilitating"]," students' ability to adapt to diverse career paths or address interdisciplinary challenges. Some universities in Europe have ",["recognised","ignored"]," the limitations of traditional thesis-based doctoral programmes and have started to implement more ",["structured","random"]," approaches. These structured programmes often ",["combine","separate"]," research with coursework and training in transferable skills. By ",["incorporating","excluding"]," coursework, seminars, workshops and internships into the curriculum, they aim ",["to provide","providing"]," students with a ",["broader","narrower"]," skill set and better prepare them for a variety of career paths ",["beyond","within"]," academia."
+    ]
+  },
+  {
+    num: 31,
+    items: [
+      {no:1, opts:["come","coming"], ans:0},
+      {no:2, opts:["especially","specially"], ans:0},
+      {no:3, opts:["even though","because"], ans:0},
+      {no:4, opts:["empty","full"], ans:0},
+      {no:5, opts:["However","Therefore"], ans:0},
+      {no:6, opts:["disrupt","facilitate"], ans:0},
+      {no:7, opts:["even though","as"], ans:0},
+      {no:8, opts:["enough","insufficient"], ans:0},
+      {no:9, opts:["refuse","accept"], ans:0},
+      {no:10, opts:["difficult","easy"], ans:0},
+      {no:11, opts:["displaying","to display"], ans:0},
+      {no:12, opts:["are asked","ask"], ans:0},
+      {no:13, opts:["were shown","showed"], ans:0},
+      {no:14, opts:["that","what"], ans:0},
+      {no:15, opts:["However","Consequently"], ans:0},
+      {no:16, opts:["were left","left"], ans:0},
+      {no:17, opts:["exhibited","inhibited"], ans:0},
+    ],
+    parts: [
+      "Research shows that, by age three, children understand that imaginary objects do not ",["come","coming"]," to life. This is ",["especially","specially"]," clear with respect to everyday objects — children know that ",["even though","because"]," they imagine a pencil in an empty box, the box will remain ",["empty","full"],". ",["However","Therefore"],", emotion can sometimes ",["disrupt","facilitate"]," this understanding, or at least its expression. That is, ",["even though","as"]," a child knows that monsters are not real, the thought of a monster under a bed might be ",["enough","insufficient"]," to make a child ",["refuse","accept"]," to go into his room at night. Indeed, research shows that children have a more ",["difficult","easy"]," time ",["displaying","to display"]," their understanding of the causal relations between imagination and reality when they ",["are asked","ask"]," to pretend or imagine scary things, like monsters. In one study, preschool children ",["were shown","showed"]," an empty box and were asked to imagine a monster inside. All children agreed ",["that","what"]," the box was empty. ",["However","Consequently"],", when they ",["were left","left"]," alone with the box they ",["exhibited","inhibited"]," fear and avoidance of it."
+    ]
+  },
+  {
+    num: 32,
+    items: [
+      {no:1, opts:["emerge","be emerged"], ans:0},
+      {no:2, opts:["is","are"], ans:0},
+      {no:3, opts:["gratification","gratitude"], ans:0},
+      {no:4, opts:["has long been recognized","has long recognized"], ans:0},
+      {no:5, opts:["degraded","upgraded"], ans:0},
+      {no:6, opts:["valued","ignoring"], ans:0},
+      {no:7, opts:["those","that"], ans:0},
+      {no:8, opts:["has also been recognized","has also recognized"], ans:0},
+      {no:9, opts:["convenient","inconvenient"], ans:0},
+      {no:10, opts:["to locate","locating"], ans:0},
+      {no:11, opts:["against","for"], ans:0},
+      {no:12, opts:["basing","base"], ans:0},
+      {no:13, opts:["internalized","internalizing"], ans:0},
+      {no:14, opts:["interpenetration","isolation"], ans:0},
+      {no:15, opts:["Further","However"], ans:0},
+      {no:16, opts:["clarified","clarify"], ans:0},
+      {no:17, opts:["belong","belongs"], ans:0},
+    ],
+    parts: [
+      "Perhaps the best-known development to ",["emerge","be emerged"]," from the liberation and expansion of aesthetic experience ",["is","are"]," the aesthetics of everyday life. Although there is presently a flowering of work on everyday aesthetics, the possibility of aesthetic ",["gratification","gratitude"]," in ordinary objects and events ",["has long been recognized","has long recognized"],", even if ",["degraded","upgraded"]," and dismissed by prevalent philosophical theory. Widely ",["valued","ignoring"]," by poets, especially Romantic poets and ",["those","that"]," in Asian traditions, the aesthetic in everyday situations ",["has also been recognized","has also recognized"]," by novelists. It may be most ",["convenient","inconvenient"],", though, ",["to locate","locating"]," its contemporary intellectual origins in John Dewey's Art as Experience. In that book Dewey argued ",["against","for"]," the separation of art from life by ",["basing","base"]," aesthetic experience on the biological and cultural conditions of human life. He located the aesthetic, not in an ",["internalized","internalizing"]," awareness of sensation and feeling but in \"a complete ",["interpenetration","isolation"]," of self and the world of objects and events.\" ",["Further","However"],", Dewey maintained that \"the aesthetic is the ",["clarified","clarify"]," and intensified development of traits that ",["belong","belongs"]," to every normally complete experience.\""
+    ]
+  },
+  {
+    num: 33,
+    items: [
+      {no:1, opts:["superior","inferior"], ans:0},
+      {no:2, opts:["lack","have"], ans:0},
+      {no:3, opts:["capacities","capabilities"], ans:0},
+      {no:4, opts:["that","what"], ans:0},
+      {no:5, opts:["concerned","concerning"], ans:0},
+      {no:6, opts:["have","has"], ans:0},
+      {no:7, opts:["be said","say"], ans:0},
+      {no:8, opts:["be judged","judge"], ans:0},
+      {no:9, opts:["must","cannot"], ans:0},
+      {no:10, opts:["are based","base"], ans:0},
+      {no:11, opts:["merits","demerits"], ans:0},
+      {no:12, opts:["being judged","judging"], ans:0},
+      {no:13, opts:["ones","those"], ans:0},
+      {no:14, opts:["ones","those"], ans:0},
+      {no:15, opts:["correctly","correct"], ans:0},
+      {no:16, opts:["are applied","apply"], ans:0},
+      {no:17, opts:["greater","lesser"], ans:0},
+      {no:18, opts:["therefore","however"], ans:0},
+      {no:19, opts:["however","similarly"], ans:0},
+      {no:20, opts:["were","had been"], ans:0},
+      {no:21, opts:["are not","do"], ans:0},
+    ],
+    parts: [
+      "One cannot validly argue that humans are morally ",["superior","inferior"]," beings on the ground that they possess, while others ",["lack","have"],", the ",["capacities","capabilities"]," of a moral agent. The reason is ",["that","what"],", as far as moral standards are ",["concerned","concerning"],", only beings that ",["have","has"]," the capacities of a moral agent can meaningfully ",["be said","say"]," to be either morally good or morally bad. Only moral agents can ",["be judged","judge"]," to be morally better or worse than others, and the others in question ",["must","cannot"]," be moral agents themselves. Judgments of moral superiority ",["are based","base"]," on the comparative ",["merits","demerits"]," or deficiencies of the entities ",["being judged","judging"],", and these merits and deficiencies are all moral ",["ones","those"],", that is, ",["ones","those"]," determined by moral standards. One entity is ",["correctly","correct"]," judged morally superior to another if it is the case that, when valid moral standards ",["are applied","apply"]," to both entities, the first fulfills them to a ",["greater","lesser"]," degree than the second. Both entities, ",["therefore","however"],", must fall within the range of application of moral standards. This would not be the case, ",["however","similarly"],", if humans ",["were","had been"]," being judged superior to animals and plants, since the latter ",["are not","do"]," moral agents."
+    ]
+  },
+  {
+    num: 34,
+    items: [
+      {no:1, opts:["produce","producing"], ans:0},
+      {no:2, opts:["that","which"], ans:0},
+      {no:3, opts:["because","because of"], ans:0},
+      {no:4, opts:["be interpreted","interpret"], ans:0},
+      {no:5, opts:["reinforcing","undermining"], ans:0},
+      {no:6, opts:["that","which"], ans:0},
+      {no:7, opts:["might","is"], ans:0},
+      {no:8, opts:["However","Therefore"], ans:0},
+      {no:9, opts:["flagged","flagging"], ans:0},
+      {no:10, opts:["are","is"], ans:0},
+      {no:11, opts:["significant","trivial"], ans:0},
+      {no:12, opts:["absence","presence"], ans:0},
+      {no:13, opts:["meaningful","meaningless"], ans:0},
+      {no:14, opts:["Yet","Thus"], ans:0},
+      {no:15, opts:["presented","presenting"], ans:0},
+      {no:16, opts:["equivalent","equivocal"], ans:0},
+      {no:17, opts:["indicate","indicates"], ans:0},
+    ],
+    parts: [
+      "Such artificial 'pause fillers' as machine-generated supplements for silence may help ",["produce","producing"]," a more natural-sounding cadence in machine-generated speech patterns and so help convince the AI's human interlocutors ",["that","which"]," they are engaging with another human. AI's 'humanity' of silence emerges in these contexts not least ",["because","because of"]," a short period of silence is likely to ",["be interpreted","interpret"]," as a 'pause for thought', therefore ",["reinforcing","undermining"]," the illusion ",["that","which"]," the machine is 'thinking' before responding, just as a human ",["might","is"],". ",["However","Therefore"],", the technical issues ",["flagged","flagging"]," in AI's poor handling of higher duration and frequency silences, no less than the machine inference that silence can be filled with relevant sounds in some conversational situations, ",["are","is"]," both ",["significant","trivial"],". In this context at least, the AI may be starting to recognise silence not as an ",["absence","presence"]," but as ",["meaningful","meaningless"]," data. ",["Yet","Thus"]," the AI's confusion when ",["presented","presenting"]," with substantial silences, and its understanding that short break tags are ",["equivalent","equivocal"]," to vocal markers such as 'uh's' and 'ah's' ",["indicate","indicates"]," the AI's continuing preferences for sound over silence, for presence over absence."
+    ]
+  },
+  {
+    num: 35,
+    items: [
+      {no:1, opts:["exact","exacting"], ans:0},
+      {no:2, opts:["did not","was not"], ans:0},
+      {no:3, opts:["evident","accidental"], ans:0},
+      {no:4, opts:["those","that"], ans:0},
+      {no:5, opts:["was copied","copied"], ans:0},
+      {no:6, opts:["that","which"], ans:0},
+      {no:7, opts:["which","what"], ans:0},
+      {no:8, opts:["authentic","authoritative"], ans:0},
+      {no:9, opts:["In contrast","Similarly"], ans:0},
+      {no:10, opts:["were fixed","fixed"], ans:0},
+      {no:11, opts:["distributed","attributed"], ans:0},
+      {no:12, opts:["were written","wrote"], ans:0},
+      {no:13, opts:["So","But"], ans:0},
+      {no:14, opts:["certainty","certitude"], ans:0},
+      {no:15, opts:["improvement","decline"], ans:0},
+    ],
+    parts: [
+      "Standardization of information was an effect of printing; since it allowed ",["exact","exacting"]," reproduction of information in a way that manuscript copying ",["did not","was not"],". This is ",["evident","accidental"]," in the contrast between the travel logs of Marco Polo and ",["those","that"]," of Christopher Columbus. After his return from China in 1295, a century and a half before printing, Polo's narrative ",["was copied","copied"]," in about 150 different manuscripts, with so many differences ",["that","which"]," we're not sure ",["which","what"]," version is ",["authentic","authoritative"],". ",["In contrast","Similarly"],", there is only one version of Christopher Columbus's letters about the exploration of the Caribbean in the 1490s, since they ",["were fixed","fixed"]," in printed form and widely ",["distributed","attributed"]," at the time they ",["were written","wrote"],". ",["So","But"]," the ",["certainty","certitude"]," of accuracy was a way that printing was an ",["improvement","decline"]," over the old oral-manuscript culture."
+    ]
+  },
+  {
+    num: 36,
+    items: [
+      {no:1, opts:["were being cultivated","were cultivating"], ans:0},
+      {no:2, opts:["productivity","production"], ans:0},
+      {no:3, opts:["reducing","increasing"], ans:0},
+      {no:4, opts:["However","Therefore"], ans:0},
+      {no:5, opts:["which","that"], ans:0},
+      {no:6, opts:["to rise","rise"], ans:0},
+      {no:7, opts:["Despite","Because of"], ans:0},
+      {no:8, opts:["small","large"], ans:0},
+      {no:9, opts:["suitable","flexible"], ans:0},
+      {no:10, opts:["influence","influence on"], ans:0},
+      {no:11, opts:["used","using"], ans:0},
+      {no:12, opts:["has been declining","has been increasing"], ans:0},
+      {no:13, opts:["was","were"], ans:0},
+    ],
+    parts: [
+      "Archaeological evidence suggests that various crops ",["were being cultivated","were cultivating"]," as early as 9500 BC in the Levant. Over the millennia, continuous innovations have boosted agricultural ",["productivity","production"]," while ",["reducing","increasing"]," manual labor. ",["However","Therefore"],", the growing global population will always demand more food. It is projected that by 2050, the world's population will increase to 9.7 billion, ",["which","that"]," will require global food production ",["to rise","rise"]," by at least 70% to meet demand. ",["Despite","Because of"]," this need, only a ",["small","large"]," portion of the Earth's surface is ",["suitable","flexible"]," for farming due to limitations such as climate, topography, soil quality, and technology. Political and economic factors, including land ownership patterns, environmental laws, and population density, also ",["influence","influence on"]," agricultural land use. In fact, the amount of land ",["used","using"]," for agriculture ",["has been declining","has been increasing"],". In 2013, around 18.6 million square miles ",["was","were"]," used for food production, compared to 19.5 million square miles in 1991."
+    ]
+  },
+  {
+    num: 37,
+    items: [
+      {no:1, opts:["confident","confidential"], ans:0},
+      {no:2, opts:["defining","confining"], ans:0},
+      {no:3, opts:["discovered","concealed"], ans:0},
+      {no:4, opts:["some","all"], ans:0},
+      {no:5, opts:["that","which"], ans:0},
+      {no:6, opts:["is","are"], ans:0},
+      {no:7, opts:["based","basing"], ans:0},
+      {no:8, opts:["core","peripheral"], ans:0},
+      {no:9, opts:["By contrast","Likewise"], ans:0},
+      {no:10, opts:["built","building"], ans:0},
+      {no:11, opts:["what","which"], ans:0},
+      {no:12, opts:["expressed","expressing"], ans:0},
+      {no:13, opts:["what","that"], ans:0},
+      {no:14, opts:["modifying","maintaining"], ans:0},
+    ],
+    parts: [
+      "If you are going to compare languages, it helps to start with something that you are ",["confident","confidential"]," you can find in all languages. Take for example signs or words for mother and father. If we add other family relationships to this category — son, grandmother, aunt, brother-in-law, cousin — we are ",["defining","confining"]," the category of kinship terminology. Comparative typological studies of kinship terminology have ",["discovered","concealed"]," that languages have labels for ",["some","all"]," but not all family relationships. And the probability ",["that","which"]," a specific kin relationship has a label ",["is","are"]," predictable ",["based","basing"]," on the other kinship terms in the language. For example, all languages have a ",["core","peripheral"]," set of kinship terms — like mother and father. ",["By contrast","Likewise"],", terms for less central category members are often ",["built","building"]," up from the core terms — like mother-in-law and step-father. If we compare languages across the world, we can ask ",["what","which"]," kinship relationships are typically ",["expressed","expressing"]," with core terminology, and ",["what","that"]," relationships are expressed by ",["modifying","maintaining"]," the core terminology."
+    ]
+  },
+  {
+    num: 38,
+    items: [
+      {no:1, opts:["that","which"], ans:0},
+      {no:2, opts:["emitted","omitted"], ans:0},
+      {no:3, opts:["fictional","factual"], ans:0},
+      {no:4, opts:["pretending","pretended"], ans:0},
+      {no:5, opts:["sufficient","deficient"], ans:0},
+      {no:6, opts:["fictionally","factually"], ans:0},
+      {no:7, opts:["approaching","retreating"], ans:0},
+      {no:8, opts:["insufficient","sufficient"], ans:0},
+      {no:9, opts:["however","therefore"], ans:0},
+      {no:10, opts:["what","that"], ans:0},
+      {no:11, opts:["out of","into"], ans:0},
+      {no:12, opts:["need","refuse"], ans:0},
+      {no:13, opts:["to avoid","avoiding"], ans:0},
+      {no:14, opts:["who","whom"], ans:0},
+      {no:15, opts:["which","what"], ans:0},
+    ],
+    parts: [
+      "There are several ways ",["that","which"]," participants in a make-believe can communicate things about the fictional world to other participants. Sometimes these messages are ",["emitted","omitted"]," naturally as a result of full participation in the fictional world — i.e., something said or done by a player while in character communicates some things that are ",["fictional","factual"]," of that world. For example, a child ",["pretending","pretended"]," to be Peter Pan might gasp and draw a plastic knife. This might be ",["sufficient","deficient"]," to communicate that ",["fictionally","factually"]," one of Peter's enemies, such as Captain Hook, is ",["approaching","retreating"],". These in-character behaviors can be ",["insufficient","sufficient"],", ",["however","therefore"],", to maintain the necessary amount of common ground about ",["what","that"]," is fictional in the world of the make-believe. At these times participants often come at least partly ",["out of","into"]," character to give other participants the information they ",["need","refuse"],". For example, it would be important ",["to avoid","avoiding"]," confusion about ",["who","whom"]," is playing ",["which","what"]," character: \"No, you're Captain Hook, and I'm Peter Pan!\""
+    ]
+  },
+  {
+    num: 39,
+    items: [
+      {no:1, opts:["where","which"], ans:0},
+      {no:2, opts:["uniformly","enormously"], ans:0},
+      {no:3, opts:["Therefore","Nevertheless"], ans:0},
+      {no:4, opts:["reflects","rejects"], ans:0},
+      {no:5, opts:["bias","basis"], ans:0},
+      {no:6, opts:["constant","instant"], ans:0},
+      {no:7, opts:["those","that"], ans:0},
+      {no:8, opts:["large","largely"], ans:0},
+      {no:9, opts:["But","So"], ans:0},
+      {no:10, opts:["trivial","vital"], ans:0},
+      {no:11, opts:["controlled","controlling"], ans:0},
+      {no:12, opts:["rapidly","slow"], ans:0},
+      {no:13, opts:["generated","generating"], ans:0},
+      {no:14, opts:["enormous","tiny"], ans:0},
+    ],
+    parts: [
+      "Our intuition about states of matter comes from our experience on Earth's surface, ",["where","which"]," the pressure is ",["uniformly","enormously"]," low and variations in temperature cause changes in the state of matter from solid to liquid to gas. ",["Therefore","Nevertheless"],", when we think of melting or boiling or the creation of plasma, we intuitively assume it ",["reflects","rejects"]," an increase in temperature. This ",["bias","basis"]," comes from the fact that we live in a very ",["constant","instant"]," pressure environment. Even small changes in pressure, such as ",["those","that"]," we experience when under water or on high mountaintops, can have very ",["large","largely"]," effects on our metabolism. ",["But","So"]," the pressure changes we experience are ",["trivial","vital"]," compared to the pressure range of the overall planetary environment. Since pressure is ",["controlled","controlling"]," by the weight of overlying material, pressures increase ",["rapidly","slow"]," with depth. Imagine the pressures ",["generated","generating"]," by the weight of rock a mile thick! For this reason a planet's pressure ranges are ",["enormous","tiny"]," — from essentially zero pressure in space to pressures of millions of atmospheres in planetary interiors."
+    ]
+  },
+  {
+    num: 40,
+    items: [
+      {no:1, opts:["possible","impossible"], ans:0},
+      {no:2, opts:["worse","better"], ans:0},
+      {no:3, opts:["convincing","convinced"], ans:0},
+      {no:4, opts:["Thus","However"], ans:0},
+      {no:5, opts:["doing","to do"], ans:0},
+      {no:6, opts:["ones","those"], ans:0},
+      {no:7, opts:["followed","following"], ans:0},
+      {no:8, opts:["find","finds"], ans:0},
+      {no:9, opts:["eliminate","maintain"], ans:0},
+      {no:10, opts:["until","while"], ans:0},
+      {no:11, opts:["optimize","optional"], ans:0},
+      {no:12, opts:["would the researcher","the researcher would"], ans:0},
+      {no:13, opts:["using","used"], ans:0},
+    ],
+    parts: [
+      "When self-experimentation and conventional experiments are both ",["possible","impossible"],", the difference between them often resembles the difference between learning and showing: Self-experiments are better for discovery but ",["worse","better"]," for ",["convincing","convinced"]," others that the solution is helpful or the answer is correct. Of course, most scientists want to do both — discover something and convince others of their discovery. ",["Thus","However"],", psychologists should consider ",["doing","to do"]," both self-experiments and conventional ",["ones","those"],". The best use of resources may often be self-experiments ",["followed","following"]," by conventional ones. The researcher begins with self-experiments that, if all goes well, ",["find","finds"]," large effects and / or generate and ",["eliminate","maintain"]," many hypotheses. This exploratory and theory-building phase lasts ",["until","while"]," a convenient solution or large effect is found. Then the researcher uses self-experiments to find the procedural parameters (e.g., duration, time of day, intensity) that ",["optimize","optional"]," the solution or maximize the effect. Only then ",["would the researcher","the researcher would"]," begin conventional experiments, ",["using","used"]," the optimized parameters."
+    ]
+  },
+];
+
+// ============================================================
+// STATE
+// ============================================================
+// state[qIdx][itemIdx] = null | 'correct' | 'wrong'
+const state = questions.map(q => q.items.map(() => null));
+
+let totalItems = 0;
+let answeredCount = 0;
+let correctCount = 0;
+questions.forEach(q => { totalItems += q.items.length; });
+
+// ============================================================
+// RENDER
+// ============================================================
+function buildPassage(q) {
+  // Build a map: itemNo -> itemIdx
+  const noToIdx = {};
+  q.items.forEach((item, idx) => { noToIdx[item.no] = idx; });
+
+  // Track which choice-group index we're on as we walk through parts
+  let cgCounter = 0;
+  let html = '<div class="passage">';
+
+  q.parts.forEach(part => {
+    if (typeof part === 'string') {
+      html += escapeHtml(part);
+    } else {
+      // It's a [opt0, opt1] array
+      const itemIdx = cgCounter;
+      const item = q.items[itemIdx];
+      const qIdx = questions.indexOf(q);
+      html += `<span class="choice-group" id="cg-${qIdx}-${itemIdx}">`;
+      html += `<span class="sep">(${item.no})</span>`;
+      item.opts.forEach((opt, optIdx) => {
+        html += `<button class="choice-btn" onclick="handleClick(${qIdx},${itemIdx},${optIdx})" id="cb-${qIdx}-${itemIdx}-${optIdx}">${escapeHtml(opt)}</button>`;
+        if (optIdx < item.opts.length - 1) {
+          html += `<span class="sep">/</span>`;
+        }
+      });
+      html += `</span>`;
+      cgCounter++;
+    }
+  });
+
+  html += '</div>';
+  return html;
+}
+
+function escapeHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function render() {
+  const main = document.getElementById('main');
+  main.innerHTML = '';
+
+  questions.forEach((q, qIdx) => {
+    const card = document.createElement('div');
+    card.className = 'q-card';
+    card.id = `qcard-${qIdx}`;
+
+    const header = document.createElement('div');
+    header.className = 'q-header';
+    header.innerHTML = `<div class="q-num">${q.num}</div><div class="q-status" id="qstatus-${qIdx}"></div>`;
+    card.appendChild(header);
+
+    card.insertAdjacentHTML('beforeend', buildPassage(q));
+    main.appendChild(card);
+  });
+
+  updateProgress();
+}
+
+// ============================================================
+// INTERACTION
+// ============================================================
+function handleClick(qIdx, itemIdx, optIdx) {
+  // Already answered?
+  if (state[qIdx][itemIdx] !== null) return;
+
+  const q = questions[qIdx];
+  const item = q.items[itemIdx];
+  const isCorrect = optIdx === item.ans;
+
+  state[qIdx][itemIdx] = isCorrect ? 'correct' : 'wrong';
+  answeredCount++;
+  if (isCorrect) correctCount++;
+
+  // Update buttons
+  const btn = document.getElementById(`cb-${qIdx}-${itemIdx}-${optIdx}`);
+  btn.classList.add(isCorrect ? 'correct' : 'wrong');
+  btn.disabled = true;
+
+  if (!isCorrect) {
+    // Reveal correct answer
+    const correctBtn = document.getElementById(`cb-${qIdx}-${itemIdx}-${item.ans}`);
+    correctBtn.classList.add('reveal-correct');
+    correctBtn.disabled = true;
+  } else {
+    // Disable other button too
+    item.opts.forEach((_, oi) => {
+      if (oi !== optIdx) {
+        const ob = document.getElementById(`cb-${qIdx}-${itemIdx}-${oi}`);
+        ob.disabled = true;
+      }
+    });
+  }
+
+  // Disable wrong button's sibling too
+  const cg = document.getElementById(`cg-${qIdx}-${itemIdx}`);
+  cg.classList.add('answered');
+
+  // Update question status
+  updateQStatus(qIdx);
+  updateProgress();
+
+  // Check if all done
+  if (answeredCount === totalItems) {
+    showSummary();
+  }
+}
+
+function updateQStatus(qIdx) {
+  const q = questions[qIdx];
+  const s = state[qIdx];
+  const answered = s.filter(x => x !== null).length;
+  const total = q.items.length;
+  const wrongs = s.filter(x => x === 'wrong').length;
+  const statusEl = document.getElementById(`qstatus-${qIdx}`);
+
+  if (answered === 0) {
+    statusEl.className = 'q-status';
+    statusEl.textContent = '';
+    return;
+  }
+  statusEl.classList.add('show');
+  if (wrongs > 0) {
+    statusEl.className = 'q-status show has-wrong';
+    statusEl.textContent = `${answered}/${total} · 오답 ${wrongs}개`;
+  } else if (answered === total) {
+    statusEl.className = 'q-status show done-all';
+    statusEl.textContent = `✓ 완료 · 전체정답!`;
+  } else {
+    statusEl.className = 'q-status show done-all';
+    statusEl.textContent = `${answered}/${total} · 정답 중`;
+  }
+}
+
+function updateProgress() {
+  const pct = totalItems > 0 ? (answeredCount / totalItems * 100) : 0;
+  document.getElementById('progressBar').style.width = pct + '%';
+  document.getElementById('progressText').textContent = `${answeredCount} / ${totalItems}`;
+  document.getElementById('scoreBadge').textContent = `✓ ${correctCount}`;
+}
+
+// ============================================================
+// SUMMARY
+// ============================================================
+function showSummary() {
+  const pct = Math.round(correctCount / totalItems * 100);
+  let msg = '';
+  if (pct === 100) msg = '🎉 완벽합니다! 모든 문항을 맞혔어요!';
+  else if (pct >= 80) msg = '👍 훌륭해요! 조금만 더 다듬어 보세요.';
+  else if (pct >= 60) msg = '📖 잘 했어요! 틀린 문항을 다시 확인해 보세요.';
+  else msg = '💪 다시 한 번 도전해 보세요!';
+
+  const summary = document.createElement('div');
+  summary.className = 'summary show';
+  summary.innerHTML = `
+    <div class="summary-title">결과 <span>확인</span></div>
+    <div class="summary-score">${correctCount}<span style="font-size:1.6rem;color:rgba(255,255,255,0.4)"> / ${totalItems}</span></div>
+    <div class="summary-sub">정답률 ${pct}%</div>
+    <div class="summary-msg">${msg}</div>
+    <button class="btn-retry" onclick="location.reload()">🔄 다시 풀기</button>
+  `;
+  document.getElementById('main').appendChild(summary);
+  const note = document.createElement('p');
+  note.className = 'capture-note';
+  note.textContent = '📸 결과를 캡처해서 선생님께 제출해 주세요!';
+  document.getElementById('main').appendChild(note);
+}
+
+// ============================================================
+// INIT
+// ============================================================
+render();
+</script>
+</body>
+</html>
