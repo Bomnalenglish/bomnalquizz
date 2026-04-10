@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>고운고 2학년 – 영어I Lesson 1 어법 선택형</title>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Serif+KR:wght@400;600&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#f4f0f8;--card:#fff;--ink:#1e1a2e;--soft:#6a6078;
+  --accent:#6a3d9e;--accent2:#c05a2a;
+  --correct:#2e7d52;--wrong:#c0392b;--border:#ddd5ee;
+}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;}
+
+header{background:var(--ink);color:#fff;padding:44px 24px 36px;text-align:center;position:relative;overflow:hidden;}
+header::before{content:'';position:absolute;top:-60px;right:-60px;width:220px;height:220px;border-radius:50%;border:2px solid rgba(106,61,158,0.3);}
+header::after{content:'';position:absolute;bottom:-40px;left:-40px;width:160px;height:160px;border-radius:50%;border:2px solid rgba(192,90,42,0.2);}
+.header-tag{display:inline-block;font-size:0.72rem;font-weight:500;letter-spacing:3px;color:#c4a0f0;border:1px solid #c4a0f0;border-radius:2px;padding:4px 12px;margin-bottom:14px;}
+header h1{font-family:'Black Han Sans',sans-serif;font-size:clamp(1.5rem,5vw,2.4rem);color:#fff;line-height:1.25;}
+header h1 span{color:#c4a0f0;}
+.header-sub{font-family:'Noto Serif KR',serif;font-size:0.88rem;color:rgba(255,255,255,0.5);margin-top:10px;letter-spacing:1px;}
+
+.progress-wrap{background:#fff;border-bottom:1px solid var(--border);padding:12px 20px;display:flex;align-items:center;gap:14px;position:sticky;top:0;z-index:100;}
+.progress-bar-outer{flex:1;height:6px;background:var(--border);border-radius:3px;overflow:hidden;}
+.progress-bar-inner{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:3px;width:0%;transition:width 0.4s ease;}
+.progress-text{font-size:0.78rem;font-weight:700;color:var(--soft);white-space:nowrap;}
+.score-badge{font-size:0.78rem;font-weight:700;background:var(--ink);color:#fff;border-radius:20px;padding:4px 12px;white-space:nowrap;}
+
+main{max-width:820px;margin:0 auto;padding:36px 20px 80px;}
+
+.section-label{font-family:'Black Han Sans',sans-serif;font-size:1rem;margin:32px 0 14px;padding:8px 16px;background:var(--ink);color:#fff;border-radius:8px;display:inline-block;letter-spacing:1px;}
+
+.q-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px 24px 24px;margin-bottom:20px;box-shadow:0 2px 10px rgba(0,0,0,0.04);animation:fadeUp 0.4s ease both;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+
+.q-header{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+.q-num{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:var(--ink);color:#fff;border-radius:7px;font-family:'Black Han Sans',sans-serif;font-size:0.95rem;flex-shrink:0;}
+.q-ko{font-family:'Noto Serif KR',serif;font-size:0.82rem;color:var(--soft);line-height:1.6;flex:1;}
+.q-status{font-size:0.72rem;font-weight:700;padding:3px 10px;border-radius:20px;opacity:0;transition:opacity 0.3s;white-space:nowrap;}
+.q-status.show{opacity:1;}
+.q-status.all-ok{background:#e8f5ee;color:var(--correct);}
+.q-status.has-err{background:#fdecea;color:var(--wrong);}
+
+.passage{font-family:'Noto Serif KR',serif;font-size:0.92rem;line-height:2.2;color:var(--ink);word-break:keep-all;}
+
+.choice-group{display:inline-flex;align-items:center;gap:1px;vertical-align:middle;border:1.5px solid var(--border);border-radius:6px;overflow:hidden;font-family:'Noto Sans KR',sans-serif;font-size:0.8rem;font-weight:600;margin:0 2px;transition:border-color 0.2s;}
+.choice-group.answered{border-color:transparent;}
+.choice-btn{background:none;border:none;padding:3px 8px;cursor:pointer;font-family:inherit;font-size:inherit;font-weight:600;color:var(--ink);transition:background 0.15s,color 0.15s;line-height:1.5;}
+.choice-btn:hover:not(:disabled){background:var(--ink);color:#fff;}
+.choice-btn.correct{background:var(--correct);color:#fff;cursor:default;}
+.choice-btn.wrong{background:var(--wrong);color:#fff;cursor:default;text-decoration:line-through;opacity:0.7;}
+.choice-btn.reveal-correct{background:var(--correct);color:#fff;cursor:default;}
+.choice-btn:disabled{cursor:default;}
+.sep{font-size:0.72rem;color:#bbb;padding:0 1px;pointer-events:none;font-weight:400;}
+
+.summary{background:var(--ink);color:#fff;border-radius:16px;padding:40px 32px;text-align:center;margin-top:24px;display:none;animation:fadeUp 0.5s ease both;}
+.summary.show{display:block;}
+.summary-title{font-family:'Black Han Sans',sans-serif;font-size:1.7rem;margin-bottom:6px;}
+.summary-title span{color:#c4a0f0;}
+.summary-score{font-size:3rem;font-weight:700;color:#c4a0f0;font-family:'Black Han Sans',sans-serif;margin:16px 0 6px;}
+.summary-sub{font-size:0.88rem;color:rgba(255,255,255,0.5);margin-bottom:24px;}
+.summary-msg{font-size:1rem;color:rgba(255,255,255,0.8);margin-bottom:28px;}
+.btn-retry{display:inline-block;background:var(--accent);color:#fff;border:none;border-radius:8px;padding:11px 32px;font-family:'Black Han Sans',sans-serif;font-size:1rem;cursor:pointer;letter-spacing:1px;transition:opacity 0.2s;}
+.btn-retry:hover{opacity:0.85;}
+.capture-note{margin-top:14px;text-align:center;font-size:0.84rem;color:var(--soft);font-family:'Noto Serif KR',serif;}
+</style>
+</head>
+<body>
+<header>
+  <div class="header-tag">고운고 2학년 · YBM 박준언 영어I</div>
+  <h1>Lesson 1 <span>어법 선택형</span></h1>
+  <p class="header-sub">교과서 본문 1~41번 + 본문 외 지문 1~12번</p>
+</header>
+<div class="progress-wrap">
+  <div class="progress-bar-outer"><div class="progress-bar-inner" id="progressBar"></div></div>
+  <div class="progress-text" id="progressText">0 / 0</div>
+  <div class="score-badge" id="scoreBadge">✓ 0</div>
+</div>
+<main id="main"></main>
+
+<script>
+// ============================================================
+// DATA — 답안지 기준으로 정확히 검증 (0=왼쪽, 1=오른쪽)
+// ============================================================
+const SECTIONS = [
+  {
+    label: '📘 교과서 본문',
+    qs: [
+      { no:1,  ko:'당신은 세계 인구 10명 중 1명이 왼손잡이라는 사실을 알고 있었는가?',
+        parts:['Did you know [',['that','what'],'] one out of every ten people in the world [',['is','are'],'] left-handed?'],
+        ans:[0,0] },
+      { no:2,  ko:'그들은 오른손잡이를 위해 만들어진 사회에서 어려움에 직면해 있다.',
+        parts:['They face challenges in a society [',['designing','designed'],'] for right-handed individuals.'],
+        ans:[1] },
+      { no:3,  ko:'그들에게 일부 오른손잡이용 제품을 사용하는 것은 불편하다.',
+        parts:['It is inconvenient for them [',['using','to use'],'] some right-handed products such as scissors, cameras, and computer mice.'],
+        ans:[1] },
+      { no:4,  ko:'우리가 살고 있는 세상은 대다수의 사람들에게 정상으로 간주되는 것에 적합한 환경으로 설계되어 있다.',
+        parts:['The world we live in [',['is','are'],'] designed [',['being','to be'],'] an environment suitable for [',['that','what'],'] is [',['considering','considered'],'] "[',['normal','normally'],']" for the majority of people, and it is [',['filling','filled'],'] with objects [',['who','that'],'] [',['is','are'],'] easy for them [',['using','to use'],'].'],
+        ans:[0,1,1,1,0,1,1,1,1] },
+      { no:5,  ko:'따라서 그 범주에 속하지 않는 사람들은 불편함을 감수하며 살아갈 수밖에 없다.',
+        parts:['Thus, those [',['who','whose'],'] [',['do','does'],'] not belong to that category [',['have','has'],'] no choice but [',['living','to live'],'] with discomfort.'],
+        ans:[0,0,0,1] },
+      { no:6,  ko:'신체적 차이가 있는 소수의 사람들은 불편을 감수하거나 특별히 제작된 물건을 찾는다.',
+        parts:['a minority of people with physical differences either [',['endure','endures'],'] inconvenience or deliberately seek objects [',['designing','designed'],'] especially for them, [',['that','which'],'] [',['is','are'],'] often difficult to find.'],
+        ans:[0,1,1,1] },
+      { no:7,  ko:'모든 사람이 제품과 시설을 편리하게 사용할 수 있는 환경을 구축하는 것이 불가능할까?',
+        parts:['Is it impossible to build an environment [',['which','where'],'] everyone can use products and facilities conveniently and without limitations?'],
+        ans:[1] },
+      { no:8,  ko:'이 질문에 대한 해답을 찾은 사람은 Ronald Mace였다.',
+        parts:['It was Ronald Mace [',['what','who'],'] sought the answer to this question.'],
+        ans:[1] },
+      { no:9,  ko:'그는 9살 때 소아마비에 걸렸고 그의 여생을 휠체어에서 보냈다.',
+        parts:['He contracted polio at the age of nine and [',['spends','spent'],'] the rest of his life in a wheelchair.'],
+        ans:[1] },
+      { no:10, ko:'대학에서 건축학을 공부하던 시절, 그는 일부 캠퍼스 시설을 이용하는 데 어려움을 겪었다.',
+        parts:['When [',['studying','studied'],'] architecture at university, he struggled [',['accessing','to access'],'] some campus facilities due to inaccessible building designs.'],
+        ans:[0,1] },
+      { no:11, ko:'이 경험은 훗날 그가 유니버설 디자인이라는 용어를 창안하는 데 영감을 주었다.',
+        parts:['This experience later inspired him [',['invent','to invent'],'] the term universal design, [',['which','what'],'] [',['refer','refers'],'] to design for all.'],
+        ans:[1,0,1] },
+      { no:12, ko:'건축가이자 제품 디자이너로서, 그는 모든 사람들에게 사용 가능하도록 설계된 세상을 추구했다.',
+        parts:['he pursued a world [',['which','in which'],'] all products and environments were designed [',['being','to be'],'] artistic and usable to the greatest extent possible by everyone.'],
+        ans:[1,1] },
+      { no:13, ko:'유니버설 디자인의 원칙에 따르면, 디자인은 다양한 사람들에 의해 사용될 수 있어야 한다.',
+        parts:['the design must be able to [',['use','be used'],'] equitably, flexibly, simply, and intuitively by a wide variety of people.'],
+        ans:[1] },
+      { no:14, ko:'또한 인지적으로 접근이 용이해야 하며 사용자의 신체적 노력을 최소화해야 한다.',
+        parts:['it should be cognitively accessible and [',['minimize','minimizes'],'] users\' physical efforts.'],
+        ans:[0] },
+      { no:15, ko:'마지막으로, 모든 사용자에게 충분한 공간을 제공해야 한다.',
+        parts:['Finally, it [',['requires','is required'],'] the providing of sufficient space for all users while [',['reducing','reduced'],'] potential hazards and adverse consequences from accidental or unintended actions.'],
+        ans:[0,0] },
+      { no:16, ko:'유니버설 디자인의 핵심 특징은 이것이 특별한 요구사항이 아니라는 점이다.',
+        parts:['A key feature of universal design [',['is','are'],'] [',['what','that'],'] this is not a special requirement only for the benefit of a minority of the population.'],
+        ans:[0,1] },
+      { no:17, ko:'만약 어떤 환경이 접근 가능하다면, 지역사회의 모든 사람들은 혜택을 누린다.',
+        parts:['If an environment is accessible, usable, convenient, and a pleasure [',['using','to use'],'], everyone in the community [',['benefit','benefits'],'].'],
+        ans:[1,1] },
+      { no:18, ko:'유니버설 디자인은 현대 건축에 어떻게 접목되었나?',
+        parts:['How [',['have','has'],'] universal design [',['incorporated','been incorporated'],'] into modern architecture?'],
+        ans:[1,1] },
+      { no:19, ko:'접근성을 개선하기 위해 유니버설 디자인이 사용된 가장 대표적인 사례 중 하나는 경사로이다.',
+        parts:['One of the most representative examples of universal design [',['using','being used'],'] to [',['improve','improving'],'] accessibility [',['is','are'],'] the ramps [',['installing','installed'],'] in front of buildings.'],
+        ans:[1,0,0,1] },
+      { no:20, ko:'경사로는 휠체어를 사용하는 장애인들에게 필수적이다.',
+        parts:['Ramps, not stairs, [',['are','to be'],'] necessary for people with disabilities [',['who','whose'],'] [',['use','uses'],'] wheelchairs, and they are also beneficial for parents [',['pushing','pushed'],'] strollers and the elderly.'],
+        ans:[0,0,0,0] },
+      { no:21, ko:'또 다른 예는 자동문이다.',
+        parts:['They are invaluable for those [',['what','who'],'] [',['rely','relies'],'] on assistive devices such as wheelchairs and crutches.'],
+        ans:[1,0] },
+      { no:22, ko:'그것들은 손이 가득 찬 어른들과 어린이들에게도 편리함을 제공한다.',
+        parts:['They also provide convenience for adults [',['who','which'],'] [',['have','has'],'] their hands full and children [',['who','which'],'] [',['is','are'],'] not [',['tall enough','enough tall'],'] [',['opening','to open'],'] the doors themselves.'],
+        ans:[0,0,0,1,0,1] },
+      { no:23, ko:'추가적인 예로는 점자 블록이 있다.',
+        parts:['These textured surfaces, often [',['finding','found'],'] on sidewalks, steps, and crosswalks, [',['assist','assists'],'] visually impaired individuals by [',['guide','guiding'],'] them through urban spaces.'],
+        ans:[1,0,1] },
+      { no:24, ko:'유니버설 디자인은 현대 건축에 적용될 뿐만 아니라 교통 시스템으로도 확장된다.',
+        parts:['Universal design is not only [',['applying','applied'],'] in modern architecture but also [',['extend','extends'],'] to transportation systems.'],
+        ans:[1,1] },
+      { no:25, ko:'버스는 모든 승객이 쉽게 탑승할 수 있도록 설계되었다.',
+        parts:['buses have [',['designed','been designed'],'] with a floor closer to ground level to [',['ease','easing'],'] access for all passengers.'],
+        ans:[1,0] },
+      { no:26, ko:'다양한 길이의 손잡이가 제공되는 것도 유니버설 디자인을 구현한 또 다른 방법이다.',
+        parts:['Handles of various lengths are [',['providing','provided'],'], another method [',['which','by which'],'] universal design is [',['implementing','implemented'],'] to [',['accommodate','accommodating'],'] passengers\' different heights.'],
+        ans:[1,1,1,0] },
+      { no:27, ko:'지하철 지도는 색맹인 사람들을 위해 지하철 노선을 명확하게 구분할 수 있도록 디자인되었다.',
+        parts:['Subway maps have also [',['designed','been designed'],'] for color-blind individuals to clearly [',['distinguish','distinguishing'],'] between subway lines by [',['adjust','adjusting'],'] the color and the brightness and by [',['vary','varying'],'] the thickness of lines [',['that','what'],'] [',['have','has'],'] similar colors.'],
+        ans:[1,0,1,1,0,0] },
+      { no:28, ko:'또한, 픽토그램 사용도 자주 볼 수 있다.',
+        parts:['the use of pictograms can [',['see','be seen'],'] frequently.'],
+        ans:[1] },
+      { no:29, ko:'지하철이나 기차역의 위치를 알려주는 표지판은 국제 여행객에게 도움이 된다.',
+        parts:['Signs [',['indicating','indicated'],'] the locations of subway or train stations [',['assist','assists'],'] international travelers [',['who','what'],'] may not be familiar with the local language.'],
+        ans:[0,0,0] },
+      { no:30, ko:'도로 표지판은 운전자가 중요한 정보를 더 쉽게 인식할 수 있도록 도와준다.',
+        parts:['road signs [',['indicating','indicated'],'] school zones, speed limits, and directions for turns and stops [',['aid','aids'],'] drivers in [',['recognize','recognizing'],'] important information more easily.'],
+        ans:[0,0,1] },
+      { no:31, ko:'유니버설 디자인은 건축 및 교통 시스템에서 일정 기간 활용되어 왔지만, 패션 산업에 더 새로운 적용이 있다.',
+        parts:['While universal design has [',['utilized','been utilized'],'] in architecture and transportation systems for some time, a newer application is in the fashion industry.'],
+        ans:[1] },
+      { no:32, ko:'유니버설 디자인으로 디자인된 의류는 편안함과 이동성을 향상시킨다.',
+        parts:['Clothing [',['designing','designed'],'] with universal design [',['integrate','integrates'],'] stretchable and breathable materials, [',['enhancing','enhanced'],'] comfort and mobility.'],
+        ans:[1,1,0] },
+      { no:33, ko:'다른 특징으로는 단추 대신 자석과 벨크로를 사용하여 옷을 입고 벗기 쉽게 만드는 것을 포함한다.',
+        parts:['[',['Other','Another'],'] features include the use of magnets and Velcro in place of buttons, [',['making','made'],'] it easier [',['putting','to put'],'] on and [',['take','taking'],'] off clothing.'],
+        ans:[0,0,1,0] },
+      { no:34, ko:'또한 신축성 있는 허리 밴드와 조절 가능한 소매와 같은 특성을 포함한다.',
+        parts:['It [',['also incorporates','is also incorporated'],'] traits like stretchy waistbands and adjustable sleeves to [',['allow','allowing'],'] individuals with disabilities [',['dress','to dress'],'] independently.'],
+        ans:[0,0,1] },
+      { no:35, ko:'이러한 유형의 의류는 임산부와 노인에게도 유익하다.',
+        parts:['This type of clothing [',['is','are'],'] also beneficial for pregnant women, older adults [',['who','whose'],'] may experience mobility issues, and individuals with temporary injuries or medical conditions.'],
+        ans:[0,0] },
+      { no:36, ko:'유니버설 디자인 의류는 모든 능력을 가진 착용자에게 편안함과 편의성을 증진시킨다.',
+        parts:['universal design clothing [',['promotes','is promoted'],'] increased comfort, convenience, independence, and improved mobility and flexibility for wearers of all abilities.'],
+        ans:[0] },
+      { no:37, ko:'당신은 생각보다 더 많은 사회 곳곳에서 유니버설 디자인을 찾아볼 수 있다는 것을 놀랍게 여길지도 모른다.',
+        parts:['You may find it [',['surprising','surprised'],'] that universal design can [',['find','be found'],'] in more parts of society than you thought.'],
+        ans:[0,1] },
+      { no:38, ko:'하지만 아직 모든 사람에게 부응하기에는 충분히 행해지지 않았다.',
+        parts:['enough has not [',['done','been done'],'] to [',['accommodate','accommodating'],'] everyone yet.'],
+        ans:[1,0] },
+      { no:39, ko:'유니버설 디자인을 더 폭넓게 구현해야 한다.',
+        parts:['Universal design should [',['implement','be implemented'],'] more extensively to [',['promote','promoting'],'] full participation in the community for a wider range of people.'],
+        ans:[1,0] },
+      { no:40, ko:'모든 사람이 접근 가능한 더 공평한 환경을 구축할 시간이다.',
+        parts:['It is time to build more equitable environments [',['that','what'],'] [',['is','are'],'] accessible to everyone.'],
+        ans:[0,1] },
+      { no:41, ko:'그러니 모두를 위한 유니버설 디자인된 세상을 만드는 데 동참하겠는가?',
+        parts:['So are you on board to [',['create','creating'],'] a universally designed world for all?'],
+        ans:[0] },
+    ]
+  },
+  {
+    label: '📄 본문 외 지문',
+    qs: [
+      { no:1,  ko:'회의를 시작할 때 "안녕하세요, 여러분, 시작합시다"라는 말을 들어본 적이 있는가?',
+        parts:['Have you [',['heard','been heard'],'], "Hello, guys; let\'s get started," at the beginning of a meeting?'],
+        ans:[0] },
+      { no:2,  ko:'그렇게 하면 일부 사람들이 덜 포함된 것처럼 느낄 수도 있지 않을까?',
+        parts:['Could that make some [',['feel','to feel'],'] less [',['included','including'],']?'],
+        ans:[0,0] },
+      { no:3,  ko:'포용적 언어는 선입견, 편견, 차별을 피하는 단어를 선택함으로써 서로를 존중하는 의사소통 방식이다.',
+        parts:['Inclusive language is a respectful way of communication by [',['select','selecting'],'] words [',['that','what'],'] [',['avoid','avoids'],'] bias, prejudice, and discrimination.'],
+        ans:[1,0,0] },
+      { no:4,  ko:'"여러분, 안녕하세요"라고 말하는 것은 포용성을 보여 주고, 잠재적인 장벽을 줄이며, 모든 사람의 소속감을 높여준다.',
+        parts:['Saying, "Hello, everyone," instead of, "Hello, guys," [',['demonstrate','demonstrates'],'] inclusivity, [',['reduce','reduces'],'] potential barriers, and [',['enhance','enhances'],'] everyone\'s sense of belonging.'],
+        ans:[1,1,1] },
+      { no:5,  ko:'포용적 언어는 평등, 존중, 다양성을 장려하며 모든 사람이 사회에 참여하도록 초대한다.',
+        parts:['Inclusive language promotes equality, respect, and diversity, [',['inviting','invited'],'] all people [',['participate','to participate'],'] in society.'],
+        ans:[0,1] },
+      { no:6,  ko:'예를 들어, 기존 용어를 중립적인 용어로 대체하면 포용성을 높인다.',
+        parts:['[',['replace','replacing'],'] conventional terms with racial implications like "blacklist" and "whitelist" with neutral alternatives such as "deny list" and "allow list" enhances inclusivity.'],
+        ans:[1] },
+      { no:7,  ko:'성 중립적 용어를 사용하면 편견을 깨는 것을 돕고 다양한 가족 구조를 인정하는 것이다.',
+        parts:['using gender-neutral terms like "parent" and "guardian" instead of "mom" and "dad" [',['help','helps'],'] [',['break','breaking'],'] down biases and [',['acknowledges','acknowledging'],'] diverse family structures.'],
+        ans:[1,0,0] },
+      { no:8,  ko:'또한 의학적 질환을 가진 개인에 대해 무심하게 여겨질 수 있는 일상적인 표현을 주의하는 것도 중요하다.',
+        parts:['it is crucial to be aware of everyday phrases [',['that','whose'],'] could be [',['considering','considered'],'] [',['insensitively','insensitive'],'] toward individuals with medical conditions.'],
+        ans:[0,1,1] },
+      { no:9,  ko:'\'맹점\' 대신 \'놓친 기회\', \'미친\' 대신 \'말도 안 되는\'을 사용하면 보다 사려 깊은 소통을 보여 줄 수 있다.',
+        parts:['using "missed opportunity" instead of "blind spot" or "ridiculous" rather than "crazy" [',['demonstrate','demonstrates'],'] more thoughtful communication.'],
+        ans:[1] },
+      { no:10, ko:'사회가 더욱 포용적으로 될수록 우리의 언어도 마찬가지여야 한다.',
+        parts:['As society becomes more [',['inclusive','inclusively'],'], so must our language.'],
+        ans:[0] },
+      { no:11, ko:'최신 정보를 유지하고 우리의 시대에 적합한 언어를 사용하는 것이 중요하다.',
+        parts:['It is essential to stay updated and [',['uses','to use'],'] appropriate language for our times.'],
+        ans:[1] },
+      { no:12, ko:'우리가 사용하는 단어에 주의를 기울임으로써, 우리는 모두를 위한 보다 우호적인 환경을 조성할 수 있다.',
+        parts:['By [',['to be','being'],'] mindful of the words we use, we can create a more welcoming environment for everyone.'],
+        ans:[1] },
+    ]
+  }
+];
+
+// ============================================================
+// STATE
+// ============================================================
+let totalItems = 0, answeredCount = 0, correctCount = 0;
+const allItems = [];
+SECTIONS.forEach(sec => sec.qs.forEach(q => {
+  q.items = [];
+  q.parts.forEach(p => { if(Array.isArray(p)) { q.items.push({opts:p, ans:q.ans[q.items.length]}); totalItems++; } });
+  allItems.push(q);
+}));
+const state = allItems.map(q => q.items.map(() => null));
+
+// ============================================================
+// RENDER
+// ============================================================
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function buildPassage(q, qIdx) {
+  let html = '<div class="passage">', ii = 0;
+  q.parts.forEach(part => {
+    if(typeof part === 'string') { html += esc(part); }
+    else {
+      const iIdx = ii++;
+      html += `<span class="choice-group" id="cg-${qIdx}-${iIdx}">`;
+      part.forEach((opt, oIdx) => {
+        html += `<button class="choice-btn" onclick="pick(${qIdx},${iIdx},${oIdx})" id="cb-${qIdx}-${iIdx}-${oIdx}">${esc(opt)}</button>`;
+        if(oIdx < part.length-1) html += `<span class="sep">/</span>`;
+      });
+      html += '</span>';
+    }
+  });
+  return html + '</div>';
+}
+
+function render() {
+  const main = document.getElementById('main');
+  let qIdx = 0;
+  SECTIONS.forEach((sec, si) => {
+    main.insertAdjacentHTML('beforeend', `<div class="section-label">${sec.label}</div>`);
+    sec.qs.forEach(q => {
+      const card = document.createElement('div');
+      card.className = 'q-card';
+      card.id = `qcard-${qIdx}`;
+      card.style.animationDelay = `${qIdx * 0.025}s`;
+      card.innerHTML = `
+        <div class="q-header">
+          <div class="q-num">${q.no}</div>
+          <div class="q-ko">${esc(q.ko)}</div>
+          <div class="q-status" id="qst-${qIdx}"></div>
+        </div>
+        ${buildPassage(q, qIdx)}
+      `;
+      main.appendChild(card);
+      qIdx++;
+    });
+  });
+  updateProgress();
+}
+
+function pick(qIdx, iIdx, oIdx) {
+  if(state[qIdx][iIdx] !== null) return;
+  const item = allItems[qIdx].items[iIdx];
+  const ok = oIdx === item.ans;
+  state[qIdx][iIdx] = ok ? 'correct' : 'wrong';
+  answeredCount++; if(ok) correctCount++;
+
+  const btn = document.getElementById(`cb-${qIdx}-${iIdx}-${oIdx}`);
+  btn.classList.add(ok ? 'correct' : 'wrong'); btn.disabled = true;
+  if(!ok) { const cb = document.getElementById(`cb-${qIdx}-${iIdx}-${item.ans}`); cb.classList.add('reveal-correct'); cb.disabled = true; }
+  item.opts.forEach((_,oi) => document.getElementById(`cb-${qIdx}-${iIdx}-${oi}`).disabled = true);
+  document.getElementById(`cg-${qIdx}-${iIdx}`).classList.add('answered');
+
+  updateQStatus(qIdx);
+  updateProgress();
+  if(answeredCount === totalItems) showSummary();
+}
+
+function updateQStatus(qIdx) {
+  const s = state[qIdx];
+  const done = s.filter(x=>x!==null).length;
+  const total = allItems[qIdx].items.length;
+  const wrongs = s.filter(x=>x==='wrong').length;
+  const el = document.getElementById(`qst-${qIdx}`);
+  if(!done){ el.className='q-status'; el.textContent=''; return; }
+  el.classList.add('show');
+  if(wrongs > 0){ el.className='q-status show has-err'; el.textContent=`${done}/${total} · 오답 ${wrongs}개`; }
+  else if(done===total){ el.className='q-status show all-ok'; el.textContent='✓ 전체 정답!'; }
+  else{ el.className='q-status show all-ok'; el.textContent=`${done}/${total} 진행 중`; }
+}
+
+function updateProgress() {
+  const pct = totalItems > 0 ? Math.round(answeredCount/totalItems*100) : 0;
+  document.getElementById('progressBar').style.width = pct+'%';
+  document.getElementById('progressText').textContent = `${answeredCount} / ${totalItems}`;
+  document.getElementById('scoreBadge').textContent = `✓ ${correctCount}`;
+}
+
+function showSummary() {
+  const pct = Math.round(correctCount/totalItems*100);
+  const msg = pct===100?'🎉 완벽합니다!':pct>=80?'👍 훌륭해요!':pct>=60?'📖 틀린 것을 다시 확인해 보세요.':'💪 다시 도전해 보세요!';
+  const s = document.createElement('div'); s.className='summary show';
+  s.innerHTML=`<div class="summary-title">결과 <span>확인</span></div>
+    <div class="summary-score">${correctCount}<span style="font-size:1.5rem;color:rgba(255,255,255,0.4)"> / ${totalItems}</span></div>
+    <div class="summary-sub">정답률 ${pct}%</div>
+    <div class="summary-msg">${msg}</div>
+    <button class="btn-retry" onclick="location.reload()">🔄 다시 풀기</button>`;
+  document.getElementById('main').appendChild(s);
+  const note = document.createElement('p'); note.className='capture-note';
+  note.textContent='📸 결과를 캡처해서 선생님께 제출해 주세요!';
+  document.getElementById('main').appendChild(note);
+}
+
+render();
+</script>
+</body>
+</html>

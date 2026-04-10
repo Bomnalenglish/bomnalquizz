@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>고운고 2학년 영어I 2과 어법선택 | 봄날 English</title>
+<style>
+  :root {
+    --primary: #4a90d9;
+    --primary-dark: #2c6fad;
+    --correct: #27ae60;
+    --wrong: #e74c3c;
+    --neutral: #7f8c8d;
+    --bg: #f0f4f8;
+    --card: #ffffff;
+    --text: #2c3e50;
+    --sub: #636e72;
+    --border: #dfe6e9;
+    --shadow: 0 2px 12px rgba(0,0,0,0.08);
+    --radius: 12px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding-bottom: 60px;
+  }
+
+  /* ── Header ── */
+  header {
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+    color: #fff;
+    padding: 24px 20px 20px;
+    text-align: center;
+  }
+  header .school { font-size: 12px; opacity: .75; letter-spacing: 1px; margin-bottom: 4px; }
+  header h1 { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
+  header .subtitle { font-size: 13px; opacity: .85; }
+
+  /* ── Progress bar ── */
+  #progress-wrap {
+    background: #fff;
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  #progress-bar-bg {
+    flex: 1;
+    height: 8px;
+    background: var(--border);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+  #progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary), #74b9ff);
+    border-radius: 99px;
+    transition: width .4s ease;
+    width: 0%;
+  }
+  #progress-text { font-size: 12px; color: var(--sub); white-space: nowrap; }
+
+  /* ── Section labels ── */
+  .section-label {
+    text-align: center;
+    padding: 20px 20px 8px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: var(--primary-dark);
+    text-transform: uppercase;
+  }
+
+  /* ── Question cards ── */
+  .quiz-container { padding: 8px 16px; }
+
+  .question-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 18px 16px;
+    margin-bottom: 12px;
+    box-shadow: var(--shadow);
+    border: 2px solid transparent;
+    transition: border-color .25s;
+  }
+  .question-card.answered-correct { border-color: var(--correct); }
+  .question-card.answered-wrong   { border-color: var(--wrong); }
+
+  .q-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .q-num {
+    background: var(--primary);
+    color: #fff;
+    border-radius: 50%;
+    width: 26px; height: 26px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .q-korean {
+    font-size: 12px;
+    color: var(--sub);
+    line-height: 1.5;
+  }
+
+  .q-sentence {
+    font-size: 14px;
+    line-height: 1.8;
+    color: var(--text);
+    margin-bottom: 14px;
+    word-break: keep-all;
+  }
+
+  /* Inline blanks within sentence */
+  .blank-slot {
+    display: inline-flex;
+    gap: 4px;
+    vertical-align: middle;
+    flex-wrap: wrap;
+  }
+
+  /* ── Choice buttons ── */
+  .choices {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .choice-btn {
+    padding: 7px 16px;
+    border-radius: 99px;
+    border: 2px solid var(--border);
+    background: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    cursor: pointer;
+    transition: all .2s;
+    font-family: inherit;
+  }
+  .choice-btn:hover:not(:disabled) {
+    border-color: var(--primary);
+    color: var(--primary);
+    background: #eef5fd;
+  }
+  .choice-btn.selected-correct {
+    background: var(--correct);
+    border-color: var(--correct);
+    color: #fff;
+  }
+  .choice-btn.selected-wrong {
+    background: var(--wrong);
+    border-color: var(--wrong);
+    color: #fff;
+  }
+  .choice-btn.reveal-correct {
+    border-color: var(--correct);
+    color: var(--correct);
+    background: #eafaf1;
+  }
+  .choice-btn:disabled { cursor: default; }
+
+  /* Multi-blank row */
+  .multi-blank {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+  }
+  .blank-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .blank-label {
+    font-size: 11px;
+    color: var(--sub);
+    background: var(--bg);
+    padding: 2px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+
+  /* ── Result feedback ── */
+  .feedback {
+    margin-top: 10px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    display: none;
+  }
+  .feedback.correct { background: #eafaf1; color: #1e8449; display: block; }
+  .feedback.wrong   { background: #fdedec; color: #c0392b; display: block; }
+
+  /* ── Score summary ── */
+  #summary {
+    display: none;
+    background: var(--card);
+    margin: 20px 16px;
+    border-radius: var(--radius);
+    padding: 28px 20px;
+    box-shadow: var(--shadow);
+    text-align: center;
+  }
+  #summary h2 { font-size: 22px; margin-bottom: 8px; }
+  #summary .score-big { font-size: 48px; font-weight: 700; color: var(--primary); line-height: 1.1; }
+  #summary .score-detail { font-size: 14px; color: var(--sub); margin-top: 6px; margin-bottom: 20px; }
+  #summary .grade-msg { font-size: 16px; font-weight: 600; margin-bottom: 20px; }
+
+  /* ── Floating submit ── */
+  #submit-wrap {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 200;
+  }
+  #submit-btn {
+    background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+    color: #fff;
+    border: none;
+    border-radius: 99px;
+    padding: 14px 36px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(44,111,173,.35);
+    transition: transform .15s, box-shadow .15s;
+    font-family: inherit;
+  }
+  #submit-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(44,111,173,.45); }
+  #submit-btn:active { transform: translateY(0); }
+
+  #retry-btn {
+    background: var(--neutral);
+    color: #fff;
+    border: none;
+    border-radius: 99px;
+    padding: 12px 32px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    margin-top: 12px;
+  }
+
+  /* Warning overlay */
+  #warn-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,.55);
+    z-index: 999;
+    align-items: center;
+    justify-content: center;
+  }
+  #warn-overlay.show { display: flex; }
+  #warn-box {
+    background: #fff;
+    border-radius: 16px;
+    padding: 28px 24px;
+    max-width: 320px;
+    text-align: center;
+    box-shadow: 0 8px 40px rgba(0,0,0,.2);
+  }
+  #warn-box .warn-icon { font-size: 40px; margin-bottom: 12px; }
+  #warn-box h3 { font-size: 17px; margin-bottom: 8px; color: var(--wrong); }
+  #warn-box p { font-size: 13px; color: var(--sub); line-height: 1.6; margin-bottom: 16px; }
+  #warn-close {
+    background: var(--wrong); color: #fff;
+    border: none; border-radius: 99px;
+    padding: 10px 28px; font-size: 14px; font-weight: 700;
+    cursor: pointer; font-family: inherit;
+  }
+
+  .attempt-info {
+    text-align: center;
+    font-size: 12px;
+    color: var(--sub);
+    padding: 8px 0 0;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="school">고운고등학교 2학년 | YBM 박준언 영어I</div>
+  <h1>Lesson 2 · 어법선택형</h1>
+  <div class="subtitle">괄호 안에서 어법상 알맞은 것을 고르세요</div>
+</header>
+
+<div id="progress-wrap">
+  <div id="progress-bar-bg"><div id="progress-bar"></div></div>
+  <span id="progress-text">0 / 62</span>
+</div>
+
+<div id="attempt-display" class="attempt-info"></div>
+
+<div id="quiz-area"></div>
+
+<div id="summary">
+  <h2>🎉 퀴즈 완료!</h2>
+  <div class="score-big" id="score-pct"></div>
+  <div class="score-detail" id="score-detail"></div>
+  <div class="grade-msg" id="grade-msg"></div>
+  <button id="retry-btn" onclick="retryQuiz()">🔄 다시 풀기</button>
+  <p style="font-size:12px;color:#999;margin-top:16px;">결과 화면을 캡처해서 선생님께 제출하세요 📸</p>
+</div>
+
+<div id="submit-wrap">
+  <button id="submit-btn" onclick="submitQuiz()">채점하기 ✓</button>
+</div>
+
+<div id="warn-overlay">
+  <div id="warn-box">
+    <div class="warn-icon">⚠️</div>
+    <h3>주의!</h3>
+    <p id="warn-msg">다른 탭으로 이동했습니다.<br>성실하게 풀어주세요!</p>
+    <button id="warn-close" onclick="closeWarn()">확인</button>
+  </div>
+</div>
+
+<script>
+// ── DATA ─────────────────────────────────────────────────────────────────
+// Each question: { num, ko, sentence (use ___ for blank), choices: [[a,b]], answers: [correct,...] }
+// For multi-blank: choices is array of pairs, answers is array
+
+const QUESTIONS_MAIN = [
+  {
+    num:1, ko:"Neil: '10분 경제학 101' 팟캐스트에 오신 것을 환영합니다. 청취해 주셔서 감사합니다.",
+    sentence:"Thank you for [___] in.",
+    blanks:[["tune","tuning"]], answers:["tuning"]
+  },
+  {
+    num:2, ko:"그녀를 따뜻하게 환영해 주세요!",
+    sentence:"Please [___] her a warm welcome!",
+    blanks:[["give","giving"]], answers:["give"]
+  },
+  {
+    num:3, ko:"Beth: 여러분 모두와 함께하게 되어 정말 영광입니다.",
+    sentence:"It's truly an honor to [___] here with all of you.",
+    blanks:[["be","being"]], answers:["be"]
+  },
+  {
+    num:4, ko:"Neil: 우리는 경제학 기초들을 탐구하고 있습니다.",
+    sentence:"We've been [___] the basics of economics.",
+    blanks:[["exploring","explored"]], answers:["exploring"]
+  },
+  {
+    num:5, ko:"이번 35회 에피소드에서는 주식 세계에 관해 이야기할 거예요. 이제 시작하겠습니다.",
+    sentence:"In this 35th episode, we'll be [___] about the world of stocks. So let's get [___].",
+    blanks:[["talking","talked"],["started","to start"]], answers:["talking","started"]
+  },
+  {
+    num:6, ko:"Beth: 당신은 여분의 돈으로 무엇을 할 것인지 궁금해 본 적이 있나요?",
+    sentence:"Have you ever [___] what [___] with your extra money?",
+    blanks:[["wondered","been wondered"],["doing","to do"]], answers:["wondered","to do"]
+  },
+  {
+    num:7, ko:"Neil: 저는 모든 청취자가 같은 질문을 자신에게 해 본 적이 있다고 확신합니다.",
+    sentence:"I bet all our listeners have [___] [___] the same question.",
+    blanks:[["asked","been asked"],["them","themselves"]], answers:["asked","themselves"]
+  },
+  {
+    num:8, ko:"Beth: 그건 금융의 세계를 탐색하기 시작하는 젊은이들 사이에서 제기되는 질문입니다.",
+    sentence:"It's a question [___] often [___], especially among young people [___] [___] beginning to [___] the world of finance.",
+    blanks:[["what","that"],["arise","arises"],["who","whose"],["is","are"],["explore","exploring"]],
+    answers:["that","arises","who","are","explore"]
+  },
+  {
+    num:9, ko:"일상생활을 하면서, 여러분은 금융 활동에 참여하는 자신을 발견하게 됩니다.",
+    sentence:"You find [___] [___] in financial activities such as [___] goods and [___] bus fares.",
+    blanks:[["you","yourself"],["engage","engaged"],["purchase","purchasing"],["pay","paying"]],
+    answers:["yourself","engaged","purchasing","paying"]
+  },
+  {
+    num:10, ko:"Neil: 어떤 사람들은 즉시 사용하기 위해 자기 지갑에 보관하는 것을 선호할 수 있습니다.",
+    sentence:"Others might prefer [___] it in their wallets for immediate use.",
+    blanks:[["keep","keeping"]], answers:["keeping"]
+  },
+  {
+    num:11, ko:"이미 주식 거래를 시도해 본 사람들도 좀 있지요.",
+    sentence:"There [___] also [___] [___] [___] already been [___] into stock trading.",
+    blanks:[["is","are"],["a few","a little"],["who","what"],["has","have"],["venturing","ventured"]],
+    answers:["are","a few","who","have","venturing"]
+  },
+  {
+    num:12, ko:"오늘, 우리는 여러분에게 주식 시장에 대한 개요를 제공하여 경제에 대한 통찰력을 얻을 수 있도록 할 것입니다.",
+    sentence:"We're going to provide you with an overview, [___] you [___] insight into the economy.",
+    blanks:[["enabling","enabled"],["gain","to gain"]], answers:["enabling","to gain"]
+  },
+  {
+    num:13, ko:"Beth: 주식의 개념으로 시작해 볼까요.",
+    sentence:"Let's [___] with the concept of a stock.",
+    blanks:[["start","starting"]], answers:["start"]
+  },
+  {
+    num:14, ko:"주식 한 주를 소유하는 것은 그 회사의 파이 한 조각을 가지는 셈이에요.",
+    sentence:"[___] one stock is [___] [___] a slice of the company's pie.",
+    blanks:[["own","owning"],["alike","like"],["have","having"]], answers:["owning","like","having"]
+  },
+  {
+    num:15, ko:"Neil: 그것은 주주 자신들이 회사 경영에 참여할 수 있는 것을 의미하나요?",
+    sentence:"Does that mean stockholders [___] can actively participate in the management of the company?",
+    blanks:[["them","themselves"]], answers:["themselves"]
+  },
+  {
+    num:16, ko:"Beth: 경영은 일반적으로 전문 경영인들에 의해 수행됩니다.",
+    sentence:"Management is generally [___] out by professional managers.",
+    blanks:[["carrying","carried"]], answers:["carried"]
+  },
+  {
+    num:17, ko:"회사는 대주주들의 의견들을 구하기 위해 주주 총회를 개최합니다.",
+    sentence:"Companies [___] stockholder meetings to [___] the opinions of major stockholders.",
+    blanks:[["hold","are held"],["seek","seeking"]], answers:["hold","seek"]
+  },
+  {
+    num:18, ko:"Beth: 주식 시장은 회사가 성장하고 확장하는 데 필요한 자금을 제공할 수 있어서 회사에 매우 중요합니다.",
+    sentence:"The stock market is very important for companies [___] it can provide them with the money they need [___] and [___].",
+    blanks:[["because of","because"],["growing","to grow"],["expand","expanding"]],
+    answers:["because","to grow","expand"]
+  },
+  {
+    num:19, ko:"Neil: 그것이 어떻게 작동하는지요?",
+    sentence:"How [___] that [___]?",
+    blanks:[["is","does"],["work","worked"]], answers:["does","work"]
+  },
+  {
+    num:20, ko:"Beth: 한 작은 집단의 사람들이 혁신적인 운동화를 생산하는 신발 회사를 시작한다고 상상해 보죠.",
+    sentence:"Let's imagine [___] a small group of people start a footwear company [___] innovative sneakers.",
+    blanks:[["that","what"],["producing","produced"]], answers:["that","producing"]
+  },
+  {
+    num:21, ko:"창업자들은 그들의 제품이 소비자에게 인기 있을 것이라고 자신합니다만, 사업을 성장시킬 충분한 자금을 갖고 있지 않습니다.",
+    sentence:"The founders are confident [___] their products will be popular with consumers, but do not have enough funds [___] the business.",
+    blanks:[["what","that"],["growing","to grow"]], answers:["that","to grow"]
+  },
+  {
+    num:22, ko:"그래서, 그들은 새로 설립된 회사를 주식 시장에 올리기로 합니다.",
+    sentence:"So they decide [___] the newly formed company on the stock market.",
+    blanks:[["putting","to put"]], answers:["to put"]
+  },
+  {
+    num:23, ko:"Neil: 그러면 어떤 일이 발생하나요?",
+    sentence:"What [___] then?",
+    blanks:[["happens","is happened"]], answers:["happens"]
+  },
+  {
+    num:24, ko:"Beth: 그 회사의 밝은 미래를 믿는 개인이나 기관이 주식을 사서 부분적인 소유자가 될 수 있습니다.",
+    sentence:"Individuals or organizations [___] [___] in the company's bright future can buy shares and [___] partial owners.",
+    blanks:[["whose","that"],["believe","believes"],["become","becomes"]], answers:["that","believe","become"]
+  },
+  {
+    num:25, ko:"이러한 과정이 그 신발 회사가 필요한 자금을 모으는 것을 쉽게 만들어 줍니다.",
+    sentence:"This process makes it [___] for the footwear company [___] the funds it needs [___] its business.",
+    blanks:[["easy","easily"],["raising","to raise"],["growing","to grow"]], answers:["easy","to raise","to grow"]
+  },
+  {
+    num:26, ko:"사업이 성장함에 따라, 주식의 가치가 상승하고, 주주의 수익도 증가하게 되죠.",
+    sentence:"As the business grows, the stock value [___], and the stockholders' profits increase.",
+    blanks:[["rises","is risen"]], answers:["rises"]
+  },
+  {
+    num:27, ko:"Beth: 주식 가격은 공급과 수요의 법칙에 따라 결정됩니다.",
+    sentence:"The prices of stocks [___] [___] by the law of supply and demand.",
+    blanks:[["is","are"],["deciding","decided"]], answers:["are","decided"]
+  },
+  {
+    num:28, ko:"사업이 성공할수록, 더 많은 사람이 그 회사의 잠재적 가치를 보고 주식을 사기 시작할 것입니다.",
+    sentence:"The [___] successful a business is, the [___] people will see the potential value and [___] buying its stocks.",
+    blanks:[["more","most"],["more","most"],["start","starts"]], answers:["more","more","start"]
+  },
+  {
+    num:29, ko:"주식에 대한 수요가 증가함에 따라, 주가도 오르게 됩니다.",
+    sentence:"As demand for the stocks [___], so [___] the stock price.",
+    blanks:[["increase","increases"],["do","does"]], answers:["increases","does"]
+  },
+  {
+    num:30, ko:"반대로, 만약 회사가 실망스럽게 성과를 내면, 주가도 하락할 것입니다.",
+    sentence:"In contrast, if a company [___] disappointingly, its stock price will fall.",
+    blanks:[["performs","will perform"]], answers:["performs"]
+  },
+  {
+    num:31, ko:"Neil: 가격에 영향을 미치는 다른 요인들이 있나요?",
+    sentence:"[___] there any other factors [___] the price?",
+    blanks:[["Is","Are"],["affecting","affected"]], answers:["Are","affecting"]
+  },
+  {
+    num:32, ko:"Beth: 고무 가격이 오르면, 신발 회사는 필요한 고무를 수입하는데 더 큰 비용을 내야 할 수 있어요.",
+    sentence:"A shoe company may have to pay more to [___] the rubber it needs from abroad to [___] sneakers.",
+    blanks:[["import","importing"],["manufacture","manufacturing"]], answers:["import","manufacture"]
+  },
+  {
+    num:33, ko:"이것은 생산 비용에 영향을 미치고 소비자 시장에서의 가격 상승으로 이어집니다.",
+    sentence:"This [___] production costs and [___] to higher prices in the consumer market.",
+    blanks:[["affect","affects"],["lead","leads"]], answers:["affects","leads"]
+  },
+  {
+    num:34, ko:"소비자들이 운동화 구매를 주저함에 따라, 회사는 실적 부진에 시달리게 되고, 주식 가격의 하락으로 이어질 수 있습니다.",
+    sentence:"As consumers hesitate [___] the company's sneakers, the company may suffer from poor performance, [___] to a decline in the stock price.",
+    blanks:[["purchasing","to purchase"],["leading","led"]], answers:["to purchase","leading"]
+  },
+  {
+    num:35, ko:"Neil: 고려해야 할 것들이 참 많군요!",
+    sentence:"There [___] so many things [___]!",
+    blanks:[["is","are"],["considering","to consider"]], answers:["are","to consider"]
+  },
+  {
+    num:36, ko:"Beth: 게다가, 투자자들은 회사의 리더십이나 평판에 대해 우려할 수 있습니다.",
+    sentence:"Additionally, investors may [___] about a company's leadership or reputation.",
+    blanks:[["concern","be concerned"]], answers:["be concerned"]
+  },
+  {
+    num:37, ko:"점점 더 많은 사람들이 공공 가치를 우선시하는 회사들을 지원하기 시작하고 있습니다.",
+    sentence:"More and more people are starting to [___] companies [___] [___] public values such as business transparency.",
+    blanks:[["support","supporting"],["that","what"],["prioritize","prioritizes"]],
+    answers:["support","that","prioritize"]
+  },
+  {
+    num:38, ko:"그들은 자신의 재정적 목표를 추구할 뿐 아니라 더 지속 가능한 경제 체제를 구축하는데 기여합니다.",
+    sentence:"In [___] such stocks, they not only pursue their financial goals but also [___] to [___] a more sustainable economic system [___] [___] the entire society.",
+    blanks:[["purchase","purchasing"],["contribute","contributes"],["build","building"],["who","that"],["benefit","benefits"]],
+    answers:["purchasing","contribute","building","that","benefits"]
+  },
+  {
+    num:39, ko:"이러한 모든 변수들이 주식 시장에서 주가의 일일 변동을 일으킬 수 있습니다.",
+    sentence:"All these variables can [___] daily changes in stock prices in the stock market.",
+    blanks:[["cause","be caused"]], answers:["cause"]
+  },
+  {
+    num:40, ko:"Neil: 우리가 주식에 대해 배울수록 더 어려워지는 것 같습니다.",
+    sentence:"It seems [___] more difficult as we learn more about stocks.",
+    blanks:[["getting","to get"]], answers:["to get"]
+  },
+  {
+    num:41, ko:"Beth: 여러분은 주식 거래소를 통해 주식을 살 수 있는데, 거기에서 회사의 주식을 쉽게 사고팔 수 있습니다.",
+    sentence:"You can buy stocks through an official place [___] a stock exchange, [___] you can easily buy or [___] stocks.",
+    blanks:[["calling","called"],["which","where"],["sell","sells"]], answers:["called","where","sell"]
+  },
+  {
+    num:42, ko:"여러분은 주식에 대한 투자가 수익을 만드는 쉬운 방법이라고 생각할지 모릅니다.",
+    sentence:"You might think investing in stocks [___] an easy way [___] a profit.",
+    blanks:[["is","are"],["making","to make"]], answers:["is","to make"]
+  },
+  {
+    num:43, ko:"그러나, 여러분이 투자한다면, 돈을 잃을 준비도 되어 있어야 하죠.",
+    sentence:"But if you are investing, you must [___] [___] money.",
+    blanks:[["prepare","be prepared"],["lose","to lose"]], answers:["be prepared","to lose"]
+  },
+  {
+    num:44, ko:"시장은 끊임없이 변동하기 때문에, 손실과 부채의 위험이 있습니다.",
+    sentence:"Since the market constantly fluctuates, there [___] a risk of loss and debt.",
+    blanks:[["is","are"]], answers:["is"]
+  },
+  {
+    num:45, ko:"Neil: 주식 투자는 도전적이네요!",
+    sentence:"[___] in stocks is challenging!",
+    blanks:[["Invest","Investing"]], answers:["Investing"]
+  },
+  {
+    num:46, ko:"Beth: 그것은 개인 상황에 달려있어요.",
+    sentence:"That [___] on individual circumstances.",
+    blanks:[["depends","is depended"]], answers:["depends"]
+  },
+  {
+    num:47, ko:"일반적으로, 여러분의 관심을 끄는 그 무엇에 투자하는 것이 현명할 거예요.",
+    sentence:"It would be smart to invest in something [___] [___] you.",
+    blanks:[["that","who"],["interest","interests"]], answers:["that","interests"]
+  },
+  {
+    num:48, ko:"항상 조사하는 것을 잊지 말고, 투자하는 회사에 대한 정보를 얻고, 여러분의 투자 위험 허용 범위를 염두에 두세요.",
+    sentence:"Always [___] to do your research, stay informed, and [___] mindful of your risk tolerance.",
+    blanks:[["remember","remembering"],["be","are"]], answers:["remember","be"]
+  },
+  {
+    num:49, ko:"Neil: 투자는 부를 쌓는 강력한 도구가 될 수 있지만, 지식과 신중함을 가지고 접근하는 것이 필수적입니다.",
+    sentence:"Investing can be a powerful tool for [___] wealth.",
+    blanks:[["build","building"]], answers:["building"]
+  },
+  {
+    num:50, ko:"Neil: 오늘 방송분이 여러분에게 도움이 되었기를 바랍니다!",
+    sentence:"I hope today's episode [___] helpful for you!",
+    blanks:[["was","to be"]], answers:["was"]
+  },
+  {
+    num:51, ko:"다음 시간에는 또 다른 흥미로운 주제로 돌아올 테니, '10분 경제학 101'을 다시 청취해 주시기를 바랍니다!",
+    sentence:"I'll be back with [___] [___] topic next time, so [___] sure [___] in to 10-Minute Economics 101 again!",
+    blanks:[["other","another"],["exciting","excited"],["make","making"],["tune","to tune"]],
+    answers:["another","exciting","make","to tune"]
+  },
+  {
+    num:52, ko:"이 방송이 도움이 되었으면, 친구들과 공유해 주세요!",
+    sentence:"If you found this episode [___], please [___] it with any friends [___] might be [___] in [___] more about economics!",
+    blanks:[["helpful","helpfully"],["share","sharing"],["who","which"],["interesting","interested"],["learn","learning"]],
+    answers:["helpful","share","who","interested","learning"]
+  }
+];
+
+const QUESTIONS_EXT = [
+  {
+    num:1, ko:"주식 시장의 움직임은 강세장과 약세장의 두 가지 주요 추세로 구분될 수 있다.",
+    sentence:"Stock market movement can [___] into two major trends: bull market vs. bear market.",
+    blanks:[["divide","be divided"]], answers:["be divided"]
+  },
+  {
+    num:2, ko:"강세장은 경제적인 조건이 투자자에게 유리한 상승하는 주식 시장 상황이다.",
+    sentence:"A bull market is a rising stock market situation [___] economic conditions are favorable to investors.",
+    blanks:[["which","in which"]], answers:["in which"]
+  },
+  {
+    num:3, ko:"그것은 높은 고용률, 국내 총생산 증가, 기타 긍정적 경제 지표들을 포함한다.",
+    sentence:"They include high employment rates, GDP increases, and [___] positive economic indicators.",
+    blanks:[["another","other"]], answers:["other"]
+  },
+  {
+    num:4, ko:"머리 뿔을 들어 올리고 들판에서 돌진하는 황소를 생각해 보라.",
+    sentence:"[___] of a charging bull in a field [___] its horns.",
+    blanks:[["Think","Thinking"],["raising","raised"]], answers:["Think","raising"]
+  },
+  {
+    num:5, ko:"상승장에서, 투자자들은 흔히 시장의 현재와 미래 성과에 대해 믿는다.",
+    sentence:"In a bull market, investors often [___] in the market's present and future performance.",
+    blanks:[["believe","believing"]], answers:["believe"]
+  },
+  {
+    num:6, ko:"그렇기 때문에 그들은 주식 매입을 늘리고 투자를 유지한다.",
+    sentence:"As such, they increase their stock purchases and [___] their investments.",
+    blanks:[["maintain","maintaining"]], answers:["maintain"]
+  },
+  {
+    num:7, ko:"자신의 앞다리를 내린 채 서 있는 곰처럼, 하락장은 주식 가치의 하락을 암시한다.",
+    sentence:"Like a standing bear [___] [___] its front legs, a bear market implies a decline in stock values.",
+    blanks:[["having","had"],["lowered","been lowered"]], answers:["having","lowered"]
+  },
+  {
+    num:8, ko:"그것은 경제적 조건들이 호의적이지 않을 때 발생하며, 주식 대부분이 가치 하락을 겪는다.",
+    sentence:"It [___] when economic conditions are not favorable, and most stocks experience decreases in value.",
+    blanks:[["occurs","is occurred"]], answers:["occurs"]
+  },
+  {
+    num:9, ko:"낮은 국내 총생산 성장률, 실업 증가 및 저임금과 같은 요인들이 약세장의 가능한 조건들이다.",
+    sentence:"Factors [___] low GDP growth, rising unemployment, and low wages [___] possible conditions for a bear market.",
+    blanks:[["like","alike"],["is","are"]], answers:["like","are"]
+  },
+  {
+    num:10, ko:"어려운 경제 상황에서, 투자자들은 자주 주식 시장에 대해 부정적인 견해를 가지며, 그것이 그들의 주식을 매도하게 이끈다.",
+    sentence:"Investors frequently have negative views of the stock market, [___] may lead them [___] their stocks.",
+    blanks:[["that","which"],["sell","to sell"]], answers:["which","to sell"]
+  }
+];
+
+// ── STATE ─────────────────────────────────────────────────────────────
+let userAnswers = {}; // key: "m_q_b" or "e_q_b", value: chosen string
+let submitted = false;
+let warnCount = 0;
+let attemptNum = 1;
+
+function totalBlanks() {
+  let n = 0;
+  QUESTIONS_MAIN.forEach(q => n += q.blanks.length);
+  QUESTIONS_EXT.forEach(q => n += q.blanks.length);
+  return n;
+}
+const TOTAL = totalBlanks();
+
+// ── SHUFFLE ───────────────────────────────────────────────────────────
+// Pre-shuffle all blanks once per session so order is consistent during retry
+let shuffledBlanks = {}; // key: "section_qnum_bidx" → shuffled pair array
+
+function shuffleArray(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function initShuffles() {
+  shuffledBlanks = {};
+  const allQ = [...QUESTIONS_MAIN.map(q=>({...q,section:'m'})), ...QUESTIONS_EXT.map(q=>({...q,section:'e'}))];
+  allQ.forEach(q => {
+    q.blanks.forEach((pair, bidx) => {
+      const key = `${q.section}_${q.num}_${bidx}`;
+      shuffledBlanks[key] = shuffleArray(pair);
+    });
+  });
+}
+
+// ── INIT ─────────────────────────────────────────────────────────────
+function init() {
+  // Load attempt count
+  try {
+    const saved = localStorage.getItem('gounko_l2_attempt');
+    if (saved) attemptNum = parseInt(saved) + 1;
+    localStorage.setItem('gounko_l2_attempt', attemptNum);
+  } catch(e) {}
+  document.getElementById('attempt-display').textContent = `도전 횟수: ${attemptNum}회`;
+  initShuffles();
+  buildQuiz();
+  updateProgress();
+}
+
+function buildQuiz() {
+  const area = document.getElementById('quiz-area');
+  area.innerHTML = '';
+
+  // Main text section
+  area.insertAdjacentHTML('beforeend', '<div class="section-label">📖 본문 (1–52)</div>');
+  const mainDiv = document.createElement('div');
+  mainDiv.className = 'quiz-container';
+  QUESTIONS_MAIN.forEach(q => mainDiv.appendChild(makeCard(q, 'm')));
+  area.appendChild(mainDiv);
+
+  // Extra text section
+  area.insertAdjacentHTML('beforeend', '<div class="section-label">📄 본문 외 지문 (1–10)</div>');
+  const extDiv = document.createElement('div');
+  extDiv.className = 'quiz-container';
+  QUESTIONS_EXT.forEach(q => extDiv.appendChild(makeCard(q, 'e')));
+  area.appendChild(extDiv);
+}
+
+function makeSentenceHTML(q, section) {
+  // Parse sentence: replace [___] with blank slot placeholders
+  let parts = q.sentence.split('[___]');
+  let html = '';
+  parts.forEach((part, i) => {
+    html += `<span>${part}</span>`;
+    if (i < q.blanks.length) {
+      const key = `${section}_${q.num}_${i}`;
+      const pair = shuffledBlanks[key] || q.blanks[i];
+      html += `<span class="blank-slot" data-section="${section}" data-qnum="${q.num}" data-bidx="${i}">`;
+      pair.forEach(opt => {
+        html += `<button class="choice-btn" onclick="pick(this,'${section}',${q.num},${i},'${opt}')">${opt}</button>`;
+      });
+      html += `</span>`;
+    }
+  });
+  return html;
+}
+
+function makeCard(q, section) {
+  const card = document.createElement('div');
+  card.className = 'question-card';
+  card.id = `card_${section}_${q.num}`;
+
+  const numColor = section === 'm' ? 'var(--primary)' : '#8e44ad';
+  card.innerHTML = `
+    <div class="q-meta">
+      <div class="q-num" style="background:${numColor}">${q.num}</div>
+      <div class="q-korean">${q.ko}</div>
+    </div>
+    <div class="q-sentence">${makeSentenceHTML(q, section)}</div>
+    <div class="feedback" id="fb_${section}_${q.num}"></div>
+  `;
+  return card;
+}
+
+// ── PICK ──────────────────────────────────────────────────────────────
+function pick(btn, section, qnum, bidx, val) {
+  if (submitted) return;
+  const key = `${section}_${qnum}_${bidx}`;
+  userAnswers[key] = val;
+
+  // Update button visual in this blank slot
+  const slot = btn.closest('.blank-slot');
+  slot.querySelectorAll('.choice-btn').forEach(b => {
+    b.classList.remove('selected-correct','selected-wrong');
+    if (b.textContent === val) b.style.borderColor = 'var(--primary)';
+    else b.style.borderColor = '';
+  });
+  btn.style.borderColor = 'var(--primary)';
+  btn.style.color = 'var(--primary)';
+  btn.style.background = '#eef5fd';
+
+  updateProgress();
+}
+
+// ── PROGRESS ─────────────────────────────────────────────────────────
+function updateProgress() {
+  const answered = Object.keys(userAnswers).length;
+  const pct = (answered / TOTAL) * 100;
+  document.getElementById('progress-bar').style.width = pct + '%';
+  document.getElementById('progress-text').textContent = `${answered} / ${TOTAL}`;
+}
+
+// ── SUBMIT ────────────────────────────────────────────────────────────
+function submitQuiz() {
+  if (submitted) return;
+
+  // Check all answered
+  const answered = Object.keys(userAnswers).length;
+  if (answered < TOTAL) {
+    const remaining = TOTAL - answered;
+    showWarn(`아직 ${remaining}개의 빈칸이 남아있어요.<br>모두 선택한 후 채점해주세요!`);
+    return;
+  }
+
+  submitted = true;
+  document.getElementById('submit-btn').style.display = 'none';
+
+  let correct = 0;
+  const allQ = [...QUESTIONS_MAIN.map(q=>({...q,section:'m'})), ...QUESTIONS_EXT.map(q=>({...q,section:'e'}))];
+
+  allQ.forEach(q => {
+    const section = q.section;
+    let qCorrect = true;
+    q.blanks.forEach((pair, bidx) => {
+      const key = `${section}_${q.num}_${bidx}`;
+      const userVal = userAnswers[key];
+      const correctVal = q.answers[bidx];
+      const isCorrect = userVal === correctVal;
+      if (!isCorrect) qCorrect = false;
+
+      // Style buttons
+      const slot = document.querySelector(`[data-section="${section}"][data-qnum="${q.num}"][data-bidx="${bidx}"]`);
+      if (slot) {
+        slot.querySelectorAll('.choice-btn').forEach(b => {
+          b.disabled = true;
+          b.style.borderColor = '';
+          b.style.color = '';
+          b.style.background = '';
+          if (b.textContent === userVal && isCorrect) b.classList.add('selected-correct');
+          else if (b.textContent === userVal && !isCorrect) b.classList.add('selected-wrong');
+          else if (b.textContent === correctVal && !isCorrect) b.classList.add('reveal-correct');
+        });
+      }
+      if (isCorrect) correct++;
+    });
+
+    const card = document.getElementById(`card_${section}_${q.num}`);
+    const fb = document.getElementById(`fb_${section}_${q.num}`);
+    if (qCorrect) {
+      card.classList.add('answered-correct');
+      fb.className = 'feedback correct';
+      fb.textContent = '✓ 정답입니다!';
+    } else {
+      card.classList.add('answered-wrong');
+      fb.className = 'feedback wrong';
+      const wrongs = q.blanks.map((p,i) => {
+        const k = `${section}_${q.num}_${i}`;
+        return userAnswers[k] !== q.answers[i] ? `정답: ${q.answers[i]}` : null;
+      }).filter(Boolean);
+      fb.textContent = '✗ 오답 | ' + wrongs.join(' / ');
+    }
+  });
+
+  // Score
+  const pct = Math.round((correct / TOTAL) * 100);
+  document.getElementById('score-pct').textContent = pct + '%';
+  document.getElementById('score-detail').textContent = `${correct} / ${TOTAL} 정답`;
+  let msg = pct >= 90 ? '🌟 훌륭해요! 완벽에 가깝습니다!' :
+            pct >= 70 ? '👍 잘했어요! 조금만 더 연습하면 완벽!' :
+            pct >= 50 ? '🙂 절반 이상 맞았어요. 틀린 문항을 다시 확인해보세요.' :
+                        '📚 틀린 문항을 꼼꼼히 복습해봐요!';
+  document.getElementById('grade-msg').textContent = msg;
+  document.getElementById('summary').style.display = 'block';
+  document.getElementById('summary').scrollIntoView({behavior:'smooth'});
+}
+
+// ── RETRY ─────────────────────────────────────────────────────────────
+function retryQuiz() {
+  submitted = false;
+  userAnswers = {};
+  document.getElementById('submit-btn').style.display = '';
+  document.getElementById('summary').style.display = 'none';
+  initShuffles();
+  buildQuiz();
+  updateProgress();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+// ── WARN / CHEAT DETECT ───────────────────────────────────────────────
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden && !submitted) {
+    warnCount++;
+    showWarn(`다른 탭으로 이동했습니다. (${warnCount}회)<br>성실하게 풀어주세요! 선생님께 제출 시 확인됩니다.`);
+  }
+});
+document.addEventListener('copy', e => { if (!submitted) e.preventDefault(); });
+document.addEventListener('contextmenu', e => { if (!submitted) e.preventDefault(); });
+
+function showWarn(msg) {
+  document.getElementById('warn-msg').innerHTML = msg;
+  document.getElementById('warn-overlay').classList.add('show');
+}
+function closeWarn() {
+  document.getElementById('warn-overlay').classList.remove('show');
+}
+
+// ── START ─────────────────────────────────────────────────────────────
+init();
+</script>
+</body>
+</html>

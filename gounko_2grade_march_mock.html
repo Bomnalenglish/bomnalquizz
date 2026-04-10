@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>고운고 2학년 3월 모의고사 어법선택 | 봄날 English</title>
+<style>
+  :root {
+    --primary: #6c5ce7;
+    --primary-dark: #4a3ab5;
+    --correct: #27ae60;
+    --wrong: #e74c3c;
+    --neutral: #7f8c8d;
+    --bg: #f3f0ff;
+    --card: #ffffff;
+    --text: #2c3e50;
+    --sub: #636e72;
+    --border: #dfe6e9;
+    --shadow: 0 2px 12px rgba(108,92,231,0.10);
+    --radius: 12px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding-bottom: 80px;
+  }
+
+  header {
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+    color: #fff;
+    padding: 24px 20px 20px;
+    text-align: center;
+  }
+  header .school { font-size: 12px; opacity: .75; letter-spacing: 1px; margin-bottom: 4px; }
+  header h1 { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
+  header .subtitle { font-size: 13px; opacity: .85; }
+  header .range-badge {
+    display: inline-block;
+    background: rgba(255,255,255,0.2);
+    border-radius: 99px;
+    padding: 4px 14px;
+    font-size: 12px;
+    margin-top: 8px;
+  }
+
+  #progress-wrap {
+    background: #fff;
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  #progress-bar-bg {
+    flex: 1; height: 8px;
+    background: var(--border);
+    border-radius: 99px; overflow: hidden;
+  }
+  #progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary), #a29bfe);
+    border-radius: 99px;
+    transition: width .4s ease;
+    width: 0%;
+  }
+  #progress-text { font-size: 12px; color: var(--sub); white-space: nowrap; }
+
+  .section-label {
+    text-align: center;
+    padding: 20px 20px 8px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: var(--primary-dark);
+    text-transform: uppercase;
+  }
+
+  .quiz-container { padding: 8px 16px; }
+
+  .question-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 18px 16px;
+    margin-bottom: 12px;
+    box-shadow: var(--shadow);
+    border: 2px solid transparent;
+    transition: border-color .25s;
+  }
+  .question-card.answered-correct { border-color: var(--correct); }
+  .question-card.answered-wrong   { border-color: var(--wrong); }
+
+  .q-meta {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .q-num {
+    background: var(--primary);
+    color: #fff;
+    border-radius: 8px;
+    padding: 3px 10px;
+    font-size: 12px;
+    font-weight: 700;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+  .q-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--primary-dark);
+  }
+
+  .q-sentence {
+    font-size: 14px;
+    line-height: 1.9;
+    color: var(--text);
+    margin-bottom: 14px;
+    word-break: keep-all;
+  }
+
+  .blank-slot {
+    display: inline-flex;
+    gap: 4px;
+    vertical-align: middle;
+    flex-wrap: wrap;
+  }
+
+  .choice-btn {
+    padding: 5px 14px;
+    border-radius: 99px;
+    border: 2px solid var(--border);
+    background: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    cursor: pointer;
+    transition: all .2s;
+    font-family: inherit;
+    white-space: nowrap;
+  }
+  .choice-btn:hover:not(:disabled) {
+    border-color: var(--primary);
+    color: var(--primary);
+    background: #f0eeff;
+  }
+  .choice-btn.selected-correct { background: var(--correct); border-color: var(--correct); color: #fff; }
+  .choice-btn.selected-wrong   { background: var(--wrong);   border-color: var(--wrong);   color: #fff; }
+  .choice-btn.reveal-correct   { border-color: var(--correct); color: var(--correct); background: #eafaf1; }
+  .choice-btn:disabled { cursor: default; }
+
+  .feedback {
+    margin-top: 10px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    display: none;
+    line-height: 1.6;
+  }
+  .feedback.correct { background: #eafaf1; color: #1e8449; display: block; }
+  .feedback.wrong   { background: #fdedec; color: #c0392b; display: block; }
+
+  #summary {
+    display: none;
+    background: var(--card);
+    margin: 20px 16px;
+    border-radius: var(--radius);
+    padding: 28px 20px;
+    box-shadow: var(--shadow);
+    text-align: center;
+  }
+  #summary h2 { font-size: 22px; margin-bottom: 8px; }
+  #summary .score-big { font-size: 48px; font-weight: 700; color: var(--primary); line-height: 1.1; }
+  #summary .score-detail { font-size: 14px; color: var(--sub); margin-top: 6px; margin-bottom: 20px; }
+  #summary .grade-msg { font-size: 16px; font-weight: 600; margin-bottom: 20px; }
+
+  #submit-wrap {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 200;
+  }
+  #submit-btn {
+    background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+    color: #fff;
+    border: none;
+    border-radius: 99px;
+    padding: 14px 36px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(108,92,231,.4);
+    transition: transform .15s, box-shadow .15s;
+    font-family: inherit;
+  }
+  #submit-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(108,92,231,.5); }
+
+  #retry-btn {
+    background: var(--neutral); color: #fff;
+    border: none; border-radius: 99px;
+    padding: 12px 32px; font-size: 14px; font-weight: 700;
+    cursor: pointer; font-family: inherit; margin-top: 12px;
+  }
+
+  #warn-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,.55);
+    z-index: 999;
+    align-items: center;
+    justify-content: center;
+  }
+  #warn-overlay.show { display: flex; }
+  #warn-box {
+    background: #fff;
+    border-radius: 16px;
+    padding: 28px 24px;
+    max-width: 320px;
+    text-align: center;
+    box-shadow: 0 8px 40px rgba(0,0,0,.2);
+  }
+  #warn-box .warn-icon { font-size: 40px; margin-bottom: 12px; }
+  #warn-box h3 { font-size: 17px; margin-bottom: 8px; color: var(--wrong); }
+  #warn-box p { font-size: 13px; color: var(--sub); line-height: 1.6; margin-bottom: 16px; }
+  #warn-close {
+    background: var(--wrong); color: #fff;
+    border: none; border-radius: 99px;
+    padding: 10px 28px; font-size: 14px; font-weight: 700;
+    cursor: pointer; font-family: inherit;
+  }
+
+  .attempt-info {
+    text-align: center;
+    font-size: 12px;
+    color: var(--sub);
+    padding: 8px 0 0;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="school">고운고등학교 2학년 | 26년 3월 모의고사</div>
+  <h1>3월 모의고사 · 어법선택형</h1>
+  <div class="subtitle">괄호 안에서 어법/문맥상 알맞은 것을 고르세요</div>
+  <div class="range-badge">📋 시험범위: 21–24번, 29–40번</div>
+</header>
+
+<div id="progress-wrap">
+  <div id="progress-bar-bg"><div id="progress-bar"></div></div>
+  <span id="progress-text">0 / ?</span>
+</div>
+
+<div id="attempt-display" class="attempt-info"></div>
+<div id="quiz-area"></div>
+
+<div id="summary">
+  <h2>🎉 퀴즈 완료!</h2>
+  <div class="score-big" id="score-pct"></div>
+  <div class="score-detail" id="score-detail"></div>
+  <div class="grade-msg" id="grade-msg"></div>
+  <button id="retry-btn" onclick="retryQuiz()">🔄 다시 풀기</button>
+  <p style="font-size:12px;color:#999;margin-top:16px;">결과 화면을 캡처해서 선생님께 제출하세요 📸</p>
+</div>
+
+<div id="submit-wrap">
+  <button id="submit-btn" onclick="submitQuiz()">채점하기 ✓</button>
+</div>
+
+<div id="warn-overlay">
+  <div id="warn-box">
+    <div class="warn-icon">⚠️</div>
+    <h3>주의!</h3>
+    <p id="warn-msg">다른 탭으로 이동했습니다.<br>성실하게 풀어주세요!</p>
+    <button id="warn-close" onclick="closeWarn()">확인</button>
+  </div>
+</div>
+
+
+<script>
+// ── DATA ─────────────────────────────────────────────────────────────────
+// 각 번호가 하나의 문제 카드
+// sentence 안의 [___] 순서대로 blanks / answers 매핑
+
+const QUESTIONS = [
+  {
+    num: 21,
+    title: "수학 토론 학습 공동체",
+    sentence: `A first step toward (1)[___] a respectful classroom learning community is (2)[___] of all ideas and answers — regardless of any obvious errors. Rich mathematical discussions cannot occur if this expectation is not (3)[___]. We must remember that wrong answers are often (4)[___] in misconceptions, and (5)[___] these ideas are allowed to (6)[___] to the forefront, we cannot help students (7)[___] their thinking. Students who (8)[___] in safe learning environments are willing to (9)[___] sharing an incorrect answer with their peers in order to grow mathematically. It is important to model and expect the acceptance of all ideas without (10)[___] comments. As educators we can model this by (11)[___] all answers to be considered without (12)[___] any verbal or physical expressions that (13)[___] agreement or disagreement with any answer. The teacher may need to practice (14)[___] a "blank face." Students look to teachers (15)[___] the source of correct answers. Part of building a safe learning community is to (16)[___] this source of knowledge to the students by (17)[___] them to defend the thinking behind their solutions.`,
+    blanks: [
+      ["establishing","establishment"],
+      ["acceptance","rejection"],
+      ["in place","displaced"],
+      ["rooted","rooting"],
+      ["unless","if"],
+      ["be brought","bring"],
+      ["confront","avoiding"],
+      ["are","is"],
+      ["risk","avoid"],
+      ["derogatory","complimentary"],
+      ["recording","ignoring"],
+      ["giving","given"],
+      ["indicate","obscures"],
+      ["having","to have"],
+      ["as","for"],
+      ["shift","maintain"],
+      ["equipping","deprivation"]
+    ],
+    answers: ["establishing","acceptance","in place","rooted","unless","be brought","confront","are","risk","derogatory","recording","giving","indicate","having","as","shift","equipping"]
+  },
+  {
+    num: 22,
+    title: "기차역 이용객 동선",
+    sentence: `The usual intercity traveler moves (1)[___] through the station area. The passenger may not (2)[___] with the routine, have baggage to handle and check or (3)[___], have a long wait for connections or delayed trains, and may (4)[___] information, food, and a comfortable place to sit. Commuters, (5)[___], are familiar with the route through the station, have little or no luggage, and are usually (6)[___]. They want (7)[___] access to or from local streets and transport. These two types of traffic should (8)[___] separate to avoid (9)[___] and confusion. In some large stations such as Grand Central Terminal in New York City, commuter and intercity trains arrive and depart on (10)[___] levels. In smaller stations, (11)[___] platforms should (12)[___] and traffic (13)[___] so that the two lines of movement do not (14)[___]. In some instances, separate stations are in use. Clear and (15)[___] direction and routing signs and other means of channelization are (16)[___].`,
+    blanks: [
+      ["slowly","rapidly"],
+      ["be familiar","unfamiliar"],
+      ["retrieve","discard"],
+      ["require","refuse"],
+      ["on the other hand","similarly"],
+      ["in a hurry","at leisure"],
+      ["direct","indirect"],
+      ["be kept","keep"],
+      ["conflict","cooperation"],
+      ["different","identical"],
+      ["separate","shared"],
+      ["be used","use"],
+      ["routed","routing"],
+      ["cross","parallel"],
+      ["concise","vague"],
+      ["desirable","unwanted"]
+    ],
+    answers: ["slowly","be familiar","retrieve","require","on the other hand","in a hurry","direct","be kept","conflict","different","separate","be used","routed","cross","concise","desirable"]
+  },
+  {
+    num: 23,
+    title: "공연 조명 큐",
+    sentence: `Most performance lighting (1)[___] up of a number of different looks (2)[___] we have called lighting states. Each lighting cue (3)[___] a change to a new state. Like actors, lighting cues usually need a (4)[___]. This might be something very (5)[___] such as a cue required (6)[___] a room setting when an actor turns on a light switch or the rapid (7)[___] in intensity at the end of a dance number in a traditional musical (known as a button cue). At other times we will need a cue (8)[___] a (9)[___] change in atmosphere over a number of minutes, (10)[___] perhaps by the mention of a sunset or the intention to slowly change the feel of the performance from normal to (11)[___]. The question, 'What will lighting do for this production?' needs to (12)[___] for each moment of the production, each dramatic unit or scene, and each transition.`,
+    blanks: [
+      ["is made","makes"],
+      ["which","what"],
+      ["triggers","suppresses"],
+      ["motivation","hesitation"],
+      ["obvious","subtle"],
+      ["to brighten","brightening"],
+      ["increase","decrease"],
+      ["to provide","providing"],
+      ["subtle","dramatic"],
+      ["motivated","motivating"],
+      ["threatening","peaceful"],
+      ["be asked","ask"]
+    ],
+    answers: ["is made","which","triggers","motivation","obvious","to brighten","increase","to provide","subtle","motivated","threatening","be asked"]
+  },
+  {
+    num: 24,
+    title: "방의 음향 특성",
+    sentence: `Rooms have their own "sound" because they (1)[___] their own characteristics on audio signals (2)[___] within them. It's actually kind of (3)[___]. Sound such as music (4)[___] from headphones will sound the (5)[___] everywhere. No matter (6)[___] acoustical environment we are in, the headphones sound the same. That's because the room is not part of (7)[___] playback signal path. (8)[___] sound such as music from a loudspeaker will sound (9)[___] in every acoustical environment. Every room where you set up the loudspeaker will (10)[___] the sound you hear (11)[___] different — sometimes (12)[___] different; that is because the room is now part of the signal path. (13)[___], in the same room, the loudspeaker will sound different when it (14)[___] in different locations in the room and it will sound different as you move around the room. (15)[___], when you are recording a musical instrument, the sound you (16)[___] at the microphone will be different in every room and the recorded sound will sound different as the instrument or the microphone (17)[___].`,
+    blanks: [
+      ["impose","remove"],
+      ["contained","containing"],
+      ["remarkable","ordinary"],
+      ["coming","comes"],
+      ["same","different"],
+      ["what","how"],
+      ["that","what"],
+      ["But","Similarly"],
+      ["different","identical"],
+      ["cause","prevent"],
+      ["to be","being"],
+      ["dramatically","slightly"],
+      ["Also","However"],
+      ["is placed","places"],
+      ["Similarly","In contrast"],
+      ["receive","transmit"],
+      ["is moved","moves"]
+    ],
+    answers: ["impose","contained","remarkable","coming","same","what","that","But","different","cause","to be","dramatically","Also","is placed","Similarly","receive","is moved"]
+  },
+  {
+    num: 29,
+    title: "산업혁명과 피아노 공장",
+    sentence: `The Industrial Revolution did more than just (1)[___] new materials or machines. It invented a new process for manufacturing: the modern factory. Prior to around 1850, most piano shops used an (2)[___] system in which a master builder taught younger workers the skills of the trade, usually over the course of many years. The larger piano shops (3)[___] have specialists — for example, one person who specialized in soundboards, another who (4)[___] hammers, and so on. (5)[___] even the largest piano makers of that time produced (6)[___] 5-10 pianos per year per worker, as pianos (7)[___] essentially one at a time. The development of a true piano factory occurred first in the United States, (8)[___] by Jonas Chickering in Boston and later the Steinway family in New York City. These factories led to (9)[___] in both (10)[___] and quality. For example, one of the factories of the time had its own iron casting facility (11)[___] it made its metal plates, (12)[___] were thought (13)[___] the best available.`,
+    blanks: [
+      ["invent","inventing"],
+      ["apprentice","expertise"],
+      ["did","were"],
+      ["made","making"],
+      ["But","So"],
+      ["no more than","at least"],
+      ["were still made","still made"],
+      ["led","leading"],
+      ["improvements","decline"],
+      ["efficiency","waste"],
+      ["where","which"],
+      ["which","what"],
+      ["to be","being"]
+    ],
+    answers: ["invent","apprentice","did","made","But","no more than","were still made","led","improvements","efficiency","where","which","to be"]
+  },
+  {
+    num: 30,
+    title: "박사 프로그램의 한계와 개선",
+    sentence: `In a thesis-based doctoral programme, students typically spend a (1)[___] amount of time and effort (2)[___] a specific topic. While this deep dive into a particular area allows for (3)[___] exploration and understanding, it can also result in (4)[___] the focus. As students become deeply (5)[___] in their research, they may spend (6)[___] time exploring related fields or acquiring skills outside their immediate area of study. (7)[___], this singular focus may (8)[___] the breadth of knowledge and skills (9)[___] during the programme, potentially (10)[___] students' ability to adapt to diverse career paths or address interdisciplinary challenges. Some universities in Europe have (11)[___] the limitations of traditional thesis-based doctoral programmes and have started to implement more (12)[___] approaches. These structured programmes often (13)[___] research with coursework and training in transferable skills. By (14)[___] coursework, seminars, workshops and internships into the curriculum, they aim (15)[___] students with a (16)[___] skill set and better prepare them for a variety of career paths (17)[___] academia.`,
+    blanks: [
+      ["significant","trivial"],
+      ["researching","to research"],
+      ["thorough","superficial"],
+      ["narrowing","broadening"],
+      ["absorbed","absorbing"],
+      ["less","more"],
+      ["Consequently","However"],
+      ["limit","expand"],
+      ["developed","developing"],
+      ["hindering","facilitating"],
+      ["recognised","ignored"],
+      ["structured","random"],
+      ["combine","separate"],
+      ["incorporating","excluding"],
+      ["to provide","providing"],
+      ["broader","narrower"],
+      ["beyond","within"]
+    ],
+    answers: ["significant","researching","thorough","narrowing","absorbed","less","Consequently","limit","developed","hindering","recognised","structured","combine","incorporating","to provide","broader","beyond"]
+  },
+  {
+    num: 31,
+    title: "상상과 감정의 관계",
+    sentence: `Research shows that, by age three, children understand that imaginary objects do not (1)[___] to life. This is (2)[___] clear with respect to everyday objects — children know that (3)[___] they imagine a pencil in an empty box, the box will remain (4)[___]. (5)[___], emotion can sometimes (6)[___] this understanding, or at least its expression. That is, (7)[___] a child knows that monsters are not real, the thought of a monster under a bed might be (8)[___] to make a child (9)[___] to go into his room at night. Indeed, research shows that children have a more (10)[___] time (11)[___] their understanding of the causal relations between imagination and reality when they (12)[___] to pretend or imagine scary things, like monsters. In one study, preschool children (13)[___] an empty box and were asked to imagine a monster inside. All children agreed (14)[___] the box was empty. (15)[___], when they (16)[___] alone with the box they (17)[___] fear and avoidance of it.`,
+    blanks: [
+      ["come","coming"],
+      ["especially","specially"],
+      ["even though","because"],
+      ["empty","full"],
+      ["However","Therefore"],
+      ["disrupt","facilitate"],
+      ["even though","as"],
+      ["enough","insufficient"],
+      ["refuse","accept"],
+      ["difficult","easy"],
+      ["displaying","to display"],
+      ["are asked","ask"],
+      ["were shown","showed"],
+      ["that","what"],
+      ["However","Consequently"],
+      ["were left","left"],
+      ["exhibited","inhibited"]
+    ],
+    answers: ["come","especially","even though","empty","However","disrupt","even though","enough","refuse","difficult","displaying","are asked","were shown","that","However","were left","exhibited"]
+  },
+  {
+    num: 32,
+    title: "일상의 미학",
+    sentence: `Perhaps the best-known development to (1)[___] from the liberation and expansion of aesthetic experience (2)[___] the aesthetics of everyday life. Although there is presently a flowering of work on everyday aesthetics, the possibility of aesthetic (3)[___] in ordinary objects and events (4)[___], even if (5)[___] and dismissed by prevalent philosophical theory. Widely (6)[___] by poets, especially Romantic poets and (7)[___] in Asian traditions, the aesthetic in everyday situations (8)[___] by novelists. It may be most (9)[___], though, (10)[___] its contemporary intellectual origins in John Dewey's Art as Experience. In that book Dewey argued (11)[___] the separation of art from life by (12)[___] aesthetic experience on the biological and cultural conditions of human life. He located the aesthetic, not in an (13)[___] awareness of sensation and feeling but in "a complete (14)[___] of self and the world of objects and events." (15)[___], Dewey maintained that "the aesthetic is the (16)[___] and intensified development of traits that (17)[___] to every normally complete experience."`,
+    blanks: [
+      ["emerge","be emerged"],
+      ["is","are"],
+      ["gratification","gratitude"],
+      ["has long been recognized","has long recognized"],
+      ["degraded","upgraded"],
+      ["valued","ignoring"],
+      ["those","that"],
+      ["has also been recognized","has also recognized"],
+      ["convenient","inconvenient"],
+      ["to locate","locating"],
+      ["against","for"],
+      ["basing","base"],
+      ["internalized","internalizing"],
+      ["interpenetration","isolation"],
+      ["Further","However"],
+      ["clarified","clarify"],
+      ["belong","belongs"]
+    ],
+    answers: ["emerge","is","gratification","has long been recognized","degraded","valued","those","has also been recognized","convenient","to locate","against","basing","internalized","interpenetration","Further","clarified","belong"]
+  },
+  {
+    num: 33,
+    title: "도덕적 우월성 논증",
+    sentence: `One cannot validly argue that humans are morally (1)[___] beings on the ground that they possess, while others (2)[___], the (3)[___] of a moral agent. The reason is (4)[___], as far as moral standards are (5)[___], only beings that (6)[___] the capacities of a moral agent can meaningfully (7)[___] to be either morally good or morally bad. Only moral agents can (8)[___] to be morally better or worse than others, and the others in question (9)[___] be moral agents themselves. Judgments of moral superiority (10)[___] on the comparative (11)[___] or deficiencies of the entities (12)[___], and these merits and deficiencies are all moral (13)[___], that is, (14)[___] determined by moral standards. One entity is (15)[___] judged morally superior to another if it is the case that, when valid moral standards (16)[___] to both entities, the first fulfills them to a (17)[___] degree than the second. Both entities, (18)[___], must fall within the range of application of moral standards. This would not be the case, (19)[___], if humans (20)[___] being judged superior to animals and plants, since the latter (21)[___] moral agents.`,
+    blanks: [
+      ["superior","inferior"],
+      ["lack","have"],
+      ["capacities","capabilities"],
+      ["that","what"],
+      ["concerned","concerning"],
+      ["have","has"],
+      ["be said","say"],
+      ["be judged","judge"],
+      ["must","cannot"],
+      ["are based","base"],
+      ["merits","demerits"],
+      ["being judged","judging"],
+      ["ones","those"],
+      ["ones","those"],
+      ["correctly","correct"],
+      ["are applied","apply"],
+      ["greater","lesser"],
+      ["therefore","however"],
+      ["however","similarly"],
+      ["were","had been"],
+      ["are not","do"]
+    ],
+    answers: ["superior","lack","capacities","that","concerned","have","be said","be judged","must","are based","merits","being judged","ones","ones","correctly","are applied","greater","therefore","however","were","are not"]
+  },
+  {
+    num: 34,
+    title: "AI의 침묵 처리",
+    sentence: `Such artificial 'pause fillers' as machine-generated supplements for silence may help (1)[___] a more natural-sounding cadence in machine-generated speech patterns and so help convince the AI's human interlocutors (2)[___] they are engaging with another human. AI's 'humanity' of silence emerges in these contexts not least (3)[___] a short period of silence is likely to (4)[___] as a 'pause for thought', therefore (5)[___] the illusion (6)[___] the machine is 'thinking' before responding, just as a human (7)[___]. (8)[___], the technical issues (9)[___] in AI's poor handling of higher duration and frequency silences, no less than the machine inference that silence can be filled with relevant sounds in some conversational situations, (10)[___] both (11)[___]. In this context at least, the AI may be starting to recognise silence not as an (12)[___] but as (13)[___] data. (14)[___] the AI's confusion when (15)[___] with substantial silences, and its understanding that short break tags are (16)[___] to vocal markers such as 'uh's' and 'ah's' (17)[___] the AI's continuing preferences for sound over silence, for presence over absence.`,
+    blanks: [
+      ["produce","producing"],
+      ["that","which"],
+      ["because","because of"],
+      ["be interpreted","interpret"],
+      ["reinforcing","undermining"],
+      ["that","which"],
+      ["might","is"],
+      ["However","Therefore"],
+      ["flagged","flagging"],
+      ["are","is"],
+      ["significant","trivial"],
+      ["absence","presence"],
+      ["meaningful","meaningless"],
+      ["Yet","Thus"],
+      ["presented","presenting"],
+      ["equivalent","equivocal"],
+      ["indicate","indicates"]
+    ],
+    answers: ["produce","that","because","be interpreted","reinforcing","that","might","However","flagged","are","significant","absence","meaningful","Yet","presented","equivalent","indicates"]
+  },
+  {
+    num: 35,
+    title: "인쇄술과 정보 표준화",
+    sentence: `Standardization of information was an effect of printing; since it allowed (1)[___] reproduction of information in a way that manuscript copying (2)[___]. This is (3)[___] in the contrast between the travel logs of Marco Polo and (4)[___] of Christopher Columbus. After his return from China in 1295, a century and a half before printing, Polo's narrative (5)[___] in about 150 different manuscripts, with so many differences (6)[___] we're not sure (7)[___] version is (8)[___]. (9)[___], there is only one version of Christopher Columbus's letters about the exploration of the Caribbean in the 1490s, since they (10)[___] in printed form and widely (11)[___] at the time they (12)[___]. (13)[___] the (14)[___] of accuracy was a way that printing was an (15)[___] over the old oral-manuscript culture.`,
+    blanks: [
+      ["exact","exacting"],
+      ["did not","was not"],
+      ["evident","accidental"],
+      ["those","that"],
+      ["was copied","copied"],
+      ["that","which"],
+      ["which","what"],
+      ["authentic","authoritative"],
+      ["In contrast","Similarly"],
+      ["were fixed","fixed"],
+      ["distributed","attributed"],
+      ["were written","wrote"],
+      ["So","But"],
+      ["certainty","certitude"],
+      ["improvement","decline"]
+    ],
+    answers: ["exact","did not","evident","those","was copied","that","which","authentic","In contrast","were fixed","distributed","were written","So","certainty","improvement"]
+  },
+  {
+    num: 36,
+    title: "농업과 식량 생산",
+    sentence: `Archaeological evidence suggests that various crops (1)[___] as early as 9500 BC in the Levant. Over the millennia, continuous innovations have boosted agricultural (2)[___] while (3)[___] manual labor. (4)[___], the growing global population will always demand more food. It is projected that by 2050, the world's population will increase to 9.7 billion, (5)[___] will require global food production (6)[___] by at least 70% to meet demand. (7)[___] this need, only a (8)[___] portion of the Earth's surface is (9)[___] for farming due to limitations such as climate, topography, soil quality, and technology. Political and economic factors, including land ownership patterns, environmental laws, and population density, also (10)[___] agricultural land use. In fact, the amount of land (11)[___] for agriculture (12)[___]. In 2013, around 18.6 million square miles (13)[___] used for food production, compared to 19.5 million square miles in 1991.`,
+    blanks: [
+      ["were being cultivated","were cultivating"],
+      ["productivity","production"],
+      ["reducing","increasing"],
+      ["However","Therefore"],
+      ["which","that"],
+      ["to rise","rise"],
+      ["Despite","Because of"],
+      ["small","large"],
+      ["suitable","flexible"],
+      ["influence","influence on"],
+      ["used","using"],
+      ["has been declining","has been increasing"],
+      ["was","were"]
+    ],
+    answers: ["were being cultivated","productivity","reducing","However","which","to rise","Despite","small","suitable","influence","used","has been declining","was"]
+  },
+  {
+    num: 37,
+    title: "친족 용어의 유형론",
+    sentence: `If you are going to compare languages, it helps to start with something that you are (1)[___] you can find in all languages. Take for example signs or words for mother and father. If we add other family relationships to this category — son, grandmother, aunt, brother-in-law, cousin — we are (2)[___] the category of kinship terminology. Comparative typological studies of kinship terminology have (3)[___] that languages have labels for (4)[___] but not all family relationships. And the probability (5)[___] a specific kin relationship has a label (6)[___] predictable (7)[___] on the other kinship terms in the language. For example, all languages have a (8)[___] set of kinship terms — like mother and father. (9)[___], terms for less central category members are often (10)[___] up from the core terms — like mother-in-law and step-father. If we compare languages across the world, we can ask (11)[___] kinship relationships are typically (12)[___] with core terminology, and (13)[___] relationships are expressed by (14)[___] the core terminology.`,
+    blanks: [
+      ["confident","confidential"],
+      ["defining","confining"],
+      ["discovered","concealed"],
+      ["some","all"],
+      ["that","which"],
+      ["is","are"],
+      ["based","basing"],
+      ["core","peripheral"],
+      ["By contrast","Likewise"],
+      ["built","building"],
+      ["what","which"],
+      ["expressed","expressing"],
+      ["what","that"],
+      ["modifying","maintaining"]
+    ],
+    answers: ["confident","defining","discovered","some","that","is","based","core","By contrast","built","what","expressed","what","modifying"]
+  },
+  {
+    num: 38,
+    title: "가상 놀이에서의 소통",
+    sentence: `There are several ways (1)[___] participants in a make-believe can communicate things about the fictional world to other participants. Sometimes these messages are (2)[___] naturally as a result of full participation in the fictional world — i.e., something said or done by a player while in character communicates some things that are (3)[___] of that world. For example, a child (4)[___] to be Peter Pan might gasp and draw a plastic knife. This might be (5)[___] to communicate that (6)[___] one of Peter's enemies, such as Captain Hook, is (7)[___]. These in-character behaviors can be (8)[___], (9)[___], to maintain the necessary amount of common ground about (10)[___] is fictional in the world of the make-believe. At these times participants often come at least partly (11)[___] character to give other participants the information they (12)[___]. For example, it would be important (13)[___] confusion about (14)[___] is playing (15)[___] character: "No, you're Captain Hook, and I'm Peter Pan!"`,
+    blanks: [
+      ["that","which"],
+      ["emitted","omitted"],
+      ["fictional","factual"],
+      ["pretending","pretended"],
+      ["sufficient","deficient"],
+      ["fictionally","factually"],
+      ["approaching","retreating"],
+      ["insufficient","sufficient"],
+      ["however","therefore"],
+      ["what","that"],
+      ["out of","into"],
+      ["need","refuse"],
+      ["to avoid","avoiding"],
+      ["who","whom"],
+      ["which","what"]
+    ],
+    answers: ["that","emitted","fictional","pretending","sufficient","fictionally","approaching","insufficient","however","what","out of","need","to avoid","who","which"]
+  },
+  {
+    num: 39,
+    title: "압력과 물질의 상태",
+    sentence: `Our intuition about states of matter comes from our experience on Earth's surface, (1)[___] the pressure is (2)[___] low and variations in temperature cause changes in the state of matter from solid to liquid to gas. (3)[___], when we think of melting or boiling or the creation of plasma, we intuitively assume it (4)[___] an increase in temperature. This (5)[___] comes from the fact that we live in a very (6)[___] pressure environment. Even small changes in pressure, such as (7)[___] we experience when under water or on high mountaintops, can have very (8)[___] effects on our metabolism. (9)[___] the pressure changes we experience are (10)[___] compared to the pressure range of the overall planetary environment. Since pressure is (11)[___] by the weight of overlying material, pressures increase (12)[___] with depth. Imagine the pressures (13)[___] by the weight of rock a mile thick! For this reason a planet's pressure ranges are (14)[___] — from essentially zero pressure in space to pressures of millions of atmospheres in planetary interiors.`,
+    blanks: [
+      ["where","which"],
+      ["uniformly","enormously"],
+      ["Therefore","Nevertheless"],
+      ["reflects","rejects"],
+      ["bias","basis"],
+      ["constant","instant"],
+      ["those","that"],
+      ["large","largely"],
+      ["But","So"],
+      ["trivial","vital"],
+      ["controlled","controlling"],
+      ["rapidly","slow"],
+      ["generated","generating"],
+      ["enormous","tiny"]
+    ],
+    answers: ["where","uniformly","Therefore","reflects","bias","constant","those","large","But","trivial","controlled","rapidly","generated","enormous"]
+  },
+  {
+    num: 40,
+    title: "자기 실험과 일반 실험",
+    sentence: `When self-experimentation and conventional experiments are both (1)[___], the difference between them often resembles the difference between learning and showing: Self-experiments are better for discovery but (2)[___] for (3)[___] others that the solution is helpful or the answer is correct. Of course, most scientists want to do both — discover something and convince others of their discovery. (4)[___], psychologists should consider (5)[___] both self-experiments and conventional (6)[___]. The best use of resources may often be self-experiments (7)[___] by conventional ones. The researcher begins with self-experiments that, if all goes well, (8)[___] large effects and / or generate and (9)[___] many hypotheses. This exploratory and theory-building phase lasts (10)[___] a convenient solution or large effect is found. Then the researcher uses self-experiments to find the procedural parameters (e.g., duration, time of day, intensity) that (11)[___] the solution or maximize the effect. Only then (12)[___] begin conventional experiments, (13)[___] the optimized parameters.`,
+    blanks: [
+      ["possible","impossible"],
+      ["worse","better"],
+      ["convincing","convinced"],
+      ["Thus","However"],
+      ["doing","to do"],
+      ["ones","those"],
+      ["followed","following"],
+      ["find","finds"],
+      ["eliminate","maintain"],
+      ["until","while"],
+      ["optimize","optional"],
+      ["would the researcher","the researcher would"],
+      ["using","used"]
+    ],
+    answers: ["possible","worse","convincing","Thus","doing","ones","followed","find","eliminate","until","optimize","would the researcher","using"]
+  }
+];
+
+// ── SHUFFLE ───────────────────────────────────────────────────────────
+let shuffledBlanks = {};
+
+function shuffleArray(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function initShuffles() {
+  shuffledBlanks = {};
+  QUESTIONS.forEach(q => {
+    q.blanks.forEach((pair, bidx) => {
+      const key = `q${q.num}_${bidx}`;
+      shuffledBlanks[key] = shuffleArray(pair);
+    });
+  });
+}
+
+// ── STATE ─────────────────────────────────────────────────────────────
+let userAnswers = {};
+let submitted = false;
+let warnCount = 0;
+let attemptNum = 1;
+
+function totalBlanks() {
+  return QUESTIONS.reduce((n, q) => n + q.blanks.length, 0);
+}
+const TOTAL = totalBlanks();
+
+// ── INIT ──────────────────────────────────────────────────────────────
+function init() {
+  try {
+    const saved = localStorage.getItem('gounko_mock_attempt');
+    if (saved) attemptNum = parseInt(saved) + 1;
+    localStorage.setItem('gounko_mock_attempt', attemptNum);
+  } catch(e) {}
+  document.getElementById('attempt-display').textContent = `도전 횟수: ${attemptNum}회`;
+  initShuffles();
+  buildQuiz();
+  updateProgress();
+}
+
+function buildQuiz() {
+  const area = document.getElementById('quiz-area');
+  area.innerHTML = '';
+  const div = document.createElement('div');
+  div.className = 'quiz-container';
+  QUESTIONS.forEach(q => div.appendChild(makeCard(q)));
+  area.appendChild(div);
+}
+
+function makeSentenceHTML(q) {
+  let parts = q.sentence.split('[___]');
+  let html = '';
+  parts.forEach((part, i) => {
+    html += `<span>${part}</span>`;
+    if (i < q.blanks.length) {
+      const key = `q${q.num}_${i}`;
+      const pair = shuffledBlanks[key] || q.blanks[i];
+      html += `<span class="blank-slot" data-qnum="${q.num}" data-bidx="${i}">`;
+      pair.forEach(opt => {
+        const safeOpt = opt.replace(/'/g, "\\'");
+        html += `<button class="choice-btn" onclick="pick(this,${q.num},${i},'${safeOpt}')">${opt}</button>`;
+      });
+      html += `</span>`;
+    }
+  });
+  return html;
+}
+
+function makeCard(q) {
+  const card = document.createElement('div');
+  card.className = 'question-card';
+  card.id = `card_${q.num}`;
+  card.innerHTML = `
+    <div class="q-meta">
+      <div class="q-num">${q.num}번</div>
+      <div class="q-title">${q.title}</div>
+    </div>
+    <div class="q-sentence">${makeSentenceHTML(q)}</div>
+    <div class="feedback" id="fb_${q.num}"></div>
+  `;
+  return card;
+}
+
+// ── PICK ──────────────────────────────────────────────────────────────
+function pick(btn, qnum, bidx, val) {
+  if (submitted) return;
+  const key = `q${qnum}_${bidx}`;
+  userAnswers[key] = val;
+
+  const slot = btn.closest('.blank-slot');
+  slot.querySelectorAll('.choice-btn').forEach(b => {
+    b.style.borderColor = '';
+    b.style.color = '';
+    b.style.background = '';
+  });
+  btn.style.borderColor = 'var(--primary)';
+  btn.style.color = 'var(--primary)';
+  btn.style.background = '#f0eeff';
+
+  updateProgress();
+}
+
+// ── PROGRESS ──────────────────────────────────────────────────────────
+function updateProgress() {
+  const answered = Object.keys(userAnswers).length;
+  const pct = (answered / TOTAL) * 100;
+  document.getElementById('progress-bar').style.width = pct + '%';
+  document.getElementById('progress-text').textContent = `${answered} / ${TOTAL}`;
+}
+
+// ── SUBMIT ────────────────────────────────────────────────────────────
+function submitQuiz() {
+  if (submitted) return;
+  const answered = Object.keys(userAnswers).length;
+  if (answered < TOTAL) {
+    showWarn(`아직 ${TOTAL - answered}개의 빈칸이 남아있어요.<br>모두 선택한 후 채점해주세요!`);
+    return;
+  }
+
+  submitted = true;
+  document.getElementById('submit-btn').style.display = 'none';
+
+  let correct = 0;
+
+  QUESTIONS.forEach(q => {
+    let qCorrect = true;
+    q.blanks.forEach((pair, bidx) => {
+      const key = `q${q.num}_${bidx}`;
+      const userVal = userAnswers[key];
+      const correctVal = q.answers[bidx];
+      const isCorrect = userVal === correctVal;
+      if (!isCorrect) qCorrect = false;
+
+      const slot = document.querySelector(`[data-qnum="${q.num}"][data-bidx="${bidx}"]`);
+      if (slot) {
+        slot.querySelectorAll('.choice-btn').forEach(b => {
+          b.disabled = true;
+          b.style.borderColor = '';
+          b.style.color = '';
+          b.style.background = '';
+          if (b.textContent === userVal && isCorrect) b.classList.add('selected-correct');
+          else if (b.textContent === userVal && !isCorrect) b.classList.add('selected-wrong');
+          else if (b.textContent === correctVal && !isCorrect) b.classList.add('reveal-correct');
+        });
+      }
+      if (isCorrect) correct++;
+    });
+
+    const card = document.getElementById(`card_${q.num}`);
+    const fb = document.getElementById(`fb_${q.num}`);
+    if (qCorrect) {
+      card.classList.add('answered-correct');
+      fb.className = 'feedback correct';
+      fb.textContent = '✓ 모두 정답입니다!';
+    } else {
+      card.classList.add('answered-wrong');
+      fb.className = 'feedback wrong';
+      const wrongs = q.blanks.map((p, i) => {
+        const k = `q${q.num}_${i}`;
+        return userAnswers[k] !== q.answers[i]
+          ? `(${i+1}) 정답: ${q.answers[i]}`
+          : null;
+      }).filter(Boolean);
+      fb.textContent = '✗ 오답 | ' + wrongs.join('  /  ');
+    }
+  });
+
+  const pct = Math.round((correct / TOTAL) * 100);
+  document.getElementById('score-pct').textContent = pct + '%';
+  document.getElementById('score-detail').textContent = `${correct} / ${TOTAL} 정답`;
+  const msg = pct >= 90 ? '🌟 훌륭해요! 완벽에 가깝습니다!' :
+              pct >= 70 ? '👍 잘했어요! 조금만 더 연습하면 완벽!' :
+              pct >= 50 ? '🙂 절반 이상 맞았어요. 틀린 문항을 다시 확인해보세요.' :
+                          '📚 틀린 문항을 꼼꼼히 복습해봐요!';
+  document.getElementById('grade-msg').textContent = msg;
+  document.getElementById('summary').style.display = 'block';
+  document.getElementById('summary').scrollIntoView({behavior:'smooth'});
+}
+
+// ── RETRY ─────────────────────────────────────────────────────────────
+function retryQuiz() {
+  submitted = false;
+  userAnswers = {};
+  document.getElementById('submit-btn').style.display = '';
+  document.getElementById('summary').style.display = 'none';
+  initShuffles();
+  buildQuiz();
+  updateProgress();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+// ── WARN / CHEAT DETECT ───────────────────────────────────────────────
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden && !submitted) {
+    warnCount++;
+    showWarn(`다른 탭으로 이동했습니다. (${warnCount}회)<br>성실하게 풀어주세요!`);
+  }
+});
+document.addEventListener('copy', e => { if (!submitted) e.preventDefault(); });
+document.addEventListener('contextmenu', e => { if (!submitted) e.preventDefault(); });
+
+function showWarn(msg) {
+  document.getElementById('warn-msg').innerHTML = msg;
+  document.getElementById('warn-overlay').classList.add('show');
+}
+function closeWarn() {
+  document.getElementById('warn-overlay').classList.remove('show');
+}
+
+init();
+</script>
+</body>
+</html>
