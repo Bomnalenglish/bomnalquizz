@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>종촌고 1학년 – Lesson 2 어법 선택형</title>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Serif+KR:wght@400;600&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#f5f0e8;--card:#fff;--ink:#1c1a16;--soft:#6b6456;
+  --accent:#3a6e9e;--accent2:#c8522a;
+  --correct:#2e7d52;--wrong:#c0392b;--border:#e0d8cc;
+}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;}
+header{background:var(--ink);color:#fff;padding:44px 24px 36px;text-align:center;position:relative;overflow:hidden;}
+header::after{content:'';position:absolute;bottom:-50px;right:-50px;width:200px;height:200px;border-radius:50%;border:2px solid rgba(58,110,158,0.3);}
+.header-tag{display:inline-block;font-size:0.72rem;font-weight:500;letter-spacing:3px;color:#6eaee6;border:1px solid #6eaee6;border-radius:2px;padding:4px 12px;margin-bottom:14px;}
+header h1{font-family:'Black Han Sans',sans-serif;font-size:clamp(1.5rem,5vw,2.4rem);color:#fff;line-height:1.25;}
+header h1 span{color:#6eaee6;}
+.header-sub{font-family:'Noto Serif KR',serif;font-size:0.88rem;color:rgba(255,255,255,0.5);margin-top:10px;letter-spacing:1px;}
+.progress-wrap{background:#fff;border-bottom:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;gap:14px;position:sticky;top:0;z-index:100;}
+.progress-bar-outer{flex:1;height:6px;background:var(--border);border-radius:3px;overflow:hidden;}
+.progress-bar-inner{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:3px;width:0%;transition:width 0.4s ease;}
+.progress-text{font-size:0.78rem;font-weight:700;color:var(--soft);white-space:nowrap;}
+.score-badge{font-size:0.78rem;font-weight:700;background:var(--ink);color:#fff;border-radius:20px;padding:4px 12px;white-space:nowrap;}
+main{max-width:820px;margin:0 auto;padding:36px 20px 80px;}
+.section-label{font-family:'Black Han Sans',sans-serif;font-size:1rem;margin:32px 0 14px;padding:8px 14px;background:var(--ink);color:#fff;border-radius:8px;display:inline-block;letter-spacing:1px;}
+.q-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px 24px 24px;margin-bottom:20px;box-shadow:0 2px 10px rgba(0,0,0,0.04);animation:fadeUp 0.4s ease both;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+.q-header{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+.q-num{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:var(--ink);color:#fff;border-radius:7px;font-family:'Black Han Sans',sans-serif;font-size:0.95rem;flex-shrink:0;}
+.q-ko{font-family:'Noto Serif KR',serif;font-size:0.82rem;color:var(--soft);line-height:1.6;flex:1;}
+.passage{font-family:'Noto Serif KR',serif;font-size:0.92rem;line-height:2.1;color:var(--ink);word-break:keep-all;}
+.choice-group{display:inline-flex;align-items:center;gap:1px;vertical-align:middle;border:1.5px solid var(--border);border-radius:6px;overflow:hidden;font-family:'Noto Sans KR',sans-serif;font-size:0.8rem;font-weight:600;margin:0 2px;transition:border-color 0.2s;}
+.choice-group.answered{border-color:transparent;}
+.choice-btn{background:none;border:none;padding:3px 8px;cursor:pointer;font-family:inherit;font-size:inherit;font-weight:600;color:var(--ink);transition:background 0.15s,color 0.15s;line-height:1.5;}
+.choice-btn:hover:not(:disabled){background:var(--ink);color:#fff;}
+.choice-btn.correct{background:var(--correct);color:#fff;cursor:default;}
+.choice-btn.wrong{background:var(--wrong);color:#fff;cursor:default;text-decoration:line-through;opacity:0.7;}
+.choice-btn.reveal-correct{background:var(--correct);color:#fff;cursor:default;}
+.choice-btn:disabled{cursor:default;}
+.sep{font-size:0.72rem;color:#bbb;padding:0 1px;pointer-events:none;font-weight:400;}
+.summary{background:var(--ink);color:#fff;border-radius:16px;padding:40px 32px;text-align:center;margin-top:16px;display:none;animation:fadeUp 0.5s ease both;}
+.summary.show{display:block;}
+.summary-title{font-family:'Black Han Sans',sans-serif;font-size:1.7rem;margin-bottom:6px;}
+.summary-title span{color:#6eaee6;}
+.summary-score{font-size:3.2rem;font-weight:700;color:#6eaee6;font-family:'Black Han Sans',sans-serif;margin:18px 0 6px;}
+.summary-sub{font-size:0.88rem;color:rgba(255,255,255,0.5);margin-bottom:24px;font-family:'Noto Serif KR',serif;}
+.summary-msg{font-size:1rem;color:rgba(255,255,255,0.8);margin-bottom:28px;}
+.btn-retry{display:inline-block;background:var(--accent);color:#fff;border:none;border-radius:8px;padding:11px 32px;font-family:'Black Han Sans',sans-serif;font-size:1rem;cursor:pointer;letter-spacing:1px;transition:opacity 0.2s;}
+.btn-retry:hover{opacity:0.85;}
+.capture-note{margin-top:14px;text-align:center;font-size:0.84rem;color:var(--soft);font-family:'Noto Serif KR',serif;}
+</style>
+</head>
+<body>
+<header>
+  <div class="header-tag">종촌고 1학년 · YBM 김은형</div>
+  <h1>Lesson 2 <span>어법 선택형</span></h1>
+  <p class="header-sub">교과서 본문 1~40번 + 본문 외 지문 1~9번</p>
+</header>
+<div class="progress-wrap">
+  <div class="progress-bar-outer"><div class="progress-bar-inner" id="progressBar"></div></div>
+  <div class="progress-text" id="progressText">0 / 0</div>
+  <div class="score-badge" id="scoreBadge">✓ 0</div>
+</div>
+<main id="main"></main>
+<script>
+const SECTIONS = [
+  {
+    label: '📘 교과서 본문',
+    qs: [
+      { no:1,  ko:'어떤 예술가들은 특정 장소와 매우 밀접하게 관련되어 있어서 그들을 분리하기 어렵다.',
+        parts:['Certain artists are so [',['close','closely'],'] linked with particular places [',['which','that'],'] it is hard to separate them.'], ans:[1,1] },
+      { no:2,  ko:'아를은 파리에서 남동쪽으로 다섯 시간 거리에 위치하고 있고 마법 같은 빛과 다채로운 풍경으로 잘 알려져 있다.',
+        parts:['Arles is located five hours southeast of Paris and [',['are','is'],'] well known for its magical light and colorful landscape.'], ans:[1] },
+      { no:3,  ko:'이 도시에서 가장 유명한 거주자는 빈센트 반 고흐였다.',
+        parts:['The most famous resident of this town [',['was','were'],'] Vincent van Gogh.'], ans:[0] },
+      { no:4,  ko:'그는 파리의 흐린 하늘을 뒤로하고 1888년에 아를에 도착했다.',
+        parts:['[',['Leaving','Left'],'] behind the gray skies of Paris, he arrived in Arles in 1888.'], ans:[0] },
+      { no:5,  ko:'그 도시는 창의성의 폭발에 영감을 주었다.',
+        parts:['The town [',['inspired','was inspired'],'] an explosion of creativity.'], ans:[0] },
+      { no:6,  ko:'빈센트는 "예술의 모든 미래는 프랑스 남부에서 찾아볼 수 있을 것이다."라고 주장했다.',
+        parts:['Vincent claimed, "The whole future of art is to [',['find','be found'],'] in the south of France."'], ans:[1] },
+      { no:7,  ko:'그는 열정적으로 작업했고 단 15개월 만에 거의 2백 점의 그림을 그렸다.',
+        parts:['He worked [',['enthusiastically','enthusiastical'],'] and produced nearly 200 paintings in just fifteen months.'], ans:[0] },
+      { no:8,  ko:'지금은 아를에 빈센트의 작품이 하나도 남아 있지 않지만, 몇몇 작품들이 거리 옆 패널에 재창조되어 있다.',
+        parts:['None of Vincent\'s works are [',['leaving','left'],'] in Arles now, but today you can see a number of them [',['has','have'],'] [',['been recreated','recreated'],'] in street-side panels.'], ans:[1,1,0] },
+      { no:9,  ko:'아를에 남아 있는 빈센트의 흔적들을 따라가 보자.',
+        parts:['Let\'s follow Vincent\'s traces that [',['remains','remain'],'] in Arles.'], ans:[1] },
+      { no:10, ko:'아를은 로마 시대 이래 계속 존재하고 있는 고대 도시다.',
+        parts:['Arles is an ancient city [',['dated','dating'],'] back to Roman times.'], ans:[1] },
+      { no:11, ko:'서기 90년에 지어진 원형 경기장을 포함하여 많은 로마 시대 건물들이 남아 있다.',
+        parts:['Many Roman buildings remain, including an arena that [',['was built','built'],'] in 90 A.D.'], ans:[0] },
+      { no:12, ko:'이 경기장은 한때 2만 명 이상의 사람들을 수용하곤 했다.',
+        parts:['The arena [',['was used','used'],'] to seat over 20,000 people who would go to watch various entertaining events.'], ans:[0] },
+      { no:13, ko:'빈센트는 가끔 일요일마다 경기장에서 열리는 투우 경기를 보러 가기도 했다.',
+        parts:['Vincent sometimes went to the bullfights [',['that','what'],'] were held in the arena every [',['Sundays','Sunday'],'].'], ans:[0,1] },
+      { no:14, ko:'그는 특히 다채로운 군중을 보는 것을 좋아했다.',
+        parts:['He particularly liked to [',['watching','watch'],'] the colorful crowds.'], ans:[1] },
+      { no:15, ko:'그는 친구에게 군중들이 대단히 흥미롭다는 것을 알게 되었다고 얘기했다.',
+        parts:['He told a friend [',['who','that'],'] he found the crowds [',['fascinated','fascinating'],'].'], ans:[1,1] },
+      { no:16, ko:'경기장은 그림의 우측 상단 가장자리에 위치하고 있고, 거의 보이지 않는다.',
+        parts:['The arena is in the top right corner of the painting and [',['are','is'],'] barely visible.'], ans:[1] },
+      { no:17, ko:'아래에는 두 마리의 황소의 희미한 이미지가 있다.',
+        parts:['Below, there [',['are','is'],'] a faint image of two bulls.'], ans:[1] },
+      { no:18, ko:'어떤 사람들은 친구와 수다를 떨고, 다른 사람들은 황소를 응원한다.',
+        parts:['Some of the people are chatting with friends, [',['others','another'],'] are cheering on the bulls.'], ans:[0] },
+      { no:19, ko:'빈센트는 세계적으로 유명한 \'밤의 카페 테라스\'를 1888년 9월에 그렸다.',
+        parts:['Vincent [',['has painted','painted'],'] the world-famous Café Terrace at Night in September 1888.'], ans:[1] },
+      { no:20, ko:'그는 밤에 카페 반 고흐 밖에 앉아 이 작품을 만들었다.',
+        parts:['He created this work while [',['sat','sitting'],'] outside the Café van Gogh at night.'], ans:[1] },
+      { no:21, ko:'대부분의 화가들이 밤 풍경을 기억에서 떠올려 그리고 주간에 작업했기 때문에 이것은 드문 경우였다.',
+        parts:['most painters did their night scenes from memory and [',['work','worked'],'] during the daytime.'], ans:[1] },
+      { no:22, ko:'따라서, 대부분의 화가들은 검은색 물감을 많이 사용했다.',
+        parts:['As such, they [',['used','were used'],'] a lot of black paint.'], ans:[0] },
+      { no:23, ko:'하지만 빈센트는 밤 풍경이 다양하고 생동감 넘치는 색들을 지니고 있다고 믿었다.',
+        parts:['Vincent, however, believed [',['that','what'],'] night scenes contained diverse and vibrant colors.'], ans:[0] },
+      { no:24, ko:'\'밤의 카페 테라스\'는 풍부한 조화를 지니고 있기 때문에 빈센트는 검은색 물감을 단 한 방울도 사용할 필요가 없었다.',
+        parts:['the Café Terrace at Night has [',['so','such'],'] a rich harmony of yellows, blues, and oranges [',['that','where'],'] Vincent did not have to use a single drop of black paint.'], ans:[1,0] },
+      { no:25, ko:'오늘날에도, 여전히 빈센트의 그림이 그려진 그 자리에 카페가 있다.',
+        parts:['Even today, there [',['is','are'],'] still a café at the site of Vincent\'s painting.'], ans:[0] },
+      { no:26, ko:'카페는 1990년대에 개조되었고, 그림 속의 카페처럼 보이기 위해 노란색으로 칠해졌다.',
+        parts:['It [',['renovated','was renovated'],'] in the 1990s and painted yellow to look like the café in the painting.'], ans:[1] },
+      { no:27, ko:'하지만 원래 카페의 색이 노란색이었는지 여부는 불확실하다.',
+        parts:['it is uncertain [',['whether','which'],'] the color of the original café was yellow or not.'], ans:[0] },
+      { no:28, ko:'그 이유는 빈센트가 램프의 불빛을 보여 주기 위해서 카페의 벽을 노란색으로 칠했기 때문이다.',
+        parts:['The reason is [',['which','that'],'] Vincent painted the wall of the café yellow to show the lamp light.'], ans:[1] },
+      { no:29, ko:'1888년 12월, 빈센트는 정신 질환을 앓았고 아를의 병원으로 보내졌다.',
+        parts:['Vincent suffered from a mental illness and [',['was sent','sent'],'] to the hospital in Arles.'], ans:[0] },
+      { no:30, ko:'의사들은 그가 야외에서 그림을 그릴 수 있도록 허락했다.',
+        parts:['the doctors allowed him [',['painting','to paint'],'] outdoors.'], ans:[1] },
+      { no:31, ko:'빈센트는 이 자유를 이용해서 몇몇 아름다운 풍경화를 그렸다.',
+        parts:['Vincent took advantage of this freedom and [',['was produced','produced'],'] several beautiful landscapes.'], ans:[1] },
+      { no:32, ko:'이 그림은 다양한 색과 명암의 꽃과 나무로 가득 찬 봄의 정원을 보여 준다.',
+        parts:['The picture illustrates a spring garden [',['filling','filled'],'] with flowers and trees with different colors and tones.'], ans:[1] },
+      { no:33, ko:'그러나 큰 나무들은 잎이 거의 없다. 계절이 봄이라는 점을 고려하면, 이것은 꽤 이상하다.',
+        parts:['The big trees, however, have [',['little','few'],'] leaves. This is rather odd [',['given','giving'],'] that the season is spring.'], ans:[1,0] },
+      { no:34, ko:'이 대조는 아마도 가장 어려운 시기 동안의 그 화가의 복잡한 감정을 반영하는 것일지도 모른다.',
+        parts:['this contrast reflects the painter\'s complex feelings [',['during','while'],'] the most difficult time of his life.'], ans:[0] },
+      { no:35, ko:'병원은 1980년대에 문을 닫았고, 건물은 도서관 및 전시 공간으로 다시 문을 열었다.',
+        parts:['the building [',['reopening','reopened'],'] as a library and exhibition space, with a café and gift shops.'], ans:[1] },
+      { no:36, ko:'정원은 빈센트의 그림을 최대한 닮도록 개조되었다.',
+        parts:['The garden [',['renovated','was renovated'],'] to resemble Vincent\'s painting as much as possible.'], ans:[1] },
+      { no:37, ko:'아를과 그 지방의 시골 풍경은 빈센트가 더 밝고 흥미로운 풍경화들을 창조하도록 영감을 주었다.',
+        parts:['Arles and its provincial countryside inspired Vincent [',['to create','creating'],'] brighter, more [',['exciting','excited'],'] landscapes.'], ans:[0,0] },
+      { no:38, ko:'그는 파리에서 더 밝은 색과 부드러운 빛을 찾아 헤맸었다. 아를에서 그는 그것들을 찾았다.',
+        parts:['He [',['has','had'],'] searched for brighter colors and softer light in Paris. In Arles, he found [',['it','them'],'].'], ans:[1,1] },
+      { no:39, ko:'오늘날, 2백 년 이상이 지난 후에도, 이 아름다운 도시는 여전히 매력적으로 남아 있다.',
+        parts:['this beautiful city remains just as [',['attractive','attractively'],'].'], ans:[0] },
+      { no:40, ko:'로마의 역사적인 장소들과 빈센트의 이야기의 결합은 독특한 분위기를 만들 것이다.',
+        parts:['The combination of Roman historic sites and Vincent\'s story [',['creates','create'],'] a unique mood [',['that','what'],'] will inspire you.'], ans:[0,0] },
+    ]
+  },
+  {
+    label: '📄 본문 외 지문',
+    qs: [
+      { no:1, ko:'태양 빛은 많은 건강상의 이점을 제공한다.',
+        parts:['Sunlight offers numerous health [',['benefit','benefits'],'].'], ans:[1] },
+      { no:2, ko:'비타민 D 수치를 높이고, 뼈를 강화하며, 질병을 예방하고 피부 상태를 치유한다.',
+        parts:['it boosts vitamin D levels, [',['making','makes'],'] the bones [',['stronger','more strongly'],'], prevents diseases, and heals skin conditions.'], ans:[0,0] },
+      { no:3, ko:'자연광은 세로토닌의 분비를 유발한다.',
+        parts:['Natural light causes the release of serotonin, a natural chemical the brain produces to promote happiness and pleasure and [',['reduce','reduces'],'] depression and anxiety.'], ans:[0] },
+      { no:4, ko:'태양 빛의 감소는 공황 발작 및 불안 관련 장애와 관련이 있다.',
+        parts:['reductions in sunlight [',['is','are'],'] linked to panic attacks and anxiety-related disorders.'], ans:[1] },
+      { no:5, ko:'인공 빛이 만드는 색은 다양한 감정을 유발할 수 있고, 몸에 다른 영향을 미칠 수 있다.',
+        parts:['Colors [',['creating','created'],'] by artificial light can cause different emotions and [',['had','have'],'] other effects on the body.'], ans:[1,1] },
+      { no:6, ko:'파란색과 흰색 빛은 우리를 활기차게 만들지만, 수면 패턴을 깨뜨릴 수도 있다.',
+        parts:['they can also disturb sleep patterns by [',['lower','lowering'],'] levels of melatonin, a chemical [',['made','making'],'] in the brain [',['what','that'],'] regulates night-and-day cycles.'], ans:[1,0,1] },
+      { no:7, ko:'빨간색 빛과 노란색 빛은 우리 몸에 영향을 미칠 가능성이 가장 낮다.',
+        parts:['red and yellow light are the least likely to [',['impacting','impact'],'] our bodies.'], ans:[1] },
+      { no:8, ko:'저녁에 빨간색 빛에 노출되면 멜라토닌의 분비를 증가시켜 정신 건강을 향상시킬 수 있다.',
+        parts:['Exposure to red light in the evening can improve mental health by [',['increased','increasing'],'] the release of melatonin, [',['that','which'],'] leads to better sleep at night.'], ans:[1,1] },
+      { no:9, ko:'이것은 사람들의 인지 능력과 전반적인 정신 건강을 향상시킨다.',
+        parts:['This improves people\'s cognitive abilities and overall [',['mental','mentally'],'] health.'], ans:[0] },
+    ]
+  }
+];
+
+let totalItems=0, answeredCount=0, correctCount=0;
+const allItems=[];
+SECTIONS.forEach(sec=>sec.qs.forEach(q=>{
+  q.items=[];
+  q.parts.forEach(p=>{if(Array.isArray(p)){q.items.push({opts:p,ans:q.ans[q.items.length]});totalItems++;}});
+  allItems.push(q);
+}));
+const state=allItems.map(q=>q.items.map(()=>null));
+
+function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+function buildPassage(q,qIdx){
+  let html='<div class="passage">',itemIdx=0;
+  q.parts.forEach(part=>{
+    if(typeof part==='string'){html+=escHtml(part);}
+    else{
+      const iIdx=itemIdx++;
+      html+=`<span class="choice-group" id="cg-${qIdx}-${iIdx}">`;
+      part.forEach((opt,oIdx)=>{
+        html+=`<button class="choice-btn" onclick="handleClick(${qIdx},${iIdx},${oIdx})" id="cb-${qIdx}-${iIdx}-${oIdx}">${escHtml(opt)}</button>`;
+        if(oIdx<part.length-1)html+=`<span class="sep">/</span>`;
+      });
+      html+=`</span>`;
+    }
+  });
+  return html+'</div>';
+}
+
+function render(){
+  const main=document.getElementById('main');
+  let qIdx=0;
+  SECTIONS.forEach(sec=>{
+    main.insertAdjacentHTML('beforeend',`<div class="section-label">${sec.label}</div>`);
+    sec.qs.forEach(q=>{
+      const card=document.createElement('div');
+      card.className='q-card';card.id=`qcard-${qIdx}`;
+      card.style.animationDelay=`${qIdx*0.03}s`;
+      card.innerHTML=`<div class="q-header"><div class="q-num">${q.no}</div><div class="q-ko">${escHtml(q.ko)}</div></div>${buildPassage(q,qIdx)}`;
+      main.appendChild(card);qIdx++;
+    });
+  });
+  updateProgress();
+}
+
+function handleClick(qIdx,itemIdx,optIdx){
+  if(state[qIdx][itemIdx]!==null)return;
+  const item=allItems[qIdx].items[itemIdx];
+  const isCorrect=optIdx===item.ans;
+  state[qIdx][itemIdx]=isCorrect?'correct':'wrong';
+  answeredCount++;if(isCorrect)correctCount++;
+  const btn=document.getElementById(`cb-${qIdx}-${itemIdx}-${optIdx}`);
+  btn.classList.add(isCorrect?'correct':'wrong');btn.disabled=true;
+  if(!isCorrect){const cb=document.getElementById(`cb-${qIdx}-${itemIdx}-${item.ans}`);cb.classList.add('reveal-correct');cb.disabled=true;}
+  item.opts.forEach((_,oi)=>{document.getElementById(`cb-${qIdx}-${itemIdx}-${oi}`).disabled=true;});
+  document.getElementById(`cg-${qIdx}-${itemIdx}`).classList.add('answered');
+  updateProgress();
+  if(answeredCount===totalItems)showSummary();
+}
+
+function updateProgress(){
+  const pct=totalItems>0?(answeredCount/totalItems*100):0;
+  document.getElementById('progressBar').style.width=pct+'%';
+  document.getElementById('progressText').textContent=`${answeredCount} / ${totalItems}`;
+  document.getElementById('scoreBadge').textContent=`✓ ${correctCount}`;
+}
+
+function showSummary(){
+  const pct=Math.round(correctCount/totalItems*100);
+  const msg=pct===100?'🎉 완벽합니다!':pct>=80?'👍 훌륭해요!':pct>=60?'📖 틀린 것을 다시 확인해 보세요.':'💪 다시 도전해 보세요!';
+  const s=document.createElement('div');s.className='summary show';
+  s.innerHTML=`<div class="summary-title">결과 <span>확인</span></div>
+    <div class="summary-score">${correctCount}<span style="font-size:1.5rem;color:rgba(255,255,255,0.4)"> / ${totalItems}</span></div>
+    <div class="summary-sub">정답률 ${pct}%</div>
+    <div class="summary-msg">${msg}</div>
+    <button class="btn-retry" onclick="location.reload()">🔄 다시 풀기</button>`;
+  document.getElementById('main').appendChild(s);
+  const note=document.createElement('p');note.className='capture-note';
+  note.textContent='📸 결과를 캡처해서 선생님께 제출해 주세요!';
+  document.getElementById('main').appendChild(note);
+}
+
+render();
+</script>
+</body>
+</html>

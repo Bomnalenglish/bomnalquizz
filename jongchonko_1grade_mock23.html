@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>23년 3월 고1 모의고사 – 21·22·29번</title>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Serif+KR:wght@400;600&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#f4f1ec;--card:#fff;--ink:#1c1a16;--soft:#6b6456;
+  --accent:#b85c2a;--accent2:#3a6e7d;
+  --correct:#2e7d52;--wrong:#c0392b;
+  --correct-bg:#e8f5ee;--wrong-bg:#fdecea;--border:#e0d8cc;
+}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;}
+
+/* HEADER */
+header{background:var(--ink);color:#fff;padding:44px 24px 36px;text-align:center;position:relative;overflow:hidden;}
+header::before{content:'';position:absolute;top:-60px;left:-60px;width:200px;height:200px;border-radius:50%;border:2px solid rgba(184,92,42,0.25);}
+header::after{content:'';position:absolute;bottom:-50px;right:-50px;width:180px;height:180px;border-radius:50%;border:2px solid rgba(58,110,125,0.25);}
+.header-tag{display:inline-block;font-size:0.72rem;font-weight:500;letter-spacing:3px;color:#e8a07a;border:1px solid #e8a07a;border-radius:2px;padding:4px 12px;margin-bottom:14px;}
+header h1{font-family:'Black Han Sans',sans-serif;font-size:clamp(1.5rem,5vw,2.4rem);color:#fff;line-height:1.25;}
+header h1 span{color:#e8a07a;}
+.header-sub{font-family:'Noto Serif KR',serif;font-size:0.88rem;color:rgba(255,255,255,0.5);margin-top:10px;letter-spacing:1px;}
+
+/* PROGRESS */
+.progress-wrap{background:#fff;border-bottom:1px solid var(--border);padding:12px 20px;display:flex;align-items:center;gap:14px;position:sticky;top:0;z-index:100;}
+.progress-bar-outer{flex:1;height:6px;background:var(--border);border-radius:3px;overflow:hidden;}
+.progress-bar-inner{height:100%;background:linear-gradient(90deg,var(--accent2),var(--accent));border-radius:3px;width:0%;transition:width 0.4s ease;}
+.progress-text{font-size:0.78rem;font-weight:700;color:var(--soft);white-space:nowrap;}
+.score-badge{font-size:0.78rem;font-weight:700;background:var(--ink);color:#fff;border-radius:20px;padding:4px 12px;white-space:nowrap;}
+
+/* MAIN */
+main{max-width:840px;margin:0 auto;padding:36px 20px 80px;}
+
+/* SECTION DIVIDER */
+.section-label{font-family:'Black Han Sans',sans-serif;font-size:1rem;margin:36px 0 16px;padding:10px 16px;border-radius:10px;display:flex;align-items:center;gap:10px;letter-spacing:1px;}
+.section-label.sel{background:#fde8d8;color:var(--accent);}
+.section-label.fill{background:#d8edf3;color:var(--accent2);}
+
+/* CARD */
+.q-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px 24px 24px;margin-bottom:20px;box-shadow:0 2px 10px rgba(0,0,0,0.04);animation:fadeUp 0.4s ease both;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
+
+.q-header{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+.q-num{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;background:var(--ink);color:#fff;border-radius:8px;font-family:'Black Han Sans',sans-serif;font-size:1rem;flex-shrink:0;}
+.q-type-badge{font-size:0.68rem;font-weight:700;padding:3px 10px;border-radius:20px;letter-spacing:0.5px;}
+.q-type-badge.sel{background:#fde8d8;color:var(--accent);}
+.q-type-badge.fill{background:#d8edf3;color:var(--accent2);}
+
+/* PASSAGE */
+.passage{font-family:'Noto Serif KR',serif;font-size:0.92rem;line-height:2.2;color:var(--ink);word-break:keep-all;}
+
+/* CHOICE GROUP (선택형) */
+.choice-group{display:inline-flex;align-items:center;gap:1px;vertical-align:middle;border:1.5px solid var(--border);border-radius:6px;overflow:hidden;font-family:'Noto Sans KR',sans-serif;font-size:0.8rem;font-weight:600;margin:0 2px;transition:border-color 0.2s;}
+.choice-group.answered{border-color:transparent;}
+.choice-btn{background:none;border:none;padding:3px 8px;cursor:pointer;font-family:inherit;font-size:inherit;font-weight:600;color:var(--ink);transition:background 0.15s,color 0.15s;line-height:1.5;}
+.choice-btn:hover:not(:disabled){background:var(--ink);color:#fff;}
+.choice-btn.correct{background:var(--correct);color:#fff;cursor:default;}
+.choice-btn.wrong{background:var(--wrong);color:#fff;cursor:default;text-decoration:line-through;opacity:0.7;}
+.choice-btn.reveal-correct{background:var(--correct);color:#fff;cursor:default;}
+.choice-btn:disabled{cursor:default;}
+.sep{font-size:0.72rem;color:#bbb;padding:0 1px;pointer-events:none;font-weight:400;}
+
+/* FILL BLANKS (빈칸형) */
+.blank-num{display:inline-block;font-size:0.72rem;font-weight:700;color:var(--accent2);min-width:18px;text-align:center;}
+.blank-input{
+  display:inline-block;
+  border:none;border-bottom:2px solid var(--accent2);
+  background:transparent;
+  font-family:'Noto Serif KR',serif;
+  font-size:0.9rem;
+  color:var(--ink);
+  padding:1px 4px;
+  min-width:80px;
+  width:auto;
+  outline:none;
+  vertical-align:middle;
+  transition:border-color 0.2s;
+}
+.blank-input:focus{border-bottom-color:var(--accent);}
+.blank-input.correct-fill{border-bottom-color:var(--correct);background:#e8f5ee;color:var(--correct);font-weight:700;}
+.blank-input.wrong-fill{border-bottom-color:var(--wrong);background:#fdecea;color:var(--wrong);}
+.blank-input:disabled{cursor:default;}
+
+/* FILL SECTION SUBMIT */
+.fill-section{margin-top:20px;border-top:1px solid var(--border);padding-top:16px;display:flex;justify-content:flex-end;gap:10px;}
+.btn-check{background:var(--accent2);color:#fff;border:none;border-radius:8px;padding:9px 24px;font-family:'Black Han Sans',sans-serif;font-size:0.95rem;cursor:pointer;letter-spacing:1px;transition:opacity 0.2s;}
+.btn-check:hover{opacity:0.85;}
+.btn-check:disabled{opacity:0.4;cursor:default;}
+.fill-result{font-size:0.82rem;color:var(--soft);font-family:'Noto Serif KR',serif;display:flex;align-items:center;gap:6px;}
+
+/* WRONG ANSWER REVEAL */
+.wrong-answer-row{margin-top:12px;font-family:'Noto Serif KR',serif;font-size:0.82rem;color:var(--wrong);background:#fdecea;border-radius:8px;padding:10px 14px;line-height:1.9;}
+.wrong-answer-row span.correct-ans{color:var(--correct);font-weight:700;}
+
+/* TOTAL SUBMIT */
+.submit-wrap{text-align:center;margin-top:32px;}
+.btn-submit{background:var(--ink);color:#fff;border:none;border-radius:10px;padding:14px 48px;font-family:'Black Han Sans',sans-serif;font-size:1.1rem;cursor:pointer;letter-spacing:2px;transition:opacity 0.2s;}
+.btn-submit:hover{opacity:0.85;}
+
+/* SUMMARY */
+.summary{background:var(--ink);color:#fff;border-radius:16px;padding:40px 32px;text-align:center;margin-top:24px;display:none;animation:fadeUp 0.5s ease both;}
+.summary.show{display:block;}
+.summary-title{font-family:'Black Han Sans',sans-serif;font-size:1.7rem;margin-bottom:6px;}
+.summary-title span{color:#e8a07a;}
+.summary-score{font-size:3rem;font-weight:700;color:#e8a07a;font-family:'Black Han Sans',sans-serif;margin:16px 0 6px;}
+.summary-sub{font-size:0.88rem;color:rgba(255,255,255,0.5);margin-bottom:24px;}
+.summary-msg{font-size:1rem;color:rgba(255,255,255,0.8);margin-bottom:28px;}
+.btn-retry{display:inline-block;background:var(--accent);color:#fff;border:none;border-radius:8px;padding:11px 32px;font-family:'Black Han Sans',sans-serif;font-size:1rem;cursor:pointer;letter-spacing:1px;transition:opacity 0.2s;}
+.btn-retry:hover{opacity:0.85;}
+.capture-note{margin-top:14px;text-align:center;font-size:0.84rem;color:var(--soft);font-family:'Noto Serif KR',serif;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-tag">종촌고 1학년 · 2023년 3월 모의고사</div>
+  <h1>고1 3월 모의 <span>21·22·29번</span></h1>
+  <p class="header-sub">본문선택 + 본문빈칸 통합 풀기</p>
+</header>
+
+<div class="progress-wrap">
+  <div class="progress-bar-outer"><div class="progress-bar-inner" id="progressBar"></div></div>
+  <div class="progress-text" id="progressText">0 / 0</div>
+  <div class="score-badge" id="scoreBadge">✓ 0</div>
+</div>
+
+<main id="main">
+
+<!-- ===================== 5라운드: 본문 선택형 ===================== -->
+<div class="section-label sel">✏️ 5라운드 — 본문 선택형</div>
+
+<!-- 21번 선택형 -->
+<div class="q-card" id="sel-21" style="animation-delay:0.05s">
+  <div class="q-header">
+    <div class="q-num">21</div>
+    <span class="q-type-badge sel">어법·어휘 선택</span>
+  </div>
+  <div class="passage" id="sel-21-passage"></div>
+</div>
+
+<!-- 22번 선택형 -->
+<div class="q-card" id="sel-22" style="animation-delay:0.1s">
+  <div class="q-header">
+    <div class="q-num">22</div>
+    <span class="q-type-badge sel">어법·어휘 선택</span>
+  </div>
+  <div class="passage" id="sel-22-passage"></div>
+</div>
+
+<!-- 29번 선택형 -->
+<div class="q-card" id="sel-29" style="animation-delay:0.15s">
+  <div class="q-header">
+    <div class="q-num">29</div>
+    <span class="q-type-badge sel">어법·어휘 선택</span>
+  </div>
+  <div class="passage" id="sel-29-passage"></div>
+</div>
+
+<!-- ===================== 4라운드: 본문 빈칸형 ===================== -->
+<div class="section-label fill" style="margin-top:48px;">📝 4라운드 — 본문 빈칸 채우기</div>
+
+<!-- 21번 빈칸 -->
+<div class="q-card" id="fill-21" style="animation-delay:0.2s">
+  <div class="q-header">
+    <div class="q-num">21</div>
+    <span class="q-type-badge fill">빈칸 채우기</span>
+  </div>
+  <div class="passage" id="fill-21-passage"></div>
+  <div class="fill-section">
+    <div class="fill-result" id="fill-21-result"></div>
+    <button class="btn-check" id="fill-21-btn" onclick="checkFill(21)">채점하기</button>
+  </div>
+  <div class="wrong-answer-row" id="fill-21-wrong" style="display:none"></div>
+</div>
+
+<!-- 22번 빈칸 -->
+<div class="q-card" id="fill-22" style="animation-delay:0.25s">
+  <div class="q-header">
+    <div class="q-num">22</div>
+    <span class="q-type-badge fill">빈칸 채우기</span>
+  </div>
+  <div class="passage" id="fill-22-passage"></div>
+  <div class="fill-section">
+    <div class="fill-result" id="fill-22-result"></div>
+    <button class="btn-check" id="fill-22-btn" onclick="checkFill(22)">채점하기</button>
+  </div>
+  <div class="wrong-answer-row" id="fill-22-wrong" style="display:none"></div>
+</div>
+
+<!-- 29번 빈칸 -->
+<div class="q-card" id="fill-29" style="animation-delay:0.3s">
+  <div class="q-header">
+    <div class="q-num">29</div>
+    <span class="q-type-badge fill">빈칸 채우기</span>
+  </div>
+  <div class="passage" id="fill-29-passage"></div>
+  <div class="fill-section">
+    <div class="fill-result" id="fill-29-result"></div>
+    <button class="btn-check" id="fill-29-btn" onclick="checkFill(29)">채점하기</button>
+  </div>
+  <div class="wrong-answer-row" id="fill-29-wrong" style="display:none"></div>
+</div>
+
+<div class="submit-wrap">
+  <button class="btn-submit" id="submitBtn" onclick="showFinalSummary()">전체 결과 보기</button>
+</div>
+
+<div class="summary" id="summary"></div>
+<p class="capture-note" id="captureNote" style="display:none">📸 결과를 캡처해서 선생님께 제출해 주세요!</p>
+
+</main>
+
+<script>
+// ============================================================
+// 선택형 DATA
+// ============================================================
+const SEL_DATA = {
+  21: {
+    parts: [
+      'If we ', ['adapt','adopt'], ' technology, we need to pay its costs. Thousands of traditional ',
+      ['livelihoods','likelihoods'], ' ', ['have','have been'], ' pushed aside by progress, and the lifestyles around those jobs ',
+      ['removed','emerged'], '. Hundreds of millions of humans today ', ['work','works'],
+      ' at jobs they hate, ', ['producing','produced'],
+      ' things they have no love for. Sometimes these jobs ', ['remove','cause'],
+      ' physical pain, disability, or chronic disease. Technology creates many new jobs that are certainly ',
+      ['dangerous','safe'], '. At the same time, mass education and media train humans to ',
+      ['avoid','accept'], ' low-tech physical work, to seek jobs ', ['worked','working'],
+      ' in the digital world. The divorce of the hands from the head ', ['puts','put'],
+      ' a stress on the human mind. Indeed, the ', ['sedentary','active'],
+      ' nature of the best-paying jobs ', ['are','is'], ' a health risk — for body and mind.'
+    ],
+    ans: [1,0,1,1,0,0,1,1,0,1,0,1,0,1]
+  },
+  22: {
+    parts: [
+      'When students are starting their college life, they may approach every course, test, or learning task the same way, ',
+      ['used','using'], ' ', ['what','that'],
+      ' we like to call "the rubber-stamp approach." Think about it this way: Would you wear a tuxedo to a baseball game? A colorful dress to a funeral? A bathing suit to religious services? Probably not. You know there\'s ',
+      ['inappropriate','appropriate'],
+      ' dress for different occasions and settings. Skillful learners know that "putting on the same clothes" ',
+      ['will','won\'t'],
+      ' work for every class. They are ', ['flexible','fixable'],
+      ' learners. They have different strategies and know when to use ', ['themselves','them'],
+      '. They know that you study for multiple-choice tests ', ['differently','different'],
+      ' than you study for essay tests. And they not only know what to do, but they also know ',
+      ['how','what'], ' to do it.'
+    ],
+    ans: [1,0,1,1,0,1,0,1]
+  },
+  29: {
+    parts: [
+      'The most noticeable human characteristic ', ['projecting','projected'],
+      ' onto animals ', ['is','are'], ' ', ['what','that'],
+      ' they can talk in human language. Physically, animal cartoon characters and toys ',
+      ['making','made'],
+      ' after animals are also most often deformed in such a way as to resemble humans. This is achieved by showing them with humanlike facial features and deformed front legs to resemble human hands. In more recent animated movies the trend has been to show the animals in a more "natural" way. ',
+      ['However','Therefore'],
+      ', they still use their front legs like human hands (for example, lions can pick up and lift small objects with one paw), and they still talk with an ',
+      ['appropriate','inappropriate'],
+      ' facial expression. A general strategy that ', ['is used','used'],
+      ' to ', ['make','making'],
+      ' the animal characters more ', ['emotional','emotionally'],
+      ' ', ['appealed','appealing'],
+      ', both to children and adults, ', ['is','are'],
+      ' to give them enlarged and deformed ', ['childlike','childish'], ' features.'
+    ],
+    ans: [1,0,1,1,0,1,0,1,1,1,0,1,0,0]
+  }
+};
+
+// ============================================================
+// 빈칸형 DATA
+// ============================================================
+const FILL_DATA = {
+  21: {
+    parts: [
+      'If we (1)', null, ' technology, we (2)', null,
+      '. Thousands of traditional livelihoods (3)', null,
+      ', and the lifestyles around those jobs (4)', null,
+      '. Hundreds of millions of humans today (5)', null,
+      ' at jobs they hate, (6)', null,
+      '. Sometimes these jobs cause (7)', null, ', (8)', null, ', or (9)', null,
+      '. Technology creates many new jobs (10)', null,
+      '. (11)', null, ', mass education and media train humans (12)', null,
+      ' low-tech (13)', null, ' work, to seek jobs (14)', null,
+      ' in the digital world. The (15)', null, ' of the hands from the head (16)', null,
+      ' a stress on the human mind. (17)', null, ', the (18)', null,
+      ' nature of the best-paying jobs (19)', null, ' — for body and mind.'
+    ],
+    ans: [
+      'adopt',
+      'need to pay its costs',
+      'have been pushed aside by progress',
+      'removed',
+      'work',
+      'producing things they have no love for',
+      'physical pain',
+      'disability',
+      'chronic disease',
+      'that are certainly dangerous',
+      'At the same time',
+      'to avoid',
+      'physical',
+      'working',
+      'divorce',
+      'puts',
+      'Indeed',
+      'sedentary',
+      'is a health risk'
+    ]
+  },
+  22: {
+    parts: [
+      'When students are starting their college life, they may approach every course, test, or learning task the same way, (1)', null,
+      ' we like to call "the rubber-stamp approach." Think about it this way: Would you wear a tuxedo to a baseball game? A colorful dress to a funeral? A bathing suit to religious services? Probably not. You know there\'s (2)', null,
+      ' for (3)', null,
+      '. Skillful learners know that (4)', null,
+      ' won\'t work for every class. They are (5)', null,
+      ' learners. They have (6)', null,
+      ' and know (7)', null,
+      '. They know that you study for multiple-choice tests (8)', null,
+      ' than you study for essay tests. And they not only know (9)', null,
+      ', but they also know (10)', null, '.'
+    ],
+    ans: [
+      'using what we like to call',
+      'appropriate dress',
+      'different occasions and settings',
+      '"putting on the same clothes"',
+      'flexible',
+      'different strategies',
+      'when to use them',
+      'differently',
+      'what to do',
+      'how to do it'
+    ]
+  },
+  29: {
+    parts: [
+      'The most noticeable human characteristic (1)', null,
+      ' onto animals (2)', null, ' (3)', null,
+      ' they can (4)', null,
+      '. (5)', null,
+      ', animal cartoon characters and toys (6)', null,
+      ' are also most often (7)', null, ' in (8)', null,
+      '. This is achieved by showing them with (9)', null, ' and (10)', null,
+      ' to resemble human hands. In more recent animated movies the trend has been to show the animals in a more (11)', null,
+      ' way. (12)', null,
+      ', they still use their front legs like human hands (for example, lions can pick up and lift small objects with one paw), and they still talk with an (13)', null,
+      '. A (14)', null,
+      ', both to children and adults, (15)', null, '.'
+    ],
+    ans: [
+      'projected',
+      'is',
+      'that',
+      'talk in human language',
+      'Physically',
+      'made after animals',
+      'deformed',
+      'such a way as to resemble humans',
+      'humanlike facial features',
+      'deformed front legs',
+      '"natural"',
+      'However',
+      'appropriate facial expression',
+      'general strategy that is used to make the animal characters more emotionally appealing',
+      'is to give them enlarged and deformed childlike features'
+    ]
+  }
+};
+
+// ============================================================
+// STATE
+// ============================================================
+let selCorrect = 0, selAnswered = 0, selTotal = 0;
+let fillCorrect = 0, fillTotal = 0;
+// track fill checked status
+const fillChecked = {21: false, 22: false, 29: false};
+
+// count sel total
+[21,22,29].forEach(n => {
+  SEL_DATA[n].parts.forEach(p => { if(Array.isArray(p)) selTotal++; });
+});
+
+// ============================================================
+// RENDER SELECTION
+// ============================================================
+function escH(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function renderSel(num) {
+  const data = SEL_DATA[num];
+  const el = document.getElementById(`sel-${num}-passage`);
+  let html = '';
+  let itemIdx = 0;
+  data.parts.forEach(part => {
+    if(typeof part === 'string') { html += escH(part); }
+    else {
+      const iIdx = itemIdx++;
+      html += `<span class="choice-group" id="scg-${num}-${iIdx}">`;
+      part.forEach((opt, oIdx) => {
+        html += `<button class="choice-btn" onclick="handleSel(${num},${iIdx},${oIdx})" id="scb-${num}-${iIdx}-${oIdx}">${escH(opt)}</button>`;
+        if(oIdx < part.length-1) html += `<span class="sep">/</span>`;
+      });
+      html += '</span>';
+    }
+  });
+  el.innerHTML = html;
+}
+
+const selState = {21:{}, 22:{}, 29:{}};
+
+function handleSel(num, iIdx, oIdx) {
+  if(selState[num][iIdx] !== undefined) return;
+  const data = SEL_DATA[num];
+  // get correct ans index
+  let cnt = 0;
+  let ansIdx = -1;
+  data.parts.forEach(p => { if(Array.isArray(p)) { if(cnt === iIdx) ansIdx = data.ans[cnt]; cnt++; }});
+  const isCorrect = oIdx === ansIdx;
+  selState[num][iIdx] = isCorrect ? 'correct' : 'wrong';
+  selAnswered++; if(isCorrect) selCorrect++;
+  const btn = document.getElementById(`scb-${num}-${iIdx}-${oIdx}`);
+  btn.classList.add(isCorrect ? 'correct' : 'wrong'); btn.disabled = true;
+  if(!isCorrect) { const cb = document.getElementById(`scb-${num}-${iIdx}-${ansIdx}`); cb.classList.add('reveal-correct'); cb.disabled = true; }
+  // get opts count
+  let oc = 0; data.parts.forEach(p=>{ if(Array.isArray(p)){ if(oc===iIdx){ p.forEach((_,i)=>{ document.getElementById(`scb-${num}-${iIdx}-${i}`).disabled=true; }); } oc++; }});
+  document.getElementById(`scg-${num}-${iIdx}`).classList.add('answered');
+  updateProgress();
+}
+
+// ============================================================
+// RENDER FILL
+// ============================================================
+function renderFill(num) {
+  const data = FILL_DATA[num];
+  const el = document.getElementById(`fill-${num}-passage`);
+  let html = '';
+  let blankIdx = 0;
+  data.parts.forEach(part => {
+    if(typeof part === 'string') { html += escH(part); }
+    else {
+      // null = blank
+      const bi = blankIdx++;
+      const width = Math.max(80, (data.ans[bi].length * 10) + 20);
+      html += `<span class="blank-num">(${bi+1})</span>`;
+      html += `<input class="blank-input" id="finput-${num}-${bi}" type="text" autocomplete="off" spellcheck="false" style="width:${width}px" placeholder="   "/>`;
+    }
+  });
+  el.innerHTML = html;
+  fillTotal += data.ans.length;
+}
+
+// ============================================================
+// CHECK FILL
+// ============================================================
+function normalize(s) {
+  return s.trim().toLowerCase().replace(/\s+/g, ' ').replace(/['".,?!;]/g,'');
+}
+
+function checkFill(num) {
+  if(fillChecked[num]) return;
+  fillChecked[num] = true;
+  const data = FILL_DATA[num];
+  let correct = 0;
+  const wrongList = [];
+
+  data.ans.forEach((ans, bi) => {
+    const inp = document.getElementById(`finput-${num}-${bi}`);
+    inp.disabled = true;
+    const userVal = inp.value;
+    // accept if normalized match OR if user answer contains all key words
+    const norm_user = normalize(userVal);
+    const norm_ans = normalize(ans);
+    const isCorrect = norm_user === norm_ans;
+    if(isCorrect) {
+      correct++;
+      inp.classList.add('correct-fill');
+    } else {
+      inp.classList.add('wrong-fill');
+      wrongList.push({no: bi+1, user: userVal || '(공란)', ans});
+    }
+  });
+
+  fillCorrect += correct;
+  document.getElementById(`fill-${num}-btn`).disabled = true;
+
+  const total = data.ans.length;
+  const resultEl = document.getElementById(`fill-${num}-result`);
+  resultEl.innerHTML = `<strong style="color:var(--correct)">${correct}</strong> / ${total} 정답`;
+
+  if(wrongList.length > 0) {
+    const wrongEl = document.getElementById(`fill-${num}-wrong`);
+    wrongEl.style.display = 'block';
+    wrongEl.innerHTML = '❌ 틀린 항목:<br>' + wrongList.map(w =>
+      `(${w.no}) 내 답: <em>${escH(w.user)}</em> → 정답: <span class="correct-ans">${escH(w.ans)}</span>`
+    ).join('<br>');
+  }
+
+  updateProgress();
+}
+
+// ============================================================
+// PROGRESS
+// ============================================================
+function updateProgress() {
+  const fillDone = Object.values(fillChecked).filter(Boolean).length * 1; // just track checked
+  // sel progress
+  const pct = selTotal > 0 ? Math.round((selAnswered / selTotal) * 100) : 0;
+  document.getElementById('progressBar').style.width = pct + '%';
+  document.getElementById('progressText').textContent = `선택 ${selAnswered}/${selTotal}`;
+  document.getElementById('scoreBadge').textContent = `✓ ${selCorrect}`;
+}
+
+// ============================================================
+// FINAL SUMMARY
+// ============================================================
+function showFinalSummary() {
+  // check if all fills done
+  [21,22,29].forEach(n => { if(!fillChecked[n]) checkFill(n); });
+
+  const totalAll = selTotal + fillTotal;
+  const correctAll = selCorrect + fillCorrect;
+  const pct = Math.round(correctAll / totalAll * 100);
+  let msg = pct===100?'🎉 완벽합니다! 모두 맞혔어요!':pct>=80?'👍 훌륭해요! 조금만 더!':pct>=60?'📖 잘 했어요! 틀린 항목을 확인해 보세요.':'💪 다시 한 번 도전해 보세요!';
+
+  const s = document.getElementById('summary');
+  s.className = 'summary show';
+  s.innerHTML = `
+    <div class="summary-title">최종 결과 <span>확인</span></div>
+    <div style="display:flex;justify-content:center;gap:32px;margin:20px 0 8px;flex-wrap:wrap;">
+      <div>
+        <div style="font-size:0.8rem;color:rgba(255,255,255,0.5);margin-bottom:4px;">선택형</div>
+        <div style="font-size:2rem;font-family:'Black Han Sans',sans-serif;color:#e8a07a;">${selCorrect}<span style="font-size:1.1rem;color:rgba(255,255,255,0.3)">/${selTotal}</span></div>
+      </div>
+      <div>
+        <div style="font-size:0.8rem;color:rgba(255,255,255,0.5);margin-bottom:4px;">빈칸형</div>
+        <div style="font-size:2rem;font-family:'Black Han Sans',sans-serif;color:#6ec6d8;">${fillCorrect}<span style="font-size:1.1rem;color:rgba(255,255,255,0.3)">/${fillTotal}</span></div>
+      </div>
+      <div>
+        <div style="font-size:0.8rem;color:rgba(255,255,255,0.5);margin-bottom:4px;">전체</div>
+        <div style="font-size:2rem;font-family:'Black Han Sans',sans-serif;color:#fff;">${correctAll}<span style="font-size:1.1rem;color:rgba(255,255,255,0.3)">/${totalAll}</span></div>
+      </div>
+    </div>
+    <div style="font-size:0.88rem;color:rgba(255,255,255,0.4);margin-bottom:20px;">정답률 ${pct}%</div>
+    <div class="summary-msg">${msg}</div>
+    <button class="btn-retry" onclick="location.reload()">🔄 다시 풀기</button>
+  `;
+  document.getElementById('captureNote').style.display = 'block';
+  document.getElementById('submitBtn').style.display = 'none';
+  document.getElementById('progressBar').style.width = pct + '%';
+  document.getElementById('progressText').textContent = `${correctAll} / ${totalAll}`;
+  document.getElementById('scoreBadge').textContent = `✓ ${correctAll}`;
+}
+
+// ============================================================
+// INIT
+// ============================================================
+[21,22,29].forEach(n => { renderSel(n); renderFill(n); });
+updateProgress();
+</script>
+</body>
+</html>
