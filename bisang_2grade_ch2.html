@@ -382,6 +382,9 @@ function renderQuestions() {
     box.addEventListener('keydown', onLetterKeydown);
     box.addEventListener('paste', e => e.preventDefault());   // 붙여넣기 차단
   });
+
+  /* 자동저장 복구 */
+  restoreAnswers();
 }
 
 /* ─── 글자 입력 핸들러 ─── */
@@ -406,6 +409,8 @@ function onLetterInput(e) {
   } else {
     box.classList.remove('filled');
   }
+  /* 자동저장 */
+  saveAnswers();
 }
 
 /* ─── 백스페이스: 이전 칸으로 이동 ─── */
@@ -434,6 +439,54 @@ function collectAnswer(blankInfo) {
     }
   }
   return ans.trim();
+}
+
+
+/* ─── 자동저장 ─── */
+function saveAnswers() {
+  var data = {};
+  // 이름 저장
+  var nameEl = document.getElementById('student-name');
+  if (nameEl) data['__name__'] = nameEl.value;
+  // 각 빈칸 저장
+  currentBlanks.forEach(function(b) {
+    var inputIdx = 0;
+    for (var c = 0; c < b.word.length; c++) {
+      var ch = b.word[c];
+      if (ch !== '-' && ch !== '.' && ch !== "'") {
+        var box = document.getElementById(b.blankId + '_' + inputIdx);
+        if (box) data[b.blankId + '_' + inputIdx] = box.value;
+        inputIdx++;
+      }
+    }
+  });
+  localStorage.setItem('bisang_2grade_ch2_draft', JSON.stringify(data));
+}
+
+function restoreAnswers() {
+  var saved = localStorage.getItem('bisang_2grade_ch2_draft');
+  if (!saved) return;
+  try {
+    var data = JSON.parse(saved);
+    // 이름 복구
+    if (data['__name__']) {
+      var nameEl = document.getElementById('student-name');
+      if (nameEl) nameEl.value = data['__name__'];
+    }
+    // 빈칸 복구
+    Object.keys(data).forEach(function(key) {
+      if (key === '__name__') return;
+      var box = document.getElementById(key);
+      if (box && data[key]) {
+        box.value = data[key];
+        box.classList.add('filled');
+      }
+    });
+  } catch(e) {}
+}
+
+function clearDraft() {
+  localStorage.removeItem('bisang_2grade_ch2_draft');
 }
 
 /* ─── 채점 ─── */
@@ -542,6 +595,9 @@ function submitTest(auto) {
   });
   submitToSheet(name, correct, total, wrongList);
 
+  /* 제출 시 임시저장 삭제 */
+  clearDraft();
+
   /* 화면 전환 */
   document.getElementById('test-screen').style.display   = 'none';
   document.getElementById('result-screen').style.display = 'block';
@@ -561,6 +617,10 @@ function restartTest() {
   startDateTime = new Date();
   document.getElementById('test-datetime').textContent = '시험 시작: ' + formatDT(startDateTime);
   renderQuestions();
+
+  /* 이름 입력 시 자동저장 */
+  var nameInput = document.getElementById('student-name');
+  if (nameInput) nameInput.addEventListener('input', saveAnswers);
 
   /* ── 응시 횟수 로컬 저장 ── */
   var storageKey = 'attemptCount_비상황종배_2학년_2챕터';
