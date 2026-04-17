@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>봄날 퀴즈 | 고운고1 영어 어휘</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&family=Black+Han+Sans&display=swap');
+:root{--primary:#7b1fa2;--primary-light:#9c27b0;--accent:#ff6f00;--green:#2e7d32;--red:#c62828;--bg:#f3e5f5;--card:#fff;--border:#ce93d8;--text:#1a1a2e;--muted:#757575;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Nanum Gothic',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+
+.header{background:var(--primary);color:white;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 10px rgba(0,0,0,.25);}
+.header-title{font-family:'Black Han Sans',sans-serif;font-size:17px;letter-spacing:1px;}
+.header-sub{font-size:11px;opacity:.7;margin-top:1px;}
+.header-badge{background:var(--accent);color:white;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:800;}
+
+.prog-wrap{background:white;padding:9px 20px 7px;border-bottom:1px solid var(--border);position:sticky;top:54px;z-index:99;box-shadow:0 1px 4px rgba(0,0,0,.06);display:none;}
+.prog-info{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:4px;}
+.prog-bar{height:6px;background:var(--border);border-radius:3px;overflow:hidden;}
+.prog-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,#9c27b0,#ff6f00);transition:width .35s ease;width:0%;}
+
+.main{max-width:680px;margin:0 auto;padding:22px 16px 60px;}
+
+/* 정보 입력 */
+.info-screen{background:var(--card);border-radius:18px;padding:40px 28px;text-align:center;box-shadow:0 4px 24px rgba(123,31,162,.11);margin-top:16px;}
+.info-screen h2{font-family:'Black Han Sans',sans-serif;font-size:22px;color:var(--primary);margin-bottom:10px;}
+.info-screen p{color:var(--muted);font-size:13px;line-height:1.75;margin-bottom:28px;}
+.info-form{display:flex;flex-direction:column;gap:18px;margin-bottom:26px;text-align:left;}
+.field-label{font-size:12px;font-weight:800;color:var(--primary);margin-bottom:6px;letter-spacing:.5px;}
+.info-input,.school-select{width:100%;padding:14px 16px;border:2px solid var(--border);border-radius:12px;font-family:'Nanum Gothic',sans-serif;font-size:15px;outline:none;background:white;transition:border-color .2s;}
+.info-input:focus,.school-select:focus{border-color:var(--primary-light);}
+
+/* 섹션 선택 */
+.section-screen{background:var(--card);border-radius:18px;padding:28px 24px;box-shadow:0 4px 24px rgba(123,31,162,.11);margin-top:16px;}
+.section-screen h2{font-family:'Black Han Sans',sans-serif;font-size:19px;color:var(--primary);margin-bottom:6px;}
+.section-screen p{color:var(--muted);font-size:13px;margin-bottom:20px;}
+.student-badge{background:linear-gradient(135deg,#f3e5f5,#ede7f6);border:2px solid #ce93d8;border-radius:10px;padding:10px 16px;margin-bottom:18px;font-size:13px;font-weight:800;color:var(--primary);}
+.section-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin-bottom:20px;}
+.sec-btn{background:var(--bg);border:2px solid var(--border);border-radius:12px;padding:14px 10px;text-align:center;cursor:pointer;transition:all .15s;font-family:'Nanum Gothic',sans-serif;}
+.sec-btn:hover{border-color:var(--primary);background:#f8e8ff;transform:translateY(-2px);}
+.sec-btn.done{border-color:var(--green);background:#e8f5e9;}
+.sec-btn.done .sec-icon{color:var(--green);}
+.sec-btn .sec-num{font-family:'Black Han Sans',sans-serif;font-size:18px;color:var(--primary);}
+.sec-btn .sec-cnt{font-size:11px;color:var(--muted);margin-top:3px;}
+.sec-btn .sec-icon{font-size:14px;margin-bottom:4px;display:block;}
+.sec-all-btn{width:100%;padding:14px;background:var(--primary);color:white;border:none;border-radius:12px;font-family:'Nanum Gothic',sans-serif;font-size:14px;font-weight:800;cursor:pointer;margin-bottom:10px;transition:opacity .15s;}
+.sec-all-btn:hover{opacity:.85;}
+.attempt-info{background:#fff3e0;border-left:3px solid var(--accent);border-radius:6px;padding:8px 14px;font-size:12px;color:#e65100;text-align:left;}
+
+.btn{display:inline-block;padding:12px 28px;border:none;border-radius:10px;font-family:'Nanum Gothic',sans-serif;font-size:14px;font-weight:800;cursor:pointer;transition:transform .1s;}
+.btn:active{transform:scale(.96);}
+.btn-primary{background:var(--primary);color:white;box-shadow:0 4px 12px rgba(123,31,162,.3);}
+.btn-primary:hover{background:var(--primary-light);}
+.btn-accent{background:var(--accent);color:white;}
+.btn-ghost{background:#f3e5f5;color:var(--primary);}
+.btn-danger{background:var(--red);color:white;}
+.btn-sm{padding:8px 18px;font-size:12px;border-radius:8px;}
+
+/* 퀴즈 */
+.quiz-card{background:var(--card);border-radius:18px;padding:22px 24px;box-shadow:0 3px 18px rgba(123,31,162,.09);animation:slideUp .2s ease;}
+@keyframes slideUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.q-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+.q-num{font-size:11px;color:var(--muted);font-weight:700;}
+.q-src{font-size:10px;background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:2px 9px;color:var(--primary);font-weight:700;}
+.qword-timer{display:flex;align-items:center;gap:16px;margin-bottom:20px;}
+.q-word-block{flex:1;}
+.q-word-row{display:flex;align-items:center;gap:10px;margin-bottom:4px;}
+.q-word{font-family:'Black Han Sans',sans-serif;font-size:26px;color:var(--primary);line-height:1.2;}
+.speak-btn{background:none;border:2px solid var(--border);border-radius:50%;width:36px;height:36px;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s,border-color .15s;flex-shrink:0;padding:0;}
+.speak-btn:hover{background:#f3e5f5;border-color:var(--primary-light);}
+.speak-btn.speaking{background:#f3e5f5;border-color:var(--primary);animation:pulse .6s ease infinite alternate;}
+@keyframes pulse{from{transform:scale(1)}to{transform:scale(1.12)}}
+.q-direction{font-size:12px;color:var(--muted);}
+.timer-ring-wrap{position:relative;width:58px;height:58px;flex-shrink:0;}
+.timer-ring-wrap svg{transform:rotate(-90deg);display:block;}
+.t-bg{fill:none;stroke:#e0e0e0;stroke-width:5;}
+.t-arc{fill:none;stroke:var(--primary);stroke-width:5;stroke-linecap:round;stroke-dasharray:138.2;stroke-dashoffset:0;transition:stroke-dashoffset .92s linear,stroke .25s;}
+.t-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Black Han Sans',sans-serif;font-size:20px;color:var(--primary);transition:color .25s;}
+.danger .t-arc{stroke:var(--red);}.danger .t-num{color:var(--red);}
+.timeout-flash{animation:flashBg .25s ease 3;}
+@keyframes flashBg{0%,100%{background:white}50%{background:#ffebee}}
+
+.choices{display:flex;flex-direction:column;gap:10px;}
+.choice-btn{width:100%;padding:13px 18px;border:2px solid var(--border);border-radius:12px;background:white;font-family:'Nanum Gothic',sans-serif;font-size:14px;font-weight:700;color:var(--text);cursor:pointer;text-align:left;display:flex;align-items:center;gap:12px;transition:border-color .15s,background .15s,transform .1s;line-height:1.4;}
+.choice-btn:hover:not(:disabled){border-color:var(--primary-light);background:#f8e8ff;transform:translateX(3px);}
+.choice-btn:disabled{cursor:default;}
+.choice-btn .cl{min-width:26px;height:26px;background:var(--bg);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:var(--primary);flex-shrink:0;}
+.choice-btn.correct{border-color:var(--green);background:#e8f5e9;}.choice-btn.correct .cl{background:var(--green);color:white;}
+.choice-btn.wrong{border-color:var(--red);background:#ffebee;}.choice-btn.wrong .cl{background:var(--red);color:white;}
+.choice-btn.reveal{border-color:var(--green);background:#e8f5e9;opacity:.75;}.choice-btn.reveal .cl{background:var(--green);color:white;}
+
+.feedback{margin-top:12px;padding:10px 16px;border-radius:9px;font-size:13px;font-weight:800;display:none;animation:fadeIn .15s;}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.feedback.ok{background:#e8f5e9;color:var(--green);border-left:4px solid var(--green);display:block;}
+.feedback.no{background:#ffebee;color:var(--red);border-left:4px solid var(--red);display:block;}
+.feedback.to{background:#fff3e0;color:#e65100;border-left:4px solid var(--accent);display:block;}
+
+/* 결과 */
+.result-screen{background:var(--card);border-radius:18px;padding:32px 24px;text-align:center;box-shadow:0 4px 24px rgba(123,31,162,.12);display:none;}
+.result-score{font-family:'Black Han Sans',sans-serif;font-size:56px;color:var(--primary);line-height:1;margin:8px 0 4px;}
+.result-sub{font-size:13px;color:var(--muted);margin-bottom:18px;}
+.result-grade{display:inline-block;font-size:20px;font-weight:800;padding:6px 22px;border-radius:30px;margin-bottom:20px;}
+.gS{background:#fff8e1;color:#f57f17;}.gA{background:#e8f5e9;color:#2e7d32;}
+.gB{background:#e3f2fd;color:#1565c0;}.gC{background:#fff3e0;color:#e65100;}.gD{background:#ffebee;color:#c62828;}
+.stats{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:22px;}
+.stat-box{background:var(--bg);border-radius:10px;padding:10px 18px;min-width:76px;}
+.stat-box .n{font-size:22px;font-weight:800;}.stat-box .l{font-size:11px;color:var(--muted);}
+.sc .n{color:var(--green);}.sw .n{color:var(--red);}.st .n{color:#e65100;}
+.submit-box{border-radius:10px;padding:12px 16px;font-size:13px;font-weight:800;margin-bottom:16px;text-align:center;}
+.submit-box.sending{background:#e3f2fd;color:#1565c0;}
+.submit-box.done{background:#e8f5e9;color:var(--green);}
+.submit-box.fail{background:#ffebee;color:var(--red);}
+.capture-note{background:#fff3e0;border-radius:8px;padding:10px 14px;font-size:12px;color:#e65100;margin-bottom:20px;}
+.wrong-section{text-align:left;margin-top:22px;}
+.wrong-section h3{font-size:13px;font-weight:800;color:var(--red);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid #ffcdd2;}
+.wrong-item{display:grid;grid-template-columns:1fr 1fr;gap:4px 10px;padding:7px 0;border-bottom:1px solid var(--bg);font-size:12px;}
+.wi-eng{font-weight:800;color:var(--primary);}.wi-ans{color:var(--green);font-weight:700;}
+.wi-my{color:var(--red);font-size:11px;}.wi-src{color:var(--muted);font-size:10px;text-align:right;}
+
+.hidden{display:none !important;}
+.tab-warn{position:fixed;inset:0;background:rgba(198,40,40,.94);color:white;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;text-align:center;padding:30px;}
+.tab-warn h2{font-family:'Black Han Sans',sans-serif;font-size:26px;margin-bottom:10px;}
+.tab-warn .tw-n{font-size:52px;font-weight:800;margin:12px 0;}
+.tab-warn p{font-size:14px;opacity:.9;line-height:1.7;}
+@media(max-width:480px){.q-word{font-size:20px;}.choice-btn{font-size:13px;padding:11px 14px;}.section-grid{grid-template-columns:repeat(3,1fr);}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <div class="header-title">🌸 봄날 English</div>
+    <div class="header-sub" id="headerSub">고운고 1학년 · 영어 어휘 퀴즈</div>
+  </div>
+  <div class="header-badge" id="hBadge">631개</div>
+</div>
+
+<div class="prog-wrap" id="progWrap">
+  <div class="prog-info"><span id="progTxt">0 / 0</span><span id="progPct">0%</span></div>
+  <div class="prog-bar"><div class="prog-fill" id="progFill"></div></div>
+</div>
+
+<div class="main">
+
+  <!-- ① 학생 정보 입력 -->
+  <div class="info-screen" id="infoScreen">
+    <h2>👋 먼저 정보를 입력해주세요</h2>
+    <p>퀴즈 결과가 선생님께 자동으로 전달돼요.<br>정확하게 입력해주세요!</p>
+    <div class="info-form">
+      <div>
+        <div class="field-label">🏫 학교</div>
+        <select class="school-select" id="schoolSelect">
+          <option value="">학교 / 학년을 선택하세요</option>
+          <optgroup label="종촌고">
+            <option value="종촌고1">종촌고 1학년</option>
+            <option value="종촌고2">종촌고 2학년</option>
+            <option value="종촌고3">종촌고 3학년</option>
+          </optgroup>
+          <optgroup label="고운고">
+            <option value="고운고1">고운고 1학년</option>
+            <option value="고운고2">고운고 2학년</option>
+            <option value="고운고3">고운고 3학년</option>
+          </optgroup>
+          <optgroup label="대성고">
+            <option value="대성고1">대성고 1학년</option>
+            <option value="대성고2">대성고 2학년</option>
+            <option value="대성고3">대성고 3학년</option>
+          </optgroup>
+        </select>
+      </div>
+      <div>
+        <div class="field-label">✏️ 이름</div>
+        <input type="text" class="info-input" id="nameInput" placeholder="이름을 입력하세요" maxlength="10" autocomplete="off">
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="submitInfo()">다음 →</button>
+  </div>
+
+  <!-- ② 섹션 선택 -->
+  <div class="hidden" id="sectionScreen">
+    <div class="section-screen">
+      <h2>📚 섹션을 선택하세요</h2>
+      <p>각 섹션은 50개 단어로 구성되어 있어요.<br>문제당 <strong>⏱ 10초</strong> 제한!</p>
+      <div class="student-badge" id="studentBadge">👤 —</div>
+      <button class="sec-all-btn" onclick="startQuiz('all')">🔥 전체 풀기 (631개)</button>
+      <div class="section-grid" id="sectionGrid"></div>
+      <div class="attempt-info" id="attemptInfo">⚠️ 이 기기에서 처음 응시합니다.</div>
+    </div>
+  </div>
+
+  <!-- ③ 퀴즈 -->
+  <div id="quizArea" class="hidden">
+    <div class="quiz-card" id="quizCard">
+      <div class="q-meta">
+        <span class="q-num" id="qNum">1 / 50</span>
+        <span class="q-src" id="qSrc"></span>
+      </div>
+      <div class="qword-timer">
+        <div class="q-word-block">
+          <div class="q-word-row">
+            <div class="q-word" id="qWord">—</div>
+            <button class="speak-btn" id="speakBtn" onclick="speakWord()" title="발음 듣기">🔊</button>
+          </div>
+          <div class="q-direction">알맞은 한글 뜻을 고르세요</div>
+        </div>
+        <div class="timer-ring-wrap" id="timerRing">
+          <svg viewBox="0 0 48 48" width="58" height="58">
+            <circle class="t-bg" cx="24" cy="24" r="22"/>
+            <circle class="t-arc" id="tArc" cx="24" cy="24" r="22"/>
+          </svg>
+          <div class="t-num" id="tNum">10</div>
+        </div>
+      </div>
+      <div class="choices" id="choices"></div>
+      <div class="feedback" id="feedback"></div>
+    </div>
+  </div>
+
+  <!-- ④ 결과 -->
+  <div class="result-screen" id="resultScreen">
+    <div style="font-size:12px;color:var(--muted);margin-bottom:4px" id="resultSecLabel">섹션 결과</div>
+    <div class="result-score" id="rScore">0</div>
+    <div class="result-sub" id="rSub">점</div>
+    <div class="result-grade" id="rGrade"></div>
+    <div class="stats">
+      <div class="stat-box sc"><div class="n" id="sCorrect">0</div><div class="l">정답</div></div>
+      <div class="stat-box sw"><div class="n" id="sWrong">0</div><div class="l">오답</div></div>
+      <div class="stat-box st"><div class="n" id="sTimeout">0</div><div class="l">시간초과</div></div>
+      <div class="stat-box">  <div class="n" id="sTime">0</div><div class="l">분</div></div>
+    </div>
+    <div class="submit-box sending" id="submitBox">📡 결과 전송 중...</div>
+    <div class="capture-note">📸 이 화면을 캡처해서 선생님께 제출!</div>
+    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:8px;">
+      <button class="btn btn-primary btn-sm" onclick="goSectionSelect()">← 섹션 선택으로</button>
+      <button class="btn btn-accent btn-sm" id="retryBtn" onclick="retryWrong()">❌ 오답만 다시</button>
+    </div>
+    <div class="wrong-section" id="wrongSection"></div>
+  </div>
+
+</div>
+
+<div class="tab-warn hidden" id="tabWarn">
+  <h2>⚠️ 탭 이탈 감지!</h2>
+  <div class="tw-n" id="twN">1</div>
+  <p id="twMsg">다른 탭이나 창으로 이동하지 마세요.<br>3회 이탈 시 자동 제출됩니다.</p>
+  <button class="btn btn-ghost btn-sm" style="margin-top:16px;color:#c62828" onclick="closeTW()">돌아가기</button>
+</div>
+
+<!-- Firebase -->
+<script type="module">
+import{initializeApp}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import{getFirestore,collection,addDoc,serverTimestamp}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+const cfg={apiKey:"AIzaSyCxS524S8KAaF87DomPtl9sJdF-eqes404",authDomain:"bomnalvaca.firebaseapp.com",projectId:"bomnalvaca",storageBucket:"bomnalvaca.firebasestorage.app",messagingSenderId:"115868052300",appId:"1:115868052300:web:765c08867b6f1ce0987de9"};
+const app=initializeApp(cfg);const db=getFirestore(app);
+window._db=db;window._col=collection;window._add=addDoc;window._ts=serverTimestamp;window._fbReady=true;
+</script>
+
+<script>
+// ══════════════════════════════════════
+//  섹션 데이터 (50개씩 랜덤 분할)
+// ══════════════════════════════════════
+const SECTIONS=[
+["intellectual","지적인","25년 33번"],["closet","옷장","25년 31번"],["fMRI","기능적 자기 공명 영상","26년 24번"],["below-zero","영하의","25년 39번"],["have a clue","짐작하다","26년 32번"],["adopt","채택하다","25년 32번"],["back in the day","옛날에, 예전에","26년 36번"],["a wealth of","수많은","26년 23번"],["mention","언급하다, 거론하다","25년 36번"],["horizontal","수평적인","25년 38번"],["be linked to","~와 연결[연관]되다","25년 21번"],["propose","제안하다, 제의하다","25년 38번"],["in pursuit of","~을 추구하여","26년 29번"],["certain","어떤, 무슨","26년 36번"],["color coding","색상 구분","25년 34번"],["behavior","행동","25년 22번"],["independence","독립성","25년 32번"],["actively","적극적으로, 능동적으로","25년 32번"],["fine-tune","미세하게 조정하다","26년 29번"],["commitment","약속, 헌신","25년 38번"],["habit","(사회적) 관습·습관","25년 36번"],["assign","과제","교과서 1과"],["purpose","목적","교과서 1과"],["on foot","도보로, 걸어서","25년 30번"],["interrelated","상호 연관된","25년 38번"],["grain","곡물, 곡류","25년 22번"],["resilient","회복 탄력적인","26년 40번"],["performance","수행, 성취","교과서 1과"],["discovery","발견","26년 40번"],["overall","전반적인","26년 24번"],["these days","요즈음에","교과서 1과"],["impact","영향","25년 21번"],["inborn","타고난","25년 22번"],["stand up for","~을 옹호하다","26년 40번"],["reach","~에 도달하다","교과서 1과"],["combine","결합하다","25년 24번"],["current","현재의","25년 30번"],["stretch","뻗어 있다","25년 39번"],["describe","묘사하다","25년 33번"],["by definition","정의상","25년 40번"],["consume","소모하다","25년 30번"],["narrow","(폭이) 좁은","25년 38번"],["awareness","인식","25년 32번"],["cooperate","함께하다","25년 34번"],["self-constructed","스스로 구성해 낸","25년 38번"],["trend","추세, 동향","25년 30번"],["fairness","공평함","25년 38번"],["take account of","~을 고려하다","25년 34번"],["complex","복잡한","25년 36번"],["innate","타고난","25년 38번"]
+,
+["perception","인식","25년 29번"],["figure out","~을 알아내다[이해하다]","25년 38번"],["habit","습관","25년 24번"],["in silence","조용히, 침묵하여","26년 24번"],["concentrate","집중하다","교과서 1과"],["ingroup","내집단","25년 34번"],["reveal","드러내다","25년 32번"],["ancestor","조상","25년 21번"],["decline","감소하다","26년 40번"],["look into","~을 들여다보다","26년 37번"],["massive","거대한","25년 36번"],["demonstrate","입증하다","26년 40번"],["introduce","도입하다","25년 32번"],["involve","포함하다","26년 29번"],["simplify","단순화하다","25년 29번"],["strengthen","강화시키다","26년 24번"],["conformity","순응","26년 40번"],["survival","살아남기 위한","26년 34번"],["describe","묘사하다","25년 29번"],["scale","크기","25년 36번"],["deep","깊이","25년 37번"],["imaginary","가상의, 상상의","25년 32번"],["exploration","탐색하다","교과서 1과"],["internalization","내면화","26년 23번"],["perception","지각","26년 24번"],["positive","긍정적인","26년 24번"],["persuade","설득하다","25년 35번"],["recipe","(요리의) 조리법","교과서 1과"],["competition","경기, 경쟁","26년 29번"],["and so on","~등, 기타 등등","26년 22번"],["enormous","방대한","교과서 1과"],["adopt","받아들이다","25년 22번"],["application","응용 프로그램","25년 29번"],["mention","얘기를 꺼내다","26년 32번"],["take turns","순서대로 돌아가며 하다","25년 38번"],["solid","견고한","25년 32번"],["ensure","보장하다","25년 32번"],["achieve","성취하다","교과서 1과"],["provide","제공하다","25년 39번"],["progress","진보, 진전","25년 38번"],["behavior","행동","25년 34번"],["insight","통찰","25년 32번"],["develop","개발하다","교과서 1과"],["trend","경향","26년 40번"],["transform","변화시키다","25년 32번"],["apply","적용하다","25년 32번"],["be likely to do","~할 가능성이 있다","25년 24번"],["peer","또래, 동료","26년 23번"],["incidental","부수적인","26년 35번"],["practice","실제","26년 22번"]
+,
+["adjust","조절하다, 조정하다","26년 29번"],["expansion","확장하다","25년 22번"],["take on","~에 맞서다","26년 23번"],["enormous","엄청나게","교과서 1과"],["narrow","좁은","26년 39번"],["go along with","~에 동조[동의]하다","26년 40번"],["argue","주장하다","26년 31번"],["wristband","손목 밴드","25년 34번"],["be aware","~을 인식하다","26년 32번"],["abstract","추상적인","26년 31번"],["argue","주장하다","25년 38번"],["partial","부분적인","26년 31번"],["recital","연주회","26년 32번"],["correctly","올바르게","교과서 1과"],["rely on","의지하다","25년 29번"],["come up with","~을 떠올리다","26년 32번"],["context","맥락","25년 34번"],["simplify","간소화하다","25년 31번"],["rapid","빠른","25년 37번"],["concrete","구체적인","26년 36번"],["share","나누다, 공유하다","교과서 1과"],["demonstrate","입증하다","25년 34번"],["generation","세대","25년 21번"],["reasoning","추론","25년 40번"],["productive","생산적인","25년 30번"],["adjustment","조정, 수정","26년 29번"],["efficiency","효율적으로","25년 34번"],["familiar","익숙한, 친숙한","25년 40번"],["accumulate","축적하다","26년 39번"],["employer","상사","26년 23번"],["especially","특히, 특별히","26년 37번"],["decline","감소하다","26년 40번"],["slight","(양·정도) 약간의","교과서 1과"],["overcome","극복하다","교과서 1과"],["find","발견","26년 40번"],["transparency","투명함","25년 32번"],["currently","현재","25년 21번"],["practical","실제적인","26년 39번"],["persuade","설득하다","25년 38번"],["artificial","인공적인","25년 33번"],["distinguish","식별하다","25년 34번"],["wisdom","지혜, 현명함","26년 39번"],["nonlinear","비선형적(의)","25년 40번"],["adopt","채택하다","26년 23번"],["decade","10년","25년 21번"],["objective","목표","26년 34번"],["vague","막연한, 명확치 않은","교과서 1과"],["reduction","축소, 감소","25년 36번"],["concern","걱정","25년 31번"],["viewpoint","관점","25년 40번"]
+,
+["performance","수행","26년 29번"],["concentration","집중력","26년 24번"],["enthusiasm","열정","교과서 1과"],["commitment","약속","26년 35번"],["find","발견","26년 32번"],["viewpoint","관점","26년 33번"],["more or less","꽤, 다소","26년 33번"],["adopt","채택하다","26년 40번"],["ancestor","조상","25년 21번"],["functional","기능적인","26년 24번"],["take for granted","~을 당연하게 여기다","25년 33번"],["stand up for","~을 옹호하다","26년 40번"],["conformity","동조","26년 40번"],["confusion","혼란","25년 29번"],["objective","객관적인","26년 33번"],["barely","간신히","교과서 1과"],["perceive","여기다, 인식하다","26년 23번"],["emancipated","해방된","25년 33번"],["on the tip of one's tongue","당장 떠오르지 않는","26년 32번"],["state","상태","26년 29번"],["purpose","목적","25년 30번"],["conductor","전도체","26년 33번"],["publisher","발간하다, 출판하다","교과서 1과"],["transition","운송","25년 30번"],["competence","유능함, 능숙함","26년 23번"],["proper","타당한","25년 34번"],["explain","설명하다","26년 32번"],["enthusiasm","의지","25년 22번"],["efficiency","효율적으로","26년 34번"],["challenge","도전","26년 23번"],["influence","영향력","26년 40번"],["association","연관","26년 24번"],["distant","멀리 있는","25년 29번"],["organization","조직화, 구성","25년 32번"],["observe","관찰","26년 22번"],["efficiency","효율적으로","26년 33번"],["specific","특정한","25년 38번"],["commitment","의지","25년 22번"],["encounter","맞닥뜨리다, 직면하다","25년 40번"],["conform","따르다, 순응하다","25년 34번"],["a series of","연속된","26년 32번"],["describe","묘사하다","26년 35번"],["valuable","소중한","26년 35번"],["gradually","점진적으로","25년 22번"],["back and forth","왔다갔다","25년 38번"],["practical","실제적인","25년 38번"],["claim","주장하다","교과서 1과"],["boost","강화시키다","26년 24번"],["concentration","집중력","25년 24번"],["instruct","가르치다","25년 21번"]
+,
+["simplify","간소화하다","25년 29번"],["conductor","전도체","26년 33번"],["emphasize","강조하다","25년 34번"],["valuable","소중한","26년 35번"],["enthusiasm","의지","25년 24번"],["observe","관찰","26년 22번"],["complex","복잡한","26년 36번"],["suggest","시사하다","25년 36번"],["peer","또래","26년 40번"],["involve","포함하다","25년 32번"],["trend","경향","25년 35번"],["transparency","투명함","25년 33번"],["awareness","인식","25년 34번"],["exploration","탐색하다","25년 39번"],["functional","기능적인","25년 29번"],["producer","생산하다","교과서 1과"],["conform","따르다, 순응하다","26년 34번"],["simplify","간소화하다","25년 32번"],["confidence","자신감","교과서 1과"],["practical","실제적인","25년 29번"],["associate","연관되다","26년 36번"],["artificial","인공적인","25년 40번"],["boost","강화시키다","26년 23번"],["decline","감소하다","25년 34번"],["influence","영향력","26년 29번"],["persuade","설득하다","26년 35번"],["consequence","결과","25년 37번"],["claim","주장하다","25년 38번"],["clarify","분명히 하다","교과서 1과"],["functional","기능적인","26년 29번"],["efficiency","효율적으로","25년 38번"],["vast","방대한","25년 23번"],["concern","걱정","25년 36번"],["commitment","의지","25년 36번"],["insight","통찰","25년 29번"],["exploration","탐색하다","25년 36번"],["simplify","간소화하다","26년 39번"],["competence","능력","25년 32번"],["persuade","설득하다","26년 32번"],["transparency","투명함","26년 36번"],["functional","기능적인","25년 35번"],["adopt","받아들이다","26년 22번"],["complex","복잡한","25년 34번"],["gain","얻다","교과서 1과"],["take for granted","~을 당연하게 여기다","26년 33번"],["influence","영향력","25년 35번"],["influence","영향","26년 34번"],["insight","통찰","26년 32번"],["confidence","자신감","25년 35번"],["concern","걱정","26년 37번"]
+,
+["enormous","엄청나게","25년 21번"],["boost","강화시키다","25년 29번"],["identify","확인하다","26년 30번"],["transparency","투명함","26년 38번"],["clarify","분명히 하다","26년 38번"],["awareness","인식","26년 36번"],["enormous","방대한","25년 33번"],["vast","방대한","26년 22번"],["producer","생산하다","25년 37번"],["artificial","인공적인","26년 36번"],["vast","방대한","26년 38번"],["gain","얻다","25년 30번"],["gain","얻다","26년 30번"],["consequence","결과","25년 30번"],["consequence","결과","26년 30번"],["confidence","자신감","26년 35번"],["clarify","분명히 하다","26년 32번"],["producer","생산하다","26년 37번"],["awareness","인식","26년 34번"],["vast","방대한","25년 29번"],["boost","강화시키다","26년 29번"],["transparency","투명함","26년 32번"],["clarify","분명히 하다","25년 38번"],["confidence","자신감","26년 23번"],["consequence","결과","26년 37번"],["gain","얻다","25년 38번"],["gain","얻다","26년 38번"],["consequence","결과","25년 38번"],["consequence","결과","26년 38번"],["boost","강화시키다","25년 35번"],["boost","강화시키다","26년 35번"],["clarify","분명히 하다","25년 29번"],["vast","방대한","26년 36번"],["artificial","인공적인","25년 36번"],["artificial","인공적인","26년 34번"],["producer","생산하다","25년 30번"],["producer","생산하다","26년 30번"],["enormous","방대한","26년 36번"],["enormous","방대한","26년 38번"],["enormous","엄청나게","26년 21번"],["insight","통찰","26년 38번"],["insight","통찰","25년 35번"],["awareness","인식","25년 35번"],["transparency","투명함","25년 35번"],["clarify","분명히 하다","26년 35번"],["persuade","설득하다","25년 36번"],["persuade","설득하다","26년 36번"],["confidence","자신감","25년 29번"],["decline","감소하다","25년 36번"],["exploration","탐색하다","26년 36번"]
+,
+["enrich","풍요롭게 하다, 질을 높이다","교과서 1과"],["channel","채널","교과서 1과"],["podcast","팟캐스트","교과서 1과"],["host","(TV·라디오 프로의) 진행자, 사회자","교과서 1과"],["enormously","엄청나게","교과서 1과"],["useful","유용한","교과서 1과"],["journaling","일기 쓰기","교과서 1과"],["form","형성하다","교과서 1과"],["episode","(방송·영화의) 시리즈물의 한 편","교과서 1과"],["teenage","십대의","교과서 1과"],["subscriber","구독자","교과서 1과"],["ideally","이상적으로","교과서 1과"],["first thing","처음으로","교과서 1과"],["concept","개념","교과서 1과"],["simple","간단한","교과서 1과"],["cross one's mind","(생각이) 문득 떠오르다","교과서 1과"],["technique","기법","교과서 1과"],["originally","원래","교과서 1과"],["loss","상실","교과서 1과"],["creativity","창의력","교과서 1과"],["rule","규칙","교과서 1과"],["judge ~ as","~을 …하다고 판단하다","교과서 1과"],["cleanse","깨끗이 하다","교과서 1과"],["completely","완전히, 철저히","교과서 1과"],["private","비공개인","교과서 1과"],["honestly","솔직하게","교과서 1과"],["complaint","불평","교과서 1과"],["productive","생산적인","교과서 1과"],["random","닥치는 대로의, 임의의","교과서 1과"],["normally","보통(은)","교과서 1과"],["task","일, 과업","교과서 1과"],["come up with","~을 생각해 내다","교과서 1과"],["relate to","~에 공감하다","교과서 1과"],["similar to","~와 비슷한","교과서 1과"],["unsure","확신하지 못하는","교과서 1과"],["daily","매일의","교과서 1과"],["stick to","~을 계속하다, ~을 고수하다","교과서 1과"],["release onto","(감정 등)을 풀어놓다, 발산하다","교과서 1과"],["relieve","완화하다","교과서 1과"],["emotional","감정적인, 정서적인","교과서 1과"],["tension","긴장","교과서 1과"],["inner","내면적인","교과서 1과"],["peace","평화","교과서 1과"],["improve","향상시키다","교과서 1과"],["fun","재미있는","교과서 1과"],["raise","(문제 등을) 제기하다","교과서 1과"],["challenging","도전적인","교과서 1과"],["values","(복수형) 가치관","교과서 1과"],["passion","열정","교과서 1과"],["talent","재능","교과서 1과"]
+,
+["vague","막연한, 명확치 않은","교과서 1과"],["successful","성공적인","교과서 1과"],["publish","발간하다, 출판하다","교과서 1과"],["drive","투지, 추진력","교과서 1과"],["aim","목표","교과서 1과"],["explore","탐험하다, 탐색하다","교과서 1과"],["perfectionist","완벽주의자","교과서 1과"],["ultimate","최종의, 궁극적인","교과서 1과"],["assume","가정하다","26년 21번"],["gene editing","유전자 편집","26년 21번"],["prove","입증되다","26년 21번"],["logical","합리적인, 논리적인","26년 21번"],["preferable","바람직한","26년 21번"],["harmful","해로운","26년 21번"],["certainly","분명히","26년 21번"],["temptation","유혹","26년 21번"],["normal","정상적인","26년 21번"],["superior","우수한","26년 21번"],["unborn","태어나지 않은","26년 21번"],["lower","~을 낮추다","26년 21번"],["heart disease","심장병","26년 21번"],["cancer","암","26년 21번"],["beneficial","유익한","26년 21번"],["feature","특성, 특징","26년 21번"],["characteristic","특징, 특질","26년 21번"],["pursuit","추구","26년 21번"],["nature","본성, 천성","26년 21번"],["slippery","미끄러운","26년 21번"],["slope","경사지, 비탈","26년 21번"],["mutation","돌연변이","26년 21번"],["embryo","배아","26년 21번"],["grade school","초등학교","26년 22번"],["certainty","확실함","26년 22번"],["carry","담고 있다","26년 22번"],["organism","유기체","26년 22번"],["realize","깨닫다","26년 22번"],["succession","연속","26년 22번"],["observation","관찰","26년 22번"],["experiment","실험","26년 22번"],["process","과정","26년 22번"],["uncertainty","불확실함","26년 22번"],["depending upon","~에 따라","26년 22번"],["quite","꽤, 상당히","26년 22번"],["remain","남아 있다","26년 22번"],["inference","추론","26년 22번"],["turbulent fluid flow","난류 유동","26년 22번"],["evidence","증거","26년 23번"],["supervisor","상사","26년 23번"],["motivate","동기를 부여하다","26년 23번"],["coworker","(직장) 동료","26년 23번"]
+,
+["relatedness","관계성","26년 23번"],["meet","충족시키다","26년 23번"],["fuel","자극하다","26년 23번"],["crucial","중요한, 결정적인","26년 23번"],["basis","기반, 기초","26년 23번"],["enhance","강화하다, 향상시키다","26년 23번"],["a sense of connectedness","유대감","26년 23번"],["long-term","장기적인","26년 23번"],["autonomy","자율성","26년 23번"],["persistence","지속","26년 23번"],["modern","현대의","26년 24번"],["light up","밝히다","26년 24번"],["intense","강렬한","26년 24번"],["associated with","~과 연관된","26년 24번"],["pronunciation","발음","26년 24번"],["response","반응","26년 24번"],["connective structure","결합 구조","26년 24번"],["improvement","향상, 개선","26년 24번"],["public speaking skills","대중 말하기 능력","26년 24번"],["in particular","특히","26년 24번"],["encourage","장려하다","26년 24번"],["wire","연결하다","26년 24번"],["stimulation","자극","26년 24번"],["routine","루틴, 일상의 과정","26년 29번"],["enable","가능하게 하다","26년 29번"],["athlete","운동선수","26년 29번"],["evaluate","평가하다","26년 29번"],["condition","조건","26년 29번"],["bounce","(공을) 튀기다","26년 29번"],["supply","제공하다","26년 29번"],["muscle","근육","26년 29번"],["properly","적절히","26년 29번"],["prepare for","~을 준비하다","26년 29번"],["evaluation","평가, 감정","26년 29번"],["adaptation","적응","26년 29번"],["internal","내적인, 내부의","26년 29번"],["influence","영향","26년 29번"],["affect","영향을 미치다","26년 29번"],["reach","도달하다","26년 29번"],["component","구성 요소","26년 29번"],["promotion","프로모션, 홍보","26년 30번"],["deal with","~을 다루다","26년 30번"],["consumer","소비자","26년 30번"],["psychology","심리","26년 30번"],["force","~를 강요하다","26년 30번"],["one way or another","어떤 한 방식으로","26년 30번"],["marketer","마케팅 담당자","26년 30번"],["provide","제공하다","26년 30번"],["fashion","방식, 방법","26년 30번"],["possibility","가능성","26년 30번"]
+,
+["sales","매출, 판매","26년 30번"],["fool","속이다","26년 30번"],["purchase","구매하다","26년 30번"],["damage","손해, 피해","26년 30번"],["relate","전하다","26년 30번"],["experience","경험","26년 30번"],["be likely to do","~할 것 같다","26년 30번"],["appreciate","진가를 인정하다","26년 30번"],["promote","홍보하다","26년 30번"],["potential","잠재적인","26년 30번"],["argue","주장하다","26년 31번"],["strike","인상을 주다","26년 31번"],["reflection","반영","26년 31번"],["capture","포착하다, 담아내다","26년 31번"],["idea","관념","26년 31번"],["physical","구체적인, 물리적인","26년 31번"],["somehow","어떻게든","26년 31번"],["lie","존재하다, 있다","26년 31번"],["each and every","각각의 모든","26년 31번"],["emotional","감정적인","26년 32번"],["conversation","대화","26년 32번"],["roll","굴러가다","26년 32번"],["argument","말다툼, 논쟁","26년 32번"],["overtired","극도로 지친","26년 32번"],["justify","정당화하다","26년 32번"],["circumstances","상황, 환경","26년 32번"],["reflect","나타내다, 반영하다","26년 32번"],["notice","인지하다, 알아차리다","26년 32번"],["frown","찡그리다","26년 32번"],["conduct","전도하다, 전달하다","26년 33번"],["electricity","전기","26년 33번"],["efficiently","효율적으로","26년 33번"],["depending on","~에 따라","26년 33번"],["emotionally","감정적으로","26년 33번"],["intense","강렬한","26년 33번"],["drop","방울","26년 33번"],["sweat","땀, 식은땀","26년 33번"],["electrically","전기적으로","26년 33번"],["conductive","전도력 있는","26년 33번"],["conscious mind","의식(적 마음)","26년 33번"],["particularly","특히, 특별히","26년 33번"],["subjective","주관적인","26년 33번"],["track","추적하다","26년 33번"],["subconscious","잠재의식의","26년 33번"],["intensity","강도","26년 33번"],["figure out","계산하다","26년 33번"],["transfer","전달하다","26년 33번"],["electrical current","전류","26년 33번"],["sweat gland","땀샘","26년 33번"],["communicate","의사소통을 하다","26년 34번"]
+,
+["express","표현하다","26년 34번"],["discontent","불만","26년 34번"],["lawn","잔디, 잔디밭","26년 34번"],["frequency","주파수","26년 34번"],["researcher","연구자","26년 34번"],["microphone","마이크","26년 34번"],["expert","전문가","26년 34번"],["defend","지키다, 방어하다","26년 34번"],["scent","냄새","26년 34번"],["mow","(잔디를) 깎다","26년 34번"],["knee-jerk","자동적인","26년 34번"],["as opposed to","~와 대비되는","26년 35번"],["description","묘사, 기술, 서술","26년 35번"],["author","작가, 저자","26년 35번"],["establish","수립하다","26년 35번"],["audience","관객","26년 35번"],["tragedy","비극","26년 35번"],["misfortune","불행","26년 35번"],["draw out","끌어내다","26년 35번"],["recognizable","인식할 수 있는, 알아볼 수 있는","26년 35번"],["reality","현실","26년 35번"],["portrayal","묘사","26년 35번"],["fictional","허구의, 가상의","26년 35번"],["documentary","사실을 기록한","26년 35번"],["companion","동료","26년 35번"],["ally","협력자","26년 35번"],["violent","폭력적인, 난폭한","26년 35번"],["dozens of","많은, 수십의","26년 35번"],["minor","비중이 적은, 별로 중요하지 않은","26년 35번"],["villain","악당","26년 35번"],["protagonist","주인공","26년 35번"],["at least","적어도, 최소한","26년 36번"],["be capable of","~할 수 있다","26년 36번"],["despite","~에도 불구하고","26년 36번"],["lack","부족하다","26년 36번"],["necessarily","반드시, 물론","26년 36번"],["possess","가지고 있다, 소유하다","26년 36번"],["nonconceptual","비(非)개념적인","26년 36번"],["branch","나뭇가지","26년 36번"],["in principle","원칙적으로","26년 36번"],["route","경로, 루트","26년 36번"],["imply","의미하다","26년 36번"],["squirrel","다람쥐","26년 36번"],["extremely","아주, 매우, 몹시","26년 37번"],["functioning","기능, 작용","26년 37번"],["joint","관절","26년 37번"],["bear","지탱하다","26년 37번"],["knee","무릎","26년 37번"],["shift","옮기다","26년 37번"],["pressure","압력","26년 37번"]
+,
+["release","풀다","26년 37번"],["drink in","흡수하다","26년 37번"],["soak up","흡수하다","26년 37번"],["liquid","액체","26년 37번"],["transfer","옮기다, 이동하다","26년 37번"],["squeeze","압착되다","26년 37번"],["respond","반응하다","26년 37번"],["off-and-on","반복적인","26년 37번"],["cartilage","연골","26년 37번"],["synovial fluid","윤활액","26년 37번"],["amount","양","26년 38번"],["compare","비교하다","26년 38번"],["level","높이","26년 38번"],["volume","부피","26년 38번"],["morality","도덕(성)","26년 38번"],["directly","직접(으로)","26년 38번"],["rather","오히려, 차라리","26년 38번"],["fairness","공평함","26년 38번"],["effectively","효과적으로","26년 38번"],["conservation","보존","26년 38번"],["rise","부상, 오름, 상승","26년 39번"],["air-conditioning","냉방 설비","26년 39번"],["accelerate","가속화하다","26년 39번"],["construction","건설, 공사","26년 39번"],["seal","밀폐[밀봉]하다","26년 39번"],["box","구조물","26년 39번"],["airflow","공기 흐름","26년 39번"],["unit","장치","26년 39번"],["climate","기후","26년 39번"],["architect","건축가","26년 39번"],["orient","~을 향하게 하다","26년 39번"],["breeze","산들바람","26년 39번"],["block","막다, 차단하다","26년 39번"],["ignore","간과하다","26년 39번"],["comfort","안락","26년 39번"],["duct","(배)관","26년 39번"],["transom","채광창","26년 39번"],["go against","~에 반대하다","26년 40번"],["fascinating","흥미로운","26년 40번"],["equally","고르게","26년 40번"],["peak","정점","26년 40번"],["disagree","반대하다","26년 40번"],["mature","성숙해지다","26년 40번"],["defend","방어하다","26년 40번"],["opinion","의견","26년 40번"],["genetic","유전적인","25년 21번"],["species","종","25년 21번"],["nearly","거의","25년 21번"],["embodied","육체를 가진","25년 21번"],["trap","가두다","25년 21번"]
+,
+["limited","제한된","25년 21번"],["stream","흐름","25년 21번"],["influencer","영향력 행사자","25년 21번"],["grand","거대한, 웅장한","25년 21번"],["humanity","인류","25년 21번"],["decision","결정","25년 21번"],["far-reaching","(영향·결과가) 광범위한","25년 21번"],["place a responsibility on","~에게 책임을 맡기다","25년 21번"],["forward","앞으로","25년 21번"],["precious","소중한","25년 21번"],["shade","그늘","25년 21번"],["descendant","후손","25년 21번"],["unprecedented","전례 없는","25년 21번"],["stewardship","(재산·조직체 등의) 관리","25년 21번"],["despite","~에도 불구하고","25년 22번"],["early childhood","유아기","25년 22번"],["biological","생물학적인","25년 22번"],["difference","차이","25년 22번"],["preference","선호도","25년 22번"],["adaptability","적응력","25년 22번"],["flexibility","유연성","25년 22번"],["terrific","아주 좋은, 멋진","25년 22번"],["adventurous","모험적인","25년 22번"],["eager to do","~를 열망하는","25년 22번"],["readjust","재조정하다","25년 22번"],["processed","가공된","25년 22번"],["texture","식감, 질감","25년 22번"],["exposure","경험, 노출","25년 22번"],["willingness","의지","25년 22번"],["neuroplasticity","신경 가소성","25년 22번"],["nutritious","영양분이 많은","25년 22번"],["have access to","~에 접근하다","25년 24번"],["device","기기, 장치","25년 24번"],["awesome","멋진, 굉장한","25년 24번"],["otherwise","그렇지 않았다면","25년 24번"],["put off","미루다, 연기하다","25년 24번"],["opt to do","~하는 것을 선택하다","25년 24번"],["hostage","볼모","25년 24번"],["attach","결합하다, 붙이다","25년 24번"],["bundling","묶기","25년 24번"],["participant","참가자","25년 24번"],["essential","필수적인","25년 24번"],["accurate","정확한","25년 29번"],["as long as","~하기만 하면","25년 29번"],["display","표시하다","25년 29번"],["document","문서, 서류","25년 29번"],["effective","효과적인","25년 29번"],["conceptualization","개념화","25년 29번"],["actual","실제의","25년 29번"],["consist of","~로 구성되다","25년 29번"]
+].map(w => Array.isArray(w[0]) ? w : w); // 이미 배열 형태
+
+// 실제 섹션 데이터 (13섹션 × 50개)
+const SEC_DATA = SECTIONS;
+const SEC_NAMES = SEC_DATA.map((_,i) => `${i+1}섹션`);
+const ALL_WORDS = SEC_DATA.flat();
+const ALL_KOR = [...new Set(ALL_WORDS.map(w=>w[1]))];
+
+// ── localStorage ──
+const SK_DONE = 'bnq_gk1_done';  // 완료한 섹션 번호들
+const SK_ATT  = 'bnq_gk1_att';
+const LS = {
+  getDone(){try{return JSON.parse(localStorage.getItem(SK_DONE)||'[]');}catch{return [];}},
+  addDone(i){try{const d=LS.getDone();if(!d.includes(i)){d.push(i);localStorage.setItem(SK_DONE,JSON.stringify(d));};}catch{}},
+  getAtt(){try{return parseInt(localStorage.getItem(SK_ATT)||'0');}catch{return 0;}},
+  incAtt(){try{localStorage.setItem(SK_ATT,LS.getAtt()+1);}catch{}},
+};
+
+function shuffle(a){const r=[...a];for(let i=r.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[r[i],r[j]]=[r[j],r[i]];}return r;}
+function getDistractors(c){return shuffle(ALL_KOR.filter(k=>k!==c)).slice(0,3);}
+
+let questions=[],idx=0,correct=0,wrong=0,timedOut=0;
+let wrongWords=[],startTime=null,answered=false,tabViolations=0,quizActive=false;
+let timerId=null,timerLeft=10,currentWord='',currentSecIdx=-1;
+let studentName='',studentSchool='';
+const TIMER_MAX=10,CIRC=138.2;
+
+// 초기화
+(function init(){
+  document.getElementById('hBadge').textContent=ALL_WORDS.length+'개';
+  const n=LS.getAtt();
+  document.getElementById('attemptInfo').textContent=
+    n===0?'⚠️ 이 기기에서 처음 응시합니다.':`⚠️ 이 기기에서 ${n}회 응시한 기록이 있습니다.`;
+})();
+
+// 정보 제출
+function submitInfo(){
+  const school=document.getElementById('schoolSelect').value.trim();
+  const name=document.getElementById('nameInput').value.trim();
+  if(!school){alert('학교를 선택해주세요!');return;}
+  if(!name){alert('이름을 입력해주세요!');return;}
+  studentSchool=school;studentName=name;
+  document.getElementById('headerSub').textContent=`고운고 1학년 · ${name}`;
+  document.getElementById('studentBadge').textContent=`👤 ${name} · ${school}`;
+  document.getElementById('infoScreen').classList.add('hidden');
+  document.getElementById('sectionScreen').classList.remove('hidden');
+  renderSectionGrid();
+}
+
+// 섹션 그리드 렌더
+function renderSectionGrid(){
+  const done = LS.getDone();
+  const grid = document.getElementById('sectionGrid');
+  grid.innerHTML = '';
+  SEC_DATA.forEach((words, i) => {
+    const isDone = done.includes(i);
+    const btn = document.createElement('button');
+    btn.className = 'sec-btn' + (isDone?' done':'');
+    btn.innerHTML = `<span class="sec-icon">${isDone?'✅':'📝'}</span><div class="sec-num">${i+1}섹션</div><div class="sec-cnt">${words.length}개</div>`;
+    btn.onclick = () => startQuiz(i);
+    grid.appendChild(btn);
+  });
+}
+
+// 퀴즈 시작
+function startQuiz(mode){
+  LS.incAtt();
+  if(mode === 'all'){
+    questions = shuffle(ALL_WORDS);
+    currentSecIdx = -1;
+  } else {
+    questions = shuffle([...SEC_DATA[mode]]);
+    currentSecIdx = mode;
+  }
+  idx=0;correct=0;wrong=0;timedOut=0;wrongWords=[];
+  answered=false;tabViolations=0;startTime=Date.now();quizActive=true;
+  document.getElementById('sectionScreen').classList.add('hidden');
+  document.getElementById('quizArea').classList.remove('hidden');
+  document.getElementById('progWrap').style.display='';
+  document.getElementById('hBadge').textContent = questions.length+'개';
+  showQ();
+}
+
+function goSectionSelect(){
+  document.getElementById('resultScreen').style.display='none';
+  document.getElementById('sectionScreen').classList.remove('hidden');
+  document.getElementById('progWrap').style.display='none';
+  document.getElementById('hBadge').textContent=ALL_WORDS.length+'개';
+  renderSectionGrid();
+}
+
+// TTS
+function speakWord(){
+  if(!window.speechSynthesis)return;
+  window.speechSynthesis.cancel();
+  const utt=new SpeechSynthesisUtterance(currentWord.replace(/[~*]/g,'').trim());
+  utt.lang='en-US';utt.rate=0.85;
+  const v=window.speechSynthesis.getVoices().find(v=>v.lang.startsWith('en'));
+  if(v)utt.voice=v;
+  const btn=document.getElementById('speakBtn');
+  if(btn)btn.classList.add('speaking');
+  utt.onend=utt.onerror=()=>{if(btn)btn.classList.remove('speaking');};
+  window.speechSynthesis.speak(utt);
+}
+
+// 문제 표시
+function showQ(){
+  if(idx>=questions.length){showResult();return;}
+  answered=false;stopTimer();
+  const[eng,kor,src]=questions[idx];
+  currentWord=eng;
+  document.getElementById('qNum').textContent=`${idx+1} / ${questions.length}`;
+  document.getElementById('qSrc').textContent=src;
+  document.getElementById('qWord').textContent=eng;
+  document.getElementById('feedback').className='feedback';
+  document.getElementById('quizCard').classList.remove('timeout-flash');
+  document.getElementById('timerRing').classList.remove('danger');
+  const pct=Math.round(idx/questions.length*100);
+  document.getElementById('progFill').style.width=pct+'%';
+  document.getElementById('progTxt').textContent=`${idx} / ${questions.length}`;
+  document.getElementById('progPct').textContent=pct+'%';
+  const choices=shuffle([kor,...getDistractors(kor)]);
+  const box=document.getElementById('choices');box.innerHTML='';
+  ['①','②','③','④'].forEach((lbl,i)=>{
+    const b=document.createElement('button');b.className='choice-btn';
+    b.innerHTML=`<span class="cl">${lbl}</span><span>${choices[i]}</span>`;
+    b.onclick=()=>selectChoice(b,choices[i],kor);box.appendChild(b);
+  });
+  setTimeout(speakWord,300);
+  startTimer(kor);
+}
+
+// 타이머
+function startTimer(ans){
+  timerLeft=TIMER_MAX;_rt(TIMER_MAX);
+  timerId=setInterval(()=>{timerLeft--;_rt(timerLeft);if(timerLeft<=0){stopTimer();onTimeout(ans);}},1000);
+}
+function stopTimer(){if(timerId){clearInterval(timerId);timerId=null;}}
+function _rt(t){
+  document.getElementById('tArc').style.strokeDashoffset=CIRC*(1-t/TIMER_MAX);
+  document.getElementById('tNum').textContent=t;
+  document.getElementById('timerRing').classList.toggle('danger',t<=3);
+}
+function onTimeout(ans){
+  if(answered)return;answered=true;timedOut++;
+  wrongWords.push({eng:questions[idx][0],kor:ans,my:'(시간초과)',src:questions[idx][2]});
+  document.querySelectorAll('.choice-btn').forEach(b=>{
+    b.disabled=true;
+    if(b.querySelector('span:last-child').textContent===ans)b.classList.add('reveal');
+  });
+  document.getElementById('quizCard').classList.add('timeout-flash');
+  const fb=document.getElementById('feedback');fb.className='feedback to';
+  fb.textContent=`⏱ 시간 초과!  정답: ${ans}`;
+  setTimeout(nextQ,1800);
+}
+function selectChoice(btn,sel,ans){
+  if(answered)return;answered=true;stopTimer();
+  const[eng,kor,src]=questions[idx];
+  document.querySelectorAll('.choice-btn').forEach(b=>b.disabled=true);
+  const fb=document.getElementById('feedback');
+  if(sel===ans){
+    correct++;btn.classList.add('correct');fb.className='feedback ok';fb.textContent='✅ 정답!';
+  }else{
+    wrong++;wrongWords.push({eng,kor,my:sel,src});btn.classList.add('wrong');
+    document.querySelectorAll('.choice-btn').forEach(b=>{if(b.querySelector('span:last-child').textContent===ans)b.classList.add('reveal');});
+    fb.className='feedback no';fb.textContent=`❌ 오답  정답: ${ans}`;
+  }
+  setTimeout(nextQ,sel===ans?800:1500);
+}
+function nextQ(){
+  idx++;const c=document.getElementById('quizCard');
+  c.style.animation='none';requestAnimationFrame(()=>{c.style.animation='';showQ();});
+}
+
+// 결과
+function showResult(){
+  quizActive=false;stopTimer();
+  // 섹션 완료 표시
+  if(currentSecIdx>=0) LS.addDone(currentSecIdx);
+
+  const elapsed=Math.round((Date.now()-startTime)/60000);
+  const total=questions.length,score=Math.round(correct/total*100);
+  document.getElementById('quizArea').classList.add('hidden');
+  document.getElementById('progWrap').style.display='none';
+  document.getElementById('resultScreen').style.display='block';
+
+  const secLabel = currentSecIdx>=0 ? `${currentSecIdx+1}섹션 결과` : '전체 결과';
+  document.getElementById('resultSecLabel').textContent=secLabel;
+  document.getElementById('rScore').textContent=score;
+  document.getElementById('rSub').textContent=`점  (${correct} / ${total} 정답)`;
+  document.getElementById('sCorrect').textContent=correct;
+  document.getElementById('sWrong').textContent=wrong;
+  document.getElementById('sTimeout').textContent=timedOut;
+  document.getElementById('sTime').textContent=elapsed;
+
+  let g,gc;
+  if(score>=95){g='S 🌸';gc='gS';}else if(score>=85){g='A 🌟';gc='gA';}
+  else if(score>=70){g='B 👍';gc='gB';}else if(score>=55){g='C 😅';gc='gC';}else{g='D 📚';gc='gD';}
+  const ge=document.getElementById('rGrade');ge.textContent=g;ge.className='result-grade '+gc;
+  document.getElementById('progFill').style.width='100%';
+
+  if(wrongWords.length===0){
+    document.getElementById('retryBtn').style.display='none';
+    document.getElementById('wrongSection').innerHTML='<div style="text-align:center;color:#2e7d32;font-weight:800;padding:20px">🎉 전부 정답! 완벽해요!</div>';
+  }else{
+    const ws=document.getElementById('wrongSection');
+    ws.innerHTML=`<h3>❌ 오답·시간초과 단어 (${wrongWords.length}개)</h3>`;
+    wrongWords.forEach(({eng,kor,my,src})=>{
+      const d=document.createElement('div');d.className='wrong-item';
+      d.innerHTML=`<span class="wi-eng">${eng}</span><span class="wi-ans">${kor}</span><span class="wi-my">내 답: ${my}</span><span class="wi-src">${src}</span>`;
+      ws.appendChild(d);
+    });
+  }
+  _submitFirebase({score,correct,wrong,timedOut,total,elapsed,secLabel});
+}
+
+async function _submitFirebase(data){
+  const box=document.getElementById('submitBox');
+  try{
+    let w=0;while(!window._fbReady&&w<6000){await new Promise(r=>setTimeout(r,200));w+=200;}
+    if(!window._fbReady)throw new Error('Firebase not ready');
+    await window._add(window._col(window._db,'quiz_results'),{
+      submittedAt:window._ts(),
+      studentName,school:studentSchool,
+      score:data.score,correct:data.correct,wrong:data.wrong,
+      timedOut:data.timedOut,total:data.total,elapsedMin:data.elapsed,
+      wrongWords:wrongWords.map(w=>({eng:w.eng,kor:w.kor,my:w.my,src:w.src})),
+      quizType:`고운고1_어휘_${data.secLabel}_4지선다`,
+    });
+    box.className='submit-box done';
+    box.textContent='✅ 결과가 선생님께 전달되었습니다!';
+  }catch(e){
+    box.className='submit-box fail';
+    box.textContent='⚠️ 전송 실패 — 캡처해서 선생님께 제출해주세요';
+  }
+}
+
+function retryWrong(){
+  if(!wrongWords.length)return;
+  questions=shuffle(wrongWords.map(w=>[w.eng,w.kor,w.src]));
+  idx=0;correct=0;wrong=0;timedOut=0;wrongWords=[];
+  answered=false;startTime=Date.now();quizActive=true;tabViolations=0;currentSecIdx=-1;
+  document.getElementById('resultScreen').style.display='none';
+  document.getElementById('quizArea').classList.remove('hidden');
+  document.getElementById('progWrap').style.display='';
+  showQ();
+}
+
+// 탭 이탈
+document.addEventListener('visibilitychange',()=>{
+  if(!quizActive)return;
+  if(document.hidden){
+    stopTimer();tabViolations++;
+    document.getElementById('twN').textContent=tabViolations;
+    document.getElementById('tabWarn').classList.remove('hidden');
+    if(tabViolations>=3){
+      document.getElementById('twMsg').textContent='⛔ 3회 이탈로 자동 제출됩니다.';
+      document.getElementById('tabWarn').querySelector('button').style.display='none';
+      setTimeout(()=>{showResult();document.getElementById('tabWarn').classList.add('hidden');},2000);
+    }
+  }
+});
+function closeTW(){
+  document.getElementById('tabWarn').classList.add('hidden');
+  if(quizActive&&!answered&&timerLeft>0){
+    timerId=setInterval(()=>{timerLeft--;_rt(timerLeft);if(timerLeft<=0){stopTimer();onTimeout(questions[idx][1]);}},1000);
+  }else if(quizActive&&!answered)onTimeout(questions[idx][1]);
+}
+document.addEventListener('copy',e=>{if(quizActive)e.preventDefault();});
+document.addEventListener('contextmenu',e=>{if(quizActive)e.preventDefault();});
+</script>
+</body>
+</html>
