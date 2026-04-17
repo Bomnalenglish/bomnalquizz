@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>봄날 퀴즈 | 관리자 대시보드</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&family=Black+Han+Sans&display=swap');
+:root{--primary:#1a237e;--accent:#ff6f00;--green:#2e7d32;--red:#c62828;--bg:#eef0f8;--card:#fff;--border:#c5cae9;--muted:#757575;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Nanum Gothic',sans-serif;background:var(--bg);color:#1a1a2e;min-height:100vh;}
+
+/* 로그인 */
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
+.login-card{background:var(--card);border-radius:20px;padding:44px 36px;text-align:center;width:100%;max-width:360px;box-shadow:0 8px 32px rgba(26,35,126,.13);}
+.login-card h1{font-family:'Black Han Sans',sans-serif;font-size:22px;color:var(--primary);margin-bottom:6px;}
+.login-card p{font-size:13px;color:var(--muted);margin-bottom:28px;}
+.pw-input{width:100%;padding:14px 16px;border:2px solid var(--border);border-radius:12px;font-size:15px;outline:none;font-family:'Nanum Gothic',sans-serif;transition:border-color .2s;margin-bottom:14px;}
+.pw-input:focus{border-color:var(--primary);}
+.pw-input.err{border-color:var(--red);animation:shake .3s;}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+
+/* 헤더 */
+.header{background:var(--primary);color:white;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 10px rgba(0,0,0,.2);}
+.header-title{font-family:'Black Han Sans',sans-serif;font-size:18px;letter-spacing:1px;}
+.header-right{display:flex;align-items:center;gap:12px;}
+.logout-btn{background:rgba(255,255,255,.15);border:none;color:white;padding:6px 14px;border-radius:8px;font-family:'Nanum Gothic',sans-serif;font-size:12px;cursor:pointer;font-weight:700;}
+.logout-btn:hover{background:rgba(255,255,255,.25);}
+
+/* 메인 */
+.main{max-width:1100px;margin:0 auto;padding:24px 16px 60px;}
+
+/* 요약 카드 */
+.summary-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px;margin-bottom:28px;}
+.sum-card{background:var(--card);border-radius:14px;padding:18px 20px;box-shadow:0 2px 12px rgba(26,35,126,.07);}
+.sum-card .sum-n{font-family:'Black Han Sans',sans-serif;font-size:32px;color:var(--primary);line-height:1;}
+.sum-card .sum-l{font-size:12px;color:var(--muted);margin-top:4px;}
+.sum-card.g .sum-n{color:var(--green);}
+.sum-card.r .sum-n{color:var(--red);}
+.sum-card.o .sum-n{color:#e65100;}
+
+/* 필터/컨트롤 */
+.controls{background:var(--card);border-radius:14px;padding:16px 20px;margin-bottom:20px;display:flex;flex-wrap:wrap;gap:12px;align-items:center;box-shadow:0 2px 8px rgba(26,35,126,.06);}
+.ctrl-label{font-size:12px;font-weight:800;color:var(--primary);}
+.ctrl-select,.ctrl-input{padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;font-family:'Nanum Gothic',sans-serif;font-size:13px;outline:none;}
+.ctrl-select:focus,.ctrl-input:focus{border-color:var(--primary);}
+.ctrl-spacer{flex:1;}
+.refresh-btn{background:var(--primary);color:white;border:none;padding:9px 18px;border-radius:8px;font-family:'Nanum Gothic',sans-serif;font-size:13px;font-weight:800;cursor:pointer;}
+.refresh-btn:hover{opacity:.85;}
+.export-btn{background:#e8eaf6;color:var(--primary);border:none;padding:9px 18px;border-radius:8px;font-family:'Nanum Gothic',sans-serif;font-size:13px;font-weight:800;cursor:pointer;}
+
+/* 테이블 */
+.table-wrap{background:var(--card);border-radius:14px;box-shadow:0 2px 12px rgba(26,35,126,.07);overflow:hidden;}
+.table-header{padding:16px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);}
+.table-title{font-family:'Black Han Sans',sans-serif;font-size:15px;color:var(--primary);}
+.count-badge{background:var(--bg);border:1px solid var(--border);border-radius:20px;padding:3px 12px;font-size:12px;font-weight:700;color:var(--muted);}
+table{width:100%;border-collapse:collapse;}
+th{background:var(--primary);color:white;padding:11px 14px;text-align:left;font-size:12px;font-weight:700;white-space:nowrap;}
+td{padding:10px 14px;border-bottom:1px solid #f0f2f8;font-size:13px;vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:#f8f9ff;}
+.score-pill{display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:800;}
+.sS{background:#fff8e1;color:#f57f17;}.sA{background:#e8f5e9;color:#2e7d32;}
+.sB{background:#e3f2fd;color:#1565c0;}.sC{background:#fff3e0;color:#e65100;}.sD{background:#ffebee;color:#c62828;}
+.wrong-toggle{background:none;border:1px solid var(--border);border-radius:6px;padding:3px 8px;font-size:11px;cursor:pointer;color:var(--muted);}
+.wrong-toggle:hover{border-color:var(--primary);color:var(--primary);}
+.wrong-detail{display:none;padding:10px 14px 14px;background:#fafbff;border-top:1px solid #f0f2f8;}
+.wrong-detail.open{display:block;}
+.wrong-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;}
+.wrong-chip{background:#ffebee;color:var(--red);border-radius:6px;padding:3px 8px;font-size:11px;}
+.wrong-chip .w-ans{color:var(--green);margin-left:4px;}
+
+/* 차트 영역 */
+.chart-section{margin-bottom:28px;}
+.chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.chart-card{background:var(--card);border-radius:14px;padding:18px 20px;box-shadow:0 2px 12px rgba(26,35,126,.07);}
+.chart-card h3{font-size:13px;font-weight:800;color:var(--primary);margin-bottom:14px;}
+.bar-chart{display:flex;flex-direction:column;gap:8px;}
+.bar-row{display:flex;align-items:center;gap:10px;font-size:12px;}
+.bar-label{width:36px;text-align:right;color:var(--muted);flex-shrink:0;}
+.bar-track{flex:1;background:#f0f2f8;border-radius:4px;height:20px;overflow:hidden;}
+.bar-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,#3949ab,#ff6f00);transition:width .6s ease;}
+.bar-val{width:36px;font-weight:700;color:var(--primary);font-size:12px;}
+
+/* 빈 상태 */
+.empty{text-align:center;padding:48px 20px;color:var(--muted);}
+.empty .e-icon{font-size:40px;margin-bottom:12px;}
+
+.loading{text-align:center;padding:40px;color:var(--muted);font-size:14px;}
+
+.btn{display:inline-block;padding:12px 28px;border:none;border-radius:10px;font-family:'Nanum Gothic',sans-serif;font-size:14px;font-weight:800;cursor:pointer;}
+.btn-primary{background:var(--primary);color:white;}
+
+.hidden{display:none!important;}
+
+@media(max-width:600px){
+  .chart-grid{grid-template-columns:1fr;}
+  th,td{padding:8px 10px;font-size:12px;}
+  .summary-grid{grid-template-columns:repeat(2,1fr);}
+}
+</style>
+</head>
+<body>
+
+<!-- 로그인 화면 -->
+<div id="loginWrap" class="login-wrap">
+  <div class="login-card">
+    <h1>🌸 봄날 English</h1>
+    <p>관리자 페이지입니다.<br>비밀번호를 입력해주세요.</p>
+    <input type="password" class="pw-input" id="pwInput" placeholder="비밀번호" onkeydown="if(event.key==='Enter')doLogin()">
+    <br>
+    <button class="btn btn-primary" onclick="doLogin()" style="width:100%">로그인</button>
+  </div>
+</div>
+
+<!-- 대시보드 -->
+<div id="dashboard" class="hidden">
+  <div class="header">
+    <div>
+      <div class="header-title">🌸 봄날 English · 관리자</div>
+    </div>
+    <div class="header-right">
+      <span style="font-size:12px;opacity:.7" id="lastRefresh"></span>
+      <button class="logout-btn" onclick="doLogout()">로그아웃</button>
+    </div>
+  </div>
+
+  <div class="main">
+
+    <!-- 요약 -->
+    <div class="summary-grid" id="summaryGrid">
+      <div class="sum-card"><div class="sum-n" id="sumTotal">-</div><div class="sum-l">총 응시 횟수</div></div>
+      <div class="sum-card"><div class="sum-n" id="sumStudents">-</div><div class="sum-l">응시 학생 수</div></div>
+      <div class="sum-card g"><div class="sum-n" id="sumAvgScore">-</div><div class="sum-l">평균 점수</div></div>
+      <div class="sum-card r"><div class="sum-n" id="sumAvgWrong">-</div><div class="sum-l">평균 오답수</div></div>
+      <div class="sum-card o"><div class="sum-n" id="sumAvgTimeout">-</div><div class="sum-l">평균 시간초과</div></div>
+    </div>
+
+    <!-- 차트 -->
+    <div class="chart-section">
+      <div class="chart-grid">
+        <div class="chart-card">
+          <h3>📊 점수 분포</h3>
+          <div class="bar-chart" id="scoreDistChart"></div>
+        </div>
+        <div class="chart-card">
+          <h3>❌ 자주 틀린 단어 TOP 10</h3>
+          <div class="bar-chart" id="wrongWordChart"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 필터 -->
+    <div class="controls">
+      <span class="ctrl-label">학교</span>
+      <select class="ctrl-select" id="filterSchool" onchange="applyFilter()">
+        <option value="">전체</option>
+        <optgroup label="종촌고">
+          <option value="종촌고1">종촌고 1학년</option>
+          <option value="종촌고2">종촌고 2학년</option>
+          <option value="종촌고3">종촌고 3학년</option>
+        </optgroup>
+        <optgroup label="고운고">
+          <option value="고운고1">고운고 1학년</option>
+          <option value="고운고2">고운고 2학년</option>
+          <option value="고운고3">고운고 3학년</option>
+        </optgroup>
+        <optgroup label="대성고">
+          <option value="대성고1">대성고 1학년</option>
+          <option value="대성고2">대성고 2학년</option>
+          <option value="대성고3">대성고 3학년</option>
+        </optgroup>
+      </select>
+      <span class="ctrl-label">이름 검색</span>
+      <input type="text" class="ctrl-input" id="filterName" placeholder="이름 입력..." oninput="applyFilter()">
+      <span class="ctrl-label">정렬</span>
+      <select class="ctrl-select" id="sortBy" onchange="applyFilter()">
+        <option value="time_desc">최신순</option>
+        <option value="time_asc">오래된순</option>
+        <option value="score_desc">점수 높은순</option>
+        <option value="score_asc">점수 낮은순</option>
+      </select>
+      <div class="ctrl-spacer"></div>
+      <button class="export-btn" onclick="exportCSV()">📥 CSV 내보내기</button>
+      <button class="refresh-btn" onclick="loadData()">🔄 새로고침</button>
+    </div>
+
+    <!-- 테이블 -->
+    <div class="table-wrap">
+      <div class="table-header">
+        <span class="table-title">응시 기록</span>
+        <span class="count-badge" id="countBadge">0건</span>
+      </div>
+      <div id="tableArea"><div class="loading">데이터 불러오는 중...</div></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Firebase -->
+<script type="module">
+import{initializeApp}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import{getFirestore,collection,getDocs,query,orderBy,limit}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+const cfg={apiKey:"AIzaSyCxS524S8KAaF87DomPtl9sJdF-eqes404",authDomain:"bomnalvaca.firebaseapp.com",projectId:"bomnalvaca",storageBucket:"bomnalvaca.firebasestorage.app",messagingSenderId:"115868052300",appId:"1:115868052300:web:765c08867b6f1ce0987de9"};
+const app=initializeApp(cfg);
+const db=getFirestore(app);
+window._db=db;window._col=collection;window._getDocs=getDocs;window._query=query;window._orderBy=orderBy;window._limit=limit;window._fbReady=true;
+</script>
+
+<script>
+// ════ 설정 ════
+const ADMIN_PW = 'bomnalvoca2025';  // ← 비밀번호 여기서 변경
+
+// ════ 로그인 ════
+function doLogin(){
+  const pw=document.getElementById('pwInput').value;
+  if(pw===ADMIN_PW){
+    document.getElementById('loginWrap').classList.add('hidden');
+    document.getElementById('dashboard').classList.remove('hidden');
+    sessionStorage.setItem('adminOk','1');
+    loadData();
+  }else{
+    const inp=document.getElementById('pwInput');
+    inp.classList.add('err');
+    inp.value='';inp.placeholder='비밀번호가 틀렸습니다';
+    setTimeout(()=>{inp.classList.remove('err');inp.placeholder='비밀번호';},1500);
+  }
+}
+function doLogout(){sessionStorage.removeItem('adminOk');location.reload();}
+if(sessionStorage.getItem('adminOk')==='1'){
+  document.getElementById('loginWrap').classList.add('hidden');
+  document.getElementById('dashboard').classList.remove('hidden');
+  loadData();
+}
+
+// ════ 데이터 ════
+let allData=[];
+
+async function loadData(){
+  document.getElementById('tableArea').innerHTML='<div class="loading">⏳ 데이터 불러오는 중...</div>';
+  try{
+    let w=0;while(!window._fbReady&&w<6000){await new Promise(r=>setTimeout(r,200));w+=200;}
+    const q=window._query(window._col(window._db,'quiz_results'),window._orderBy('submittedAt','desc'),window._limit(500));
+    const snap=await window._getDocs(q);
+    allData=[];
+    snap.forEach(doc=>{
+      const d=doc.data();
+      allData.push({
+        id:doc.id,
+        name:d.studentName||'(이름없음)',
+        school:d.school||'-',
+        score:d.score||0,
+        correct:d.correct||0,
+        wrong:d.wrong||0,
+        timedOut:d.timedOut||0,
+        total:d.total||0,
+        elapsed:d.elapsedMin||0,
+        wrongWords:d.wrongWords||[],
+        quizType:d.quizType||'-',
+        time:d.submittedAt?.toDate()||null,
+      });
+    });
+    document.getElementById('lastRefresh').textContent=`마지막 갱신: ${new Date().toLocaleTimeString('ko-KR')}`;
+    renderSummary();
+    renderCharts();
+    applyFilter();
+  }catch(e){
+    document.getElementById('tableArea').innerHTML=`<div class="empty"><div class="e-icon">⚠️</div><p>데이터 로드 실패<br><small>${e.message}</small></p></div>`;
+    console.error(e);
+  }
+}
+
+function renderSummary(){
+  if(!allData.length){
+    ['sumTotal','sumStudents','sumAvgScore','sumAvgWrong','sumAvgTimeout'].forEach(id=>document.getElementById(id).textContent='0');
+    return;
+  }
+  const names=new Set(allData.map(d=>d.name+'|'+d.school));
+  const avg=arr=>arr.length?Math.round(arr.reduce((a,b)=>a+b,0)/arr.length):0;
+  document.getElementById('sumTotal').textContent=allData.length;
+  document.getElementById('sumStudents').textContent=names.size;
+  document.getElementById('sumAvgScore').textContent=avg(allData.map(d=>d.score))+'점';
+  document.getElementById('sumAvgWrong').textContent=avg(allData.map(d=>d.wrong))+'개';
+  document.getElementById('sumAvgTimeout').textContent=avg(allData.map(d=>d.timedOut))+'개';
+}
+
+function renderCharts(){
+  // 점수 분포
+  const bands=[{l:'S(95↑)',min:95,max:101},{l:'A(85↑)',min:85,max:95},{l:'B(70↑)',min:70,max:85},{l:'C(55↑)',min:55,max:70},{l:'D(~54)',min:0,max:55}];
+  const maxB=Math.max(...bands.map(b=>allData.filter(d=>d.score>=b.min&&d.score<b.max).length),1);
+  document.getElementById('scoreDistChart').innerHTML=bands.map(b=>{
+    const cnt=allData.filter(d=>d.score>=b.min&&d.score<b.max).length;
+    const w=Math.round(cnt/maxB*100);
+    return`<div class="bar-row"><span class="bar-label">${b.l}</span><div class="bar-track"><div class="bar-fill" style="width:${w}%"></div></div><span class="bar-val">${cnt}명</span></div>`;
+  }).join('');
+
+  // 자주 틀린 단어
+  const wmap=new Map();
+  allData.forEach(d=>d.wrongWords.forEach(w=>{if(w.eng){wmap.set(w.eng,(wmap.get(w.eng)||0)+1);}}) );
+  const top10=[...wmap.entries()].sort((a,b)=>b[1]-a[1]).slice(0,10);
+  const maxW=top10.length?top10[0][1]:1;
+  document.getElementById('wrongWordChart').innerHTML=top10.length
+    ?top10.map(([eng,cnt])=>{const w=Math.round(cnt/maxW*100);return`<div class="bar-row"><span class="bar-label" style="width:80px;font-size:10px;text-align:left">${eng}</span><div class="bar-track"><div class="bar-fill" style="width:${w}%"></div></div><span class="bar-val">${cnt}회</span></div>`}).join('')
+    :'<div style="color:var(--muted);font-size:13px;padding:10px">데이터 없음</div>';
+}
+
+function applyFilter(){
+  const nameQ=document.getElementById('filterName').value.trim().toLowerCase();
+  const schoolQ=document.getElementById('filterSchool').value;
+  const sort=document.getElementById('sortBy').value;
+  let data=[...allData];
+  if(schoolQ)data=data.filter(d=>d.school===schoolQ);
+  if(nameQ)data=data.filter(d=>d.name.toLowerCase().includes(nameQ));
+  if(sort==='time_asc')data.sort((a,b)=>(a.time||0)-(b.time||0));
+  else if(sort==='score_desc')data.sort((a,b)=>b.score-a.score);
+  else if(sort==='score_asc')data.sort((a,b)=>a.score-b.score);
+  renderTable(data);
+}
+
+function gradeClass(s){if(s>=95)return'sS';if(s>=85)return'sA';if(s>=70)return'sB';if(s>=55)return'sC';return'sD';}
+function gradeLetter(s){if(s>=95)return'S';if(s>=85)return'A';if(s>=70)return'B';if(s>=55)return'C';return'D';}
+function fmtTime(t){if(!t)return'-';return t.toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});}
+
+function renderTable(data){
+  document.getElementById('countBadge').textContent=data.length+'건';
+  if(!data.length){
+    document.getElementById('tableArea').innerHTML='<div class="empty"><div class="e-icon">📭</div><p>해당하는 기록이 없습니다</p></div>';
+    return;
+  }
+  const rows=data.map((d,i)=>{
+    const gc=gradeClass(d.score);
+    const ww=d.wrongWords.slice(0,20).map(w=>`<span class="wrong-chip">${w.eng}<span class="w-ans">→${w.kor}</span></span>`).join('');
+    return`
+    <tbody>
+      <tr>
+        <td style="color:var(--muted);font-size:11px">${i+1}</td>
+        <td><strong>${d.name}</strong></td>
+        <td>${d.school}</td>
+        <td><span class="score-pill ${gc}">${d.score}점 (${gradeLetter(d.score)})</span></td>
+        <td style="color:var(--green);font-weight:800">${d.correct}</td>
+        <td style="color:var(--red);font-weight:800">${d.wrong}</td>
+        <td style="color:#e65100;font-weight:800">${d.timedOut}</td>
+        <td>${d.total}</td>
+        <td>${d.elapsed}분</td>
+        <td>${fmtTime(d.time)}</td>
+        <td>${d.wrongWords.length>0?`<button class="wrong-toggle" onclick="toggleWrong(this)">오답 ${d.wrongWords.length}개</button>`:'<span style="color:var(--green);font-size:12px">✅ 없음</span>'}</td>
+      </tr>
+      ${d.wrongWords.length>0?`<tr><td colspan="11" style="padding:0"><div class="wrong-detail" data-id="${d.id}"><div style="font-size:12px;font-weight:800;color:var(--red);margin-bottom:4px">오답 단어:</div><div class="wrong-chips">${ww}</div></div></td></tr>`:''}
+    </tbody>`;
+  }).join('');
+  document.getElementById('tableArea').innerHTML=`
+    <div style="overflow-x:auto">
+    <table>
+      <thead><tr>
+        <th>#</th><th>이름</th><th>학교</th><th>점수</th>
+        <th>정답</th><th>오답</th><th>시간초과</th><th>총문제</th>
+        <th>소요</th><th>제출시간</th><th>오답보기</th>
+      </tr></thead>
+      ${rows}
+    </table>
+    </div>`;
+}
+
+function toggleWrong(btn){
+  const row=btn.closest('tr').nextElementSibling;
+  if(!row)return;
+  const detail=row.querySelector('.wrong-detail');
+  if(!detail)return;
+  detail.classList.toggle('open');
+  btn.textContent=detail.classList.contains('open')?'접기 ▲':`오답 ${btn.textContent.replace(/[^0-9]/g,'')}개 ▼`;
+}
+
+function exportCSV(){
+  const header=['이름','학교','점수','정답','오답','시간초과','총문제','소요(분)','제출시간','오답단어'];
+  const rows=allData.map(d=>[
+    d.name,d.school,d.score,d.correct,d.wrong,d.timedOut,d.total,d.elapsed,
+    d.time?d.time.toLocaleString('ko-KR'):'-',
+    d.wrongWords.map(w=>w.eng).join('|')
+  ]);
+  const csv=[header,...rows].map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download=`봄날퀴즈_결과_${new Date().toISOString().slice(0,10)}.csv`;a.click();
+}
+</script>
+</body>
+</html>
