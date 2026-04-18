@@ -736,7 +736,7 @@ function _rt(t){
 }
 function onTimeout(ans){
   if(answered)return;answered=true;timedOut++;
-  wrongWords.push({eng:questions[idx][0],kor:ans,my:'(시간초과)',src:questions[idx][2]});
+  wrongWords.push({eng:questions[idx][0]||'', kor:ans||'', my:'(시간초과)', src:(questions[idx][2]||'')});
   document.querySelectorAll('.choice-btn').forEach(b=>{
     b.disabled=true;
     if(b.querySelector('span:last-child').textContent===ans)b.classList.add('reveal');
@@ -754,7 +754,7 @@ function selectChoice(btn,sel,ans){
   if(sel===ans){
     correct++;btn.classList.add('correct');fb.className='feedback ok';fb.textContent='✅ 정답!';
   }else{
-    wrong++;wrongWords.push({eng,kor,my:sel,src});btn.classList.add('wrong');
+    wrong++;wrongWords.push({eng:eng||questions[idx][0]||'', kor:kor||questions[idx][1]||'', my:sel, src:src||questions[idx][2]||''});btn.classList.add('wrong');
     document.querySelectorAll('.choice-btn').forEach(b=>{if(b.querySelector('span:last-child').textContent===ans)b.classList.add('reveal');});
     fb.className='feedback no';fb.textContent=`❌ 오답  정답: ${ans}`;
   }
@@ -792,13 +792,15 @@ function showResult(){
   const ge=document.getElementById('rGrade');ge.textContent=g;ge.className='result-grade '+gc;
   document.getElementById('progFill').style.width='100%';
 
+  // 버튼 먼저 보이게 리셋
+  document.getElementById('retryBtn').style.display='';
   if(wrongWords.length===0){
     document.getElementById('retryBtn').style.display='none';
     document.getElementById('wrongSection').innerHTML='<div style="text-align:center;color:#2e7d32;font-weight:800;padding:20px">🎉 전부 정답! 완벽해요!</div>';
   }else{
     const ws=document.getElementById('wrongSection');
     ws.innerHTML=`<h3>❌ 오답·시간초과 단어 (${wrongWords.length}개)</h3>`;
-    wrongWords.forEach(({eng,kor,my,src})=>{
+    wrongWords.filter(w=>w&&w.eng).forEach(({eng,kor,my,src})=>{
       const d=document.createElement('div');d.className='wrong-item';
       d.innerHTML=`<span class="wi-eng">${eng}</span><span class="wi-ans">${kor}</span><span class="wi-my">내 답: ${my}</span><span class="wi-src">${src}</span>`;
       ws.appendChild(d);
@@ -817,7 +819,7 @@ async function _submitFirebase(data){
       studentName,school:studentSchool,
       score:data.score,correct:data.correct,wrong:data.wrong,
       timedOut:data.timedOut,total:data.total,elapsedMin:data.elapsed,
-      wrongWords:wrongWords.map(w=>({eng:w.eng,kor:w.kor,my:w.my,src:w.src})),
+      wrongWords:wrongWords.filter(w=>w&&w.eng).map(w=>({eng:w.eng||'',kor:w.kor||'',my:w.my||'',src:w.src||''})),
       quizType:`종촌고1_어휘_${data.secLabel}_4지선다`,
     });
     box.className='submit-box done';
