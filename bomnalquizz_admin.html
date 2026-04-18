@@ -332,7 +332,7 @@ async function loadData(){
         score: d.score||0, correct: d.correct||0, wrong: d.wrong||0,
         timedOut: d.timedOut||0, total: d.total||0, elapsed: d.elapsedMin||0,
         wrongWords: d.wrongWords||[], quizType: d.quizType||'-',
-        time: d.submittedAt?.toDate()||null,
+        time: d.submittedAt ? (typeof d.submittedAt.toDate === 'function' ? d.submittedAt.toDate() : new Date(d.submittedAt)) : null,
       });
     });
     document.getElementById('lastRefresh').textContent = '갱신: '+new Date().toLocaleTimeString('ko-KR');
