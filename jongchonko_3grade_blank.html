@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>봄날 | 종촌고 3학년 빈칸추론 언스크램블</title>
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Nanum+Gothic:wght@400;700;800&family=Black+Han+Sans&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --teal:#00695c;--teal-mid:#00897b;--teal-light:#e0f2f1;--teal-pale:#f1fafa;
+  --orange:#e65100;--green:#1b5e20;--red:#b71c1c;--ink:#1a1a2e;--soft:#666;
+}
+@media print{
+  body{background:#fff!important;}
+  #pg-start,#pg-quiz,#pg-result{display:none!important;}
+  #pg-print{display:block!important;}
+  .print-page{page-break-after:always;padding:18px;}
+  .print-page:last-child{page-break-after:auto;}
+}
+body{font-family:'Nanum Gothic',sans-serif;background:#e0f2f1;min-height:100vh;color:var(--ink);}
+
+/* ── START ── */
+#pg-start{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;background:linear-gradient(135deg,#e0f2f1,#e8f5e9,#f3e5f5);}
+.start-box{background:#fff;border-radius:28px;padding:44px 36px;max-width:500px;width:100%;box-shadow:0 12px 48px rgba(0,105,92,.15);text-align:center;}
+.start-box h1{font-family:'Black Han Sans',sans-serif;font-size:20px;color:var(--teal);margin-bottom:6px;}
+.start-box .sub{font-size:12px;color:var(--soft);margin-bottom:24px;line-height:1.7;}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:22px;}
+.info-chip{background:var(--teal-light);border-radius:12px;padding:10px;font-size:12px;color:var(--teal-mid);font-weight:700;}
+.inp{width:100%;padding:13px 16px;border:2px solid #80cbc4;border-radius:14px;font-size:14px;font-family:'Nanum Gothic',sans-serif;outline:none;margin-bottom:12px;background:#fff;}
+.inp:focus{border-color:var(--teal);}
+select.inp{color:var(--teal);font-weight:700;cursor:pointer;}
+.filter-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+.filter-btn{border:2px solid #80cbc4;border-radius:12px;padding:11px 8px;background:var(--teal-light);cursor:pointer;font-family:'Nanum Gothic',sans-serif;font-size:12px;font-weight:800;color:var(--teal);transition:.15s;text-align:center;}
+.filter-btn.on{border-color:var(--teal);background:var(--teal-mid);color:#fff;box-shadow:0 0 0 3px #80cbc4;}
+.filter-label{font-size:12px;font-weight:800;color:var(--soft);text-align:left;margin-bottom:8px;}
+.btn-start{width:100%;padding:16px;border:none;border-radius:14px;background:linear-gradient(135deg,var(--teal),var(--orange));color:#fff;font-size:16px;font-weight:800;font-family:'Nanum Gothic',sans-serif;cursor:pointer;transition:opacity .2s;margin-bottom:10px;}
+.btn-start:hover{opacity:.9;}
+.btn-print-start{width:100%;padding:13px;border:2px solid #80cbc4;border-radius:14px;background:var(--teal-light);color:var(--teal);font-size:14px;font-weight:800;font-family:'Nanum Gothic',sans-serif;cursor:pointer;transition:all .2s;}
+.btn-print-start:hover{background:#b2dfdb;}
+
+/* ── QUIZ ── */
+#pg-quiz{display:none;}
+.top-bar{background:var(--teal);color:#fff;padding:13px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;}
+.top-title{font-family:'Black Han Sans',sans-serif;font-size:15px;}
+.top-sub{font-size:11px;opacity:.6;margin-top:2px;}
+.top-badge{background:rgba(255,255,255,.18);border-radius:20px;padding:4px 14px;font-size:13px;font-weight:800;}
+.prog-bar{height:5px;background:#b2dfdb;}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--teal-mid),var(--orange));transition:width .35s ease;}
+.q-wrap{padding:20px 18px;max-width:660px;margin:0 auto;}
+.q-card{background:#fff;border-radius:22px;padding:26px 22px;box-shadow:0 5px 22px rgba(0,105,92,.09);}
+.q-label{display:inline-flex;align-items:center;gap:6px;background:var(--teal-light);color:var(--teal-mid);border-radius:20px;padding:5px 14px;font-size:12px;font-weight:800;margin-bottom:12px;}
+.q-num-big{font-size:12px;color:var(--soft);margin-bottom:8px;font-weight:700;}
+.source-tag{display:inline-block;background:#f5f5f5;border-radius:8px;padding:3px 10px;font-size:11px;color:#888;margin-bottom:12px;}
+
+/* passage */
+.passage-box{background:#fafafa;border:1.5px solid #e0e0e0;border-radius:14px;padding:16px 18px;font-size:13px;line-height:1.9;color:#333;font-family:'Nanum Myeongjo',serif;margin-bottom:16px;max-height:240px;overflow-y:auto;}
+.blank-mark{display:inline-block;background:#fff9c4;border:2px dashed #f9a825;border-radius:8px;padding:2px 16px;font-weight:800;color:#e65100;font-size:13px;letter-spacing:1px;vertical-align:middle;}
+
+/* task */
+.task-prompt{background:var(--teal-light);border-left:4px solid var(--teal-mid);border-radius:0 12px 12px 0;padding:11px 16px;font-size:13px;font-weight:700;color:var(--teal);margin-bottom:16px;line-height:1.6;}
+
+/* hint chip */
+.hint-chip{display:inline-block;background:#fff8e1;border:1.5px solid #ffe082;border-radius:10px;padding:5px 12px;font-size:12px;color:#e65100;font-weight:700;margin-bottom:14px;}
+
+/* word bank */
+.bank-label{font-size:11px;font-weight:800;color:var(--soft);margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px;}
+.word-bank{display:flex;flex-wrap:wrap;gap:8px;min-height:48px;background:#f5fffe;border:2px dashed #80cbc4;border-radius:14px;padding:12px;margin-bottom:18px;}
+.word-chip{background:#fff;border:2px solid #80cbc4;border-radius:10px;padding:7px 13px;font-size:13px;font-weight:700;color:var(--teal);cursor:pointer;transition:all .12s;user-select:none;font-family:'Nanum Gothic',sans-serif;}
+.word-chip:hover{background:var(--teal-light);border-color:var(--teal);transform:translateY(-1px);}
+.word-chip.used{opacity:0;pointer-events:none;}
+
+/* answer area */
+.answer-area{min-height:52px;background:#fff;border:2px solid #80cbc4;border-radius:14px;padding:10px 14px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:16px;transition:border-color .2s;}
+.answer-area.correct-state{border-color:var(--green);background:#f1f8f1;}
+.answer-area.wrong-state{border-color:var(--red);background:#fff5f5;}
+.ans-chip{background:var(--teal-mid);color:#fff;border-radius:9px;padding:7px 12px;font-size:13px;font-weight:700;cursor:pointer;transition:all .12s;font-family:'Nanum Gothic',sans-serif;}
+.ans-chip:hover:not(.locked){background:#00695c;transform:translateY(-1px);}
+.ans-chip.locked{cursor:default;}
+.ans-chip.ok{background:var(--green);}
+.ans-chip.no{background:var(--red);}
+.ans-placeholder{color:#bbb;font-size:13px;font-style:italic;}
+
+/* feedback */
+.fb-box{border-radius:12px;padding:13px 16px;font-size:13px;font-weight:700;display:none;line-height:1.6;margin-bottom:14px;}
+.fb-box.ok{background:#e8f5e9;color:#1b5e20;display:block;}
+.fb-box.no{background:#ffebee;color:var(--red);display:block;}
+.correct-ans-box{background:#e8f5e9;border-radius:10px;padding:10px 14px;font-size:12px;color:#1b5e20;margin-top:6px;display:none;}
+.correct-ans-box.show{display:block;}
+
+/* buttons */
+.btn-row{display:flex;gap:10px;}
+.btn-check{flex:1;padding:14px;border:none;border-radius:13px;background:linear-gradient(135deg,var(--teal-mid),var(--orange));color:#fff;font-size:15px;font-weight:800;font-family:'Nanum Gothic',sans-serif;cursor:pointer;transition:opacity .2s;}
+.btn-check:hover{opacity:.9;}
+.btn-check:disabled{opacity:.5;cursor:default;}
+.btn-next{padding:14px 22px;border:2px solid #80cbc4;border-radius:13px;background:var(--teal-light);color:var(--teal);font-size:14px;font-weight:800;font-family:'Nanum Gothic',sans-serif;cursor:pointer;display:none;transition:all .15s;}
+.btn-next.show{display:block;}
+.btn-next:hover{background:#b2dfdb;}
+.btn-clear{padding:14px 18px;border:2px solid #e0e0e0;border-radius:13px;background:#f5f5f5;color:#888;font-size:13px;font-weight:700;font-family:'Nanum Gothic',sans-serif;cursor:pointer;}
+.btn-clear:hover{background:#eee;}
+
+/* ── RESULT ── */
+#pg-result{display:none;padding:24px 18px 60px;max-width:660px;margin:0 auto;}
+.r-card{background:#fff;border-radius:24px;padding:32px 24px;box-shadow:0 8px 30px rgba(0,105,92,.11);text-align:center;margin-bottom:16px;}
+.r-score{font-family:'Black Han Sans',sans-serif;font-size:64px;color:var(--teal);line-height:1;}
+.r-name{font-size:13px;color:var(--soft);margin-top:6px;}
+.r-stats{display:flex;justify-content:center;gap:28px;margin-top:20px;}
+.r-stat .n{font-family:'Black Han Sans',sans-serif;font-size:28px;}
+.r-stat .l{font-size:11px;color:var(--soft);margin-top:3px;}
+.wrong-review{background:var(--teal-light);border-radius:16px;padding:16px;text-align:left;margin-top:16px;}
+.wrong-review h3{font-size:13px;font-weight:800;color:var(--red);margin-bottom:12px;}
+.wr-item{background:#fff;border-radius:10px;padding:12px 14px;margin-bottom:8px;border-left:3px solid #e91e63;font-size:12px;}
+.wr-q{font-weight:800;color:var(--teal);margin-bottom:4px;font-size:11px;}
+.wr-my{color:var(--red);margin-bottom:3px;}
+.wr-ans{color:var(--green);}
+.r-btns{display:flex;gap:10px;justify-content:center;margin-top:20px;flex-wrap:wrap;}
+.r-btn{padding:13px 26px;border:none;border-radius:13px;font-size:14px;font-weight:800;font-family:'Nanum Gothic',sans-serif;cursor:pointer;transition:opacity .2s;}
+.r-btn:hover{opacity:.85;}
+.r-btn.primary{background:linear-gradient(135deg,var(--teal-mid),var(--orange));color:#fff;}
+.r-btn.ghost{background:var(--teal-light);color:var(--teal);border:2px solid #80cbc4;}
+
+/* ── PRINT ── */
+#pg-print{display:none;}
+.print-header{text-align:center;border-bottom:2.5px solid #333;padding-bottom:12px;margin-bottom:18px;}
+.print-header h1{font-size:17px;font-weight:800;}
+.print-header p{font-size:11px;color:#555;margin-top:4px;}
+.print-info-row{display:flex;gap:24px;margin-bottom:14px;font-size:13px;}
+.print-info-row span{border-bottom:1px solid #333;padding-bottom:2px;min-width:80px;display:inline-block;}
+.print-conditions{font-size:11px;border:1px solid #999;padding:8px 12px;border-radius:6px;margin-bottom:16px;line-height:1.8;}
+.print-q{margin-bottom:22px;page-break-inside:avoid;}
+.print-q-num{font-weight:800;font-size:13px;background:#333;color:#fff;display:inline-block;padding:2px 10px;border-radius:4px;margin-bottom:6px;}
+.print-source{font-size:10px;color:#666;margin-bottom:5px;font-style:italic;}
+.print-passage{font-size:11.5px;line-height:1.8;color:#333;border:1px solid #ddd;border-radius:6px;padding:10px 12px;margin-bottom:8px;font-family:'Nanum Myeongjo',serif;background:#fafafa;}
+.print-blank{display:inline-block;background:#fffde7;border:1.5px dashed #f9a825;border-radius:5px;padding:1px 14px;font-weight:800;color:#e65100;font-size:12px;}
+.print-task{font-size:11px;font-weight:700;border-left:3px solid #333;padding-left:8px;margin-bottom:8px;color:#333;}
+.print-bank{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px;}
+.print-word{border:1.5px solid #888;border-radius:5px;padding:3px 9px;font-size:11px;font-weight:700;}
+.print-lines{margin-top:6px;}
+.print-line{border-bottom:1px solid #999;margin-bottom:9px;height:22px;}
+.print-ans-section{margin-top:36px;border-top:2.5px solid #333;padding-top:14px;}
+.print-ans-section h2{font-size:14px;font-weight:800;margin-bottom:12px;}
+.print-ans-item{display:flex;gap:8px;margin-bottom:5px;font-size:11px;line-height:1.5;}
+.print-ans-num{font-weight:800;width:28px;flex-shrink:0;color:#00695c;}
+.print-ans-text{color:#333;}
+@media(max-width:480px){.q-card{padding:18px 14px;}.passage-box{font-size:12px;}.filter-row{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<!-- ═══ START ═══ -->
+<div id="pg-start">
+  <div class="start-box">
+    <h1>🌿 빈칸추론 언스크램블</h1>
+    <p class="sub">종촌고 3학년 · EBS 수능특강 연계<br>빈칸에 들어갈 말을 단어 배열로 완성하세요 · 총 62문제</p>
+    <div class="info-grid">
+      <div class="info-chip">📝 62문제</div>
+      <div class="info-chip">🔤 언스크램블</div>
+      <div class="info-chip">🏆 기록 저장</div>
+      <div class="info-chip">🖨️ 출력 가능</div>
+    </div>
+    <div class="filter-label">📚 출제 범위 선택</div>
+    <div class="filter-row" id="filterRow">
+      <button class="filter-btn on" data-range="all" onclick="pickRange(this,'all')">전체 (62문제)</button>
+      <button class="filter-btn" data-range="3" onclick="pickRange(this,'3')">3강 (8문제)</button>
+      <button class="filter-btn" data-range="4" onclick="pickRange(this,'4')">4강 (8문제)</button>
+      <button class="filter-btn" data-range="5" onclick="pickRange(this,'5')">5강 (5문제)</button>
+      <button class="filter-btn" data-range="6" onclick="pickRange(this,'6')">6강 (5문제)</button>
+      <button class="filter-btn" data-range="7" onclick="pickRange(this,'7')">7강 (6문제)</button>
+      <button class="filter-btn" data-range="11" onclick="pickRange(this,'11')">11강 (5문제)</button>
+      <button class="filter-btn" data-range="12" onclick="pickRange(this,'12')">12강 (8문제)</button>
+      <button class="filter-btn" data-range="14" onclick="pickRange(this,'14')">14강 (5문제)</button>
+      <button class="filter-btn" data-range="T1" onclick="pickRange(this,'T1')">TEST01 (12문제)</button>
+    </div>
+    <select class="inp" id="schoolSel">
+      <option value="">학교 선택</option>
+      <option value="종촌고">종촌고</option>
+      <option value="고운고">고운고</option>
+      <option value="대성고">대성고</option>
+    </select>
+    <input type="text" class="inp" id="nameInp" placeholder="이름 입력" maxlength="10">
+    <button class="btn-start" onclick="startQuiz()">시작하기 🚀</button>
+    <button class="btn-print-start" onclick="openPrint()">🖨️ 시험지 출력</button>
+  </div>
+</div>
+
+<!-- ═══ QUIZ ═══ -->
+<div id="pg-quiz">
+  <div class="top-bar">
+    <div>
+      <div class="top-title">🌿 빈칸추론 언스크램블</div>
+      <div class="top-sub" id="topSub"></div>
+    </div>
+    <div class="top-badge" id="topBadge">0/0</div>
+  </div>
+  <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0"></div></div>
+  <div class="q-wrap"><div class="q-card" id="qCard"></div></div>
+</div>
+
+<!-- ═══ RESULT ═══ -->
+<div id="pg-result"></div>
+
+<!-- ═══ PRINT ═══ -->
+<div id="pg-print"></div>
+
+<script>
+// ══════════════════════════════════════════════════════
+// QUESTION DATA — 62 questions
+// ══════════════════════════════════════════════════════
+var ALL_Q = [
+// ── 3강 ──
+{no:1,kang:'3',src:'Handbook of Plant and Crop Physiology',
+ passage:'Even outdoors, although climate (including temperature) is usually regarded as beyond the control of man, <BLANK> is sometimes effective on a microclimate scale. Vancouver, Canada, is a few miles north of the 49th parallel, about 60 miles farther north than Minot, North Dakota, with its legendary harsh winter temperatures. But constant foehn winds off the Pacific Ocean make Vancouver winters mild and wet, although sunshine is scant.',
+ hint:'국지적으로 적용된 온도 조절',
+ answer:'locally applied temperature regulation',
+ words:['locally','applied','temperature','regulation']},
+
+{no:2,kang:'3',src:'Handbook of Plant and Crop Physiology',
+ passage:'When I had a garden there in the late 1940s, a neighbor used to say that I "<BLANK>" to bring in my lettuce and tomatoes earlier than anyone else. The bed in which the vegetables grew was banked toward the south at approximately 50 degrees, and the area between the plants was covered with flat stones, gathered from the nearby beach, to maximize soil heating from the weak late winter-early spring sun.',
+ hint:'자연 조건을 정확히 이해하고 이를 적극적으로 활용했다',
+ answer:'understood and took advantage of natural conditions',
+ words:['understood','and','took','advantage','of','natural','conditions']},
+
+{no:3,kang:'3',src:'Start with Why by Simon Sinek',
+ passage:'Energy can always be injected into an organization to motivate people to do things. Bonuses, promotions, other carrots, and even a few sticks can get people to work harder, for sure, but the gains are, like all manipulations, short-term. Loyalty among employees is when they <BLANK> to continue working at the same company. Loyalty to a company trumps pay and benefits.',
+ hint:'더 나은 급여나 복지를 마다하다',
+ answer:'pass up better pay or benefits',
+ words:['pass','up','better','pay','or','benefits']},
+
+{no:4,kang:'3',src:'A New History of Life by Peter Ward and Joe Kirschvink',
+ passage:'But the statement is equally true if the word "people" is replaced with "all of life on Earth, present and past," for each strand of DNA, in each of our cells, is <BLANK>, written in simple code and passed down from generation to generation.',
+ hint:'생물학적 역사의 아주 오래된 기록',
+ answer:'an ancient record of biological history',
+ words:['an','ancient','record','of','biological','history']},
+
+{no:5,kang:'3',src:'A New History of Life by Peter Ward and Joe Kirschvink',
+ passage:'DNA is <BLANK> — and yet one that is our master as well, the blueprint for our bodies, and dictator of what we will pass on to our children, gifts that can be blessings — or deadly time bombs.',
+ hint:'우리 안에 존재하는 역사',
+ answer:'a history that is inside us',
+ words:['a','history','that','is','inside','us']},
+
+{no:6,kang:'3',src:'A New History of Life by Peter Ward and Joe Kirschvink',
+ passage:'DNA is <BLANK> — and yet one that is our master as well, the blueprint for our bodies, and dictator of what we will pass on to our children.',
+ hint:'우리의 생물학적 과거를 담은 내적 기록',
+ answer:'an internal record of our biological past',
+ words:['an','internal','record','of','our','biological','past']},
+
+{no:7,kang:'3',src:'Never Stop Asking by Nathan D. Lang-Raad',
+ passage:'People don\'t want to think not just because it\'s hard, but also because they\'re afraid it will make them <BLANK>. Your students most likely do want to think about things that can be very controversial, like politics, ethics, and philosophy.',
+ hint:'오랫동안 당연하게 여겨 온 것을 다시 생각하다',
+ answer:'rethink what they have long taken for granted',
+ words:['rethink','what','they','have','long','taken','for','granted']},
+
+{no:8,kang:'3',src:'Work Without the Worker by Phil Jones',
+ passage:'Digital platforms <BLANK>. As work becomes ever more modularised, commoditised and standardised, and as markets for digital work are created, ties between service work and particular places can be disconnected.',
+ hint:'많은 형태의 일에 대한 지리적 결속을 느슨하게 만들었다',
+ answer:'have loosened the geographic attachment of many forms of work',
+ words:['have','loosened','the','geographic','attachment','of','many','forms','of','work']},
+
+// ── 4강 ──
+{no:9,kang:'4',src:'The Infinite Resource by Ramez Naam',
+ passage:'There\'s a saying that "you can\'t eat information." That may be so, but the food we eat today is the <BLANK> of thousands of years of increasingly high-quality information — the knowledge of how to farm.',
+ hint:'결과 (outcome)',
+ answer:'outcome',
+ words:['outcome','waste','burden','foundation','substitute']},
+
+{no:10,kang:'4',src:'Death of the Daily News by Andrew Conte',
+ passage:'Journalism, perhaps like never before, belongs to the people rather than to professional journalists, wealthy publishers, or even corporate shareholders. The same technology that <BLANK> gives them the tools to act as broadcasters and publishers of information essential to their immediate community.',
+ hint:'시민들에게 언론 권력을 부여해 온',
+ answer:'has placed journalistic power in the hands of the people',
+ words:['has','placed','journalistic','power','in','the','hands','of','the','people']},
+
+{no:11,kang:'4',src:'Death of the Daily News by Andrew Conte',
+ passage:'The same technology that has shifted the balance of power toward the people gives them the tools to act as broadcasters and publishers of information essential to their immediate community — and, more critically, to serve as <BLANK>.',
+ hint:'지역 공동체 내 정보의 중심',
+ answer:'information hubs within their communities',
+ words:['information','hubs','within','their','communities']},
+
+{no:12,kang:'4',src:'Never Stop Asking by Nathan D. Lang-Raad',
+ passage:'Without testing and evidence, intuition is useful, but <BLANK>.',
+ hint:'그것은 확정적인 결론은 아니다',
+ answer:'it is not the definitive conclusion',
+ words:['it','is','not','the','definitive','conclusion']},
+
+{no:13,kang:'4',src:'Good Anxiety by Wendy Suzuki, Billie Fitzpatrick',
+ passage:'Truly listen to <BLANK> about where you feel uncertain or insecure, and practice empathy by offering a hand to others who might be in the same boat.',
+ hint:'당신의 불안이 당신에게 말해 주려는 것',
+ answer:'what your anxiety is trying to tell you',
+ words:['what','your','anxiety','is','trying','to','tell','you']},
+
+{no:14,kang:'4',src:'Good Anxiety by Wendy Suzuki, Billie Fitzpatrick',
+ passage:'Remember that <BLANK> is something inherent in you — it is, in fact, what your anxiety was designed to do for you.',
+ hint:'당신의 취약함을 타인과 연결되는 도구로 바꾸는 것',
+ answer:'turning your vulnerability into a tool for connecting with others',
+ words:['turning','your','vulnerability','into','a','tool','for','connecting','with','others']},
+
+{no:15,kang:'4',src:'Sport Entrepreneurial Ecosystems by Vanessa Ratten',
+ passage:'It can be challenging to be collaborative and competitive in sport as they involve different forms of behaviour. This means <BLANK> may be required in terms of the amount of emphasis placed on each activity.',
+ hint:'두 활동을 신중하게 조율하는 것',
+ answer:'careful coordination between the two',
+ words:['careful','coordination','between','the','two']},
+
+{no:16,kang:'4',src:'Sport Entrepreneurial Ecosystems by Vanessa Ratten',
+ passage:'This means it might be better to have plans in place about how to pursue both simultaneously. This will ensure <BLANK>.',
+ hint:'두 활동이 충분한 강조를 받는다',
+ answer:'both activities receive adequate emphasis',
+ words:['both','activities','receive','adequate','emphasis']},
+
+// ── 5강 ──
+{no:17,kang:'5',src:'How to Survive and Thrive When Bad Things Happen by Jim Taylor',
+ passage:'With these sorts of crises, your best chance is to identify those aspects that <BLANK>. Then, you can break down the bigger crisis into smaller, more manageable problems toward which you can direct your energy and find solutions.',
+ hint:'자신의 통제 범위에 속하다',
+ answer:'fall under your control',
+ words:['fall','under','your','control']},
+
+{no:18,kang:'5',src:"Williams' Essentials of Nutrition and Diet Therapy",
+ passage:'A Google search for "nutrition listservs" yielded over 100,000 sites, but it is likely that many of these writings <BLANK>. Internet sites marketing herbs, drugs, and health devices are not monitored by government regulatory agencies and often contain misleading information.',
+ hint:'전문적인 검토를 거치지 않았다',
+ answer:'have not undergone professional evaluation',
+ words:['have','not','undergone','professional','evaluation']},
+
+{no:19,kang:'5',src:'Servant Leader',
+ passage:'My business partner Charles and I adopted the servant leader\'s way of doing things. In other words, everything was <BLANK> us. We led by example and did the work.',
+ hint:'낮은 (below)',
+ answer:'below',
+ words:['below','above','beyond','outside','opposed to']},
+
+{no:20,kang:'5',src:'Breathe, Focus, Excel by Harvey Martin',
+ passage:'One way is <BLANK>.',
+ hint:'생리학적 균형을 회복하기 위해 느린 호흡 기술을 도입하는 것',
+ answer:'to incorporate slow-breathing techniques to restore physiological balance',
+ words:['to','incorporate','slow-breathing','techniques','to','restore','physiological','balance']},
+
+{no:21,kang:'5',src:'The Entertainment Industry by Stuart Moss',
+ passage:'The literary world <BLANK>. Unlike Shakespeare, who has been studied and celebrated for his development of the English language, modern songwriters have experienced restraints on the acknowledgement of their contributions and largely been ignored.',
+ hint:'현대 음악 작사가들의 언어적 영향력을 무시한다',
+ answer:'ignores the linguistic impact of modern songwriters',
+ words:['ignores','the','linguistic','impact','of','modern','songwriters']},
+
+// ── 6강 ──
+{no:22,kang:'6',src:'Active and Passive Citizens by Richard Tuck',
+ passage:'In the United States, the practice of <BLANK> could be seen as compatible with the idea of an exclusionary citizenship, but that is a hard balance to maintain.',
+ hint:'시민이 아닌 사람에게 투표권을 행사하도록 허용하는 것',
+ answer:'allowing noncitizens to cast ballots',
+ words:['allowing','noncitizens','to','cast','ballots']},
+
+{no:23,kang:'6',src:'Messages, Signs, and Meanings by Marcel Danesi',
+ passage:'Clearly, the can\'s location on a sidewalk versus its display on a pedestal in an art gallery <BLANK>.',
+ hint:'그 물건에 대한 우리의 인식을 결정하는 데 핵심적인 역할을 한다',
+ answer:'plays a key role in determining our perception of the object',
+ words:['plays','a','key','role','in','determining','our','perception','of','the','object']},
+
+{no:24,kang:'6',src:'Literature',
+ passage:'The writer may provide the blueprint, but the reader builds literature\'s many rooms, and like any satisfying occupation, literature <BLANK>.',
+ hint:'우리의 정신적, 창의적 역량을 충족시킨다',
+ answer:'fulfills our mental and inventive capacities',
+ words:['fulfills','our','mental','and','inventive','capacities']},
+
+{no:25,kang:'6',src:'Human Transit by Jarrett Walker',
+ passage:'Unless you\'re comfortable planning your life around a particular scheduled trip, <BLANK>, so a transit map that screams about speed and whispers about frequency may simply be planting confusion.',
+ hint:'속도는 빈도 없이는 가치가 없다',
+ answer:'speed is worthless without frequency',
+ words:['speed','is','worthless','without','frequency']},
+
+{no:26,kang:'6',src:'Sport Entrepreneurial Ecosystems',
+ passage:'The literary world <BLANK>. Unlike Shakespeare, modern songwriters have experienced restraints on the acknowledgement of their contributions and largely been ignored.',
+ hint:'현대 음악 작사가들의 언어적 영향력을 무시한다',
+ answer:'ignores the linguistic impact of modern songwriters',
+ words:['ignores','the','linguistic','impact','of','modern','songwriters']},
+
+// ── 7강 ──
+{no:27,kang:'7',src:'Anxiety is Your Superpower by Wendy Suzuki',
+ passage:'In other words, <BLANK> that can predict or ensure mastery or optimal performance of anything.',
+ hint:'전문성은 단 하나의 고립된 요소에 의한 결과물이 아니다',
+ answer:'expertise is not the product of a solitary, isolated element',
+ words:['expertise','is','not','the','product','of','a','solitary,','isolated','element']},
+
+{no:28,kang:'7',src:'The Global Negotiator by Jeswald W. Salacuse',
+ passage:'Instead, the U.S. negotiators justified the project on the grounds that it would <BLANK>. They restructured the project to include a heavy training component for local workers and managers.',
+ hint:'국가의 산업 성장을 촉진하다',
+ answer:'foster the nation\'s industrial growth',
+ words:["foster","the","nation's","industrial","growth"]},
+
+{no:29,kang:'7',src:'The Glass Cage by Nicholas Carr',
+ passage:'He bypasses much of the reflective and exploratory playfulness that <BLANK>. Researchers term this phenomenon "premature fixation."',
+ hint:'스케치의 불확실함과 모호함에서 비롯되는',
+ answer:'springs from the uncertainty and ambiguity of sketching',
+ words:['springs','from','the','uncertainty','and','ambiguity','of','sketching']},
+
+{no:30,kang:'7',src:'Animation & Cartoons by Nicolae Sfetcu',
+ passage:'This style of animation depends more upon suspension of disbelief to tell a story; the story <BLANK>. It also encourages the animators to indulge in artistic styles that are not necessarily bound to the limits of the real world.',
+ hint:'관객의 인지적 영역 안에서 주로 구성된다',
+ answer:'is predominantly constructed within the spectator\'s cognitive realm',
+ words:['is','predominantly','constructed','within',"the","spectator's",'cognitive','realm']},
+
+{no:31,kang:'7',src:'The Entertainment Industry by Stuart Moss',
+ passage:'However, such commercialization risks culturtainment becoming homogeneous and losing its original \'message\' that could lead to a dilution of audiences. This could also lead to smaller non-commercial independent events being set up that would only serve to <BLANK>.',
+ hint:'관객층을 더 갈라지게 하다',
+ answer:'cause audiences to become more fragmented',
+ words:['cause','audiences','to','become','more','fragmented']},
+
+{no:32,kang:'7',src:'The Glass Cage by Nicholas Carr',
+ passage:'He bypasses much of the reflective and exploratory playfulness that <BLANK>.',
+ hint:'불확실함과 모호함에서 비롯되는',
+ answer:'springs from the uncertainty and ambiguity of sketching',
+ words:['springs','from','the','uncertainty','and','ambiguity','of','sketching']},
+
+// ── 11강 ──
+{no:33,kang:'11',src:'Metaphors & Analogies by Rick Wormeli',
+ passage:'It sometimes helps them to understand that <BLANK>.',
+ hint:'이용 가능한 모든 정보를 기록하려고 하는 것은 비효율적인 접근 방식이다',
+ answer:'trying to record all available information is an inefficient approach',
+ words:['trying','to','record','all','available','information','is','an','inefficient','approach']},
+
+{no:34,kang:'11',src:'Beyond Money by Anitra Nelson',
+ passage:'Yet the logic of market efficiencies generally rotates on purely monetary calculations, effectively reasoning in a hall of mirrors and <BLANK>.',
+ hint:'진정한 사회적, 생태적 가치를 주변부로 밀어내는 것',
+ answer:'pushing authentic social and ecological worth to the periphery',
+ words:['pushing','authentic','social','and','ecological','worth','to','the','periphery']},
+
+{no:35,kang:'11',src:'Heads Up Sociology by Chris Yuill',
+ passage:'Historical evidence that race <BLANK> is difficult to find. For example, in ancient Rome there were various leading figures, such as Emperor Septimius Severus, who were black.',
+ hint:'역사 전반에 걸쳐 일관되게 중심적인 역할을 해왔다',
+ answer:'has consistently played a central role throughout history',
+ words:['has','consistently','played','a','central','role','throughout','history']},
+
+{no:36,kang:'11',src:'Discovering Nutrition by Insel et al.',
+ passage:'Americans have created the perception that large portion sizes are appropriate, <BLANK>. We find portion distortions in restaurants, where the jumbo-sized portions are consistently 250 percent larger than the regular portions.',
+ hint:'표준 식사에 대한 우리의 인식을 왜곡시키면서',
+ answer:'distorting our perception of what a standard meal is',
+ words:['distorting','our','perception','of','what','a','standard','meal','is']},
+
+{no:37,kang:'11',src:'A Different Kind of Animal by Robert Boyd',
+ passage:'This psychology allows human populations that greatly exceed the inventive capacities of individuals <BLANK>.',
+ hint:'방대한 적응적 정보를 축적하는 것',
+ answer:'to accumulate pools of adaptive information',
+ words:['to','accumulate','pools','of','adaptive','information']},
+
+// ── 12강 ──
+{no:38,kang:'12',src:'Outraged by Kurt Gray',
+ passage:'the powerful feeling of outrage leads us to momentarily forget this unfavorable evaluation and get involved in a situation we would be better off avoiding, and science reveals how this feeling and forgetting is essential for <BLANK>.',
+ hint:'사회적 협력을 지속하는 것',
+ answer:'sustaining social cooperation',
+ words:['sustaining','social','cooperation']},
+
+{no:39,kang:'12',src:'Everyday Chemicals by Gerald A. LeBlanc',
+ passage:'<BLANK> provided a terrific survival advantage. Today, we trust that products of nature are safe to consume.',
+ hint:'익숙하지 않은 자극에 대해 극도의 경계심을 발휘하는 것',
+ answer:'Exercising extreme vigilance toward unfamiliar stimuli',
+ words:['Exercising','extreme','vigilance','toward','unfamiliar','stimuli']},
+
+{no:40,kang:'12',src:'Discovering Nutrition by Paul M. Insel et al.',
+ passage:'This makes it difficult for the government <BLANK>. The FDA does not evaluate the safety and effectiveness of supplements before they hit the marketplace.',
+ hint:'상업적 유통망에서 위험한 식이보충제를 회수하는 것',
+ answer:'to withdraw hazardous dietary products from commercial circulation',
+ words:['to','withdraw','hazardous','dietary','products','from','commercial','circulation']},
+
+{no:41,kang:'12',src:'Literature and Reader',
+ passage:'What has changed is not the work of literature exactly but <BLANK>. One\'s perception of Shakespeare\'s grand drama on aging under existential threat, King Lear, is a different experience read in one\'s twenties than it is in one\'s seventies.',
+ hint:'현재 그 텍스트에 반영되는 우리의 경험',
+ answer:'our experiences that are now reflected in the text',
+ words:['our','experiences','that','are','now','reflected','in','the','text']},
+
+{no:42,kang:'12',src:'Literature and Reader',
+ passage:'What has changed is not the work of literature exactly but <BLANK>.',
+ hint:'현재 우리가 읽기에 가져오는 개인적 배경',
+ answer:'the personal background we currently bring to our reading',
+ words:['the','personal','background','we','currently','bring','to','our','reading']},
+
+{no:43,kang:'12',src:'Literature and Reader',
+ passage:'Literature persists in conveying meaning and significance as time passes, and, most remarkably, <BLANK>.',
+ hint:'우리의 관점에 따라 계속해서 그 의미를 변화시킨다',
+ answer:'in shifting its meaning based on our perspective',
+ words:['in','shifting','its','meaning','based','on','our','perspective']},
+
+{no:44,kang:'12',src:'Literature and Reader',
+ passage:'Literature persists in conveying meaning and significance as time passes, and, most remarkably, <BLANK>.',
+ hint:'독자의 관점에 따라 그것이 의미하는 바를 변화시킨다',
+ answer:'in altering what it signifies according to the reader\'s viewpoint',
+ words:['in','altering','what','it','signifies','according','to',"the","reader's",'viewpoint']},
+
+{no:45,kang:'12',src:'Modern Sport Ethics by Angela Lumpkin',
+ passage:'In the absence of a universal standard or law, what matters is the outcome or consequences; so, <BLANK>.',
+ hint:'좋은 결과가 수단을 정당화한다',
+ answer:'a good outcome can justify the methods used',
+ words:['a','good','outcome','can','justify','the','methods','used']},
+
+// ── 14강 ──
+{no:46,kang:'14',src:'The Great Paradox of Science by Manosingham',
+ passage:'A detailed anthropological study of daily scientific practice in the Salk Institute laboratory shows how difficult it is <BLANK>.',
+ hint:'과학적 발견 과정에서 공로와 시점을 부여하는 것',
+ answer:'to assign credit and dates in the process of scientific discovery',
+ words:['to','assign','credit','and','dates','in','the','process','of','scientific','discovery']},
+
+{no:47,kang:'14',src:'The Great Paradox of Science by Manosingham',
+ passage:'A detailed anthropological study shows how difficult it is <BLANK>.',
+ hint:'명확한 공로와 정확한 시점을 부여하는 것',
+ answer:'to assign definitive credit and precise dates',
+ words:['to','assign','definitive','credit','and','precise','dates']},
+
+{no:48,kang:'14',src:'Music Direction for the Stage by Joseph Church',
+ passage:'They need not be aware to fulfill their experience; indeed, <BLANK> of a musical leader will detract from it.',
+ hint:'지나치게 눈에 띄는 존재',
+ answer:'an excessively noticeable presence',
+ words:['an','excessively','noticeable','presence']},
+
+{no:49,kang:'14',src:'Readicide by Kelly Gallagher',
+ passage:'Though the second group of readers were not strong readers, their prior knowledge enabled them to outscore readers with far better abilities. In other words, <BLANK> was the x-factor.',
+ hint:'독자의 주제에 대한 친숙함',
+ answer:"the readers' familiarity with the subject",
+ words:["the","readers'","familiarity","with","the","subject"]},
+
+{no:50,kang:'14',src:'Architectural Design by Mr. Rohit Manglik',
+ passage:'<BLANK> to your designs while in progress is a key to professional success. Similarly, involving prospective building users as well as clients is even more valuable in the long run.',
+ hint:'고객에게 피드백을 제공할 수 있는 충분한 기회를 제공하는 것',
+ answer:'Providing clients with adequate chances to offer feedback',
+ words:['Providing','clients','with','adequate','chances','to','offer','feedback']},
+
+// ── T1 ──
+{no:51,kang:'T1',src:'Superminds by Thomas W. Malone',
+ passage:'Jean Baudrillard refers to this social creation as hyperreality — a situation in which the <BLANK>.',
+ hint:'현실의 복제가 원본보다 더 현실적으로 인식된다',
+ answer:'a copy of reality is perceived as more real than the original',
+ words:['a','copy','of','reality','is','perceived','as','more','real','than','the','original']},
+
+{no:52,kang:'T1',src:'Social Cognition by David L. Hamilton',
+ passage:'To overcome this automatic draw on attention, people must assert control to report a judgment that has been made challenging by <BLANK>.',
+ hint:'경쟁하는 비자발적 처리 기제',
+ answer:'a rival involuntary processing mechanism',
+ words:['a','rival','involuntary','processing','mechanism']},
+
+{no:53,kang:'T1',src:'Categories We Live By by Gregory L. Murphy',
+ passage:'He actually thinks that there is <BLANK>. But that is not the case: cheeses don\'t share a particular texture or flavor or source.',
+ hint:'모든 치즈를 그에게 나쁘게 느끼게 하는 어떤 본질적인 불쾌한 특성',
+ answer:'some inherent unpleasant quality making all cheeses taste bad to him',
+ words:['some','inherent','unpleasant','quality','making','all','cheeses','taste','bad','to','him']},
+
+{no:54,kang:'T1',src:'The Cultural Animal by Roy F. Baumeister',
+ passage:'By and large, most people in every culture recognized the emotions expressed in those American faces. These results convinced most doubters that <BLANK>.',
+ hint:'감정의 일부 측면은 타고난 것이며 보편적이다',
+ answer:'certain aspects of emotions are innate and universal',
+ words:['certain','aspects','of','emotions','are','innate','and','universal']},
+
+{no:55,kang:'T1',src:'Conducting Research in Psychology by Brett W. Pelham',
+ passage:'Galileo was not simply a good logician or a good observer. One of his unique talents was his ability <BLANK>.',
+ hint:'경험적 관찰과 논리적 연역을 일관된 틀로 통합하는 것',
+ answer:'to synthesize empirical observation and logical deduction into a coherent framework',
+ words:['to','synthesize','empirical','observation','and','logical','deduction','into','a','coherent','framework']},
+
+{no:56,kang:'T1',src:'Decoding the New Consumer Mind by Kit Yarrow',
+ passage:'consumers expect something more, an incentive that <BLANK>.',
+ hint:'그들에게 추가적인 감정적 가치를 제공할',
+ answer:'will provide them with additional emotional value',
+ words:['will','provide','them','with','additional','emotional','value']},
+
+{no:57,kang:'T1',src:'The American Stamp by Laura Goldblatt',
+ passage:'Postage stamps, tiny though they were, nonetheless had space enough <BLANK>.',
+ hint:'국가의 절대적 권위를 투사하기 위한 축소된 수단으로 기능할',
+ answer:'to function as a miniature vehicle for projecting the absolute authority of the state',
+ words:['to','function','as','a','miniature','vehicle','for','projecting','the','absolute','authority','of','the','state']},
+
+{no:58,kang:'T1',src:'Literature: Story vs. Plot',
+ passage:'A story, as opposed to a plot, is the account of everything that happens in the <BLANK> order that it happens.',
+ hint:'직접적인 (direct)',
+ answer:'direct',
+ words:['direct','causal','dramatic','creative','subjective']},
+
+{no:59,kang:'T1',src:'How the Body Knows Its Mind by Sian Beilock',
+ passage:'So next time you are struggling to connect with your spouse, try to subtly mimic his or her facial expression; <BLANK>.',
+ hint:'정서적 공명을 키우고 불화의 시기에 약해지기 쉬운 정서적 유대를 공고히 한다',
+ answer:'it is expected to foster emotional resonance and solidify the affective ties that tend to erode during periods of discord',
+ words:['it','is','expected','to','foster','emotional','resonance','and','solidify','the','affective','ties','that','tend','to','erode','during','periods','of','discord']},
+
+{no:60,kang:'T1',src:'The Number Sense by Stanislas Dehaene',
+ passage:'One neuron, for instance, reacted after six events of any kind, regardless of whether this was six flashes of light, six brief tones, or six longer tones. <BLANK> did not seem to matter: The neuron apparently cared only about number.',
+ hint:'감각 입력의 유형',
+ answer:'The type of sensory input',
+ words:['The','type','of','sensory','input']},
+
+{no:61,kang:'T1',src:'Superminds by Thomas W. Malone',
+ passage:'Information technology can play an important role in <BLANK>.',
+ hint:'다양한 인구를 통합하는 동시에 사회적 분열을 야기하는 것',
+ answer:'unifying diverse populations while also causing social rifts',
+ words:['unifying','diverse','populations','while','also','causing','social','rifts']},
+
+{no:62,kang:'T1',src:'Social Origins of Language by Robert M. Seyfarth',
+ passage:'As a consequence, a male\'s roaring cannot be faked — because small males and males in poor condition cannot produce low-pitched roars at a high rate — and roaring <BLANK>.',
+ hint:'전투 잠재력의 신뢰할 만한 반영으로 기능한다',
+ answer:"functions as a reliable reflection of one's fighting potential",
+ words:['functions','as','a','reliable','reflection','of',"one's",'fighting','potential']}
+];
+
+// ══════════════════════════════════════════════════════
+// GLOBAL STATE
+// ══════════════════════════════════════════════════════
+var selectedRange = 'all';
+var activeQ = [];
+var studentName = '', school = '';
+var qIdx = 0, numCorrect = 0, numWrong = 0, wrongList = [], startTime = 0;
+var answered = false, bankWords = [], ansWords = [];
+
+// ══════════════════════════════════════════════════════
+// UTILS
+// ══════════════════════════════════════════════════════
+function shuffle(arr){var a=arr.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
+
+function pickRange(btn, range){
+  selectedRange = range;
+  document.querySelectorAll('.filter-btn').forEach(function(b){b.classList.remove('on');});
+  btn.classList.add('on');
+}
+
+function getActiveQ(){
+  if(selectedRange==='all') return ALL_Q;
+  return ALL_Q.filter(function(q){return q.kang===selectedRange;});
+}
+
+function renderPassage(text){
+  return text.replace(/<BLANK>/g,'<span class="blank-mark">　　　　　</span>');
+}
+
+// ══════════════════════════════════════════════════════
+// START
+// ══════════════════════════════════════════════════════
+function startQuiz(){
+  school=document.getElementById('schoolSel').value;
+  studentName=document.getElementById('nameInp').value.trim();
+  if(!school){alert('학교를 선택해주세요!');return;}
+  if(!studentName){alert('이름을 입력해주세요!');return;}
+  activeQ=shuffle(getActiveQ());
+  if(activeQ.length===0){alert('선택한 범위에 문제가 없습니다.');return;}
+  qIdx=0;numCorrect=0;numWrong=0;wrongList=[];startTime=Date.now();answered=false;
+  document.getElementById('pg-start').style.display='none';
+  document.getElementById('pg-quiz').style.display='block';
+  document.getElementById('pg-result').style.display='none';
+  var label=selectedRange==='all'?'전체':selectedRange+'강';
+  document.getElementById('topSub').textContent=studentName+' · EBS 빈칸추론 ('+label+')';
+  renderQ();
+}
+
+// ══════════════════════════════════════════════════════
+// RENDER QUESTION
+// ══════════════════════════════════════════════════════
+function renderQ(){
+  if(qIdx>=activeQ.length){showResult();return;}
+  var q=activeQ[qIdx];
+  var pct=Math.round(qIdx/activeQ.length*100);
+  document.getElementById('progFill').style.width=pct+'%';
+  document.getElementById('topBadge').textContent=(qIdx+1)+'/'+activeQ.length;
+  answered=false;
+  bankWords=shuffle(q.words).map(function(w){return{word:w,used:false};});
+  ansWords=[];
+  var card=document.getElementById('qCard');
+  card.innerHTML=buildQHTML(q);
+  card.querySelectorAll('.word-chip').forEach(function(chip,i){
+    chip.addEventListener('click',function(){addToAns(i);});
+  });
+  refreshAns();
+}
+
+function buildQHTML(q){
+  var chips=bankWords.map(function(w,i){return '<div class="word-chip" id="chip-'+i+'">'+w.word+'</div>';}).join('');
+  return '<div class="q-label">📖 빈칸추론</div>'+
+    '<div class="q-num-big">문제 '+(qIdx+1)+' / '+activeQ.length+' &nbsp;·&nbsp; '+q.kang+'강</div>'+
+    '<div class="source-tag">📚 '+q.src+'</div>'+
+    '<div class="passage-box">'+renderPassage(q.passage)+'</div>'+
+    '<div class="task-prompt">✏️ 빈칸에 들어갈 말을 주어진 단어를 모두 사용하여 완성하시오.</div>'+
+    '<div class="hint-chip">💡 한국어 의미: '+q.hint+'</div>'+
+    '<div class="bank-label">📦 단어 뱅크 — 탭해서 순서대로 배열하세요</div>'+
+    '<div class="word-bank" id="wordBank">'+chips+'</div>'+
+    '<div class="bank-label">✍️ 내 답안</div>'+
+    '<div class="answer-area" id="ansArea"><span class="ans-placeholder">단어를 탭해서 여기에 배열하세요...</span></div>'+
+    '<div class="fb-box" id="fbBox"></div>'+
+    '<div class="correct-ans-box" id="correctAnsBox"></div>'+
+    '<div class="btn-row">'+
+      '<button class="btn-clear" onclick="clearAns()">↩ 초기화</button>'+
+      '<button class="btn-check" id="btnCheck" onclick="checkAns()">채점하기 ✓</button>'+
+      '<button class="btn-next" id="btnNext" style="display:none" onclick="nextQ()">다음 →</button>'+
+    '</div>';
+}
+
+function addToAns(idx){
+  if(answered||bankWords[idx].used)return;
+  bankWords[idx].used=true;
+  ansWords.push({word:bankWords[idx].word,bankIdx:idx});
+  document.getElementById('chip-'+idx).classList.add('used');
+  refreshAns();
+}
+
+function removeFromAns(i){
+  if(answered)return;
+  var item=ansWords[i];
+  bankWords[item.bankIdx].used=false;
+  document.getElementById('chip-'+item.bankIdx).classList.remove('used');
+  ansWords.splice(i,1);
+  refreshAns();
+}
+
+function refreshAns(){
+  var area=document.getElementById('ansArea');
+  if(!area)return;
+  if(ansWords.length===0){area.innerHTML='<span class="ans-placeholder">단어를 탭해서 여기에 배열하세요...</span>';return;}
+  area.innerHTML=ansWords.map(function(item,i){return '<div class="ans-chip" onclick="removeFromAns('+i+')">'+item.word+'</div>';}).join('');
+}
+
+function clearAns(){
+  if(answered)return;
+  bankWords.forEach(function(w,i){w.used=false;var c=document.getElementById('chip-'+i);if(c)c.classList.remove('used');});
+  ansWords=[];
+  refreshAns();
+}
+
+// ══════════════════════════════════════════════════════
+// CHECK
+// ══════════════════════════════════════════════════════
+function checkAns(){
+  if(answered)return;
+  if(ansWords.length===0){alert('단어를 배열해주세요!');return;}
+  answered=true;
+  var q=activeQ[qIdx];
+  var myAns=ansWords.map(function(i){return i.word;}).join(' ');
+  var norm=function(s){return s.toLowerCase().replace(/["""''',\.]/g,'').replace(/\s+/g,' ').trim();};
+  var isOk=norm(myAns)===norm(q.answer);
+  document.querySelectorAll('.ans-chip').forEach(function(c){c.classList.add('locked');});
+  document.getElementById('btnCheck').disabled=true;
+  var area=document.getElementById('ansArea');
+  var fb=document.getElementById('fbBox');
+  var cb=document.getElementById('correctAnsBox');
+  if(isOk){
+    area.classList.add('correct-state');
+    document.querySelectorAll('.ans-chip').forEach(function(c){c.classList.add('ok');});
+    fb.className='fb-box ok';fb.textContent='✅ 정답입니다!';
+    numCorrect++;
+  } else {
+    area.classList.add('wrong-state');
+    document.querySelectorAll('.ans-chip').forEach(function(c){c.classList.add('no');});
+    fb.className='fb-box no';fb.textContent='❌ 오답입니다.';
+    cb.className='correct-ans-box show';cb.innerHTML='✅ 정답: <strong>'+q.answer+'</strong>';
+    numWrong++;
+    wrongList.push({kang:q.kang,hint:q.hint,my:myAns,correct:q.answer});
+  }
+  var nb=document.getElementById('btnNext');
+  nb.textContent=(qIdx+1>=activeQ.length)?'결과 보기 →':'다음 →';
+  nb.style.display='block';
+}
+
+function nextQ(){qIdx++;renderQ();}
+
+// ══════════════════════════════════════════════════════
+// RESULT
+// ══════════════════════════════════════════════════════
+function showResult(){
+  document.getElementById('pg-quiz').style.display='none';
+  var total=activeQ.length;
+  var pct=total>0?Math.round(numCorrect/total*100):0;
+  var elapsed=Math.round((Date.now()-startTime)/60000);
+  var wHTML='';
+  if(wrongList.length>0){
+    wHTML='<div class="wrong-review"><h3>❌ 오답 ('+wrongList.length+'개)</h3>';
+    wrongList.forEach(function(w){
+      wHTML+='<div class="wr-item"><div class="wr-q">['+w.kang+'강] '+w.hint+'</div><div class="wr-my">내 답: '+w.my+'</div><div class="wr-ans">정답: '+w.correct+'</div></div>';
+    });
+    wHTML+='</div>';
+  } else {
+    wHTML='<div style="color:#1b5e20;font-weight:800;padding:20px;text-align:center;font-size:17px;">🎉 전부 정답! 완벽해요!</div>';
+  }
+  var res=document.getElementById('pg-result');
+  res.style.display='block';
+  res.innerHTML='<div class="r-card">'+
+    '<div style="font-size:12px;color:#888;margin-bottom:6px;">EBS 수능특강 빈칸추론 언스크램블</div>'+
+    '<div class="r-score">'+pct+'점</div>'+
+    '<div class="r-name">'+studentName+' ('+school+')의 결과</div>'+
+    '<div class="r-stats">'+
+      '<div class="r-stat"><div class="n" style="color:#1b5e20;">'+numCorrect+'</div><div class="l">정답</div></div>'+
+      '<div class="r-stat"><div class="n" style="color:#b71c1c;">'+numWrong+'</div><div class="l">오답</div></div>'+
+      '<div class="r-stat"><div class="n" style="color:#00695c;">'+total+'</div><div class="l">총문제</div></div>'+
+      '<div class="r-stat"><div class="n" style="color:#e65100;">'+elapsed+'분</div><div class="l">소요</div></div>'+
+    '</div>'+wHTML+
+    '<div class="r-btns">'+
+      '<button class="r-btn ghost" onclick="openPrint()">🖨️ 시험지 출력</button>'+
+      '<button class="r-btn primary" onclick="location.reload()">처음부터 🔄</button>'+
+    '</div></div>';
+  saveFirebase(pct,numCorrect,numWrong,total,elapsed);
+}
+
+// ══════════════════════════════════════════════════════
+// PRINT
+// ══════════════════════════════════════════════════════
+function openPrint(){
+  var pg=document.getElementById('pg-print');
+  var qs=getActiveQ();
+  var qHTML='';
+  qs.forEach(function(q,i){
+    var shuffled=shuffle(q.words);
+    var chips=shuffled.map(function(w){return '<span class="print-word">'+w+'</span>';}).join('');
+    qHTML+='<div class="print-q">'+
+      '<div class="print-q-num">문제 '+(i+1)+'</div>'+
+      '<div class="print-source">'+q.src+'</div>'+
+      '<div class="print-passage">'+q.passage.replace(/<BLANK>/g,'<span class="print-blank">　　　　　　　</span>')+'</div>'+
+      '<div class="print-task">빈칸에 들어갈 말을 주어진 단어를 모두 사용하여 완성하시오. (💡 '+q.hint+')</div>'+
+      '<div class="print-bank">'+chips+'</div>'+
+      '<div class="print-lines"><div class="print-line"></div><div class="print-line"></div></div>'+
+    '</div>';
+  });
+  var ansHTML='';
+  qs.forEach(function(q,i){
+    ansHTML+='<div class="print-ans-item"><div class="print-ans-num">'+(i+1)+'번</div><div class="print-ans-text">'+q.answer+'<br><small style="color:#555">→ '+q.hint+'</small></div></div>';
+  });
+  var rangeLabel=selectedRange==='all'?'전체 62문제':selectedRange+'강';
+  pg.innerHTML='<div class="print-page">'+
+    '<div class="print-header"><h1>🌿 종촌고 3학년 영어 — 빈칸추론 언스크램블</h1><p>EBS 수능특강 연계 | '+rangeLabel+' | 주어진 단어를 모두 사용하여 빈칸을 완성하시오.</p></div>'+
+    '<div class="print-info-row">학년: <span>3학년</span> &nbsp;&nbsp; 이름: <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> &nbsp;&nbsp; 점수: <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></div>'+
+    '<div class="print-conditions"><strong>〈조건〉</strong><br>○ 주어진 단어(구)를 모두 한 번씩 사용할 것 &nbsp; ○ 단어 형태 변형 없음 &nbsp; ○ 단어 추가 없음 &nbsp; ○ 대·소문자 구별 없음 &nbsp; ○ 철자 오류 시 감점</div>'+
+    qHTML+
+    '<div class="print-ans-section"><h2>※ 정답지 (학생에게 배부 금지)</h2>'+ansHTML+'</div>'+
+  '</div>';
+  ['pg-start','pg-quiz','pg-result'].forEach(function(id){document.getElementById(id).style.display='none';});
+  pg.style.display='block';
+  setTimeout(function(){
+    window.print();
+    setTimeout(function(){pg.style.display='none';document.getElementById('pg-start').style.display='flex';},500);
+  },300);
+}
+
+// ══════════════════════════════════════════════════════
+// FIREBASE
+// ══════════════════════════════════════════════════════
+function saveFirebase(score,correct,wrong,total,elapsed){
+  try{
+    var s1=document.createElement('script');
+    s1.src='https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js';
+    s1.onload=function(){
+      var s2=document.createElement('script');
+      s2.src='https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js';
+      s2.onload=function(){
+        try{
+          if(!firebase.apps.length){firebase.initializeApp({apiKey:"AIzaSyCxS524S8KAaF87DomPtl9sJdF-eqes404",authDomain:"bomnalvaca.firebaseapp.com",projectId:"bomnalvaca",storageBucket:"bomnalvaca.firebasestorage.app",messagingSenderId:"115868052300",appId:"1:115868052300:web:765c08867b6f1ce0987de9"});}
+          firebase.firestore().collection('quiz_results').add({submittedAt:new Date().toISOString(),studentName:studentName,school:school,score:score,correct:correct,wrong:wrong,total:total,elapsedMin:elapsed,quizType:'종촌고3_수능특강_빈칸추론_언스크램블_'+selectedRange,wrongWords:wrongList.map(function(w){return{eng:w.hint,my:w.my,correct:w.correct};})});
+        }catch(e){console.warn('FB 저장 실패:',e);}
+      };
+      document.head.appendChild(s2);
+    };
+    document.head.appendChild(s1);
+  }catch(e){}
+}
+</script>
+</body>
+</html>

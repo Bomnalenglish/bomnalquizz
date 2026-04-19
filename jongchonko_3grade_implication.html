@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>봄날 | 종촌고 3학년 함축의미 언스크램블</title>
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Nanum+Gothic:wght@400;700;800&family=Black+Han+Sans&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --purple:#4a148c;
+  --purple-mid:#6a1b9a;
+  --purple-light:#e8deff;
+  --purple-pale:#f3e5f5;
+  --orange:#ff6f00;
+  --green:#2e7d32;
+  --red:#b71c1c;
+  --ink:#1a1a2e;
+  --soft:#666;
+}
+
+/* ═══════════════════════════════════════
+   PRINT STYLES
+═══════════════════════════════════════ */
+@media print {
+  body { background: #fff !important; }
+  #pg-start, #pg-quiz, #pg-result { display: none !important; }
+  #pg-print { display: block !important; }
+  .print-no { display: none !important; }
+  .print-page { page-break-after: always; padding: 20px; }
+  .print-page:last-child { page-break-after: auto; }
+}
+
+/* ═══════════════════════════════════════
+   GLOBAL
+═══════════════════════════════════════ */
+body {
+  font-family: 'Nanum Gothic', sans-serif;
+  background: #f3e5f5;
+  min-height: 100vh;
+  color: var(--ink);
+}
+
+/* ═══════════════════════════════════════
+   START SCREEN
+═══════════════════════════════════════ */
+#pg-start {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: linear-gradient(135deg, #f3e5f5 0%, #ede7f6 50%, #e8eaf6 100%);
+}
+.start-box {
+  background: #fff;
+  border-radius: 28px;
+  padding: 44px 36px;
+  max-width: 480px;
+  width: 100%;
+  box-shadow: 0 12px 48px rgba(74,20,140,.15);
+  text-align: center;
+}
+.start-box h1 {
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: 20px;
+  color: var(--purple);
+  margin-bottom: 6px;
+}
+.start-box .sub {
+  font-size: 12px;
+  color: var(--soft);
+  margin-bottom: 28px;
+  line-height: 1.6;
+}
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 28px;
+}
+.info-chip {
+  background: var(--purple-pale);
+  border-radius: 12px;
+  padding: 10px;
+  font-size: 12px;
+  color: var(--purple-mid);
+  font-weight: 700;
+}
+.inp {
+  width: 100%;
+  padding: 13px 16px;
+  border: 2px solid #ce93d8;
+  border-radius: 14px;
+  font-size: 14px;
+  font-family: 'Nanum Gothic', sans-serif;
+  outline: none;
+  margin-bottom: 12px;
+  background: #fff;
+  color: var(--ink);
+}
+.inp:focus { border-color: var(--purple); }
+select.inp { color: var(--purple); font-weight: 700; cursor: pointer; }
+.btn-start {
+  width: 100%;
+  padding: 16px;
+  border: none;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--purple), var(--orange));
+  color: #fff;
+  font-size: 16px;
+  font-weight: 800;
+  font-family: 'Nanum Gothic', sans-serif;
+  cursor: pointer;
+  transition: opacity .2s;
+}
+.btn-start:hover { opacity: .9; }
+.btn-print-start {
+  width: 100%;
+  padding: 13px;
+  border: 2px solid #ce93d8;
+  border-radius: 14px;
+  background: var(--purple-pale);
+  color: var(--purple);
+  font-size: 14px;
+  font-weight: 800;
+  font-family: 'Nanum Gothic', sans-serif;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: all .2s;
+}
+.btn-print-start:hover { background: var(--purple-light); }
+
+/* ═══════════════════════════════════════
+   QUIZ SCREEN
+═══════════════════════════════════════ */
+#pg-quiz { display: none; }
+
+.top-bar {
+  background: var(--purple);
+  color: #fff;
+  padding: 13px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.top-title { font-family: 'Black Han Sans', sans-serif; font-size: 15px; }
+.top-sub { font-size: 11px; opacity: .6; margin-top: 2px; }
+.top-badge {
+  background: rgba(255,255,255,.18);
+  border-radius: 20px;
+  padding: 4px 14px;
+  font-size: 13px;
+  font-weight: 800;
+}
+.prog-bar { height: 5px; background: #e1bee7; }
+.prog-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--purple-mid), var(--orange));
+  transition: width .35s ease;
+}
+
+.q-wrap {
+  padding: 20px 18px;
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+/* Question card */
+.q-card {
+  background: #fff;
+  border-radius: 22px;
+  padding: 26px 22px;
+  box-shadow: 0 5px 22px rgba(74,20,140,.09);
+}
+.q-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--purple-pale);
+  color: var(--purple-mid);
+  border-radius: 20px;
+  padding: 5px 14px;
+  font-size: 12px;
+  font-weight: 800;
+  margin-bottom: 14px;
+}
+.q-num-big {
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: 13px;
+  color: var(--soft);
+  margin-bottom: 8px;
+}
+
+/* Passage box */
+.passage-box {
+  background: #fafafa;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 14px;
+  padding: 16px 18px;
+  font-size: 13px;
+  line-height: 1.85;
+  color: #333;
+  font-family: 'Nanum Myeongjo', serif;
+  margin-bottom: 16px;
+  max-height: 220px;
+  overflow-y: auto;
+}
+.passage-box .underline {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  font-weight: 700;
+  color: var(--purple);
+}
+
+/* Task prompt */
+.task-prompt {
+  background: var(--purple-pale);
+  border-left: 4px solid var(--purple-mid);
+  border-radius: 0 12px 12px 0;
+  padding: 11px 16px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--purple);
+  margin-bottom: 18px;
+  line-height: 1.6;
+}
+
+/* Word bank */
+.bank-label {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--soft);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+}
+.word-bank {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-height: 48px;
+  background: #f8f5ff;
+  border: 2px dashed #ce93d8;
+  border-radius: 14px;
+  padding: 12px;
+  margin-bottom: 18px;
+}
+.word-chip {
+  background: #fff;
+  border: 2px solid #ce93d8;
+  border-radius: 10px;
+  padding: 7px 13px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--purple);
+  cursor: pointer;
+  transition: all .12s;
+  user-select: none;
+  font-family: 'Nanum Gothic', sans-serif;
+}
+.word-chip:hover { background: var(--purple-light); border-color: var(--purple); transform: translateY(-1px); }
+.word-chip.used { opacity: 0; pointer-events: none; }
+
+/* Answer area */
+.answer-area {
+  min-height: 52px;
+  background: #fff;
+  border: 2px solid #ce93d8;
+  border-radius: 14px;
+  padding: 10px 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 16px;
+  transition: border-color .2s;
+}
+.answer-area.correct-state { border-color: var(--green); background: #f1f8f1; }
+.answer-area.wrong-state { border-color: var(--red); background: #fff5f5; }
+.ans-chip {
+  background: var(--purple-mid);
+  color: #fff;
+  border-radius: 9px;
+  padding: 7px 12px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all .12s;
+  font-family: 'Nanum Gothic', sans-serif;
+}
+.ans-chip:hover:not(.locked) { background: #8e24aa; transform: translateY(-1px); }
+.ans-chip.locked { cursor: default; }
+.ans-chip.ok { background: var(--green); }
+.ans-chip.no { background: var(--red); }
+.ans-placeholder { color: #bbb; font-size: 13px; font-style: italic; }
+
+/* Feedback */
+.fb-box {
+  border-radius: 12px;
+  padding: 13px 16px;
+  font-size: 13px;
+  font-weight: 700;
+  display: none;
+  line-height: 1.6;
+  margin-bottom: 14px;
+}
+.fb-box.ok { background: #e8f5e9; color: #1b5e20; display: block; }
+.fb-box.no { background: #ffebee; color: var(--red); display: block; }
+
+/* Correct answer display */
+.correct-ans-box {
+  background: #e8f5e9;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 12px;
+  color: #1b5e20;
+  margin-top: 6px;
+  display: none;
+}
+.correct-ans-box.show { display: block; }
+
+/* Buttons */
+.btn-row { display: flex; gap: 10px; }
+.btn-check {
+  flex: 1;
+  padding: 14px;
+  border: none;
+  border-radius: 13px;
+  background: linear-gradient(135deg, var(--purple-mid), var(--orange));
+  color: #fff;
+  font-size: 15px;
+  font-weight: 800;
+  font-family: 'Nanum Gothic', sans-serif;
+  cursor: pointer;
+  transition: opacity .2s;
+}
+.btn-check:hover { opacity: .9; }
+.btn-check:disabled { opacity: .5; cursor: default; }
+.btn-next {
+  padding: 14px 22px;
+  border: 2px solid #ce93d8;
+  border-radius: 13px;
+  background: var(--purple-pale);
+  color: var(--purple);
+  font-size: 14px;
+  font-weight: 800;
+  font-family: 'Nanum Gothic', sans-serif;
+  cursor: pointer;
+  display: none;
+  transition: all .15s;
+}
+.btn-next.show { display: block; }
+.btn-next:hover { background: var(--purple-light); }
+.btn-clear {
+  padding: 14px 18px;
+  border: 2px solid #e0e0e0;
+  border-radius: 13px;
+  background: #f5f5f5;
+  color: #888;
+  font-size: 13px;
+  font-weight: 700;
+  font-family: 'Nanum Gothic', sans-serif;
+  cursor: pointer;
+  transition: all .15s;
+}
+.btn-clear:hover { background: #eeeeee; }
+
+/* ═══════════════════════════════════════
+   RESULT SCREEN
+═══════════════════════════════════════ */
+#pg-result {
+  display: none;
+  padding: 24px 18px 60px;
+  max-width: 640px;
+  margin: 0 auto;
+}
+.r-card {
+  background: #fff;
+  border-radius: 24px;
+  padding: 32px 24px;
+  box-shadow: 0 8px 30px rgba(74,20,140,.11);
+  text-align: center;
+  margin-bottom: 16px;
+}
+.r-score {
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: 64px;
+  color: var(--purple);
+  line-height: 1;
+}
+.r-name { font-size: 13px; color: var(--soft); margin-top: 6px; }
+.r-stats {
+  display: flex;
+  justify-content: center;
+  gap: 28px;
+  margin-top: 20px;
+}
+.r-stat .n { font-family: 'Black Han Sans', sans-serif; font-size: 28px; }
+.r-stat .l { font-size: 11px; color: var(--soft); margin-top: 3px; }
+.wrong-review {
+  background: var(--purple-pale);
+  border-radius: 16px;
+  padding: 16px;
+  text-align: left;
+  margin-top: 16px;
+}
+.wrong-review h3 { font-size: 13px; font-weight: 800; color: var(--red); margin-bottom: 12px; }
+.wr-item {
+  background: #fff;
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-bottom: 8px;
+  border-left: 3px solid #e91e63;
+  font-size: 12px;
+}
+.wr-q { font-weight: 800; color: var(--purple); margin-bottom: 4px; }
+.wr-my { color: var(--red); margin-bottom: 3px; }
+.wr-ans { color: var(--green); }
+.r-btns {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+.r-btn {
+  padding: 13px 26px;
+  border: none;
+  border-radius: 13px;
+  font-size: 14px;
+  font-weight: 800;
+  font-family: 'Nanum Gothic', sans-serif;
+  cursor: pointer;
+  transition: opacity .2s;
+}
+.r-btn:hover { opacity: .85; }
+.r-btn.primary { background: linear-gradient(135deg, var(--purple-mid), var(--orange)); color: #fff; }
+.r-btn.ghost { background: var(--purple-pale); color: var(--purple); border: 2px solid #ce93d8; }
+
+/* ═══════════════════════════════════════
+   PRINT PAGE
+═══════════════════════════════════════ */
+#pg-print { display: none; }
+.print-header {
+  text-align: center;
+  border-bottom: 2px solid #333;
+  padding-bottom: 12px;
+  margin-bottom: 20px;
+}
+.print-header h1 { font-size: 18px; font-weight: 800; }
+.print-header p { font-size: 12px; color: #555; margin-top: 4px; }
+.print-info-row {
+  display: flex;
+  gap: 30px;
+  margin-bottom: 20px;
+  font-size: 13px;
+}
+.print-info-row span { border-bottom: 1px solid #333; padding-bottom: 2px; min-width: 80px; display: inline-block; }
+
+.print-q {
+  margin-bottom: 28px;
+  page-break-inside: avoid;
+}
+.print-q-num {
+  font-weight: 800;
+  font-size: 14px;
+  background: #333;
+  color: #fff;
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+.print-underline-text {
+  font-size: 12px;
+  color: #333;
+  margin-bottom: 8px;
+  font-style: italic;
+}
+.print-underline-text strong { text-decoration: underline; }
+.print-task {
+  font-size: 12px;
+  font-weight: 700;
+  border-left: 3px solid #333;
+  padding-left: 10px;
+  margin-bottom: 8px;
+  color: #333;
+}
+.print-bank {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+.print-word {
+  border: 1.5px solid #888;
+  border-radius: 6px;
+  padding: 3px 10px;
+  font-size: 12px;
+  font-weight: 700;
+}
+.print-lines { margin-top: 8px; }
+.print-line {
+  border-bottom: 1px solid #999;
+  margin-bottom: 10px;
+  height: 24px;
+}
+.print-ans-section {
+  margin-top: 40px;
+  border-top: 2px solid #333;
+  padding-top: 16px;
+}
+.print-ans-section h2 { font-size: 15px; font-weight: 800; margin-bottom: 12px; }
+.print-ans-item {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 6px;
+  font-size: 12px;
+}
+.print-ans-num { font-weight: 800; width: 30px; flex-shrink: 0; }
+.print-ans-text { color: #333; }
+
+@media (max-width: 480px) {
+  .q-card { padding: 20px 16px; }
+  .passage-box { font-size: 12px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════
+     START SCREEN
+════════════════════════════════════ -->
+<div id="pg-start">
+  <div class="start-box">
+    <h1>🌸 함축의미 언스크램블</h1>
+    <p class="sub">종촌고 3학년 · EBS 수능특강 연계<br>밑줄 친 표현의 의미를 단어 배열로 완성하세요</p>
+    <div class="info-grid">
+      <div class="info-chip">📝 10문제</div>
+      <div class="info-chip">🔤 언스크램블</div>
+      <div class="info-chip">🏆 기록 저장</div>
+      <div class="info-chip">🖨️ 출력 가능</div>
+    </div>
+    <select class="inp" id="schoolSel">
+      <option value="">학교 선택</option>
+      <option value="종촌고">종촌고</option>
+      <option value="고운고">고운고</option>
+      <option value="대성고">대성고</option>
+    </select>
+    <input type="text" class="inp" id="nameInp" placeholder="이름 입력" maxlength="10">
+    <button class="btn-start" onclick="startQuiz()">시작하기 🚀</button>
+    <button class="btn-print-start" onclick="openPrint()">🖨️ 시험지 출력</button>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════
+     QUIZ SCREEN
+════════════════════════════════════ -->
+<div id="pg-quiz">
+  <div class="top-bar">
+    <div>
+      <div class="top-title">🌸 함축의미 언스크램블</div>
+      <div class="top-sub" id="topSub"></div>
+    </div>
+    <div class="top-badge" id="topBadge">0/10</div>
+  </div>
+  <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0"></div></div>
+  <div class="q-wrap">
+    <div class="q-card" id="qCard"></div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════
+     RESULT SCREEN
+════════════════════════════════════ -->
+<div id="pg-result"></div>
+
+<!-- ════════════════════════════════════
+     PRINT PAGE
+════════════════════════════════════ -->
+<div id="pg-print"></div>
+
+<script>
+// ════════════════════════════════════════════════════════
+// QUESTION DATA
+// ════════════════════════════════════════════════════════
+const QUESTIONS = [
+  {
+    no: 1,
+    source: "Work Without the Worker by Phil Jones",
+    passage: `Digital platforms have made a lot of work less sticky. As work becomes ever more modularised, commoditised and standardised, and as markets for digital work are created, ties between service work and particular places can be disconnected. While the business process of outsourcing that emerged in the 1990s allowed large companies to take advantage of a 'global reserve army' by moving their call centres to cheap and distant labour markets, cloudwork changes the volume and granularity at which geographically non-proximate work can take place. A small business in New York can hire a freelance transcriber in Nairobi one day and New Delhi the next. No offices or factories need to be built, no local regulations are observed, and — in most cases — no local taxes are paid. The switch in the production network of work happens by simply sending some emails or clicking some buttons on a digital work platform. And, in this way, <u>the employer leaves behind no material traces in the places where it was once an employer</u>.`,
+    underline: "the employer leaves behind no material traces in the places where it was once an employer",
+    underline_kor: "직원을 고용하던 곳에서 고용주들이 더 이상 물리적 존재, 의무, 장기적인 기여를 하지 않는다",
+    task: "밑줄 친 부분이 의미하는 바를 아래 단어를 모두 사용하여 영어 문장으로 완성하시오.",
+    answer: "is no longer geographically constrained to a particular place",
+    words: ["is", "no", "longer", "geographically", "constrained", "to", "a", "particular", "place"]
+  },
+  {
+    no: 2,
+    source: "The Infinite Resource by Ramez Naam",
+    passage: `There's a saying that "you can't eat information." That may be so, but the food we eat today is the fruit of thousands of years of increasingly high-quality information — the knowledge of how to farm — what seeds, what tools and how to use them, what times of year, what irrigation, what sequence of one crop after another on the same land. What we eat is solar energy, filtered, concentrated, and distilled through <u>the lens of human knowledge</u>. The energy the Earth receives from the sun each year has remained more or less constant through all of human civilization. What's allowed us to flourish is our increasingly sophisticated knowledge of how to capture an ever-growing but still tiny fraction of that energy in a form that can fuel our bodies. Every step in the advancement of our knowledge has brought with it an increase in the amount of energy we can tap into.`,
+    underline: "the lens of human knowledge",
+    underline_kor: "인간이 에너지를 이해하고 변환하는 틀",
+    task: "밑줄 친 부분이 의미하는 바를 아래 단어를 모두 사용하여 영어 문장으로 완성하시오.",
+    answer: "a framework through which humans interpret and transform energy",
+    words: ["a", "framework", "through", "which", "humans", "interpret", "and", "transform", "energy"]
+  },
+  {
+    no: 3,
+    source: "Never Stop Asking by Nathan D. Lang-Raad",
+    passage: `It is a myth that all ideas are equally valid, even those with little or no objective proof. The existence of science is the commitment to objective truth. After all, science is true: fire is hot, the wheel is efficient, birds and planes can fly, we've landed on a comet and traveled to the Moon, antibiotics treat illness, and immunizations keep us from getting sick. These accomplishments are made possible by objective truths. A plausible theory can, and frequently does, push science forward. However, an intuition must be followed with testing that confirms or disproves its veracity. If a theory is disproved, one should consider it as a reason to reject or alter the hypothesis, not a justification to just keep firmly holding to the hypothesis because you are instinctively wedded to it. Critical thinking is an absolute must, and we must respect evidence. It's the only reason for anyone to trust anything about reality. Without testing and evidence, <u>intuition is useful, but it is never the ultimate word</u>.`,
+    underline: "intuition is useful, but it is never the ultimate word",
+    underline_kor: "직관은 유용하지만 진리의 최종 근거가 될 수 없다",
+    task: "밑줄 친 부분이 의미하는 바를 아래 단어를 모두 사용하여 영어 문장으로 완성하시오.",
+    answer: "it cannot serve as the final basis for truth",
+    words: ["it", "cannot", "serve", "as", "the", "final", "basis", "for", "truth"]
+  },
+  {
+    no: 4,
+    source: "Never Stop Asking by Nathan D. Lang-Raad",
+    passage: `It is a myth that all ideas are equally valid, even those with little or no objective proof. The existence of science is the commitment to objective truth. After all, science is true: fire is hot, the wheel is efficient, birds and planes can fly, we've landed on a comet and traveled to the Moon, antibiotics treat illness, and immunizations keep us from getting sick. These accomplishments are made possible by objective truths. A plausible theory can, and frequently does, push science forward. However, <u>an intuition must be followed with testing that confirms or disproves its veracity</u>. If a theory is disproved, one should consider it as a reason to reject or alter the hypothesis, not a justification to just keep firmly holding to the hypothesis because you are instinctively wedded to it. Critical thinking is an absolute must, and we must respect evidence. It's the only reason for anyone to trust anything about reality. Without testing and evidence, intuition is useful, but it is never the ultimate word.`,
+    underline: "an intuition must be followed with testing that confirms or disproves its veracity",
+    underline_kor: "초기 가정들은 검증 없이 신뢰되어서는 안 된다",
+    task: "밑줄 친 부분이 의미하는 바를 아래 단어를 모두 사용하여 영어 문장으로 완성하시오.",
+    answer: "initial assumptions should not be trusted without verification",
+    words: ["initial", "assumptions", "should", "not", "be", "trusted", "without", "verification"]
+  },
+  {
+    no: 5,
+    source: "Good Anxiety by Wendy Suzuki, Billie Fitzpatrick",
+    passage: `If you suffer from social angst, awkwardness, or dread, know that this is a perfectly normal response. No matter what it looks like, a lot of people are dealing with internal anxiety in social situations. But it is actually possible to build your social muscle and use it to boost your connections — and your anxiety is giving you clues to what icebreakers and lifelines other people might be grateful for you to extend. Truly listen to what your anxiety is signaling to you about where you feel uncertain or insecure, and practice empathy by offering a hand to others who might be <u>in the same boat</u>. Remember that flipping anxiety into compassion is something inherent in you — it is, in fact, what your anxiety was designed to do for you. Together, compassion and empathy can buffer against bad anxiety. You can use your anxiety to be more outward-facing. The outcome? The spread of compassion for your fellow human beings, other species, and the planet!`,
+    underline: "in the same boat",
+    underline_kor: "각자 자신이 힘들어하며 겪고 있는 불안을 가지고 있다",
+    task: "밑줄 친 부분이 의미하는 바를 아래 단어를 모두 사용하여 영어 문장으로 완성하시오.",
+    answer: "have their own anxiety that they are struggling with",
+    words: ["have", "their", "own", "anxiety", "that", "they", "are", "struggling", "with"]
+  },
+  {
+    no: 6,
+    source: "The Glass Cage by Nicholas Carr",
+    passage: `In 2012, the Yale School of Architecture held a symposium called "Is Drawing Dead?" The bold title reflects a growing sense that the architect's freehand sketch is being displaced by the computer. The transition from sketchpad to screen entails, many architects believe, a loss of creativity, of adventurousness. Thanks to the precision and apparent completeness of screen renderings, a designer working at a computer has a tendency to lock in, visually and cognitively, on a design at an early stage. <u>He bypasses much of the reflective and exploratory playfulness that springs from the uncertainty and ambiguity of sketching.</u> Researchers term this phenomenon "premature fixation" and trace its cause to "the disincentive for design changes once a large amount of detail and interconnectedness is built too quickly into a CAD model." The designer at the computer also tends to emphasize formal experimentation at the expense of expressiveness. By weakening an architect's "personal, emotional connection with the work," CAD software produces designs that often "lack the emotional content of a design derived from hand."`,
+    underline: "He bypasses much of the reflective and exploratory playfulness that springs from the uncertainty and ambiguity of sketching.",
+    underline_kor: "스케치를 통한 창의적 사고의 기회를 놓친다",
+    task: "밑줄 친 부분이 의미하는 바를 아래 단어를 모두 사용하여 영어 문장으로 완성하시오.",
+    answer: "misses the chance for creative thinking through sketches",
+    words: ["misses", "the", "chance", "for", "creative", "thinking", "through", "sketches"]
+  },
+  {
+    no: 7,
+    source: "Discovering Nutrition by Insel et al.",
+    passage: `Many factors contribute to Americans' growing waistlines, but one observation in particular cannot be overlooked: The incidence of obesity has increased in parallel with increasing portion sizes. Consider this: Adults today consume an average of 300 more calories per day than they did in the year 1985. Is this just a coincidence, or do larger portion sizes have something to do with it? In almost every eating situation, we are now confronted by huge portions, which are perceived as "normal" or "a great value." Americans have created the perception that large portion sizes are appropriate, creating an environment of <u>portion distortion</u>. We find portion distortions in restaurants, where the jumbo-sized portions are consistently 250 percent larger than the regular portions. We even find portion distortions in our homes, where the sizes of our bowls and glasses have steadily increased and where the surface area of the average dinner plate has increased 36 percent since 1960.`,
+    underline: "portion distortion",
+    underline_kor: "과도한 1인분 분량이 표준으로 간주되는 인식의 변화",
+    task: "밑줄 친 부분이 의미하는 바를 아래 단어를 모두 사용하여 영어 문장으로 완성하시오.",
+    answer: "a shift in perception where excessive servings are viewed as the standard",
+    words: ["a", "shift", "in", "perception", "where", "excessive", "servings", "are", "viewed", "as", "the", "standard"]
+  },
+  {
+    no: 8,
+    source: "Readicide by Kelly Gallagher",
+    passage: `The importance of what a reader brings to the page is highlighted in a study discussed by Hirsch in The Knowledge Deficit. This study consisted of two groups of students who were asked to read a passage about baseball. The first group was made up of strong readers who knew little about baseball. The second group was composed of struggling readers who were knowledgeable about baseball. After reading the passage, students in each group had their comprehension tested. Guess which group scored higher? The struggling readers. Having strong reading skills was not enough for the students who came to the page with a knowledge deficit about the topic. Though the second group of readers were not strong readers, their prior knowledge enabled them to outscore readers with far better abilities. Prior knowledge, or, in the case of the good readers, the lack of prior knowledge, was <u>the x-factor</u>.`,
+    underline: "the x-factor",
+    underline_kor: "이해도를 결정짓는 특정한 배경 정보",
+    task: "밑줄 친 부분이 의미하는 바를 아래 단어를 모두 사용하여 영어 문장으로 완성하시오.",
+    answer: "the specific background information that determines comprehension",
+    words: ["the", "specific", "background", "information", "that", "determines", "comprehension"]
+  },
+  {
+    no: 9,
+    source: "Social Cognition by David L. Hamilton, Steven J. Stroessner",
+    passage: `Things become complicated when we consider a task that involves multiple processes differing in automaticity. In a psychological task, people are required to name aloud the color of words while ignoring the words themselves. Sometimes, the words are compatible with the color with which they are printed (e.g., "red" printed with red ink). In other conditions, the words are incompatible with their color (e.g., "red" printed in blue). People usually complete this task more slowly in incompatible than compatible conditions. On incompatible trials, people do not intend to respond to the meaning of the word (the task is to name the ink color, not the word), but they typically become aware that <u>it is easier said than done</u>. They realize their attention is being drawn to the content of the words, despite its irrelevance to the task at hand and their intention to ignore it.`,
+    underline: "it is easier said than done",
+    underline_kor: "잉크 색을 명명하는 동안 단어 의미를 무시하는 것이 예상외로 어렵다",
+    task: "밑줄 친 부분이 의미하는 바를 아래 단어를 모두 사용하여 영어 문장으로 완성하시오.",
+    answer: "ignoring word meaning while naming ink color proves unexpectedly difficult",
+    words: ["ignoring", "word", "meaning", "while", "naming", "ink", "color", "proves", "unexpectedly", "difficult"]
+  },
+  {
+    no: 10,
+    source: "Categories We Live By by Gregory L. Murphy",
+    passage: `If you told me that you don't like sharp cheeses, I would believe you. If you said that you don't like the texture of very soft cheeses, I would pity you, but I would believe you. But if you say that you don't like any cheese, I don't believe you because cheeses simply don't taste, look, or feel the same. What my friend dislikes is something being called "cheese." I'm sure that he had a bad cheese experience in childhood. He ate something he didn't like and learned that "cheese" is bad. With that negative attitude, he quickly rejected anything else called "cheese" (and very likely did not have a wide experience with cheeses anyway), reinforcing his belief that "cheese" is bad. As a result, this friend, who is in other respects normal, cannot bear to eat anything that he believes is called "cheese." He actually thinks that there is some flavor or property of cheese that makes it taste bad to him. But that is not the case: cheeses don't share a particular texture or flavor or source. <u>He hates the category, not the actual stuff.</u>`,
+    underline: "He hates the category, not the actual stuff.",
+    underline_kor: '그의 거부감은 "치즈"라는 개념을 향한 것이며, 실제 치즈들의 다양성을 향한 것이 아니다',
+    task: "밑줄 친 부분이 의미하는 바를 아래 단어를 모두 사용하여 영어 문장으로 완성하시오.",
+    answer: 'his rejection is aimed at the concept "cheese," not the real diversity of cheeses',
+    words: ["his", "rejection", "is", "aimed", "at", "the", "concept", '"cheese,"', "not", "the", "real", "diversity", "of", "cheeses"]
+  }
+];
+
+// ════════════════════════════════════════════════════════
+// GLOBAL STATE
+// ════════════════════════════════════════════════════════
+var studentName = '';
+var school = '';
+var qIdx = 0;
+var numCorrect = 0;
+var numWrong = 0;
+var wrongList = [];
+var startTime = 0;
+var answered = false;
+
+// current question word state
+var bankWords = [];    // [{word, used}]
+var ansWords = [];     // [word]
+
+// ════════════════════════════════════════════════════════
+// UTILS
+// ════════════════════════════════════════════════════════
+function shuffle(arr) {
+  var a = arr.slice();
+  for (var i = a.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var t = a[i]; a[i] = a[j]; a[j] = t;
+  }
+  return a;
+}
+
+function renderPassage(text) {
+  return text.replace(/<u>([\s\S]*?)<\/u>/g, function(m, p1) {
+    return '<span class="underline">' + p1 + '</span>';
+  });
+}
+
+// ════════════════════════════════════════════════════════
+// START
+// ════════════════════════════════════════════════════════
+function startQuiz() {
+  school = document.getElementById('schoolSel').value;
+  studentName = document.getElementById('nameInp').value.trim();
+  if (!school) { alert('학교를 선택해주세요!'); return; }
+  if (!studentName) { alert('이름을 입력해주세요!'); return; }
+
+  qIdx = 0; numCorrect = 0; numWrong = 0; wrongList = []; startTime = Date.now(); answered = false;
+  document.getElementById('pg-start').style.display = 'none';
+  document.getElementById('pg-quiz').style.display = 'block';
+  document.getElementById('topSub').textContent = studentName + ' · EBS 수능특강 함축의미';
+  renderQuestion();
+}
+
+// ════════════════════════════════════════════════════════
+// RENDER QUESTION
+// ════════════════════════════════════════════════════════
+function renderQuestion() {
+  if (qIdx >= QUESTIONS.length) { showResult(); return; }
+
+  var q = QUESTIONS[qIdx];
+  var pct = Math.round(qIdx / QUESTIONS.length * 100);
+  document.getElementById('progFill').style.width = pct + '%';
+  document.getElementById('topBadge').textContent = (qIdx + 1) + '/' + QUESTIONS.length;
+  answered = false;
+
+  // Shuffle words for bank
+  bankWords = shuffle(q.words).map(function(w) { return { word: w, used: false }; });
+  ansWords = [];
+
+  var card = document.getElementById('qCard');
+  card.innerHTML = buildQuestionHTML(q);
+
+  // Attach bank click events
+  document.querySelectorAll('.word-chip').forEach(function(chip, i) {
+    chip.addEventListener('click', function() { addToAnswer(i); });
+  });
+
+  // Attach answer chip click events
+  refreshAnswerArea();
+}
+
+function buildQuestionHTML(q) {
+  var chips = bankWords.map(function(w, i) {
+    return '<div class="word-chip" id="chip-' + i + '">' + w.word + '</div>';
+  }).join('');
+
+  return '<div class="q-label">📖 함축의미 문제</div>' +
+    '<div class="q-num-big">문제 ' + (qIdx + 1) + ' / ' + QUESTIONS.length + ' &nbsp;·&nbsp; [' + q.source + ']</div>' +
+    '<div class="passage-box">' + renderPassage(q.passage) + '</div>' +
+    '<div class="task-prompt">✏️ ' + q.task + '<br><small style="font-weight:400;color:#888;">👆 밑줄 친 부분 (한국어 의미): ' + q.underline_kor + '</small></div>' +
+    '<div class="bank-label">📦 단어 뱅크 — 탭해서 순서대로 배열하세요</div>' +
+    '<div class="word-bank" id="wordBank">' + chips + '</div>' +
+    '<div class="bank-label">✍️ 내 답안</div>' +
+    '<div class="answer-area" id="ansArea"><span class="ans-placeholder">단어를 탭해서 여기에 배열하세요...</span></div>' +
+    '<div class="fb-box" id="fbBox"></div>' +
+    '<div class="correct-ans-box" id="correctAnsBox"></div>' +
+    '<div class="btn-row">' +
+      '<button class="btn-clear" onclick="clearAnswer()">↩ 초기화</button>' +
+      '<button class="btn-check" id="btnCheck" onclick="checkAnswer()">채점하기 ✓</button>' +
+      '<button class="btn-next show" id="btnNext" style="display:none" onclick="nextQuestion()">다음 →</button>' +
+    '</div>';
+}
+
+function addToAnswer(idx) {
+  if (answered) return;
+  if (bankWords[idx].used) return;
+  bankWords[idx].used = true;
+  ansWords.push({ word: bankWords[idx].word, bankIdx: idx });
+
+  document.getElementById('chip-' + idx).classList.add('used');
+  refreshAnswerArea();
+}
+
+function removeFromAnswer(ansIdx) {
+  if (answered) return;
+  var item = ansWords[ansIdx];
+  bankWords[item.bankIdx].used = false;
+  document.getElementById('chip-' + item.bankIdx).classList.remove('used');
+  ansWords.splice(ansIdx, 1);
+  refreshAnswerArea();
+}
+
+function refreshAnswerArea() {
+  var area = document.getElementById('ansArea');
+  if (!area) return;
+  if (ansWords.length === 0) {
+    area.innerHTML = '<span class="ans-placeholder">단어를 탭해서 여기에 배열하세요...</span>';
+    return;
+  }
+  area.innerHTML = ansWords.map(function(item, i) {
+    return '<div class="ans-chip" onclick="removeFromAnswer(' + i + ')">' + item.word + '</div>';
+  }).join('');
+}
+
+function clearAnswer() {
+  if (answered) return;
+  bankWords.forEach(function(w, i) {
+    w.used = false;
+    var chip = document.getElementById('chip-' + i);
+    if (chip) chip.classList.remove('used');
+  });
+  ansWords = [];
+  refreshAnswerArea();
+}
+
+// ════════════════════════════════════════════════════════
+// CHECK ANSWER
+// ════════════════════════════════════════════════════════
+function checkAnswer() {
+  if (answered) return;
+  if (ansWords.length === 0) { alert('단어를 배열해주세요!'); return; }
+
+  answered = true;
+  var q = QUESTIONS[qIdx];
+  var myAns = ansWords.map(function(i) { return i.word; }).join(' ');
+  var correctAns = q.answer;
+
+  // Normalize for comparison
+  var myNorm = myAns.toLowerCase().replace(/[",]/g, '').replace(/\s+/g, ' ').trim();
+  var correctNorm = correctAns.toLowerCase().replace(/[",]/g, '').replace(/\s+/g, ' ').trim();
+  var isOk = myNorm === correctNorm;
+
+  // Lock chips
+  document.querySelectorAll('.ans-chip').forEach(function(c) { c.classList.add('locked'); });
+  document.getElementById('btnCheck').disabled = true;
+
+  var area = document.getElementById('ansArea');
+  var fb = document.getElementById('fbBox');
+  var correctBox = document.getElementById('correctAnsBox');
+
+  if (isOk) {
+    area.classList.add('correct-state');
+    document.querySelectorAll('.ans-chip').forEach(function(c) { c.classList.add('ok'); });
+    fb.className = 'fb-box ok';
+    fb.textContent = '✅ 정답입니다! 훌륭해요!';
+    numCorrect++;
+  } else {
+    area.classList.add('wrong-state');
+    document.querySelectorAll('.ans-chip').forEach(function(c) { c.classList.add('no'); });
+    fb.className = 'fb-box no';
+    fb.textContent = '❌ 오답입니다.';
+    correctBox.className = 'correct-ans-box show';
+    correctBox.innerHTML = '✅ 정답: <strong>' + correctAns + '</strong>';
+    numWrong++;
+    wrongList.push({ no: q.no, underline: q.underline_kor, my: myAns, correct: correctAns });
+  }
+
+  var btnNext = document.getElementById('btnNext');
+  btnNext.textContent = (qIdx + 1 >= QUESTIONS.length) ? '결과 보기 →' : '다음 →';
+  btnNext.style.display = 'block';
+}
+
+function nextQuestion() {
+  qIdx++;
+  renderQuestion();
+}
+
+// ════════════════════════════════════════════════════════
+// RESULT
+// ════════════════════════════════════════════════════════
+function showResult() {
+  document.getElementById('pg-quiz').style.display = 'none';
+  var total = QUESTIONS.length;
+  var pct = total > 0 ? Math.round(numCorrect / total * 100) : 0;
+  var elapsed = Math.round((Date.now() - startTime) / 60000);
+
+  var wrongHTML = '';
+  if (wrongList.length > 0) {
+    wrongHTML = '<div class="wrong-review"><h3>❌ 오답 (' + wrongList.length + '개)</h3>';
+    wrongList.forEach(function(w) {
+      wrongHTML += '<div class="wr-item">' +
+        '<div class="wr-q">문제 ' + w.no + ': ' + w.underline + '</div>' +
+        '<div class="wr-my">내 답: ' + w.my + '</div>' +
+        '<div class="wr-ans">정답: ' + w.correct + '</div>' +
+        '</div>';
+    });
+    wrongHTML += '</div>';
+  } else {
+    wrongHTML = '<div style="color:#1b5e20;font-weight:800;padding:20px;text-align:center;font-size:17px;">🎉 전부 정답! 완벽해요!</div>';
+  }
+
+  var res = document.getElementById('pg-result');
+  res.style.display = 'block';
+  res.innerHTML =
+    '<div class="r-card">' +
+      '<div style="font-size:12px;color:#888;margin-bottom:6px;">EBS 수능특강 함축의미 언스크램블</div>' +
+      '<div class="r-score">' + pct + '점</div>' +
+      '<div class="r-name">' + studentName + ' (' + school + ')의 결과</div>' +
+      '<div class="r-stats">' +
+        '<div class="r-stat"><div class="n" style="color:#2e7d32;">' + numCorrect + '</div><div class="l">정답</div></div>' +
+        '<div class="r-stat"><div class="n" style="color:#b71c1c;">' + numWrong + '</div><div class="l">오답</div></div>' +
+        '<div class="r-stat"><div class="n" style="color:#4a148c;">' + total + '</div><div class="l">총문제</div></div>' +
+        '<div class="r-stat"><div class="n" style="color:#ff6f00;">' + elapsed + '분</div><div class="l">소요</div></div>' +
+      '</div>' +
+      wrongHTML +
+      '<div class="r-btns">' +
+        '<button class="r-btn ghost" onclick="openPrint()">🖨️ 시험지 출력</button>' +
+        '<button class="r-btn primary" onclick="location.reload()">처음부터 🔄</button>' +
+      '</div>' +
+    '</div>';
+
+  saveFirebase(pct, numCorrect, numWrong, total, elapsed);
+}
+
+// ════════════════════════════════════════════════════════
+// PRINT
+// ════════════════════════════════════════════════════════
+function openPrint() {
+  var pg = document.getElementById('pg-print');
+
+  // Build question sheet
+  var qHTML = '';
+  QUESTIONS.forEach(function(q, i) {
+    var shuffled = shuffle(q.words);
+    var wordChips = shuffled.map(function(w) {
+      return '<span class="print-word">' + w + '</span>';
+    }).join('');
+
+    qHTML += '<div class="print-q">' +
+      '<div class="print-q-num">문제 ' + (i+1) + '</div>' +
+      '<div class="print-underline-text">밑줄: <strong>' + q.underline + '</strong></div>' +
+      '<div class="print-task">위 밑줄 친 부분이 의미하는 바를 아래 단어를 모두 사용하여 영어 문장으로 쓰시오.</div>' +
+      '<div class="print-bank">' + wordChips + '</div>' +
+      '<div class="print-lines"><div class="print-line"></div><div class="print-line"></div></div>' +
+    '</div>';
+  });
+
+  // Build answer key
+  var ansHTML = '';
+  QUESTIONS.forEach(function(q, i) {
+    ansHTML += '<div class="print-ans-item">' +
+      '<div class="print-ans-num">' + (i+1) + '번</div>' +
+      '<div class="print-ans-text">' + q.answer + '<br><small style="color:#555">→ ' + q.underline_kor + '</small></div>' +
+    '</div>';
+  });
+
+  pg.innerHTML =
+    '<div class="print-page">' +
+      '<div class="print-header">' +
+        '<h1>🌸 종촌고 3학년 영어 — 함축의미 언스크램블</h1>' +
+        '<p>EBS 수능특강 연계 | 밑줄 친 표현의 함축적 의미를 단어를 배열하여 완성하시오.</p>' +
+      '</div>' +
+      '<div class="print-info-row">' +
+        '학년: <span>3학년</span> &nbsp;&nbsp;' +
+        '이름: <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> &nbsp;&nbsp;' +
+        '점수: <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>' +
+      '</div>' +
+      '<div class="print-conditions" style="font-size:11px;border:1px solid #999;padding:8px 12px;border-radius:6px;margin-bottom:18px;line-height:1.8;">' +
+        '<strong>〈조건〉</strong><br>' +
+        '○ 주어진 단어(구)를 모두 한 번씩 사용할 것<br>' +
+        '○ 단어 형태 변형 없음 &nbsp;○ 단어 추가 없음 &nbsp;○ 대·소문자 구별 없음 &nbsp;○ 철자 오류 시 감점' +
+      '</div>' +
+      qHTML +
+      '<div class="print-ans-section">' +
+        '<h2>※ 정답지 (학생에게 배부 금지)</h2>' +
+        ansHTML +
+      '</div>' +
+    '</div>';
+
+  // Hide other pages, show print
+  document.getElementById('pg-start').style.display = 'none';
+  document.getElementById('pg-quiz').style.display = 'none';
+  document.getElementById('pg-result').style.display = 'none';
+  pg.style.display = 'block';
+
+  setTimeout(function() {
+    window.print();
+    // After print, restore
+    setTimeout(function() {
+      pg.style.display = 'none';
+      document.getElementById('pg-start').style.display = 'flex';
+    }, 500);
+  }, 300);
+}
+
+// ════════════════════════════════════════════════════════
+// FIREBASE
+// ════════════════════════════════════════════════════════
+function saveFirebase(score, correct, wrong, total, elapsed) {
+  try {
+    var s1 = document.createElement('script');
+    s1.src = 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js';
+    s1.onload = function() {
+      var s2 = document.createElement('script');
+      s2.src = 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js';
+      s2.onload = function() {
+        try {
+          if (!firebase.apps.length) {
+            firebase.initializeApp({
+              apiKey: "AIzaSyCxS524S8KAaF87DomPtl9sJdF-eqes404",
+              authDomain: "bomnalvaca.firebaseapp.com",
+              projectId: "bomnalvaca",
+              storageBucket: "bomnalvaca.firebasestorage.app",
+              messagingSenderId: "115868052300",
+              appId: "1:115868052300:web:765c08867b6f1ce0987de9"
+            });
+          }
+          firebase.firestore().collection('quiz_results').add({
+            submittedAt: new Date().toISOString(),
+            studentName: studentName,
+            school: school,
+            score: score,
+            correct: correct,
+            wrong: wrong,
+            total: total,
+            elapsedMin: elapsed,
+            quizType: '종촌고3_수능특강_함축의미_언스크램블',
+            wrongWords: wrongList.map(function(w) {
+              return { eng: w.underline, kor: w.underline_kor, my: w.my, correct: w.correct };
+            })
+          });
+        } catch(e) { console.warn('FB 저장 실패:', e); }
+      };
+      document.head.appendChild(s2);
+    };
+    document.head.appendChild(s1);
+  } catch(e) {}
+}
+</script>
+</body>
+</html>
