@@ -149,7 +149,7 @@ tr:hover td{background:#f8f9ff;}
   </div>
   <div class="tab-bar">
     <button class="tab-btn active" onclick="switchTab('quiz')" id="tab-quiz">📊 퀴즈 결과</button>
-    <button class="tab-btn"        onclick="switchTab('section')" id="tab-section">📋 섹션 현황</button>
+    <button class="tab-btn"        onclick="switchTab('section')" id="tab-section">📋 학생별 현황</button>
     <button class="tab-btn"        onclick="switchTab('vaca')" id="tab-vaca">📚 단어장 · 학생 관리</button>
   </div>
   <div class="panels">
@@ -446,70 +446,162 @@ function parseSection(quizType){
   return m ? parseInt(m[1]) : 0;
 }
 
+// quizType → 카테고리 분류
+function categorize(qt){
+  if(!qt) return 'other';
+  if(qt.includes('섹션')) return 'section';
+  if(qt.includes('동반의어')) return 'synanm';
+  if(qt.includes('함축의미')) return 'implication';
+  if(qt.includes('빈칸추론')) return 'blank';
+  return 'other';
+}
+
+// 비섹션 퀴즈 라벨
+function nonSecLabel(qt){
+  if(!qt) return qt;
+  if(qt.includes('동반의어')){
+    const yr = qt.match(/(\d{4})/);
+    const mo = qt.match(/(\d{1,2})월/);
+    const mode = qt.includes('A모드')?'A':qt.includes('B모드')?'B':'';
+    let lbl = '동반의어';
+    if(yr) lbl += ' '+yr[1];
+    if(mo) lbl += '.'+mo[1];
+    if(mode) lbl += ' '+mode;
+    return lbl;
+  }
+  if(qt.includes('함축의미')) return '함축의미';
+  if(qt.includes('빈칸추론')){
+    const kang = qt.match(/([\dT]+강|전체)/);
+    return '빈칸추론'+(kang?' '+kang[1]:'');
+  }
+  return qt.slice(0,14);
+}
+
 function renderSectionView(){
   const sq = document.getElementById('secSchool')?.value || '';
   const nq = (document.getElementById('secName')?.value || '').trim().toLowerCase();
   const area = document.getElementById('sectionArea');
   if(!area) return;
-  let data = [...allData].filter(d => d.quizType && d.quizType.includes('섹션'));
+
+  // 전체 데이터 (섹션 필터 제거!)
+  let data = [...allData];
   if(sq) data = data.filter(d => d.school === sq);
   if(nq) data = data.filter(d => d.name.toLowerCase().includes(nq));
+
   if(!data.length){
-    area.innerHTML = '<div class="no-data-msg">📭 섹션 기록이 없습니다<br><small>학생들이 퀴즈를 풀면 여기 나타나요</small></div>';
+    area.innerHTML = '<div class="no-data-msg">📭 기록이 없습니다<br><small>학생들이 퀴즈를 풀면 여기 나타나요</small></div>';
     return;
   }
-  const groups = {};
+
+  // 학생별 그룹핑
+  const students = {};
   data.forEach(d => {
-    const base = d.quizType.replace(/_\d+섹션.*/, '').replace(/_어휘$/, '');
-    const gkey = `${d.name}||${d.school}||${base}`;
-    if(!groups[gkey]) groups[gkey] = { name: d.name, school: d.school, base, sessions: [] };
-    groups[gkey].sessions.push(d);
+    const key = `${d.name}||${d.school}`;
+    if(!students[key]) students[key] = { name: d.name, school: d.school, records: [] };
+    students[key].records.push(d);
   });
-  const maxSections = {};
-  Object.values(groups).forEach(g => {
-    const secs = g.sessions.map(s => parseSection(s.quizType)).filter(n=>n>0);
-    const mx = secs.length ? Math.max(...secs) : 0;
-    if(!maxSections[g.base] || maxSections[g.base] < mx) maxSections[g.base] = mx;
-  });
-  const KNOWN_MAX = {'종촌고1':7,'종촌고2':16,'고운고1':11};
-  const html = Object.values(groups).map(g => {
-    const knownMax = KNOWN_MAX[g.school] || maxSections[g.base] || 7;
-    const secMap = {};
-    g.sessions.forEach(s => {
-      const sn = parseSection(s.quizType);
-      if(sn > 0){
-        if(!secMap[sn] || (s.time && (!secMap[sn].time || s.time > secMap[sn].time))) secMap[sn] = s;
+
+  const KNOWN_MAX = {'종촌고1':7,'종촌고2':16,'고운고1':11,'고운고2':11,'종촌고3':0};
+
+  const html = Object.values(students).map(st => {
+    // ── 섹션 퀴즈 그룹핑 (quizBase별) ──
+    const secGroups = {};
+    const nonSecRecords = [];
+
+    st.records.forEach(d => {
+      const cat = categorize(d.quizType);
+      if(cat === 'section'){
+        const base = d.quizType.replace(/_\d+섹션.*/, '').replace(/_어휘$/, '');
+        if(!secGroups[base]) secGroups[base] = {};
+        const sn = parseSection(d.quizType);
+        if(sn > 0){
+          if(!secGroups[base][sn] || (d.time && secGroups[base][sn].time && d.time > secGroups[base][sn].time)){
+            secGroups[base][sn] = d;
+          }
+        }
+      } else if(cat !== 'other'){
+        nonSecRecords.push(d);
       }
     });
-    const doneCount = Object.keys(secMap).length;
-    const perfectCount = Object.values(secMap).filter(s=>s.wrong===0&&s.timedOut===0).length;
-    const warnCount = doneCount - perfectCount;
-    const cells = Array.from({length: knownMax}, (_, i) => {
-      const sn = i + 1;
-      const s = secMap[sn];
-      if(!s) return `<div class="sec-cell not-done"><div class="sec-num">${sn}섹션</div><div class="sec-score" style="font-size:11px">미완료</div></div>`;
-      const isPerfect = s.wrong === 0 && s.timedOut === 0;
-      const cls = isPerfect ? 'perfect' : 'has-wrong';
-      const wrongTxt = s.wrong + s.timedOut > 0 ? `<div class="sec-wrong">오답 ${s.wrong+s.timedOut}개</div>` : '';
-      const timeStr = s.time ? s.time.toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}) : '';
-      return `<div class="sec-cell ${cls}"><div class="sec-num">${sn}섹션</div><div class="sec-score">${s.score}점</div>${wrongTxt}<div class="sec-time">${timeStr}</div></div>`;
+
+    // 섹션 블록 렌더
+    const secBlocksHtml = Object.entries(secGroups).map(([base, secMap]) => {
+      const knownMax = KNOWN_MAX[st.school] || Math.max(...Object.keys(secMap).map(Number), 1);
+      const doneCount = Object.keys(secMap).length;
+      const perfectCount = Object.values(secMap).filter(s=>s.wrong===0&&s.timedOut===0).length;
+      const warnCount = doneCount - perfectCount;
+      const cells = Array.from({length: knownMax}, (_, i) => {
+        const sn = i + 1;
+        const s = secMap[sn];
+        if(!s) return `<div class="sec-cell not-done"><div class="sec-num">${sn}섹션</div><div class="sec-score" style="font-size:11px">미완료</div></div>`;
+        const isPerfect = s.wrong === 0 && s.timedOut === 0;
+        const wrongTxt = s.wrong + s.timedOut > 0 ? `<div class="sec-wrong">오답 ${s.wrong+s.timedOut}개</div>` : '';
+        const timeStr = s.time ? s.time.toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}) : '';
+        return `<div class="sec-cell ${isPerfect?'perfect':'has-wrong'}">
+          <div class="sec-num">${sn}섹션</div>
+          <div class="sec-score">${s.score}점</div>
+          ${wrongTxt}<div class="sec-time">${timeStr}</div>
+        </div>`;
+      }).join('');
+      return `
+        <div style="margin-bottom:14px;">
+          <div style="font-size:11px;font-weight:800;color:var(--muted);margin-bottom:8px;letter-spacing:.5px;">
+            📚 어휘퀴즈 &nbsp;·&nbsp; 완료 ${doneCount}/${knownMax}
+            ${warnCount>0?`<span style="color:#e65100;margin-left:8px;">⚠️ 재도전 ${warnCount}개</span>`:''}
+            ${doneCount===knownMax&&perfectCount===knownMax?'<span style="color:var(--green);margin-left:8px;">🏆 전 섹션 클리어!</span>':''}
+          </div>
+          <div class="sec-grid">${cells}</div>
+        </div>`;
     }).join('');
+
+    // 비섹션 퀴즈 블록 (동반의어·함축의미·빈칸추론)
+    // quizType별로 최신 기록만
+    const nonSecMap = {};
+    nonSecRecords.forEach(d => {
+      // 오답재시도는 별도 키
+      const key = d.quizType;
+      if(!nonSecMap[key] || (d.time && nonSecMap[key].time && d.time > nonSecMap[key].time)){
+        nonSecMap[key] = d;
+      }
+    });
+
+    const nonSecHtml = Object.values(nonSecMap).length > 0 ? `
+      <div style="margin-bottom:10px;">
+        <div style="font-size:11px;font-weight:800;color:var(--muted);margin-bottom:8px;letter-spacing:.5px;">🔤 모의고사·수능 퀴즈</div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;">
+          ${Object.values(nonSecMap).sort((a,b)=>(b.time||0)-(a.time||0)).map(d => {
+            const isPerfect = d.wrong === 0;
+            const timeStr = d.time ? d.time.toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}) : '';
+            return `<div class="sec-cell ${isPerfect?'perfect':'has-wrong'}" style="min-width:130px;text-align:left;">
+              <div style="font-size:10px;font-weight:800;color:var(--muted);margin-bottom:4px;">${nonSecLabel(d.quizType)}</div>
+              <div class="sec-score">${d.score}점</div>
+              ${d.wrong>0?`<div class="sec-wrong">오답 ${d.wrong}개</div>`:''}
+              <div class="sec-time">${timeStr}</div>
+            </div>`;
+          }).join('')}
+        </div>
+      </div>` : '';
+
+    // 전체 통계
+    const totalDone = st.records.filter(d=>categorize(d.quizType)!=='other').length;
+    const avgScore = totalDone > 0 ? Math.round(st.records.reduce((a,b)=>a+b.score,0)/st.records.length) : 0;
+
     return `<div class="student-card">
       <div class="student-card-header">
         <div>
-          <div class="quiz-type-label">${g.school} · ${g.base}</div>
-          <div class="student-name">👤 ${g.name}</div>
+          <div class="quiz-type-label">${st.school}</div>
+          <div class="student-name">👤 ${st.name}</div>
         </div>
         <div class="student-summary">
-          <span class="sum-pill done">✅ 완료 ${doneCount}/${knownMax}</span>
-          <span class="sum-pill ${perfectCount===doneCount&&doneCount>0?'done':'warn'}">🌸 오답0 ${perfectCount}개</span>
-          ${warnCount>0?`<span class="sum-pill warn">⚠️ 재도전 필요 ${warnCount}개</span>`:''}
-          ${doneCount===knownMax&&perfectCount===knownMax?'<span class="sum-pill done">🏆 전 섹션 클리어!</span>':''}
+          <span class="sum-pill done">📝 총 ${st.records.length}회 응시</span>
+          <span class="sum-pill ${avgScore>=85?'done':'warn'}">평균 ${avgScore}점</span>
         </div>
       </div>
-      <div class="sec-grid">${cells}</div>
+      ${secBlocksHtml}
+      ${nonSecHtml}
     </div>`;
   }).join('');
+
   area.innerHTML = `<div class="student-cards">${html}</div>`;
 }
 
