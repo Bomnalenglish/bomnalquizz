@@ -172,9 +172,24 @@ tr:hover td{background:#f8f9ff;}
           <span class="ctrl-label">학교</span>
           <select class="ctrl-sel" id="fSchool" onchange="applyFilter()">
             <option value="">전체</option>
-            <optgroup label="종촌고"><option value="종촌고1">종촌고1</option><option value="종촌고2">종촌고2</option><option value="종촌고3">종촌고3</option></optgroup>
-            <optgroup label="고운고"><option value="고운고1">고운고1</option><option value="고운고2">고운고2</option><option value="고운고3">고운고3</option></optgroup>
-            <optgroup label="대성고"><option value="대성고1">대성고1</option><option value="대성고2">대성고2</option><option value="대성고3">대성고3</option></optgroup>
+            <optgroup label="종촌고">
+              <option value="종촌고">종촌고 전체</option>
+              <option value="종촌고1">종촌고1</option>
+              <option value="종촌고2">종촌고2</option>
+              <option value="종촌고3">종촌고3</option>
+            </optgroup>
+            <optgroup label="고운고">
+              <option value="고운고">고운고 전체</option>
+              <option value="고운고1">고운고1</option>
+              <option value="고운고2">고운고2</option>
+              <option value="고운고3">고운고3</option>
+            </optgroup>
+            <optgroup label="대성고">
+              <option value="대성고">대성고 전체</option>
+              <option value="대성고1">대성고1</option>
+              <option value="대성고2">대성고2</option>
+              <option value="대성고3">대성고3</option>
+            </optgroup>
           </select>
           <span class="ctrl-label">이름</span>
           <input type="text" class="ctrl-inp" id="fName" placeholder="검색..." oninput="applyFilter()">
@@ -206,9 +221,24 @@ tr:hover td{background:#f8f9ff;}
           <span class="ctrl-label">학교</span>
           <select class="ctrl-sel" id="secSchool" onchange="renderSectionView()">
             <option value="">전체</option>
-            <optgroup label="종촌고"><option value="종촌고1">종촌고1</option><option value="종촌고2">종촌고2</option><option value="종촌고3">종촌고3</option></optgroup>
-            <optgroup label="고운고"><option value="고운고1">고운고1</option><option value="고운고2">고운고2</option><option value="고운고3">고운고3</option></optgroup>
-            <optgroup label="대성고"><option value="대성고1">대성고1</option><option value="대성고2">대성고2</option><option value="대성고3">대성고3</option></optgroup>
+            <optgroup label="종촌고">
+              <option value="종촌고">종촌고 전체</option>
+              <option value="종촌고1">종촌고1</option>
+              <option value="종촌고2">종촌고2</option>
+              <option value="종촌고3">종촌고3</option>
+            </optgroup>
+            <optgroup label="고운고">
+              <option value="고운고">고운고 전체</option>
+              <option value="고운고1">고운고1</option>
+              <option value="고운고2">고운고2</option>
+              <option value="고운고3">고운고3</option>
+            </optgroup>
+            <optgroup label="대성고">
+              <option value="대성고">대성고 전체</option>
+              <option value="대성고1">대성고1</option>
+              <option value="대성고2">대성고2</option>
+              <option value="대성고3">대성고3</option>
+            </optgroup>
           </select>
           <span class="ctrl-label">이름</span>
           <input type="text" class="ctrl-inp" id="secName" placeholder="검색..." oninput="renderSectionView()">
@@ -242,7 +272,7 @@ window._fbReady=true;
 </script>
 
 <script>
-const ADMIN_PW = 'bomnalvoca2025';
+const ADMIN_PW = 'bomnalvaca2025';
 const VACA_URL  = 'https://bomnalenglish.github.io/bomnalvaca/admin.html';
 
 function doLogin(){
@@ -365,7 +395,8 @@ function applyFilter(){
   const nq = document.getElementById('fName').value.trim().toLowerCase();
   const so = document.getElementById('fSort').value;
   let data = [...allData];
-  if(sq) data = data.filter(d=>d.school===sq);
+  // 학교 필터: 저장값이 "종촌고", "고운고" 등 다양하므로 startsWith로 매칭
+  if(sq) data = data.filter(d => d.school && d.school.startsWith(sq));
   if(nq) data = data.filter(d=>d.name.toLowerCase().includes(nq));
   if(so==='time_asc')        data.sort((a,b)=>(a.time||0)-(b.time||0));
   else if(so==='score_desc') data.sort((a,b)=>b.score-a.score);
@@ -485,7 +516,7 @@ function renderSectionView(){
 
   // 전체 데이터 (섹션 필터 제거!)
   let data = [...allData];
-  if(sq) data = data.filter(d => d.school === sq);
+  if(sq) data = data.filter(d => d.school && d.school.startsWith(sq));
   if(nq) data = data.filter(d => d.name.toLowerCase().includes(nq));
 
   if(!data.length){
