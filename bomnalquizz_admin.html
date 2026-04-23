@@ -108,7 +108,6 @@ tr:hover td{background:#f8f9ff;}
 .sec-cell.not-done .sec-score{color:var(--muted);}
 .no-data-msg{text-align:center;padding:48px;color:var(--muted);}
 .quiz-type-label{font-size:10px;color:var(--muted);margin-bottom:6px;font-weight:700;letter-spacing:.5px;}
-/* 로딩 진행상황 표시 */
 .load-progress{background:var(--card);border-radius:12px;padding:20px 24px;text-align:center;margin-bottom:16px;box-shadow:0 2px 8px rgba(26,35,126,.06);}
 .load-progress .load-n{font-family:'Black Han Sans',sans-serif;font-size:28px;color:var(--primary);}
 .load-progress .load-l{font-size:12px;color:var(--muted);margin-top:4px;}
@@ -190,6 +189,24 @@ tr:hover td{background:#f8f9ff;}
               <option value="대성고2">대성고2</option>
               <option value="대성고3">대성고3</option>
             </optgroup>
+            <optgroup label="종촌중">
+              <option value="종촌중">종촌중 전체</option>
+              <option value="종촌중1">종촌중1</option>
+              <option value="종촌중2">종촌중2</option>
+              <option value="종촌중3">종촌중3</option>
+            </optgroup>
+            <optgroup label="어진중">
+              <option value="어진중">어진중 전체</option>
+              <option value="어진중1">어진중1</option>
+              <option value="어진중2">어진중2</option>
+              <option value="어진중3">어진중3</option>
+            </optgroup>
+            <optgroup label="고운중">
+              <option value="고운중">고운중 전체</option>
+              <option value="고운중1">고운중1</option>
+              <option value="고운중2">고운중2</option>
+              <option value="고운중3">고운중3</option>
+            </optgroup>
           </select>
           <span class="ctrl-label">이름</span>
           <input type="text" class="ctrl-inp" id="fName" placeholder="검색..." oninput="applyFilter()">
@@ -239,6 +256,24 @@ tr:hover td{background:#f8f9ff;}
               <option value="대성고2">대성고2</option>
               <option value="대성고3">대성고3</option>
             </optgroup>
+            <optgroup label="종촌중">
+              <option value="종촌중">종촌중 전체</option>
+              <option value="종촌중1">종촌중1</option>
+              <option value="종촌중2">종촌중2</option>
+              <option value="종촌중3">종촌중3</option>
+            </optgroup>
+            <optgroup label="어진중">
+              <option value="어진중">어진중 전체</option>
+              <option value="어진중1">어진중1</option>
+              <option value="어진중2">어진중2</option>
+              <option value="어진중3">어진중3</option>
+            </optgroup>
+            <optgroup label="고운중">
+              <option value="고운중">고운중 전체</option>
+              <option value="고운중1">고운중1</option>
+              <option value="고운중2">고운중2</option>
+              <option value="고운중3">고운중3</option>
+            </optgroup>
           </select>
           <span class="ctrl-label">이름</span>
           <input type="text" class="ctrl-inp" id="secName" placeholder="검색..." oninput="renderSectionView()">
@@ -267,7 +302,6 @@ window._col=collection;
 window._getDocs=getDocs;
 window._query=query;
 window._orderBy=orderBy;
-// limit은 import하지 않음 — 전체 데이터 조회
 window._fbReady=true;
 </script>
 
@@ -317,7 +351,6 @@ async function loadData(){
     let w=0;
     while(!window._fbReady && w<8000){ await new Promise(r=>setTimeout(r,200)); w+=200; }
 
-    // ✅ limit 없이 전체 데이터 조회 (최신순 정렬)
     const q = window._query(
       window._col(window._db, 'quiz_results'),
       window._orderBy('submittedAt', 'desc')
@@ -395,7 +428,6 @@ function applyFilter(){
   const nq = document.getElementById('fName').value.trim().toLowerCase();
   const so = document.getElementById('fSort').value;
   let data = [...allData];
-  // 학교 필터: 저장값이 "종촌고", "고운고" 등 다양하므로 startsWith로 매칭
   if(sq) data = data.filter(d => d.school && d.school.startsWith(sq));
   if(nq) data = data.filter(d=>d.name.toLowerCase().includes(nq));
   if(so==='time_asc')        data.sort((a,b)=>(a.time||0)-(b.time||0));
@@ -420,6 +452,8 @@ function secLabel(qt){
   }
   if(qt.includes('함축의미')) return '함축의미';
   if(qt.includes('빈칸추론')) return '빈칸추론';
+  // 중학교 어휘퀴즈
+  if(qt.includes('어휘퀴즈')) return '어휘퀴즈';
   return '-';
 }
 
@@ -434,6 +468,7 @@ function renderTable(data){
     const sl = secLabel(d.quizType);
     const slStyle = sl==='전체'?'background:#e3f2fd;color:#1565c0'
                   : sl==='오답재시'?'background:#fff3e0;color:#e65100'
+                  : sl==='어휘퀴즈'?'background:#f3e5f5;color:#6a1b9a'
                   : sl==='-'?'color:var(--muted);font-size:11px'
                   : 'background:#e8eaf6;color:#3949ab';
     const slHtml = sl!=='-'
@@ -477,17 +512,16 @@ function parseSection(quizType){
   return m ? parseInt(m[1]) : 0;
 }
 
-// quizType → 카테고리 분류
 function categorize(qt){
   if(!qt) return 'other';
   if(qt.includes('섹션')) return 'section';
   if(qt.includes('동반의어')) return 'synanm';
   if(qt.includes('함축의미')) return 'implication';
   if(qt.includes('빈칸추론')) return 'blank';
+  if(qt.includes('어휘퀴즈')) return 'vocab';
   return 'other';
 }
 
-// 비섹션 퀴즈 라벨
 function nonSecLabel(qt){
   if(!qt) return qt;
   if(qt.includes('동반의어')){
@@ -505,6 +539,7 @@ function nonSecLabel(qt){
     const kang = qt.match(/([\dT]+강|전체)/);
     return '빈칸추론'+(kang?' '+kang[1]:'');
   }
+  if(qt.includes('어휘퀴즈')) return qt.replace('_어휘퀴즈','').replace(/_/g,' ');
   return qt.slice(0,14);
 }
 
@@ -514,7 +549,6 @@ function renderSectionView(){
   const area = document.getElementById('sectionArea');
   if(!area) return;
 
-  // 전체 데이터 (섹션 필터 제거!)
   let data = [...allData];
   if(sq) data = data.filter(d => d.school && d.school.startsWith(sq));
   if(nq) data = data.filter(d => d.name.toLowerCase().includes(nq));
@@ -524,7 +558,6 @@ function renderSectionView(){
     return;
   }
 
-  // 학생별 그룹핑
   const students = {};
   data.forEach(d => {
     const key = `${d.name}||${d.school}`;
@@ -532,10 +565,9 @@ function renderSectionView(){
     students[key].records.push(d);
   });
 
-  const KNOWN_MAX = {'종촌고1':7,'종촌고2':16,'고운고1':11,'고운고2':11,'종촌고3':0};
+  const KNOWN_MAX = {'종촌고1':7,'종촌고2':16,'고운고1':11,'고운고2':11,'종촌고3':0,'종촌중2':0,'어진중2':0,'고운중2':0};
 
   const html = Object.values(students).map(st => {
-    // ── 섹션 퀴즈 그룹핑 (quizBase별) ──
     const secGroups = {};
     const nonSecRecords = [];
 
@@ -555,7 +587,6 @@ function renderSectionView(){
       }
     });
 
-    // 섹션 블록 렌더
     const secBlocksHtml = Object.entries(secGroups).map(([base, secMap]) => {
       const knownMax = KNOWN_MAX[st.school] || Math.max(...Object.keys(secMap).map(Number), 1);
       const doneCount = Object.keys(secMap).length;
@@ -585,11 +616,8 @@ function renderSectionView(){
         </div>`;
     }).join('');
 
-    // 비섹션 퀴즈 블록 (동반의어·함축의미·빈칸추론)
-    // quizType별로 최신 기록만
     const nonSecMap = {};
     nonSecRecords.forEach(d => {
-      // 오답재시도는 별도 키
       const key = d.quizType;
       if(!nonSecMap[key] || (d.time && nonSecMap[key].time && d.time > nonSecMap[key].time)){
         nonSecMap[key] = d;
@@ -598,7 +626,7 @@ function renderSectionView(){
 
     const nonSecHtml = Object.values(nonSecMap).length > 0 ? `
       <div style="margin-bottom:10px;">
-        <div style="font-size:11px;font-weight:800;color:var(--muted);margin-bottom:8px;letter-spacing:.5px;">🔤 모의고사·수능 퀴즈</div>
+        <div style="font-size:11px;font-weight:800;color:var(--muted);margin-bottom:8px;letter-spacing:.5px;">🔤 모의고사·수능·어휘 퀴즈</div>
         <div style="display:flex;flex-wrap:wrap;gap:8px;">
           ${Object.values(nonSecMap).sort((a,b)=>(b.time||0)-(a.time||0)).map(d => {
             const isPerfect = d.wrong === 0;
@@ -613,7 +641,6 @@ function renderSectionView(){
         </div>
       </div>` : '';
 
-    // 전체 통계
     const totalDone = st.records.filter(d=>categorize(d.quizType)!=='other').length;
     const avgScore = totalDone > 0 ? Math.round(st.records.reduce((a,b)=>a+b.score,0)/st.records.length) : 0;
 
