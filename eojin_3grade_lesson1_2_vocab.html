@@ -181,9 +181,21 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
     <div class="result-label" id="resultLabel"></div>
     <div class="result-detail" id="resultDetail"></div>
     <div class="sending-msg" id="sendingMsg">📡 결과 전송 중...</div>
-    <button class="retry-btn" onclick="retryQuiz()">🔄 다시 도전하기</button>
+    <button id="retryWrongBtn" onclick="startRetry()" style="display:none;width:100%;padding:13px;background:var(--wrong);color:white;border:none;border-radius:14px;font-family:'Noto Sans KR',sans-serif;font-size:15px;font-weight:700;cursor:pointer;margin-bottom:10px;">❌ 오답 다시 풀기 (<span id="wrongCount">0</span>개)</button>
+    <button class="retry-btn" onclick="retryQuiz()">🔄 처음부터 다시</button>
   </div>
 
+  
+  <!-- 오답 재풀이 화면 -->
+  <div id="retryScreen" style="display:none;padding:14px 14px 80px;">
+    <div style="background:var(--wrong);color:white;border-radius:14px;padding:14px 18px;margin-bottom:16px;text-align:center;">
+      <div style="font-size:12px;font-weight:700;opacity:.85">오답 재풀이 모드 · <span id="retryRoundLabel">1라운드</span></div>
+      <div style="font-family:'Fredoka One',cursive;font-size:20px;margin-top:2px">❌ → ✅ 전부 맞힐 때까지!</div>
+      <div style="font-size:11px;opacity:.75;margin-top:4px" id="retryCountLabel"></div>
+    </div>
+    <div id="retryQuestions"></div>
+  </div>
+  <button class="float-submit hidden" id="retrySubmitBtn" onclick="submitRetry()">✅ 오답 확인하기</button>
   <button class="float-submit" id="floatSubmit" onclick="submitAll()">🎯 최종 제출하기</button>
 </div>
 
@@ -378,17 +390,18 @@ function buildMC(containerId, prefix, data, subText, displayFn){
       </div>`;
   });
   state.totalQ+=d.length;
+  return d;
 }
 
-function buildAll(){
-  buildMC('synonymQuestions','syn',SYNONYM_DATA,'위 단어의 유의어는?');
-  buildMC('antonymQuestions','ant',ANTONYM_DATA,'위 단어의 반의어는?');
-  buildMC('formQuestions','form',FORM_DATA,'알맞은 뜻을 고르세요.',
+function buildAll(){window._builtData={};
+  window._builtData['syn']=buildMC('synonymQuestions','syn',SYNONYM_DATA,'위 단어의 유의어는?');
+  window._builtData['ant']=buildMC('antonymQuestions','ant',ANTONYM_DATA,'위 단어의 반의어는?');
+  window._builtData['form']=buildMC('formQuestions','form',FORM_DATA,'알맞은 뜻을 고르세요.',
     q=>`<div class="lesson-tag l${q.lesson}">L${q.lesson}</div><div class="q-word" style="font-size:17px">${q.word}</div><div class="q-sub">${q.pos}</div>`);
-  buildPoly();
-  buildMC('idiomQuestions','idiom',IDIOM_DATA,'위 관용표현의 뜻은?',
+  window._builtData['poly']=buildPoly();
+  window._builtData['idiom']=buildMC('idiomQuestions','idiom',IDIOM_DATA,'위 관용표현의 뜻은?',
     q=>`<div class="q-word" style="font-size:16px;font-style:italic">${q.phrase}</div>`);
-  buildMC('engEngQuestions','ee',ENG_ENG_DATA,'위 영영풀이에 해당하는 단어는?',
+  window._builtData['ee']=buildMC('engEngQuestions','ee',ENG_ENG_DATA,'위 영영풀이에 해당하는 단어는?',
     q=>`<div class="q-word ko" style="font-size:13px;font-weight:600;color:#374151;line-height:1.6">"${q.definition}"</div>`);
   updateProgress();
 }
@@ -412,6 +425,7 @@ function buildPoly(){
       </div>`;
   });
   state.totalQ+=d.length;
+  return d;
 }
 
 // ============================================================
@@ -554,9 +568,174 @@ async function submitAll(){
     sendEl.textContent='⚠️ 전송 실패 (인터넷 연결을 확인해주세요)';
     sendEl.className='sending-msg err';
   }
+  retryWrongList=collectWrongItems();if(retryWrongList.length>0){document.getElementById('wrongCount').textContent=retryWrongList.length;document.getElementById('retryWrongBtn').style.display='block';}
 }
 
 function retryQuiz(){location.reload();}
+// ============================================================
+// 오답 재풀이
+// ============================================================
+let retryRound = 0;
+let retryWrongList = [];
+
+function startRetry() {
+  retryRound++;
+  document.getElementById('resultScreen').classList.remove('show');
+  document.getElementById('retryScreen').style.display = 'block';
+  document.getElementById('retrySubmitBtn').classList.remove('hidden');
+  document.getElementById('retryRoundLabel').textContent = retryRound + '라운드';
+  document.getElementById('retryCountLabel').textContent = retryWrongList.length + '문제 남음';
+  buildRetryQuestions();
+}
+
+function buildRetryQuestions() {
+  const container = document.getElementById('retryQuestions');
+  container.innerHTML = '';
+  const shuffled = shuffle([...retryWrongList]);
+  window._retryItems = shuffled;
+  window._retryAnswers = {};
+  Object.keys(retryMultiSelected).forEach(k => delete retryMultiSelected[k]);
+
+  shuffled.forEach((item, i) => {
+    const card = document.createElement('div');
+    card.className = 'q-card';
+    card.id = 'retry-card-' + i;
+    if (item.type === 'multi') {
+      const cnt = item.answers.length;
+      const opts = shuffle([...item.allOpts]);
+      const aj = JSON.stringify(item.answers);
+      card.innerHTML = `
+        <div class="q-num">오답 ${i+1} · <span class="lesson-tag">재풀이</span></div>
+        <div class="q-word">${item.word}</div>
+        <div class="q-sub">이 단어의 뜻 ${cnt}개를 모두 고르세요</div>
+        <div class="options" style="grid-template-columns:1fr 1fr 1fr">
+          ${opts.map(o=>`<button class="opt-btn multi" onclick="toggleRetryMulti(${i},this,'${o.replace(/'/g,"\'").replace(/"/g,'\\"')}',${aj})">${o}</button>`).join('')}
+        </div>
+        <div class="feedback" id="retry-fb-${i}"></div>`;
+    } else {
+      const opts = opts4(item.answer, item.distractors);
+      card.innerHTML = `
+        <div class="q-num">오답 ${i+1} · <span class="lesson-tag">재풀이</span></div>
+        <div class="q-word" style="${item.wordStyle||''}">${item.word}</div>
+        <div class="q-sub">${item.subText||'알맞은 답을 고르세요'}</div>
+        <div class="options">
+          ${opts.map(o=>`<button class="opt-btn" onclick="answerRetryMC(${i},this,'${o.replace(/'/g,"\'").replace(/"/g,'\\"')}','${item.answer.replace(/'/g,"\'").replace(/"/g,'\\"')}')">${o}</button>`).join('')}
+        </div>
+        <div class="feedback" id="retry-fb-${i}"></div>`;
+    }
+    container.appendChild(card);
+  });
+}
+
+const retryMultiSelected = {};
+
+function toggleRetryMulti(idx, btn, chosen, answers) {
+  const key = 'rm-' + idx;
+  if (window._retryAnswers[idx]?.done) return;
+  if (!retryMultiSelected[key]) retryMultiSelected[key] = new Set();
+  const sel = retryMultiSelected[key];
+  if (btn.classList.contains('selected')) { btn.classList.remove('selected'); sel.delete(chosen); }
+  else { btn.classList.add('selected'); sel.add(chosen); }
+  if (sel.size === answers.length) confirmRetryMulti(idx, answers);
+}
+
+function confirmRetryMulti(idx, answers) {
+  const card = document.getElementById('retry-card-' + idx);
+  const fb = document.getElementById('retry-fb-' + idx);
+  const sel = retryMultiSelected['rm-' + idx] || new Set();
+  const correctSet = new Set(answers);
+  const allCorrect = sel.size === correctSet.size && [...sel].every(s => correctSet.has(s));
+  card.querySelectorAll('.opt-btn').forEach(b => {
+    b.disabled = true;
+    const t = b.textContent.trim();
+    if (sel.has(t) && correctSet.has(t)) b.className = 'opt-btn multi correct-sel';
+    else if (sel.has(t)) b.className = 'opt-btn multi wrong-sel';
+    else if (correctSet.has(t)) b.className = 'opt-btn multi correct-sel';
+    else b.className = 'opt-btn multi';
+  });
+  fb.textContent = allCorrect ? '✅ 정답!' : '❌ 정답: ' + answers.join(', ');
+  fb.className = 'feedback show ' + (allCorrect ? 'ok' : 'no');
+  card.classList.add(allCorrect ? 'correct-card' : 'wrong-card');
+  window._retryAnswers[idx] = { done: true, correct: allCorrect };
+  checkAllRetryDone();
+}
+
+function answerRetryMC(idx, btn, chosen, answer) {
+  if (window._retryAnswers[idx]?.done) return;
+  const card = document.getElementById('retry-card-' + idx);
+  const fb = document.getElementById('retry-fb-' + idx);
+  const isCorrect = chosen === answer;
+  card.querySelectorAll('.opt-btn').forEach(b => {
+    b.disabled = true;
+    if (b.textContent.trim() === answer) b.classList.add('show-correct');
+  });
+  if (isCorrect) { btn.classList.remove('show-correct'); btn.classList.add('selected-correct'); }
+  else btn.classList.add('selected-wrong');
+  fb.textContent = isCorrect ? '✅ 정답!' : '❌ 정답: ' + answer;
+  fb.className = 'feedback show ' + (isCorrect ? 'ok' : 'no');
+  card.classList.add(isCorrect ? 'correct-card' : 'wrong-card');
+  window._retryAnswers[idx] = { done: true, correct: isCorrect };
+  checkAllRetryDone();
+}
+
+function checkAllRetryDone() {
+  const total = window._retryItems.length;
+  const done = Object.keys(window._retryAnswers).length;
+  if (done >= total) setTimeout(submitRetry, 600);
+}
+
+function submitRetry() {
+  const items = window._retryItems || [];
+  const answers = window._retryAnswers || {};
+  const newWrong = items.filter((_, i) => !answers[i]?.correct);
+  document.getElementById('retrySubmitBtn').classList.add('hidden');
+  document.getElementById('retryScreen').style.display = 'none';
+  if (newWrong.length === 0) {
+    showRetryComplete();
+  } else {
+    retryWrongList = newWrong;
+    document.getElementById('wrongCount').textContent = newWrong.length;
+    document.getElementById('resultScreen').classList.add('show');
+    document.getElementById('retryWrongBtn').style.display = 'block';
+  }
+}
+
+function showRetryComplete() {
+  document.getElementById('resultScreen').classList.add('show');
+  document.getElementById('resultEmoji').textContent = '🏆';
+  document.getElementById('resultScore').textContent = '완벽!';
+  document.getElementById('resultLabel').textContent = retryRound + '라운드 만에 오답 0개 달성! 🎉';
+  document.getElementById('resultDetail').innerHTML =
+    '<div class="result-row"><span class="label">이름</span><span class="val">' + studentName + '</span></div>' +
+    '<div class="result-row"><span class="label">재도전 횟수</span><span class="val">' + retryRound + '라운드</span></div>' +
+    '<div class="result-row"><span class="label">오답</span><span class="val" style="color:var(--correct);font-weight:900">0개 🎊</span></div>';
+  document.getElementById('retryWrongBtn').style.display = 'none';
+  document.getElementById('sendingMsg').textContent = '';
+}
+
+function collectWrongItems() {
+  const wrongKeys = Object.keys(state.answers).filter(k => !state.answers[k].correct);
+  const list = [];
+  const multiPrefixes = new Set(['dual','poly']);
+  wrongKeys.forEach(key => {
+    const parts = key.split('-');
+    const prefix = parts[0];
+    const idx = parseInt(parts[1]);
+    const data = window._builtData && window._builtData[prefix];
+    if (!data || !data[idx]) return;
+    const q = data[idx];
+    if (multiPrefixes.has(prefix)) {
+      list.push({ type:'multi', word:q.word, answers:q.meanings||q.answers, allOpts:q.all4||q.all6, lesson:q.lesson||1 });
+    } else {
+      const wordTxt = q.word || q.phrase || ('"' + q.definition + '"') || '';
+      const subTxt = prefix==='ee'?'위 영영풀이에 해당하는 단어는?':prefix==='phr'?'위 표현의 뜻은?':prefix==='form'?('알맞은 뜻을 고르세요 · '+q.pos):'알맞은 답을 고르세요';
+      const wStyle = prefix==='ee'?'font-size:13px;font-weight:600;color:#374151;line-height:1.6':'';
+      list.push({ type:'mc', word:wordTxt, answer:q.answer, distractors:q.distractors, lesson:q.lesson||1, subText:subTxt, wordStyle:wStyle });
+    }
+  });
+  return list;
+}
+
 
 // ============================================================
 // ANTI-CHEAT
