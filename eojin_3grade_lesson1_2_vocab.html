@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>봄날 퀴즈 | 어진중 3학년 Lesson 1&2 어휘</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700;900&family=Fredoka+One&display=swap');
+:root{
+  --primary:#1a3a5c;--secondary:#3a86c8;--accent:#f4a261;--accent2:#e76f51;
+  --bg:#f0f6fb;--card:#fff;--text:#1b1b2f;--muted:#6b7280;
+  --correct:#2e7d32;--wrong:#c62828;--border:#b8d4ee;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+
+.info-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
+.info-card{background:var(--card);border-radius:24px;padding:36px 28px;width:100%;max-width:380px;box-shadow:0 8px 32px rgba(26,58,92,.15);}
+.info-card .top-icon{font-size:48px;text-align:center;margin-bottom:12px;}
+.info-card h1{font-family:'Fredoka One',cursive;font-size:22px;color:var(--primary);text-align:center;margin-bottom:4px;}
+.info-card .sub{font-size:12px;color:var(--muted);text-align:center;margin-bottom:28px;line-height:1.6;}
+.form-label{font-size:12px;font-weight:700;color:var(--primary);margin-bottom:6px;display:block;}
+.form-select,.form-input{width:100%;padding:13px 14px;border:2px solid var(--border);border-radius:12px;font-family:'Noto Sans KR',sans-serif;font-size:14px;outline:none;transition:border-color .2s;margin-bottom:16px;background:white;color:var(--text);}
+.form-select:focus,.form-input:focus{border-color:var(--secondary);}
+.form-select.err,.form-input.err{border-color:var(--wrong);}
+.start-btn{width:100%;padding:15px;background:linear-gradient(135deg,var(--primary),#0d2238);color:white;border:none;border-radius:14px;font-family:'Noto Sans KR',sans-serif;font-size:16px;font-weight:700;cursor:pointer;transition:opacity .2s;box-shadow:0 4px 16px rgba(26,58,92,.3);}
+.start-btn:hover{opacity:.88;}
+
+.quiz-wrap{display:none;}
+.quiz-header{background:linear-gradient(135deg,var(--primary),#0d2238);color:white;padding:20px 16px 16px;text-align:center;position:relative;overflow:hidden;}
+.quiz-header::before{content:'';position:absolute;top:-40px;right:-40px;width:160px;height:160px;background:rgba(255,255,255,.05);border-radius:50%;}
+.lesson-badge{display:inline-block;background:var(--accent);color:white;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;letter-spacing:1px;margin-bottom:6px;}
+.quiz-header h1{font-family:'Fredoka One',cursive;font-size:24px;letter-spacing:1px;margin-bottom:2px;}
+.quiz-header .student-info{font-size:12px;opacity:.85;margin-top:2px;}
+.attempt-badge{display:inline-block;background:rgba(255,255,255,.18);border-radius:8px;padding:3px 10px;font-size:11px;margin-top:5px;}
+
+.section-tabs{display:flex;overflow-x:auto;gap:8px;padding:12px 14px 0;background:var(--primary);scrollbar-width:none;}
+.section-tabs::-webkit-scrollbar{display:none;}
+.tab-btn{flex-shrink:0;padding:7px 14px;border-radius:10px 10px 0 0;border:none;background:rgba(255,255,255,.13);color:rgba(255,255,255,.65);font-family:'Noto Sans KR',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;}
+.tab-btn.active{background:var(--bg);color:var(--primary);}
+
+.progress-wrap{padding:10px 14px 0;background:var(--bg);}
+.progress-info{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:5px;}
+.progress-bar{height:5px;background:var(--border);border-radius:10px;overflow:hidden;}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--secondary),var(--primary));border-radius:10px;transition:width .4s ease;}
+
+.quiz-section{display:none;padding:14px 14px 80px;}
+.quiz-section.active{display:block;}
+.section-title{font-size:14px;font-weight:700;color:var(--primary);margin-bottom:3px;display:flex;align-items:center;gap:6px;}
+.section-title .icon{width:26px;height:26px;background:var(--primary);color:white;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;}
+.section-desc{font-size:11px;color:var(--muted);margin-bottom:14px;}
+
+.q-card{background:var(--card);border-radius:14px;padding:18px;margin-bottom:12px;border:1.5px solid var(--border);box-shadow:0 2px 6px rgba(0,0,0,.04);}
+.q-card.correct-card{border-color:var(--correct);background:#f1f8f1;}
+.q-card.wrong-card{border-color:var(--wrong);background:#fff5f5;}
+.q-num{font-size:10px;font-weight:700;color:var(--muted);margin-bottom:5px;}
+.q-word{font-size:20px;font-weight:900;color:var(--text);margin-bottom:3px;font-family:'Fredoka One',cursive;}
+.q-word.ko{font-family:'Noto Sans KR',sans-serif;font-size:16px;font-weight:700;}
+.q-sub{font-size:11px;color:var(--muted);margin-bottom:12px;}
+.lesson-tag{display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:5px;margin-bottom:3px;}
+.lesson-tag.l1{background:#dbeafe;color:#1d4ed8;}
+.lesson-tag.l2{background:#dcfce7;color:#166534;}
+
+.options{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+.opt-btn{padding:9px 11px;border:2px solid var(--border);border-radius:9px;background:white;font-family:'Noto Sans KR',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;text-align:center;color:var(--text);line-height:1.4;}
+.opt-btn:hover:not(:disabled){border-color:var(--secondary);background:#eef4fb;}
+.opt-btn.selected-correct{background:#e8f5e9;border-color:var(--correct);color:var(--correct);}
+.opt-btn.selected-wrong{background:#ffebee;border-color:var(--wrong);color:var(--wrong);}
+.opt-btn.show-correct{background:#e8f5e9;border-color:var(--correct);color:var(--correct);}
+.opt-btn:disabled{cursor:default;}
+.opt-btn.multi.selected{background:#dbeafe;border-color:#3b82f6;color:#1d4ed8;}
+.opt-btn.multi.correct-sel{background:#e8f5e9;border-color:var(--correct);color:var(--correct);}
+.opt-btn.multi.wrong-sel{background:#ffebee;border-color:var(--wrong);color:var(--wrong);}
+
+.feedback{font-size:12px;font-weight:700;margin-top:7px;padding:5px 9px;border-radius:7px;display:none;}
+.feedback.show{display:block;}
+.feedback.ok{background:#e8f5e9;color:var(--correct);}
+.feedback.no{background:#ffebee;color:var(--wrong);}
+
+.float-submit{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);z-index:100;width:calc(100% - 28px);max-width:480px;padding:13px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:white;border:none;border-radius:14px;font-family:'Noto Sans KR',sans-serif;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 4px 18px rgba(231,111,81,.4);}
+.float-submit:active{transform:translateX(-50%) scale(.97);}
+.float-submit.hidden{display:none;}
+
+.result-screen{display:none;padding:28px 18px;text-align:center;}
+.result-screen.show{display:block;}
+.result-emoji{font-size:56px;margin-bottom:10px;}
+.result-score{font-size:44px;font-weight:900;font-family:'Fredoka One',cursive;color:var(--primary);margin-bottom:3px;}
+.result-label{font-size:13px;color:var(--muted);margin-bottom:20px;}
+.result-detail{background:white;border-radius:14px;padding:14px;margin-bottom:18px;text-align:left;}
+.result-row{display:flex;justify-content:space-between;padding:5px 0;font-size:12px;border-bottom:1px solid #f0f0f0;}
+.result-row:last-child{border-bottom:none;}
+.result-row .label{color:var(--muted);}
+.result-row .val{font-weight:700;}
+.sending-msg{font-size:13px;color:var(--muted);margin-bottom:14px;}
+.sending-msg.ok{color:var(--correct);font-weight:700;}
+.sending-msg.err{color:var(--wrong);}
+.retry-btn{width:100%;padding:13px;background:var(--primary);color:white;border:none;border-radius:14px;font-family:'Noto Sans KR',sans-serif;font-size:14px;font-weight:700;cursor:pointer;}
+</style>
+</head>
+<body>
+
+<!-- 학생 정보 입력 -->
+<div class="info-wrap" id="infoWrap">
+  <div class="info-card">
+    <div class="top-icon">🐜</div>
+    <h1>Lesson 1 &amp; 2 어휘 퀴즈</h1>
+    <p class="sub">천재(이) 중학교 영어 3 · 어진중 3학년<br>퀴즈 결과가 선생님께 자동 전달돼요!</p>
+    <label class="form-label">🏫 학교 / 학년</label>
+    <select class="form-select" id="schoolSel">
+      <option value="">학교를 선택하세요</option>
+      <option value="어진중3">어진중 3학년</option>
+      <option value="종촌중3">종촌중 3학년</option>
+      <option value="고운중3">고운중 3학년</option>
+    </select>
+    <label class="form-label">✏️ 이름</label>
+    <input type="text" class="form-input" id="nameInput" placeholder="이름을 입력하세요" maxlength="10">
+    <button class="start-btn" onclick="startQuiz()">퀴즈 시작 →</button>
+  </div>
+</div>
+
+<!-- 퀴즈 -->
+<div class="quiz-wrap" id="quizWrap">
+  <div class="quiz-header">
+    <div class="lesson-badge">어진중 · 3학년</div>
+    <h1>📚 Vocabulary Quiz</h1>
+    <div class="student-info" id="studentInfoDisplay"></div>
+    <div class="attempt-badge" id="attemptDisplay">첫 번째 도전!</div>
+  </div>
+
+  <div class="section-tabs">
+    <button class="tab-btn active" onclick="switchSection(0)">① 유의어</button>
+    <button class="tab-btn" onclick="switchSection(1)">② 반의어</button>
+    <button class="tab-btn" onclick="switchSection(2)">③ 형태관계</button>
+    <button class="tab-btn" onclick="switchSection(3)">④ 다의어</button>
+    <button class="tab-btn" onclick="switchSection(4)">⑤ 관용표현</button>
+    <button class="tab-btn" onclick="switchSection(5)">⑥ 영영풀이</button>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-info">
+      <span id="progressText">0 / 0 완료</span>
+      <span id="scoreText">점수: 0</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+  </div>
+
+  <div class="quiz-section active" id="section-0">
+    <div class="section-title"><div class="icon">①</div> 유의어 고르기</div>
+    <div class="section-desc">주어진 단어와 의미가 가장 가까운 것을 고르세요.</div>
+    <div id="synonymQuestions"></div>
+  </div>
+  <div class="quiz-section" id="section-1">
+    <div class="section-title"><div class="icon">②</div> 반의어 고르기</div>
+    <div class="section-desc">주어진 단어의 반의어를 고르세요.</div>
+    <div id="antonymQuestions"></div>
+  </div>
+  <div class="quiz-section" id="section-2">
+    <div class="section-title"><div class="icon">③</div> 단어의 형태 관계</div>
+    <div class="section-desc">단어와 알맞은 뜻을 고르세요.</div>
+    <div id="formQuestions"></div>
+  </div>
+  <div class="quiz-section" id="section-3">
+    <div class="section-title"><div class="icon">④</div> 다의어 뜻 모두 선택</div>
+    <div class="section-desc">단어의 뜻을 모두 골라보세요.</div>
+    <div id="polyQuestions"></div>
+  </div>
+  <div class="quiz-section" id="section-4">
+    <div class="section-title"><div class="icon">⑤</div> 신체 관용표현</div>
+    <div class="section-desc">관용표현의 올바른 뜻을 고르세요.</div>
+    <div id="idiomQuestions"></div>
+  </div>
+  <div class="quiz-section" id="section-5">
+    <div class="section-title"><div class="icon">⑥</div> 영영풀이</div>
+    <div class="section-desc">영어 풀이를 읽고 알맞은 단어를 고르세요.</div>
+    <div id="engEngQuestions"></div>
+  </div>
+
+  <div class="result-screen" id="resultScreen">
+    <div class="result-emoji" id="resultEmoji">🎉</div>
+    <div class="result-score" id="resultScore">0점</div>
+    <div class="result-label" id="resultLabel"></div>
+    <div class="result-detail" id="resultDetail"></div>
+    <div class="sending-msg" id="sendingMsg">📡 결과 전송 중...</div>
+    <button class="retry-btn" onclick="retryQuiz()">🔄 다시 도전하기</button>
+  </div>
+
+  <button class="float-submit" id="floatSubmit" onclick="submitAll()">🎯 최종 제출하기</button>
+</div>
+
+<!-- Firebase CDN -->
+<script type="module">
+import{initializeApp}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import{getFirestore,collection,addDoc,serverTimestamp}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+const cfg={apiKey:"AIzaSyCxS524S8KAaF87DomPtl9sJdF-eqes404",authDomain:"bomnalvaca.firebaseapp.com",projectId:"bomnalvaca",storageBucket:"bomnalvaca.firebasestorage.app",messagingSenderId:"115868052300",appId:"1:115868052300:web:765c08867b6f1ce0987de9"};
+const app=initializeApp(cfg);const db=getFirestore(app);
+window._saveResult=async function(data){
+  await addDoc(collection(db,'quiz_results'),{...data,submittedAt:serverTimestamp()});
+};
+window._fbReady=true;
+</script>
+
+<script>
+// ============================================================
+// DATA
+// ============================================================
+
+// ── 유의어 ──
+const SYNONYM_DATA = [
+  // Lesson 1
+  {lesson:1, word:"priceless (귀중한)", answer:"precious", distractors:["valueless","faraway","useless"]},
+  {lesson:1, word:"puzzled", answer:"confused", distractors:["excited","delighted","hopeful"]},
+  {lesson:1, word:"jealous", answer:"envious", distractors:["puzzled","glad","supportive"]},
+  {lesson:1, word:"useless", answer:"worthless", distractors:["priceless","precious","valuable"]},
+  {lesson:1, word:"trade (교환하다)", answer:"exchange", distractors:["collect","defend","produce"]},
+  {lesson:1, word:"glad", answer:"delighted", distractors:["jealous","puzzled","faraway"]},
+  {lesson:1, word:"chance", answer:"opportunity", distractors:["trade","focus","merchant"]},
+  {lesson:1, word:"focus (집중하다)", answer:"concentrate", distractors:["exchange","whisper","realize"]},
+  {lesson:1, word:"faraway", answer:"distant", distractors:["entire","common","sensitive"]},
+  // Lesson 2
+  {lesson:2, word:"except (~을 제외하고)", answer:"apart from", distractors:["including","according to","along with"]},
+  {lesson:2, word:"skinny", answer:"thin", distractors:["entire","sensitive","common"]},
+  {lesson:2, word:"hardly", answer:"scarcely", distractors:["extremely","entirely","commonly"]},
+  {lesson:2, word:"entire", answer:"whole", distractors:["common","sensitive","male"]},
+  {lesson:2, word:"beehive", answer:"hive", distractors:["colony","chemical","resident"]},
+  {lesson:2, word:"human (인간)", answer:"human being", distractors:["resident","insect","colony"]},
+];
+
+// ── 반의어 ──
+const ANTONYM_DATA = [
+  // Lesson 1
+  {lesson:1, word:"appear (나타나다)", answer:"disappear", distractors:["exchange","focus","collect"]},
+  {lesson:1, word:"expensive", answer:"inexpensive", distractors:["priceless","precious","valuable"]},
+  // Lesson 2
+  {lesson:2, word:"common (흔한)", answer:"uncommon", distractors:["insensitive","endangered","entire"]},
+  {lesson:2, word:"sensitive (민감한)", answer:"insensitive", distractors:["uncommon","male","excluding"]},
+  {lesson:2, word:"including (~을 포함하여)", answer:"excluding", distractors:["appearing","collecting","defending"]},
+  {lesson:2, word:"appear (나타나다)", answer:"disappear", distractors:["collect","defend","produce"]},
+  {lesson:2, word:"male (수컷)", answer:"female", distractors:["uncommon","insensitive","excluding"]},
+];
+
+// ── 형태관계 ──
+const FORM_DATA = [
+  // Lesson 1: 접미사 -less (명사 → 형용사)
+  {lesson:1, word:"speechless", answer:"말이 없는, 침묵의", pos:"speech + less", distractors:["두려움 없는","집 없는","쓸모없는"]},
+  {lesson:1, word:"fearless", answer:"두려움 없는", pos:"fear + less", distractors:["말이 없는","가격 없는","끝이 없는"]},
+  {lesson:1, word:"homeless", answer:"집이 없는, 노숙자의", pos:"home + less", distractors:["두려움 없는","색이 없는","쓸모없는"]},
+  {lesson:1, word:"useless", answer:"쓸모없는", pos:"use + less", distractors:["가치 없는","말이 없는","색이 없는"]},
+  {lesson:1, word:"priceless", answer:"값을 매길 수 없는, 귀중한", pos:"price + less", distractors:["쓸모없는","두려움 없는","끝이 없는"]},
+  {lesson:1, word:"careless", answer:"조심성 없는", pos:"care + less", distractors:["가치 없는","무색의","집이 없는"]},
+  {lesson:1, word:"endless", answer:"끝이 없는, 영원한", pos:"end + less", distractors:["조심성 없는","두려움 없는","집이 없는"]},
+  {lesson:1, word:"colorless", answer:"무색의, 색이 없는", pos:"color + less", distractors:["끝이 없는","쓸모없는","가치 없는"]},
+  {lesson:1, word:"worthless", answer:"가치 없는", pos:"worth + less", distractors:["무색의","집이 없는","쓸모없는"]},
+  // Lesson 1: 형용사 → 동사
+  {lesson:1, word:"puzzled → ?", answer:"puzzle (어리둥절하게 만들다)", pos:"형용사 → 동사", distractors:["realize (깨닫다)","excite (흥분시키다)","support (부양하다)"]},
+  {lesson:1, word:"real → ?", answer:"realize (깨닫다)", pos:"형용사 → 동사", distractors:["puzzle (어리둥절하게 만들다)","excite (흥분시키다)","hope (바라다)"]},
+  {lesson:1, word:"excited → ?", answer:"excite (흥분시키다)", pos:"형용사 → 동사", distractors:["realize (깨닫다)","support (부양하다)","hope (바라다)"]},
+  {lesson:1, word:"supportive → ?", answer:"support (부양하다)", pos:"형용사 → 동사", distractors:["excite (흥분시키다)","puzzle (어리둥절하게 만들다)","realize (깨닫다)"]},
+  {lesson:1, word:"hopeful → ?", answer:"hope (바라다)", pos:"형용사 → 동사", distractors:["support (부양하다)","excite (흥분시키다)","realize (깨닫다)"]},
+  // Lesson 2: 동사 → 명사
+  {lesson:2, word:"communicate", answer:"communication (의사소통)", pos:"동사 → 명사", distractors:["production (생산)","collection (수집품)","breath (숨)"]},
+  {lesson:2, word:"breathe", answer:"breath (숨)", pos:"동사 → 명사", distractors:["communication (의사소통)","production (생산)","weight (무게)"]},
+  {lesson:2, word:"produce", answer:"production (생산)", pos:"동사 → 명사", distractors:["breath (숨)","collection (수집품)","communication (의사소통)"]},
+  {lesson:2, word:"weigh", answer:"weight (무게, 체중)", pos:"동사 → 명사", distractors:["production (생산)","breath (숨)","collection (수집품)"]},
+  {lesson:2, word:"collect", answer:"collection (수집품)", pos:"동사 → 명사", distractors:["weight (무게)","communication (의사소통)","production (생산)"]},
+];
+
+// ── 다의어 (뜻 모두 선택) ──
+const POLY_DATA = [
+  {lesson:1, word:"chest",
+   answers:["(명) 가슴, 흉부","(명) (나무로 만든) 궤, 상자"],
+   all6:["(명) 가슴, 흉부","(명) (나무로 만든) 궤, 상자","(동) 주다, 수여하다","(명) 선물","(명) 기회","(동) 집중하다"]},
+  {lesson:1, word:"present",
+   answers:["(동) 주다, 수여하다","(명) 선물","(형) 현재의"],
+   all6:["(동) 주다, 수여하다","(명) 선물","(형) 현재의","(명) 가슴","(명) 상자","(동) 교환하다"]},
+];
+
+// ── 신체 관용표현 ──
+const IDIOM_DATA = [
+  {lesson:2, phrase:"have two left feet", answer:"몸치이다, (동작이) 서투르다", distractors:["경청하다","의견이 일치하다","표정이 우울하다"]},
+  {lesson:2, phrase:"keep an eye on ~", answer:"~을 지켜보다, ~을 감시하다", distractors:["~을 무시하다","~와 함께하다","~을 포기하다"]},
+  {lesson:2, phrase:"have a long face", answer:"표정이 우울하다", distractors:["경청하다","몸치이다","비싼 값을 치르다"]},
+  {lesson:2, phrase:"have a big mouth", answer:"입이 싸다", distractors:["표정이 우울하다","경청하다","의견이 일치하다"]},
+  {lesson:2, phrase:"be all ears", answer:"경청하다", distractors:["입이 싸다","몸치이다","가슴이 벌렁 거리다"]},
+  {lesson:2, phrase:"see eye to eye", answer:"의견이 일치하다", distractors:["경청하다","표정이 우울하다","입이 싸다"]},
+  {lesson:2, phrase:"break one's heart", answer:"비탄에 잠기게 하다", distractors:["의견이 일치하다","가슴이 벌렁 거리다","비싼 값을 치르다"]},
+  {lesson:2, phrase:"cost an arm and a leg", answer:"비싼 값을 치르다", distractors:["비탄에 잠기게 하다","입이 싸다","경청하다"]},
+  {lesson:2, phrase:"have butterflies in one's stomach", answer:"가슴이 벌렁 거리다", distractors:["비싼 값을 치르다","표정이 우울하다","몸치이다"]},
+];
+
+// ── 영영풀이 ──
+const ENG_ENG_DATA = [
+  // Lesson 1
+  {lesson:1, definition:"an opportunity to do something", answer:"chance", distractors:["trade","focus","merchant"]},
+  {lesson:1, definition:"feeling or showing envy of what another person has or can do", answer:"jealous", distractors:["puzzled","priceless","hopeful"]},
+  {lesson:1, definition:"to follow someone or something quickly in order to catch them", answer:"chase", distractors:["whisper","exchange","collect"]},
+  {lesson:1, definition:"very distant from a particular place", answer:"faraway", distractors:["entire","common","sensitive"]},
+  {lesson:1, definition:"to give something to someone formally or officially", answer:"present", distractors:["trade","exchange","focus"]},
+  {lesson:1, definition:"someone who buys or sells goods in large quantities, especially by trading", answer:"merchant", distractors:["resident","colony","insect"]},
+  {lesson:1, definition:"the official home of a king, queen, president, etc.", answer:"palace", distractors:["colony","chest","beehive"]},
+  {lesson:1, definition:"being extremely valuable or important", answer:"priceless", distractors:["useless","faraway","jealous"]},
+  {lesson:1, definition:"being unable to understand something or the reason for something", answer:"puzzled", distractors:["jealous","glad","hopeful"]},
+  {lesson:1, definition:"to come or go back from one place to another", answer:"return", distractors:["exchange","collect","focus"]},
+  {lesson:1, definition:"to say something very quietly so that only one person can hear you", answer:"whisper", distractors:["shout","chase","present"]},
+  // Lesson 2
+  {lesson:2, definition:"a nest in which bees live", answer:"beehive", distractors:["colony","chemical","insect"]},
+  {lesson:2, definition:"to get things of the same type from different places and bring them together", answer:"collect", distractors:["defend","produce","weigh"]},
+  {lesson:2, definition:"a substance obtained by a chemical process or producing a chemical effect", answer:"chemical", distractors:["colony","resident","insect"]},
+  {lesson:2, definition:"a group of the same type of animals or plants living or growing together", answer:"colony", distractors:["beehive","chemical","resident"]},
+  {lesson:2, definition:"to protect someone or something from attack", answer:"defend", distractors:["collect","produce","weigh"]},
+  {lesson:2, definition:"at risk of soon disappearing", answer:"endangered", distractors:["entire","sensitive","common"]},
+  {lesson:2, definition:"having all the parts", answer:"entire", distractors:["common","sensitive","male"]},
+  {lesson:2, definition:"not including someone or something", answer:"except", distractors:["including","entire","common"]},
+  {lesson:2, definition:"to a very great degree", answer:"extremely", distractors:["scarcely","hardly","entirely"]},
+  {lesson:2, definition:"a small creature with six legs and a body divided into three parts", answer:"insect", distractors:["colony","resident","beehive"]},
+  {lesson:2, definition:"a person who lives in a particular place", answer:"resident", distractors:["merchant","insect","colony"]},
+  {lesson:2, definition:"to have a particular weight", answer:"weigh", distractors:["collect","defend","produce"]},
+];
+
+// ============================================================
+// STATE
+// ============================================================
+let studentName='', studentSchool='';
+let state={currentSection:0, answers:{}, totalQ:0, score:0, startTime:null};
+const multiSelected={};
+let wrongWordsMap={};
+
+function recordWrong(eng, correct){ wrongWordsMap[eng]={eng, kor:correct, correct}; }
+
+// ============================================================
+// INFO SCREEN
+// ============================================================
+function startQuiz(){
+  const sel=document.getElementById('schoolSel');
+  const inp=document.getElementById('nameInput');
+  studentSchool=sel.value.trim();
+  studentName=inp.value.trim();
+  let ok=true;
+  if(!studentSchool){sel.classList.add('err');ok=false;}else sel.classList.remove('err');
+  if(!studentName){inp.classList.add('err');ok=false;}else inp.classList.remove('err');
+  if(!ok)return;
+  document.getElementById('infoWrap').style.display='none';
+  document.getElementById('quizWrap').style.display='block';
+  document.getElementById('studentInfoDisplay').textContent=studentSchool+' · '+studentName;
+  const key='bomnal_ej3_L12_'+studentSchool+'_'+studentName;
+  const attempts=parseInt(localStorage.getItem(key+'_cnt')||'0');
+  const best=localStorage.getItem(key+'_best');
+  document.getElementById('attemptDisplay').textContent=
+    attempts>0?`${attempts}번째 도전 · 최고 ${best}점`:'첫 번째 도전!';
+  state.startTime=Date.now();
+  buildAll();
+}
+
+// ============================================================
+// UTILS
+// ============================================================
+function shuffle(arr){const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function opts4(answer,distractors){return shuffle([answer,...distractors.slice(0,3)]);}
+function esc(s){return String(s).replace(/'/g,"\\'").replace(/"/g,'\\"');}
+
+// ============================================================
+// BUILD
+// ============================================================
+function buildMC(containerId, prefix, data, subText, displayFn){
+  const c=document.getElementById(containerId);
+  const d=shuffle(data);
+  d.forEach((q,i)=>{
+    const opts=opts4(q.answer,q.distractors);
+    const wordHtml=displayFn?displayFn(q):`<div class="q-word">${q.word}</div>`;
+    c.innerHTML+=`
+      <div class="q-card" id="${prefix}-card-${i}">
+        <div class="q-num">Q${i+1} · <span class="lesson-tag l${q.lesson}">L${q.lesson}</span></div>
+        ${wordHtml}
+        <div class="q-sub">${subText}</div>
+        <div class="options">
+          ${opts.map(o=>`<button class="opt-btn" onclick="answerMC('${prefix}',${i},this,'${esc(o)}','${esc(q.answer)}')">${o}</button>`).join('')}
+        </div>
+        <div class="feedback" id="${prefix}-fb-${i}"></div>
+      </div>`;
+  });
+  state.totalQ+=d.length;
+}
+
+function buildAll(){
+  buildMC('synonymQuestions','syn',SYNONYM_DATA,'위 단어의 유의어는?');
+  buildMC('antonymQuestions','ant',ANTONYM_DATA,'위 단어의 반의어는?');
+  buildMC('formQuestions','form',FORM_DATA,'알맞은 뜻을 고르세요.',
+    q=>`<div class="lesson-tag l${q.lesson}">L${q.lesson}</div><div class="q-word" style="font-size:17px">${q.word}</div><div class="q-sub">${q.pos}</div>`);
+  buildPoly();
+  buildMC('idiomQuestions','idiom',IDIOM_DATA,'위 관용표현의 뜻은?',
+    q=>`<div class="q-word" style="font-size:16px;font-style:italic">${q.phrase}</div>`);
+  buildMC('engEngQuestions','ee',ENG_ENG_DATA,'위 영영풀이에 해당하는 단어는?',
+    q=>`<div class="q-word ko" style="font-size:13px;font-weight:600;color:#374151;line-height:1.6">"${q.definition}"</div>`);
+  updateProgress();
+}
+
+function buildPoly(){
+  const c=document.getElementById('polyQuestions');
+  const d=shuffle(POLY_DATA);
+  d.forEach((q,i)=>{
+    const opts=shuffle(q.all6);
+    const cnt=q.answers.length;
+    const answersJson=JSON.stringify(q.answers).replace(/"/g,'&quot;');
+    c.innerHTML+=`
+      <div class="q-card" id="poly-card-${i}">
+        <div class="q-num">Q${i+1} · <span class="lesson-tag l${q.lesson}">L${q.lesson}</span></div>
+        <div class="q-word">${q.word}</div>
+        <div class="q-sub">이 단어의 뜻 ${cnt}개를 모두 고르세요</div>
+        <div class="options" id="poly-opts-${i}" style="grid-template-columns:1fr 1fr 1fr">
+          ${opts.map(o=>`<button class="opt-btn multi" onclick="toggleMulti('poly',${i},this,'${esc(o)}',${answersJson.replace(/'/g,"\\'")})">${o}</button>`).join('')}
+        </div>
+        <div class="feedback" id="poly-fb-${i}"></div>
+      </div>`;
+  });
+  state.totalQ+=d.length;
+}
+
+// ============================================================
+// ANSWER LOGIC
+// ============================================================
+function answerMC(prefix,idx,btn,chosen,answer){
+  const key=`${prefix}-${idx}`;
+  if(state.answers[key]?.answered)return;
+  const card=document.getElementById(`${prefix}-card-${idx}`);
+  const fb=document.getElementById(`${prefix}-fb-${idx}`);
+  const allBtns=card.querySelectorAll('.opt-btn');
+  const isCorrect=chosen===answer;
+  allBtns.forEach(b=>{b.disabled=true;if(b.textContent.trim()===answer)b.classList.add('show-correct');});
+  if(isCorrect){
+    btn.classList.remove('show-correct');btn.classList.add('selected-correct');
+    fb.textContent='✅ 정답입니다!';fb.className='feedback show ok';
+    card.classList.add('correct-card');state.score++;
+  }else{
+    btn.classList.add('selected-wrong');
+    fb.textContent=`❌ 오답! 정답: ${answer}`;fb.className='feedback show no';
+    card.classList.add('wrong-card');
+    const wordEl=card.querySelector('.q-word');
+    const eng=wordEl?wordEl.textContent.trim().split(' ')[0]:String(idx);
+    recordWrong(eng,answer);
+  }
+  state.answers[key]={answered:true,correct:isCorrect};
+  updateProgress();
+}
+
+function toggleMulti(prefix,idx,btn,chosen,answers){
+  const key=`${prefix}-${idx}`;
+  if(state.answers[key]?.answered)return;
+  if(!multiSelected[key])multiSelected[key]=new Set();
+  const sel=multiSelected[key];
+  if(btn.classList.contains('selected')){btn.classList.remove('selected');sel.delete(chosen);}
+  else{btn.classList.add('selected');sel.add(chosen);}
+  if(sel.size===answers.length)confirmMulti(prefix,idx,answers);
+}
+
+function confirmMulti(prefix,idx,answers){
+  const key=`${prefix}-${idx}`;
+  if(state.answers[key]?.answered)return;
+  const sel=multiSelected[key]||new Set();
+  const card=document.getElementById(`${prefix}-card-${idx}`);
+  const fb=document.getElementById(`${prefix}-fb-${idx}`);
+  const allBtns=card.querySelectorAll('.opt-btn');
+  const correctSet=new Set(answers);
+  let allCorrect=sel.size===correctSet.size&&[...sel].every(s=>correctSet.has(s));
+  allBtns.forEach(b=>{
+    b.disabled=true;const txt=b.textContent.trim();
+    if(sel.has(txt)&&correctSet.has(txt))b.className='opt-btn multi correct-sel';
+    else if(sel.has(txt)&&!correctSet.has(txt))b.className='opt-btn multi wrong-sel';
+    else if(correctSet.has(txt))b.className='opt-btn multi correct-sel';
+    else b.className='opt-btn multi';
+  });
+  if(allCorrect){
+    fb.textContent='✅ 정답입니다!';fb.className='feedback show ok';
+    card.classList.add('correct-card');state.score++;
+  }else{
+    fb.textContent=`❌ 오답! 정답: ${answers.join(', ')}`;fb.className='feedback show no';
+    card.classList.add('wrong-card');
+    const wordEl=card.querySelector('.q-word');
+    const eng=wordEl?wordEl.textContent.trim().split(' ')[0]:String(idx);
+    recordWrong(eng,answers.join('/'));
+  }
+  state.answers[key]={answered:true,correct:allCorrect};
+  updateProgress();
+}
+
+// ============================================================
+// SECTION / PROGRESS
+// ============================================================
+function switchSection(idx){
+  document.querySelectorAll('.quiz-section').forEach((s,i)=>s.classList.toggle('active',i===idx));
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',i===idx));
+  state.currentSection=idx;
+  document.getElementById('resultScreen').classList.remove('show');
+  document.getElementById('floatSubmit').classList.remove('hidden');
+}
+
+function updateProgress(){
+  const answered=Object.keys(state.answers).length;
+  const total=state.totalQ;
+  document.getElementById('progressFill').style.width=total?(answered/total*100)+'%':'0%';
+  document.getElementById('progressText').textContent=`${answered} / ${total} 완료`;
+  document.getElementById('scoreText').textContent=`점수: ${state.score}`;
+}
+
+// ============================================================
+// SUBMIT → FIREBASE
+// ============================================================
+async function submitAll(){
+  const answered=Object.keys(state.answers).length;
+  if(answered<state.totalQ*0.5){alert(`아직 ${state.totalQ-answered}문제가 남아있어요! 조금 더 풀어보세요 😊`);return;}
+  document.querySelectorAll('.quiz-section').forEach(s=>s.classList.remove('active'));
+  document.getElementById('floatSubmit').classList.add('hidden');
+  const total=state.totalQ;
+  const correct=state.score;
+  const wrong=answered-correct;
+  const unanswered=total-answered;
+  const pct=Math.round(correct/total*100);
+  const elapsedMin=Math.round((Date.now()-state.startTime)/60000);
+  const wrongWords=Object.values(wrongWordsMap).slice(0,50);
+  let emoji='😢',label='다시 도전해봐요!';
+  if(pct>=90){emoji='🏆';label='최고예요! 완벽에 가까워요!';}
+  else if(pct>=70){emoji='🎉';label='잘했어요! 조금만 더!';}
+  else if(pct>=50){emoji='💪';label='절반 이상! 꾸준히 하면 돼요!';}
+  document.getElementById('resultEmoji').textContent=emoji;
+  document.getElementById('resultScore').textContent=`${pct}점`;
+  document.getElementById('resultLabel').textContent=label;
+  document.getElementById('resultDetail').innerHTML=`
+    <div class="result-row"><span class="label">이름</span><span class="val">${studentName} (${studentSchool})</span></div>
+    <div class="result-row"><span class="label">총 문제</span><span class="val">${total}문제</span></div>
+    <div class="result-row"><span class="label">정답</span><span class="val" style="color:var(--correct)">${correct}개</span></div>
+    <div class="result-row"><span class="label">오답</span><span class="val" style="color:var(--wrong)">${wrong}개</span></div>
+    <div class="result-row"><span class="label">미응답</span><span class="val">${unanswered}개</span></div>
+    <div class="result-row"><span class="label">정답률</span><span class="val">${pct}%</span></div>
+    <div class="result-row"><span class="label">소요 시간</span><span class="val">${elapsedMin}분</span></div>`;
+  document.getElementById('resultScreen').classList.add('show');
+  const key='bomnal_ej3_L12_'+studentSchool+'_'+studentName;
+  const cnt=parseInt(localStorage.getItem(key+'_cnt')||'0')+1;
+  const prev=parseInt(localStorage.getItem(key+'_best')||'0');
+  localStorage.setItem(key+'_cnt',cnt);
+  localStorage.setItem(key+'_best',Math.max(pct,prev));
+  const sendEl=document.getElementById('sendingMsg');
+  sendEl.textContent='📡 결과 전송 중...';sendEl.className='sending-msg';
+  try{
+    let w=0;
+    while(!window._fbReady&&w<8000){await new Promise(r=>setTimeout(r,200));w+=200;}
+    await window._saveResult({
+      studentName:studentName,
+      school:studentSchool,
+      score:pct,correct,wrong,timedOut:0,
+      total,elapsedMin,wrongWords,
+      quizType:'어진중3_L1+L2_어휘퀴즈',
+    });
+    sendEl.textContent='✅ 선생님께 결과가 전달됐어요!';
+    sendEl.className='sending-msg ok';
+  }catch(e){
+    sendEl.textContent='⚠️ 전송 실패 (인터넷 연결을 확인해주세요)';
+    sendEl.className='sending-msg err';
+  }
+}
+
+function retryQuiz(){location.reload();}
+
+// ============================================================
+// ANTI-CHEAT
+// ============================================================
+document.addEventListener('visibilitychange',()=>{
+  if(document.hidden&&document.getElementById('quizWrap').style.display!=='none'){
+    const w=document.createElement('div');
+    w.style.cssText='position:fixed;top:0;left:0;right:0;background:#c62828;color:white;text-align:center;padding:10px;font-weight:700;z-index:9999;font-size:13px';
+    w.textContent='⚠️ 화면을 벗어났습니다! 퀴즈에 집중하세요.';
+    document.body.appendChild(w);setTimeout(()=>w.remove(),3000);
+  }
+});
+document.addEventListener('copy',e=>e.preventDefault());
+document.addEventListener('contextmenu',e=>e.preventDefault());
+</script>
+</body>
+</html>
