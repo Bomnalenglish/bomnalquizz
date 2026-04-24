@@ -445,6 +445,7 @@ function secLabel(qt){
   const m = qt.match(/(\d+)섹션/);
   if(m) return m[1]+'섹션';
   if(qt.includes('전체')) return '전체';
+  if(qt.includes('오답완료')) return '오답완료';
   if(qt.includes('오답')) return '오답재시';
   if(qt.includes('동반의어')){
     const mode = qt.includes('A모드')?'A':qt.includes('B모드')?'B':'';
@@ -452,7 +453,6 @@ function secLabel(qt){
   }
   if(qt.includes('함축의미')) return '함축의미';
   if(qt.includes('빈칸추론')) return '빈칸추론';
-  // 중학교 어휘퀴즈
   if(qt.includes('어휘퀴즈')) return '어휘퀴즈';
   return '-';
 }
@@ -468,6 +468,7 @@ function renderTable(data){
     const sl = secLabel(d.quizType);
     const slStyle = sl==='전체'?'background:#e3f2fd;color:#1565c0'
                   : sl==='오답재시'?'background:#fff3e0;color:#e65100'
+                  : sl==='오답완료'?'background:#e8f5e9;color:#2e7d32'
                   : sl==='어휘퀴즈'?'background:#f3e5f5;color:#6a1b9a'
                   : sl==='-'?'color:var(--muted);font-size:11px'
                   : 'background:#e8eaf6;color:#3949ab';
@@ -539,7 +540,11 @@ function nonSecLabel(qt){
     const kang = qt.match(/([\dT]+강|전체)/);
     return '빈칸추론'+(kang?' '+kang[1]:'');
   }
-  if(qt.includes('어휘퀴즈')) return qt.replace('_어휘퀴즈','').replace(/_/g,' ');
+  if(qt.includes('어휘퀴즈')) {
+    const complete = qt.includes('오답완료');
+    const label = qt.replace('_어휘퀴즈_오답완료','').replace('_어휘퀴즈','').replace(/_/g,' ');
+    return label + (complete?' ✅':'');
+  }
   return qt.slice(0,14);
 }
 
@@ -618,9 +623,15 @@ function renderSectionView(){
 
     const nonSecMap = {};
     nonSecRecords.forEach(d => {
-      const key = d.quizType;
-      if(!nonSecMap[key] || (d.time && nonSecMap[key].time && d.time > nonSecMap[key].time)){
-        nonSecMap[key] = d;
+      // 어휘퀴즈_오답완료는 원본 어휘퀴즈 키로 합쳐서 최고 버전으로 표시
+      const baseKey = d.quizType
+        ? d.quizType.replace('_오답완료','')
+        : d.quizType;
+      if(!nonSecMap[baseKey] || (d.quizType && d.quizType.includes('오답완료'))){
+        // 오답완료가 있으면 우선 표시
+        nonSecMap[baseKey] = d;
+      } else if(d.time && nonSecMap[baseKey].time && d.time > nonSecMap[baseKey].time && !nonSecMap[baseKey].quizType?.includes('오답완료')){
+        nonSecMap[baseKey] = d;
       }
     });
 
@@ -630,11 +641,15 @@ function renderSectionView(){
         <div style="display:flex;flex-wrap:wrap;gap:8px;">
           ${Object.values(nonSecMap).sort((a,b)=>(b.time||0)-(a.time||0)).map(d => {
             const isPerfect = d.wrong === 0;
+            const isVocabComplete = d.quizType && d.quizType.includes('오답완료');
             const timeStr = d.time ? d.time.toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}) : '';
-            return `<div class="sec-cell ${isPerfect?'perfect':'has-wrong'}" style="min-width:130px;text-align:left;">
+            const cellClass = isVocabComplete ? 'perfect' : isPerfect ? 'perfect' : 'has-wrong';
+            const badge = isVocabComplete ? '<div style="font-size:10px;color:#2e7d32;font-weight:900;margin-top:2px">🏆 오답 0개 완료!</div>' : '';
+            return `<div class="sec-cell ${cellClass}" style="min-width:130px;text-align:left;">
               <div style="font-size:10px;font-weight:800;color:var(--muted);margin-bottom:4px;">${nonSecLabel(d.quizType)}</div>
               <div class="sec-score">${d.score}점</div>
               ${d.wrong>0?`<div class="sec-wrong">오답 ${d.wrong}개</div>`:''}
+              ${badge}
               <div class="sec-time">${timeStr}</div>
             </div>`;
           }).join('')}
