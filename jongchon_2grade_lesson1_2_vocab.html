@@ -847,19 +847,44 @@ function submitRetry() {
   }
 }
 
-function showRetryComplete() {
+async function showRetryComplete() {
   const screen = document.getElementById('resultScreen');
   screen.classList.add('show');
   document.getElementById('resultEmoji').textContent = '🏆';
   document.getElementById('resultScore').textContent = '완벽!';
   document.getElementById('resultLabel').textContent = `${retryRound}라운드 만에 오답 0개 달성! 🎉`;
   document.getElementById('resultDetail').innerHTML = `
-    <div class="result-row"><span class="label">이름</span><span class="val">${studentName}</span></div>
+    <div class="result-row"><span class="label">이름</span><span class="val">${studentName} (${studentSchool})</span></div>
     <div class="result-row"><span class="label">재도전 횟수</span><span class="val">${retryRound}라운드</span></div>
     <div class="result-row" style="color:var(--correct)"><span class="label">오답</span><span class="val" style="color:var(--correct);font-weight:900">0개 🎊</span></div>
   `;
   document.getElementById('retryWrongBtn').style.display = 'none';
-  document.getElementById('sendingMsg').textContent = '';
+
+  // Firebase 전송 - 오답 0개 달성 기록
+  const sendEl = document.getElementById('sendingMsg');
+  sendEl.textContent = '📡 오답 완료 기록 전송 중...';
+  sendEl.className = 'sending-msg';
+  try {
+    let w=0;
+    while(!window._fbReady && w<8000){ await new Promise(r=>setTimeout(r,200)); w+=200; }
+    await window._saveResult({
+      studentName: studentName,
+      school: studentSchool,
+      score: 100,
+      correct: state.totalQ,
+      wrong: 0,
+      timedOut: 0,
+      total: state.totalQ,
+      elapsedMin: Math.round((Date.now() - state.startTime) / 60000),
+      wrongWords: [],
+      quizType: '종촌중2_L1+L2_어휘퀴즈_오답완료',
+    });
+    sendEl.textContent = '✅ 오답 0개 달성! 선생님께 전달됐어요 🎊';
+    sendEl.className = 'sending-msg ok';
+  } catch(e) {
+    sendEl.textContent = '⚠️ 전송 실패';
+    sendEl.className = 'sending-msg err';
+  }
 }
 
 // 오답 수집: wrongWordsMap에서 원본 문제 데이터로 retryWrongList 구성
