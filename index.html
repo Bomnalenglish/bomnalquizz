@@ -175,6 +175,13 @@ footer { text-align: center; padding: 28px; color: #aabbc8; font-size: .8rem; fo
       <button onclick="doLogout()" style="background:none;border:none;color:var(--soft);font-size:.78rem;cursor:pointer;margin-left:8px;text-decoration:underline;font-family:inherit">로그아웃</button>
     </div>
     <div class="school-grid" id="school-grid"></div>
+
+  <!-- 봄날 보카 섹션 -->
+  <div style="margin-top:28px;padding-top:24px;border-top:1px solid #e0d8ce;">
+    <div style="font-family:'Black Han Sans',sans-serif;font-size:1rem;color:#2a2a2a;margin-bottom:14px;padding-left:12px;border-left:4px solid #a09890;">📖 봄날 보카</div>
+    <div id="voca-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:12px;"></div>
+  </div>
+
   </main>
 </div>
 
@@ -413,9 +420,35 @@ function submitCode() {
 // ─── 허브 열기 ───
 function openHub() {
   renderSchoolGrid();
+  renderVoca();
   document.getElementById("home-user-badge").textContent = `👤 ${studentName} (${studentSchool})`;
   document.getElementById("subtitle").textContent = "학교를 선택하세요";
   goStep("screen-home");
+}
+
+
+const VOCA_LEVELS = [
+  {file:'bomnal_voca_level1', title:'Level 1', sub:'기초 단어 · 4지선다', badge:'보카'},
+];
+
+function renderVoca(){
+  const grid = document.getElementById('voca-grid');
+  if(!grid) return;
+  grid.innerHTML = '';
+  const vc = ['c-2','c-4','c-6','c-0'];
+  VOCA_LEVELS.forEach((item,i) => {
+    const a = document.createElement('a');
+    a.className = 'card ' + vc[i % vc.length];
+    a.href = BASE + item.file + '.html';
+    a.target = '_blank';
+    a.rel = 'noopener';
+    a.innerHTML =
+      '<span class="card-emoji">📖</span>' +
+      '<div class="card-title">' + item.title + '</div>' +
+      (item.sub   ? '<div class="card-sub">'  + item.sub   + '</div>' : '') +
+      (item.badge ? '<span class="badge">'     + item.badge + '</span>' : '');
+    grid.appendChild(a);
+  });
 }
 
 function renderSchoolGrid() {
