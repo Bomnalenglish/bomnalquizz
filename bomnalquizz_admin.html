@@ -401,10 +401,15 @@ async function loadData(){
         round: d.round||1,
         part: d.part||0,
         time: d.timestamp
-          ? new Date(d.timestamp)
+          ? (typeof d.timestamp.toDate==='function' ? d.timestamp.toDate() : new Date(d.timestamp))
           : (d.submittedAt
             ? (typeof d.submittedAt.toDate==='function' ? d.submittedAt.toDate() : new Date(d.submittedAt))
             : null),
+        wrongWords: d.wrongWords||[],
+        wrongNumbers: d.wrongNumbers||'',
+        wrongSentences: d.wrongSentences||'',
+        tabSwitchCount: d.tabSwitchCount||0,
+        attemptCount: d.attemptCount||1,
       });
     });
 
@@ -503,6 +508,10 @@ function nonSecLabel(qt){
     if(round && parseInt(round[1])>1) lbl += ` R${round[1]}`;
     return lbl;
   }
+  if(qt.includes('빈칸시험')||qt.includes('챕터')){
+    const ch = qt.match(/(\d+)챕터/);
+    return (ch ? ch[1]+'챕터' : '챕터') + ' 빈칸시험';
+  }
   if(qt.includes('함축의미')) return '함축의미';
   if(qt.includes('빈칸추론')){
     const kang = qt.match(/([\dT]+강|전체)/);
@@ -571,9 +580,9 @@ function renderTable(data){
         <td>${d.total}</td>
         <td>${d.elapsed?d.elapsed+'분':'-'}</td>
         <td style="font-size:11px">${ft(d.time)}</td>
-        <td>${d.wrongWords.length>0?`<button class="wt-btn" onclick="toggleW(this)">오답 ${d.wrongWords.length}개 ▼</button>`:'<span style="color:var(--green)">✅ 없음</span>'}</td>
+        <td>${(d.wrongWords&&d.wrongWords.length>0)?`<button class="wt-btn" onclick="toggleW(this)">오답 ${d.wrongWords.length}개 ▼</button>`:d.wrongNumbers?`<span style="font-size:11px;color:var(--red)">${d.wrongNumbers}</span>`:'<span style="color:var(--green)">✅ 없음</span>'}</td>
       </tr>
-      ${d.wrongWords.length>0?`<tr><td colspan="12" style="padding:0"><div class="wt-detail"><div style="font-size:11px;font-weight:800;color:var(--red);margin-bottom:4px">오답:</div><div class="wt-chips">${chips}</div></div></td></tr>`:''}
+      ${(d.wrongWords&&d.wrongWords.length>0)?`<tr><td colspan="12" style="padding:0"><div class="wt-detail"><div style="font-size:11px;font-weight:800;color:var(--red);margin-bottom:4px">오답:</div><div class="wt-chips">${chips}</div></div></td></tr>`:(d.wrongSentences?`<tr><td colspan="12" style="padding:0"><div class="wt-detail"><div style="font-size:11px;font-weight:800;color:var(--red);margin-bottom:4px">오답 문장:</div><div style="font-size:11px;color:var(--red);line-height:1.7">${d.wrongSentences.split(' / ').join('<br>')}</div></div></td></tr>`:'')
     </tbody>`;
   }).join('');
   document.getElementById('tblArea').innerHTML = `<div class="tbl-scroll"><table>
@@ -603,6 +612,7 @@ function categorize(qt){
   if(qt.includes('함축의미')) return 'implication';
   if(qt.includes('빈칸추론')) return 'blank';
   if(qt.includes('어휘퀴즈')) return 'vocab';
+  if(qt.includes('빈칸시험') || qt.includes('챕터')) return 'chapter';
   return 'other';
 }
 
