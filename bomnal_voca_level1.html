@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
+<title>봄날 보카 · Level 1</title>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#f5efe6;--card:#fdfaf6;--ink:#2a2a2a;--soft:#7a7570;
+  --primary:#4a6741;--accent:#c8844a;--red:#c0392b;--green:#2e7d32;
+  --bdr:#e0d8ce;--shadow:0 4px 20px rgba(0,0,0,.08);
+}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);min-height:100vh;color:var(--ink);}
+
+/* ── HEADER ── */
+header{background:linear-gradient(135deg,#f7efe4,#ece0d2);padding:36px 24px 28px;text-align:center;border-bottom:1px solid var(--bdr);}
+.logo-row{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:6px;}
+.logo-img{width:52px;height:52px;border-radius:50%;object-fit:cover;border:2px solid var(--bdr);}
+.logo-text{font-family:'Black Han Sans',sans-serif;font-size:1.5rem;color:#5c3d1e;}
+.logo-text .hl{color:#7a4e28;}
+.level-badge{display:inline-block;background:var(--primary);color:#fff;font-size:.78rem;font-weight:700;padding:3px 14px;border-radius:20px;margin-top:4px;letter-spacing:.5px;}
+
+/* ── SCREENS ── */
+.screen{display:none;}
+.screen.active{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:70vh;padding:24px;}
+
+/* ── NAME SCREEN ── */
+.auth-card{background:var(--card);border-radius:22px;padding:36px 28px;width:100%;max-width:380px;box-shadow:var(--shadow);border:1px solid var(--bdr);text-align:center;}
+.auth-card h2{font-family:'Black Han Sans',sans-serif;font-size:1.25rem;color:var(--ink);margin-bottom:8px;}
+.auth-card p{font-size:.85rem;color:var(--soft);margin-bottom:22px;font-family:'Gowun Dodum',serif;line-height:1.7;}
+.name-input{width:100%;padding:13px 16px;border:2px solid var(--bdr);border-radius:12px;font-size:1rem;font-family:inherit;outline:none;text-align:center;background:#fff;transition:border-color .2s;}
+.name-input:focus{border-color:var(--primary);}
+.name-input.err{border-color:var(--red);animation:shake .3s;}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.start-btn{width:100%;margin-top:14px;padding:14px;border-radius:12px;border:none;background:#3d3d3d;color:#fff;font-size:1rem;font-weight:800;cursor:pointer;font-family:inherit;letter-spacing:.3px;transition:opacity .2s;}
+.start-btn:hover{opacity:.85;}
+
+/* ── QUIZ SCREEN ── */
+#screen-quiz{padding:20px;align-items:stretch;justify-content:flex-start;min-height:100vh;}
+.quiz-wrap{max-width:520px;width:100%;margin:0 auto;}
+
+.progress-bar{background:#e0d8ce;border-radius:20px;height:7px;margin-bottom:20px;overflow:hidden;}
+.progress-fill{height:100%;background:var(--primary);border-radius:20px;transition:width .4s ease;}
+.progress-text{text-align:right;font-size:.75rem;color:var(--soft);margin-top:4px;font-family:'Gowun Dodum',serif;}
+
+.word-card{background:var(--card);border-radius:22px;padding:36px 24px 28px;text-align:center;box-shadow:var(--shadow);border:1px solid var(--bdr);margin-bottom:20px;position:relative;}
+.round-badge{position:absolute;top:14px;left:16px;font-size:.7rem;background:#fde4cc;color:#c8844a;padding:2px 10px;border-radius:20px;font-weight:700;}
+.word-en{font-size:2.4rem;font-weight:800;color:var(--ink);letter-spacing:-1px;margin-bottom:8px;}
+.word-phonetic{font-size:.9rem;color:var(--soft);font-family:'Gowun Dodum',serif;margin-bottom:16px;}
+.sound-btn{background:none;border:2px solid var(--bdr);border-radius:50%;width:46px;height:46px;cursor:pointer;font-size:1.3rem;transition:all .15s;display:inline-flex;align-items:center;justify-content:center;}
+.sound-btn:hover{background:var(--bg);border-color:var(--primary);}
+.sound-btn.playing{background:var(--primary);border-color:var(--primary);animation:pulse .6s infinite;}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+
+.choices{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px;}
+.choice-btn{background:var(--card);border:2px solid var(--bdr);border-radius:14px;padding:16px 14px;font-size:.95rem;font-family:'Noto Sans KR',sans-serif;cursor:pointer;transition:all .15s;text-align:center;line-height:1.4;color:var(--ink);font-weight:700;}
+.choice-btn:hover:not(:disabled){border-color:var(--primary);background:#f0ede5;}
+.choice-btn.correct{border-color:var(--green);background:#e8f5e9;color:var(--green);}
+.choice-btn.wrong{border-color:var(--red);background:#ffebee;color:var(--red);}
+.choice-btn:disabled{cursor:default;}
+
+.feedback{text-align:center;font-size:.92rem;font-weight:700;min-height:24px;margin-bottom:14px;font-family:'Gowun Dodum',serif;}
+.feedback.ok{color:var(--green);}
+.feedback.bad{color:var(--red);}
+
+.next-btn{width:100%;padding:15px;border-radius:14px;border:none;background:#3d3d3d;color:#fff;font-size:1rem;font-weight:800;cursor:pointer;font-family:inherit;display:none;transition:opacity .2s;}
+.next-btn:hover{opacity:.85;}
+.next-btn.show{display:block;}
+
+/* ── ROUND COMPLETE ── */
+#screen-round{background:var(--bg);}
+.round-card{background:var(--card);border-radius:22px;padding:40px 28px;width:100%;max-width:380px;box-shadow:var(--shadow);border:1px solid var(--bdr);text-align:center;}
+.round-emoji{font-size:3.5rem;margin-bottom:12px;}
+.round-title{font-family:'Black Han Sans',sans-serif;font-size:1.4rem;color:var(--ink);margin-bottom:8px;}
+.round-sub{font-size:.88rem;color:var(--soft);font-family:'Gowun Dodum',serif;line-height:1.7;margin-bottom:24px;}
+.score-big{font-size:3rem;font-weight:800;color:var(--primary);line-height:1;}
+.score-label{font-size:.82rem;color:var(--soft);margin-top:4px;font-family:'Gowun Dodum',serif;margin-bottom:24px;}
+.retry-btn{width:100%;padding:14px;border-radius:12px;border:none;background:var(--accent);color:#fff;font-size:1rem;font-weight:800;cursor:pointer;font-family:inherit;margin-bottom:10px;}
+.retry-btn:hover{opacity:.88;}
+.done-btn{width:100%;padding:14px;border-radius:12px;border:2px solid var(--bdr);background:#fff;color:var(--soft);font-size:1rem;font-weight:800;cursor:pointer;font-family:inherit;}
+
+/* ── COMPLETE SCREEN ── */
+#screen-done{background:var(--bg);}
+.done-card{background:var(--card);border-radius:22px;padding:44px 28px;width:100%;max-width:380px;box-shadow:var(--shadow);border:1px solid var(--bdr);text-align:center;}
+.done-emoji{font-size:4rem;margin-bottom:14px;}
+.done-title{font-family:'Black Han Sans',sans-serif;font-size:1.5rem;color:var(--ink);margin-bottom:10px;}
+.done-sub{font-size:.88rem;color:var(--soft);font-family:'Gowun Dodum',serif;line-height:1.8;margin-bottom:28px;}
+.stat-row{display:flex;justify-content:center;gap:24px;margin-bottom:24px;}
+.stat-box{text-align:center;}
+.stat-n{font-size:2rem;font-weight:800;color:var(--primary);}
+.stat-l{font-size:.72rem;color:var(--soft);font-family:'Gowun Dodum',serif;}
+.home-btn{width:100%;padding:14px;border-radius:12px;border:none;background:#3d3d3d;color:#fff;font-size:1rem;font-weight:800;cursor:pointer;font-family:inherit;}
+
+footer{text-align:center;padding:24px;color:#bbb;font-size:.75rem;font-family:'Gowun Dodum',serif;}
+@media(max-width:480px){.choices{grid-template-columns:1fr 1fr;}.word-en{font-size:2rem;}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-row">
+    <img src="IMG_6063.jpg" alt="봄날" class="logo-img" onerror="this.style.display='none'"/>
+    <div>
+      <div class="logo-text">봄날 <span class="hl">BOMNAL</span> 보카</div>
+    </div>
+  </div>
+  <div class="level-badge" id="level-badge">Level 1 · 기초 단어</div>
+</header>
+
+<!-- STEP 1: 이름 입력 -->
+<div id="screen-name" class="screen active">
+  <div class="auth-card">
+    <h2>👤 이름을 입력하세요</h2>
+    <p>결과가 선생님께 전송됩니다.<br>본인 이름을 정확히 입력해주세요.</p>
+    <input type="text" class="name-input" id="nameInput" placeholder="예) 홍길동" maxlength="10"
+           onkeydown="if(event.key==='Enter')startQuiz()"/>
+    <button class="start-btn" onclick="startQuiz()">시작하기 →</button>
+  </div>
+</div>
+
+<!-- STEP 2: 퀴즈 -->
+<div id="screen-quiz" class="screen">
+  <div class="quiz-wrap">
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="progress-text" id="progressText"></div>
+
+    <div class="word-card">
+      <div class="round-badge" id="roundBadge">1라운드</div>
+      <div class="word-en" id="wordEn"></div>
+      <div class="word-phonetic" id="wordPhonetic"></div>
+      <button class="sound-btn" id="soundBtn" onclick="speakWord()" title="발음 듣기">🔊</button>
+    </div>
+
+    <div class="choices" id="choices"></div>
+    <div class="feedback" id="feedback"></div>
+    <button class="next-btn" id="nextBtn" onclick="nextWord()">다음 →</button>
+  </div>
+</div>
+
+<!-- STEP 3: 라운드 완료 -->
+<div id="screen-round" class="screen">
+  <div class="round-card">
+    <div class="round-emoji" id="roundEmoji"></div>
+    <div class="round-title" id="roundTitle"></div>
+    <div class="round-sub" id="roundSub"></div>
+    <div class="score-big" id="roundScore"></div>
+    <div class="score-label" id="roundScoreLabel"></div>
+    <button class="retry-btn" id="retryBtn" onclick="startRetry()">오답 다시 풀기 🔄</button>
+    <button class="done-btn" onclick="finishEarly()">완료하기</button>
+  </div>
+</div>
+
+<!-- STEP 4: 최종 완료 -->
+<div id="screen-done" class="screen">
+  <div class="done-card">
+    <div class="done-emoji">🏆</div>
+    <div class="done-title">완벽해요!</div>
+    <div class="done-sub" id="doneSub"></div>
+    <div class="stat-row">
+      <div class="stat-box"><div class="stat-n" id="statRounds"></div><div class="stat-l">총 라운드</div></div>
+      <div class="stat-box"><div class="stat-n" id="statWords"></div><div class="stat-l">총 단어</div></div>
+      <div class="stat-box"><div class="stat-n" id="statWrong"></div><div class="stat-l">최초 오답</div></div>
+    </div>
+    <button class="home-btn" onclick="location.href='index.html'">허브로 돌아가기</button>
+  </div>
+</div>
+
+<footer>🌸 봄날 BOMNAL ENGLISH · 봄날 보카</footer>
+
+<!-- Firebase -->
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getFirestore,collection,addDoc,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+const cfg={apiKey:"AIzaSyCxS524S8KAaF87DomPtl9sJdF-eqes404",authDomain:"bomnalvaca.firebaseapp.com",projectId:"bomnalvaca",storageBucket:"bomnalvaca.firebasestorage.app",messagingSenderId:"115868052300",appId:"1:115868052300:web:765c08867b6f1ce0987de9"};
+const app=initializeApp(cfg);
+const db=getFirestore(app);
+window._fbReady=true;
+window._saveResult=async(data)=>{
+  try{await addDoc(collection(db,"quiz_results"),{...data,timestamp:serverTimestamp()});}
+  catch(e){console.log("Firebase 저장 실패",e);}
+};
+</script>
+
+<script>
+/* ════════════════════════════════════════
+   📝 단어 데이터 — 선생님이 여기서 수정!
+   형식: { en:'영어단어', ko:'한국어뜻', phonetic:'발음기호(선택)' }
+   ════════════════════════════════════════ */
+const LEVEL_INFO = { name: 'Level 1', desc: '기초 단어', quizType: '봄날보카_Level1' };
+
+const WORDS = [
+  { en: 'apple',      ko: '사과',     phonetic: '[ǽpl]' },
+  { en: 'school',     ko: '학교',     phonetic: '[skuːl]' },
+  { en: 'happy',      ko: '행복한',   phonetic: '[hǽpi]' },
+  { en: 'beautiful',  ko: '아름다운', phonetic: '[bjúːtifəl]' },
+  { en: 'friend',     ko: '친구',     phonetic: '[frend]' },
+  { en: 'family',     ko: '가족',     phonetic: '[fǽməli]' },
+  { en: 'teacher',    ko: '선생님',   phonetic: '[tíːtʃər]' },
+  { en: 'music',      ko: '음악',     phonetic: '[mjúːzik]' },
+  { en: 'morning',    ko: '아침',     phonetic: '[mɔ́ːrniŋ]' },
+  { en: 'together',   ko: '함께',     phonetic: '[təgéðər]' },
+  { en: 'important',  ko: '중요한',   phonetic: '[impɔ́ːrtənt]' },
+  { en: 'remember',   ko: '기억하다', phonetic: '[rimémbər]' },
+  { en: 'different',  ko: '다른',     phonetic: '[dífərənt]' },
+  { en: 'favorite',   ko: '가장 좋아하는', phonetic: '[féivərit]' },
+  { en: 'practice',   ko: '연습하다', phonetic: '[prǽktis]' },
+];
+/* ════════════════════════════════════════ */
+
+// ── 상태 ──
+let studentName = '';
+let queue = [];          // 현재 라운드 문제 목록
+let currentIdx = 0;
+let wrongWords = [];     // 이번 라운드 오답
+let allWrong = [];       // 전체 최초 오답 (중복 없이)
+let round = 1;
+let currentWord = null;
+let answered = false;
+let totalQuestions = 0;
+let startTime = null;
+
+// ── 화면 전환 ──
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+// ── 이름 입력 후 시작 ──
+function startQuiz() {
+  const val = document.getElementById('nameInput').value.trim();
+  if (!val) {
+    const el = document.getElementById('nameInput');
+    el.classList.add('err');
+    el.placeholder = '이름을 입력해주세요!';
+    setTimeout(() => { el.classList.remove('err'); el.placeholder = '예) 홍길동'; }, 1400);
+    return;
+  }
+  studentName = val;
+  startTime = new Date();
+
+  // 첫 라운드: 전체 단어 셔플
+  queue = shuffle([...WORDS]);
+  wrongWords = [];
+  allWrong = [];
+  round = 1;
+  currentIdx = 0;
+  totalQuestions = 0;
+
+  showScreen('screen-quiz');
+  loadWord();
+}
+
+// ── 단어 로드 ──
+function loadWord() {
+  if (currentIdx >= queue.length) {
+    showRoundResult();
+    return;
+  }
+
+  answered = false;
+  currentWord = queue[currentIdx];
+  totalQuestions++;
+
+  // 진행도
+  const total = queue.length;
+  const pct = Math.round((currentIdx / total) * 100);
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressText').textContent = `${currentIdx + 1} / ${total}`;
+  document.getElementById('roundBadge').textContent = round + '라운드';
+
+  // 단어 표시
+  document.getElementById('wordEn').textContent = currentWord.en;
+  document.getElementById('wordPhonetic').textContent = currentWord.phonetic || '';
+  document.getElementById('feedback').textContent = '';
+  document.getElementById('feedback').className = 'feedback';
+  document.getElementById('nextBtn').classList.remove('show');
+
+  // 보기 생성
+  buildChoices();
+
+  // 자동 발음
+  setTimeout(() => speakWord(), 300);
+}
+
+// ── 발음 ──
+function speakWord() {
+  if (!window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  const utter = new SpeechSynthesisUtterance(currentWord.en);
+  utter.lang = 'en-US';
+  utter.rate = 0.85;
+  const btn = document.getElementById('soundBtn');
+  btn.classList.add('playing');
+  utter.onend = () => btn.classList.remove('playing');
+  window.speechSynthesis.speak(utter);
+}
+
+// ── 보기 생성 ──
+function buildChoices() {
+  const container = document.getElementById('choices');
+  container.innerHTML = '';
+
+  // 오답 보기 3개 (정답 제외 랜덤)
+  const others = shuffle(WORDS.filter(w => w.en !== currentWord.en)).slice(0, 3);
+  const options = shuffle([currentWord, ...others]);
+
+  options.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'choice-btn';
+    btn.textContent = opt.ko;
+    btn.onclick = () => selectAnswer(btn, opt.ko === currentWord.ko);
+    container.appendChild(btn);
+  });
+}
+
+// ── 정답 선택 ──
+function selectAnswer(btn, isCorrect) {
+  if (answered) return;
+  answered = true;
+
+  const allBtns = document.querySelectorAll('.choice-btn');
+  allBtns.forEach(b => {
+    b.disabled = true;
+    if (b.textContent === currentWord.ko) b.classList.add('correct');
+  });
+
+  const fb = document.getElementById('feedback');
+  if (isCorrect) {
+    btn.classList.add('correct');
+    fb.textContent = '✅ 정답!';
+    fb.className = 'feedback ok';
+  } else {
+    btn.classList.add('wrong');
+    fb.textContent = `❌ 정답: ${currentWord.ko}`;
+    fb.className = 'feedback bad';
+    // 오답 기록
+    if (!wrongWords.find(w => w.en === currentWord.en)) {
+      wrongWords.push(currentWord);
+    }
+    if (!allWrong.find(w => w.en === currentWord.en)) {
+      allWrong.push(currentWord);
+    }
+  }
+
+  document.getElementById('nextBtn').classList.add('show');
+}
+
+// ── 다음 단어 ──
+function nextWord() {
+  currentIdx++;
+  loadWord();
+}
+
+// ── 라운드 완료 ──
+function showRoundResult() {
+  const correct = queue.length - wrongWords.length;
+  const pct = Math.round(correct / queue.length * 100);
+
+  if (wrongWords.length === 0) {
+    // 오답 없음 → 완료!
+    showDone();
+    return;
+  }
+
+  // 오답 있음 → 다음 라운드 안내
+  document.getElementById('roundEmoji').textContent = pct >= 80 ? '😊' : '💪';
+  document.getElementById('roundTitle').textContent = `${round}라운드 완료!`;
+  document.getElementById('roundScore').textContent = `${correct} / ${queue.length}`;
+  document.getElementById('roundScoreLabel').textContent = `${pct}점 · 오답 ${wrongWords.length}개`;
+  document.getElementById('roundSub').textContent =
+    `오답 ${wrongWords.length}개가 남았어요.\n다시 풀어서 완벽하게 마무리해봐요! 💪`;
+  document.getElementById('retryBtn').style.display = 'block';
+
+  showScreen('screen-round');
+  saveResult(false);
+}
+
+// ── 오답 재시작 ──
+function startRetry() {
+  round++;
+  queue = shuffle([...wrongWords]);
+  wrongWords = [];
+  currentIdx = 0;
+  totalQuestions += queue.length;
+  showScreen('screen-quiz');
+  loadWord();
+}
+
+// ── 조기 완료 ──
+function finishEarly() {
+  showDone();
+}
+
+// ── 최종 완료 ──
+function showDone() {
+  const elapsed = Math.round((new Date() - startTime) / 60000);
+  document.getElementById('doneSub').textContent =
+    `${studentName} 학생, 모든 단어를 완벽하게 외웠어요! 🎉\n총 ${round}라운드 · 약 ${elapsed}분 소요`;
+  document.getElementById('statRounds').textContent = round;
+  document.getElementById('statWords').textContent = WORDS.length;
+  document.getElementById('statWrong').textContent = allWrong.length;
+  showScreen('screen-done');
+  saveResult(true);
+}
+
+// ── Firebase 저장 ──
+function saveResult(completed) {
+  const data = {
+    studentName,
+    quizType: LEVEL_INFO.quizType,
+    level: LEVEL_INFO.name,
+    score: completed ? 100 : Math.round((WORDS.length - allWrong.length) / WORDS.length * 100),
+    correct: WORDS.length - allWrong.length,
+    wrong: allWrong.length,
+    total: WORDS.length,
+    round,
+    completed,
+    wrongWords: allWrong.map(w => ({ eng: w.en, kor: w.ko })),
+    userAgent: navigator.userAgent.substring(0, 100)
+  };
+  let w = 0;
+  const t = setInterval(() => {
+    w += 200;
+    if (window._saveResult) { clearInterval(t); window._saveResult(data); }
+    else if (w >= 6000) clearInterval(t);
+  }, 200);
+}
+
+// ── 유틸: 셔플 ──
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+</script>
+</body>
+</html>
