@@ -152,7 +152,7 @@ footer { text-align: center; padding: 28px; color: #aabbc8; font-size: .8rem; fo
 <!-- STEP 4: 학교별 퀴즈 목록 -->
 <div id="screen-school" class="screen">
   <main>
-    <button class="back-btn" onclick="goStep('screen-home')">← 학교 목록으로</button>
+    <button class="back-btn" onclick="doLogout()">← 처음으로 (로그아웃)</button>
     <div class="school-banner">
       <div id="banner-emoji" style="display:none"></div>
       <div style="flex:1">
@@ -422,8 +422,15 @@ function openHub() {
   renderSchoolGrid();
   renderVoca();
   document.getElementById("home-user-badge").textContent = `👤 ${studentName} (${studentSchool})`;
-  document.getElementById("subtitle").textContent = "학교를 선택하세요";
-  goStep("screen-home");
+
+  // 로그인 시 선택한 학교로 바로 이동
+  const mySchool = SCHOOLS.find(s => s.name === studentSchool);
+  if (mySchool) {
+    openSchool(mySchool);
+  } else {
+    document.getElementById("subtitle").textContent = "학교를 선택하세요";
+    goStep("screen-home");
+  }
 }
 
 
