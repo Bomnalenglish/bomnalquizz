@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>대성고1 교과서 2과 동반의어</title>
+<style>
+:root{--p:#1a5276;--pl:#2e86c1;--acc:#e74c3c;--ok:#27ae60;--bg:#f0f4f8;--muted:#718096;--bdr:#e2e8f0;--warn:#f39c12;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Noto Sans KR','Malgun Gothic',sans-serif;background:var(--bg);color:#1a202c;min-height:100vh;}
+
+/* HEADER */
+#hdr{background:linear-gradient(135deg,var(--p),var(--pl));color:#fff;padding:16px 20px;text-align:center;}
+#hdr h1{font-size:1.15rem;font-weight:800;}
+#hdr p{font-size:0.75rem;opacity:.85;margin-top:3px;}
+
+/* PROGRESS */
+#pbwrap{background:#1a3f5e;padding:7px 20px;display:none;}
+#pbbg{background:rgba(255,255,255,.2);border-radius:99px;height:7px;}
+#pbfill{background:#fff;border-radius:99px;height:7px;width:0%;transition:width .4s;}
+#pbtxt{color:rgba(255,255,255,.8);font-size:.7rem;margin-top:3px;text-align:right;}
+
+/* SCREENS */
+.screen{display:none;}
+.screen.active{display:flex;}
+
+/* PART SELECT */
+#psel{flex-direction:column;align-items:center;justify-content:center;min-height:80vh;gap:14px;padding:24px;}
+#psel h2{font-size:1.25rem;color:var(--p);font-weight:800;text-align:center;margin-bottom:4px;}
+#psel .sub{color:var(--muted);font-size:.83rem;text-align:center;max-width:320px;margin-bottom:8px;}
+.pbtn{width:100%;max-width:360px;padding:16px 20px;border-radius:14px;border:2px solid var(--bdr);background:#fff;cursor:pointer;text-align:left;transition:all .2s;box-shadow:0 2px 8px rgba(0,0,0,.06);}
+.pbtn:hover{border-color:var(--pl);transform:translateY(-2px);box-shadow:0 6px 16px rgba(30,100,180,.12);}
+.pbtn .pt{font-size:.95rem;font-weight:800;color:var(--p);margin-bottom:4px;}
+.pbtn .pd{font-size:.78rem;color:var(--muted);}
+.pnum{display:inline-block;background:var(--p);color:#fff;border-radius:99px;padding:2px 11px;font-size:.68rem;font-weight:800;margin-bottom:7px;}
+
+/* MODE SELECT */
+#msel{flex-direction:column;align-items:center;justify-content:center;min-height:80vh;gap:14px;padding:24px;}
+#msel h2{font-size:1.2rem;color:var(--p);font-weight:800;text-align:center;}
+#msel .psub{font-size:.8rem;color:var(--pl);background:#e8f4fd;padding:6px 14px;border-radius:8px;margin-bottom:4px;font-weight:700;}
+#msel .sub{color:var(--muted);font-size:.82rem;text-align:center;max-width:320px;}
+.mbtn{width:100%;max-width:360px;padding:16px 20px;border-radius:14px;border:2px solid var(--bdr);background:#fff;cursor:pointer;text-align:left;transition:all .2s;box-shadow:0 2px 8px rgba(0,0,0,.06);}
+.mbtn:hover{border-color:var(--pl);transform:translateY(-2px);}
+.mbtn .mt{font-size:.92rem;font-weight:800;color:var(--p);margin-bottom:4px;}
+.mbtn .md{font-size:.76rem;color:var(--muted);line-height:1.5;}
+.bdg{display:inline-block;padding:2px 10px;border-radius:99px;font-size:.66rem;font-weight:800;margin-bottom:6px;}
+.ba{background:#dbeafe;color:#1d4ed8;}.bb{background:#dcfce7;color:#15803d;}
+.back-btn{padding:9px 18px;border-radius:8px;border:1.5px solid var(--bdr);background:#fff;color:var(--muted);font-size:.8rem;cursor:pointer;font-family:inherit;}
+
+/* QUIZ */
+#qa{flex-direction:column;padding:14px;max-width:600px;margin:0 auto;width:100%;}
+#rbdg{text-align:center;padding:5px 0;}
+#rbspan{background:var(--p);color:#fff;border-radius:99px;padding:3px 14px;font-size:.7rem;font-weight:700;}
+.qcard{background:#fff;border-radius:16px;padding:20px;box-shadow:0 2px 12px rgba(0,0,0,.08);margin-top:10px;}
+.qlbl{font-size:.66rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;}
+.qword{font-size:1.5rem;font-weight:900;color:var(--p);margin-bottom:3px;}
+.qkor{font-size:.86rem;color:var(--muted);margin-bottom:12px;}
+.qhint{font-size:.78rem;color:var(--pl);background:#e8f4fd;padding:7px 11px;border-radius:8px;margin-bottom:12px;}
+.ogrid{display:flex;flex-direction:column;gap:8px;}
+.obtn{padding:12px 15px;border-radius:10px;border:2px solid var(--bdr);background:#fff;font-size:.9rem;cursor:pointer;text-align:left;transition:all .15s;font-family:inherit;}
+.obtn:hover:not(:disabled){border-color:var(--pl);background:#f0f7ff;}
+.obtn.correct{border-color:var(--ok);background:#f0fdf4;color:var(--ok);font-weight:800;}
+.obtn.wrong{border-color:var(--acc);background:#fff5f5;color:var(--acc);}
+.obtn:disabled{cursor:default;}
+#fb{display:none;padding:10px 14px;border-radius:10px;font-size:.86rem;font-weight:700;margin-top:10px;}
+#fb.ok{background:#f0fdf4;color:var(--ok);border:1.5px solid #86efac;}
+#fb.ng{background:#fff5f5;color:var(--acc);border:1.5px solid #fca5a5;}
+#nxtbtn{display:none;width:100%;padding:12px;border-radius:10px;border:none;background:var(--p);color:#fff;font-size:.92rem;font-weight:800;cursor:pointer;margin-top:10px;font-family:inherit;}
+#nxtbtn:hover{background:var(--pl);}
+
+/* RESULT */
+#rs{flex-direction:column;padding:22px;max-width:600px;margin:0 auto;width:100%;}
+.rcard{background:#fff;border-radius:20px;padding:28px 20px;box-shadow:0 4px 20px rgba(0,0,0,.1);text-align:center;}
+.remoji{font-size:2.6rem;margin-bottom:9px;}
+.rtitle{font-size:1.25rem;font-weight:900;color:var(--p);margin-bottom:6px;}
+.rscore{font-size:2.3rem;font-weight:900;color:var(--p);margin:9px 0;}
+.rsub{color:var(--muted);font-size:.83rem;margin-bottom:16px;}
+.racts{display:flex;flex-direction:column;gap:8px;}
+.btn-rw{padding:12px;border-radius:10px;border:none;background:var(--acc);color:#fff;font-size:.9rem;font-weight:800;cursor:pointer;font-family:inherit;}
+.btn-ra{padding:12px;border-radius:10px;border:none;background:var(--warn);color:#fff;font-size:.9rem;font-weight:800;cursor:pointer;font-family:inherit;}
+.btn-cm{padding:12px;border-radius:10px;border:1.5px solid var(--bdr);background:#fff;color:var(--p);font-size:.9rem;font-weight:800;cursor:pointer;font-family:inherit;}
+.btn-cp{padding:12px;border-radius:10px;border:1.5px solid var(--bdr);background:#fff;color:var(--muted);font-size:.9rem;font-weight:800;cursor:pointer;font-family:inherit;}
+.wlist{text-align:left;margin:12px 0;border-top:1px solid var(--bdr);padding-top:12px;}
+.wlist h3{font-size:.8rem;font-weight:800;color:var(--acc);margin-bottom:7px;}
+.wi{padding:6px 0;border-bottom:1px solid var(--bdr);font-size:.8rem;}
+.we{font-weight:800;color:var(--p);}.wk{color:var(--muted);margin-left:5px;}
+
+/* PERFECT BANNER */
+#perfect{display:none;position:fixed;inset:0;background:rgba(39,174,96,.96);color:#fff;z-index:9999;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:32px;}
+#perfect h2{font-size:1.9rem;font-weight:900;margin-bottom:10px;}
+#perfect p{font-size:.95rem;opacity:.9;margin-bottom:22px;}
+#perfect button{padding:11px 30px;border-radius:10px;border:2px solid #fff;background:transparent;color:#fff;font-size:.95rem;font-weight:800;cursor:pointer;font-family:inherit;}
+
+/* TAB WARNING */
+#tabw{display:none;position:fixed;inset:0;background:rgba(180,20,20,.95);color:#fff;z-index:9998;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:32px;}
+#tabw h2{font-size:1.3rem;font-weight:900;margin-bottom:9px;}
+#tabw p{font-size:.9rem;opacity:.9;margin-bottom:16px;}
+#tabw button{padding:10px 24px;border-radius:8px;border:2px solid #fff;background:transparent;color:#fff;font-size:.9rem;font-weight:800;cursor:pointer;font-family:inherit;}
+</style>
+</head>
+<body>
+
+<div id="tabw" style="display:none;flex-direction:column;align-items:center;justify-content:center;">
+  <h2>⚠️ 화면 이탈 감지!</h2>
+  <p>다른 탭으로 이동했어요.<br>이탈 횟수: <strong id="twcnt">0</strong>회</p>
+  <button onclick="document.getElementById('tabw').style.display='none'">계속하기</button>
+</div>
+
+<div id="perfect" style="display:none;flex-direction:column;align-items:center;justify-content:center;">
+  <h2>🏆 완벽 달성!</h2>
+  <p>오답 0개! 모든 단어를 완벽하게 맞혔어요!</p>
+  <button onclick="document.getElementById('perfect').style.display='none';goPartSelect()">처음으로</button>
+</div>
+
+<div id="hdr">
+  <h1>🏛️ 대성고1 · 교과서 2과 동반의어</h1>
+  <p>YBM(김은형) 공통영어1 · Lesson 2</p>
+</div>
+<div id="pbwrap"><div id="pbbg"><div id="pbfill"></div></div><div id="pbtxt"></div></div>
+
+<!-- STEP 1: 파트 선택 -->
+<div id="psel" class="screen active">
+  <h2>파트를 선택하세요</h2>
+  <p class="sub">각 파트는 30개 단어로 구성되어 있어요<br>오답 0개 달성까지 자동 반복됩니다 🔁</p>
+  <button class="pbtn" onclick="selectPart(1)">
+    <div class="pnum">PART 1</div>
+    <div class="pt">certain → entertaining</div>
+    <div class="pd">#1~30 · 본문 앞부분 단어</div>
+  </button>
+  <button class="pbtn" onclick="selectPart(2)">
+    <div class="pnum">PART 2</div>
+    <div class="pt">hold → in full bloom</div>
+    <div class="pd">#31~60 · 본문 중간 단어</div>
+  </button>
+  <button class="pbtn" onclick="selectPart(3)">
+    <div class="pnum">PART 3</div>
+    <div class="pt">leafy → persistent</div>
+    <div class="pd">#61~90 · 본문 뒷부분 + 유의어 섹션</div>
+  </button>
+</div>
+
+<!-- STEP 2: 모드 선택 -->
+<div id="msel" class="screen">
+  <h2>모드를 선택하세요</h2>
+  <div class="psub" id="part-label">PART 1 선택됨</div>
+  <p class="sub">오답이 0개가 될 때까지 자동 반복됩니다 🔁</p>
+  <button class="mbtn" onclick="startMode('A')">
+    <div class="bdg ba">MODE A</div>
+    <div class="mt">뜻 맞히기 → 동반의어</div>
+    <div class="md">① 영어 단어 보고 한국어 뜻 선택<br>② 동의어(syn) / 반의어(ant) 찾기</div>
+  </button>
+  <button class="mbtn" onclick="startMode('B')">
+    <div class="bdg bb">MODE B</div>
+    <div class="mt">동반의어 직접 매칭</div>
+    <div class="md">동의어·반의어만 보고 원단어 찾기<br>심화 학습에 적합</div>
+  </button>
+  <button class="back-btn" onclick="goPartSelect()">← 파트 다시 선택</button>
+</div>
+
+<!-- STEP 3: 퀴즈 -->
+<div id="qa" class="screen">
+  <div id="rbdg"><span id="rbspan">1라운드</span></div>
+  <div class="qcard">
+    <div class="qlbl" id="qlbl"></div>
+    <div class="qword" id="qword"></div>
+    <div class="qkor" id="qkor"></div>
+    <div class="qhint" id="qhint" style="display:none"></div>
+    <div class="ogrid" id="ogrid"></div>
+    <div id="fb"></div>
+    <button id="nxtbtn" onclick="nextQ()">다음 →</button>
+  </div>
+</div>
+
+<!-- STEP 4: 결과 -->
+<div id="rs" class="screen">
+  <div class="rcard">
+    <div class="remoji" id="remoji"></div>
+    <div class="rtitle" id="rtitle"></div>
+    <div class="rscore" id="rscore"></div>
+    <div class="rsub" id="rsub"></div>
+    <div class="wlist" id="wla" style="display:none">
+      <h3>❌ 틀린 단어</h3>
+      <div id="wli"></div>
+    </div>
+    <div class="racts">
+      <button class="btn-rw" id="btnrw" onclick="retryWrong()" style="display:none">❌ 오답만 다시 풀기</button>
+      <button class="btn-ra" onclick="retryAll()">🔄 이 파트 처음부터</button>
+      <button class="btn-cm" onclick="goModeSelect()">⚙️ 모드 변경</button>
+      <button class="btn-cp" onclick="goPartSelect()">📚 다른 파트 선택</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const FIREBASE="https://firestore.googleapis.com/v1/projects/bomnalvaca/databases/(default)/documents/quiz_results";
+
+const PARTS = {
+  1: [{"eng": "certain", "kor": "특정한", "syn": ["particular", "specific"], "ant": []}, {"eng": "artist", "kor": "예술가", "syn": ["creator", "painter"], "ant": []}, {"eng": "be linked with", "kor": "~와 연관되다", "syn": ["be connected to", "be related to", "be associated with"], "ant": []}, {"eng": "closely", "kor": "밀접하게", "syn": [], "ant": []}, {"eng": "particular", "kor": "특정한", "syn": ["certain", "specific"], "ant": []}, {"eng": "separate", "kor": "분리하다", "syn": ["detach", "take apart"], "ant": []}, {"eng": "locate", "kor": "~를 위치시키다", "syn": [], "ant": []}, {"eng": "magical", "kor": "마법 같은", "syn": ["enchanting", "mystical"], "ant": []}, {"eng": "colorful", "kor": "다채로운", "syn": ["vivid", "vibrant"], "ant": ["monotonous"]}, {"eng": "landscape", "kor": "풍경; 풍경화", "syn": ["scenery", "view"], "ant": []}, {"eng": "resident", "kor": "거주자, 주민", "syn": ["inhabitant", "dweller"], "ant": []}, {"eng": "leave behind", "kor": "~를 뒤로 하다", "syn": ["abandon", "depart from"], "ant": []}, {"eng": "arrive", "kor": "도착하다", "syn": ["reach", "come"], "ant": ["depart", "leave"]}, {"eng": "inspire", "kor": "불러일으키다; 영감을 주다", "syn": ["motivate", "stimulate"], "ant": []}, {"eng": "explosion", "kor": "폭발, 폭발적 증가", "syn": ["burst", "surge"], "ant": []}, {"eng": "creativity", "kor": "창의성", "syn": ["imagination", "originality"], "ant": []}, {"eng": "claim", "kor": "주장하다", "syn": ["assert", "argue", "insist"], "ant": []}, {"eng": "whole", "kor": "전체적인", "syn": ["entire", "complete", "total"], "ant": []}, {"eng": "enthusiastically", "kor": "매우 열심히, 열정적으로", "syn": ["eagerly", "passionately"], "ant": []}, {"eng": "produce", "kor": "제작하다", "syn": ["create", "make", "generate"], "ant": []}, {"eng": "nearly", "kor": "거의, 대략", "syn": ["almost", "about", "roughly"], "ant": []}, {"eng": "recreate", "kor": "재현하다", "syn": ["reproduce", "reconstruct"], "ant": []}, {"eng": "panel", "kor": "판, 패널", "syn": ["board", "surface"], "ant": []}, {"eng": "trace", "kor": "흔적, 자취", "syn": ["track", "trail"], "ant": []}, {"eng": "remain", "kor": "남아 있다; 계속 있다", "syn": ["stay", "continue"], "ant": ["leave", "depart"]}, {"eng": "ancient", "kor": "고대의", "syn": ["old", "historic", "archaic"], "ant": ["modern", "contemporary"]}, {"eng": "date back to", "kor": "~로 거슬러 올라가다", "syn": ["go back to", "trace back to"], "ant": []}, {"eng": "arena", "kor": "(원형) 경기장", "syn": ["stadium", "amphitheater"], "ant": []}, {"eng": "seat", "kor": "~명의 좌석을 가지다; 수용하다", "syn": ["accommodate"], "ant": []}, {"eng": "entertaining", "kor": "즐거움을 주는", "syn": ["amusing", "enjoyable"], "ant": ["boring", "dull"]}],
+  2: [{"eng": "hold", "kor": "열다, 개최하다", "syn": ["organize", "conduct", "host"], "ant": []}, {"eng": "particularly", "kor": "특별히", "syn": ["especially", "specifically"], "ant": []}, {"eng": "fascinating", "kor": "대단히 흥미로운, 매력적인", "syn": ["captivating", "intriguing"], "ant": ["boring", "dull"]}, {"eng": "barely", "kor": "거의 ~아니게", "syn": ["hardly", "scarcely", "rarely"], "ant": ["easily", "clearly"]}, {"eng": "visible", "kor": "눈에 보이는", "syn": ["noticeable", "apparent"], "ant": ["invisible"]}, {"eng": "faint", "kor": "희미한", "syn": ["indistinct", "vague", "unclear"], "ant": ["obvious", "distinct", "clear"]}, {"eng": "pay attention to", "kor": "~에 주의를 기울이다", "syn": ["focus on", "concentrate on"], "ant": []}, {"eng": "powerful", "kor": "강렬한", "syn": ["strong", "intense", "forceful"], "ant": ["weak", "feeble"]}, {"eng": "paint", "kor": "그리다; 물감", "syn": ["draw", "depict"], "ant": []}, {"eng": "work", "kor": "작품; 일하다", "syn": ["creation", "piece"], "ant": []}, {"eng": "unusual", "kor": "특이한, 드문", "syn": ["unique", "rare", "strange"], "ant": ["common", "usual", "normal", "ordinary"]}, {"eng": "scene", "kor": "장면, 광경", "syn": ["view", "sight"], "ant": []}, {"eng": "from memory", "kor": "기억을 더듬어", "syn": ["by heart", "from recall"], "ant": []}, {"eng": "diverse", "kor": "다양한", "syn": ["various", "different"], "ant": ["uniform", "homogeneous"]}, {"eng": "vibrant", "kor": "강렬[생생/선명]한", "syn": ["vivid", "striking", "intense"], "ant": ["dull", "faint"]}, {"eng": "rich", "kor": "풍부한", "syn": ["abundant"], "ant": []}, {"eng": "harmony", "kor": "조화", "syn": ["balance", "unity"], "ant": ["conflict", "discord"]}, {"eng": "renovate", "kor": "개조하다", "syn": ["restore", "repair", "improve"], "ant": []}, {"eng": "uncertain", "kor": "불확실한", "syn": ["unsure", "unsettled"], "ant": ["certain", "sure", "settled"]}, {"eng": "original", "kor": "원래의", "syn": ["initial", "first"], "ant": []}, {"eng": "former", "kor": "이전의", "syn": ["one-time", "previous"], "ant": ["future"]}, {"eng": "suffer from", "kor": "~로부터 고통받다; ~을 앓다", "syn": ["experience", "endure"], "ant": []}, {"eng": "mental", "kor": "정신적인", "syn": ["psychological", "cognitive"], "ant": ["physical"]}, {"eng": "stability", "kor": "안정성", "syn": ["steadiness", "balance"], "ant": ["instability"]}, {"eng": "improve", "kor": "나아지다, 개선되다", "syn": ["enhance", "better", "upgrade"], "ant": ["worsen", "decline"]}, {"eng": "take advantage of", "kor": "~를 활용하다", "syn": ["make good use of", "utilize"], "ant": []}, {"eng": "freedom", "kor": "자유", "syn": ["liberty", "independence"], "ant": ["restriction", "confinement"]}, {"eng": "illustrate", "kor": "묘사하다", "syn": ["describe", "portray"], "ant": []}, {"eng": "tone", "kor": "색조", "syn": ["shade", "hue", "tint"], "ant": []}, {"eng": "in full bloom", "kor": "만개한", "syn": ["blossoming", "flourishing"], "ant": []}],
+  3: [{"eng": "leafy", "kor": "잎이 무성한", "syn": ["green", "lush"], "ant": ["bare", "leafless"]}, {"eng": "odd", "kor": "이상한, 특이한", "syn": ["strange", "peculiar", "weird"], "ant": ["ordinary", "normal", "usual"]}, {"eng": "contrast", "kor": "대비", "syn": ["difference", "distinction"], "ant": ["similarity", "resemblance"]}, {"eng": "reflect", "kor": "반영하다", "syn": ["show", "express", "represent"], "ant": []}, {"eng": "complex", "kor": "복잡한", "syn": ["complicated", "intricate"], "ant": ["simple", "straightforward"]}, {"eng": "resemble", "kor": "닮다, 유사하다", "syn": ["take after", "look like"], "ant": ["differ from"]}, {"eng": "provincial", "kor": "지방의, 시골의", "syn": ["regional", "rural"], "ant": ["urban", "metropolitan"]}, {"eng": "search for", "kor": "~를 찾아다니다", "syn": ["look for", "seek"], "ant": []}, {"eng": "attractive", "kor": "매력적인", "syn": ["charming", "inviting", "appealing"], "ant": ["unattractive", "charmless"]}, {"eng": "combination", "kor": "결합, 조합", "syn": ["mixture", "blend", "union"], "ant": []}, {"eng": "historic", "kor": "역사적인", "syn": ["significant", "notable"], "ant": []}, {"eng": "unique", "kor": "독특한", "syn": ["distinctive", "original", "special"], "ant": ["common", "ordinary"]}, {"eng": "offer", "kor": "제공하다", "syn": ["provide", "give", "supply"], "ant": []}, {"eng": "benefit", "kor": "이점, 혜택", "syn": ["advantage", "gain"], "ant": ["disadvantage", "harm"]}, {"eng": "boost", "kor": "신장시키다", "syn": ["raise", "increase"], "ant": ["decrease"]}, {"eng": "heal", "kor": "치료하다", "syn": ["cure", "treat", "restore"], "ant": []}, {"eng": "release", "kor": "분비, 방출", "syn": ["discharge", "ejection"], "ant": []}, {"eng": "promote", "kor": "증진[촉진]하다", "syn": ["encourage", "advance", "foster"], "ant": []}, {"eng": "reduce", "kor": "줄이다", "syn": ["decrease", "cut", "lower"], "ant": ["increase"]}, {"eng": "disorder", "kor": "장애", "syn": ["condition", "ailment"], "ant": []}, {"eng": "impact", "kor": "영향", "syn": ["effect", "influence"], "ant": []}, {"eng": "artificial", "kor": "인공의", "syn": ["man-made", "synthetic"], "ant": ["natural"]}, {"eng": "disturb", "kor": "방해하다", "syn": ["interrupt", "disrupt"], "ant": []}, {"eng": "lower", "kor": "낮추다", "syn": ["reduce", "decrease"], "ant": ["raise", "increase"]}, {"eng": "regulate", "kor": "조절하다", "syn": ["control", "manage"], "ant": []}, {"eng": "cognitive", "kor": "인지적인", "syn": ["mental", "intellectual"], "ant": []}, {"eng": "overall", "kor": "전반적인", "syn": ["general", "total", "comprehensive"], "ant": []}, {"eng": "recognize", "kor": "인정하다", "syn": ["acknowledge"], "ant": []}, {"eng": "vivid", "kor": "생생한, 선명한", "syn": ["vibrant"], "ant": ["dull"]}, {"eng": "persistent", "kor": "끈질긴, 집요한", "syn": ["persevering"], "ant": []}]
+};
+
+let curPart=1, mode='A', round=1, wrongWords=[], words=[], qQueue=[], qIdx=0, sc=0, tot=0, answered=false, tabCnt=0;
+
+// Tab detection
+document.addEventListener('visibilitychange',()=>{
+  if(document.hidden && isActive('qa')){
+    tabCnt++;
+    document.getElementById('twcnt').textContent=tabCnt;
+    document.getElementById('tabw').style.display='flex';
+  }
+});
+document.addEventListener('copy',e=>e.preventDefault());
+document.addEventListener('paste',e=>e.preventDefault());
+document.addEventListener('contextmenu',e=>e.preventDefault());
+
+function isActive(id){return document.getElementById(id).classList.contains('active');}
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  const showPb = id==='qa';
+  document.getElementById('pbwrap').style.display = showPb?'block':'none';
+}
+
+function goPartSelect(){
+  document.getElementById('perfect').style.display='none';
+  showScreen('psel');
+}
+
+function selectPart(n){
+  curPart=n;
+  document.getElementById('part-label').textContent=`PART ${n} 선택됨 (30단어)`;
+  showScreen('msel');
+}
+
+function goModeSelect(){showScreen('msel');}
+
+function startMode(m){
+  mode=m; round=1; wrongWords=[]; sc=0; tot=0;
+  words=PARTS[curPart];
+  document.getElementById('rbspan').textContent='1라운드';
+  showScreen('qa');
+  buildAndStart([...words]);
+}
+
+function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+
+function buildQs(wl){
+  const qs=[];
+  shuffle(wl).forEach(w=>{
+    if(mode==='A'){
+      qs.push({type:'meaning',w});
+      w.syn.forEach(s=>qs.push({type:'syn',w,p:s}));
+      w.ant.forEach(a=>qs.push({type:'ant',w,p:a}));
+    }else{
+      w.syn.forEach(s=>qs.push({type:'syn_b',w,p:s}));
+      w.ant.forEach(a=>qs.push({type:'ant_b',w,p:a}));
+      if(!w.syn.length&&!w.ant.length) qs.push({type:'meaning',w});
+    }
+  });
+  return qs;
+}
+
+function buildAndStart(wl){qQueue=buildQs(wl);qIdx=0;sc=0;tot=0;loadQ();}
+
+function loadQ(){
+  if(qIdx>=qQueue.length){showResult();return;}
+  renderQ(qQueue[qIdx]);
+  updatePb(qIdx,qQueue.length);
+}
+
+function updatePb(i,t){
+  const pct=Math.round(i/t*100);
+  document.getElementById('pbfill').style.width=pct+'%';
+  document.getElementById('pbtxt').textContent=`${i} / ${t} 문제`;
+}
+
+function getWrong(exc,n=3){return shuffle(words.filter(w=>w.eng!==exc)).slice(0,n);}
+
+function renderQ(q){
+  answered=false;
+  document.getElementById('fb').style.display='none';
+  document.getElementById('nxtbtn').style.display='none';
+  const og=document.getElementById('ogrid');og.innerHTML='';
+  const qh=document.getElementById('qhint');
+
+  if(q.type==='meaning'){
+    document.getElementById('qlbl').textContent='이 단어의 뜻은?';
+    document.getElementById('qword').textContent=q.w.eng;
+    document.getElementById('qkor').textContent='';
+    qh.style.display='none';
+    const ws=getWrong(q.w.eng).map(w=>w.kor);
+    makeOpts(og,shuffle([q.w.kor,...ws]),q.w.kor,'#1a5276');
+  }else if(q.type==='syn'){
+    document.getElementById('qlbl').textContent='동의어(SYN) 찾기';
+    document.getElementById('qword').textContent=q.w.eng;
+    document.getElementById('qkor').textContent=q.w.kor;
+    qh.textContent='💡 이 단어와 비슷한 뜻의 단어는?';qh.style.display='block';
+    const ws=getWrong(q.w.eng).map(w=>{const p=[...w.syn,...w.ant];return p.length?p[0]:w.eng;});
+    makeOpts(og,shuffle([q.p,...ws]),q.p,'#1565c0');
+  }else if(q.type==='ant'){
+    document.getElementById('qlbl').textContent='반의어(ANT) 찾기';
+    document.getElementById('qword').textContent=q.w.eng;
+    document.getElementById('qkor').textContent=q.w.kor;
+    qh.textContent='💡 이 단어와 반대 뜻의 단어는?';qh.style.display='block';
+    const ws=getWrong(q.w.eng).map(w=>w.eng);
+    makeOpts(og,shuffle([q.p,...ws]),q.p,'#c62828');
+  }else if(q.type==='syn_b'){
+    document.getElementById('qlbl').textContent='동의어(SYN)의 원단어는? (Mode B)';
+    document.getElementById('qword').textContent=q.p;
+    document.getElementById('qkor').textContent='동의어 → 원단어 찾기';
+    qh.style.display='none';
+    const ws=getWrong(q.w.eng).map(w=>w.eng);
+    makeOpts(og,shuffle([q.w.eng,...ws]),q.w.eng,'#1565c0');
+  }else if(q.type==='ant_b'){
+    document.getElementById('qlbl').textContent='반의어(ANT)의 원단어는? (Mode B)';
+    document.getElementById('qword').textContent=q.p;
+    document.getElementById('qkor').textContent='반의어 → 원단어 찾기';
+    qh.style.display='none';
+    const ws=getWrong(q.w.eng).map(w=>w.eng);
+    makeOpts(og,shuffle([q.w.eng,...ws]),q.w.eng,'#c62828');
+  }
+}
+
+function makeOpts(container,opts,correct,color){
+  opts.forEach(opt=>{
+    const b=document.createElement('button');
+    b.className='obtn';b.textContent=opt;b.style.color=color;
+    b.onclick=()=>checkA(b,opt,correct,qQueue[qIdx]);
+    container.appendChild(b);
+  });
+}
+
+function checkA(btn,sel,correct,q){
+  if(answered)return;
+  answered=true;tot++;
+  document.querySelectorAll('.obtn').forEach(b=>b.disabled=true);
+  const fb=document.getElementById('fb');
+  if(sel===correct){
+    btn.classList.add('correct');
+    fb.className='ok';fb.textContent='✅ 정답!';fb.style.display='block';
+    sc++;
+  }else{
+    btn.classList.add('wrong');
+    document.querySelectorAll('.obtn').forEach(b=>{if(b.textContent===correct)b.classList.add('correct');});
+    fb.className='ng';fb.textContent=`❌ 오답! 정답: ${correct}`;fb.style.display='block';
+    if(q&&q.w&&!wrongWords.find(w=>w.eng===q.w.eng)) wrongWords.push(q.w);
+  }
+  document.getElementById('nxtbtn').style.display='block';
+}
+
+function nextQ(){qIdx++;loadQ();}
+
+async function saveResult(d){
+  try{
+    await fetch(FIREBASE,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({fields:{
+      quizType:{stringValue:d.qt},score:{integerValue:d.sc},total:{integerValue:d.tot},
+      wrongCount:{integerValue:d.wc},round:{integerValue:d.rd},part:{integerValue:d.pt},
+      timestamp:{stringValue:new Date().toISOString()}
+    }})});
+  }catch(e){}
+}
+
+function showResult(){
+  saveResult({qt:`대성고1_교과서2과_동반의어_파트${curPart}_${mode}모드_${round}라운드`,sc,tot,wc:wrongWords.length,rd:round,pt:curPart});
+  showScreen('rs');
+  const pct=tot>0?Math.round(sc/tot*100):0;
+  document.getElementById('remoji').textContent=wrongWords.length===0?'🏆':pct>=80?'🎯':'📚';
+  document.getElementById('rtitle').textContent=wrongWords.length===0?'완벽 달성!':`${round}라운드 완료`;
+  document.getElementById('rscore').textContent=`${sc} / ${tot}`;
+  document.getElementById('rsub').textContent=`파트${curPart} · 정답률 ${pct}% · 오답 ${wrongWords.length}개`;
+
+  const wla=document.getElementById('wla');
+  if(wrongWords.length>0){
+    wla.style.display='block';
+    document.getElementById('wli').innerHTML=wrongWords.map(w=>`<div class="wi"><span class="we">${w.eng}</span><span class="wk">${w.kor}</span></div>`).join('');
+    document.getElementById('btnrw').style.display='block';
+  }else{
+    wla.style.display='none';
+    document.getElementById('btnrw').style.display='none';
+    setTimeout(()=>document.getElementById('perfect').style.display='flex',400);
+  }
+}
+
+function retryWrong(){
+  if(!wrongWords.length)return;
+  round++;
+  const prev=[...wrongWords];wrongWords=[];
+  showScreen('qa');
+  document.getElementById('rbspan').textContent=`${round}라운드 (오답재시도)`;
+  buildAndStart(prev);
+}
+
+function retryAll(){
+  round=1;wrongWords=[];
+  showScreen('qa');
+  document.getElementById('rbspan').textContent='1라운드';
+  buildAndStart([...words]);
+}
+</script>
+</body>
+</html>

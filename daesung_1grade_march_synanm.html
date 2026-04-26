@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>대성고1 교과서 2과 동반의어</title>
+<style>
+:root{--p:#1a5276;--pl:#2e86c1;--acc:#e74c3c;--ok:#27ae60;--bg:#f0f4f8;--muted:#718096;--bdr:#e2e8f0;--warn:#f39c12;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Noto Sans KR','Malgun Gothic',sans-serif;background:var(--bg);color:#1a202c;min-height:100vh;}
+
+/* HEADER */
+#hdr{background:linear-gradient(135deg,#0d3b5e,#1a6b9a);color:#fff;padding:16px 20px;text-align:center;}
+#hdr h1{font-size:1.15rem;font-weight:800;}
+#hdr p{font-size:0.75rem;opacity:.85;margin-top:3px;}
+
+/* PROGRESS */
+#pbwrap{background:#1a3f5e;padding:7px 20px;display:none;}
+#pbbg{background:rgba(255,255,255,.2);border-radius:99px;height:7px;}
+#pbfill{background:#fff;border-radius:99px;height:7px;width:0%;transition:width .4s;}
+#pbtxt{color:rgba(255,255,255,.8);font-size:.7rem;margin-top:3px;text-align:right;}
+
+/* SCREENS */
+.screen{display:none;}
+.screen.active{display:flex;}
+
+/* PART SELECT */
+#psel{flex-direction:column;align-items:center;justify-content:center;min-height:80vh;gap:14px;padding:24px;}
+#psel h2{font-size:1.25rem;color:var(--p);font-weight:800;text-align:center;margin-bottom:4px;}
+#psel .sub{color:var(--muted);font-size:.83rem;text-align:center;max-width:320px;margin-bottom:8px;}
+.pbtn{width:100%;max-width:360px;padding:16px 20px;border-radius:14px;border:2px solid var(--bdr);background:#fff;cursor:pointer;text-align:left;transition:all .2s;box-shadow:0 2px 8px rgba(0,0,0,.06);}
+.pbtn:hover{border-color:var(--pl);transform:translateY(-2px);box-shadow:0 6px 16px rgba(30,100,180,.12);}
+.pbtn .pt{font-size:.95rem;font-weight:800;color:var(--p);margin-bottom:4px;}
+.pbtn .pd{font-size:.78rem;color:var(--muted);}
+.pnum{display:inline-block;background:var(--p);color:#fff;border-radius:99px;padding:2px 11px;font-size:.68rem;font-weight:800;margin-bottom:7px;}
+
+/* MODE SELECT */
+#msel{flex-direction:column;align-items:center;justify-content:center;min-height:80vh;gap:14px;padding:24px;}
+#msel h2{font-size:1.2rem;color:var(--p);font-weight:800;text-align:center;}
+#msel .psub{font-size:.8rem;color:var(--pl);background:#e8f4fd;padding:6px 14px;border-radius:8px;margin-bottom:4px;font-weight:700;}
+#msel .sub{color:var(--muted);font-size:.82rem;text-align:center;max-width:320px;}
+.mbtn{width:100%;max-width:360px;padding:16px 20px;border-radius:14px;border:2px solid var(--bdr);background:#fff;cursor:pointer;text-align:left;transition:all .2s;box-shadow:0 2px 8px rgba(0,0,0,.06);}
+.mbtn:hover{border-color:var(--pl);transform:translateY(-2px);}
+.mbtn .mt{font-size:.92rem;font-weight:800;color:var(--p);margin-bottom:4px;}
+.mbtn .md{font-size:.76rem;color:var(--muted);line-height:1.5;}
+.bdg{display:inline-block;padding:2px 10px;border-radius:99px;font-size:.66rem;font-weight:800;margin-bottom:6px;}
+.ba{background:#dbeafe;color:#1d4ed8;}.bb{background:#dcfce7;color:#15803d;}
+.back-btn{padding:9px 18px;border-radius:8px;border:1.5px solid var(--bdr);background:#fff;color:var(--muted);font-size:.8rem;cursor:pointer;font-family:inherit;}
+
+/* QUIZ */
+#qa{flex-direction:column;padding:14px;max-width:600px;margin:0 auto;width:100%;}
+#rbdg{text-align:center;padding:5px 0;}
+#rbspan{background:var(--p);color:#fff;border-radius:99px;padding:3px 14px;font-size:.7rem;font-weight:700;}
+.qcard{background:#fff;border-radius:16px;padding:20px;box-shadow:0 2px 12px rgba(0,0,0,.08);margin-top:10px;}
+.qlbl{font-size:.66rem;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;}
+.qword{font-size:1.5rem;font-weight:900;color:var(--p);margin-bottom:3px;}
+.qkor{font-size:.86rem;color:var(--muted);margin-bottom:12px;}
+.qhint{font-size:.78rem;color:var(--pl);background:#e8f4fd;padding:7px 11px;border-radius:8px;margin-bottom:12px;}
+.ogrid{display:flex;flex-direction:column;gap:8px;}
+.obtn{padding:12px 15px;border-radius:10px;border:2px solid var(--bdr);background:#fff;font-size:.9rem;cursor:pointer;text-align:left;transition:all .15s;font-family:inherit;}
+.obtn:hover:not(:disabled){border-color:var(--pl);background:#f0f7ff;}
+.obtn.correct{border-color:var(--ok);background:#f0fdf4;color:var(--ok);font-weight:800;}
+.obtn.wrong{border-color:var(--acc);background:#fff5f5;color:var(--acc);}
+.obtn:disabled{cursor:default;}
+#fb{display:none;padding:10px 14px;border-radius:10px;font-size:.86rem;font-weight:700;margin-top:10px;}
+#fb.ok{background:#f0fdf4;color:var(--ok);border:1.5px solid #86efac;}
+#fb.ng{background:#fff5f5;color:var(--acc);border:1.5px solid #fca5a5;}
+#nxtbtn{display:none;width:100%;padding:12px;border-radius:10px;border:none;background:var(--p);color:#fff;font-size:.92rem;font-weight:800;cursor:pointer;margin-top:10px;font-family:inherit;}
+#nxtbtn:hover{background:var(--pl);}
+
+/* RESULT */
+#rs{flex-direction:column;padding:22px;max-width:600px;margin:0 auto;width:100%;}
+.rcard{background:#fff;border-radius:20px;padding:28px 20px;box-shadow:0 4px 20px rgba(0,0,0,.1);text-align:center;}
+.remoji{font-size:2.6rem;margin-bottom:9px;}
+.rtitle{font-size:1.25rem;font-weight:900;color:var(--p);margin-bottom:6px;}
+.rscore{font-size:2.3rem;font-weight:900;color:var(--p);margin:9px 0;}
+.rsub{color:var(--muted);font-size:.83rem;margin-bottom:16px;}
+.racts{display:flex;flex-direction:column;gap:8px;}
+.btn-rw{padding:12px;border-radius:10px;border:none;background:var(--acc);color:#fff;font-size:.9rem;font-weight:800;cursor:pointer;font-family:inherit;}
+.btn-ra{padding:12px;border-radius:10px;border:none;background:var(--warn);color:#fff;font-size:.9rem;font-weight:800;cursor:pointer;font-family:inherit;}
+.btn-cm{padding:12px;border-radius:10px;border:1.5px solid var(--bdr);background:#fff;color:var(--p);font-size:.9rem;font-weight:800;cursor:pointer;font-family:inherit;}
+.btn-cp{padding:12px;border-radius:10px;border:1.5px solid var(--bdr);background:#fff;color:var(--muted);font-size:.9rem;font-weight:800;cursor:pointer;font-family:inherit;}
+.wlist{text-align:left;margin:12px 0;border-top:1px solid var(--bdr);padding-top:12px;}
+.wlist h3{font-size:.8rem;font-weight:800;color:var(--acc);margin-bottom:7px;}
+.wi{padding:6px 0;border-bottom:1px solid var(--bdr);font-size:.8rem;}
+.we{font-weight:800;color:var(--p);}.wk{color:var(--muted);margin-left:5px;}
+
+/* PERFECT BANNER */
+#perfect{display:none;position:fixed;inset:0;background:rgba(39,174,96,.96);color:#fff;z-index:9999;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:32px;}
+#perfect h2{font-size:1.9rem;font-weight:900;margin-bottom:10px;}
+#perfect p{font-size:.95rem;opacity:.9;margin-bottom:22px;}
+#perfect button{padding:11px 30px;border-radius:10px;border:2px solid #fff;background:transparent;color:#fff;font-size:.95rem;font-weight:800;cursor:pointer;font-family:inherit;}
+
+/* TAB WARNING */
+#tabw{display:none;position:fixed;inset:0;background:rgba(180,20,20,.95);color:#fff;z-index:9998;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:32px;}
+#tabw h2{font-size:1.3rem;font-weight:900;margin-bottom:9px;}
+#tabw p{font-size:.9rem;opacity:.9;margin-bottom:16px;}
+#tabw button{padding:10px 24px;border-radius:8px;border:2px solid #fff;background:transparent;color:#fff;font-size:.9rem;font-weight:800;cursor:pointer;font-family:inherit;}
+</style>
+</head>
+<body>
+
+<div id="tabw" style="display:none;flex-direction:column;align-items:center;justify-content:center;">
+  <h2>⚠️ 화면 이탈 감지!</h2>
+  <p>다른 탭으로 이동했어요.<br>이탈 횟수: <strong id="twcnt">0</strong>회</p>
+  <button onclick="document.getElementById('tabw').style.display='none'">계속하기</button>
+</div>
+
+<div id="perfect" style="display:none;flex-direction:column;align-items:center;justify-content:center;">
+  <h2>🏆 완벽 달성!</h2>
+  <p>오답 0개! 모든 단어를 완벽하게 맞혔어요!</p>
+  <button onclick="document.getElementById('perfect').style.display='none';goPartSelect()">처음으로</button>
+</div>
+
+<div id="hdr">
+  <h1>📝 대성고1 · 2026년 3월 모의고사 동반의어</h1>
+  <p>고1 3월 학력평가 · 18~40번 시험범위</p>
+</div>
+<div id="pbwrap"><div id="pbbg"><div id="pbfill"></div></div><div id="pbtxt"></div></div>
+
+<!-- STEP 1: 파트 선택 -->
+<div id="psel" class="screen active">
+  <h2>파트를 선택하세요</h2>
+  <p class="sub">각 파트는 30개 단어로 구성되어 있어요<br>오답 0개 달성까지 자동 반복됩니다 🔁</p>
+  <button class="pbtn" onclick="selectPart(1)">
+    <div class="pnum">PART 1</div>
+    <div class="pt">18~29번</div>
+    <div class="pd">manager / interest / influence / genetic<br>conformity / habit / benefit / foundation … (124개)</div>
+  </button>
+  <button class="pbtn" onclick="selectPart(2)">
+    <div class="pnum">PART 2</div>
+    <div class="pt">30~40번</div>
+    <div class="pd">principal / cause / familiarity / official<br>emphasis / concept / initially / rooted … (133개)</div>
+  </button>
+</div>
+
+<!-- STEP 2: 모드 선택 -->
+<div id="msel" class="screen">
+  <h2>모드를 선택하세요</h2>
+  <div class="psub" id="part-label">PART 1 선택됨</div>
+  <p class="sub">오답이 0개가 될 때까지 자동 반복됩니다 🔁</p>
+  <button class="mbtn" onclick="startMode('A')">
+    <div class="bdg ba">MODE A</div>
+    <div class="mt">뜻 맞히기 → 동반의어</div>
+    <div class="md">① 영어 단어 보고 한국어 뜻 선택<br>② 동의어(syn) / 반의어(ant) 찾기</div>
+  </button>
+  <button class="mbtn" onclick="startMode('B')">
+    <div class="bdg bb">MODE B</div>
+    <div class="mt">동반의어 직접 매칭</div>
+    <div class="md">동의어·반의어만 보고 원단어 찾기<br>심화 학습에 적합</div>
+  </button>
+  <button class="back-btn" onclick="goPartSelect()">← 파트 다시 선택</button>
+</div>
+
+<!-- STEP 3: 퀴즈 -->
+<div id="qa" class="screen">
+  <div id="rbdg"><span id="rbspan">1라운드</span></div>
+  <div class="qcard">
+    <div class="qlbl" id="qlbl"></div>
+    <div class="qword" id="qword"></div>
+    <div class="qkor" id="qkor"></div>
+    <div class="qhint" id="qhint" style="display:none"></div>
+    <div class="ogrid" id="ogrid"></div>
+    <div id="fb"></div>
+    <button id="nxtbtn" onclick="nextQ()">다음 →</button>
+  </div>
+</div>
+
+<!-- STEP 4: 결과 -->
+<div id="rs" class="screen">
+  <div class="rcard">
+    <div class="remoji" id="remoji"></div>
+    <div class="rtitle" id="rtitle"></div>
+    <div class="rscore" id="rscore"></div>
+    <div class="rsub" id="rsub"></div>
+    <div class="wlist" id="wla" style="display:none">
+      <h3>❌ 틀린 단어</h3>
+      <div id="wli"></div>
+    </div>
+    <div class="racts">
+      <button class="btn-rw" id="btnrw" onclick="retryWrong()" style="display:none">❌ 오답만 다시 풀기</button>
+      <button class="btn-ra" onclick="retryAll()">🔄 이 파트 처음부터</button>
+      <button class="btn-cm" onclick="goModeSelect()">⚙️ 모드 변경</button>
+      <button class="btn-cp" onclick="goPartSelect()">📚 다른 파트 선택</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const FIREBASE="https://firestore.googleapis.com/v1/projects/bomnalvaca/databases/(default)/documents/quiz_results";
+
+const PARTS = {1: [{"eng": "manager", "kor": "관리자", "syn": ["administrator", "supervisor"], "ant": []}, {"eng": "interest", "kor": "관심", "syn": ["attention", "curiosity", "concern"], "ant": ["indifference", "apathy"]}, {"eng": "upcoming", "kor": "다가오는", "syn": ["forthcoming", "approaching", "impending"], "ant": ["preceding"]}, {"eng": "unfortunately", "kor": "안타깝게도", "syn": ["unluckily", "sadly", "regrettably"], "ant": ["fortunately", "luckily"]}, {"eng": "unexpected", "kor": "예상치 못한", "syn": ["unforeseen", "surprising", "unpredictable"], "ant": ["expected", "predictable"]}, {"eng": "issue", "kor": "문제", "syn": ["problem", "matter", "affair"], "ant": ["solution", "resolution"]}, {"eng": "discover", "kor": "발견하다", "syn": ["find", "uncover", "reveal"], "ant": ["hide", "conceal"]}, {"eng": "inform", "kor": "알리다", "syn": ["notify", "tell", "advise"], "ant": ["conceal", "withhold"]}, {"eng": "delay", "kor": "연기하다", "syn": ["postpone", "put off", "defer"], "ant": ["advance", "expedite"]}, {"eng": "ensure", "kor": "보장하다", "syn": ["guarantee", "secure", "assure"], "ant": []}, {"eng": "patience", "kor": "인내", "syn": ["tolerance", "endurance", "perseverance"], "ant": []}, {"eng": "sincerely", "kor": "진심을 담아", "syn": ["honestly", "truly", "genuinely"], "ant": ["insincerely", "dishonestly"]}, {"eng": "imagine", "kor": "상상하다", "syn": ["picture", "visualize", "envision"], "ant": []}, {"eng": "arrive at", "kor": "~에 도착하다", "syn": ["reach", "get to", "attain"], "ant": ["depart", "leave"]}, {"eng": "suddenly", "kor": "갑자기", "syn": ["abruptly", "unexpectedly", "all at once"], "ant": ["gradually", "slowly"]}, {"eng": "beat", "kor": "뛰다", "syn": ["pound", "throb", "pulsate"], "ant": ["slow", "calm down"]}, {"eng": "fear", "kor": "공포", "syn": ["terror", "fright", "dread"], "ant": ["courage", "bravery"]}, {"eng": "freeze", "kor": "얼어붙다", "syn": [], "ant": ["melt"]}, {"eng": "hide", "kor": "숨다", "syn": ["conceal"], "ant": ["reveal"]}, {"eng": "influence", "kor": "영향을 주다", "syn": ["affect", "impact", "sway"], "ant": []}, {"eng": "stir", "kor": "동요시키다", "syn": ["provoke", "stimulate", "arouse"], "ant": ["calm", "soothe"]}, {"eng": "instantly", "kor": "즉각적으로", "syn": ["immediately", "promptly", "right away"], "ant": []}, {"eng": "powerfully", "kor": "강력하게", "syn": ["strongly", "forcefully", "intensely"], "ant": ["weakly", "faintly"]}, {"eng": "open up", "kor": "마음을 터놓다", "syn": ["confess", "reveal", "disclose"], "ant": ["shut down", "hold back"]}, {"eng": "anecdote", "kor": "일화", "syn": ["story", "tale"], "ant": []}, {"eng": "detail", "kor": "세부 사항", "syn": ["particular", "specific", "element"], "ant": ["whole", "generality"]}, {"eng": "tried-and-tested", "kor": "입증된", "syn": ["proven", "reliable", "dependable"], "ant": ["unproven", "untested", "unreliable"]}, {"eng": "groundwork", "kor": "기틀", "syn": ["foundation", "basis"], "ant": []}, {"eng": "persuade", "kor": "설득하다", "syn": ["convince", "coax", "induce"], "ant": ["dissuade", "discourage"]}, {"eng": "reality", "kor": "현실", "syn": ["actuality"], "ant": ["illusion", "fantasy"]}, {"eng": "argument", "kor": "주장", "syn": ["claim", "assertion", "contention"], "ant": ["agreement", "harmony"]}, {"eng": "revealing", "kor": "의미심장한", "syn": ["disclosing"], "ant": ["concealing"]}, {"eng": "flaw", "kor": "결점", "syn": ["defect", "fault", "weakness"], "ant": ["perfection", "strength"]}, {"eng": "allow", "kor": "허용하다", "syn": ["permit"], "ant": ["forbid"]}, {"eng": "genetic", "kor": "유전적인", "syn": ["hereditary", "inherited", "biological"], "ant": ["acquired", "environmental"]}, {"eng": "be linked to", "kor": "~와 연결되다", "syn": ["be connected to", "be related to", "be associated with"], "ant": ["be unrelated to", "be independent of"]}, {"eng": "nearly", "kor": "거의", "syn": ["almost", "practically", "virtually"], "ant": ["exactly", "totally"]}, {"eng": "trap", "kor": "가두다", "syn": ["restrict", "limit"], "ant": ["release", "free"]}, {"eng": "limited", "kor": "제한된", "syn": ["restricted", "confined", "finite"], "ant": ["unlimited", "endless"]}, {"eng": "grand", "kor": "거대한, 웅장한", "syn": ["magnificent", "majestic"], "ant": []}, {"eng": "decision", "kor": "결정", "syn": ["choice", "resolution", "conclusion"], "ant": ["indecision", "hesitation"]}, {"eng": "far-reaching", "kor": "광범위한", "syn": ["extensive"], "ant": ["limited", "restricted"]}, {"eng": "currently", "kor": "현재", "syn": ["presently"], "ant": ["previously", "formerly"]}, {"eng": "instruct", "kor": "가르치다", "syn": ["teach", "educate"], "ant": []}, {"eng": "consider", "kor": "고려하다", "syn": ["contemplate", "ponder", "weigh"], "ant": ["ignore", "disregard"]}, {"eng": "precious", "kor": "소중한", "syn": ["valuable", "priceless"], "ant": ["worthless", "unimportant"]}, {"eng": "descendant", "kor": "후손", "syn": [], "ant": ["ancestor"]}, {"eng": "unprecedented", "kor": "전례 없는", "syn": ["unparalleled", "extraordinary"], "ant": ["common"]}, {"eng": "ancestor", "kor": "조상", "syn": [], "ant": ["descendant"]}, {"eng": "despite", "kor": "~에도 불구하고", "syn": ["in spite of", "notwithstanding", "regardless of"], "ant": ["because of", "due to"]}, {"eng": "form", "kor": "형성하다", "syn": ["shape", "create", "develop"], "ant": ["destroy", "break"]}, {"eng": "inborn", "kor": "타고난", "syn": ["innate", "inherent", "natural"], "ant": ["acquired", "learned"]}, {"eng": "difference", "kor": "차이", "syn": ["disparity", "distinction", "contrast"], "ant": ["similarity", "resemblance"]}, {"eng": "preference", "kor": "선호도", "syn": ["liking", "taste", "fondness"], "ant": ["dislike", "aversion"]}, {"eng": "adaptability", "kor": "적응력", "syn": ["flexibility", "versatility", "adjustability"], "ant": ["rigidity", "inflexibility"]}, {"eng": "flexibility", "kor": "유연성", "syn": ["elasticity", "pliancy", "suppleness"], "ant": ["stiffness", "rigidity"]}, {"eng": "terrific", "kor": "아주 좋은, 멋진", "syn": ["fantastic", "amazing", "wonderful"], "ant": ["terrible", "awful", "horrible"]}, {"eng": "expand", "kor": "확장하다", "syn": ["enlarge", "broaden", "widen"], "ant": ["shrink", "contract"]}, {"eng": "eager to do", "kor": "~를 열망하는", "syn": ["keen to", "willing to"], "ant": ["reluctant to"]}, {"eng": "gradually", "kor": "점진적으로", "syn": ["progressively"], "ant": ["suddenly"]}, {"eng": "processed", "kor": "가공된", "syn": ["refined", "treated"], "ant": ["raw", "unprocessed"]}, {"eng": "exposure", "kor": "경험, 노출", "syn": ["experience", "disclosure"], "ant": ["concealment"]}, {"eng": "conformity", "kor": "순응", "syn": ["compliance", "obedience", "submission"], "ant": ["rebellion", "defiance"]}, {"eng": "go against", "kor": "~에 반대하다", "syn": ["oppose", "resist", "defy"], "ant": ["comply with"]}, {"eng": "fascinating", "kor": "흥미로운", "syn": ["captivating", "intriguing", "absorbing"], "ant": ["boring", "uninteresting"]}, {"eng": "equally", "kor": "고르게", "syn": ["evenly", "uniformly"], "ant": ["unequally", "differently"]}, {"eng": "willingness", "kor": "의지", "syn": ["readiness", "inclination", "eagerness"], "ant": ["reluctance", "hesitation"]}, {"eng": "peak", "kor": "정점", "syn": ["summit", "climax"], "ant": []}, {"eng": "tendency", "kor": "경향", "syn": ["inclination", "propensity", "disposition"], "ant": ["aversion", "disinclination"]}, {"eng": "disagree", "kor": "반대하다", "syn": ["oppose", "differ"], "ant": ["agree"]}, {"eng": "stand up for", "kor": "~을 옹호하다", "syn": ["defend", "support"], "ant": ["oppose"]}, {"eng": "finding", "kor": "발견", "syn": ["discovery", "detection", "identification"], "ant": []}, {"eng": "demonstrate", "kor": "입증하다", "syn": ["prove", "show"], "ant": ["hide", "disprove"]}, {"eng": "mature", "kor": "성숙해지다", "syn": ["develop", "grow", "ripen"], "ant": ["regress", "decay"]}, {"eng": "defend", "kor": "방어하다", "syn": ["protect"], "ant": ["attack"]}, {"eng": "resilient", "kor": "회복 탄력적인", "syn": ["tough", "hardy", "adaptable"], "ant": ["fragile", "vulnerable"]}, {"eng": "habit", "kor": "습관", "syn": ["custom", "routine", "practice"], "ant": ["irregularity", "deviation"]}, {"eng": "essential", "kor": "필수적인", "syn": ["crucial", "vital", "indispensable"], "ant": ["optional", "unnecessary"]}, {"eng": "attach", "kor": "결합하다, 붙이다", "syn": ["fasten", "join", "connect"], "ant": ["detach", "separate"]}, {"eng": "have access to", "kor": "~에 접근하다", "syn": ["be able to use"], "ant": ["be denied access to"]}, {"eng": "device", "kor": "기기, 장치", "syn": ["gadget", "appliance", "instrument"], "ant": []}, {"eng": "awesome", "kor": "멋진, 굉장한", "syn": ["fantastic", "amazing", "terrific"], "ant": []}, {"eng": "combine", "kor": "결합하다", "syn": ["blend", "mix", "integrate"], "ant": ["separate", "divide", "split"]}, {"eng": "put off", "kor": "미루다, 연기하다", "syn": ["postpone", "delay"], "ant": []}, {"eng": "temptation", "kor": "유혹", "syn": ["lure", "enticement", "attraction"], "ant": []}, {"eng": "benefit", "kor": "이점", "syn": ["advantage", "profit", "gain"], "ant": ["disadvantage", "drawback"]}, {"eng": "based on", "kor": "~에 기반하여", "syn": ["grounded in"], "ant": ["regardless of", "independent of"]}, {"eng": "select", "kor": "선택하다", "syn": ["choose", "pick"], "ant": ["reject", "decline", "refuse"]}, {"eng": "cite", "kor": "언급하다", "syn": ["mention"], "ant": []}, {"eng": "gap", "kor": "격차", "syn": ["difference", "disparity", "divide"], "ant": ["connection"]}, {"eng": "foundation", "kor": "기초", "syn": ["basis", "base", "ground"], "ant": []}, {"eng": "worldwide", "kor": "전 세계에", "syn": ["globally", "internationally"], "ant": []}, {"eng": "give up", "kor": "포기하다", "syn": ["surrender", "abandon", "quit"], "ant": ["continue", "persist"]}, {"eng": "reconsider", "kor": "재고하다", "syn": ["review"], "ant": ["stick to"]}, {"eng": "traditional", "kor": "전통적인", "syn": ["conventional", "established"], "ant": ["modern", "contemporary"]}, {"eng": "focus on", "kor": "~에 집중하다", "syn": ["concentrate on"], "ant": ["distract from"]}, {"eng": "outstanding", "kor": "뛰어난", "syn": ["exceptional", "excellent", "remarkable"], "ant": ["ordinary", "mediocre"]}, {"eng": "lifelong", "kor": "평생의", "syn": ["lasting"], "ant": ["temporary"]}, {"eng": "commitment", "kor": "헌신, 약속", "syn": ["dedication", "devotion", "pledge"], "ant": ["apathy", "indifference"]}, {"eng": "inspire", "kor": "영감을 주다", "syn": ["motivate"], "ant": ["discourage"]}, {"eng": "look for", "kor": "찾다, 구하다", "syn": ["search for", "seek"], "ant": []}, {"eng": "convenient", "kor": "편리한", "syn": ["handy", "accessible", "suitable"], "ant": ["inconvenient", "awkward"]}, {"eng": "save", "kor": "아끼다", "syn": ["conserve", "economize", "spare"], "ant": ["waste"]}, {"eng": "public", "kor": "공영의", "syn": ["state", "national", "government-run"], "ant": ["private", "exclusive"]}, {"eng": "available", "kor": "이용 가능한", "syn": ["accessible", "obtainable", "ready"], "ant": ["unavailable", "taken"]}, {"eng": "purchase", "kor": "구매하다", "syn": ["buy"], "ant": ["sell"]}, {"eng": "direct", "kor": "연출하다", "syn": ["manage", "guide", "oversee"], "ant": ["misguide", "follow"]}, {"eng": "require", "kor": "필요로 하다", "syn": ["need", "demand", "entail"], "ant": ["exempt"]}, {"eng": "participate in", "kor": "~에 참여하다", "syn": ["take part in"], "ant": ["abstain from"]}, {"eng": "interactive", "kor": "쌍방향의", "syn": [], "ant": ["one-way"]}, {"eng": "complete", "kor": "완성하다", "syn": ["finish", "accomplish"], "ant": ["start", "begin"]}, {"eng": "apply", "kor": "신청하다", "syn": ["request", "register"], "ant": ["withdraw", "retract"]}, {"eng": "conceptual", "kor": "개념의", "syn": ["abstract", "theoretical", "notional"], "ant": ["concrete", "physical"]}, {"eng": "explanation", "kor": "설명", "syn": ["description", "clarification", "account"], "ant": ["confusion", "mystery"]}, {"eng": "simplified", "kor": "단순화된", "syn": ["straightforward"], "ant": ["complicated", "complex"]}, {"eng": "accurate", "kor": "정확한", "syn": ["correct", "precise", "exact"], "ant": ["inaccurate", "wrong"]}, {"eng": "useful", "kor": "유용한", "syn": ["helpful", "beneficial", "practical"], "ant": ["useless", "worthless"]}, {"eng": "display", "kor": "표시하다", "syn": ["show", "exhibit", "reveal"], "ant": ["hide", "conceal"]}, {"eng": "effective", "kor": "효과적인", "syn": ["successful", "productive", "efficacious"], "ant": ["ineffective", "useless"]}, {"eng": "confusion", "kor": "혼란", "syn": ["bewilderment", "perplexity", "chaos"], "ant": ["clarity", "order"]}, {"eng": "actual", "kor": "실제의", "syn": ["real", "genuine", "true"], "ant": ["fake", "imaginary"]}, {"eng": "distant", "kor": "멀리 있는", "syn": ["remote"], "ant": ["close"]}, {"eng": "consist of", "kor": "~로 구성되다", "syn": ["be made up of", "be composed of"], "ant": []}, {"eng": "coherent", "kor": "일관된", "syn": ["logical", "consistent", "rational"], "ant": ["incoherent", "illogical"]}], 2: [{"eng": "principal", "kor": "주요한", "syn": ["main", "primary"], "ant": ["secondary", "supplementary"]}, {"eng": "resource", "kor": "자원", "syn": ["supply", "reserve", "asset"], "ant": ["scarcity", "shortage"]}, {"eng": "operate", "kor": "운영하다", "syn": ["run", "manage", "handle"], "ant": ["halt", "cease"]}, {"eng": "extensive", "kor": "광범위한", "syn": ["widespread", "broad", "comprehensive"], "ant": ["limited", "narrow"]}, {"eng": "expend", "kor": "소비하다", "syn": ["spend", "consume", "use"], "ant": ["save", "conserve"]}, {"eng": "unavoidable", "kor": "피할 수 없는", "syn": ["inevitable", "inescapable", "certain"], "ant": ["avoidable", "preventable"]}, {"eng": "burden", "kor": "부담", "syn": ["load", "weight", "strain"], "ant": ["relief", "advantage"]}, {"eng": "consume", "kor": "소모하다", "syn": ["use up", "deplete", "exhaust"], "ant": ["accumulate", "save"]}, {"eng": "productive", "kor": "생산적인", "syn": ["constructive", "efficient"], "ant": ["unproductive"]}, {"eng": "capability", "kor": "능력", "syn": ["ability"], "ant": ["inability", "incapacity"]}, {"eng": "efficient", "kor": "효율적인", "syn": ["effective", "productive", "economical"], "ant": ["inefficient", "wasteful"]}, {"eng": "current", "kor": "현재의", "syn": ["present"], "ant": ["past", "former"]}, {"eng": "trend", "kor": "추세, 동향", "syn": ["tendency", "inclination"], "ant": []}, {"eng": "reverse", "kor": "뒤바꾸다", "syn": ["invert", "overturn"], "ant": ["maintain"]}, {"eng": "simulate", "kor": "모방하다", "syn": ["imitate", "mimic"], "ant": []}, {"eng": "accomplish", "kor": "달성하다", "syn": ["achieve", "complete"], "ant": ["fail"]}, {"eng": "purpose", "kor": "목적", "syn": ["aim", "goal", "objective"], "ant": []}, {"eng": "constraint", "kor": "제약", "syn": ["limitation", "restriction", "restraint"], "ant": ["freedom"]}, {"eng": "cause", "kor": "유발하다", "syn": ["bring about", "generate", "produce"], "ant": ["prevent", "stop"]}, {"eng": "anxiety", "kor": "불안감", "syn": ["worry", "apprehension", "unease"], "ant": ["calmness", "peace"]}, {"eng": "house", "kor": "보관하다", "syn": ["store", "keep"], "ant": ["discard", "release"]}, {"eng": "express", "kor": "표현하다", "syn": ["reveal"], "ant": ["hide", "conceal"]}, {"eng": "remind", "kor": "상기시키다", "syn": ["prompt", "recall", "point out"], "ant": ["forget", "ignore"]}, {"eng": "revision", "kor": "수정, 정정", "syn": ["modification", "alteration"], "ant": []}, {"eng": "own", "kor": "소유하다", "syn": ["possess", "hold", "have"], "ant": ["lack", "be without"]}, {"eng": "input", "kor": "입력", "syn": ["entry"], "ant": ["output"]}, {"eng": "inspired", "kor": "영감을 받은", "syn": ["motivated", "stimulated", "encouraged"], "ant": ["uninspired", "discouraged"]}, {"eng": "imaginative", "kor": "상상력이 풍부한", "syn": ["creative", "inventive"], "ant": []}, {"eng": "overcome", "kor": "압도하다", "syn": ["overwhelm", "overpower", "conquer"], "ant": []}, {"eng": "indecision", "kor": "망설임", "syn": ["hesitation"], "ant": ["decision", "determination"]}, {"eng": "streamline", "kor": "간소화하다", "syn": ["simplify"], "ant": ["complicate"]}, {"eng": "familiarity", "kor": "친숙함", "syn": ["acquaintance", "intimacy", "closeness"], "ant": ["unfamiliarity", "strangeness"]}, {"eng": "mastery", "kor": "숙달", "syn": ["proficiency", "expertise"], "ant": ["incompetence"]}, {"eng": "competence", "kor": "능력", "syn": ["capability", "proficiency", "ability"], "ant": ["incompetence", "inability"]}, {"eng": "recognize", "kor": "인식하다", "syn": ["identify", "perceive", "notice"], "ant": []}, {"eng": "genuine", "kor": "진짜의", "syn": ["authentic", "real", "true", "actual"], "ant": ["fake", "counterfeit"]}, {"eng": "struggle", "kor": "어려움을 겪다", "syn": ["strive", "fight", "labor"], "ant": ["yield", "surrender"]}, {"eng": "recall", "kor": "회상하다", "syn": ["recollect"], "ant": ["forget"]}, {"eng": "independently", "kor": "독립적으로", "syn": ["autonomously"], "ant": ["dependently"]}, {"eng": "bias", "kor": "편향", "syn": ["prejudice", "partiality", "leaning"], "ant": ["fairness", "impartiality"]}, {"eng": "overestimate", "kor": "과대평가하다", "syn": ["overrate", "overvalue", "exaggerate"], "ant": []}, {"eng": "informally", "kor": "비공식적으로", "syn": ["casually", "unofficially"], "ant": ["formally", "officially"]}, {"eng": "actively", "kor": "적극적으로", "syn": ["energetically", "enthusiastically"], "ant": ["passively"]}, {"eng": "reveal", "kor": "드러내다", "syn": ["disclose", "uncover", "expose"], "ant": ["hide", "conceal"]}, {"eng": "imaginary", "kor": "가상의, 상상의", "syn": ["fictitious", "unreal"], "ant": ["actual", "real"]}, {"eng": "employ", "kor": "이용하다", "syn": ["use", "utilize", "apply"], "ant": ["abandon", "discard"]}, {"eng": "ultimately", "kor": "궁극적으로", "syn": ["finally", "eventually"], "ant": []}, {"eng": "adopt", "kor": "채택하다", "syn": ["embrace", "assume", "take on"], "ant": ["reject", "discard"]}, {"eng": "transform", "kor": "변화시키다", "syn": ["convert", "turn", "change"], "ant": []}, {"eng": "reliable", "kor": "신뢰할 수 있는", "syn": ["dependable", "trustworthy", "steadfast"], "ant": ["unreliable", "untrustworthy"]}, {"eng": "illusion", "kor": "착각", "syn": ["delusion"], "ant": ["reality", "truth"]}, {"eng": "official", "kor": "관리", "syn": ["officer", "bureaucrat", "executive"], "ant": ["private individual"]}, {"eng": "record", "kor": "기록하다", "syn": ["document", "register", "log"], "ant": ["erase", "delete"]}, {"eng": "leap", "kor": "도약", "syn": ["development", "breakthrough"], "ant": ["fall", "decline"]}, {"eng": "separate from", "kor": "~을 ~로부터 분리하다", "syn": ["detach from", "isolate from"], "ant": ["combine with"]}, {"eng": "represent", "kor": "표현하다", "syn": ["stand for", "symbolize"], "ant": []}, {"eng": "existing", "kor": "존재하는, 기존의", "syn": [], "ant": ["nonexistent"]}, {"eng": "independent of", "kor": "~과 상관없이", "syn": ["separate from", "free from", "irrespective of"], "ant": ["dependent on", "reliant on"]}, {"eng": "civilization", "kor": "문명", "syn": [], "ant": []}, {"eng": "extremely", "kor": "매우", "syn": ["exceptionally", "tremendously"], "ant": ["slightly"]}, {"eng": "emphasis", "kor": "강조", "syn": ["stress", "focus", "significance"], "ant": []}, {"eng": "take account of", "kor": "~을 고려하다", "syn": ["consider"], "ant": ["ignore", "overlook", "disregard"]}, {"eng": "dislike", "kor": "싫어하다", "syn": ["hate", "detest", "abhor", "loathe"], "ant": ["like", "love", "adore"]}, {"eng": "context", "kor": "맥락", "syn": ["situation", "circumstance", "background"], "ant": []}, {"eng": "minimal", "kor": "최소한의", "syn": [], "ant": ["maximal", "maximum"]}, {"eng": "antisocial", "kor": "반사회적인", "syn": [], "ant": ["prosocial"]}, {"eng": "prosocial", "kor": "친사회적인", "syn": [], "ant": ["antisocial"]}, {"eng": "tendency", "kor": "경향", "syn": ["inclination"], "ant": []}, {"eng": "closely", "kor": "면밀히", "syn": ["carefully", "attentively", "thoroughly"], "ant": ["carelessly", "superficially"]}, {"eng": "efficiently", "kor": "효율적으로", "syn": ["effectively", "productively"], "ant": ["inefficiently", "ineffectively"]}, {"eng": "proper", "kor": "타당한", "syn": ["appropriate", "suitable"], "ant": ["inappropriate", "unsuitable"]}, {"eng": "conform", "kor": "따르다, 순응하다", "syn": ["comply", "follow", "yield"], "ant": ["rebel", "oppose"]}, {"eng": "convention", "kor": "관습, 관례", "syn": ["custom", "tradition", "norm"], "ant": []}, {"eng": "appropriately", "kor": "적절하게", "syn": ["suitably", "properly"], "ant": ["inappropriately", "improperly"]}, {"eng": "demonstrate", "kor": "입증하다", "syn": ["prove", "show", "indicate"], "ant": ["disprove", "hide"]}, {"eng": "concept", "kor": "개념", "syn": ["idea", "notion", "theory"], "ant": ["concrete reality"]}, {"eng": "stable", "kor": "안정적인", "syn": ["steady", "constant"], "ant": ["unstable", "unsteady"]}, {"eng": "strength", "kor": "강도", "syn": ["intensity", "force", "power"], "ant": ["weakness", "frailty"]}, {"eng": "affect", "kor": "영향을 미치다", "syn": ["influence", "impact"], "ant": []}, {"eng": "release", "kor": "분비하다, 내보내다", "syn": ["emit", "discharge", "secrete"], "ant": ["absorb", "contain"]}, {"eng": "treat", "kor": "치료하다", "syn": ["cure", "heal", "remedy"], "ant": []}, {"eng": "battle with", "kor": "~와 싸우다", "syn": ["struggle with", "combat"], "ant": ["give in to", "surrender to"]}, {"eng": "desire", "kor": "욕구", "syn": ["craving", "longing", "urge"], "ant": ["aversion", "indifference"]}, {"eng": "initially", "kor": "처음에", "syn": ["originally", "at first", "primarily"], "ant": ["finally", "eventually"]}, {"eng": "mention", "kor": "언급하다", "syn": ["note"], "ant": ["ignore", "overlook"]}, {"eng": "suggest", "kor": "시사하다", "syn": ["imply", "indicate", "hint"], "ant": []}, {"eng": "complex", "kor": "복잡한", "syn": ["complicated", "intricate", "involved"], "ant": ["simple", "straightforward"]}, {"eng": "recognize", "kor": "인식하다", "syn": ["acknowledge", "realize", "admit"], "ant": ["ignore", "overlook"]}, {"eng": "massive", "kor": "거대한", "syn": ["huge", "enormous", "immense", "gigantic"], "ant": ["tiny", "small"]}, {"eng": "remove", "kor": "제거하다", "syn": ["eliminate", "delete", "extract", "erase"], "ant": ["add", "include", "retain"]}, {"eng": "reduction", "kor": "축소, 감소", "syn": ["decrease", "decline"], "ant": ["expansion"]}, {"eng": "eventually", "kor": "결국", "syn": ["finally", "ultimately", "in the end"], "ant": ["initially", "originally"]}, {"eng": "rooted", "kor": "뿌리 깊은", "syn": ["embedded", "established", "anchored", "settled"], "ant": []}, {"eng": "face", "kor": "직면하다", "syn": ["confront", "encounter"], "ant": ["avoid", "evade"]}, {"eng": "rapid", "kor": "빠른", "syn": ["fast", "quick", "swift"], "ant": ["slow", "sluggish"]}, {"eng": "adoption", "kor": "채택", "syn": ["embrace", "acceptance", "introduction"], "ant": []}, {"eng": "explosion", "kor": "폭발적 증가", "syn": ["surge"], "ant": ["decline", "decrease", "reduction"]}, {"eng": "symbolize", "kor": "상징하다", "syn": ["represent", "embody", "stand for", "signify"], "ant": []}, {"eng": "convenience", "kor": "편리함", "syn": [], "ant": ["inconvenience"]}, {"eng": "notice", "kor": "알아차리다", "syn": ["observe", "perceive", "spot"], "ant": []}, {"eng": "counter", "kor": "대응하다", "syn": ["combat", "respond to", "address"], "ant": []}, {"eng": "launch", "kor": "시작하다", "syn": ["start", "begin", "initiate"], "ant": ["end", "conclude"]}, {"eng": "propose", "kor": "제안하다", "syn": ["suggest", "offer", "present"], "ant": ["withdraw", "refuse"]}, {"eng": "roughly", "kor": "대략, 거의", "syn": ["approximately", "nearly"], "ant": ["exactly", "precisely", "accurately"]}, {"eng": "commitment", "kor": "약속, 헌신", "syn": ["dedication", "devotion", "loyalty"], "ant": []}, {"eng": "particular", "kor": "특정한", "syn": ["specific", "certain", "given"], "ant": ["general"]}, {"eng": "practice", "kor": "관행, 관례", "syn": ["custom", "tradition", "habit"], "ant": []}, {"eng": "specific", "kor": "특정한", "syn": ["particular", "certain", "given"], "ant": ["general"]}, {"eng": "sensible", "kor": "사리에 맞는", "syn": ["meaningful", "intelligible", "comprehensible"], "ant": []}, {"eng": "major", "kor": "주요한, 중대한", "syn": ["primary", "crucial", "significant"], "ant": ["minor", "trivial"]}, {"eng": "progress", "kor": "진보, 진전", "syn": ["advancement", "development", "improvement", "growth"], "ant": ["regression", "decline", "stagnation"]}, {"eng": "horizontal", "kor": "수평적인", "syn": ["lateral", "sideway", "parallel"], "ant": ["vertical", "upright"]}, {"eng": "shift", "kor": "전환", "syn": ["change", "transition"], "ant": []}, {"eng": "provide", "kor": "제공하다", "syn": ["supply", "offer", "give"], "ant": ["withhold", "deprive"]}, {"eng": "striking", "kor": "인상적인", "syn": ["impressive", "remarkable"], "ant": []}, {"eng": "raise", "kor": "들어올리다", "syn": ["lift", "elevate", "hoist"], "ant": ["lower", "drop"]}, {"eng": "reveal", "kor": "드러내다", "syn": ["show", "expose", "uncover"], "ant": ["conceal", "hide", "cover"]}, {"eng": "convince", "kor": "납득시키다", "syn": ["persuade", "assure", "satisfy"], "ant": ["dissuade", "deter"]}, {"eng": "foolish", "kor": "어리석은", "syn": ["silly", "stupid", "absurd"], "ant": ["wise", "sensible"]}, {"eng": "miraculous", "kor": "기적적인", "syn": ["wonderful", "amazing", "marvelous"], "ant": ["ordinary", "common", "unremarkable"]}, {"eng": "contrast", "kor": "대조, 대비", "syn": ["difference", "distinction", "discrepancy"], "ant": ["similarity", "likeness", "resemblance"]}, {"eng": "stretch", "kor": "뻗어 있다", "syn": ["extend", "spread", "elongate"], "ant": ["shrink", "compress"]}, {"eng": "expert", "kor": "전문가", "syn": ["specialist", "authority", "professional"], "ant": ["amateur", "novice"]}, {"eng": "independence", "kor": "독립심", "syn": ["self-reliance"], "ant": ["dependence", "reliance"]}, {"eng": "resilience", "kor": "회복 탄력성", "syn": ["toughness", "elasticity", "endurance"], "ant": ["fragility", "vulnerability"]}, {"eng": "navigate", "kor": "~을 이끌다", "syn": ["guide", "direct", "steer"], "ant": []}, {"eng": "structural", "kor": "구조적인", "syn": ["organizational", "systemic", "foundational"], "ant": []}, {"eng": "actual", "kor": "실제적인", "syn": ["real", "factual", "genuine"], "ant": ["hypothetical", "imaginary"]}, {"eng": "populate", "kor": "(~에) 살다", "syn": ["inhabit", "reside"], "ant": []}, {"eng": "lightly", "kor": "가볍게, 부드럽게", "syn": ["gently", "softly", "delicately"], "ant": ["heavily", "forcefully"]}, {"eng": "independent", "kor": "독립적인", "syn": ["self-reliant"], "ant": ["dependent", "reliant"]}, {"eng": "supportive", "kor": "지원적인, 지지하는", "syn": ["cooperative"], "ant": []}, {"eng": "tolerance", "kor": "관용", "syn": ["patience", "endurance"], "ant": ["intolerance", "impatience"]}]};
+
+let curPart=1, mode='A', round=1, wrongWords=[], words=[], qQueue=[], qIdx=0, sc=0, tot=0, answered=false, tabCnt=0;
+
+// Tab detection
+document.addEventListener('visibilitychange',()=>{
+  if(document.hidden && isActive('qa')){
+    tabCnt++;
+    document.getElementById('twcnt').textContent=tabCnt;
+    document.getElementById('tabw').style.display='flex';
+  }
+});
+document.addEventListener('copy',e=>e.preventDefault());
+document.addEventListener('paste',e=>e.preventDefault());
+document.addEventListener('contextmenu',e=>e.preventDefault());
+
+function isActive(id){return document.getElementById(id).classList.contains('active');}
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  const showPb = id==='qa';
+  document.getElementById('pbwrap').style.display = showPb?'block':'none';
+}
+
+function goPartSelect(){
+  document.getElementById('perfect').style.display='none';
+  showScreen('psel');
+}
+
+function selectPart(n){
+  curPart=n;
+  document.getElementById('part-label').textContent=`PART ${n} 선택됨 (30단어)`;
+  showScreen('msel');
+}
+
+function goModeSelect(){showScreen('msel');}
+
+function startMode(m){
+  mode=m; round=1; wrongWords=[]; sc=0; tot=0;
+  words=PARTS[curPart];
+  document.getElementById('rbspan').textContent='1라운드';
+  showScreen('qa');
+  buildAndStart([...words]);
+}
+
+function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+
+function buildQs(wl){
+  const qs=[];
+  shuffle(wl).forEach(w=>{
+    if(mode==='A'){
+      qs.push({type:'meaning',w});
+      w.syn.forEach(s=>qs.push({type:'syn',w,p:s}));
+      w.ant.forEach(a=>qs.push({type:'ant',w,p:a}));
+    }else{
+      w.syn.forEach(s=>qs.push({type:'syn_b',w,p:s}));
+      w.ant.forEach(a=>qs.push({type:'ant_b',w,p:a}));
+      if(!w.syn.length&&!w.ant.length) qs.push({type:'meaning',w});
+    }
+  });
+  return qs;
+}
+
+function buildAndStart(wl){qQueue=buildQs(wl);qIdx=0;sc=0;tot=0;loadQ();}
+
+function loadQ(){
+  if(qIdx>=qQueue.length){showResult();return;}
+  renderQ(qQueue[qIdx]);
+  updatePb(qIdx,qQueue.length);
+}
+
+function updatePb(i,t){
+  const pct=Math.round(i/t*100);
+  document.getElementById('pbfill').style.width=pct+'%';
+  document.getElementById('pbtxt').textContent=`${i} / ${t} 문제`;
+}
+
+function getWrong(exc,n=3){return shuffle(words.filter(w=>w.eng!==exc)).slice(0,n);}
+
+function renderQ(q){
+  answered=false;
+  document.getElementById('fb').style.display='none';
+  document.getElementById('nxtbtn').style.display='none';
+  const og=document.getElementById('ogrid');og.innerHTML='';
+  const qh=document.getElementById('qhint');
+
+  if(q.type==='meaning'){
+    document.getElementById('qlbl').textContent='이 단어의 뜻은?';
+    document.getElementById('qword').textContent=q.w.eng;
+    document.getElementById('qkor').textContent='';
+    qh.style.display='none';
+    const ws=getWrong(q.w.eng).map(w=>w.kor);
+    makeOpts(og,shuffle([q.w.kor,...ws]),q.w.kor,'#1a5276');
+  }else if(q.type==='syn'){
+    document.getElementById('qlbl').textContent='동의어(SYN) 찾기';
+    document.getElementById('qword').textContent=q.w.eng;
+    document.getElementById('qkor').textContent=q.w.kor;
+    qh.textContent='💡 이 단어와 비슷한 뜻의 단어는?';qh.style.display='block';
+    const ws=getWrong(q.w.eng).map(w=>{const p=[...w.syn,...w.ant];return p.length?p[0]:w.eng;});
+    makeOpts(og,shuffle([q.p,...ws]),q.p,'#1565c0');
+  }else if(q.type==='ant'){
+    document.getElementById('qlbl').textContent='반의어(ANT) 찾기';
+    document.getElementById('qword').textContent=q.w.eng;
+    document.getElementById('qkor').textContent=q.w.kor;
+    qh.textContent='💡 이 단어와 반대 뜻의 단어는?';qh.style.display='block';
+    const ws=getWrong(q.w.eng).map(w=>w.eng);
+    makeOpts(og,shuffle([q.p,...ws]),q.p,'#c62828');
+  }else if(q.type==='syn_b'){
+    document.getElementById('qlbl').textContent='동의어(SYN)의 원단어는? (Mode B)';
+    document.getElementById('qword').textContent=q.p;
+    document.getElementById('qkor').textContent='동의어 → 원단어 찾기';
+    qh.style.display='none';
+    const ws=getWrong(q.w.eng).map(w=>w.eng);
+    makeOpts(og,shuffle([q.w.eng,...ws]),q.w.eng,'#1565c0');
+  }else if(q.type==='ant_b'){
+    document.getElementById('qlbl').textContent='반의어(ANT)의 원단어는? (Mode B)';
+    document.getElementById('qword').textContent=q.p;
+    document.getElementById('qkor').textContent='반의어 → 원단어 찾기';
+    qh.style.display='none';
+    const ws=getWrong(q.w.eng).map(w=>w.eng);
+    makeOpts(og,shuffle([q.w.eng,...ws]),q.w.eng,'#c62828');
+  }
+}
+
+function makeOpts(container,opts,correct,color){
+  opts.forEach(opt=>{
+    const b=document.createElement('button');
+    b.className='obtn';b.textContent=opt;b.style.color=color;
+    b.onclick=()=>checkA(b,opt,correct,qQueue[qIdx]);
+    container.appendChild(b);
+  });
+}
+
+function checkA(btn,sel,correct,q){
+  if(answered)return;
+  answered=true;tot++;
+  document.querySelectorAll('.obtn').forEach(b=>b.disabled=true);
+  const fb=document.getElementById('fb');
+  if(sel===correct){
+    btn.classList.add('correct');
+    fb.className='ok';fb.textContent='✅ 정답!';fb.style.display='block';
+    sc++;
+  }else{
+    btn.classList.add('wrong');
+    document.querySelectorAll('.obtn').forEach(b=>{if(b.textContent===correct)b.classList.add('correct');});
+    fb.className='ng';fb.textContent=`❌ 오답! 정답: ${correct}`;fb.style.display='block';
+    if(q&&q.w&&!wrongWords.find(w=>w.eng===q.w.eng)) wrongWords.push(q.w);
+  }
+  document.getElementById('nxtbtn').style.display='block';
+}
+
+function nextQ(){qIdx++;loadQ();}
+
+async function saveResult(d){
+  try{
+    await fetch(FIREBASE,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({fields:{
+      quizType:{stringValue:d.qt},score:{integerValue:d.sc},total:{integerValue:d.tot},
+      wrongCount:{integerValue:d.wc},round:{integerValue:d.rd},part:{integerValue:d.pt},
+      timestamp:{stringValue:new Date().toISOString()}
+    }})});
+  }catch(e){}
+}
+
+function showResult(){
+  saveResult({qt:`대성고1_2026년3월모의고사_동반의어_파트${curPart}_${mode}모드_${round}라운드`,sc,tot,wc:wrongWords.length,rd:round,pt:curPart});
+  showScreen('rs');
+  const pct=tot>0?Math.round(sc/tot*100):0;
+  document.getElementById('remoji').textContent=wrongWords.length===0?'🏆':pct>=80?'🎯':'📚';
+  document.getElementById('rtitle').textContent=wrongWords.length===0?'완벽 달성!':`${round}라운드 완료`;
+  document.getElementById('rscore').textContent=`${sc} / ${tot}`;
+  document.getElementById('rsub').textContent=`파트${curPart} · 고1_3월모의고사 · 정답률 ${pct}% · 오답 ${wrongWords.length}개`;
+
+  const wla=document.getElementById('wla');
+  if(wrongWords.length>0){
+    wla.style.display='block';
+    document.getElementById('wli').innerHTML=wrongWords.map(w=>`<div class="wi"><span class="we">${w.eng}</span><span class="wk">${w.kor}</span></div>`).join('');
+    document.getElementById('btnrw').style.display='block';
+  }else{
+    wla.style.display='none';
+    document.getElementById('btnrw').style.display='none';
+    setTimeout(()=>document.getElementById('perfect').style.display='flex',400);
+  }
+}
+
+function retryWrong(){
+  if(!wrongWords.length)return;
+  round++;
+  const prev=[...wrongWords];wrongWords=[];
+  showScreen('qa');
+  document.getElementById('rbspan').textContent=`${round}라운드 (오답재시도)`;
+  buildAndStart(prev);
+}
+
+function retryAll(){
+  round=1;wrongWords=[];
+  showScreen('qa');
+  document.getElementById('rbspan').textContent='1라운드';
+  buildAndStart([...words]);
+}
+</script>
+</body>
+</html>

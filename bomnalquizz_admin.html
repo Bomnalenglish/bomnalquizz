@@ -291,7 +291,6 @@ tr:hover td{background:#f8f9ff;}
   </div>
 </div>
 
-<!-- Firebase — limit 제거! getDocs 전체 조회 -->
 <script type="module">
 import{initializeApp}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import{getFirestore,collection,getDocs,query,orderBy}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
@@ -363,19 +362,22 @@ async function loadData(){
         school: d.school||'-',
         score: d.score||0,
         correct: d.correct||0,
-        wrong: d.wrong||0,
+        wrong: d.wrongCount||d.wrong||0,
         timedOut: d.timedOut||0,
         total: d.total||0,
         elapsed: d.elapsedMin||0,
         wrongWords: d.wrongWords||[],
         quizType: d.quizType||'-',
-        time: d.submittedAt
-          ? (typeof d.submittedAt.toDate==='function' ? d.submittedAt.toDate() : new Date(d.submittedAt))
-          : null,
+        round: d.round||1,
+        part: d.part||0,
+        time: d.timestamp
+          ? new Date(d.timestamp)
+          : (d.submittedAt
+            ? (typeof d.submittedAt.toDate==='function' ? d.submittedAt.toDate() : new Date(d.submittedAt))
+            : null),
       });
     });
 
-    // JS에서 최신순 정렬 (submittedAt 없는 데이터도 포함)
     allData.sort((a,b)=>(b.time||0)-(a.time||0));
 
     document.getElementById('lastRefresh').textContent =
@@ -415,7 +417,10 @@ function renderCharts(){
   }).join('');
 
   const wmap = new Map();
-  allData.forEach(d=>d.wrongWords.forEach(w=>{ if(w.eng) wmap.set(w.eng,(wmap.get(w.eng)||0)+1); }));
+  allData.forEach(d=>d.wrongWords.forEach(w=>{
+    const key = typeof w === 'string' ? w : (w.eng||w);
+    if(key) wmap.set(key,(wmap.get(key)||0)+1);
+  }));
   const top = [...wmap.entries()].sort((a,b)=>b[1]-a[1]).slice(0,10);
   const maxW = top.length ? top[0][1] : 1;
   document.getElementById('wrongWords').innerHTML = top.length
@@ -440,6 +445,47 @@ const gc = s => s>=95?'sS':s>=85?'sA':s>=70?'sB':s>=55?'sC':'sD';
 const gl = s => s>=95?'S':s>=85?'A':s>=70?'B':s>=55?'C':'D';
 const ft = t => t ? t.toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}) : '-';
 
+// ===== 퀴즈 유형 라벨 =====
+function nonSecLabel(qt){
+  if(!qt) return '-';
+
+  if(qt.includes('동반의어')){
+    let lbl = '';
+    // 교과서 과
+    const lesson = qt.match(/교과서(\d+)과/);
+    if(lesson) lbl = `교과서 ${lesson[1]}과`;
+    // 모의고사
+    else if(qt.includes('모의고사')){
+      const yr = qt.match(/(\d{4})/);
+      lbl = yr ? `${yr[1]} 3월모고` : '3월모고';
+    }
+    // 올림포스
+    else if(qt.includes('올림포스')) lbl = '올림포스';
+    else lbl = '동반의어';
+    // 파트
+    const part = qt.match(/파트(\d)/);
+    if(part) lbl += ` P${part[1]}`;
+    // 모드 A/B
+    const mode = qt.includes('A모드')?'A':qt.includes('B모드')?'B':'';
+    if(mode) lbl += ` ${mode}`;
+    // 라운드 (1라운드는 생략)
+    const round = qt.match(/(\d+)라운드/);
+    if(round && parseInt(round[1])>1) lbl += ` R${round[1]}`;
+    return lbl;
+  }
+  if(qt.includes('함축의미')) return '함축의미';
+  if(qt.includes('빈칸추론')){
+    const kang = qt.match(/([\dT]+강|전체)/);
+    return '빈칸추론'+(kang?' '+kang[1]:'');
+  }
+  if(qt.includes('어휘퀴즈')) {
+    const complete = qt.includes('오답완료');
+    const label = qt.replace('_어휘퀴즈_오답완료','').replace('_어휘퀴즈','').replace(/_/g,' ');
+    return label + (complete?' ✅':'');
+  }
+  return qt.slice(0,16);
+}
+
 function secLabel(qt){
   if(!qt) return '-';
   const m = qt.match(/(\d+)섹션/);
@@ -448,8 +494,7 @@ function secLabel(qt){
   if(qt.includes('오답완료')) return '오답완료';
   if(qt.includes('오답')) return '오답재시';
   if(qt.includes('동반의어')){
-    const mode = qt.includes('A모드')?'A':qt.includes('B모드')?'B':'';
-    return '동반의어'+(mode?' '+mode+'모드':'');
+    return nonSecLabel(qt);
   }
   if(qt.includes('함축의미')) return '함축의미';
   if(qt.includes('빈칸추론')) return '빈칸추론';
@@ -464,9 +509,15 @@ function renderTable(data){
     return;
   }
   const rows = data.map((d,i)=>{
-    const chips = d.wrongWords.slice(0,20).map(w=>`<span class="wt-chip">${w.eng}<span class="wa">→${w.kor||w.correct||''}</span></span>`).join('');
-    const sl = secLabel(d.quizType);
-    const slStyle = sl==='전체'?'background:#e3f2fd;color:#1565c0'
+    const chips = d.wrongWords.slice(0,20).map(w=>{
+      const eng = typeof w === 'string' ? w : (w.eng||w);
+      const kor = typeof w === 'object' ? (w.kor||w.correct||'') : '';
+      return `<span class="wt-chip">${eng}${kor?`<span class="wa">→${kor}</span>`:''}</span>`;
+    }).join('');
+    const sl = nonSecLabel(d.quizType);
+    const isSynanm = d.quizType && d.quizType.includes('동반의어');
+    const slStyle = isSynanm ? 'background:#e8f5e9;color:#2e7d32'
+                  : sl==='전체'?'background:#e3f2fd;color:#1565c0'
                   : sl==='오답재시'?'background:#fff3e0;color:#e65100'
                   : sl==='오답완료'?'background:#e8f5e9;color:#2e7d32'
                   : sl==='어휘퀴즈'?'background:#f3e5f5;color:#6a1b9a'
@@ -475,18 +526,20 @@ function renderTable(data){
     const slHtml = sl!=='-'
       ? `<span style="display:inline-block;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:800;${slStyle}">${sl}</span>`
       : `<span style="color:var(--muted);font-size:11px">-</span>`;
+    const roundBadge = d.round > 1
+      ? `<span style="font-size:10px;color:#e65100;margin-left:4px">${d.round}라운드</span>` : '';
     return `<tbody>
       <tr>
         <td style="color:var(--muted)">${i+1}</td>
         <td><strong>${d.name}</strong></td>
         <td>${d.school}</td>
-        <td style="text-align:center">${slHtml}</td>
+        <td style="text-align:center">${slHtml}${roundBadge}</td>
         <td><span class="sp ${gc(d.score)}">${d.score}점 (${gl(d.score)})</span></td>
-        <td style="color:var(--green);font-weight:800">${d.correct}</td>
+        <td style="color:var(--green);font-weight:800">${d.correct||'-'}</td>
         <td style="color:${d.wrong>0?'var(--red)':'var(--green)'};font-weight:800">${d.wrong}</td>
         <td style="color:${d.timedOut>0?'#e65100':'var(--green)'};font-weight:800">${d.timedOut}</td>
         <td>${d.total}</td>
-        <td>${d.elapsed}분</td>
+        <td>${d.elapsed?d.elapsed+'분':'-'}</td>
         <td style="font-size:11px">${ft(d.time)}</td>
         <td>${d.wrongWords.length>0?`<button class="wt-btn" onclick="toggleW(this)">오답 ${d.wrongWords.length}개 ▼</button>`:'<span style="color:var(--green)">✅ 없음</span>'}</td>
       </tr>
@@ -523,31 +576,6 @@ function categorize(qt){
   return 'other';
 }
 
-function nonSecLabel(qt){
-  if(!qt) return qt;
-  if(qt.includes('동반의어')){
-    const yr = qt.match(/(\d{4})/);
-    const mo = qt.match(/(\d{1,2})월/);
-    const mode = qt.includes('A모드')?'A':qt.includes('B모드')?'B':'';
-    let lbl = '동반의어';
-    if(yr) lbl += ' '+yr[1];
-    if(mo) lbl += '.'+mo[1];
-    if(mode) lbl += ' '+mode;
-    return lbl;
-  }
-  if(qt.includes('함축의미')) return '함축의미';
-  if(qt.includes('빈칸추론')){
-    const kang = qt.match(/([\dT]+강|전체)/);
-    return '빈칸추론'+(kang?' '+kang[1]:'');
-  }
-  if(qt.includes('어휘퀴즈')) {
-    const complete = qt.includes('오답완료');
-    const label = qt.replace('_어휘퀴즈_오답완료','').replace('_어휘퀴즈','').replace(/_/g,' ');
-    return label + (complete?' ✅':'');
-  }
-  return qt.slice(0,14);
-}
-
 function renderSectionView(){
   const sq = document.getElementById('secSchool')?.value || '';
   const nq = (document.getElementById('secName')?.value || '').trim().toLowerCase();
@@ -570,7 +598,13 @@ function renderSectionView(){
     students[key].records.push(d);
   });
 
-  const KNOWN_MAX = {'종촌고1':7,'종촌고2':16,'고운고1':11,'고운고2':11,'종촌고3':0,'종촌중2':0,'어진중2':0,'고운중2':0};
+  // 학교별 섹션 최대값 (어휘퀴즈용)
+  const KNOWN_MAX = {
+    '종촌고1':7,'종촌고2':16,
+    '고운고1':11,'고운고2':11,
+    '종촌고3':0,'종촌중2':0,'어진중2':0,'고운중2':0,
+    '대성고1':0  // 대성고1은 섹션 없음 (동반의어만)
+  };
 
   const html = Object.values(students).map(st => {
     const secGroups = {};
@@ -621,14 +655,86 @@ function renderSectionView(){
         </div>`;
     }).join('');
 
+    // 동반의어 퀴즈: 파트별로 묶어서 표시
+    const synanmRecords = nonSecRecords.filter(d => d.quizType && d.quizType.includes('동반의어'));
+    const otherRecords  = nonSecRecords.filter(d => !d.quizType || !d.quizType.includes('동반의어'));
+
+    // 동반의어: 파트별 최고 라운드 기록만 표시
+    const synanmMap = {};
+    synanmRecords.forEach(d => {
+      // key: 교과서1과_A모드 / 2026년3월모의고사_파트1_A모드 등
+      const partMatch = d.quizType.match(/파트(\d)/);
+      const modeMatch = d.quizType.includes('A모드')?'A':d.quizType.includes('B모드')?'B':'';
+      const lessonMatch = d.quizType.match(/교과서(\d+)과/);
+      const isOlym = d.quizType.includes('올림포스');
+      const isMarch = d.quizType.includes('모의고사');
+      let groupKey = '';
+      if(lessonMatch) groupKey = `lesson${lessonMatch[1]}`;
+      else if(isOlym) groupKey = 'olympos';
+      else if(isMarch) groupKey = 'march';
+      else groupKey = 'other';
+      const partKey = partMatch ? `p${partMatch[1]}` : 'p0';
+      const key = `${groupKey}_${partKey}_${modeMatch}`;
+      if(!synanmMap[key] || (d.round||1) > (synanmMap[key].round||1)){
+        synanmMap[key] = d;
+      }
+    });
+
+    // 동반의어 그룹별 블록
+    const synanmGroups = {};
+    Object.values(synanmMap).forEach(d => {
+      const lessonMatch = d.quizType.match(/교과서(\d+)과/);
+      const isOlym = d.quizType.includes('올림포스');
+      const isMarch = d.quizType.includes('모의고사');
+      let gname = '';
+      if(lessonMatch) gname = `📖 교과서 ${lessonMatch[1]}과 동반의어`;
+      else if(isOlym) gname = '📚 올림포스 동반의어';
+      else if(isMarch){
+        const yr = d.quizType.match(/(\d{4})/);
+        gname = `📝 ${yr?yr[1]+'년 ':''}3월 모의고사 동반의어`;
+      } else gname = '🔤 동반의어';
+      if(!synanmGroups[gname]) synanmGroups[gname] = [];
+      synanmGroups[gname].push(d);
+    });
+
+    const synanmHtml = Object.entries(synanmGroups).map(([gname, records]) => {
+      const cells = records.sort((a,b) => {
+        const pa = (a.quizType.match(/파트(\d)/)||[,'0'])[1];
+        const pb = (b.quizType.match(/파트(\d)/)||[,'0'])[1];
+        return pa.localeCompare(pb) || (a.quizType.includes('A모드')?-1:1);
+      }).map(d => {
+        const isPerfect = d.wrong === 0 && (d.round||1) > 1;
+        const cellClass = isPerfect ? 'perfect' : d.wrong > 0 ? 'has-wrong' : 'perfect';
+        const partMatch = d.quizType.match(/파트(\d)/);
+        const modeMatch = d.quizType.includes('A모드')?'A':d.quizType.includes('B모드')?'B':'';
+        const partLabel = partMatch ? `파트${partMatch[1]}` : '';
+        const timeStr = d.time ? d.time.toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}) : '';
+        const roundStr = (d.round||1) > 1 ? `<div style="font-size:10px;color:#e65100">${d.round}라운드</div>` : '';
+        const perfectBadge = d.wrong === 0 && (d.round||1) > 1
+          ? '<div style="font-size:10px;color:#2e7d32;font-weight:900">🏆 완료!</div>' : '';
+        return `<div class="sec-cell ${cellClass}" style="min-width:110px;text-align:left;">
+          <div style="font-size:10px;font-weight:800;color:var(--muted);margin-bottom:3px;">${partLabel}${modeMatch?' '+modeMatch+'모드':''}</div>
+          <div class="sec-score">${d.score}점</div>
+          ${d.wrong>0?`<div class="sec-wrong">오답 ${d.wrong}개</div>`:''}
+          ${roundStr}${perfectBadge}
+          <div class="sec-time">${timeStr}</div>
+        </div>`;
+      }).join('');
+      const allPerfect = records.every(d => d.wrong === 0);
+      return `<div style="margin-bottom:14px;">
+        <div style="font-size:11px;font-weight:800;color:var(--muted);margin-bottom:8px;letter-spacing:.5px;">
+          ${gname}
+          ${allPerfect?'<span style="color:var(--green);margin-left:8px;">🏆 전 파트 완료!</span>':''}
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;">${cells}</div>
+      </div>`;
+    }).join('');
+
+    // 기타 기록 (함축의미, 빈칸추론 등)
     const nonSecMap = {};
-    nonSecRecords.forEach(d => {
-      // 어휘퀴즈_오답완료는 원본 어휘퀴즈 키로 합쳐서 최고 버전으로 표시
-      const baseKey = d.quizType
-        ? d.quizType.replace('_오답완료','')
-        : d.quizType;
+    otherRecords.forEach(d => {
+      const baseKey = d.quizType ? d.quizType.replace('_오답완료','') : d.quizType;
       if(!nonSecMap[baseKey] || (d.quizType && d.quizType.includes('오답완료'))){
-        // 오답완료가 있으면 우선 표시
         nonSecMap[baseKey] = d;
       } else if(d.time && nonSecMap[baseKey].time && d.time > nonSecMap[baseKey].time && !nonSecMap[baseKey].quizType?.includes('오답완료')){
         nonSecMap[baseKey] = d;
@@ -637,7 +743,7 @@ function renderSectionView(){
 
     const nonSecHtml = Object.values(nonSecMap).length > 0 ? `
       <div style="margin-bottom:10px;">
-        <div style="font-size:11px;font-weight:800;color:var(--muted);margin-bottom:8px;letter-spacing:.5px;">🔤 모의고사·수능·어휘 퀴즈</div>
+        <div style="font-size:11px;font-weight:800;color:var(--muted);margin-bottom:8px;letter-spacing:.5px;">🔤 기타 퀴즈</div>
         <div style="display:flex;flex-wrap:wrap;gap:8px;">
           ${Object.values(nonSecMap).sort((a,b)=>(b.time||0)-(a.time||0)).map(d => {
             const isPerfect = d.wrong === 0;
@@ -671,6 +777,7 @@ function renderSectionView(){
         </div>
       </div>
       ${secBlocksHtml}
+      ${synanmHtml}
       ${nonSecHtml}
     </div>`;
   }).join('');
@@ -679,12 +786,12 @@ function renderSectionView(){
 }
 
 function exportCSV(){
-  const hdr = ['이름','학교','퀴즈유형','점수','정답','오답','시간초과','총문제','소요(분)','제출시간','오답단어'];
+  const hdr = ['이름','학교','퀴즈유형','점수','정답','오답','시간초과','총문제','라운드','제출시간','오답단어'];
   const rows = allData.map(d=>[
     d.name, d.school, d.quizType, d.score, d.correct, d.wrong, d.timedOut,
-    d.total, d.elapsed,
+    d.total, d.round||1,
     d.time ? d.time.toLocaleString('ko-KR') : '-',
-    d.wrongWords.map(w=>w.eng).join('|')
+    d.wrongWords.map(w=>typeof w==='string'?w:(w.eng||w)).join('|')
   ]);
   const csv = [hdr,...rows].map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
   const a = document.createElement('a');
