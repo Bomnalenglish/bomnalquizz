@@ -375,6 +375,27 @@ function renderSchoolPicker() {
     a.onmouseleave = () => { a.style.borderColor='#d0dde8'; a.style.background='white'; };
     picker.appendChild(a);
   });
+
+  // 듣기평가 섹션
+  const listenSep = document.createElement("div");
+  listenSep.style.cssText = "grid-column:1/-1;border-top:1px solid #e0d8ce;padding-top:10px;font-family:\'Black Han Sans\',sans-serif;font-size:.82rem;color:#a09890;margin-top:6px;";
+  listenSep.textContent = "🎧 봄날 Listening";
+  picker.appendChild(listenSep);
+
+  LISTENING_LEVELS.forEach((item) => {
+    const a = document.createElement("a");
+    a.href = BASE + item.file + ".html";
+    a.target = "_blank";
+    a.rel = "noopener";
+    a.style.cssText = "display:block;text-decoration:none;border-radius:12px;padding:12px 14px;border:2px solid #d0dde8;background:white;font-family:inherit;transition:border-color .15s,background .15s;";
+    a.innerHTML =
+      '<div style="font-size:.82rem;font-weight:700;color:#2a2a2a">🎧 ' + item.title + '</div>' +
+      (item.sub ? '<div style="font-size:.7rem;color:#7a7570;margin-top:2px">' + item.sub + '</div>' : '') +
+      (item.badge ? '<span style="display:inline-block;font-size:.63rem;background:#3d3d3d;color:#f0ede8;border-radius:20px;padding:1px 8px;margin-top:4px">' + item.badge + '</span>' : '');
+    a.onmouseenter = () => { a.style.borderColor='#888'; a.style.background='#f5f2ee'; };
+    a.onmouseleave = () => { a.style.borderColor='#d0dde8'; a.style.background='white'; };
+    picker.appendChild(a);
+  });
 }
 
 function submitSchool() {
@@ -413,6 +434,10 @@ function openHub() {
 
 const VOCA_LEVELS = [
   {file:'bomnal_voca_level1', title:'Level 1', sub:'기초 단어 · 4지선다', badge:'보카'},
+];
+
+const LISTENING_LEVELS = [
+  {file:'bomnal_listening_go1_2025_02', title:'고1 듣기평가', sub:'2025년 2회 · 20문제', badge:'고1'},
 ];
 
 function renderVoca(){
