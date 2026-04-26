@@ -134,21 +134,6 @@ footer { text-align: center; padding: 28px; color: #aabbc8; font-size: .8rem; fo
   </div>
 </div>
 
-<!-- STEP 3: 코드 입력 -->
-<div id="screen-code" class="screen">
-  <div class="auth-wrap">
-    <div class="auth-card">
-      <h2>🔑 입장 코드를 입력하세요</h2>
-      <p id="code-hint">선생님께 받은 입장 코드를<br>입력해주세요.</p>
-      <input type="password" class="auth-input" id="codeInput" placeholder="입장 코드"
-             onkeydown="if(event.key==='Enter')submitCode()">
-      <div class="err-msg" id="codeErr"></div>
-      <button class="auth-btn" onclick="submitCode()">입장하기 🚀</button>
-      <br><button class="auth-back" onclick="goStep('screen-pick')">← 학교 다시 선택</button>
-    </div>
-  </div>
-</div>
-
 <!-- STEP 4: 학교별 퀴즈 목록 -->
 <div id="screen-school" class="screen">
   <main>
@@ -378,44 +363,15 @@ function submitSchool() {
   }
   const s = SCHOOL_LIST.find(x => x.id === selectedSchoolId);
   studentSchool = s ? s.name : selectedSchoolId;
-  document.getElementById("code-hint").innerHTML =
-    `<strong>${studentName}</strong> 학생, 선생님께 받은<br>입장 코드를 입력해주세요.`;
-  document.getElementById("codeInput").value = "";
-  document.getElementById("codeErr").textContent = "";
-  goStep("screen-code");
-}
-
-// ─── STEP 3: 코드 입력 ───
-function submitCode() {
-  const val = document.getElementById("codeInput").value.trim();
-  const errEl = document.getElementById("codeErr");
-  const inp = document.getElementById("codeInput");
-  if (val !== ACCESS_CODE) {
-    inp.classList.add("err");
-    errEl.textContent = "입장 코드가 틀렸습니다. 선생님께 확인해주세요.";
-    inp.value = "";
-    setTimeout(() => { inp.classList.remove("err"); }, 1000);
-    // 실패 로그
-    if (window._logAccess) window._logAccess({
-      type: "code_fail",
-      name: studentName,
-      school: studentSchool,
-      attempt: val
-    });
-    return;
-  }
-  // 성공 — 세션 저장
+  // 세션 저장 후 바로 허브로
   sessionStorage.setItem("bn_name", studentName);
   sessionStorage.setItem("bn_school", studentSchool);
   sessionStorage.setItem("bn_auth", "1");
-  // 접속 로그
-  if (window._logAccess) window._logAccess({
-    type: "login",
-    name: studentName,
-    school: studentSchool
-  });
+  if (window._logAccess) window._logAccess({ type:"login", name:studentName, school:studentSchool });
   openHub();
 }
+
+
 
 // ─── 허브 열기 ───
 function openHub() {
