@@ -128,9 +128,15 @@ footer { text-align: center; padding: 28px; color: #aabbc8; font-size: .8rem; fo
       <p>본인이 다니는 학교를 선택해주세요.</p>
       <div class="school-picker" id="school-picker"></div>
       <div class="err-msg" id="pickErr"></div>
-      <button class="auth-btn" onclick="submitSchool()">다음 →</button>
+      <button class="auth-btn" onclick="submitSchool()">입장하기 →</button>
       <br><button class="auth-back" onclick="goStep('screen-name')">← 이름 다시 입력</button>
     </div>
+  </div>
+
+  <!-- 봄날 보카 (학교 선택 화면 아래) -->
+  <div style="max-width:380px;margin:20px auto 0;padding:0 24px;">
+    <div style="font-family:'Black Han Sans',sans-serif;font-size:.95rem;color:#2a2a2a;margin-bottom:12px;padding-left:10px;border-left:4px solid #a09890;">📖 봄날 보카</div>
+    <div id="voca-pick-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;"></div>
   </div>
 </div>
 
@@ -149,12 +155,6 @@ footer { text-align: center; padding: 28px; color: #aabbc8; font-size: .8rem; fo
       </div>
     </div>
     <div id="quiz-sections"></div>
-
-    <!-- 봄날 보카 고정 섹션 -->
-    <div style="margin-top:28px;padding-top:24px;border-top:1px solid #e0d8ce;">
-      <div class="section-title">📖 봄날 보카</div>
-      <div id="voca-grid-school" class="cards"></div>
-    </div>
 
   </main>
 </div>
@@ -359,8 +359,28 @@ function renderSchoolPicker() {
       selectedSchoolId = s.id;
       document.getElementById("pickErr").textContent = "";
     };
-    picker.appendChild(btn);
+      picker.appendChild(btn);
   });
+
+  // 보카 렌더
+  const vg = document.getElementById("voca-pick-grid");
+  if(vg){
+    vg.innerHTML = "";
+    const vc = ["c-2","c-4","c-6","c-0"];
+    VOCA_LEVELS.forEach((item,i)=>{
+      const a = document.createElement("a");
+      a.className = "card " + vc[i%vc.length];
+      a.href = BASE + item.file + ".html";
+      a.target = "_blank"; a.rel = "noopener";
+      a.style.cssText = "border-radius:14px;padding:14px 12px;";
+      a.innerHTML =
+        '<span class="card-emoji" style="font-size:1.3rem">📖</span>' +
+        '<div class="card-title" style="font-size:.85rem">'+item.title+'</div>' +
+        (item.sub?'<div class="card-sub" style="font-size:.68rem">'+item.sub+'</div>':'') +
+        (item.badge?'<span class="badge">'+item.badge+'</span>':'');
+      vg.appendChild(a);
+    });
+  }
 }
 
 function submitSchool() {
@@ -489,25 +509,6 @@ function openSchool(s) {
     div.appendChild(grid);
     container.appendChild(div);
   });
-
-  // 보카 섹션 렌더
-  const vg = document.getElementById("voca-grid-school");
-  if(vg){
-    vg.innerHTML = "";
-    const vc = ["c-2","c-4","c-6","c-0"];
-    VOCA_LEVELS.forEach((item,i)=>{
-      const a = document.createElement("a");
-      a.className = "card " + vc[i%vc.length];
-      a.href = BASE + item.file + ".html";
-      a.target = "_blank"; a.rel = "noopener";
-      a.innerHTML =
-        '<span class="card-emoji">📖</span>' +
-        '<div class="card-title">'+item.title+'</div>' +
-        (item.sub?'<div class="card-sub">'+item.sub+'</div>':'') +
-        (item.badge?'<span class="badge">'+item.badge+'</span>':'');
-      vg.appendChild(a);
-    });
-  }
 
   goStep("screen-school");
 }
