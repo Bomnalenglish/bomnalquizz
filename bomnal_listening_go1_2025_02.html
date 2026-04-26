@@ -138,15 +138,15 @@ header{background:linear-gradient(135deg,#f7efe4,#ece0d2);padding:20px 24px 16px
 
 <!-- STEP 2: 퀴즈 -->
 <div id="screen-quiz" class="screen">
-  <div class="audio-bar">
-    <button class="play-btn" id="playBtn" onclick="togglePlay()">▶ 재생</button>
-    <div class="audio-info">
-      <div class="audio-time" id="audioTime">00:00 / 00:00</div>
-      <div class="audio-track" id="audioTrack" onclick="seekAudio(event)">
-        <div class="audio-fill" id="audioFill"></div>
-      </div>
+  <div class="audio-bar" style="flex-direction:column;align-items:stretch;padding:10px 16px;gap:8px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;">
+      <span style="font-family:'Black Han Sans',sans-serif;font-size:.88rem;color:#5c3d1e;">🎧 듣기 음성</span>
+      <div class="answered-badge" id="answeredBadge">0 / 20 선택</div>
     </div>
-    <div class="answered-badge" id="answeredBadge">0 / 20 선택</div>
+    <iframe src="https://drive.google.com/file/d/1oOEh_H8tOj-v5FMqo9lQL0at-wMSRiwN/preview"
+      width="100%" height="44" allow="autoplay"
+      style="border:none;border-radius:8px;background:#f0ede8;"
+      id="audioFrame"></iframe>
   </div>
   <div class="questions-wrap" id="questionsWrap"></div>
   <div class="submit-wrap">
@@ -201,7 +201,7 @@ window._saveResult=async(data)=>{
 
 <script>
 const QUIZ_INFO = { title:'고1 듣기평가', quizType:'봄날Listening_고1', grade:'고1' };
-const AUDIO_FILE = 'https://drive.google.com/uc?export=view&id=1oOEh_H8tOj-v5FMqo9lQL0at-wMSRiwN';
+const AUDIO_FILE = 'https://drive.google.com/file/d/1oOEh_H8tOj-v5FMqo9lQL0at-wMSRiwN/preview';
 
 // ════════ 문제 데이터 (선택지·정답) ════════
 const QUESTIONS = [
@@ -619,11 +619,7 @@ function submitQuiz(){
 function startRetry(){
   round++; answers={}; currentQList=retryQueue;
   renderQuestions(retryQueue);
-  audio.currentTime=0;
-  audio.play().then(()=>{
-    document.getElementById('playBtn').textContent='⏸ 일시정지';
-    document.getElementById('playBtn').classList.add('playing');
-  }).catch(()=>{});
+  // 오답 재시험 시 음성 다시 처음부터 재생하려면 위의 iframe을 새로고침
   showScreen('screen-quiz');
 }
 
