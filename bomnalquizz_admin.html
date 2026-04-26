@@ -112,6 +112,12 @@ tr:hover td{background:#f8f9ff;}
 .load-progress .load-n{font-family:'Black Han Sans',sans-serif;font-size:28px;color:var(--primary);}
 .load-progress .load-l{font-size:12px;color:var(--muted);margin-top:4px;}
 .hidden{display:none!important;}
+.del-btn{background:none;border:1px solid #ffcdd2;border-radius:5px;padding:2px 7px;font-size:10px;cursor:pointer;color:#e53935;}
+.del-btn:hover{background:#ffebee;border-color:#e53935;}
+.btn-delete-all{background:#ffebee;color:#c62828;border:none;padding:8px 16px;border-radius:8px;font-family:'Nanum Gothic',sans-serif;font-size:12px;font-weight:800;cursor:pointer;}
+.btn-delete-all:hover{background:#ffcdd2;}
+.del-confirm{background:white;border:2px solid #e53935;border-radius:12px;padding:16px 20px;margin-bottom:14px;font-size:13px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+.del-confirm span{flex:1;color:#c62828;font-weight:700;}
 @media(max-width:640px){
   .chart-grid{grid-template-columns:1fr;}
   .summary-grid{grid-template-columns:repeat(2,1fr);}
@@ -219,6 +225,7 @@ tr:hover td{background:#f8f9ff;}
             <option value="score_asc">점수↑</option>
           </select>
           <div class="spacer"></div>
+          <button class="btn-delete-all" onclick="confirmDeleteAll()">🗑️ 선택 삭제</button>
           <button class="btn-export"  onclick="exportCSV()">📥 CSV</button>
           <button class="btn-refresh" onclick="loadData()">🔄 새로고침</button>
         </div>
@@ -322,7 +329,7 @@ tr:hover td{background:#f8f9ff;}
 
 <script type="module">
 import{initializeApp}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import{getFirestore,collection,getDocs,query,orderBy}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import{getFirestore,collection,getDocs,query,orderBy,deleteDoc,doc}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 const cfg={apiKey:"AIzaSyCxS524S8KAaF87DomPtl9sJdF-eqes404",authDomain:"bomnalvaca.firebaseapp.com",projectId:"bomnalvaca",storageBucket:"bomnalvaca.firebasestorage.app",messagingSenderId:"115868052300",appId:"1:115868052300:web:765c08867b6f1ce0987de9"};
 const app=initializeApp(cfg);const db=getFirestore(app);
 window._db=db;
@@ -331,6 +338,8 @@ window._getDocs=getDocs;
 window._query=query;
 window._orderBy=orderBy;
 window._fbReady=true;
+window._deleteDoc=deleteDoc;
+window._doc=doc;
 </script>
 
 <script>
@@ -569,6 +578,7 @@ function renderTable(data){
       ? `<span style="font-size:10px;color:#e65100;margin-left:4px">${d.round}라운드</span>` : '';
     return `<tbody>
       <tr>
+        <td><input type="checkbox" class="row-chk" data-id="${d.id}" style="cursor:pointer"></td>
         <td style="color:var(--muted)">${i+1}</td>
         <td><strong>${d.name}</strong></td>
         <td>${d.school}</td>
@@ -581,12 +591,13 @@ function renderTable(data){
         <td>${d.elapsed?d.elapsed+'분':'-'}</td>
         <td style="font-size:11px">${ft(d.time)}</td>
         <td>${(d.wrongWords&&d.wrongWords.length>0)?`<button class="wt-btn" onclick="toggleW(this)">오답 ${d.wrongWords.length}개 ▼</button>`:d.wrongNumbers?`<span style="font-size:11px;color:var(--red)">${d.wrongNumbers}</span>`:'<span style="color:var(--green)">✅ 없음</span>'}</td>
+        <td><button class="del-btn" onclick="deleteSingle('${d.id}')">🗑️</button></td>
       </tr>
-      ${(d.wrongWords&&d.wrongWords.length>0)?`<tr><td colspan="12" style="padding:0"><div class="wt-detail"><div style="font-size:11px;font-weight:800;color:var(--red);margin-bottom:4px">오답:</div><div class="wt-chips">${chips}</div></div></td></tr>`:(d.wrongSentences?`<tr><td colspan="12" style="padding:0"><div class="wt-detail"><div style="font-size:11px;font-weight:800;color:var(--red);margin-bottom:4px">오답 문장:</div><div style="font-size:11px;color:var(--red);line-height:1.7">${d.wrongSentences.split(' / ').join('<br>')}</div></div></td></tr>`:'')}
+      ${(d.wrongWords&&d.wrongWords.length>0)?`<tr><td colspan="14" style="padding:0"><div class="wt-detail"><div style="font-size:11px;font-weight:800;color:var(--red);margin-bottom:4px">오답:</div><div class="wt-chips">${chips}</div></div></td></tr>`:(d.wrongSentences?`<tr><td colspan="14" style="padding:0"><div class="wt-detail"><div style="font-size:11px;font-weight:800;color:var(--red);margin-bottom:4px">오답 문장:</div><div style="font-size:11px;color:var(--red);line-height:1.7">${d.wrongSentences.split(' / ').join('<br>')}</div></div></td></tr>`:'')}
     </tbody>`;
   }).join('');
   document.getElementById('tblArea').innerHTML = `<div class="tbl-scroll"><table>
-    <thead><tr><th>#</th><th>이름</th><th>학교</th><th style="text-align:center">유형</th><th>점수</th><th>정답</th><th>오답</th><th>시간초과</th><th>총문제</th><th>소요</th><th>제출시간</th><th>오답보기</th></tr></thead>
+    <thead><tr><th><input type="checkbox" id="chkAll" onchange="toggleAllCheck(this)" style="cursor:pointer"></th><th>#</th><th>이름</th><th>학교</th><th style="text-align:center">유형</th><th>점수</th><th>정답</th><th>오답</th><th>시간초과</th><th>총문제</th><th>소요</th><th>제출시간</th><th>오답보기</th><th>삭제</th></tr></thead>
     ${rows}</table></div>`;
 }
 
@@ -900,6 +911,50 @@ function renderAccess(){
     <thead><tr><th>#</th><th>이름</th><th>학교</th><th>유형</th><th>상세</th><th>시간</th></tr></thead>
     <tbody>${rows}</tbody>
   </table></div>`;
+}
+
+
+// ─── 삭제 기능 ───
+function toggleAllCheck(chk){
+  document.querySelectorAll('.row-chk').forEach(c => c.checked = chk.checked);
+}
+
+async function deleteSingle(id){
+  if(!confirm('이 기록을 삭제할까요?')) return;
+  try{
+    let w=0;
+    while(!window._fbReady && w<5000){ await new Promise(r=>setTimeout(r,200)); w+=200; }
+    await window._deleteDoc(window._doc(window._db,'quiz_results',id));
+    allData = allData.filter(d=>d.id!==id);
+    applyFilter();
+    renderSectionView();
+    document.getElementById('lastRefresh').textContent = '✅ 삭제 완료 · '+new Date().toLocaleTimeString('ko-KR');
+  }catch(e){
+    alert('삭제 실패: '+e.message);
+  }
+}
+
+async function confirmDeleteAll(){
+  const checked = [...document.querySelectorAll('.row-chk:checked')];
+  if(!checked.length){
+    alert('삭제할 항목을 체크해주세요!');
+    return;
+  }
+  if(!confirm(`체크한 ${checked.length}개 기록을 삭제할까요?\n이 작업은 되돌릴 수 없습니다.`)) return;
+  let w=0;
+  while(!window._fbReady && w<5000){ await new Promise(r=>setTimeout(r,200)); w+=200; }
+  const ids = checked.map(c=>c.dataset.id);
+  let done=0, fail=0;
+  for(const id of ids){
+    try{
+      await window._deleteDoc(window._doc(window._db,'quiz_results',id));
+      done++;
+    }catch(e){ fail++; }
+  }
+  allData = allData.filter(d=>!ids.includes(d.id));
+  applyFilter();
+  renderSectionView();
+  document.getElementById('lastRefresh').textContent = `✅ ${done}건 삭제 완료${fail>0?' ('+fail+'건 실패)':''} · `+new Date().toLocaleTimeString('ko-KR');
 }
 
 
