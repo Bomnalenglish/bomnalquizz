@@ -96,6 +96,17 @@ body{font-family:'Noto Sans KR','Malgun Gothic',sans-serif;background:var(--bg);
 #tabw h2{font-size:1.3rem;font-weight:900;margin-bottom:9px;}
 #tabw p{font-size:.9rem;opacity:.9;margin-bottom:16px;}
 #tabw button{padding:10px 24px;border-radius:8px;border:2px solid #fff;background:transparent;color:#fff;font-size:.9rem;font-weight:800;cursor:pointer;font-family:inherit;}
+
+/* NAME INPUT */
+#nsel{flex-direction:column;align-items:center;justify-content:center;min-height:80vh;gap:16px;padding:24px;}
+#nsel h2{font-size:1.25rem;color:var(--p);font-weight:800;text-align:center;}
+#nsel p{color:var(--muted);font-size:.83rem;text-align:center;max-width:320px;}
+.name-input{width:100%;max-width:360px;padding:14px 18px;border:2px solid var(--bdr);border-radius:12px;font-size:1rem;font-family:inherit;outline:none;text-align:center;}
+.name-input:focus{border-color:var(--pl);}
+.name-input.err{border-color:var(--acc);animation:shake .3s;}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.name-start-btn{width:100%;max-width:360px;padding:14px;border-radius:12px;border:none;background:var(--p);color:#fff;font-size:1rem;font-weight:800;cursor:pointer;font-family:inherit;}
+.name-start-btn:hover{background:var(--pl);}
 </style>
 </head>
 <body>
@@ -119,7 +130,17 @@ body{font-family:'Noto Sans KR','Malgun Gothic',sans-serif;background:var(--bg);
 <div id="pbwrap"><div id="pbbg"><div id="pbfill"></div></div><div id="pbtxt"></div></div>
 
 <!-- STEP 1: 파트 선택 -->
-<div id="psel" class="screen active">
+
+<!-- STEP 0: 이름 입력 -->
+<div id="nsel" class="screen active">
+  <h2>👤 이름을 입력하세요</h2>
+  <p>퀴즈 결과가 선생님께 전송됩니다</p>
+  <input type="text" class="name-input" id="nameInput" placeholder="예) 홍길동" maxlength="10"
+         onkeydown="if(event.key==='Enter')submitName()">
+  <button class="name-start-btn" onclick="submitName()">시작하기 →</button>
+</div>
+
+<div id="psel" class="screen">
   <h2>파트를 선택하세요</h2>
   <p class="sub">각 파트는 30개 단어로 구성되어 있어요<br>오답 0개 달성까지 자동 반복됩니다 🔁</p>
   <button class="pbtn" onclick="selectPart(1)">
@@ -199,6 +220,21 @@ const PARTS = {
   2: [{"eng": "hold", "kor": "열다, 개최하다", "syn": ["organize", "conduct", "host"], "ant": []}, {"eng": "particularly", "kor": "특별히", "syn": ["especially", "specifically"], "ant": []}, {"eng": "fascinating", "kor": "대단히 흥미로운, 매력적인", "syn": ["captivating", "intriguing"], "ant": ["boring", "dull"]}, {"eng": "barely", "kor": "거의 ~아니게", "syn": ["hardly", "scarcely", "rarely"], "ant": ["easily", "clearly"]}, {"eng": "visible", "kor": "눈에 보이는", "syn": ["noticeable", "apparent"], "ant": ["invisible"]}, {"eng": "faint", "kor": "희미한", "syn": ["indistinct", "vague", "unclear"], "ant": ["obvious", "distinct", "clear"]}, {"eng": "pay attention to", "kor": "~에 주의를 기울이다", "syn": ["focus on", "concentrate on"], "ant": []}, {"eng": "powerful", "kor": "강렬한", "syn": ["strong", "intense", "forceful"], "ant": ["weak", "feeble"]}, {"eng": "paint", "kor": "그리다; 물감", "syn": ["draw", "depict"], "ant": []}, {"eng": "work", "kor": "작품; 일하다", "syn": ["creation", "piece"], "ant": []}, {"eng": "unusual", "kor": "특이한, 드문", "syn": ["unique", "rare", "strange"], "ant": ["common", "usual", "normal", "ordinary"]}, {"eng": "scene", "kor": "장면, 광경", "syn": ["view", "sight"], "ant": []}, {"eng": "from memory", "kor": "기억을 더듬어", "syn": ["by heart", "from recall"], "ant": []}, {"eng": "diverse", "kor": "다양한", "syn": ["various", "different"], "ant": ["uniform", "homogeneous"]}, {"eng": "vibrant", "kor": "강렬[생생/선명]한", "syn": ["vivid", "striking", "intense"], "ant": ["dull", "faint"]}, {"eng": "rich", "kor": "풍부한", "syn": ["abundant"], "ant": []}, {"eng": "harmony", "kor": "조화", "syn": ["balance", "unity"], "ant": ["conflict", "discord"]}, {"eng": "renovate", "kor": "개조하다", "syn": ["restore", "repair", "improve"], "ant": []}, {"eng": "uncertain", "kor": "불확실한", "syn": ["unsure", "unsettled"], "ant": ["certain", "sure", "settled"]}, {"eng": "original", "kor": "원래의", "syn": ["initial", "first"], "ant": []}, {"eng": "former", "kor": "이전의", "syn": ["one-time", "previous"], "ant": ["future"]}, {"eng": "suffer from", "kor": "~로부터 고통받다; ~을 앓다", "syn": ["experience", "endure"], "ant": []}, {"eng": "mental", "kor": "정신적인", "syn": ["psychological", "cognitive"], "ant": ["physical"]}, {"eng": "stability", "kor": "안정성", "syn": ["steadiness", "balance"], "ant": ["instability"]}, {"eng": "improve", "kor": "나아지다, 개선되다", "syn": ["enhance", "better", "upgrade"], "ant": ["worsen", "decline"]}, {"eng": "take advantage of", "kor": "~를 활용하다", "syn": ["make good use of", "utilize"], "ant": []}, {"eng": "freedom", "kor": "자유", "syn": ["liberty", "independence"], "ant": ["restriction", "confinement"]}, {"eng": "illustrate", "kor": "묘사하다", "syn": ["describe", "portray"], "ant": []}, {"eng": "tone", "kor": "색조", "syn": ["shade", "hue", "tint"], "ant": []}, {"eng": "in full bloom", "kor": "만개한", "syn": ["blossoming", "flourishing"], "ant": []}],
   3: [{"eng": "leafy", "kor": "잎이 무성한", "syn": ["green", "lush"], "ant": ["bare", "leafless"]}, {"eng": "odd", "kor": "이상한, 특이한", "syn": ["strange", "peculiar", "weird"], "ant": ["ordinary", "normal", "usual"]}, {"eng": "contrast", "kor": "대비", "syn": ["difference", "distinction"], "ant": ["similarity", "resemblance"]}, {"eng": "reflect", "kor": "반영하다", "syn": ["show", "express", "represent"], "ant": []}, {"eng": "complex", "kor": "복잡한", "syn": ["complicated", "intricate"], "ant": ["simple", "straightforward"]}, {"eng": "resemble", "kor": "닮다, 유사하다", "syn": ["take after", "look like"], "ant": ["differ from"]}, {"eng": "provincial", "kor": "지방의, 시골의", "syn": ["regional", "rural"], "ant": ["urban", "metropolitan"]}, {"eng": "search for", "kor": "~를 찾아다니다", "syn": ["look for", "seek"], "ant": []}, {"eng": "attractive", "kor": "매력적인", "syn": ["charming", "inviting", "appealing"], "ant": ["unattractive", "charmless"]}, {"eng": "combination", "kor": "결합, 조합", "syn": ["mixture", "blend", "union"], "ant": []}, {"eng": "historic", "kor": "역사적인", "syn": ["significant", "notable"], "ant": []}, {"eng": "unique", "kor": "독특한", "syn": ["distinctive", "original", "special"], "ant": ["common", "ordinary"]}, {"eng": "offer", "kor": "제공하다", "syn": ["provide", "give", "supply"], "ant": []}, {"eng": "benefit", "kor": "이점, 혜택", "syn": ["advantage", "gain"], "ant": ["disadvantage", "harm"]}, {"eng": "boost", "kor": "신장시키다", "syn": ["raise", "increase"], "ant": ["decrease"]}, {"eng": "heal", "kor": "치료하다", "syn": ["cure", "treat", "restore"], "ant": []}, {"eng": "release", "kor": "분비, 방출", "syn": ["discharge", "ejection"], "ant": []}, {"eng": "promote", "kor": "증진[촉진]하다", "syn": ["encourage", "advance", "foster"], "ant": []}, {"eng": "reduce", "kor": "줄이다", "syn": ["decrease", "cut", "lower"], "ant": ["increase"]}, {"eng": "disorder", "kor": "장애", "syn": ["condition", "ailment"], "ant": []}, {"eng": "impact", "kor": "영향", "syn": ["effect", "influence"], "ant": []}, {"eng": "artificial", "kor": "인공의", "syn": ["man-made", "synthetic"], "ant": ["natural"]}, {"eng": "disturb", "kor": "방해하다", "syn": ["interrupt", "disrupt"], "ant": []}, {"eng": "lower", "kor": "낮추다", "syn": ["reduce", "decrease"], "ant": ["raise", "increase"]}, {"eng": "regulate", "kor": "조절하다", "syn": ["control", "manage"], "ant": []}, {"eng": "cognitive", "kor": "인지적인", "syn": ["mental", "intellectual"], "ant": []}, {"eng": "overall", "kor": "전반적인", "syn": ["general", "total", "comprehensive"], "ant": []}, {"eng": "recognize", "kor": "인정하다", "syn": ["acknowledge"], "ant": []}, {"eng": "vivid", "kor": "생생한, 선명한", "syn": ["vibrant"], "ant": ["dull"]}, {"eng": "persistent", "kor": "끈질긴, 집요한", "syn": ["persevering"], "ant": []}]
 };
+
+
+let studentName = '';
+function submitName(){
+  const val = document.getElementById('nameInput').value.trim();
+  if(!val){
+    const el = document.getElementById('nameInput');
+    el.classList.add('err');
+    el.placeholder='이름을 입력해주세요!';
+    setTimeout(()=>{el.classList.remove('err');el.placeholder='예) 홍길동';},1200);
+    return;
+  }
+  studentName = val;
+  showScreen('psel');
+}
 
 let curPart=1, mode='A', round=1, wrongWords=[], words=[], qQueue=[], qIdx=0, sc=0, tot=0, answered=false, tabCnt=0;
 
@@ -355,7 +391,7 @@ function nextQ(){qIdx++;loadQ();}
 async function saveResult(d){
   try{
     await fetch(FIREBASE,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({fields:{
-      quizType:{stringValue:d.qt},score:{integerValue:d.sc},total:{integerValue:d.tot},
+      quizType:{stringValue:d.qt},studentName:{stringValue:d.sn},score:{integerValue:d.sc},total:{integerValue:d.tot},
       wrongCount:{integerValue:d.wc},round:{integerValue:d.rd},part:{integerValue:d.pt},
       timestamp:{stringValue:new Date().toISOString()}
     }})});
@@ -363,7 +399,7 @@ async function saveResult(d){
 }
 
 function showResult(){
-  saveResult({qt:`대성고1_교과서2과_동반의어_파트${curPart}_${mode}모드_${round}라운드`,sc,tot,wc:wrongWords.length,rd:round,pt:curPart});
+  saveResult({sn:studentName,qt:`대성고1_교과서2과_동반의어_파트${curPart}_${mode}모드_${round}라운드`,sc,tot,wc:wrongWords.length,rd:round,pt:curPart});
   showScreen('rs');
   const pct=tot>0?Math.round(sc/tot*100):0;
   document.getElementById('remoji').textContent=wrongWords.length===0?'🏆':pct>=80?'🎯':'📚';

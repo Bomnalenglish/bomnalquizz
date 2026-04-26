@@ -96,6 +96,17 @@ body{font-family:'Noto Sans KR','Malgun Gothic',sans-serif;background:var(--bg);
 #tabw h2{font-size:1.3rem;font-weight:900;margin-bottom:9px;}
 #tabw p{font-size:.9rem;opacity:.9;margin-bottom:16px;}
 #tabw button{padding:10px 24px;border-radius:8px;border:2px solid #fff;background:transparent;color:#fff;font-size:.9rem;font-weight:800;cursor:pointer;font-family:inherit;}
+
+/* NAME INPUT */
+#nsel{flex-direction:column;align-items:center;justify-content:center;min-height:80vh;gap:16px;padding:24px;}
+#nsel h2{font-size:1.25rem;color:var(--p);font-weight:800;text-align:center;}
+#nsel p{color:var(--muted);font-size:.83rem;text-align:center;max-width:320px;}
+.name-input{width:100%;max-width:360px;padding:14px 18px;border:2px solid var(--bdr);border-radius:12px;font-size:1rem;font-family:inherit;outline:none;text-align:center;}
+.name-input:focus{border-color:var(--pl);}
+.name-input.err{border-color:var(--acc);animation:shake .3s;}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.name-start-btn{width:100%;max-width:360px;padding:14px;border-radius:12px;border:none;background:var(--p);color:#fff;font-size:1rem;font-weight:800;cursor:pointer;font-family:inherit;}
+.name-start-btn:hover{background:var(--pl);}
 </style>
 </head>
 <body>
@@ -119,7 +130,17 @@ body{font-family:'Noto Sans KR','Malgun Gothic',sans-serif;background:var(--bg);
 <div id="pbwrap"><div id="pbbg"><div id="pbfill"></div></div><div id="pbtxt"></div></div>
 
 <!-- STEP 1: 파트 선택 -->
-<div id="psel" class="screen active">
+
+<!-- STEP 0: 이름 입력 -->
+<div id="nsel" class="screen active">
+  <h2>👤 이름을 입력하세요</h2>
+  <p>퀴즈 결과가 선생님께 전송됩니다</p>
+  <input type="text" class="name-input" id="nameInput" placeholder="예) 홍길동" maxlength="10"
+         onkeydown="if(event.key==='Enter')submitName()">
+  <button class="name-start-btn" onclick="submitName()">시작하기 →</button>
+</div>
+
+<div id="psel" class="screen">
   <h2>파트를 선택하세요</h2>
   <p class="sub">각 파트는 30개 단어로 구성되어 있어요<br>오답 0개 달성까지 자동 반복됩니다 🔁</p>
   <button class="pbtn" onclick="selectPart(1)">
@@ -195,6 +216,21 @@ body{font-family:'Noto Sans KR','Malgun Gothic',sans-serif;background:var(--bg);
 const FIREBASE="https://firestore.googleapis.com/v1/projects/bomnalvaca/databases/(default)/documents/quiz_results";
 
 const PARTS = {1: [{"eng": "no doubt", "kor": "틀림없이", "syn": ["undoubtedly", "certainly"], "ant": ["doubtfully", "dubiously"]}, {"eng": "certainly", "kor": "분명히, 틀림없이", "syn": ["surely", "definitely", "undoubtedly"], "ant": ["doubtfully", "uncertainly"]}, {"eng": "absence", "kor": "없음, 부재", "syn": [], "ant": ["presence"]}, {"eng": "entirely", "kor": "전적으로", "syn": ["completely", "fully", "absolutely"], "ant": ["partly", "partially"]}, {"eng": "fault", "kor": "잘못", "syn": ["flaw", "error"], "ant": ["perfection"]}, {"eng": "thoughtlessness", "kor": "부주의함, 경솔함", "syn": ["carelessness"], "ant": ["prudence", "thoughtfulness"]}, {"eng": "value", "kor": "소중히 여기다", "syn": ["cherish"], "ant": ["scorn", "condemn"]}, {"eng": "friendship", "kor": "우정", "syn": ["companionship"], "ant": ["enmity", "hostility"]}, {"eng": "offense", "kor": "기분 상하게 함", "syn": ["insult"], "ant": ["defence", "flattery"]}, {"eng": "overlook", "kor": "못 보고 넘어가다", "syn": ["miss"], "ant": ["consider"]}, {"eng": "obvious", "kor": "분명한", "syn": ["clear", "evident", "apparent"], "ant": ["unclear", "obscure", "ambiguous"]}, {"eng": "forgive", "kor": "용서하다", "syn": ["pardon"], "ant": ["punish", "blame"]}, {"eng": "unfortunately", "kor": "안타깝게도", "syn": ["regrettably", "unluckily"], "ant": ["fortunately", "luckily"]}, {"eng": "conflict", "kor": "충돌, 상충", "syn": ["disagreement", "argument"], "ant": ["agreement", "harmony", "accord"]}, {"eng": "sincere", "kor": "진심 어린", "syn": ["genuine", "heartfelt", "earnest"], "ant": ["hypocritical", "insincere"]}, {"eng": "cancellation", "kor": "취소", "syn": ["annulment"], "ant": ["enforcement"]}, {"eng": "inconvenience", "kor": "불편", "syn": ["discomfort", "discommodity"], "ant": ["convenience", "comfort"]}, {"eng": "completely", "kor": "충분히, 완전히", "syn": ["entirely", "fully"], "ant": ["partially", "barely", "partly"]}, {"eng": "regarding", "kor": "~과 관련하여", "syn": ["concerning", "about"], "ant": ["disregarding"]}, {"eng": "replace", "kor": "교체하다", "syn": ["substitute", "exchange"], "ant": ["remove", "keep"]}, {"eng": "durability", "kor": "내구성", "syn": ["serviceability", "lasting quality"], "ant": ["weakness"]}, {"eng": "in the long term", "kor": "장기적으로 보아", "syn": ["in the long run"], "ant": ["in the short run"]}, {"eng": "inform", "kor": "알리다", "syn": ["notify"], "ant": ["conceal"]}, {"eng": "urge", "kor": "촉구하다", "syn": ["encourage", "press", "drive"], "ant": ["discourage", "forbid"]}, {"eng": "reconsider", "kor": "재고하다", "syn": ["rethink about"], "ant": ["ignore"]}, {"eng": "character", "kor": "특색, 특성", "syn": ["feature"], "ant": ["commonplaceness"]}, {"eng": "secure", "kor": "확보하다", "syn": ["obtain", "gain"], "ant": ["lose"]}, {"eng": "stability", "kor": "안정", "syn": ["stabilization", "counterpoise"], "ant": ["instability", "unstableness"]}, {"eng": "short-sighted", "kor": "근시안적인", "syn": ["near-sighted", "imprudent"], "ant": ["long-sighted", "prudent"]}], 2: [{"eng": "gather", "kor": "모이다", "syn": ["assemble"], "ant": ["disperse", "scatter"]}, {"eng": "hardly", "kor": "거의 ~않다", "syn": ["scarcely", "barely", "rarely"], "ant": ["easily", "completely"]}, {"eng": "wave down", "kor": "(운전자에게 손을 흔들어) ~을 세우다", "syn": ["stop"], "ant": ["send"]}, {"eng": "hostility", "kor": "적대 행위", "syn": ["animosity", "antipathy", "enmity"], "ant": ["kindness", "amity"]}, {"eng": "cease", "kor": "중단되다, 멈추다", "syn": ["stop", "halt", "quit", "end"], "ant": ["continue", "begin"]}, {"eng": "overflow", "kor": "넘쳐나다", "syn": ["flood", "pour"], "ant": ["be stopped", "be blocked"]}, {"eng": "arrange", "kor": "정돈하다, 배열하다", "syn": ["organize"], "ant": ["derange", "disarrange"]}, {"eng": "pound", "kor": "(심장이) 고동치다", "syn": ["beat"], "ant": ["stop"]}, {"eng": "descend", "kor": "내려오다", "syn": ["go down"], "ant": ["climb"]}, {"eng": "anticipation", "kor": "기대, 예상", "syn": ["expectation", "expectancy"], "ant": ["doubt"]}, {"eng": "unveil", "kor": "드러내다", "syn": ["reveal", "uncover", "disclose"], "ant": ["conceal", "hide", "veil"]}, {"eng": "subtle", "kor": "미묘한", "syn": ["delicate"], "ant": ["obvious"]}, {"eng": "significant", "kor": "아주 큰, 중대한", "syn": ["large", "important", "substantial"], "ant": ["small", "unimportant", "insignificant"]}, {"eng": "crucial", "kor": "결정적인", "syn": ["critical", "vital", "decisive"], "ant": ["unimportant", "trivial"]}, {"eng": "triumph", "kor": "승리", "syn": ["victory"], "ant": ["failure", "defeat"]}, {"eng": "captivating", "kor": "매혹적인", "syn": ["charming", "enchanting", "alluring", "fascinating"], "ant": ["boring", "unattractive"]}, {"eng": "profound", "kor": "깊은, 심오한", "syn": ["deep", "significant"], "ant": ["shallow", "slight", "insignificant"]}, {"eng": "reflect on", "kor": "~을 되돌아보다", "syn": ["ponder", "consider", "meditate on"], "ant": ["disregard", "neglect"]}, {"eng": "crisp", "kor": "상쾌한, 서늘한", "syn": ["fresh"], "ant": ["stuffy", "suffocating"]}, {"eng": "surge", "kor": "감정의 고조", "syn": ["upsurge"], "ant": ["decline"]}, {"eng": "asleep", "kor": "잠이 든", "syn": ["sleeping"], "ant": ["awake"]}, {"eng": "contain", "kor": "억누르다", "syn": ["control"], "ant": []}, {"eng": "inch one's way into", "kor": "~으로 조금씩 다가오다", "syn": ["approach slowly"], "ant": ["move away from"]}, {"eng": "desperately", "kor": "필사적으로", "syn": ["frantically"], "ant": ["mildly", "calmly"]}, {"eng": "force", "kor": "억지로 ~하게 하다", "syn": ["drive", "press"], "ant": ["forbid", "disallow"]}, {"eng": "cheer", "kor": "응원하다, 갈채하다", "syn": [], "ant": ["dishearten"]}, {"eng": "run out of", "kor": "~이 동이 나다", "syn": ["exhaust", "deplete"], "ant": []}, {"eng": "run", "kor": "운영하다", "syn": ["manage", "operate"], "ant": ["close", "discontinue"]}, {"eng": "delighted", "kor": "아주 즐거운", "syn": ["happy", "pleased", "glad", "overjoyed"], "ant": ["sad", "sorrowful", "depressed"]}], 3: [{"eng": "facilitate", "kor": "촉진하다", "syn": ["assist", "promote"], "ant": ["hinder", "obstruct"]}, {"eng": "tempting", "kor": "솔깃한, 구미가 당기는", "syn": ["enticing", "alluring", "seductive", "attractive"], "ant": ["dreadful", "repulsive"]}, {"eng": "respectfully", "kor": "정중하게, 공손하게", "syn": ["reverently", "politely", "courteously"], "ant": ["disrespectfully", "harshly", "contemptuously"]}, {"eng": "reflection", "kor": "성찰, 숙고", "syn": ["consideration", "contemplation"], "ant": ["impulsiveness", "thoughtlessness"]}, {"eng": "empathically", "kor": "공감하면서", "syn": ["compassionately"], "ant": ["heartlessly"]}, {"eng": "acknowledge", "kor": "인정하다", "syn": ["recognize", "admit"], "ant": ["deny", "disregard"]}, {"eng": "essential", "kor": "극히 중요한, 필수적인", "syn": ["vital", "crucial"], "ant": ["unimportant", "inessential"]}, {"eng": "myth", "kor": "신화, 근거 없는 믿음", "syn": [], "ant": ["fact"]}, {"eng": "face", "kor": "표면, 외관", "syn": ["outer side"], "ant": ["inner side"]}, {"eng": "master", "kor": "숙달하다", "syn": ["perfect oneself in", "attain proficiency in", "become proficient in"], "ant": ["be unfamiliar with", "be bad at"]}, {"eng": "expertise", "kor": "전문성", "syn": ["professionalism", "professionality"], "ant": ["amateurishness"]}, {"eng": "diminish", "kor": "줄어들다, 약해지다", "syn": ["decrease", "weaken"], "ant": ["increase", "improve"]}, {"eng": "overlook", "kor": "간과하다", "syn": ["disregard", "neglect"], "ant": ["consider", "pay attention to"]}, {"eng": "in advance", "kor": "미리", "syn": ["beforehand", "previously"], "ant": ["belatedly"]}, {"eng": "unfold", "kor": "(어떤 내용이) 펼쳐지다, 밝혀지다", "syn": ["spread", "stretch out"], "ant": ["disappear"]}, {"eng": "emerge", "kor": "나타나다", "syn": ["appear", "arise", "come out"], "ant": ["disappear", "vanish"]}, {"eng": "gradually", "kor": "서서히", "syn": ["slowly"], "ant": ["suddenly", "quickly", "instantly"]}, {"eng": "instantly", "kor": "즉각적으로", "syn": ["immediately", "promptly"], "ant": ["slowly", "gradually"]}, {"eng": "straightforward", "kor": "간단한", "syn": ["simple"], "ant": ["complicated", "complex"]}, {"eng": "patience", "kor": "인내심", "syn": ["tolerance", "forbearance"], "ant": ["impatience", "intolerance"]}, {"eng": "hand down", "kor": "~을 물려주다", "syn": ["pass on", "give"], "ant": ["receive"]}, {"eng": "at large", "kor": "전반적인, 전체적인", "syn": ["generally", "widely", "on the whole"], "ant": ["partially", "in part"]}, {"eng": "invisible", "kor": "눈에 보이지 않는", "syn": ["unseen"], "ant": ["visible"]}, {"eng": "keep in mind", "kor": "~을 마음속에 두다", "syn": ["bear in mind"], "ant": ["overlook", "disregard"]}]};
+
+
+let studentName = '';
+function submitName(){
+  const val = document.getElementById('nameInput').value.trim();
+  if(!val){
+    const el = document.getElementById('nameInput');
+    el.classList.add('err');
+    el.placeholder='이름을 입력해주세요!';
+    setTimeout(()=>{el.classList.remove('err');el.placeholder='예) 홍길동';},1200);
+    return;
+  }
+  studentName = val;
+  showScreen('psel');
+}
 
 let curPart=1, mode='A', round=1, wrongWords=[], words=[], qQueue=[], qIdx=0, sc=0, tot=0, answered=false, tabCnt=0;
 
@@ -351,7 +387,7 @@ function nextQ(){qIdx++;loadQ();}
 async function saveResult(d){
   try{
     await fetch(FIREBASE,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({fields:{
-      quizType:{stringValue:d.qt},score:{integerValue:d.sc},total:{integerValue:d.tot},
+      quizType:{stringValue:d.qt},studentName:{stringValue:d.sn},score:{integerValue:d.sc},total:{integerValue:d.tot},
       wrongCount:{integerValue:d.wc},round:{integerValue:d.rd},part:{integerValue:d.pt},
       timestamp:{stringValue:new Date().toISOString()}
     }})});
@@ -359,7 +395,7 @@ async function saveResult(d){
 }
 
 function showResult(){
-  saveResult({qt:`대성고1_올림포스독해기본_동반의어_파트${curPart}_${mode}모드_${round}라운드`,sc,tot,wc:wrongWords.length,rd:round,pt:curPart});
+  saveResult({sn:studentName,qt:`대성고1_올림포스독해기본_동반의어_파트${curPart}_${mode}모드_${round}라운드`,sc,tot,wc:wrongWords.length,rd:round,pt:curPart});
   showScreen('rs');
   const pct=tot>0?Math.round(sc/tot*100):0;
   document.getElementById('remoji').textContent=wrongWords.length===0?'🏆':pct>=80?'🎯':'📚';
