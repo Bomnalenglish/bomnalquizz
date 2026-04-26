@@ -132,12 +132,6 @@ footer { text-align: center; padding: 28px; color: #aabbc8; font-size: .8rem; fo
       <br><button class="auth-back" onclick="goStep('screen-name')">← 이름 다시 입력</button>
     </div>
   </div>
-
-  <!-- 봄날 보카 (학교 선택 화면 아래) -->
-  <div style="max-width:380px;margin:20px auto 0;padding:0 24px;">
-    <div style="font-family:'Black Han Sans',sans-serif;font-size:.95rem;color:#2a2a2a;margin-bottom:12px;padding-left:10px;border-left:4px solid #a09890;">📖 봄날 보카</div>
-    <div id="voca-pick-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;"></div>
-  </div>
 </div>
 
 <!-- STEP 4: 학교별 퀴즈 목록 -->
@@ -362,25 +356,25 @@ function renderSchoolPicker() {
       picker.appendChild(btn);
   });
 
-  // 보카 렌더
-  const vg = document.getElementById("voca-pick-grid");
-  if(vg){
-    vg.innerHTML = "";
-    const vc = ["c-2","c-4","c-6","c-0"];
-    VOCA_LEVELS.forEach((item,i)=>{
-      const a = document.createElement("a");
-      a.className = "card " + vc[i%vc.length];
-      a.href = BASE + item.file + ".html";
-      a.target = "_blank"; a.rel = "noopener";
-      a.style.cssText = "border-radius:14px;padding:14px 12px;";
-      a.innerHTML =
-        '<span class="card-emoji" style="font-size:1.3rem">📖</span>' +
-        '<div class="card-title" style="font-size:.85rem">'+item.title+'</div>' +
-        (item.sub?'<div class="card-sub" style="font-size:.68rem">'+item.sub+'</div>':'') +
-        (item.badge?'<span class="badge">'+item.badge+'</span>':'');
-      vg.appendChild(a);
-    });
-  }
+  // 보카 버튼 추가 (학교 목록 맨 아래)
+  const sep = document.createElement("div");
+  sep.style.cssText = "grid-column:1/-1;border-top:1px solid #e0d8ce;padding-top:10px;font-family:\'Black Han Sans\',sans-serif;font-size:.82rem;color:#a09890;margin-top:2px;";
+  sep.textContent = "📖 봄날 보카";
+  picker.appendChild(sep);
+
+  VOCA_LEVELS.forEach((item) => {
+    const a = document.createElement("a");
+    a.href = BASE + item.file + ".html";
+    a.target = "_blank";
+    a.rel = "noopener";
+    a.style.cssText = "display:block;text-decoration:none;border-radius:12px;padding:12px 14px;border:2px solid #d0dde8;background:white;font-family:inherit;transition:border-color .15s,background .15s;";
+    a.innerHTML =
+      '<div style="font-size:.82rem;font-weight:700;color:#2a2a2a">📖 ' + item.title + '</div>' +
+      (item.sub ? '<div style="font-size:.7rem;color:#7a7570;margin-top:2px">' + item.sub + '</div>' : '');
+    a.onmouseenter = () => { a.style.borderColor='#888'; a.style.background='#f5f2ee'; };
+    a.onmouseleave = () => { a.style.borderColor='#d0dde8'; a.style.background='white'; };
+    picker.appendChild(a);
+  });
 }
 
 function submitSchool() {
