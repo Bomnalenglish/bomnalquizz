@@ -149,6 +149,7 @@ tr:hover td{background:#f8f9ff;}
   <div class="tab-bar">
     <button class="tab-btn active" onclick="switchTab('quiz')" id="tab-quiz">📊 퀴즈 결과</button>
     <button class="tab-btn"        onclick="switchTab('section')" id="tab-section">📋 학생별 현황</button>
+    <button class="tab-btn"        onclick="switchTab('access')" id="tab-access">🔐 접속 기록</button>
     <button class="tab-btn"        onclick="switchTab('vaca')" id="tab-vaca">📚 단어장 · 학생 관리</button>
   </div>
   <div class="panels">
@@ -284,6 +285,34 @@ tr:hover td{background:#f8f9ff;}
       </div>
     </div>
 
+    <!-- 접속 기록 -->
+    <div class="panel" id="panel-access">
+      <div class="quiz-inner">
+        <div class="controls">
+          <span class="ctrl-label">유형</span>
+          <select class="ctrl-sel" id="accType" onchange="renderAccess()">
+            <option value="">전체</option>
+            <option value="login">✅ 로그인 성공</option>
+            <option value="code_fail">❌ 코드 실패</option>
+            <option value="school_enter">🏫 학교 입장</option>
+            <option value="quiz_click">📝 퀴즈 클릭</option>
+          </select>
+          <span class="ctrl-label">이름</span>
+          <input type="text" class="ctrl-inp" id="accName" placeholder="검색..." oninput="renderAccess()">
+          <div class="spacer"></div>
+          <button class="btn-refresh" onclick="loadAccess()">🔄 새로고침</button>
+        </div>
+        <div class="summary-grid" id="acc-summary"></div>
+        <div class="tbl-wrap">
+          <div class="tbl-head">
+            <span class="tbl-title">접속 기록</span>
+            <span class="cnt-badge" id="accBadge">0건</span>
+          </div>
+          <div id="accArea"><div class="loading-msg">새로고침을 눌러주세요</div></div>
+        </div>
+      </div>
+    </div>
+
     <!-- vaca iframe -->
     <div class="panel panel-iframe" id="panel-vaca">
       <iframe id="vacaFrame" src="" title="봄날 vaca 관리자" allowfullscreen></iframe>
@@ -331,7 +360,7 @@ if(sessionStorage.getItem('bnadmin')==='1'){
 
 let vacaLoaded = false;
 function switchTab(tab){
-  ['quiz','section','vaca'].forEach(t=>{
+  ['quiz','section','access','vaca'].forEach(t=>{
     document.getElementById('tab-'+t).classList.toggle('active', t===tab);
     document.getElementById('panel-'+t).classList.toggle('active', t===tab);
   });
@@ -340,6 +369,7 @@ function switchTab(tab){
     vacaLoaded = true;
   }
   if(tab==='section') renderSectionView();
+  if(tab==='access') loadAccess();
 }
 
 let allData = [];
@@ -784,6 +814,84 @@ function renderSectionView(){
 
   area.innerHTML = `<div class="student-cards">${html}</div>`;
 }
+
+
+let accessData = [];
+
+async function loadAccess(){
+  document.getElementById('accArea').innerHTML = '<div class="loading-msg">⏳ 접속 기록 불러오는 중...</div>';
+  try{
+    let w=0;
+    while(!window._fbReady && w<8000){ await new Promise(r=>setTimeout(r,200)); w+=200; }
+    const snap = await window._getDocs(window._col(window._db, 'hub_access'));
+    accessData = [];
+    snap.forEach(doc=>{
+      const d = doc.data();
+      accessData.push({
+        id: doc.id,
+        type: d.type||'-',
+        name: d.name||'(이름없음)',
+        school: d.school||'-',
+        targetSchool: d.targetSchool||'',
+        quiz: d.quiz||'',
+        file: d.file||'',
+        attempt: d.attempt||'',
+        time: d.timestamp ? (typeof d.timestamp.toDate==='function' ? d.timestamp.toDate() : new Date(d.timestamp)) : null,
+      });
+    });
+    accessData.sort((a,b)=>(b.time||0)-(a.time||0));
+    renderAccess();
+  }catch(e){
+    document.getElementById('accArea').innerHTML = `<div class="empty-msg">⚠️ 오류: ${e.message}</div>`;
+  }
+}
+
+function renderAccess(){
+  const tq = document.getElementById('accType').value;
+  const nq = document.getElementById('accName').value.trim().toLowerCase();
+  let data = [...accessData];
+  if(tq) data = data.filter(d=>d.type===tq);
+  if(nq) data = data.filter(d=>d.name.toLowerCase().includes(nq));
+
+  // 요약
+  const logins = accessData.filter(d=>d.type==='login').length;
+  const fails  = accessData.filter(d=>d.type==='code_fail').length;
+  const clicks = accessData.filter(d=>d.type==='quiz_click').length;
+  const uniq   = new Set(accessData.filter(d=>d.type==='login').map(d=>d.name+'|'+d.school)).size;
+  document.getElementById('acc-summary').innerHTML = `
+    <div class="sum-card"><div class="sum-n">${logins}</div><div class="sum-l">✅ 로그인 성공</div></div>
+    <div class="sum-card g"><div class="sum-n">${uniq}</div><div class="sum-l">학생 수 (유니크)</div></div>
+    <div class="sum-card r"><div class="sum-n">${fails}</div><div class="sum-l">❌ 코드 실패</div></div>
+    <div class="sum-card o"><div class="sum-n">${clicks}</div><div class="sum-l">📝 퀴즈 클릭</div></div>
+  `;
+
+  document.getElementById('accBadge').textContent = data.length+'건';
+  if(!data.length){
+    document.getElementById('accArea').innerHTML='<div class="empty-msg">📭 기록 없음</div>';
+    return;
+  }
+
+  const typeLabel = t => t==='login'?'<span style="background:#e8f5e9;color:#2e7d32;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:800">✅ 로그인</span>'
+    :t==='code_fail'?'<span style="background:#ffebee;color:#c62828;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:800">❌ 코드실패</span>'
+    :t==='school_enter'?'<span style="background:#e3f2fd;color:#1565c0;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:800">🏫 학교입장</span>'
+    :t==='quiz_click'?'<span style="background:#f3e5f5;color:#6a1b9a;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:800">📝 퀴즈클릭</span>'
+    :`<span style="color:var(--muted)">${t}</span>`;
+
+  const rows = data.map((d,i)=>`<tr>
+    <td style="color:var(--muted)">${i+1}</td>
+    <td><strong>${d.name}</strong></td>
+    <td>${d.school}</td>
+    <td>${typeLabel(d.type)}</td>
+    <td style="font-size:11px;color:var(--muted)">${d.targetSchool||d.quiz||d.attempt||'-'}</td>
+    <td style="font-size:11px">${d.time ? d.time.toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}) : '-'}</td>
+  </tr>`).join('');
+
+  document.getElementById('accArea').innerHTML = `<div class="tbl-scroll"><table>
+    <thead><tr><th>#</th><th>이름</th><th>학교</th><th>유형</th><th>상세</th><th>시간</th></tr></thead>
+    <tbody>${rows}</tbody>
+  </table></div>`;
+}
+
 
 function exportCSV(){
   const hdr = ['이름','학교','퀴즈유형','점수','정답','오답','시간초과','총문제','라운드','제출시간','오답단어'];
