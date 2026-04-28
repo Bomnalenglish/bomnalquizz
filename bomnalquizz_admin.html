@@ -624,6 +624,7 @@ function categorize(qt){
   if(qt.includes('빈칸추론')) return 'blank';
   if(qt.includes('어휘퀴즈')) return 'vocab';
   if(qt.includes('빈칸시험') || qt.includes('챕터')) return 'chapter';
+  if(qt.includes('총정리')) return 'review';
   return 'other';
 }
 
@@ -813,6 +814,46 @@ function renderSectionView(){
         </div>
       </div>` : '';
 
+    // ── 총정리 블록 ──
+    const reviewRecords = st.records.filter(d => d.quizType && d.quizType.includes('총정리'));
+    const reviewTabOrder = ['빈칸','OX퀴즈','문법','단어퀴즈','지각동사','SinceTho'];
+    const reviewTabLabel = {'빈칸':'✏️ 빈칸','OX퀴즈':'⭕ OX퀴즈','문법':'📐 문법','단어퀴즈':'🔤 단어','지각동사':'👁 지각동사','SinceTho':'🔗 Since/Though'};
+    const reviewMap = {};
+    reviewRecords.forEach(d => {
+      const m = d.quizType.match(/총정리_([^_]+)/);
+      const tab = m ? m[1] : '기타';
+      const isDone = d.quizType.includes('오답완료');
+      if(!reviewMap[tab] || isDone || (d.time && reviewMap[tab].time && d.time > reviewMap[tab].time && !reviewMap[tab].quizType?.includes('오답완료'))){
+        reviewMap[tab] = d;
+      }
+    });
+    const reviewHtml = Object.keys(reviewMap).length > 0 ? (() => {
+      const cells = reviewTabOrder.filter(tab => reviewMap[tab]).map(tab => {
+        const d = reviewMap[tab];
+        const isDone = d.quizType && d.quizType.includes('오답완료');
+        const isPerfect = d.wrong === 0;
+        const cellClass = (isDone || isPerfect) ? 'perfect' : 'has-wrong';
+        const timeStr = d.time ? d.time.toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}) : '';
+        const roundStr = (d.round||1) > 1 ? `<div style="font-size:10px;color:#e65100">${d.round}라운드</div>` : '';
+        const perfectBadge = (isDone || isPerfect) ? '<div style="font-size:10px;color:#2e7d32;font-weight:900">🏆 클리어!</div>' : '';
+        return `<div class="sec-cell ${cellClass}" style="min-width:100px;text-align:left;">
+          <div style="font-size:10px;font-weight:800;color:var(--muted);margin-bottom:3px;">${reviewTabLabel[tab]||tab}</div>
+          <div class="sec-score">${d.score}점</div>
+          ${d.wrong>0?`<div class="sec-wrong">오답 ${d.wrong}개</div>`:''}
+          ${roundStr}${perfectBadge}
+          <div class="sec-time">${timeStr}</div>
+        </div>`;
+      }).join('');
+      const allClear = reviewTabOrder.filter(t=>reviewMap[t]).every(t => reviewMap[t].wrong===0 || reviewMap[t].quizType?.includes('오답완료'));
+      return `<div style="margin-bottom:14px;">
+        <div style="font-size:11px;font-weight:800;color:var(--muted);margin-bottom:8px;letter-spacing:.5px;">
+          📋 어진중3 1학기 총정리
+          ${allClear?'<span style="color:var(--green);margin-left:8px;">🏆 전 탭 클리어!</span>':''}
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;">${cells}</div>
+      </div>`;
+    })() : '';
+
     const totalDone = st.records.filter(d=>categorize(d.quizType)!=='other').length;
     const avgScore = totalDone > 0 ? Math.round(st.records.reduce((a,b)=>a+b.score,0)/st.records.length) : 0;
 
@@ -828,6 +869,7 @@ function renderSectionView(){
         </div>
       </div>
       ${secBlocksHtml}
+      ${reviewHtml}
       ${synanmHtml}
       ${nonSecHtml}
     </div>`;
