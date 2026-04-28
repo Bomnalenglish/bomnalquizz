@@ -149,6 +149,7 @@ footer { text-align: center; padding: 28px; color: #aabbc8; font-size: .8rem; fo
       </div>
     </div>
     <div id="quiz-sections"></div>
+
   </main>
 </div>
 
@@ -247,8 +248,7 @@ const SCHOOLS = [
       {title:"📙 3학년", items:[
         {file:"eojin_3grade_ch1",                 title:"Chapter 1",        sub:"어진중 3학년", emoji:"📘"},
         {file:"eojin_3grade_ch2",                 title:"Chapter 2",        sub:"어진중 3학년", emoji:"📗"},
-        {file:"eojin_3grade_lesson1_2_vocab",     title:"Lesson 1+2 어휘퀴즈",sub:"천재(이) · 유의어·반의어·형태·영영풀이",emoji:"🔊",badge:"중간고사"},
-        {file:"eojin_3grade_review",              title:"1학기 총정리",      sub:"정리노트·빈칸·OX·문법·단어·지각동사·Since/Though",emoji:"📋",badge:"수업마무리"}
+        {file:"eojin_3grade_lesson1_2_vocab",     title:"Lesson 1+2 어휘퀴즈",sub:"천재(이) · 유의어·반의어·형태·영영풀이",emoji:"🔊",badge:"중간고사"}
       ]}
     ]
   },
@@ -353,12 +353,12 @@ function renderSchoolPicker() {
       selectedSchoolId = s.id;
       document.getElementById("pickErr").textContent = "";
     };
-    picker.appendChild(btn);
+      picker.appendChild(btn);
   });
 
   // 보카 버튼 추가 (학교 목록 맨 아래)
   const sep = document.createElement("div");
-  sep.style.cssText = "grid-column:1/-1;border-top:1px solid #e0d8ce;padding-top:10px;font-family:'Black Han Sans',sans-serif;font-size:.82rem;color:#a09890;margin-top:2px;";
+  sep.style.cssText = "grid-column:1/-1;border-top:1px solid #e0d8ce;padding-top:10px;font-family:\'Black Han Sans\',sans-serif;font-size:.82rem;color:#a09890;margin-top:2px;";
   sep.textContent = "📖 봄날 보카";
   picker.appendChild(sep);
 
@@ -378,7 +378,7 @@ function renderSchoolPicker() {
 
   // 듣기평가 섹션
   const listenSep = document.createElement("div");
-  listenSep.style.cssText = "grid-column:1/-1;border-top:1px solid #e0d8ce;padding-top:10px;font-family:'Black Han Sans',sans-serif;font-size:.82rem;color:#a09890;margin-top:6px;";
+  listenSep.style.cssText = "grid-column:1/-1;border-top:1px solid #e0d8ce;padding-top:10px;font-family:\'Black Han Sans\',sans-serif;font-size:.82rem;color:#a09890;margin-top:6px;";
   listenSep.textContent = "🎧 봄날 Listening";
   picker.appendChild(listenSep);
 
@@ -405,12 +405,17 @@ function submitSchool() {
   }
   const s = SCHOOL_LIST.find(x => x.id === selectedSchoolId);
   studentSchool = s ? s.name : selectedSchoolId;
+  // 세션 저장 후 바로 허브로
   sessionStorage.setItem("bn_name", studentName);
   sessionStorage.setItem("bn_school", studentSchool);
   sessionStorage.setItem("bn_auth", "1");
+  localStorage.setItem("bn_name", studentName);
+  localStorage.setItem("bn_school", studentSchool);
   if (window._logAccess) window._logAccess({ type:"login", name:studentName, school:studentSchool });
   openHub();
 }
+
+
 
 // ─── 허브 열기 ───
 function openHub() {
@@ -418,6 +423,7 @@ function openHub() {
   renderVoca();
   document.getElementById("home-user-badge").textContent = `👤 ${studentName} (${studentSchool})`;
 
+  // 로그인 시 선택한 학교로 바로 이동
   const mySchool = SCHOOLS.find(s => s.name === studentSchool);
   if (mySchool) {
     openSchool(mySchool);
@@ -427,11 +433,14 @@ function openHub() {
   }
 }
 
+
 const VOCA_LEVELS = [
   {file:'bomnal_voca_level1', title:'Level 1', sub:'기초 단어 · 4지선다', badge:'보카'},
 ];
 
 const LISTENING_LEVELS = [
+  // ← 듣기평가 추가할 때 여기에 한 줄씩 추가하세요!
+  // 형식: {file:'파일명(확장자제외)', title:'표시이름', sub:'설명', badge:'학년'},
   {file:'bomnal_listening_go1_A', title:'고1 듣기평가 A', sub:'20문제 · 5지선다', badge:'고1'},
 ];
 
@@ -480,6 +489,7 @@ function openSchool(s) {
   document.getElementById("banner-user").textContent  = `👤 ${studentName}`;
   document.getElementById("subtitle").textContent     = s.name + " 퀴즈 목록";
 
+  // 학교 입장 로그
   if (window._logAccess) window._logAccess({
     type: "school_enter",
     name: studentName,
@@ -507,6 +517,7 @@ function openSchool(s) {
         `<div class="card-title">${item.title}</div>` +
         (item.sub   ? `<div class="card-sub">${item.sub}</div>` : "") +
         (item.badge ? `<span class="badge">${item.badge}</span>` : "");
+      // 퀴즈 클릭 로그
       a.addEventListener("click", () => {
         if (window._logAccess) window._logAccess({
           type: "quiz_click",
@@ -529,6 +540,8 @@ function doLogout() {
   sessionStorage.removeItem("bn_name");
   sessionStorage.removeItem("bn_school");
   sessionStorage.removeItem("bn_auth");
+  localStorage.removeItem("bn_name");
+  localStorage.removeItem("bn_school");
   studentName = "";
   studentSchool = "";
   document.getElementById("nameInput").value = "";

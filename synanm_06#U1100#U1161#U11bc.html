@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>봄날 퀴즈 | 06강 유의어·반의어</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&family=Black+Han+Sans&display=swap');
+:root{--pri:#4a148c;--acc:#ff6f00;--green:#2e7d32;--red:#b71c1c;--bg:#f3e5f5;--card:#fff;--bdr:#ce93d8;--muted:#757575;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Nanum Gothic',sans-serif;background:var(--bg);min-height:100vh;color:#1a1a2e;}
+.hidden{display:none!important;}
+.btn{padding:12px 28px;border:none;border-radius:12px;font-family:'Nanum Gothic',sans-serif;font-size:15px;font-weight:800;cursor:pointer;transition:all .15s;}
+.btn-p{background:linear-gradient(135deg,#7b1fa2,#ff6f00);color:white;}
+.btn-p:hover{opacity:.9;transform:translateY(-1px);}
+.btn-g{background:#f3e5f5;color:#7b1fa2;border:2px solid #ce93d8;}
+
+#startScreen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
+.s-card{background:var(--card);border-radius:24px;padding:44px 36px;text-align:center;max-width:480px;width:100%;box-shadow:0 8px 32px rgba(74,20,140,.13);}
+.s-card h1{font-family:'Black Han Sans',sans-serif;font-size:22px;color:var(--pri);margin-bottom:6px;}
+.s-sub{font-size:14px;color:var(--muted);margin-bottom:24px;}
+.mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px;}
+.mode-card{background:var(--bg);border:2px solid var(--bdr);border-radius:16px;padding:18px;cursor:pointer;transition:all .15s;text-align:left;}
+.mode-card:hover,.mode-card.sel{border-color:#7b1fa2;background:#ede7f6;}
+.mode-card.sel{box-shadow:0 0 0 3px #ce93d8;}
+.mi{font-size:26px;margin-bottom:8px;}
+.mt{font-size:13px;font-weight:800;color:#4a148c;margin-bottom:3px;}
+.md{font-size:11px;color:var(--muted);line-height:1.5;}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px;}
+.info-item{background:#f3e5f5;border-radius:10px;padding:10px;text-align:center;font-size:12px;color:#7b1fa2;font-weight:700;}
+.name-row{display:flex;gap:8px;margin-bottom:16px;}
+.ni{flex:1;padding:12px 14px;border:2px solid var(--bdr);border-radius:12px;font-size:14px;font-family:'Nanum Gothic',sans-serif;outline:none;}
+.ni:focus{border-color:#7b1fa2;}
+
+.hdr{background:#4a148c;color:white;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.ht{font-family:'Black Han Sans',sans-serif;font-size:16px;}
+.hs{font-size:11px;opacity:.65;margin-top:2px;}
+.hb{background:rgba(255,255,255,.15);border-radius:20px;padding:4px 12px;font-size:12px;font-weight:700;}
+.pw{height:4px;background:#e1bee7;}.pf{height:100%;background:linear-gradient(90deg,#7b1fa2,#ff6f00);transition:width .4s;}
+
+#quizArea{padding:20px;max-width:600px;margin:0 auto;}
+.qc{background:var(--card);border-radius:20px;padding:26px 22px;margin-bottom:14px;box-shadow:0 4px 20px rgba(74,20,140,.08);}
+.qb{display:inline-block;padding:4px 14px;border-radius:20px;font-size:12px;font-weight:800;margin-bottom:10px;}
+.qb.s{background:#e8f5e9;color:#2e7d32;}.qb.a{background:#fce4ec;color:#880e4f;}.qb.j{background:#e3f2fd;color:#0d47a1;}
+.qstep{font-size:12px;color:var(--muted);margin-bottom:6px;font-weight:700;}
+.qw{font-size:30px;font-weight:800;color:#4a148c;margin-bottom:4px;font-family:'Black Han Sans',sans-serif;}
+.qk{font-size:13px;color:var(--muted);margin-bottom:16px;}
+.qp{font-size:14px;color:#5c3d47;background:#f3e5f5;padding:10px 14px;border-radius:10px;margin-bottom:16px;font-weight:700;}
+.choices{display:grid;gap:10px;}
+.cb{background:var(--bg);border:2px solid var(--bdr);border-radius:12px;padding:13px 16px;font-family:'Nanum Gothic',sans-serif;font-size:14px;font-weight:700;cursor:pointer;text-align:left;transition:all .15s;display:flex;align-items:center;gap:10px;}
+.cb:hover:not(:disabled){border-color:#7b1fa2;background:#ede7f6;}
+.cb.correct{background:#e8f5e9;border-color:#2e7d32;color:#1b5e20;}
+.cb.wrong{background:#ffebee;border-color:#c62828;color:#b71c1c;}
+.cb.reveal{background:#e8f5e9;border-color:#2e7d32;}
+.cn{width:24px;height:24px;border-radius:50%;background:#ce93d8;color:white;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0;}
+.jbtns{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.jb{padding:20px;border:2px solid var(--bdr);border-radius:14px;background:var(--bg);font-family:'Nanum Gothic',sans-serif;font-size:16px;font-weight:800;cursor:pointer;transition:all .15s;}
+.jb:hover:not(:disabled){transform:translateY(-2px);}
+.jb.sb{border-color:#4caf50;color:#2e7d32;}.jb.ab{border-color:#e91e63;color:#880e4f;}
+.jb.correct{background:#e8f5e9;}.jb.wrong{background:#ffebee;}
+.fb{padding:12px 14px;border-radius:10px;font-size:14px;font-weight:800;margin-top:12px;display:none;}
+.fb.ok{background:#e8f5e9;color:#1b5e20;display:block;}.fb.no{background:#ffebee;color:#b71c1c;display:block;}
+
+#resultScreen{padding:20px;max-width:600px;margin:0 auto;}
+.rc{background:var(--card);border-radius:24px;padding:30px 22px;box-shadow:0 8px 32px rgba(74,20,140,.1);margin-bottom:14px;text-align:center;}
+.rs{font-family:'Black Han Sans',sans-serif;font-size:52px;color:#4a148c;line-height:1;}
+.rsub{font-size:13px;color:var(--muted);margin-top:4px;}
+.sr{display:flex;justify-content:center;gap:22px;margin-top:18px;}
+.si{text-align:center;}.sn{font-family:'Black Han Sans',sans-serif;font-size:26px;}.sl{font-size:11px;color:var(--muted);margin-top:2px;}
+.wl{background:var(--bg);border-radius:14px;padding:14px;text-align:left;margin-top:14px;}
+.wl h3{font-size:12px;font-weight:800;color:#b71c1c;margin-bottom:8px;}
+.wi{background:white;border-radius:8px;padding:8px 12px;margin-bottom:6px;font-size:12px;border-left:3px solid #e91e63;}
+.wie{font-weight:800;color:#4a148c;}.wid{font-size:10px;color:var(--muted);margin-top:2px;}
+.rbtns{display:flex;gap:10px;justify-content:center;margin-top:18px;flex-wrap:wrap;}
+@media(max-width:480px){.mode-grid{grid-template-columns:1fr;}.qw{font-size:24px;}}
+</style>
+
+<script>
+// 봄날 허브에서 전달된 학생 이름 자동 적용
+(function(){
+  var saved = sessionStorage.getItem('bn_name') || localStorage.getItem('bn_name');
+  if(saved){
+    window._hubStudentName = saved;
+    // 이름 입력란이 있으면 자동 입력
+    window.addEventListener('DOMContentLoaded', function(){
+      var inputs = document.querySelectorAll('input#student-name, input#nameInput, .name-input');
+      inputs.forEach(function(el){ if(!el.value) el.value = saved; });
+    });
+  }
+})();
+</script>
+</head>
+<body>
+<div id="startScreen">
+  <div class="s-card">
+    <h1>🌸 06강 유의어·반의어</h1>
+    <div class="s-sub">2027 수능특강 영어 · 동반의어 퀴즈</div>
+    <div class="info-grid">
+      <div class="info-item">📚 23개 단어</div>
+      <div class="info-item">⏱ 10초 타이머</div>
+      <div class="info-item">🔄 4지선다</div>
+      <div class="info-item">🏆 기록 저장</div>
+    </div>
+    <div class="mode-grid">
+      <div class="mode-card sel" onclick="selMode('A',this)">
+        <div class="mi">🔵</div><div class="mt">모드 A</div>
+        <div class="md">뜻 맞히기 후<br>유의어 4지선다</div>
+      </div>
+      <div class="mode-card" onclick="selMode('B',this)">
+        <div class="mi">🟣</div><div class="mt">모드 B</div>
+        <div class="md">두 단어 관계가<br>유의어 / 반의어?</div>
+      </div>
+    </div>
+    <div class="name-row" style="flex-direction:column;gap:10px;">
+      <select class="ni" id="si" style="background:white;color:#4a148c;font-weight:700;cursor:pointer;">
+        <option value="">학교 선택</option>
+        <option value="종촌고">종촌고</option>
+        <option value="고운고">고운고</option>
+        <option value="어진고">어진고</option>
+        <option value="기타">기타</option>
+      </select>
+      <input type="text" class="ni" id="ni" placeholder="이름 입력" maxlength="10">
+    </div>
+    <button class="btn btn-p" onclick="startQuiz()" style="width:100%;padding:15px;">시작하기 🚀</button>
+  </div>
+</div>
+
+<div id="hdr" class="hdr hidden">
+  <div><div class="ht">🌸 06강 유의어·반의어</div><div class="hs" id="hs"></div></div>
+  <div class="hb" id="hb">0/23</div>
+</div>
+<div id="pw" class="pw hidden"><div class="pf" id="pf" style="width:0%"></div></div>
+<div id="quizArea" class="hidden"></div>
+<div id="resultScreen" class="hidden"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script>
+const cfg={apiKey:"AIzaSyCxS524S8KAaF87DomPtl9sJdF-eqes404",authDomain:"bomnalvaca.firebaseapp.com",projectId:"bomnalvaca",storageBucket:"bomnalvaca.firebasestorage.app",messagingSenderId:"115868052300",appId:"1:115868052300:web:765c08867b6f1ce0987de9"};
+firebase.initializeApp(cfg);
+const _fbDB=firebase.firestore();
+window._fbReady=true;
+window._fbSave=async function(data){
+  try{await _fbDB.collection('quiz_results').add(data);}catch(e){console.warn('FB 오류:',e);}
+};
+</script>
+<script>
+const WORDS=[
+  {eng:"emphasize",kor:"강조하다",syn:["stress", "highlight", "underline"],ant:["ignore", "understate"]},
+  {eng:"frequency",kor:"빈도",syn:["regularity", "recurrence"],ant:["rareness", "irregularity"]},
+  {eng:"wipe out",kor:"~을 없애 버리다",syn:["eliminate", "erase", "destroy"],ant:["create", "build"]},
+  {eng:"scream",kor:"소리치다",syn:["yell", "shout", "proclaim"],ant:["whisper", "mutter"]},
+  {eng:"compatible",kor:"양립될 수 있는",syn:["consistent", "congruous", "matching"],ant:["incompatible", "conflicting"]},
+  {eng:"distinction",kor:"구분",syn:["difference", "separation", "division"],ant:["similarity", "unity"]},
+  {eng:"abandon",kor:"폐지하다",syn:["discard", "relinquish", "give up"],ant:["maintain", "retain"]},
+  {eng:"restrict",kor:"제한하다",syn:["limit", "confine", "restrain"],ant:["expand", "free"]},
+  {eng:"countenance",kor:"지지하다",syn:["support", "approve", "tolerate"],ant:["oppose", "reject"]},
+  {eng:"convincing",kor:"설득력 있는",syn:["persuasive", "credible", "plausible"],ant:["unconvincing", "doubtful"]},
+  {eng:"abstract",kor:"추상적인",syn:["conceptual", "theoretical"],ant:["concrete", "real"]},
+  {eng:"interpret",kor:"해석하다",syn:["understand", "translate", "read"],ant:["misconstrue", "misinterpret"]},
+  {eng:"inclined to do",kor:"~하는 경향이 있는",syn:["prone to", "likely to"],ant:["reluctant to", "disinclined to"]},
+  {eng:"descry",kor:"발견하다",syn:["spot", "detect", "notice"],ant:["overlook", "miss"]},
+  {eng:"materialistic",kor:"물질주의적인",syn:["worldly", "greedy", "consumerist"],ant:["spiritual", "ascetic"]},
+  {eng:"metaphor",kor:"비유, 은유",syn:["analogy", "comparison", "symbol"],ant:["reality", "fact"]},
+  {eng:"shift",kor:"전환, 변화",syn:["transition", "change", "transformation"],ant:["stability", "maintenance"]},
+  {eng:"essential",kor:"필수적인",syn:["vital", "indispensable", "crucial"],ant:["optional", "unnecessary"]},
+  {eng:"escape",kor:"도피",syn:["avoidance", "evasion", "flight"],ant:["confrontation"]},
+  {eng:"vicarious",kor:"대리의",syn:["indirect", "secondary", "surrogate"],ant:["direct", "firsthand"]},
+  {eng:"activate",kor:"활성화하다",syn:["trigger", "stimulate", "start"],ant:["deactivate", "stop"]},
+  {eng:"latent",kor:"잠재적인",syn:["hidden", "dormant", "underlying"],ant:["manifest", "obvious"]},
+  {eng:"gratify",kor:"만족시키다",syn:["satisfy", "please", "fulfill"],ant:["dissatisfy", "frustrate"]}
+];
+const VALID=WORDS.filter(w=>w.syn.length>=1);
+let mode='A',name='',qs=[],idx=0,cor=0,wrn=0,wrongs=[],tid=null,answered=false,t0=0;
+
+function selMode(m,el){mode=m;document.querySelectorAll('.mode-card').forEach(c=>c.classList.remove('sel'));el.classList.add('sel');}
+function shuf(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+
+let school='';
+function startQuiz(){
+  school=document.getElementById('si').value;
+  name=document.getElementById('ni').value.trim();
+  if(!school){alert('학교를 선택해주세요!');return;}
+  if(!name){alert('이름을 입력해주세요!');return;}
+  if(mode==='A'){
+    qs=shuf(VALID).slice(0,Math.min(VALID.length,20)).flatMap(w=>([{type:'M',word:w},{type:'S',word:w}]));
+  }else{
+    const p=[];
+    WORDS.forEach(w=>{
+      if(w.syn.length>0)p.push({type:'J',w1:w.eng,w2:w.syn[0],rel:'syn',kor:w.kor});
+      if(w.ant.length>0)p.push({type:'J',w1:w.eng,w2:w.ant[0],rel:'ant',kor:w.kor});
+    });
+    qs=shuf(p).slice(0,Math.min(p.length,20));
+  }
+  idx=0;cor=0;wrn=0;wrongs=[];t0=Date.now();
+  document.getElementById('startScreen').classList.add('hidden');
+  document.getElementById('hdr').classList.remove('hidden');
+  document.getElementById('pw').classList.remove('hidden');
+  document.getElementById('quizArea').classList.remove('hidden');
+  document.getElementById('hs').textContent=name+' · '+(mode==='A'?'유의어 찾기':'관계 판별');
+  showQ();
+}
+
+function showQ(){
+  if(idx>=qs.length){showResult();return;}
+  answered=false;
+  const q=qs[idx];
+  const prog=(idx/qs.length*100).toFixed(0);
+  document.getElementById('pf').style.width=prog+'%';
+  document.getElementById('hb').textContent=(idx+1)+'/'+qs.length;
+  const area=document.getElementById('quizArea');
+  
+  if(q.type==='M'){
+    const ck=q.word.kor;
+    const dis=shuf(WORDS.filter(w=>w.kor!==ck&&w.kor).map(w=>w.kor)).slice(0,3);
+    const ch=shuf([ck,...dis]);
+    area.innerHTML=`<div class="qc">
+      <div class="qb s">1단계 · 뜻 찾기</div>
+      <div class="qstep">${idx+1} / ${qs.length}</div>
+      <div class="qw">${q.word.eng}</div>
+      <div class="qp">이 단어의 뜻은?</div>
+      <div class="choices" id="meanC"></div>
+      <div class="fb" id="fb"></div></div>`;
+    const _meanC=document.getElementById('meanC');
+    ch.forEach((c,i)=>{
+      const b=document.createElement('button');b.className='cb';
+      b.innerHTML=`<span class="cn">${i+1}</span>${c}`;
+      const _ck=ck,_idx=idx;
+      b.addEventListener('click',()=>selM(b,c,_ck,_idx));
+      _meanC.appendChild(b);
+    });
+  } else if(q.type==='S'){
+    const syns=q.word.syn;
+    const cs=syns[Math.floor(Math.random()*syns.length)];
+    const allS=WORDS.flatMap(w=>w.syn).filter(s=>!syns.includes(s));
+    const dis=shuf(allS).slice(0,3);
+    const ch=shuf([cs,...dis]);
+    const area.innerHTML=`<div class="qc">
+      <div class="qb s">2단계 · 유의어 찾기</div>
+      <div class="qstep">${idx+1} / ${qs.length}</div>
+      <div class="qw">${q.word.eng}</div>
+      <div class="qk">${q.word.kor}</div>
+      <div class="qp">이 단어의 유의어는?</div>
+      <div class="choices" id="synC"></div>
+      <div class="fb" id="fb"></div></div>`;
+    const _synC=document.getElementById('synC');
+    ch.forEach((c,i)=>{
+      const b=document.createElement('button');b.className='cb';
+      b.innerHTML=`<span class="cn">${i+1}</span>${c}`;
+      const _syns=syns,_idx=idx;
+      b.addEventListener('click',()=>selS(b,c,_syns,_idx));
+      _synC.appendChild(b);
+    });
+  } else {
+    area.innerHTML=`<div class="qc">
+      <div class="qb j">관계 판별</div>
+      <div class="qstep">${idx+1} / ${qs.length}</div>
+      <div style="display:flex;gap:14px;justify-content:center;align-items:center;margin:14px 0 6px;">
+        <div class="qw" style="font-size:22px;">${q.w1}</div>
+        <div style="font-size:22px;color:#ce93d8;font-weight:800;">↔</div>
+        <div class="qw" style="font-size:22px;">${q.w2}</div>
+      </div>
+      <div class="qk" style="text-align:center;">(${q.kor})</div>
+      <div class="qp" style="margin-top:14px;">두 단어의 관계는?</div>
+      <div class="jbtns">
+        <button class="jb sb" onclick="selJ(this,'syn','${q.rel}',${idx})">🟢 유의어</button>
+        <button class="jb ab" onclick="selJ(this,'ant','${q.rel}',${idx})">🔴 반의어</button>
+      </div>
+      <div class="fb" id="fb"></div></div>`;
+  }
+  clearTimeout(tid);tid=setTimeout(autoTO,10000);
+}
+
+function selM(btn,sel,ans,qi){
+  if(answered||parseInt(qi)!==idx)return;
+  answered=true;clearTimeout(tid);
+  document.querySelectorAll('.cb').forEach(b=>b.disabled=true);
+  const fb=document.getElementById('fb');
+  if(sel===ans){btn.classList.add('correct');fb.className='fb ok';fb.textContent='✅ 정답!';cor++;setTimeout(()=>{idx++;showQ();},800);}
+  else{btn.classList.add('wrong');document.querySelectorAll('.cb').forEach(b=>{if(b.dataset.v===ans)b.classList.add('reveal');});fb.className='fb no';fb.textContent='❌ 오답! 정답: '+ans;wrn++;wrongs.push({eng:qs[idx].word.eng,kor:ans,type:'뜻',my:sel,correct:ans});setTimeout(()=>{idx+=2;showQ();},1500);}
+}
+function selS(btn,sel,syns,qi){
+  if(answered||parseInt(qi)!==idx)return;
+  answered=true;clearTimeout(tid);
+  document.querySelectorAll('.cb').forEach(b=>b.disabled=true);
+  const fb=document.getElementById('fb');
+  const ok=syns.includes(sel);
+  if(ok){btn.classList.add('correct');fb.className='fb ok';fb.textContent='✅ 정답!';cor++;}
+  else{btn.classList.add('wrong');document.querySelectorAll('.cb').forEach(b=>{if(syns.includes(b.dataset.v))b.classList.add('reveal');});fb.className='fb no';fb.textContent='❌ 오답! 유의어: '+syns.join(', ');wrn++;wrongs.push({eng:qs[idx].word.eng,kor:qs[idx].word.kor,type:'유의어',my:sel,correct:syns[0]});}
+  setTimeout(()=>{idx++;showQ();},1500);
+}
+function selJ(btn,sel,ans,qi){
+  if(answered||parseInt(qi)!==idx)return;
+  answered=true;clearTimeout(tid);
+  document.querySelectorAll('.jb').forEach(b=>b.disabled=true);
+  const fb=document.getElementById('fb');
+  const la=ans==='syn'?'유의어':'반의어';const ls=sel==='syn'?'유의어':'반의어';
+  if(sel===ans){btn.classList.add('correct');fb.className='fb ok';fb.textContent='✅ 정답! '+la;cor++;}
+  else{btn.classList.add('wrong');document.querySelectorAll('.jb').forEach(b=>{if((ans==='syn'&&b.classList.contains('sb'))||(ans==='ant'&&b.classList.contains('ab')))b.classList.add('reveal');});fb.className='fb no';fb.textContent='❌ 오답! 정답: '+la;wrn++;const q=qs[idx];wrongs.push({eng:q.w1+' ↔ '+q.w2,kor:q.kor,type:'관계',my:ls,correct:la});}
+  setTimeout(()=>{idx++;showQ();},1500);
+}
+function autoTO(){
+  if(answered)return;answered=true;
+  document.querySelectorAll('.cb,.jb').forEach(b=>b.disabled=true);
+  const fb=document.getElementById('fb');fb.className='fb no';fb.textContent='⏱ 시간 초과!';
+  wrn++;const q=qs[idx];
+  if(q.type==='M')wrongs.push({eng:q.word.eng,kor:q.word.kor,type:'뜻',my:'(초과)',correct:q.word.kor});
+  else if(q.type==='S')wrongs.push({eng:q.word.eng,kor:q.word.kor,type:'유의어',my:'(초과)',correct:q.word.syn[0]});
+  setTimeout(()=>{idx++;showQ();},1500);
+}
+function showResult(){
+  document.getElementById('pf').style.width='100%';
+  document.getElementById('quizArea').classList.add('hidden');
+  const total=idx,pct=total>0?Math.round(cor/total*100):0,el=Math.round((Date.now()-t0)/60000);
+  const wHTML=wrongs.length>0?`<div class="wl"><h3>❌ 오답 (${wrongs.length}개)</h3>${wrongs.map(w=>`<div class="wi"><div class="wie">${w.eng}</div><div class="wid">[${w.type}] 내 답: ${w.my} → 정답: ${w.correct}</div></div>`).join('')}</div>`:'<div style="color:#2e7d32;font-weight:800;padding:14px;text-align:center;">🎉 전부 정답!</div>';
+  document.getElementById('resultScreen').classList.remove('hidden');
+  document.getElementById('resultScreen').innerHTML=`<div class="rc">
+    <div style="font-size:12px;color:var(--muted);margin-bottom:4px;">06강 · ${mode==='A'?'유의어 찾기':'관계 판별'}</div>
+    <div class="rs">${pct}점</div><div class="rsub">${name}의 결과</div>
+    <div class="sr">
+      <div class="si"><div class="sn" style="color:#2e7d32;">${cor}</div><div class="sl">정답</div></div>
+      <div class="si"><div class="sn" style="color:#b71c1c;">${wrn}</div><div class="sl">오답</div></div>
+      <div class="si"><div class="sn" style="color:#7b1fa2;">${total}</div><div class="sl">총문제</div></div>
+      <div class="si"><div class="sn" style="color:#ff6f00;">${el}분</div><div class="sl">소요</div></div>
+    </div>${wHTML}
+    <div class="rbtns"><button class="btn btn-p" onclick="location.reload()">다시하기 🔄</button></div></div>`;
+  _save({score:pct,correct:cor,wrong:wrn,total,elapsed:el,wrongs,mode});
+}
+async function _save(d){
+  if(window._fbSave){
+    window._fbSave({
+      submittedAt:new Date().toISOString(),
+      studentName:name,school:school,
+      score:d.score,correct:d.correct,wrong:d.wrong,total:d.total,elapsedMin:d.elapsed,
+      quizType:'06강_동반의어_'+d.mode+'모드',
+      wrongWords:d.wrongs.map(w=>({eng:w.eng||'',kor:w.kor||'',my:w.my||'',src:w.type||''}))
+    });
+  }
+}
+</script>
+</body>
+</html>

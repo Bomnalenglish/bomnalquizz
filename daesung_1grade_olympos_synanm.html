@@ -108,6 +108,21 @@ body{font-family:'Noto Sans KR','Malgun Gothic',sans-serif;background:var(--bg);
 .name-start-btn{width:100%;max-width:360px;padding:14px;border-radius:12px;border:none;background:var(--p);color:#fff;font-size:1rem;font-weight:800;cursor:pointer;font-family:inherit;}
 .name-start-btn:hover{background:var(--pl);}
 </style>
+
+<script>
+// 봄날 허브에서 전달된 학생 이름 자동 적용
+(function(){
+  var saved = sessionStorage.getItem('bn_name') || localStorage.getItem('bn_name');
+  if(saved){
+    window._hubStudentName = saved;
+    // 이름 입력란이 있으면 자동 입력
+    window.addEventListener('DOMContentLoaded', function(){
+      var inputs = document.querySelectorAll('input#student-name, input#nameInput, .name-input');
+      inputs.forEach(function(el){ if(!el.value) el.value = saved; });
+    });
+  }
+})();
+</script>
 </head>
 <body>
 

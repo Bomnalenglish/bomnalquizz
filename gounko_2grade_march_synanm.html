@@ -88,6 +88,21 @@ select.inp{color:#1b5e20;font-weight:700;cursor:pointer;}
 
 @media(max-width:480px){.mode-row{grid-template-columns:1fr;}.q-word{font-size:24px;}}
 </style>
+
+<script>
+// 봄날 허브에서 전달된 학생 이름 자동 적용
+(function(){
+  var saved = sessionStorage.getItem('bn_name') || localStorage.getItem('bn_name');
+  if(saved){
+    window._hubStudentName = saved;
+    // 이름 입력란이 있으면 자동 입력
+    window.addEventListener('DOMContentLoaded', function(){
+      var inputs = document.querySelectorAll('input#student-name, input#nameInput, .name-input');
+      inputs.forEach(function(el){ if(!el.value) el.value = saved; });
+    });
+  }
+})();
+</script>
 </head>
 <body>
 
