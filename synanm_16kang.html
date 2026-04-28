@@ -90,14 +90,19 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--bg);min-height:100vh
         <div class="md">두 단어 관계가<br>유의어 / 반의어?</div>
       </div>
     </div>
-    <select class="ni" id="si" style="background:white;color:#4a148c;font-weight:700;cursor:pointer;">
-      <option value="">학교 선택</option>
-      <option value="종촌고">종촌고</option>
-      <option value="고운고">고운고</option>
-      <option value="대성고">대성고</option>
-      <option value="기타">기타</option>
-    </select>
-    <input type="text" class="ni" id="ni" placeholder="이름 입력" maxlength="10">
+    <div id="user-info-box" style="background:#ede7f6;border-radius:12px;padding:12px 16px;margin-bottom:12px;font-size:14px;color:#4a148c;font-weight:700;text-align:left;display:none;">
+      👤 <span id="user-info-text"></span>
+    </div>
+    <div id="manual-inputs" style="display:none;">
+      <select class="ni" id="si" style="background:white;color:#4a148c;font-weight:700;cursor:pointer;">
+        <option value="">학교 선택</option>
+        <option value="종촌고">종촌고</option>
+        <option value="고운고">고운고</option>
+        <option value="대성고">대성고</option>
+        <option value="기타">기타</option>
+      </select>
+      <input type="text" class="ni" id="ni" placeholder="이름 입력" maxlength="10">
+    </div>
     <button class="btn btn-p" onclick="startQuiz()" style="width:100%;padding:15px;">시작하기 🚀</button>
   </div>
 </div>
@@ -131,6 +136,25 @@ _loadScript('https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js')
 </script>
 
 <script>
+// 페이지 로드시 저장된 사용자 정보 표시
+window.addEventListener('DOMContentLoaded', function() {
+  const savedName = sessionStorage.getItem('bn_name') || localStorage.getItem('bn_name') || '';
+  const savedSchool = sessionStorage.getItem('bn_school') || localStorage.getItem('bn_school') || '';
+  if (savedName) {
+    const box = document.getElementById('user-info-box');
+    const txt = document.getElementById('user-info-text');
+    if (box && txt) {
+      txt.textContent = savedName + (savedSchool ? ' · ' + savedSchool : '');
+      box.style.display = 'block';
+    }
+    const manual = document.getElementById('manual-inputs');
+    if (manual) manual.style.display = 'none';
+  } else {
+    const manual = document.getElementById('manual-inputs');
+    if (manual) manual.style.display = 'block';
+  }
+});
+
 const WORDS = [
   {
     "eng": "repetitive",
@@ -491,10 +515,19 @@ function shuf(a) {
   return b;
 }
 function startQuiz() {
-  school = document.getElementById('si').value;
-  name = document.getElementById('ni').value.trim();
-  if (!school) { alert('학교를 선택해주세요!'); return; }
-  if (!name) { alert('이름을 입력해주세요!'); return; }
+  // 허브에서 저장된 이름/학교 자동 로드
+  const savedName = sessionStorage.getItem('bn_name') || localStorage.getItem('bn_name') || '';
+  const savedSchool = sessionStorage.getItem('bn_school') || localStorage.getItem('bn_school') || '';
+  if (savedName) {
+    name = savedName;
+    school = savedSchool;
+  } else {
+    // 직접 입력 모드
+    school = document.getElementById('si') ? document.getElementById('si').value : '';
+    name = document.getElementById('ni') ? document.getElementById('ni').value.trim() : '';
+    if (!school) { alert('학교를 선택해주세요!'); return; }
+    if (!name) { alert('이름을 입력해주세요!'); return; }
+  }
   if (mode === 'A') {
     qs = shuf(VALID).slice(0, Math.min(VALID.length, 20)).flatMap(w => ([{type:'M',word:w},{type:'S',word:w}]));
   } else {
