@@ -171,6 +171,83 @@ footer { text-align: center; padding: 28px; color: #aabbc8; font-size: .8rem; fo
   </main>
 </div>
 
+
+
+<!-- 모의고사 STEP 4: 유형 선택 -->
+<div id="screen-mock-type" class="screen">
+  <div class="auth-wrap">
+    <div class="auth-card" style="max-width:420px;">
+      <h2>📝 모의고사</h2>
+      <p id="mock-type-title">유형을 선택하세요.</p>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px;">
+        <a id="mock-type-voca"    class="sp-btn" target="_blank" rel="noopener" style="text-align:center;display:block;text-decoration:none;">
+          <div class="sp-n">📖 단어</div>
+          <div style="font-size:.7rem;color:#7a7570;margin-top:2px">어휘 · 뜻 맞추기</div>
+        </a>
+        <a id="mock-type-memory"  class="sp-btn" target="_blank" rel="noopener" style="text-align:center;display:block;text-decoration:none;">
+          <div class="sp-n">🧠 본문 암기</div>
+          <div style="font-size:.7rem;color:#7a7570;margin-top:2px">빈칸 채우기 · 문장 순서</div>
+        </a>
+        <a id="mock-type-grammar" class="sp-btn" target="_blank" rel="noopener" style="text-align:center;display:block;text-decoration:none;">
+          <div class="sp-n">✏️ 어법 선택</div>
+          <div style="font-size:.7rem;color:#7a7570;margin-top:2px">어법 · 어휘 선택형</div>
+        </a>
+        <a id="mock-type-total"   class="sp-btn" target="_blank" rel="noopener" style="text-align:center;display:block;text-decoration:none;">
+          <div class="sp-n">🏆 총괄 퀴즈</div>
+          <div style="font-size:.7rem;color:#7a7570;margin-top:2px">단어 + 어법 + 본문 종합</div>
+        </a>
+      </div>
+      <br><button class="auth-back" onclick="goStep('screen-mock-month')">← 월 선택으로</button>
+    </div>
+  </div>
+</div>
+
+<!-- 모의고사 STEP 1: 학년 선택 -->
+<div id="screen-mock-grade" class="screen">
+  <div class="auth-wrap">
+    <div class="auth-card" style="max-width:420px;">
+      <h2>📝 모의고사</h2>
+      <p>학년을 선택하세요.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px;">
+        <button class="sp-btn" onclick="selectMockGrade('고1')" style="text-align:center;">
+          <div class="sp-n">고1</div>
+        </button>
+        <button class="sp-btn" onclick="selectMockGrade('고2')" style="text-align:center;">
+          <div class="sp-n">고2</div>
+        </button>
+        <button class="sp-btn" onclick="selectMockGrade('고3')" style="text-align:center;">
+          <div class="sp-n">고3</div>
+        </button>
+      </div>
+      <br><button class="auth-back" onclick="goStep('screen-pick')">← 돌아가기</button>
+    </div>
+  </div>
+</div>
+
+<!-- 모의고사 STEP 2: 연도 선택 -->
+<div id="screen-mock-year" class="screen">
+  <div class="auth-wrap">
+    <div class="auth-card" style="max-width:420px;">
+      <h2>📝 모의고사</h2>
+      <p id="mock-year-title">학년 · 연도를 선택하세요.</p>
+      <div id="mock-year-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;"></div>
+      <br><button class="auth-back" onclick="goStep('screen-mock-grade')">← 학년 선택으로</button>
+    </div>
+  </div>
+</div>
+
+<!-- 모의고사 STEP 3: 월 선택 -->
+<div id="screen-mock-month" class="screen">
+  <div class="auth-wrap">
+    <div class="auth-card" style="max-width:420px;">
+      <h2>📝 모의고사</h2>
+      <p id="mock-month-title">월을 선택하세요.</p>
+      <div id="mock-month-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;"></div>
+      <br><button class="auth-back" onclick="goStep('screen-mock-year')">← 연도 선택으로</button>
+    </div>
+  </div>
+</div>
+
 <footer>봄날 BOMNAL ENGLISH &nbsp;·&nbsp; 퀴즈는 새 탭에서 열립니다</footer>
 
 <!-- Firebase -->
@@ -396,6 +473,20 @@ function renderSchoolPicker() {
     a.onmouseleave = () => { a.style.borderColor='#d0dde8'; a.style.background='white'; };
     picker.appendChild(a);
   });
+
+  // 모의고사 섹션
+  const mockSep = document.createElement("div");
+  mockSep.style.cssText = "grid-column:1/-1;border-top:1px solid #e0d8ce;padding-top:10px;font-family:\'Black Han Sans\',sans-serif;font-size:.82rem;color:#a09890;margin-top:6px;";
+  mockSep.textContent = "📝 봄날 모의고사";
+  picker.appendChild(mockSep);
+
+  const mockBtn = document.createElement("button");
+  mockBtn.style.cssText = "display:block;width:100%;text-decoration:none;border-radius:12px;padding:12px 14px;border:2px solid #d0dde8;background:white;font-family:inherit;transition:border-color .15s,background .15s;text-align:left;cursor:pointer;";
+  mockBtn.innerHTML = '<div style="font-size:.82rem;font-weight:700;color:#2a2a2a">📝 모의고사 풀기</div><div style="font-size:.7rem;color:#7a7570;margin-top:2px">고1·고2·고3 · 연도·월 선택</div>';
+  mockBtn.onmouseenter = () => { mockBtn.style.borderColor='#888'; mockBtn.style.background='#f5f2ee'; };
+  mockBtn.onmouseleave = () => { mockBtn.style.borderColor='#d0dde8'; mockBtn.style.background='white'; };
+  mockBtn.onclick = () => openMock();
+  picker.appendChild(mockBtn);
 }
 
 function submitSchool() {
@@ -535,6 +626,115 @@ function openSchool(s) {
 
   goStep("screen-school");
 }
+
+
+// ─── 모의고사 데이터 ───
+const MOCK_DATA = {
+  '고1': {
+    years: ['2023','2024','2025'],
+    months: {
+      '2023': ['3월','6월','9월','11월'],
+      '2024': ['3월','6월','9월','11월'],
+      '2025': ['3월','6월','9월','11월'],
+    }
+  },
+  '고2': {
+    years: ['2023','2024','2025'],
+    months: {
+      '2023': ['3월','6월','9월','11월'],
+      '2024': ['3월','6월','9월','11월'],
+      '2025': ['3월','6월','9월','11월'],
+    }
+  },
+  '고3': {
+    years: ['2023','2024','2025'],
+    months: {
+      '2023': ['3월','6월','9월','12월'],
+      '2024': ['3월','6월','9월','수능'],
+      '2025': ['3월','6월','9월','수능'],
+    }
+  },
+};
+
+// 파일명 규칙: mock_{grade}_{year}_{month}.html
+// 예: mock_go1_2025_03.html
+const MOCK_GRADE_MAP = {'고1':'go1','고2':'go2','고3':'go3'};
+const MOCK_MONTH_MAP = {'3월':'03','6월':'06','9월':'09','11월':'11','12월':'12','수능':'suneung'};
+
+let mockGrade='', mockYear='';
+
+function openMock(){
+  goStep('screen-mock-grade');
+}
+
+function selectMockGrade(grade){
+  mockGrade = grade;
+  const data = MOCK_DATA[grade];
+  document.getElementById('mock-year-title').textContent = grade + ' · 연도를 선택하세요.';
+  const grid = document.getElementById('mock-year-grid');
+  grid.innerHTML = '';
+  data.years.forEach(year => {
+    const btn = document.createElement('button');
+    btn.className = 'sp-btn';
+    btn.style.textAlign = 'center';
+    btn.innerHTML = '<div class="sp-n">' + year + '년</div>';
+    btn.onclick = () => selectMockYear(year);
+    grid.appendChild(btn);
+  });
+  goStep('screen-mock-year');
+}
+
+let mockMonth = '';
+
+function selectMockYear(year){
+  mockYear = year;
+  const months = MOCK_DATA[mockGrade].months[year];
+  document.getElementById('mock-month-title').textContent = mockGrade + ' ' + year + '년 · 시험을 선택하세요.';
+  const grid = document.getElementById('mock-month-grid');
+  grid.innerHTML = '';
+  months.forEach(month => {
+    const gradeKey = MOCK_GRADE_MAP[mockGrade];
+    const monthKey = MOCK_MONTH_MAP[month];
+    const file = 'mock_' + gradeKey + '_' + year + '_' + monthKey + '.html';
+    const url = BASE + file;
+    const btn = document.createElement('button');
+    btn.className = 'sp-btn';
+    btn.style.cssText = 'text-align:center;display:block;width:100%;';
+    btn.innerHTML = '<div class="sp-n">' + year + '년 ' + month + '</div><div style="font-size:.7rem;color:#7a7570;margin-top:2px">고등학교 ' + mockGrade + '</div>';
+    btn.onclick = () => selectMockMonth(month);
+    grid.appendChild(btn);
+  });
+  goStep('screen-mock-month');
+}
+
+
+function selectMockMonth(month){
+  mockMonth = month;
+  const gradeKey = MOCK_GRADE_MAP[mockGrade];
+  const monthKey = MOCK_MONTH_MAP[month];
+  const base = 'mock_' + gradeKey + '_' + mockYear + '_' + monthKey;
+
+  // 유형별 파일명 규칙
+  const types = {
+    voca:    base + '_voca.html',
+    memory:  base + '_memory.html',
+    grammar: base + '_grammar.html',
+    total:   base + '_total.html',
+  };
+
+  // 링크 설정
+  document.getElementById('mock-type-voca').href    = BASE + types.voca;
+  document.getElementById('mock-type-memory').href  = BASE + types.memory;
+  document.getElementById('mock-type-grammar').href = BASE + types.grammar;
+  document.getElementById('mock-type-total').href   = BASE + types.total;
+
+  // 제목 업데이트
+  document.getElementById('mock-type-title').textContent =
+    mockGrade + ' ' + mockYear + '년 ' + month + ' · 유형을 선택하세요.';
+
+  goStep('screen-mock-type');
+}
+
 
 function goHome() {
   // 학교 선택 화면으로 (로그아웃 없이)
