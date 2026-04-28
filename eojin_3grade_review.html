@@ -1020,7 +1020,9 @@ let vocDir = 'en2ko';
 function setVocSet(s){ vocSet=s; buildVocab(); }
 function setDir(d){ vocDir=d; buildVocab(); }
 
+</script>
 
+<!-- Firebase -->
 <script type="module">
 import{initializeApp}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import{getFirestore,collection,addDoc,serverTimestamp}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
@@ -1097,6 +1099,36 @@ function showRetryBanner(containerId, wrongCount, round, tabName){
 // ════════════ FILL: 오답 재도전 ════════════
 let fillRound = 1;
 let fillRetryData = null; // null이면 전체, 아니면 오답만
+
+function buildFill() {
+  fillRetryData = null; fillRound = 1;
+  document.getElementById('fill-result').classList.remove('show');
+  document.getElementById('fill-score').textContent = `0 / ${fillData.length}`;
+  const cont = document.getElementById('fill-questions');
+  cont.innerHTML = '';
+  const sectionLabels = {
+    0:  '📖 Scene 1 — Greta became sad',
+    3:  '📖 Scene 2 — What use is school?',
+    6:  '📖 Scene 3 — Going on strike',
+    8:  '📖 Scene 4 — To the parliament',
+    11: '📖 Scene 5 — Invisible there, too',
+    14: '📖 Scene 6 — The word began to spread',
+    17: '📖 Scene 7 — Everywhere',
+    21: '🐜 Animals Big & Small — The Amazing Ants',
+    25: '👑 What Matters to You — Luigi',
+  };
+  fillData.forEach((d, i) => {
+    if (sectionLabels[i]) {
+      cont.innerHTML += `<div style="font-family:'Space Mono',monospace;font-size:0.72rem;letter-spacing:1.5px;color:var(--teal);background:var(--light-teal);padding:7px 14px;border-radius:8px;margin:18px 0 10px;font-weight:700;">${sectionLabels[i]}</div>`;
+    }
+    cont.innerHTML += `
+      <div class="q-block" id="fq-${i}">
+        <div class="q-num">Q${i+1} <span class="tag tag-reading">빈칸</span></div>
+        <div class="q-text">${d.pre}<input class="fill-input" id="fi-${i}" placeholder="${d.hint}" autocomplete="off"><span>${d.post}</span></div>
+        <div class="feedback" id="ff-${i}"></div>
+      </div>`;
+  });
+}
 
 function checkFill() {
   const data = fillRetryData || fillData;
