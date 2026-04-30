@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>13강 2번 | Symbols & Subjective Reality</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700&family=Space+Mono:wght@400;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f5f0e8;
+  --surface: #fdfaf4;
+  --surface2: #ede8dc;
+  --border: #d8d0bc;
+  --accent: #4a7cf0;
+  --accent2: #d95f5f;
+  --accent3: #b87a0a;
+  --accent4: #2a9d6f;
+  --text: #2d2a22;
+  --text-muted: #7a7060;
+  --text-dim: #b0a890;
+  --correct: #2a9d6f;
+  --wrong: #d95f5f;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: 'Noto Sans KR', sans-serif; min-height: 100vh; overflow-x: hidden; }
+
+/* HEADER */
+.site-header { border-bottom: 1px solid var(--border); padding: 16px 28px; display: flex; align-items: center; gap: 14px; background: var(--surface); position: sticky; top: 0; z-index: 100; }
+.logo { font-family: 'Space Mono', monospace; font-size: 13px; color: var(--accent); letter-spacing: 2px; }
+.subtitle { font-size: 11px; color: var(--text-muted); }
+.header-right { margin-left: auto; display: flex; gap: 8px; }
+.passage-tab { padding: 6px 16px; border-radius: 20px; font-size: 12px; font-family: 'Space Mono', monospace; cursor: pointer; border: 1px solid var(--border); background: transparent; color: var(--text-muted); transition: all .2s; }
+.passage-tab.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+/* LAYOUT */
+.main-wrap { max-width: 960px; margin: 0 auto; padding: 36px 24px 80px; }
+.passage-panel { display: none; }
+.passage-panel.active { display: block; }
+.passage-title { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--accent); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 6px; }
+.passage-headline { font-family: 'Noto Serif KR', serif; font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+.passage-desc { font-size: 13px; color: var(--text-muted); margin-bottom: 28px; }
+
+/* STAGE NAV */
+.stage-nav { display: flex; gap: 4px; margin-bottom: 28px; flex-wrap: wrap; }
+.stage-btn { padding: 7px 14px; border-radius: 6px; font-size: 12px; font-family: 'Space Mono', monospace; cursor: pointer; border: 1px solid var(--border); background: transparent; color: var(--text-muted); transition: all .2s; }
+.stage-btn:hover { border-color: var(--accent); color: var(--accent); }
+.stage-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+.stage-btn .dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--accent4); margin-left: 5px; vertical-align: middle; opacity: 0; }
+.stage-btn.done .dot { opacity: 1; }
+
+/* LABELS */
+.section-label { display: inline-block; padding: 3px 10px; border-radius: 4px; font-size: 10px; font-family: 'Space Mono', monospace; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px; }
+.section-label.sec1 { background: rgba(74,124,240,.1); color: var(--accent); border: 1px solid rgba(74,124,240,.25); }
+.section-label.sec2 { background: rgba(184,122,10,.1); color: var(--accent3); border: 1px solid rgba(184,122,10,.25); }
+
+/* STAGE PANELS */
+.stage-panel { display: none; }
+.stage-panel.active { display: block; animation: fadeUp .3s ease; }
+@keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+.stage-heading { font-size: 17px; font-weight: 700; margin-bottom: 6px; }
+.stage-desc { font-size: 13px; color: var(--text-muted); margin-bottom: 22px; line-height: 1.7; }
+
+/* ───── STAGE 1 ───── */
+.chunk-row { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; margin-bottom: 14px; transition: border-color .2s; }
+.chunk-row.all-correct { border-color: var(--correct); }
+.chunk-row.has-wrong { border-color: var(--wrong); }
+.chunk-meta { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--text-dim); letter-spacing: .5px; margin-bottom: 8px; }
+.chunk-en { font-family: 'Noto Serif KR', serif; font-size: 15px; color: var(--text); line-height: 2.1; }
+.chunk-kr { font-size: 12.5px; color: var(--text-muted); line-height: 1.8; margin-top: 8px; padding-left: 10px; border-left: 2px solid var(--border); }
+
+/* inline blank */
+.b-wrap { display: inline-block; position: relative; margin: 0 3px; vertical-align: middle; }
+.b-wrap select {
+  appearance: none; -webkit-appearance: none;
+  background: var(--surface2); border: 1px solid var(--accent);
+  border-radius: 6px; color: var(--accent); font-size: 13px;
+  padding: 3px 26px 3px 10px; cursor: pointer;
+  font-family: 'Noto Sans KR', sans-serif; transition: all .2s; min-width: 110px;
+}
+.b-wrap::after { content:'▾'; position:absolute; right:8px; top:50%; transform:translateY(-50%); color:var(--accent); pointer-events:none; font-size:11px; }
+.b-wrap select.correct { border-color:var(--correct); color:var(--correct); background:rgba(6,214,160,.1); }
+.b-wrap select.wrong   { border-color:var(--wrong);   color:var(--wrong);   background:rgba(255,107,107,.1); }
+
+/* ───── STAGE 2 ───── */
+.full-passage-box { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px 22px; margin-bottom: 24px; }
+.fp-title { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--text-dim); letter-spacing: 1px; margin-bottom: 10px; }
+.fp-sentence { font-family: 'Noto Serif KR', serif; font-size: 14px; line-height: 1.9; color: var(--text); margin-bottom: 4px; }
+.fp-sentence span.hl { background: rgba(91,140,255,.15); border-radius: 3px; padding: 1px 3px; color: var(--accent); }
+
+.s2-qblock { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; margin-bottom: 14px; transition: border-color .2s; }
+.s2-qblock.graded-correct { border-color: var(--correct); }
+.s2-qblock.graded-wrong   { border-color: var(--wrong); }
+.s2-qnum { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--accent3); letter-spacing: 1px; margin-bottom: 6px; }
+.s2-question { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 14px; line-height: 1.7; }
+.s2-opts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.s2-opt { padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface2); font-size: 13px; cursor: pointer; transition: all .2s; color: var(--text); line-height: 1.5; }
+.s2-opt:hover { border-color: var(--accent); color: var(--accent); }
+.s2-opt.selected { border-color: var(--accent); background: rgba(91,140,255,.12); color: var(--accent); }
+.s2-opt.reveal-correct { border-color: var(--correct); background: rgba(6,214,160,.12); color: var(--correct); }
+.s2-opt.reveal-wrong   { border-color: var(--wrong);   background: rgba(255,107,107,.12); color: var(--wrong); }
+
+/* ───── STAGE 3 ───── */
+.s3-opts-label { font-size: 12px; color: var(--text-muted); margin-bottom: 8px; font-family: 'Space Mono', monospace; }
+.s3-opts { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+.s3-opt { padding: 12px 16px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface2); font-size: 13px; cursor: pointer; transition: all .2s; color: var(--text); line-height: 1.6; }
+.s3-opt:hover { border-color: var(--accent3); color: var(--accent3); }
+.s3-opt:hover .s3-easy { color: var(--accent3); opacity: .8; }
+.s3-opt.used { opacity: .3; pointer-events: none; }
+.s3-main { font-size: 13px; font-weight: 500; }
+.s3-easy { font-size: 12px; color: var(--text-muted); margin-top: 4px; line-height: 1.6; padding-left: 2px; border-left: 2px solid var(--border); padding-left: 8px; margin-left: 2px; }
+.s3-structure { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+.s3-slot { display: flex; align-items: flex-start; gap: 12px; padding: 14px 16px; margin-bottom: 10px; border-radius: 8px; border: 1.5px dashed var(--border); min-height: 60px; transition: all .2s; }
+.s3-slot.filled { border-style: solid; border-color: var(--accent); background: rgba(91,140,255,.06); }
+.s3-slot.slot-correct { border-color: var(--correct); background: rgba(6,214,160,.06); }
+.s3-slot.slot-wrong   { border-color: var(--wrong);   background: rgba(255,107,107,.06); }
+.s3-slot-label { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--text-muted); white-space: nowrap; padding-top: 2px; min-width: 48px; letter-spacing: .5px; }
+.s3-slot-text { font-size: 13px; color: var(--text); line-height: 1.7; flex: 1; }
+.s3-slot-placeholder { font-size: 13px; color: var(--text-dim); font-style: italic; }
+.s3-remove { background: none; border: 1px solid var(--border); color: var(--text-dim); cursor: pointer; font-size: 12px; padding: 2px 8px; border-radius: 4px; transition: all .2s; white-space: nowrap; }
+.s3-remove:hover { border-color: var(--wrong); color: var(--wrong); }
+
+/* ───── STAGE 4 ───── */
+.s4-box { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px 24px 18px; margin-bottom: 18px; }
+.s4-qtype { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--accent3); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; }
+.s4-question { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 18px; line-height: 1.7; }
+.s4-opts { display: flex; flex-direction: column; gap: 8px; }
+.s4-opt { padding: 12px 16px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface2); font-size: 13.5px; cursor: pointer; transition: all .2s; color: var(--text); line-height: 1.6; }
+.s4-opt:hover { border-color: var(--accent3); color: var(--accent3); }
+.s4-opt.selected { border-color: var(--accent3); background: rgba(255,209,102,.08); color: var(--accent3); }
+.s4-opt.reveal-correct { border-color: var(--correct); background: rgba(6,214,160,.1); color: var(--correct); }
+.s4-opt.reveal-wrong   { border-color: var(--wrong);   background: rgba(255,107,107,.1); color: var(--wrong); }
+
+/* ───── SEC2 VARIANT ───── */
+.sec2-notice { background: rgba(184,122,10,.07); border: 1px solid rgba(184,122,10,.2); border-radius: 10px; padding: 14px 18px; margin-bottom: 22px; font-size: 13px; color: var(--accent3); line-height: 1.7; }
+
+/* ───── UNSCRAMBLE (서술형) ───── */
+.unscramble-block { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px 20px 18px; margin-bottom: 16px; }
+.us-label { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--accent2); letter-spacing: 2px; margin-bottom: 8px; }
+.us-kr-hint { font-size: 13px; color: var(--text-muted); margin-bottom: 14px; line-height: 1.7; background: rgba(255,107,107,.05); border-left: 3px solid var(--accent2); padding: 8px 12px; border-radius: 0 6px 6px 0; }
+.us-answer-zone { min-height: 52px; background: var(--surface2); border: 1.5px dashed var(--border); border-radius: 8px; padding: 10px 14px; margin-bottom: 12px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; transition: border-color .2s; }
+.us-answer-zone.has-words { border-color: var(--accent); border-style: solid; }
+.us-answer-zone.correct-zone { border-color: var(--correct); background: rgba(6,214,160,.05); }
+.us-answer-zone.wrong-zone  { border-color: var(--wrong);   background: rgba(255,107,107,.05); }
+.us-word-pool { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.us-word { display: inline-block; padding: 6px 12px; border-radius: 6px; border: 1px solid var(--accent); background: rgba(91,140,255,.1); color: var(--accent); font-size: 13px; font-family: 'Space Mono', monospace; cursor: pointer; transition: all .2s; user-select: none; }
+.us-word:hover { background: rgba(91,140,255,.25); transform: translateY(-1px); }
+.us-word.placed { border-color: var(--accent3); background: rgba(255,209,102,.1); color: var(--accent3); }
+.us-word.in-answer { border-color: var(--accent3); background: rgba(255,209,102,.12); color: var(--accent3); cursor: pointer; }
+.us-word.in-answer:hover { background: rgba(255,107,107,.12); color: var(--wrong); border-color: var(--wrong); }
+.us-word.word-correct { border-color: var(--correct); background: rgba(6,214,160,.12); color: var(--correct); cursor: default; }
+.us-word.word-wrong   { border-color: var(--wrong);   background: rgba(255,107,107,.12); color: var(--wrong); cursor: default; }
+.us-word.pool-used { opacity: .25; pointer-events: none; }
+.us-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.us-reset-btn { background: none; border: 1px solid var(--border); border-radius: 6px; color: var(--text-muted); font-size: 12px; padding: 5px 14px; cursor: pointer; transition: all .2s; }
+.us-reset-btn:hover { border-color: var(--text-muted); color: var(--text); }
+.us-check-btn { background: var(--accent2); border: none; border-radius: 6px; color: #fff; font-size: 12px; font-family: 'Space Mono', monospace; padding: 6px 16px; cursor: pointer; font-weight: 700; transition: all .2s; }
+.us-check-btn:hover { background: #ff8e8e; }
+.us-result { font-size: 12px; margin-top: 8px; padding: 8px 12px; border-radius: 6px; display: none; }
+.us-result.show { display: block; }
+.us-result.pass { background: rgba(6,214,160,.1); color: var(--correct); border: 1px solid rgba(6,214,160,.3); }
+.us-result.fail { background: rgba(255,107,107,.1); color: var(--wrong); border: 1px solid rgba(255,107,107,.3); }
+
+/* SHARED BUTTONS */
+.check-btn { display: inline-flex; align-items: center; gap: 8px; padding: 11px 26px; border-radius: 8px; font-size: 13px; font-family: 'Space Mono', monospace; cursor: pointer; border: none; background: var(--accent); color: #fff; font-weight: 700; transition: all .2s; margin-top: 14px; letter-spacing: 1px; }
+.check-btn:hover { background: #7aa5ff; transform: translateY(-1px); }
+.result-banner { display: none; margin-top: 14px; padding: 12px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; align-items: center; gap: 8px; }
+.result-banner.show { display: flex; }
+.result-banner.pass { background: rgba(6,214,160,.1); border: 1px solid var(--correct); color: var(--correct); }
+.result-banner.fail { background: rgba(255,107,107,.1); border: 1px solid var(--wrong); color: var(--wrong); }
+
+@media (max-width: 600px) {
+  .s2-opts, .s4-opts { grid-template-columns: 1fr; }
+  .stage-btn { padding: 5px 9px; font-size: 11px; }
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div>
+    <div class="logo">Reading Lab</div>
+    <div class="subtitle">2027 EBS 수능특강 영어 · 독해훈련</div>
+  </div>
+  <div class="header-right">
+    <button class="passage-tab active" onclick="switchPassage(0)">01 Deep Work</button>
+    <button class="passage-tab" onclick="switchPassage(1)">02 Symbols</button>
+  </div>
+</header>
+
+<div class="main-wrap">
+
+<!-- ═══════════════════════════════════════
+     PASSAGE 01  Deep Work vs Shallow Work
+═══════════════════════════════════════ -->
+
+</head>
+<body>
+
+<header class="site-header">
+  <div>
+    <div class="logo">Reading Lab</div>
+    <div class="subtitle">2027 EBS 수능특강 · 13강 02번</div>
+  </div>
+  <div class="header-right">
+    <a href="jongchon3_review_13.html" style="padding:6px 14px;border-radius:20px;font-size:12px;font-family:'Space Mono',monospace;border:1px solid var(--border);background:transparent;color:var(--text-muted);text-decoration:none;transition:all .2s;">← 목록으로</a>
+  </div>
+</header>
+
+<div class="main-wrap">
+<div class="passage-panel active">
+  <div class="passage-title">Passage 02 · 26005-0085</div>
+  <div class="passage-headline">Symbols &amp; Subjective Reality</div>
+  <div class="passage-desc">기호는 어떻게 우리의 현실 인식을 만들어내는가?</div>
+
+  <div class="stage-nav">
+    <button class="stage-btn active" onclick="switchStage(0,1)" id="p0-nav1">STAGE 1<span class="dot">●</span></button>
+    <button class="stage-btn" onclick="switchStage(0,2)" id="p0-nav2">STAGE 2<span class="dot">●</span></button>
+    <button class="stage-btn" onclick="switchStage(0,3)" id="p0-nav3">STAGE 3<span class="dot">●</span></button>
+    <button class="stage-btn" onclick="switchStage(0,4)" id="p0-nav4">STAGE 4<span class="dot">●</span></button>
+    <button class="stage-btn" onclick="switchStage(0,5)" id="p0-nav5">§2 변형<span class="dot">●</span></button>
+    <button class="stage-btn" onclick="switchStage(0,6)" id="p0-nav6">✍ 서술형</button>
+  </div>
+
+  <!-- ── S1 ── -->
+  <div class="stage-panel active" id="p0-s1">
+    <span class="section-label sec1">Section 1 · Stage 1</span>
+    <div class="stage-heading">📌 청크 해석 + 핵심어휘 빈칸</div>
+    <div class="stage-desc">동사·준동사·핵심 어휘 자리를 영어 보기에서 골라 채우세요.</div>
+
+    <!-- P2 C1 -->
+    <div class="chunk-row" id="p0-c1">
+      <div class="chunk-meta">S1 · 주어 + 보어 + 준동사구</div>
+      <div class="chunk-en">
+        Symbols /
+        <span class="b-wrap"><select onchange="markBlank(this,'are')"><option value="">▾</option><option>were</option><option>are</option><option>seem</option><option>become</option></select></span>
+        instrumental / in
+        <span class="b-wrap"><select onchange="markBlank(this,'helping')"><option value="">▾</option><option>stopping</option><option>helping</option><option>preventing</option><option>avoiding</option></select></span>
+        people
+        <span class="b-wrap"><select onchange="markBlank(this,'derive')"><option value="">▾</option><option>lose</option><option>hide</option><option>derive</option><option>ignore</option></select></span>
+        meanings / from social situations
+      </div>
+      <div class="chunk-kr">기호는 / 도움이 되는 역할을 한다 / 사람들이 의미를 이끌어내도록 / 사회적 상황에서</div>
+    </div>
+
+    <!-- P2 C2 -->
+    <div class="chunk-row" id="p0-c2">
+      <div class="chunk-meta">S2 · 주어부 + 술어 + 보어</div>
+      <div class="chunk-en">
+        In social encounters, / each person's
+        <span class="b-wrap"><select onchange="markBlank(this,'interpretation')"><option value="">▾</option><option>rejection</option><option>interpretation</option><option>description</option><option>imagination</option></select></span>
+        or definition of a given situation /
+        <span class="b-wrap"><select onchange="markBlank(this,'becomes')"><option value="">▾</option><option>destroys</option><option>becomes</option><option>removes</option><option>avoids</option></select></span>
+        a
+        <span class="b-wrap"><select onchange="markBlank(this,'subjective')"><option value="">▾</option><option>objective</option><option>collective</option><option>subjective</option><option>universal</option></select></span>
+        reality from that person's viewpoint
+      </div>
+      <div class="chunk-kr">사회적 만남에서 / 각 사람의 해석이나 정의가 / 그 사람의 관점에서 주관적 현실이 된다</div>
+    </div>
+
+    <!-- P2 C3 -->
+    <div class="chunk-row" id="p0-c3">
+      <div class="chunk-meta">S3 · 주어 + 명사절 목적어 + 역접</div>
+      <div class="chunk-en">
+        We often
+        <span class="b-wrap"><select onchange="markBlank(this,'assume')"><option value="">▾</option><option>deny</option><option>assume</option><option>prove</option><option>forget</option></select></span>
+        that what we consider to be "reality" / is
+        <span class="b-wrap"><select onchange="markBlank(this,'shared')"><option value="">▾</option><option>hidden</option><option>shared</option><option>created</option><option>rejected</option></select></span>
+        by others ; / however, this
+        <span class="b-wrap"><select onchange="markBlank(this,'assumption')"><option value="">▾</option><option>experiment</option><option>assumption</option><option>decision</option><option>observation</option></select></span>
+        is often incorrect
+      </div>
+      <div class="chunk-kr">우리는 종종 우리의 '현실'이 타인과 공유된다고 가정하지만 / 이 가정은 종종 틀리다</div>
+    </div>
+
+    <!-- P2 C4 -->
+    <div class="chunk-row" id="p0-c4">
+      <div class="chunk-meta">S4 · 조건절 + 주절 + 관계절</div>
+      <div class="chunk-en">
+        If a person
+        <span class="b-wrap"><select onchange="markBlank(this,'shouts')"><option value="">▾</option><option>whispers</option><option>shouts</option><option>ignores</option><option>writes</option></select></span>
+        "Fire!" / in a crowded movie theater, / that language
+        <span class="b-wrap"><select onchange="markBlank(this,'produces')"><option value="">▾</option><option>blocks</option><option>produces</option><option>removes</option><option>ignores</option></select></span>
+        the same response /
+        <span class="b-wrap"><select onchange="markBlank(this,'attempting')"><option value="">▾</option><option>refusing</option><option>attempting</option><option>delaying</option><option>denying</option></select></span>
+        to escape / in all of those who hear and understand it
+      </div>
+      <div class="chunk-kr">누군가 "불이야!"를 외치면 / 영화관에서 / 그 언어는 동일한 반응을 일으킨다 / 탈출을 시도하는 / 듣고 이해하는 모든 이에게서</div>
+    </div>
+
+    <!-- P2 C5 -->
+    <div class="chunk-row" id="p0-c5">
+      <div class="chunk-meta">S5 · 역접 조건절 + 결과 + 예시</div>
+      <div class="chunk-en">
+        When people in a group / do not
+        <span class="b-wrap"><select onchange="markBlank(this,'share')"><option value="">▾</option><option>share</option><option>reject</option><option>create</option><option>avoid</option></select></span>
+        the same meaning for a given symbol, / however,
+        <span class="b-wrap"><select onchange="markBlank(this,'confusion')"><option value="">▾</option><option>agreement</option><option>unity</option><option>confusion</option><option>silence</option></select></span>
+        results ; / people who did not know the meaning of the word fire /
+        <span class="b-wrap"><select onchange="markBlank(this,'would not know')"><option value="">▾</option><option>would clearly know</option><option>would not know</option><option>could easily guess</option><option>might remember</option></select></span>
+        what the commotion was about
+      </div>
+      <div class="chunk-kr">사람들이 기호의 의미를 공유하지 않으면 / 혼란이 생긴다 / fire의 의미를 모르는 사람은 / 그 소란이 무엇인지 알 수 없을 것이다</div>
+    </div>
+
+    <!-- P2 C6 -->
+    <div class="chunk-row" id="p0-c6">
+      <div class="chunk-meta">S6 · 간접의문문 주어 + 술어 + 결과</div>
+      <div class="chunk-en">
+        How people
+        <span class="b-wrap"><select onchange="markBlank(this,'interpret')"><option value="">▾</option><option>create</option><option>ignore</option><option>interpret</option><option>reject</option></select></span>
+        the messages they receive / and the situations they
+        <span class="b-wrap"><select onchange="markBlank(this,'encounter')"><option value="">▾</option><option>avoid</option><option>encounter</option><option>forget</option><option>invent</option></select></span>
+        /
+        <span class="b-wrap"><select onchange="markBlank(this,'becomes')"><option value="">▾</option><option>destroys</option><option>removes</option><option>becomes</option><option>prevents</option></select></span>
+        their subjective reality / and may strongly
+        <span class="b-wrap"><select onchange="markBlank(this,'influence')"><option value="">▾</option><option>avoid</option><option>influence</option><option>ignore</option><option>copy</option></select></span>
+        their behavior
+      </div>
+      <div class="chunk-kr">사람들이 메시지와 상황을 어떻게 해석하느냐가 / 그들의 주관적 현실이 되고 / 행동에 강한 영향을 미친다</div>
+    </div>
+
+    <button class="check-btn" onclick="checkStage1(1)">✓ 전체 채점</button>
+    <div class="result-banner" id="p0-s1-result"></div>
+  </div>
+
+  <!-- ── S2 ── -->
+  <div class="stage-panel" id="p0-s2">
+    <span class="section-label sec1">Section 1 · Stage 2</span>
+    <div class="stage-heading">📋 문장별 요약 4지선다</div>
+    <div class="stage-desc">지문 전체를 읽고, 각 문장의 핵심 내용을 가장 잘 나타낸 선택지를 고르세요.</div>
+
+    <div class="full-passage-box">
+      <div class="fp-title">FULL PASSAGE · 02</div>
+      <div class="fp-sentence">Symbols are <span class="hl">instrumental</span> in helping people <span class="hl">derive meanings</span> from social situations.</div>
+      <div class="fp-sentence">In social encounters, each person's <span class="hl">interpretation</span> or definition of a given situation becomes a <span class="hl">subjective reality</span> from that person's viewpoint.</div>
+      <div class="fp-sentence">We often <span class="hl">assume</span> that what we consider to be "reality" is shared by others; however, this assumption is often <span class="hl">incorrect</span>.</div>
+      <div class="fp-sentence">Subjective reality is <span class="hl">acquired and shared</span> through agreed-upon symbols, especially language.</div>
+      <div class="fp-sentence">If a person shouts "Fire!" in a crowded movie theater, that language <span class="hl">produces the same response</span> (attempting to escape) in all of those who hear and understand it.</div>
+      <div class="fp-sentence">When people in a group do not share the same meaning for a given symbol, however, <span class="hl">confusion results</span>; people who did not know the meaning of the word <em>fire</em> would not know what the commotion was about.</div>
+      <div class="fp-sentence">How people <span class="hl">interpret</span> the messages they receive and the situations they encounter becomes their <span class="hl">subjective reality</span> and may strongly influence their behavior.</div>
+    </div>
+
+    <div class="s2-qblock" data-correct="1" id="p0-q1">
+      <div class="s2-qnum">Q1 · 문장 1</div>
+      <div class="s2-question">기호(symbols)가 하는 역할로 가장 적절한 것은?</div>
+      <div class="s2-opts">
+        <div class="s2-opt" onclick="pickS2(this,'p0-q1',false)">① 사회 규범을 강요하고 일탈 행동을 억제하는 역할</div>
+        <div class="s2-opt" onclick="pickS2(this,'p0-q1',true)">② 사람들이 사회적 상황에서 의미를 도출하도록 돕는 핵심 매개</div>
+        <div class="s2-opt" onclick="pickS2(this,'p0-q1',false)">③ 개인의 감정을 숨겨 집단 내 갈등을 줄이는 역할</div>
+        <div class="s2-opt" onclick="pickS2(this,'p0-q1',false)">④ 집단 내 언어 차이를 통합하는 표준화 도구</div>
+      </div>
+    </div>
+
+    <div class="s2-qblock" data-correct="2" id="p0-q2">
+      <div class="s2-qnum">Q2 · 문장 2</div>
+      <div class="s2-question">주관적 현실(subjective reality)이 형성되는 방식은?</div>
+      <div class="s2-opts">
+        <div class="s2-opt" onclick="pickS2(this,'p0-q2',false)">① 사회적 규칙과 제도가 개인에게 부과하면서 형성된다</div>
+        <div class="s2-opt" onclick="pickS2(this,'p0-q2',false)">② 전문가 집단의 합의가 개인에게 전달되면서 형성된다</div>
+        <div class="s2-opt" onclick="pickS2(this,'p0-q2',true)">③ 각 사람이 상황을 해석하거나 정의하는 방식을 통해 형성된다</div>
+        <div class="s2-opt" onclick="pickS2(this,'p0-q2',false)">④ 언어 교육을 통해 공통된 세계관이 주입되면서 형성된다</div>
+      </div>
+    </div>
+
+    <div class="s2-qblock" data-correct="0" id="p0-q3">
+      <div class="s2-qnum">Q3 · 문장 3~4</div>
+      <div class="s2-question">우리가 흔히 범하는 오류와 주관적 현실의 공유 방식은?</div>
+      <div class="s2-opts">
+        <div class="s2-opt" onclick="pickS2(this,'p0-q3',true)">① 자신의 현실 인식이 타인과 같다고 착각하며, 실제로는 합의된 기호(언어)를 통해 공유된다</div>
+        <div class="s2-opt" onclick="pickS2(this,'p0-q3',false)">② 자신만의 현실이 가장 옳다고 확신하며, 상호 소통으로 교정된다</div>
+        <div class="s2-opt" onclick="pickS2(this,'p0-q3',false)">③ 언어가 발달할수록 현실 인식의 차이가 더욱 커진다</div>
+        <div class="s2-opt" onclick="pickS2(this,'p0-q3',false)">④ 다른 문화의 기호를 배우면 주관적 현실을 완전히 바꿀 수 있다</div>
+      </div>
+    </div>
+
+    <div class="s2-qblock" data-correct="0" id="p0-q4">
+      <div class="s2-qnum">Q4 · 문장 5~6</div>
+      <div class="s2-question">"Fire!" 예시와 혼란 발생의 원인이 공통으로 시사하는 것은?</div>
+      <div class="s2-opts">
+        <div class="s2-opt" onclick="pickS2(this,'p0-q4',true)">① 기호의 의미 공유 여부가 동일한 반응 혹은 혼란을 결정한다</div>
+        <div class="s2-opt" onclick="pickS2(this,'p0-q4',false)">② 위기 상황에서 언어보다 행동이 더 강력한 의사소통 수단이다</div>
+        <div class="s2-opt" onclick="pickS2(this,'p0-q4',false)">③ 공공장소에서는 집단 규범이 개인 행동을 완전히 통제한다</div>
+        <div class="s2-opt" onclick="pickS2(this,'p0-q4',false)">④ 감정적 반응은 언어 이해와 무관하게 나타난다</div>
+      </div>
+    </div>
+
+    <div class="s2-qblock" data-correct="1" id="p0-q5">
+      <div class="s2-qnum">Q5 · 문장 7</div>
+      <div class="s2-question">결론 문장이 전달하는 핵심 메시지는?</div>
+      <div class="s2-opts">
+        <div class="s2-opt" onclick="pickS2(this,'p0-q5',false)">① 집단의 합의가 바뀌어야만 개인의 행동이 변화할 수 있다</div>
+        <div class="s2-opt" onclick="pickS2(this,'p0-q5',true)">② 개인이 메시지와 상황을 해석하는 방식이 주관적 현실을 구성하고 행동을 좌우한다</div>
+        <div class="s2-opt" onclick="pickS2(this,'p0-q5',false)">③ 언어를 정확히 이해하면 모든 사회적 오해가 자동으로 해결된다</div>
+        <div class="s2-opt" onclick="pickS2(this,'p0-q5',false)">④ 주관적 현실은 사회적 현실과 무관하게 독립적으로 존재한다</div>
+      </div>
+    </div>
+
+    <button class="check-btn" onclick="gradeAllS2('p0',5,'p0-s2-result','p0-nav2')">✓ 채점하기</button>
+    <div class="result-banner" id="p0-s2-result"></div>
+  </div>
+
+  <!-- ── S3 ── -->
+  <div class="stage-panel" id="p0-s3">
+    <span class="section-label sec1">Section 1 · Stage 3</span>
+    <div class="stage-heading">🧩 요약 문장 배치</div>
+    <div class="stage-desc">보기에서 알맞은 요약 문장을 골라 서론·본론·예시·결론 자리에 배치해보세요.</div>
+
+    <div class="s3-opts-label">[ 보기 ]</div>
+    <div class="s3-opts" id="p0-s3-pool">
+      <div class="s3-opt" onclick="placeS3(0,'intro',this,'A')">
+        <div class="s3-main">A. 기호는 사람들이 사회적 상황의 의미를 파악하는 데 핵심 도구이며, 각자의 해석은 고유한 주관적 현실을 만든다.</div>
+        <div class="s3-easy">💬 우리가 쓰는 말이나 신호들은 상황의 뜻을 이해하도록 도와주는데, 사람마다 다르게 해석해서 각자의 '현실'이 생겨.</div>
+      </div>
+      <div class="s3-opt" onclick="placeS3(0,'body',this,'B')">
+        <div class="s3-main">B. 주관적 현실은 합의된 기호, 특히 언어를 통해 획득되고 공유된다.</div>
+        <div class="s3-easy">💬 그 '나만의 현실'은 사람들끼리 약속한 말이나 기호를 통해 서로 나눌 수 있어.</div>
+      </div>
+      <div class="s3-opt" onclick="placeS3(0,'example',this,'C')">
+        <div class="s3-main">C. "불이야!" 예시처럼, 기호의 의미 공유 여부에 따라 반응이 같아지거나 혼란이 생긴다.</div>
+        <div class="s3-easy">💬 같은 말의 뜻을 알면 다 같이 뛰어나가지만, 모르면 왜 소란인지 몰라서 우왕좌왕하게 돼.</div>
+      </div>
+      <div class="s3-opt" onclick="placeS3(0,'conclusion',this,'D')">
+        <div class="s3-main">D. 개인의 해석 방식이 주관적 현실을 구성하고 궁극적으로 행동에 강한 영향을 미친다.</div>
+        <div class="s3-easy">💬 결국 내가 상황을 어떻게 이해하느냐가 내 '세상'이 되고, 그게 내 행동까지 결정하게 돼.</div>
+      </div>
+    </div>
+
+    <div class="s3-structure">
+      <div class="s3-slot" id="p0-slot-intro" data-correct="A">
+        <div class="s3-slot-label">서론</div>
+        <div class="s3-slot-text"><span class="s3-slot-placeholder">보기를 클릭해 배치하세요</span></div>
+        <button class="s3-remove" style="display:none" onclick="removeS3(0,'intro')">✕ 제거</button>
+      </div>
+      <div class="s3-slot" id="p0-slot-body" data-correct="B">
+        <div class="s3-slot-label">본론</div>
+        <div class="s3-slot-text"><span class="s3-slot-placeholder">보기를 클릭해 배치하세요</span></div>
+        <button class="s3-remove" style="display:none" onclick="removeS3(0,'body')">✕ 제거</button>
+      </div>
+      <div class="s3-slot" id="p0-slot-example" data-correct="C">
+        <div class="s3-slot-label">예시</div>
+        <div class="s3-slot-text"><span class="s3-slot-placeholder">보기를 클릭해 배치하세요</span></div>
+        <button class="s3-remove" style="display:none" onclick="removeS3(0,'example')">✕ 제거</button>
+      </div>
+      <div class="s3-slot" id="p0-slot-conclusion" data-correct="D">
+        <div class="s3-slot-label">결론</div>
+        <div class="s3-slot-text"><span class="s3-slot-placeholder">보기를 클릭해 배치하세요</span></div>
+        <button class="s3-remove" style="display:none" onclick="removeS3(0,'conclusion')">✕ 제거</button>
+      </div>
+    </div>
+
+    <button class="check-btn" onclick="gradeS3(0,'p0-s3-result','p0-nav3')">✓ 채점하기</button>
+    <div class="result-banner" id="p0-s3-result"></div>
+  </div>
+
+  <!-- ── S4 ── -->
+  <div class="stage-panel" id="p0-s4">
+    <span class="section-label sec1">Section 1 · Stage 4</span>
+    <div class="stage-heading">🎯 글의 제목 / 주장 / 대의</div>
+
+    <div class="s4-box">
+      <div class="s4-qtype">TITLE</div>
+      <div class="s4-question">Q1. 이 글의 제목으로 가장 적절한 것은?</div>
+      <div class="s4-opts" id="p0-s4q1">
+        <div class="s4-opt" onclick="pickS4(this,'p0-s4q1',false)">① How Language Creates Conflict in Social Groups</div>
+        <div class="s4-opt" onclick="pickS4(this,'p0-s4q1',true)">② Symbols Shape Our Perception of Social Reality</div>
+        <div class="s4-opt" onclick="pickS4(this,'p0-s4q1',false)">③ Why People Always Share the Same Understanding of Events</div>
+        <div class="s4-opt" onclick="pickS4(this,'p0-s4q1',false)">④ The Role of Logic in Building Shared Social Norms</div>
+      </div>
+    </div>
+
+    <div class="s4-box">
+      <div class="s4-qtype">MAIN CLAIM</div>
+      <div class="s4-question">Q2. 이 글의 핵심 주장으로 가장 적절한 것은?</div>
+      <div class="s4-opts" id="p0-s4q2">
+        <div class="s4-opt" onclick="pickS4(this,'p0-s4q2',false)">① 집단 언어 통일이 사회적 혼란을 없애는 유일한 해결책이다</div>
+        <div class="s4-opt" onclick="pickS4(this,'p0-s4q2',true)">② 기호의 의미 공유 여부가 사회적 현실 인식과 행동에 결정적인 영향을 미친다</div>
+        <div class="s4-opt" onclick="pickS4(this,'p0-s4q2',false)">③ 주관적 현실은 결국 객관적 사실과 완전히 일치하게 된다</div>
+        <div class="s4-opt" onclick="pickS4(this,'p0-s4q2',false)">④ 인간은 본능적으로 타인의 현실 인식을 공유하려는 경향을 지닌다</div>
+      </div>
+    </div>
+
+    <button class="check-btn" onclick="gradeS4(['p0-s4q1','p0-s4q2'],'p0-s4-result','p0-nav4')">✓ 채점하기</button>
+    <div class="result-banner" id="p0-s4-result"></div>
+  </div>
+
+  <!-- ── S5 VARIANT ── -->
+  <div class="stage-panel" id="p0-s5">
+    <span class="section-label sec2">Section 2 · 유의어 변형</span>
+    <div class="sec2-notice">⚡ 핵심 어휘가 유의어/반의어 선택지로 교체된 변형 버전입니다. 영어로 올바른 것을 고르세요.</div>
+    <div class="stage-heading">🔄 유의어 변형판 복습</div>
+
+    <div class="chunk-row" id="p0-v1">
+      <div class="chunk-meta">V1 · 주어 + 보어 + 준동사구</div>
+      <div class="chunk-en">
+        <em>Signs and signals</em> /
+        <span class="b-wrap"><select onchange="markBlank(this,'play a crucial role')"><option value="">▾</option><option>play no part</option><option>play a crucial role</option><option>cause serious harm</option><option>remain unnecessary</option></select></span>
+        / in enabling individuals to
+        <span class="b-wrap"><select onchange="markBlank(this,'extract significance')"><option value="">▾</option><option>conceal significance</option><option>create confusion</option><option>extract significance</option><option>eliminate meaning</option></select></span>
+        / from their
+        <span class="b-wrap"><select onchange="markBlank(this,'social interactions')"><option value="">▾</option><option>private thoughts</option><option>scientific studies</option><option>social interactions</option><option>economic systems</option></select></span>
+      </div>
+      <div class="chunk-kr">기호와 신호는 / 핵심적 역할을 한다 / 개인이 의미를 추출하도록 / 사회적 상호작용에서</div>
+    </div>
+
+    <div class="chunk-row" id="p0-v2">
+      <div class="chunk-meta">V2 · 주어부 + 술어 + 보어</div>
+      <div class="chunk-en">
+        Each individual's
+        <span class="b-wrap"><select onchange="markBlank(this,'personal reading')"><option value="">▾</option><option>collective decision</option><option>personal reading</option><option>logical analysis</option><option>physical reaction</option></select></span>
+        of a situation /
+        <span class="b-wrap"><select onchange="markBlank(this,'constructs')"><option value="">▾</option><option>destroys</option><option>avoids</option><option>constructs</option><option>blocks</option></select></span>
+        a
+        <span class="b-wrap"><select onchange="markBlank(this,'personal version of reality')"><option value="">▾</option><option>shared objective truth</option><option>universal standard</option><option>personal version of reality</option><option>collective agreement</option></select></span>
+      </div>
+      <div class="chunk-kr">각 개인의 개인적 해석이 / 개인적 현실을 구성한다</div>
+    </div>
+
+    <div class="chunk-row" id="p0-v3">
+      <div class="chunk-meta">V3 · 역접 + 조건절</div>
+      <div class="chunk-en">
+        We
+        <span class="b-wrap"><select onchange="markBlank(this,'mistakenly presume')"><option value="">▾</option><option>correctly verify</option><option>mistakenly presume</option><option>openly admit</option><option>carefully measure</option></select></span>
+        our "reality" is
+        <span class="b-wrap"><select onchange="markBlank(this,'universally recognized')"><option value="">▾</option><option>uniquely personal</option><option>scientifically proven</option><option>universally recognized</option><option>privately held</option></select></span>
+        ; / yet this
+        <span class="b-wrap"><select onchange="markBlank(this,'presumption')"><option value="">▾</option><option>experiment</option><option>decision</option><option>presumption</option><option>observation</option></select></span>
+        is frequently mistaken
+      </div>
+      <div class="chunk-kr">우리는 잘못 추정한다 / 우리의 '현실'이 보편적으로 인식된다고 / 그러나 이 추정은 자주 틀린다</div>
+    </div>
+
+    <div class="chunk-row" id="p0-v4">
+      <div class="chunk-meta">V4 · 결론</div>
+      <div class="chunk-en">
+        The way individuals
+        <span class="b-wrap"><select onchange="markBlank(this,'make sense of')"><option value="">▾</option><option>disregard</option><option>make sense of</option><option>copy</option><option>block</option></select></span>
+        incoming messages and circumstances /
+        <span class="b-wrap"><select onchange="markBlank(this,'shapes')"><option value="">▾</option><option>erases</option><option>shapes</option><option>avoids</option><option>copies</option></select></span>
+        their
+        <span class="b-wrap"><select onchange="markBlank(this,'personal perception of reality')"><option value="">▾</option><option>shared objective facts</option><option>logical conclusions</option><option>personal perception of reality</option><option>collective memory</option></select></span>
+        and may
+        <span class="b-wrap"><select onchange="markBlank(this,'powerfully drive')"><option value="">▾</option><option>weakly hint at</option><option>powerfully drive</option><option>gently suggest</option><option>silently ignore</option></select></span>
+        their actions
+      </div>
+      <div class="chunk-kr">개인이 메시지와 상황을 이해하는 방식이 / 개인적 현실 인식을 형성하고 / 행동을 강력하게 이끈다</div>
+    </div>
+
+    <div class="s4-box" style="margin-top:20px">
+      <div class="s4-qtype">변형판 MAIN IDEA</div>
+      <div class="s4-question">변형 지문의 핵심 내용으로 가장 적절한 것은?</div>
+      <div class="s4-opts" id="p0-s5q1">
+        <div class="s4-opt" onclick="pickS4(this,'p0-s5q1',false)">① 기호는 언어학에서 연구되는 이론적 개념으로 일상과 무관하다</div>
+        <div class="s4-opt" onclick="pickS4(this,'p0-s5q1',false)">② 사회적 상황에서 개인의 감정이 현실 인식을 왜곡한다</div>
+        <div class="s4-opt" onclick="pickS4(this,'p0-s5q1',true)">③ 기호에 대한 개인의 해석이 각자의 현실을 만들고 행동을 결정한다</div>
+        <div class="s4-opt" onclick="pickS4(this,'p0-s5q1',false)">④ 사회적 합의만이 의미 있는 현실을 구성할 수 있다</div>
+      </div>
+    </div>
+
+    <button class="check-btn" onclick="gradeVariant(0,'p0-s5-result','p0-nav5')">✓ 변형 채점하기</button>
+    <div class="result-banner" id="p0-s5-result"></div>
+  </div>
+
+  <!-- ── S6 UNSCRAMBLE ── -->
+  <div class="stage-panel" id="p0-s6">
+    <span class="section-label sec2">서술형 대비 · Unscramble</span>
+    <div class="stage-heading">✍ 핵심 문장 단어 배열</div>
+    <div class="stage-desc">한국어 해석을 보고, 단어 조각을 클릭해 올바른 순서로 배열하세요. 배치된 단어를 다시 클릭하면 돌아옵니다.</div>
+
+    <!-- US P2-1 -->
+    <div class="unscramble-block" id="us-p0-1">
+      <div class="us-label">KEY SENTENCE 01 · 주제문</div>
+      <div class="us-kr-hint">💡 사회적 만남에서, 주어진 상황에 대한 각 사람의 해석이나 정의는 그 사람의 관점에서 주관적 현실이 된다.</div>
+      <div class="us-answer-zone" id="us-p0-1-ans" onclick="handleZoneClick(event,'us-p0-1')"></div>
+      <div class="us-word-pool" id="us-p0-1-pool"></div>
+      <div class="us-actions">
+        <button class="us-reset-btn" onclick="resetUS('us-p0-1')">↺ 초기화</button>
+        <button class="us-check-btn" onclick="checkUS('us-p0-1')">CHECK</button>
+      </div>
+      <div class="us-result" id="us-p0-1-result"></div>
+    </div>
+
+    <!-- US P2-2 -->
+    <div class="unscramble-block" id="us-p0-2">
+      <div class="us-label">KEY SENTENCE 02 · 결론 핵심</div>
+      <div class="us-kr-hint">💡 사람들이 받은 메시지와 마주치는 상황을 어떻게 해석하느냐가 그들의 주관적 현실이 되고, 그들의 행동에 강하게 영향을 줄 수 있다.</div>
+      <div class="us-answer-zone" id="us-p0-2-ans" onclick="handleZoneClick(event,'us-p0-2')"></div>
+      <div class="us-word-pool" id="us-p0-2-pool"></div>
+      <div class="us-actions">
+        <button class="us-reset-btn" onclick="resetUS('us-p0-2')">↺ 초기화</button>
+        <button class="us-check-btn" onclick="checkUS('us-p0-2')">CHECK</button>
+      </div>
+      <div class="us-result" id="us-p0-2-result"></div>
+    </div>
+  </div>
+</div><!-- /passage-1 -->
+</div><!-- /main-wrap -->
+
+<script>
+// ══════════════════════════════
+//  UNSCRAMBLE DATA
+// ══════════════════════════════
+const US_DATA = {
+  'us-p0-1': {
+    words: ['In','social','encounters',',','each','person\'s','interpretation','or','definition','of','a','given','situation','becomes','a','subjective','reality','from','that','person\'s','viewpoint','.'],
+    answer: 'In social encounters , each person\'s interpretation or definition of a given situation becomes a subjective reality from that person\'s viewpoint .'
+  },
+  'us-p0-2': {
+    words: ['How','people','interpret','the','messages','they','receive','and','the','situations','they','encounter','becomes','their','subjective','reality','and','may','strongly','influence','their','behavior','.'],
+    answer: 'How people interpret the messages they receive and the situations they encounter becomes their subjective reality and may strongly influence their behavior .'
+  }
+};
+
+// Track answer arrays
+const usState = {};
+
+function initUS(id) {
+  const data = US_DATA[id];
+  if (!data) return;
+  // shuffle
+  const shuffled = [...data.words].sort(() => Math.random() - .5);
+  usState[id] = { placed: [], pool: [...shuffled] };
+  renderUS(id);
+}
+
+function renderUS(id) {
+  const state = usState[id];
+  const poolEl = document.getElementById(id+'-pool');
+  const ansEl  = document.getElementById(id+'-ans');
+  poolEl.innerHTML = '';
+  ansEl.innerHTML  = '';
+
+  // Pool words
+  state.pool.forEach((w, i) => {
+    const span = document.createElement('span');
+    span.className = 'us-word';
+    span.textContent = w;
+    span.dataset.word = w;
+    span.dataset.idx  = i;
+    span.onclick = () => moveToAnswer(id, i);
+    poolEl.appendChild(span);
+  });
+
+  // Placed words
+  state.placed.forEach((w, i) => {
+    const span = document.createElement('span');
+    span.className = 'us-word in-answer';
+    span.textContent = w;
+    span.dataset.ansIdx = i;
+    span.onclick = () => moveToPool(id, i);
+    ansEl.appendChild(span);
+  });
+
+  if (state.placed.length > 0) ansEl.classList.add('has-words');
+  else ansEl.classList.remove('has-words');
+
+  // placeholder
+  if (state.placed.length === 0) {
+    ansEl.innerHTML = '<span style="color:var(--text-dim);font-size:13px;font-style:italic">단어를 클릭해 여기에 배치하세요</span>';
+  }
+}
+
+function moveToAnswer(id, poolIdx) {
+  const state = usState[id];
+  const word = state.pool[poolIdx];
+  state.pool.splice(poolIdx, 1);
+  state.placed.push(word);
+  renderUS(id);
+  // clear result
+  const r = document.getElementById(id+'-result');
+  r.className='us-result'; r.style.display='none';
+  document.getElementById(id+'-ans').classList.remove('correct-zone','wrong-zone');
+}
+
+function moveToPool(id, ansIdx) {
+  const state = usState[id];
+  const word = state.placed[ansIdx];
+  state.placed.splice(ansIdx,1);
+  state.pool.push(word);
+  renderUS(id);
+  const r = document.getElementById(id+'-result');
+  r.className='us-result'; r.style.display='none';
+  document.getElementById(id+'-ans').classList.remove('correct-zone','wrong-zone');
+}
+
+function handleZoneClick(e, id) {
+  // clicking zone background = no-op (words handle their own clicks)
+}
+
+function resetUS(id) {
+  const data = US_DATA[id];
+  const shuffled = [...data.words].sort(() => Math.random() - .5);
+  usState[id] = { placed: [], pool: [...shuffled] };
+  renderUS(id);
+  const r = document.getElementById(id+'-result');
+  r.className='us-result'; r.style.display='none';
+  document.getElementById(id+'-ans').classList.remove('correct-zone','wrong-zone');
+}
+
+function checkUS(id) {
+  const state = usState[id];
+  const data = US_DATA[id];
+  const placed = state.placed.join(' ');
+  const correct = data.answer;
+  const isCorrect = placed === correct;
+  const ansEl = document.getElementById(id+'-ans');
+  ansEl.classList.remove('correct-zone','wrong-zone');
+  ansEl.classList.add(isCorrect ? 'correct-zone' : 'wrong-zone');
+  const r = document.getElementById(id+'-result');
+  r.className = 'us-result show ' + (isCorrect ? 'pass' : 'fail');
+  r.style.display = 'block';
+  r.textContent = isCorrect
+    ? '✓ 정답입니다! 완벽한 문장 배열이에요.'
+    : `✗ 다시 확인해보세요. 정답: "${correct}"`;
+}
+
+// ══════════════════════════════
+//  NAVIGATION
+// ══════════════════════════════
+function switchPassage(idx) {
+  // single passage mode
+}
+
+function switchStage(pIdx, stageNum) {
+  const prefix = `p${pIdx}-`;
+  document.querySelectorAll(`[id^="${prefix}s"]`).forEach(el => {
+    if (el.classList.contains('stage-panel')) el.classList.remove('active');
+  });
+  document.getElementById(`p${pIdx}-s${stageNum}`).classList.add('active');
+  document.querySelectorAll(`#passage-${pIdx} .stage-btn`).forEach((b,i) => b.classList.toggle('active', i===stageNum-1));
+}
+
+// ══════════════════════════════
+//  STAGE 1
+// ══════════════════════════════
+function markBlank(sel, correct) {
+  if (!sel.value) { sel.className=''; return; }
+  sel.className = sel.value === correct ? 'correct' : 'wrong';
+}
+
+function checkStage1(pIdx) {
+  const panel = document.getElementById(`p${pIdx}-s1`);
+  const selects = panel.querySelectorAll('select');
+  let total=0, correct=0;
+  selects.forEach(sel => {
+    total++;
+    if (sel.className==='correct') correct++;
+    else if (!sel.className && sel.value) sel.className='wrong';
+  });
+  const banner = document.getElementById(`p${pIdx}-s1-result`);
+  const pass = correct===total;
+  banner.className = `result-banner show ${pass?'pass':'fail'}`;
+  banner.textContent = pass
+    ? `🎉 완벽! 모든 빈칸 정답 (${correct}/${total})`
+    : `${correct}/${total} 정답 — 빨간 항목을 다시 확인해보세요.`;
+  if(pass) document.getElementById(`p${pIdx}-nav1`).classList.add('done');
+}
+
+// ══════════════════════════════
+//  STAGE 2
+// ══════════════════════════════
+const s2Picks = {};
+function pickS2(el, blockId, isCorrect) {
+  if (s2Picks[blockId]?.locked) return;
+  const block = document.getElementById(blockId);
+  block.querySelectorAll('.s2-opt').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  s2Picks[blockId] = { el, isCorrect };
+}
+
+function gradeAllS2(prefix, count, resultId, navId) {
+  let total=0, correct=0;
+  for (let i=1; i<=count; i++) {
+    const id = `${prefix}-q${i}`;
+    const block = document.getElementById(id);
+    const pick = s2Picks[id];
+    total++;
+    const opts = block.querySelectorAll('.s2-opt');
+    const correctIdx = parseInt(block.dataset.correct);
+    if (pick?.el) {
+      pick.el.classList.remove('selected');
+      pick.el.classList.add(pick.isCorrect ? 'reveal-correct' : 'reveal-wrong');
+      if (pick.isCorrect) correct++;
+      block.classList.add(pick.isCorrect ? 'graded-correct' : 'graded-wrong');
+    }
+    opts[correctIdx].classList.add('reveal-correct');
+    s2Picks[id] = { ...s2Picks[id], locked: true };
+  }
+  const banner = document.getElementById(resultId);
+  const pass = correct===total;
+  banner.className = `result-banner show ${pass?'pass':'fail'}`;
+  banner.textContent = pass
+    ? `🎉 전부 정답! (${correct}/${total})`
+    : `${correct}/${total} 정답 — 초록이 정답입니다.`;
+  if(pass) document.getElementById(navId).classList.add('done');
+}
+
+// ══════════════════════════════
+//  STAGE 3
+// ══════════════════════════════
+const s3Data = { 0:{}, 1:{} };
+function placeS3(pIdx, slot, optEl, label) {
+  if (optEl.classList.contains('used')) return;
+  const slotEl = document.getElementById(`p${pIdx}-slot-${slot}`);
+  // remove old
+  const oldLabel = s3Data[pIdx][slot];
+  if (oldLabel) {
+    const old = document.querySelector(`#p${pIdx}-s3-pool [data-placed="${slot}"]`);
+    if (old) { old.classList.remove('used'); old.removeAttribute('data-placed'); }
+  }
+  s3Data[pIdx][slot] = label;
+  optEl.classList.add('used');
+  optEl.setAttribute('data-placed', slot);
+  slotEl.classList.add('filled');
+  slotEl.classList.remove('slot-correct','slot-wrong');
+  slotEl.querySelector('.s3-slot-text').innerHTML = optEl.innerHTML;
+  slotEl.querySelector('.s3-remove').style.display = 'inline-block';
+}
+
+function removeS3(pIdx, slot) {
+  const slotEl = document.getElementById(`p${pIdx}-slot-${slot}`);
+  const label = s3Data[pIdx][slot];
+  if (!label) return;
+  const opt = document.querySelector(`#p${pIdx}-s3-pool [data-placed="${slot}"]`);
+  if (opt) { opt.classList.remove('used'); opt.removeAttribute('data-placed'); }
+  delete s3Data[pIdx][slot];
+  slotEl.classList.remove('filled','slot-correct','slot-wrong');
+  slotEl.querySelector('.s3-slot-text').innerHTML = '<span class="s3-slot-placeholder">보기를 클릭해 배치하세요</span>';
+  slotEl.querySelector('.s3-remove').style.display = 'none';
+}
+
+function gradeS3(pIdx, resultId, navId) {
+  const slots = ['intro','body','example','conclusion'];
+  let correct=0;
+  slots.forEach(slot => {
+    const slotEl = document.getElementById(`p${pIdx}-slot-${slot}`);
+    const placed = s3Data[pIdx][slot];
+    const expected = slotEl.dataset.correct;
+    slotEl.classList.remove('slot-correct','slot-wrong','filled');
+    if (placed) {
+      const ok = placed===expected;
+      if(ok) correct++;
+      slotEl.classList.add(ok ? 'slot-correct' : 'slot-wrong');
+    }
+  });
+  const banner = document.getElementById(resultId);
+  const pass = correct===4;
+  banner.className = `result-banner show ${pass?'pass':'fail'}`;
+  banner.textContent = pass ? '🎉 완벽한 구조 파악!' : `${correct}/4 정답 — 색으로 확인하세요.`;
+  if(pass) document.getElementById(navId).classList.add('done');
+}
+
+// ══════════════════════════════
+//  STAGE 4
+// ══════════════════════════════
+const s4Picks = {};
+function pickS4(el, groupId, isCorrect) {
+  if (s4Picks[groupId]?.locked) return;
+  document.querySelectorAll(`#${groupId} .s4-opt`).forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  s4Picks[groupId] = { el, isCorrect };
+}
+
+function gradeS4(groupIds, resultId, navId) {
+  let correct=0, total=groupIds.length;
+  groupIds.forEach(gid => {
+    const pick = s4Picks[gid];
+    if (pick?.el) {
+      pick.el.classList.remove('selected');
+      pick.el.classList.add(pick.isCorrect ? 'reveal-correct' : 'reveal-wrong');
+      if (pick.isCorrect) correct++;
+      s4Picks[gid].locked = true;
+    }
+  });
+  const banner = document.getElementById(resultId);
+  const pass = correct===total;
+  banner.className = `result-banner show ${pass?'pass':'fail'}`;
+  banner.textContent = pass ? '🎉 대의 파악 완벽!' : `${correct}/${total} 정답`;
+  if(pass) document.getElementById(navId).classList.add('done');
+}
+
+// ══════════════════════════════
+//  VARIANT (§2)
+// ══════════════════════════════
+function gradeVariant(pIdx, resultId, navId) {
+  const panel = document.getElementById(`p${pIdx}-s5`);
+  const selects = panel.querySelectorAll('select');
+  let total=0, correct=0;
+  selects.forEach(sel => {
+    total++;
+    if (sel.className==='correct') correct++;
+    else if (!sel.className && sel.value) sel.className='wrong';
+  });
+  // MC question
+  const mcId = `p${pIdx}-s5q1`;
+  const pick = s4Picks[mcId];
+  total++;
+  if (pick?.el) {
+    pick.el.classList.remove('selected');
+    pick.el.classList.add(pick.isCorrect ? 'reveal-correct':'reveal-wrong');
+    if (pick.isCorrect) correct++;
+    s4Picks[mcId].locked=true;
+  }
+  const banner = document.getElementById(resultId);
+  const pass = correct===total;
+  banner.className = `result-banner show ${pass?'pass':'fail'}`;
+  banner.textContent = pass ? '🎉 변형 완벽 통과!' : `${correct}/${total} 정답 — 유의어를 원문과 연결해보세요.`;
+  if(pass) document.getElementById(navId).classList.add('done');
+}
+
+// ══════════════════════════════
+//  INIT unscramble on load
+// ══════════════════════════════
+window.addEventListener('DOMContentLoaded', () => {
+  Object.keys(US_DATA).forEach(id => initUS(id));
+});
+</script>
+
+</body>
+</html>
