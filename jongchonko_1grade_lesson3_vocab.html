@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>종촌고 1학년 3과 어휘 퀴즈</title>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#f4f1ec;--card:#fff;--ink:#1c1a16;--soft:#6b6456;
+  --accent:#2a7ab8;--accent2:#b85c2a;--correct:#2e7d52;--wrong:#c0392b;
+  --border:#e0d8cc;
+}
+body{font-family:"Noto Sans KR",sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;}
+header{background:var(--ink);color:#fff;padding:32px 24px 24px;text-align:center;}
+.header-tag{display:inline-block;font-size:.72rem;font-weight:500;letter-spacing:3px;color:#7ab8e8;border:1px solid #7ab8e8;border-radius:2px;padding:4px 12px;margin-bottom:10px;}
+header h1{font-family:"Black Han Sans",sans-serif;font-size:clamp(1.4rem,5vw,2.2rem);color:#fff;}
+header h1 span{color:#e8a07a;}
+.header-sub{font-size:.82rem;color:rgba(255,255,255,.5);margin-top:6px;}
+
+/* TABS */
+.tab-wrap{background:#fff;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;}
+.tabs{display:flex;overflow-x:auto;gap:0;scrollbar-width:none;}
+.tabs::-webkit-scrollbar{display:none;}
+.tab-btn{flex-shrink:0;padding:13px 20px;font-family:"Black Han Sans",sans-serif;font-size:.85rem;color:var(--soft);background:none;border:none;border-bottom:3px solid transparent;cursor:pointer;transition:all .2s;white-space:nowrap;letter-spacing:.5px;}
+.tab-btn:hover{color:var(--ink);}
+.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent);}
+.tab-btn.s2.active{color:var(--accent2);border-bottom-color:var(--accent2);}
+.tab-btn.s3.active{color:var(--correct);border-bottom-color:var(--correct);}
+.tab-info{display:flex;justify-content:space-between;padding:7px 20px;font-size:.76rem;color:var(--soft);border-top:1px solid var(--border);background:#faf8f5;}
+
+/* PANELS */
+.panel{display:none;padding:20px 16px 80px;max-width:680px;margin:0 auto;}
+.panel.active{display:block;}
+
+/* STEP HEADER */
+.step-header{display:flex;align-items:center;gap:10px;margin-bottom:20px;}
+.step-badge{font-family:"Black Han Sans",sans-serif;font-size:.8rem;padding:5px 14px;border-radius:20px;letter-spacing:.5px;}
+.step-badge.s1{background:#dbeeff;color:#1a5a8a;}
+.step-badge.s2{background:#fde8d8;color:#9a3e12;}
+.step-badge.s3{background:#d8f0e0;color:#1a5a2e;}
+.step-desc{font-size:.82rem;color:var(--soft);}
+
+/* QUESTION CARD */
+.q-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px 18px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,.04);}
+.q-card.done{opacity:.7;}
+.q-meta{font-size:.72rem;color:var(--soft);margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+.q-num-badge{background:var(--border);border-radius:20px;padding:2px 9px;font-weight:700;}
+.word-en{font-family:"Black Han Sans",sans-serif;font-size:1.75rem;color:var(--ink);cursor:pointer;display:inline-flex;align-items:center;gap:8px;margin-bottom:6px;}
+.speaker{font-size:.95rem;opacity:.45;transition:opacity .2s;}
+.word-en:hover .speaker{opacity:1;}
+.q-prompt{font-size:.85rem;color:var(--soft);margin-bottom:14px;}
+.definition-text{font-size:.82rem;color:#444;background:#f8f6f2;border-radius:8px;padding:10px 14px;margin-bottom:14px;line-height:1.7;font-style:italic;}
+
+/* OPTIONS GRID */
+.options{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+.opt-btn{background:#f8f6f2;border:2px solid var(--border);border-radius:10px;padding:12px 14px;font-family:"Noto Sans KR",sans-serif;font-size:.88rem;color:var(--ink);cursor:pointer;text-align:center;transition:all .15s;width:100%;}
+.opt-btn:hover:not(:disabled){background:#eee8df;border-color:#c0b8aa;}
+.opt-btn.selected{background:#eee8df;border-color:#8a7a65;font-weight:700;}
+.opt-btn.correct{background:#e8f5ee;border-color:var(--correct);color:var(--correct);font-weight:700;}
+.opt-btn.wrong{background:#fdecea;border-color:var(--wrong);color:var(--wrong);opacity:.7;}
+.opt-btn:disabled{cursor:default;}
+
+.check-btn{margin-top:11px;width:100%;color:#fff;border:none;border-radius:9px;padding:11px;font-family:"Black Han Sans",sans-serif;font-size:.92rem;cursor:pointer;letter-spacing:.5px;transition:opacity .2s;}
+.check-btn.s1{background:var(--accent);}
+.check-btn.s2{background:var(--accent2);}
+.check-btn.s3{background:var(--correct);}
+.check-btn:disabled{opacity:.35;cursor:default;}
+.check-btn:not(:disabled):hover{opacity:.85;}
+.feedback{margin-top:10px;font-size:.82rem;padding:8px 12px;border-radius:7px;display:none;}
+.feedback.show{display:block;}
+.feedback.ok{background:#e8f5ee;color:var(--correct);}
+.feedback.bad{background:#fdecea;color:var(--wrong);}
+
+/* SUMMARY */
+.summary{background:var(--ink);color:#fff;border-radius:14px;padding:32px 24px;text-align:center;margin-top:16px;}
+.summary-title{font-family:"Black Han Sans",sans-serif;font-size:1.4rem;margin-bottom:12px;}
+.summary-title span{color:#e8a07a;}
+.step-scores{display:flex;justify-content:center;gap:20px;margin:12px 0 6px;flex-wrap:wrap;}
+.ss-item .label{font-size:.7rem;color:rgba(255,255,255,.5);margin-bottom:3px;}
+.ss-item .val{font-family:"Black Han Sans",sans-serif;font-size:1.6rem;}
+.ss-item .val.s1{color:#7ab8e8;}
+.ss-item .val.s2{color:#e8a07a;}
+.ss-item .val.s3{color:#7ad8a0;}
+.total-score{font-size:2.4rem;font-weight:700;color:#e8a07a;font-family:"Black Han Sans",sans-serif;margin:8px 0 4px;}
+.summary-sub{font-size:.8rem;color:rgba(255,255,255,.5);margin-bottom:12px;}
+.summary-msg{font-size:.92rem;color:rgba(255,255,255,.8);margin-bottom:20px;}
+.btn-retry{background:var(--accent2);color:#fff;border:none;border-radius:8px;padding:10px 28px;font-family:"Black Han Sans",sans-serif;font-size:.95rem;cursor:pointer;letter-spacing:.5px;}
+</style>
+</head>
+<body>
+<header>
+  <div class="header-tag">종촌고 1학년 · YBM 김은형</div>
+  <h1>Lesson <span>3</span> 어휘 퀴즈</h1>
+  <p class="header-sub">뜻 · 유의어 · 영영풀이 3단계 마스터</p>
+</header>
+
+<div class="tab-wrap">
+  <div class="tabs">
+    <button class="tab-btn s1 active" onclick="switchTab(0)">① 뜻 맞추기</button>
+    <button class="tab-btn s2" onclick="switchTab(1)">② 유의어 찾기</button>
+    <button class="tab-btn s3" onclick="switchTab(2)">③ 영영풀이</button>
+  </div>
+  <div class="tab-info">
+    <span id="tabInfo">0 / 0 완료</span>
+    <span id="tabScore">점수: 0</span>
+  </div>
+</div>
+
+<div class="panel active" id="panel0"></div>
+<div class="panel" id="panel1"></div>
+<div class="panel" id="panel2"></div>
+
+<script>
+const WORDS = [
+  {word:"sustainable",meaning:"지속 가능한",syn:"eco-friendly",def:"able to continue over time without causing harm to the environment"},
+  {word:"unique",meaning:"독특한",syn:"original",def:"one of a kind; unlike anything else"},
+  {word:"vibrant",meaning:"생동감 있는",syn:"lively",def:"full of energy, life, or color"},
+  {word:"secondhand",meaning:"중고의",syn:"used",def:"previously owned or used by someone else"},
+  {word:"old fashioned",meaning:"구식의",syn:"outdated",def:"not modern; typical of a style from the past"},
+  {word:"try",meaning:"시도하다",syn:"attempt",def:null},
+  {word:"get attached to",meaning:"애착을 갖다",syn:"cling to",def:"emotionally connected to or strongly liking something or someone"},
+  {word:"exciting",meaning:"흥미로운",syn:"thrilling",def:null},
+  {word:"outfit",meaning:"옷차림",syn:"attire",def:"a set of clothes worn together, often for a specific occasion"},
+  {word:"create",meaning:"창조하다",syn:"produce",def:null},
+  {word:"action",meaning:"행동",syn:"behavior",def:"something that is done, especially to achieve a result"},
+  {word:"reduce",meaning:"줄이다",syn:"decrease",def:"to make something smaller or less in amount"},
+  {word:"production",meaning:"생산",syn:"manufacturing",def:"the process of making or manufacturing goods"},
+  {word:"consumption",meaning:"소비",syn:"usage",def:"the act of using up goods or resources"},
+  {word:"worth",meaning:"가치있는",syn:"valuable",def:null},
+  {word:"make up",meaning:"차지하다",syn:"constitute",def:null},
+  {word:"industry",meaning:"산업",syn:"sector",def:"the group of businesses involved in producing goods or services"},
+  {word:"process",meaning:"과정",syn:"procedure",def:"a series of actions taken to achieve a result"},
+  {word:"disposal",meaning:"폐기",syn:"discarding",def:"the act of getting rid of something"},
+  {word:"maximize",meaning:"극대화하다",syn:"increase",def:"to increase something as much as possible"},
+  {word:"garment",meaning:"의류",syn:"clothing",def:"a piece of clothing"},
+  {word:"negatively affect",meaning:"부정적으로 영향을 끼치다",syn:"harm",def:null},
+  {word:"environment",meaning:"환경",syn:"surroundings",def:null},
+  {word:"landfill",meaning:"매립지",syn:"waste site",def:"a place where waste is buried under the ground"},
+  {word:"recycle",meaning:"재활용하다",syn:"reuse",def:"to process used materials so they can be used again"},
+  {word:"annually",meaning:"매년",syn:"every year",def:"once a year"},
+  {word:"alarming",meaning:"경고를 주는, 놀라운",syn:"disturbing",def:"causing fear or concern; worrying"},
+  {word:"maintain",meaning:"유지하다",syn:"continue",def:null},
+  {word:"waste",meaning:"폐기물",syn:"garbage",def:"unwanted materials or by-products that are thrown away"},
+  {word:"pollution",meaning:"오염",syn:"contamination",def:"harmful substances introduced into the environment"},
+  {word:"principle",meaning:"원리",syn:"rule",def:"a basic rule or belief that guides actions or decisions"},
+  {word:"limit",meaning:"제한하다",syn:"restrict",def:"to set a boundary or restriction"},
+  {word:"reuse",meaning:"재사용하다",syn:"repurpose",def:"to use something again instead of throwing it away"},
+  {word:"extract",meaning:"추출하다",syn:"obtain",def:"to remove or take something out, especially from the earth"},
+  {word:"textile",meaning:"직물",syn:"fabric",def:"a fabric or cloth, especially one made by weaving or knitting"},
+  {word:"minimize",meaning:"최소화하다",syn:"lessen",def:"to reduce something to the smallest possible amount"},
+  {word:"provide",meaning:"제공하다",syn:"offer",def:"to supply or give something that is needed"},
+  {word:"numerous",meaning:"많은",syn:"countless",def:"many; existing in large numbers"},
+  {word:"benefit",meaning:"이점",syn:"advantage",def:"a positive result or advantage"},
+  {word:"significantly",meaning:"상당히",syn:"notably",def:"in an important or noticeable way"},
+  {word:"utilize",meaning:"이용하다",syn:"apply",def:"to use something effectively for a specific purpose"},
+  {word:"protect",meaning:"보호하다",syn:"safeguard",def:null},
+  {word:"consumer",meaning:"소비자",syn:"buyer",def:null},
+  {word:"regenerate",meaning:"재생하다",syn:"restore",def:"to grow again or restore to a better condition"},
+  {word:"alternative",meaning:"대안",syn:"substitute",def:null},
+  {word:"improve",meaning:"향상시키다",syn:"enhance",def:null},
+  {word:"enable",meaning:"가능하게 하다",syn:"allow",def:null},
+  {word:"innovation",meaning:"혁신",syn:"breakthrough",def:null},
+  {word:"facilitate",meaning:"촉진하다",syn:"promote",def:null},
+  {word:"adopt",meaning:"채택하다",syn:"accept",def:null},
+  {word:"demonstrate",meaning:"보여주다",syn:"show",def:"to show clearly how something works or that something is true"},
+  {word:"concern",meaning:"관심, 우려",syn:"worry",def:null},
+  {word:"discard",meaning:"버리다",syn:"dispose of",def:"to throw something away because it is no longer needed or wanted"},
+  {word:"responsibly",meaning:"책임감 있게",syn:"ethically",def:null},
+  {word:"thrift shop",meaning:"중고품 가게",syn:"secondhand store",def:"a store that sells secondhand items, often for charity"},
+  {word:"gradually",meaning:"점진적으로",syn:"slowly",def:null},
+  {word:"fashionable",meaning:"유행에 맞는",syn:"trendy",def:null},
+  {word:"boycott",meaning:"불매운동",syn:"refusal to buy",def:"to refuse to buy or use a product or service as a form of protest"},
+  {word:"involve",meaning:"포함하다",syn:"include",def:null},
+  {word:"campaign",meaning:"캠페인",syn:"movement",def:null},
+  {word:"cease",meaning:"중단하다",syn:"stop",def:null},
+  {word:"emerge",meaning:"등장하다",syn:"appear",def:null},
+  {word:"enhance",meaning:"향상시키다",syn:"improve",def:"to improve or increase the quality or value of something"},
+  {word:"inspire",meaning:"영감을 주다",syn:"motivate",def:null},
+  {word:"responsibility",meaning:"책임",syn:"duty",def:null},
+  {word:"empower",meaning:"권한을 주다",syn:"enable",def:null},
+  {word:"buycott",meaning:"바이콧 (윤리적 소비)",syn:"ethical purchase",def:"to support a company by consciously buying its products because of shared values"},
+  {word:"consciously",meaning:"의식적으로",syn:"deliberately",def:null},
+];
+
+const LESSON_LABEL = '3과';
+
+// ── Firebase 저장 ──────────────────────────────────
+var studentName = sessionStorage.getItem('bn_name') || localStorage.getItem('bn_name') || '';
+
+function promptName(cb) {
+  if (studentName) { cb(); return; }
+  var n = prompt('이름을 입력해주세요 (예: 홍길동)');
+  if (!n || !n.trim()) { alert('이름을 입력해야 결과가 저장됩니다.'); return; }
+  studentName = n.trim();
+  sessionStorage.setItem('bn_name', studentName);
+  cb();
+}
+
+function saveFirebase(stepLabel, correct, total) {
+  var qType = '종촌고1_' + LESSON_LABEL + '_어휘퀴즈_' + stepLabel;
+  try {
+    var s1 = document.createElement('script');
+    s1.src = 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js';
+    s1.onload = function() {
+      var s2 = document.createElement('script');
+      s2.src = 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js';
+      s2.onload = function() {
+        try {
+          if (!firebase.apps.length) {
+            firebase.initializeApp({
+              apiKey:"AIzaSyCxS524S8KAaF87DomPtl9sJdF-eqes404",
+              authDomain:"bomnalvaca.firebaseapp.com",
+              projectId:"bomnalvaca",
+              storageBucket:"bomnalvaca.firebasestorage.app",
+              messagingSenderId:"115868052300",
+              appId:"1:115868052300:web:765c08867b6f1ce0987de9"
+            });
+          }
+          firebase.firestore().collection('quiz_results').add({
+            submittedAt: new Date().toISOString(),
+            studentName: studentName,
+            school: '종촌고',
+            score: Math.round(correct/total*100),
+            correct: correct,
+            wrong: total - correct,
+            total: total,
+            quizType: qType
+          });
+        } catch(e) { console.warn('FB 저장 실패:', e); }
+      };
+      document.head.appendChild(s2);
+    };
+    document.head.appendChild(s1);
+  } catch(e) {}
+}
+// ──────────────────────────────────────────────────
+
+function shuffle(arr){const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+const sw=shuffle([...WORDS]);
+const r1=[],r2=[],r3=[];
+sw.forEach((w)=>{
+  const wi=WORDS.findIndex(x=>x.word===w.word);
+  const mO=shuffle(WORDS.filter((_,i)=>i!==wi)).slice(0,3).map(x=>x.meaning);
+  r1.push({type:'meaning',word:w.word,prompt:'위 단어의 뜻은?',answer:w.meaning,opts:shuffle([w.meaning,...mO]),def:null});
+  if(w.syn){
+    const sO=shuffle(WORDS.filter((_,i)=>i!==wi&&WORDS[i].syn)).slice(0,3).map(x=>x.syn);
+    r2.push({type:'synonym',word:w.word,prompt:'위 단어의 유의어는?',answer:w.syn,opts:shuffle([w.syn,...sO.slice(0,3)]),def:null});
+  }
+  if(w.def){
+    const dO=shuffle(WORDS.filter((_,i)=>i!==wi&&WORDS[i].def)).slice(0,3).map(x=>x.word);
+    r3.push({type:'definition',word:null,prompt:'다음 영영풀이에 맞는 단어는?',answer:w.word,opts:shuffle([w.word,...dO.slice(0,3)]),def:w.def});
+  }
+});
+
+const ROUNDS=[r1,r2,r3];
+const STEP_NAMES=['s1','s2','s3'];
+const scores=[[],[],[]]; // per round: true/false per question
+let curTab=0;
+
+function speak(t){if(!window.speechSynthesis)return;window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='en-US';u.rate=0.9;window.speechSynthesis.speak(u);}
+
+function buildPanel(r){
+  const qs=ROUNDS[r];
+  const sc=STEP_NAMES[r];
+  const panel=document.getElementById('panel'+r);
+  panel.innerHTML='';
+
+  const descMap={0:'주어진 단어의 뜻을 고르세요.',1:'주어진 단어의 유의어를 고르세요.',2:'영영풀이를 읽고 알맞은 단어를 고르세요.'};
+  const hdr=document.createElement('div');
+  hdr.className='step-header';
+  hdr.innerHTML=`<span class="step-badge ${sc}">${['STEP 1 · 뜻 맞추기','STEP 2 · 유의어 찾기','STEP 3 · 영영풀이'][r]}</span><span class="step-desc">${descMap[r]}</span>`;
+  panel.appendChild(hdr);
+
+  qs.forEach((q,i)=>{
+    const card=document.createElement('div');
+    card.className='q-card';
+    card.id=`card_${r}_${i}`;
+    let wordHTML=q.word?`<div><span class="word-en" onclick="speak('${q.word.replace(/'/g,"\'")}')"><span>${q.word}</span><span class="speaker">🔊</span></span></div>`:'';
+    let defHTML=q.def?`<div class="definition-text">"${q.def}"</div>`:'';
+    let optsHTML=q.opts.map(o=>`<button class="opt-btn" onclick="selectOpt(this,${r},${i})" data-v="${o}">${o}</button>`).join('');
+    card.innerHTML=`
+      <div class="q-meta"><span class="q-num-badge">Q${i+1}</span></div>
+      ${wordHTML}
+      <div class="q-prompt">${q.prompt}</div>
+      ${defHTML}
+      <div class="options">${optsHTML}</div>
+      <div class="feedback" id="fb_${r}_${i}"></div>
+      <button class="check-btn ${sc}" id="cb_${r}_${i}" onclick="ansQ(${r},${i})" disabled>확인</button>`;
+    panel.appendChild(card);
+    if(q.word)setTimeout(()=>{},0); // placeholder
+  });
+
+  // 결과 요약
+  const sumDiv=document.createElement('div');
+  sumDiv.id=`sum_${r}`;
+  sumDiv.style.display='none';
+  panel.appendChild(sumDiv);
+}
+
+function selectOpt(btn,r,i){
+  const card=document.getElementById(`card_${r}_${i}`);
+  card.querySelectorAll('.opt-btn').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+  document.getElementById(`cb_${r}_${i}`).disabled=false;
+}
+
+function ansQ(r,i){
+  const q=ROUNDS[r][i];
+  const card=document.getElementById(`card_${r}_${i}`);
+  const sel=card.querySelector('.opt-btn.selected');
+  if(!sel)return;
+  card.querySelectorAll('.opt-btn').forEach(b=>b.disabled=true);
+  const ok=sel.dataset.v===q.answer;
+  sel.classList.add(ok?'correct':'wrong');
+  if(!ok)card.querySelectorAll('.opt-btn').forEach(b=>{if(b.dataset.v===q.answer)b.classList.add('correct');});
+  scores[r][i]=ok;
+  document.getElementById(`cb_${r}_${i}`).style.display='none';
+  const fb=document.getElementById(`fb_${r}_${i}`);
+  fb.className='feedback show '+(ok?'ok':'bad');
+  fb.textContent=ok?'✅ 정답!':'❌ 정답: '+q.answer;
+  card.classList.add('done');
+  updateTabInfo();
+  // 해당 라운드 완료 체크
+  if(scores[r].filter(x=>x!==undefined).length===ROUNDS[r].length) showRoundSummary(r);
+}
+
+function showRoundSummary(r){
+  const correct=scores[r].filter(Boolean).length;
+  const total=ROUNDS[r].length;
+  const stepLabel=['뜻맞추기','유의어찾기','영영풀이'][r];
+  if(studentName) saveFirebase(stepLabel, correct, total);
+  else promptName(()=>saveFirebase(stepLabel, correct, total));
+  const pct=Math.round(correct/total*100);
+  const sumDiv=document.getElementById('sum_'+r);
+  sumDiv.style.display='block';
+  sumDiv.innerHTML=`<div class="summary">
+    <div class="summary-title">STEP ${r+1} 완료 <span>🎉</span></div>
+    <div class="total-score">${correct}<span style="font-size:1.1rem;opacity:.4">/${total}</span></div>
+    <div class="summary-sub">정답률 ${pct}%</div>
+    <div class="summary-msg">${pct===100?'완벽합니다!':pct>=80?'훌륭해요!':pct>=60?'잘 했어요!':'다시 도전해봐요!'}</div>
+  </div>`;
+  checkAllDone();
+}
+
+function checkAllDone(){
+  const allDone=[0,1,2].every(r=>scores[r].filter(x=>x!==undefined).length===ROUNDS[r].length);
+  if(!allDone)return;
+  const total=r1.length+r2.length+r3.length;
+  const correct=scores.flat().filter(Boolean).length;
+  const pct=Math.round(correct/total*100);
+  // 마지막 패널 끝에 전체 요약 추가
+  const panel=document.getElementById('panel2');
+  const existing=panel.querySelector('.final-summary');
+  if(existing)return;
+  const div=document.createElement('div');
+  div.className='final-summary';
+  div.innerHTML=`<div class="summary" style="margin-top:20px;">
+    <div class="summary-title">전체 결과 <span>확인</span></div>
+    <div class="step-scores">
+      <div class="ss-item"><div class="label">① 뜻</div><div class="val s1">${scores[0].filter(Boolean).length}/${r1.length}</div></div>
+      <div class="ss-item"><div class="label">② 유의어</div><div class="val s2">${scores[1].filter(Boolean).length}/${r2.length}</div></div>
+      <div class="ss-item"><div class="label">③ 영영풀이</div><div class="val s3">${scores[2].filter(Boolean).length}/${r3.length}</div></div>
+    </div>
+    <div class="total-score">${correct}<span style="font-size:1.1rem;opacity:.4">/${total}</span></div>
+    <div class="summary-sub">전체 정답률 ${pct}%</div>
+    <div class="summary-msg">${pct===100?'🎉 완벽합니다!':pct>=80?'👍 훌륭해요!':pct>=60?'📖 잘 했어요!':'💪 다시 도전해봐요!'}</div>
+    <button class="btn-retry" onclick="location.reload()">🔄 다시 풀기</button>
+  </div>`;
+  panel.appendChild(div);
+}
+
+function updateTabInfo(){
+  const r=curTab;
+  const qs=ROUNDS[r];
+  const done=scores[r].filter(x=>x!==undefined).length;
+  const correct=scores[r].filter(Boolean).length;
+  document.getElementById('tabInfo').textContent=`${done} / ${qs.length} 완료`;
+  document.getElementById('tabScore').textContent=`점수: ${correct}`;
+}
+
+function switchTab(r){
+  curTab=r;
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',i===r));
+  document.querySelectorAll('.panel').forEach((p,i)=>p.classList.toggle('active',i===r));
+  updateTabInfo();
+  // 첫 미답변 단어 TTS
+  const qs=ROUNDS[r];
+  for(let i=0;i<qs.length;i++){
+    if(scores[r][i]===undefined&&qs[i].word){
+      setTimeout(()=>speak(qs[i].word),300);
+      break;
+    }
+  }
+}
+
+// INIT
+[0,1,2].forEach(r=>buildPanel(r));
+updateTabInfo();
+// 탭0 첫 단어 TTS
+if(r1.length>0&&r1[0].word)setTimeout(()=>speak(r1[0].word),500);
+</script>
+</body>
+</html>
