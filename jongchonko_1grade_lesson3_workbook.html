@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>3과 워크북 10 Check · 봄날 ENGLISH</title>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Black+Han+Sans&family=Noto+Sans+KR:wght@300;400;700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--ink:#2a2a2a;--soft:#7a7570;--bg:#f5efe6;--card:#fdf8f2;--border:#e0d8ce;--accent:#5c3d1e;--blue:#2d5fa0}
+body{font-family:"Noto Sans KR",sans-serif;background:var(--bg);min-height:100vh;color:var(--ink)}
+header{background:linear-gradient(135deg,#f7efe4 0%,#f0e6d8 50%,#ece0d2 100%);padding:28px 24px 20px;text-align:center;border-bottom:1px solid var(--border)}
+.logo-row{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;margin-bottom:8px}
+.logo-circle{width:48px;height:48px;border-radius:50%;background:#f0ebe3;border:2px solid #e0d8ce;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0}
+.logo-circle img{width:100%;height:100%;object-fit:cover}
+.logo-title{font-family:"Black Han Sans",sans-serif;font-size:1rem;color:#5c3d1e}
+.quiz-meta{font-family:"Gowun Dodum",serif;font-size:.76rem;color:var(--soft);margin-top:2px}
+.test-badge{display:inline-block;background:#3d3d3d;color:#f0ede8;border-radius:30px;padding:3px 14px;font-size:.73rem;font-weight:700;letter-spacing:.5px;margin-top:6px}
+.score-display{font-family:"Gowun Dodum",serif;font-size:.83rem;color:var(--soft);margin-top:5px}
+#score-val{color:var(--accent);font-family:"Black Han Sans",sans-serif;font-size:.95rem}
+
+main{max-width:900px;margin:0 auto;padding:20px 14px 80px}
+.prog-wrap{margin-bottom:18px}
+.prog-bg{height:5px;background:#e0d8ce;border-radius:5px;overflow:hidden}
+.prog-fill{height:5px;background:linear-gradient(90deg,#5c3d1e,#a0724a);border-radius:5px;transition:width .4s ease}
+.prog-text{font-family:"Gowun Dodum",serif;font-size:.72rem;color:var(--soft);margin-top:4px;text-align:right}
+.back-nav{display:inline-flex;align-items:center;gap:6px;background:white;border:1.5px solid #d0c8bc;border-radius:10px;padding:6px 13px;font-family:inherit;font-size:.78rem;color:var(--soft);cursor:pointer;margin-bottom:16px;transition:border-color .15s;text-decoration:none}
+.back-nav:hover{border-color:#3d3d3d;color:#3d3d3d}
+
+/* 섹션 헤더 */
+.sec-header{background:#3d3d3d;color:#f0ede8;font-family:"Black Han Sans",sans-serif;font-size:.9rem;padding:10px 16px;border-radius:12px 12px 0 0;margin-top:28px;margin-bottom:0;letter-spacing:.5px}
+.sec-header:first-of-type{margin-top:0}
+
+/* 문단 블록 */
+.para-block{background:var(--card);border:1.5px solid var(--border);border-radius:0 0 12px 12px;padding:18px 18px 14px;margin-bottom:4px;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+.para-block+.para-block{border-radius:0;margin-bottom:0}
+.para-block:last-of-type{border-radius:0 0 12px 12px;margin-bottom:20px}
+
+/* 단락번호 */
+.para-num{display:inline-block;background:var(--accent);color:#fff;font-family:"Black Han Sans",sans-serif;font-size:.72rem;border-radius:20px;padding:1px 9px;margin-bottom:10px}
+
+/* 본문 영어 텍스트 */
+.eng-text{font-size:.88rem;line-height:2.1;color:#2a2a2a;font-family:"Gowun Dodum",serif}
+.kr-text{font-size:.8rem;color:#5a5a5a;line-height:1.9;font-family:"Gowun Dodum",serif;border-top:1px dashed #d0c8bc;margin-top:10px;padding-top:8px}
+
+/* 인라인 문제 요소들 */
+/* 선택형 [A/B] */
+.sel-group{display:inline-flex;align-items:center;gap:0;border:1.5px solid #c0b4a4;border-radius:6px;overflow:hidden;vertical-align:middle;margin:0 2px;font-size:.82rem}
+.sel-btn{padding:2px 8px;background:#fff;border:none;cursor:pointer;font-family:"Gowun Dodum",serif;font-size:.82rem;color:#3a3a3a;transition:background .15s;line-height:1.6}
+.sel-btn:not(:last-child){border-right:1px solid #c0b4a4}
+.sel-btn:hover{background:#f0ebe3}
+.sel-btn.selected{background:#3d3d3d;color:#fff}
+.sel-btn.correct{background:#2e7d32;color:#fff}
+.sel-btn.wrong{background:#c0392b;color:#fff}
+.sel-btn:disabled{cursor:not-allowed}
+
+/* 빈칸 입력 */
+.blank-input{display:inline-block;border:none;border-bottom:2px solid #c0a882;background:transparent;font-family:"Gowun Dodum",serif;font-size:.85rem;color:#3a3a3a;outline:none;padding:0 4px;min-width:80px;text-align:center;transition:border-color .2s;vertical-align:middle;margin:0 2px}
+.blank-input:focus{border-color:var(--accent)}
+.blank-input:disabled{color:#6a6a6a;cursor:not-allowed;border-bottom-color:#c0b4a4}
+.blank-input.correct-inp{border-bottom-color:#2e7d32;color:#2e7d32}
+.blank-input.wrong-inp{border-bottom-color:#c0392b;color:#c0392b}
+
+/* 순서배열 - 드래그 영역 */
+.arrange-wrap{margin:10px 0;font-family:"Gowun Dodum",serif}
+.arrange-label{font-size:.78rem;color:var(--soft);margin-bottom:6px}
+.arrange-pool{display:flex;flex-wrap:wrap;gap:6px;padding:10px;background:#f5f0ea;border-radius:8px;min-height:40px;margin-bottom:6px;border:1.5px dashed #c0b4a4}
+.arrange-answer{display:flex;flex-wrap:wrap;gap:6px;padding:10px;background:#fff;border-radius:8px;min-height:40px;border:1.5px solid #c0b4a4}
+.word-chip{display:inline-flex;align-items:center;padding:3px 10px;background:#fff;border:1.5px solid #c0a882;border-radius:20px;font-size:.79rem;cursor:pointer;transition:background .15s,border-color .15s;user-select:none;font-family:"Gowun Dodum",serif}
+.word-chip:hover{background:#f0ebe3;border-color:#a08060}
+.arrange-answer .word-chip{background:#3d3d3d;color:#fff;border-color:#3d3d3d}
+.arrange-answer .word-chip:hover{background:#555;border-color:#555}
+.word-chip.disabled{cursor:not-allowed;opacity:.6}
+.word-chip.correct-chip{background:#2e7d32;border-color:#2e7d32;color:#fff}
+.word-chip.wrong-chip{background:#c0392b;border-color:#c0392b;color:#fff}
+
+/* 영작 입력 */
+.writing-wrap{margin:10px 0}
+.writing-label{font-size:.78rem;color:var(--soft);margin-bottom:5px;font-family:"Gowun Dodum",serif}
+.writing-input{width:100%;padding:9px 12px;border:2px solid #d0c8bc;border-radius:8px;font-size:.84rem;font-family:"Gowun Dodum",serif;outline:none;background:#fff;transition:border-color .2s;resize:vertical;min-height:40px}
+.writing-input:focus{border-color:var(--accent)}
+.writing-input:disabled{background:#f5f0ea;color:#6a6a6a;cursor:not-allowed}
+
+/* 채점 버튼 */
+.q-check-btn{margin-top:8px;padding:7px 16px;background:#3d3d3d;color:#fff;border:none;border-radius:8px;font-family:inherit;font-size:.8rem;font-weight:700;cursor:pointer;transition:opacity .2s}
+.q-check-btn:hover{opacity:.85}
+.q-check-btn:disabled{background:#b0a898;cursor:not-allowed;opacity:1}
+
+/* 피드백 */
+.q-feedback{margin-top:8px;border-radius:8px;padding:9px 13px;font-size:.8rem;line-height:1.8;display:none;font-family:"Gowun Dodum",serif}
+.q-feedback.show{display:block}
+.q-feedback.ok{background:#e8f5e9;border:1px solid #a5d6a7;color:#1b5e20}
+.q-feedback.fail{background:#ffebee;border:1px solid #ef9a9a;color:#7f0000}
+.pt-tag{display:inline-block;background:rgba(0,0,0,.12);border-radius:20px;padding:1px 8px;font-size:.68rem;font-weight:700;margin-left:5px}
+
+/* 번호 태그 */
+.q-tag{display:inline-block;background:#ede9e4;border-radius:20px;padding:1px 9px;font-size:.68rem;font-weight:700;color:#7a6a5a;margin-right:4px;vertical-align:middle}
+
+/* 결과 */
+.result-card{background:var(--card);border-radius:20px;border:2px solid var(--border);padding:32px 22px;text-align:center;display:none;box-shadow:0 6px 24px rgba(0,0,0,.08);margin-top:8px}
+.result-card.show{display:block;animation:fadeUp .5s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.result-score{font-family:"Black Han Sans",sans-serif;font-size:2.6rem;color:var(--accent);margin:12px 0}
+.result-msg{font-family:"Gowun Dodum",serif;font-size:.88rem;color:var(--soft);line-height:1.8}
+.result-btns{display:flex;gap:10px;justify-content:center;margin-top:18px;flex-wrap:wrap}
+.result-btns button{padding:10px 20px;border-radius:12px;font-family:inherit;font-size:.82rem;font-weight:700;cursor:pointer;border:2px solid #3d3d3d}
+.btn-retry{background:#3d3d3d;color:#fff}.btn-retry:hover{opacity:.85}
+.btn-back{background:transparent;color:#3d3d3d}.btn-back:hover{background:#f0ede8}
+
+/* 알맞지 않은 단어 고르기 - 취소선 */
+.sel-btn.exclude{text-decoration:line-through;background:#ffe0e0;color:#999;border-color:#e0a0a0}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo-row">
+    <div class="logo-circle"><img src="https://bomnalenglish.github.io/bomnalquizz/IMG_6063.jpg" alt="봄날" onerror="this.style.display='none'"/></div>
+    <div><div class="logo-title">봄날 BOMNAL ENGLISH</div><div class="quiz-meta">종촌고 1학년 · YBM 김은형 · 3과 · 워크북 10 Check</div></div>
+  </div>
+  <div><span class="test-badge">📖 워크북 10 Check — 교과서 본문</span></div>
+  <div class="score-display">현재 점수: <span id="score-val">0</span> / <span id="score-max">0</span>점</div>
+</header>
+<main>
+  <a class="back-nav" href="javascript:history.back()">← 허브로 돌아가기</a>
+  <div class="prog-wrap">
+    <div class="prog-bg"><div class="prog-fill" id="prog" style="width:0%"></div></div>
+    <div class="prog-text" id="prog-txt">0 / 0 문제 완료</div>
+  </div>
+
+  <!-- ===== 단락 1 ===== -->
+  <div class="sec-header">📘 단락 1</div>
+  <div class="para-block">
+    <div class="eng-text">
+      Jessi is a fashion blogger
+      <!-- 1: who/which -->
+      <span class="q-tag">1)</span><span class="sel-group" data-q="0" data-ans="0"><button class="sel-btn" onclick="pickSel(this,0,0)">who</button><button class="sel-btn" onclick="pickSel(this,0,1)">which</button></span>
+      loves
+      <!-- 2: unique/ordinary -->
+      <span class="q-tag">2)</span><span class="sel-group" data-q="1" data-ans="0"><button class="sel-btn" onclick="pickSel(this,1,0)">unique</button><button class="sel-btn" onclick="pickSel(this,1,1)">ordinary</button></span>,
+      <!-- 3: dull/vibrant -->
+      <span class="q-tag">3)</span><span class="sel-group" data-q="2" data-ans="1"><button class="sel-btn" onclick="pickSel(this,2,0)">dull</button><button class="sel-btn" onclick="pickSel(this,2,1)">vibrant</button></span>
+      clothes. But
+      <!-- 4: 빈칸 guess what -->
+      <span class="q-tag">4)</span><input class="blank-input" id="b4" data-q="3" placeholder="빈칸" style="min-width:90px" oninput="autoCheck(3)"/>? She does not buy new clothes. Instead, she buys them
+      <!-- 5: 빈칸 secondhand -->
+      <span class="q-tag">5)</span><input class="blank-input" id="b5" data-q="4" placeholder="빈칸" style="min-width:100px" oninput="autoCheck(4)"/>.<br><br>
+      You may think secondhand clothes are
+      <!-- 6: 알맞지않은단어 trendy -->
+      <span class="q-tag">6)</span><span class="sel-group exclude-group" data-q="5" data-ans="0"><button class="sel-btn" onclick="pickExclude(this,5,0)">trendy</button><button class="sel-btn" onclick="pickExclude(this,5,1)">old fashioned</button><button class="sel-btn" onclick="pickExclude(this,5,2)">outdated</button></span>,
+      but by
+      <!-- 7: buy/buying -->
+      <span class="q-tag">7)</span><span class="sel-group" data-q="6" data-ans="1"><button class="sel-btn" onclick="pickSel(this,6,0)">buy</button><button class="sel-btn" onclick="pickSel(this,6,1)">buying</button></span>
+      them, Jessi can try different styles. She also does not get too
+      <!-- 8: 빈칸 attached -->
+      <span class="q-tag">8)</span><input class="blank-input" id="b8" data-q="7" placeholder="빈칸" style="min-width:90px" oninput="autoCheck(7)"/>
+      to any style or brand because
+      <!-- 9: 순서배열 -->
+      <span class="q-tag">9)</span>
+      <div class="arrange-wrap" id="arr9">
+        <div class="arrange-label">단어를 클릭해 순서대로 배열하세요:</div>
+        <div class="arrange-pool" id="pool9"></div>
+        <div class="arrange-answer" id="ans9"><span style="color:#c0b4a4;font-size:.75rem;font-family:'Gowun Dodum',serif">여기에 단어를 배열하세요...</span></div>
+        <button class="q-check-btn" onclick="checkArrange(8,'pool9','ans9','there is always another exciting outfit waiting to be discovered')">채점</button>
+        <div class="q-feedback" id="fb8"></div>
+      </div>
+      <br>
+      Jessi's clothing habits are not just about
+      <!-- 10: creating/to create -->
+      <span class="q-tag">10)</span><span class="sel-group" data-q="9" data-ans="0"><button class="sel-btn" onclick="pickSel(this,9,0)">creating</button><button class="sel-btn" onclick="pickSel(this,9,1)">to create</button></span>
+      a style; they are about
+      <!-- 11: to save/saving -->
+      <span class="q-tag">11)</span><span class="sel-group" data-q="10" data-ans="1"><button class="sel-btn" onclick="pickSel(this,10,0)">to save</button><button class="sel-btn" onclick="pickSel(this,10,1)">saving</button></span>
+      the Earth. The reason is
+      <!-- 12: that/what -->
+      <span class="q-tag">12)</span><span class="sel-group" data-q="11" data-ans="0"><button class="sel-btn" onclick="pickSel(this,11,0)">that</button><button class="sel-btn" onclick="pickSel(this,11,1)">what</button></span>
+      her actions help
+      <!-- 13: reduce/reducing -->
+      <span class="q-tag">13)</span><span class="sel-group" data-q="12" data-ans="0"><button class="sel-btn" onclick="pickSel(this,12,0)">reduce</button><button class="sel-btn" onclick="pickSel(this,12,1)">reducing</button></span>
+      the production and consumption of clothes.
+    </div>
+    <div class="kr-text">
+      제시는 독특하고 생동감 넘치는 옷을 좋아하는 패션 블로거이다. 그런데 혹시 알고 있는가? 그녀는 새 옷을 사지 않는다. 대신에 그녀는 옷들을 중고로 산다.<br>
+      여러분은 아마 중고 옷은 구식이라고 생각할 수도 있지만, 제시는 그것들을 구매함으로써 다양한 스타일을 시도해 볼 수 있다. 그녀는 또한 항상 발견되기를 기다리는 또 다른 흥미로운 옷이 있기 때문에 어떤 스타일이나 브랜드에 지나치게 애착을 갖지 않는다.<br>
+      제시의 옷 습관은 단지 스타일을 만드는 것뿐만이 아니라, 지구를 구하기 위한 것이기도 하다. 그 이유는 그녀의 행동이 옷 생산과 소비를 줄이는 데 도움이 되기 때문이다.
+    </div>
+  </div>
+
+  <!-- ===== 단락 2 ===== -->
+  <div class="sec-header">📗 단락 2</div>
+  <div class="para-block">
+    <div class="eng-text">
+      <!-- 14: 빈칸 Worth -->
+      <span class="q-tag">14)</span><input class="blank-input" id="b14" data-q="13" placeholder="빈칸" style="min-width:60px" oninput="autoCheck(13)"/>
+      over $3 trillion and
+      <!-- 15: making/made -->
+      <span class="q-tag">15)</span><span class="sel-group" data-q="14" data-ans="0"><button class="sel-btn" onclick="pickSel(this,14,0)">making</button><button class="sel-btn" onclick="pickSel(this,14,1)">made</button></span>
+      up 2% of the world's GDP, the fashion industry today has an almost entirely
+      <!-- 16: 빈칸 linear approach -->
+      <span class="q-tag">16)</span><input class="blank-input" id="b16" data-q="15" placeholder="빈칸 (두 단어)" style="min-width:120px" oninput="autoCheck(15)"/>.
+      The process moves in a
+      <!-- 17: circular/straight -->
+      <span class="q-tag">17)</span><span class="sel-group" data-q="16" data-ans="1"><button class="sel-btn" onclick="pickSel(this,16,0)">circular</button><button class="sel-btn" onclick="pickSel(this,16,1)">straight</button></span>
+      line from design to consumption to
+      <!-- 18: disposal/recycling -->
+      <span class="q-tag">18)</span><span class="sel-group" data-q="17" data-ans="0"><button class="sel-btn" onclick="pickSel(this,17,0)">disposal</button><button class="sel-btn" onclick="pickSel(this,17,1)">recycling</button></span>.<br><br>
+      Material
+      <!-- 19: extraction/extension -->
+      <span class="q-tag">19)</span><span class="sel-group" data-q="18" data-ans="0"><button class="sel-btn" onclick="pickSel(this,18,0)">extraction</button><button class="sel-btn" onclick="pickSel(this,18,1)">extension</button></span>,
+      textile manufacturing, the
+      <!-- 20: 빈칸 supply chain -->
+      <span class="q-tag">20)</span><input class="blank-input" id="b20" data-q="19" placeholder="빈칸 (두 단어)" style="min-width:110px" oninput="autoCheck(19)"/>,
+      design, sales, marketing, and other steps
+      <!-- 21: guide/are guided -->
+      <span class="q-tag">21)</span><span class="sel-group" data-q="20" data-ans="1"><button class="sel-btn" onclick="pickSel(this,20,0)">guide</button><button class="sel-btn" onclick="pickSel(this,20,1)">are guided</button></span>
+      by the aim of
+      <!-- 22: maximize/maximizing -->
+      <span class="q-tag">22)</span><span class="sel-group" data-q="21" data-ans="1"><button class="sel-btn" onclick="pickSel(this,21,0)">maximize</button><button class="sel-btn" onclick="pickSel(this,21,1)">maximizing</button></span>
+      garment consumption without
+      <!-- 23: consider/considering -->
+      <span class="q-tag">23)</span><span class="sel-group" data-q="22" data-ans="1"><button class="sel-btn" onclick="pickSel(this,22,0)">consider</button><button class="sel-btn" onclick="pickSel(this,22,1)">considering</button></span>
+      other issues.
+      <!-- 24: 알맞지않은단어 According to -->
+      <span class="q-tag">24)</span><span class="sel-group exclude-group" data-q="23" data-ans="1"><button class="sel-btn" onclick="pickExclude(this,23,0)">Because of</button><button class="sel-btn" onclick="pickExclude(this,23,1)">According to</button><button class="sel-btn" onclick="pickExclude(this,23,2)">Owing to</button><button class="sel-btn" onclick="pickExclude(this,23,3)">Due to</button></span>
+      linear fashion, the fashion industry
+      <!-- 25: positively/negatively -->
+      <span class="q-tag">25)</span><span class="sel-group" data-q="24" data-ans="1"><button class="sel-btn" onclick="pickSel(this,24,0)">positively</button><button class="sel-btn" onclick="pickSel(this,24,1)">negatively</button></span>
+      affects the environment.<br><br>
+      85% of textiles
+      <!-- 26: goes/go -->
+      <span class="q-tag">26)</span><span class="sel-group" data-q="25" data-ans="1"><button class="sel-btn" onclick="pickSel(this,25,0)">goes</button><button class="sel-btn" onclick="pickSel(this,25,1)">go</button></span>
+      into landfills, only 1% of the material
+      <!-- 27: is/are -->
+      <span class="q-tag">27)</span><span class="sel-group" data-q="26" data-ans="0"><button class="sel-btn" onclick="pickSel(this,26,0)">is</button><button class="sel-btn" onclick="pickSel(this,26,1)">are</button></span>
+      recycled, at least 500,000 tons of microfibers
+      <!-- 28: 빈칸 end up in -->
+      <span class="q-tag">28)</span><input class="blank-input" id="b28" data-q="27" placeholder="빈칸 (세 단어)" style="min-width:100px" oninput="autoCheck(27)"/>
+      the ocean (
+      <!-- 29: 빈칸 equal to -->
+      <span class="q-tag">29)</span><input class="blank-input" id="b29" data-q="28" placeholder="빈칸 (두 단어)" style="min-width:80px" oninput="autoCheck(28)"/>
+      50 billion plastic bottles), and 93 billion cubic meters of water
+      <!-- 30: is required/requires -->
+      <span class="q-tag">30)</span><span class="sel-group" data-q="29" data-ans="0"><button class="sel-btn" onclick="pickSel(this,29,0)">is required</button><button class="sel-btn" onclick="pickSel(this,29,1)">requires</button></span>
+      for textile production
+      <!-- 31: annually/biannually -->
+      <span class="q-tag">31)</span><span class="sel-group" data-q="30" data-ans="0"><button class="sel-btn" onclick="pickSel(this,30,0)">annually</button><button class="sel-btn" onclick="pickSel(this,30,1)">biannually</button></span>.<br><br>
+      <!-- 32: 영작 Alarming numbers -->
+      <span class="q-tag">32)</span>
+      <div class="writing-wrap">
+        <div class="writing-label">🖊 영작: 이러한 놀라운 수치들은 생산자들이 오래된 체계를 유지하면 계속 증가할 것이다.<br><small style="color:#9a8a7a">(alarm, number, keep, increase, if, producer, maintain, old)</small></div>
+        <input class="writing-input" id="w32" placeholder="여기에 영작하세요..." maxlength="200"/>
+        <button class="q-check-btn" onclick="checkWriting(31,'w32','alarming numbers like these will keep increasing if producers maintain the old system')">채점</button>
+        <div class="q-feedback" id="fb31"></div>
+      </div>
+      It is
+      <!-- 33: 알맞지않은단어 uncertain -->
+      <span class="q-tag">33)</span><span class="sel-group exclude-group" data-q="32" data-ans="0"><button class="sel-btn" onclick="pickExclude(this,32,0)">uncertain</button><button class="sel-btn" onclick="pickExclude(this,32,1)">obvious</button><button class="sel-btn" onclick="pickExclude(this,32,2)">apparent</button><button class="sel-btn" onclick="pickExclude(this,32,3)">clear</button></span>
+      that waste and pollution from the fashion industry must
+      <!-- 34: reduce/be reduced -->
+      <span class="q-tag">34)</span><span class="sel-group" data-q="33" data-ans="1"><button class="sel-btn" onclick="pickSel(this,33,0)">reduce</button><button class="sel-btn" onclick="pickSel(this,33,1)">be reduced</button></span>.
+      <!-- 35: Linear/Circular -->
+      <span class="q-tag">35)</span><span class="sel-group" data-q="34" data-ans="0"><button class="sel-btn" onclick="pickSel(this,34,0)">Linear</button><button class="sel-btn" onclick="pickSel(this,34,1)">Circular</button></span>
+      fashion must change, and this could happen through
+      <!-- 36: linear/circular -->
+      <span class="q-tag">36)</span><span class="sel-group" data-q="35" data-ans="1"><button class="sel-btn" onclick="pickSel(this,35,0)">linear</button><button class="sel-btn" onclick="pickSel(this,35,1)">circular</button></span>
+      fashion.
+    </div>
+    <div class="kr-text">
+      3조 달러 이상의 가치를 지니며 세계 GDP의 2%를 차지하면서, 오늘날의 패션 산업은 거의 완전히 선형적인 접근 방식을 취하고 있다. 이 과정은 디자인에서 소비, 폐기까지 직선으로 진행된다.<br>
+      재료 추출, 직물 제조, 공급망, 디자인, 판매, 마케팅 및 기타 단계는 다른 문제들을 고려하지 않고 의류 소비를 극대화하는 목적에 좌우된다. 선형 패션 때문에 패션 산업은 환경에 부정적으로 영향을 미친다.<br>
+      직물의 85%가 매립지로 가고, 재료의 1%만 재활용되며, 적어도 50만 톤의 초미세 섬유가 바다로 흘러 들어가며, 직물 생산에는 매년 930억 m³의 물이 필요하다.<br>
+      이러한 놀라운 수치는 생산자들이 오래된 체계를 유지하면 계속 증가할 것이다. 패션 산업에서의 폐기물과 오염을 줄여야 한다는 것은 명백하다. 선형 패션은 변화해야만 하며, 이것은 순환 패션을 통해서 실현될 수 있을 것이다.
+    </div>
+  </div>
+
+  <!-- ===== 단락 3 ===== -->
+  <div class="sec-header">📙 단락 3</div>
+  <div class="para-block">
+    <div class="eng-text">
+      Circular fashion is
+      <!-- 37: inspired/inspiring -->
+      <span class="q-tag">37)</span><span class="sel-group" data-q="36" data-ans="0"><button class="sel-btn" onclick="pickSel(this,36,0)">inspired</button><button class="sel-btn" onclick="pickSel(this,36,1)">inspiring</button></span>
+      by the principles of a circular economy and
+      <!-- 38: 빈칸 sustainable -->
+      <span class="q-tag">38)</span><input class="blank-input" id="b38" data-q="37" placeholder="빈칸" style="min-width:100px" oninput="autoCheck(37)"/>
+      development. A circular economy is based on
+      <!-- 39: limited/limiting -->
+      <span class="q-tag">39)</span><span class="sel-group" data-q="38" data-ans="1"><button class="sel-btn" onclick="pickSel(this,38,0)">limited</button><button class="sel-btn" onclick="pickSel(this,38,1)">limiting</button></span>
+      waste,
+      <!-- 40: keeping/keep -->
+      <span class="q-tag">40)</span><span class="sel-group" data-q="39" data-ans="0"><button class="sel-btn" onclick="pickSel(this,39,0)">keeping</button><button class="sel-btn" onclick="pickSel(this,39,1)">keep</button></span>
+      resources and materials in use, and
+      <!-- 41: reusing/reuse -->
+      <span class="q-tag">41)</span><span class="sel-group" data-q="40" data-ans="0"><button class="sel-btn" onclick="pickSel(this,40,0)">reusing</button><button class="sel-btn" onclick="pickSel(this,40,1)">reuse</button></span>
+      them.<br><br>
+      In a circular model,
+      <!-- 42: 영작 -->
+      <span class="q-tag">42)</span>
+      <div class="writing-wrap">
+        <div class="writing-label">🖊 영작: 우리는 그들(재료들)의 최대 가치를 추출하기 위해 가능한 오랫동안 재료들을 만들고, 사용하고, 재사용한다.<br><small style="color:#9a8a7a">(material, for, long, possible, extract, maximum, value)</small></div>
+        <input class="writing-input" id="w42" placeholder="여기에 영작하세요..." maxlength="200"/>
+        <button class="q-check-btn" onclick="checkWriting(41,'w42','we make use and reuse materials for as long as possible to extract their maximum value')">채점</button>
+        <div class="q-feedback" id="fb41"></div>
+      </div>
+      <!-- 43: However/Therefore -->
+      <span class="q-tag">43)</span><span class="sel-group" data-q="42" data-ans="1"><button class="sel-btn" onclick="pickSel(this,42,0)">However</button><button class="sel-btn" onclick="pickSel(this,42,1)">Therefore</button></span>,
+      clothing and textiles are produced, used, and reused to
+      <!-- 44: 빈칸 minimize -->
+      <span class="q-tag">44)</span><input class="blank-input" id="b44" data-q="43" placeholder="빈칸" style="min-width:80px" oninput="autoCheck(43)"/>
+      waste. It is a
+      <!-- 45: disposable/renewable -->
+      <span class="q-tag">45)</span><span class="sel-group" data-q="44" data-ans="1"><button class="sel-btn" onclick="pickSel(this,44,0)">disposable</button><button class="sel-btn" onclick="pickSel(this,44,1)">renewable</button></span>
+      approach
+      <!-- 46: reduce/to reduce -->
+      <span class="q-tag">46)</span><span class="sel-group" data-q="45" data-ans="1"><button class="sel-btn" onclick="pickSel(this,45,0)">reduce</button><button class="sel-btn" onclick="pickSel(this,45,1)">to reduce</button></span>
+      the fashion industry's environmental impact.<br><br>
+      Circular fashion provides numerous
+      <!-- 47: 알맞지않은단어 flaws -->
+      <span class="q-tag">47)</span><span class="sel-group exclude-group" data-q="46" data-ans="1"><button class="sel-btn" onclick="pickExclude(this,46,0)">benefits</button><button class="sel-btn" onclick="pickExclude(this,46,1)">flaws</button><button class="sel-btn" onclick="pickExclude(this,46,2)">merits</button><button class="sel-btn" onclick="pickExclude(this,46,3)">advantages</button></span>.
+      First,
+      <!-- 48: extending/shortening -->
+      <span class="q-tag">48)</span><span class="sel-group" data-q="47" data-ans="0"><button class="sel-btn" onclick="pickSel(this,47,0)">extending</button><button class="sel-btn" onclick="pickSel(this,47,1)">shortening</button></span>
+      the lifespan of fibers significantly
+      <!-- 49: reduce/reduces -->
+      <span class="q-tag">49)</span><span class="sel-group" data-q="48" data-ans="1"><button class="sel-btn" onclick="pickSel(this,48,0)">reduce</button><button class="sel-btn" onclick="pickSel(this,48,1)">reduces</button></span>
+      textile waste,
+      <!-- 50: 빈칸 benefiting -->
+      <span class="q-tag">50)</span><input class="blank-input" id="b50" data-q="49" placeholder="빈칸" style="min-width:90px" oninput="autoCheck(49)"/>
+      the environment.<br><br>
+      Second,
+      <!-- 51: 순서배열 -->
+      <span class="q-tag">51)</span>
+      <div class="arrange-wrap" id="arr51">
+        <div class="arrange-label">단어를 클릭해 순서대로 배열하세요:</div>
+        <div class="arrange-pool" id="pool51"></div>
+        <div class="arrange-answer" id="ans51"><span style="color:#c0b4a4;font-size:.75rem;font-family:'Gowun Dodum',serif">여기에 단어를 배열하세요...</span></div>
+        <button class="q-check-btn" onclick="checkArrange(50,'pool51','ans51','circular processes utilize chemicals and materials safe for human health and the environment')">채점</button>
+        <div class="q-feedback" id="fb50"></div>
+      </div>
+      This practice protects the environment and consumer health. Third, materials are regenerated instead of
+      <!-- 52: disposing/being disposed -->
+      <span class="q-tag">52)</span><span class="sel-group" data-q="51" data-ans="1"><button class="sel-btn" onclick="pickSel(this,51,0)">disposing</button><button class="sel-btn" onclick="pickSel(this,51,1)">being disposed</button></span>
+      of,
+      <!-- 53: that/which -->
+      <span class="q-tag">53)</span><span class="sel-group" data-q="52" data-ans="1"><button class="sel-btn" onclick="pickSel(this,52,0)">that</button><button class="sel-btn" onclick="pickSel(this,52,1)">which</button></span>
+      <!-- 54: enables/prevents -->
+      <span class="q-tag">54)</span><span class="sel-group" data-q="53" data-ans="0"><button class="sel-btn" onclick="pickSel(this,53,0)">enables</button><button class="sel-btn" onclick="pickSel(this,53,1)">prevents</button></span>
+      their long-term use.
+    </div>
+    <div class="kr-text">
+      순환 패션은 순환 경제와 지속 가능한 발전의 원리에 영감을 받는다. 순환 경제는 폐기물을 제한하고, 자원과 재료를 계속하여 사용하며, 그것들을 재사용하는 것에 기반한다.<br>
+      순환 모델에서 우리는 재료의 최대 가치를 추출하기 위해 재료를 가능한 한 오랫동안 만들고, 사용하고, 재사용한다.<br>
+      그러므로 옷과 직물은 폐기물을 최소화하기 위해 생산되고, 사용되고, 재사용된다. 이는 패션 산업의 환경 영향을 줄이는 재생 가능한 접근 방식이다.<br>
+      순환 패션은 많은 이점들을 제공한다. 첫째, 섬유의 수명을 연장하는 것은 직물 폐기물을 크게 줄이고 환경에 이로움을 준다.<br>
+      둘째, 순환 과정에서는 인간의 건강과 환경에 안전한 화학 물질과 재료를 이용한다. 이러한 실천은 환경과 소비자 건강을 보호한다. 셋째, 재료는 처리되는 대신에 재생되는데, 이는 그것의 장기간의 사용을 가능하게 한다.
+    </div>
+  </div>
+
+  <!-- ===== 단락 4 ===== -->
+  <div class="sec-header">📒 단락 4</div>
+  <div class="para-block">
+    <div class="eng-text">
+      The
+      <!-- 55: rise/fall -->
+      <span class="q-tag">55)</span><span class="sel-group" data-q="54" data-ans="0"><button class="sel-btn" onclick="pickSel(this,54,0)">rise</button><button class="sel-btn" onclick="pickSel(this,54,1)">fall</button></span>
+      of circular fashion is
+      <!-- 56: impeded/facilitated -->
+      <span class="q-tag">56)</span><span class="sel-group" data-q="55" data-ans="1"><button class="sel-btn" onclick="pickSel(this,55,0)">impeded</button><button class="sel-btn" onclick="pickSel(this,55,1)">facilitated</button></span>
+      by new technology and ideas. Materials commonly
+      <!-- 57: used/using -->
+      <span class="q-tag">57)</span><span class="sel-group" data-q="56" data-ans="0"><button class="sel-btn" onclick="pickSel(this,56,0)">used</button><button class="sel-btn" onclick="pickSel(this,56,1)">using</button></span>
+      in clothing
+      <!-- 58: is/are -->
+      <span class="q-tag">58)</span><span class="sel-group" data-q="57" data-ans="1"><button class="sel-btn" onclick="pickSel(this,57,0)">is</button><button class="sel-btn" onclick="pickSel(this,57,1)">are</button></span>
+      not eco-friendly because they require
+      <!-- 59: 알맞지않은단어 suitable -->
+      <span class="q-tag">59)</span><span class="sel-group exclude-group" data-q="58" data-ans="0"><button class="sel-btn" onclick="pickExclude(this,58,0)">suitable</button><button class="sel-btn" onclick="pickExclude(this,58,1)">sizeable</button><button class="sel-btn" onclick="pickExclude(this,58,2)">considerable</button></span>
+      resources and often
+      <!-- 60: 빈칸 break down -->
+      <span class="q-tag">60)</span><input class="blank-input" id="b60" data-q="59" placeholder="빈칸 (두 단어)" style="min-width:100px" oninput="autoCheck(59)"/>
+      slowly. This
+      <!-- 61: creates/eliminates -->
+      <span class="q-tag">61)</span><span class="sel-group" data-q="60" data-ans="0"><button class="sel-btn" onclick="pickSel(this,60,0)">creates</button><button class="sel-btn" onclick="pickSel(this,60,1)">eliminates</button></span>
+      a need for eco-friendly textile
+      <!-- 62: 빈칸 alternatives -->
+      <span class="q-tag">62)</span><input class="blank-input" id="b62" data-q="61" placeholder="빈칸" style="min-width:100px" oninput="autoCheck(61)"/>.<br><br>
+      <!-- 63: Currently/Previously -->
+      <span class="q-tag">63)</span><span class="sel-group" data-q="62" data-ans="0"><button class="sel-btn" onclick="pickSel(this,62,0)">Currently</button><button class="sel-btn" onclick="pickSel(this,62,1)">Previously</button></span>,
+      companies are developing
+      <!-- 64: recycling/recycled -->
+      <span class="q-tag">64)</span><span class="sel-group" data-q="63" data-ans="1"><button class="sel-btn" onclick="pickSel(this,63,0)">recycling</button><button class="sel-btn" onclick="pickSel(this,63,1)">recycled</button></span>
+      fibers and fibers
+      <!-- 65: extracted/extracting -->
+      <span class="q-tag">65)</span><span class="sel-group" data-q="64" data-ans="0"><button class="sel-btn" onclick="pickSel(this,64,0)">extracted</button><button class="sel-btn" onclick="pickSel(this,64,1)">extracting</button></span>
+      from
+      <!-- 66: industrial/agricultural -->
+      <span class="q-tag">66)</span><span class="sel-group" data-q="65" data-ans="1"><button class="sel-btn" onclick="pickSel(this,65,0)">industrial</button><button class="sel-btn" onclick="pickSel(this,65,1)">agricultural</button></span>
+      waste products like leaves, peels, and seeds. One company uses nanotechnology to make
+      <!-- 67: soft/rough -->
+      <span class="q-tag">67)</span><span class="sel-group" data-q="66" data-ans="0"><button class="sel-btn" onclick="pickSel(this,66,0)">soft</button><button class="sel-btn" onclick="pickSel(this,66,1)">rough</button></span>
+      material from orange peels.<br><br>
+      <!-- 68: 빈칸 Another -->
+      <span class="q-tag">68)</span><input class="blank-input" id="b68" data-q="67" placeholder="빈칸" style="min-width:80px" oninput="autoCheck(67)"/>
+      makes fabrics from kapok tree seeds. The trees grow well in
+      <!-- 69: rich/poor -->
+      <span class="q-tag">69)</span><span class="sel-group" data-q="68" data-ans="1"><button class="sel-btn" onclick="pickSel(this,68,0)">rich</button><button class="sel-btn" onclick="pickSel(this,68,1)">poor</button></span>
+      soil
+      <!-- 70: 빈칸 without -->
+      <span class="q-tag">70)</span><input class="blank-input" id="b70" data-q="69" placeholder="빈칸" style="min-width:70px" oninput="autoCheck(69)"/>
+      needing much water. These new fabrics produce
+      <!-- 71: less/more -->
+      <span class="q-tag">71)</span><span class="sel-group" data-q="70" data-ans="0"><button class="sel-btn" onclick="pickSel(this,70,0)">less</button><button class="sel-btn" onclick="pickSel(this,70,1)">more</button></span>
+      waste, last a long time, and
+      <!-- 72: 빈칸 break down -->
+      <span class="q-tag">72)</span><input class="blank-input" id="b72" data-q="71" placeholder="빈칸 (두 단어)" style="min-width:100px" oninput="autoCheck(71)"/>
+      easily.<br><br>
+      <!-- 73: 빈칸 In addition to -->
+      <span class="q-tag">73)</span><input class="blank-input" id="b73" data-q="72" placeholder="빈칸 (세 단어)" style="min-width:120px" oninput="autoCheck(72)"/>
+      these manufacturing techniques,
+      <!-- 74: 순서배열 -->
+      <span class="q-tag">74)</span>
+      <div class="arrange-wrap" id="arr74">
+        <div class="arrange-label">단어를 클릭해 순서대로 배열하세요:</div>
+        <div class="arrange-pool" id="pool74"></div>
+        <div class="arrange-answer" id="ans74"><span style="color:#c0b4a4;font-size:.75rem;font-family:'Gowun Dodum',serif">여기에 단어를 배열하세요...</span></div>
+        <button class="q-check-btn" onclick="checkArrange(73,'pool74','ans74','technology will improve in such a way that it may become normal to produce clothes')">채점</button>
+        <div class="q-feedback" id="fb73"></div>
+      </div>
+      only when people order them. This "make-to-order" method will cost
+      <!-- 75: less/more -->
+      <span class="q-tag">75)</span><span class="sel-group" data-q="74" data-ans="1"><button class="sel-btn" onclick="pickSel(this,74,0)">less</button><button class="sel-btn" onclick="pickSel(this,74,1)">more</button></span>,
+      but then
+      <!-- 76: less/more -->
+      <span class="q-tag">76)</span><span class="sel-group" data-q="75" data-ans="0"><button class="sel-btn" onclick="pickSel(this,75,0)">less</button><button class="sel-btn" onclick="pickSel(this,75,1)">more</button></span>
+      money will
+      <!-- 77: spend/be spent -->
+      <span class="q-tag">77)</span><span class="sel-group" data-q="76" data-ans="1"><button class="sel-btn" onclick="pickSel(this,76,0)">spend</button><button class="sel-btn" onclick="pickSel(this,76,1)">be spent</button></span>
+      on
+      <!-- 78: maintaining/shutting down -->
+      <span class="q-tag">78)</span><span class="sel-group" data-q="77" data-ans="0"><button class="sel-btn" onclick="pickSel(this,77,0)">maintaining</button><button class="sel-btn" onclick="pickSel(this,77,1)">shutting down</button></span>
+      offline stores.<br><br>
+      And
+      <!-- 79: 영작 3D technology -->
+      <span class="q-tag">79)</span>
+      <div class="writing-wrap">
+        <div class="writing-label">🖊 영작: 3D 기술은 사람들이 매장에서 옷을 입어 보지 않고도 옷이 어떻게 맞을지 온라인에서 확인하는 것을 가능하게 해 줄 것이다.<br><small style="color:#9a8a7a">(enable, see, clothes, fit, online, without, try, a store)</small></div>
+        <input class="writing-input" id="w79" placeholder="여기에 영작하세요..." maxlength="250"/>
+        <button class="q-check-btn" onclick="checkWriting(78,'w79','3d technology will enable people to see how clothes will fit online without trying them on in a store')">채점</button>
+        <div class="q-feedback" id="fb78"></div>
+      </div>
+      <!-- 80: 빈칸 In the long run -->
+      <span class="q-tag">80)</span><input class="blank-input" id="b80" data-q="79" placeholder="빈칸 (네 단어)" style="min-width:140px" oninput="autoCheck(79)"/>,
+      innovation in production and sales will
+      <!-- 81: facilitate/be facilitated -->
+      <span class="q-tag">81)</span><span class="sel-group" data-q="80" data-ans="0"><button class="sel-btn" onclick="pickSel(this,80,0)">facilitate</button><button class="sel-btn" onclick="pickSel(this,80,1)">be facilitated</button></span>
+      sustainable fashion and considerably
+      <!-- 82: 알맞지않은단어 boost -->
+      <span class="q-tag">82)</span><span class="sel-group exclude-group" data-q="81" data-ans="2"><button class="sel-btn" onclick="pickExclude(this,81,0)">reduce</button><button class="sel-btn" onclick="pickExclude(this,81,1)">decrease</button><button class="sel-btn" onclick="pickExclude(this,81,2)">boost</button><button class="sel-btn" onclick="pickExclude(this,81,3)">cut down on</button></span>
+      material waste and
+      <!-- 83: 빈칸 logistics emissions -->
+      <span class="q-tag">83)</span><input class="blank-input" id="b83" data-q="82" placeholder="빈칸 (두 단어)" style="min-width:130px" oninput="autoCheck(82)"/>.
+    </div>
+    <div class="kr-text">
+      순환 패션의 부상은 새로운 기술과 아이디어에 의해 촉진된다. 의류에 흔히 사용되는 재료는 상당한 자원을 필요로 하고 보통 느리게 분해되기 때문에 친환경적이지 않다. 이것은 친환경 직물 대안의 필요성을 만든다.<br>
+      현재, 기업들은 재활용 섬유와 잎, 껍질, 씨앗과 같은 농업 폐기물에서 추출되는 섬유를 개발하고 있다. 한 회사는 오렌지 껍질에서 부드러운 소재를 만들기 위해 나노 기술을 사용한다.<br>
+      또 다른 회사는 카폭 나무 씨앗으로 직물을 만든다. 이 나무는 많은 물을 필요로 하지 않으며 척박한 토양에서 잘 자란다. 이러한 새로운 직물들은 폐기물을 덜 생산하고, 오래 지속되며, 쉽게 분해된다.<br>
+      이러한 제조 기술 외에도, 사람들이 옷을 주문할 때에만 옷을 생산하는 것이 보편화될 수 있는 방식으로 기술이 향상될 것이다. 이 '주문 제작' 방법은 더 많은 비용이 들지만, 오프라인 매장을 유지하는 데 드는 비용은 줄어들 것이다.<br>
+      그리고 3D 기술은 사람들이 매장에서 옷을 입어 보지 않고도 옷이 어떻게 맞을지 온라인에서 확인하는 것을 가능하게 해 줄 것이다. 결국에는, 생산과 판매의 혁신은 지속 가능한 패션을 촉진하고 재료 폐기물과 물류 배출을 상당히 줄일 것이다.
+    </div>
+  </div>
+
+  <!-- ===== 단락 5 ===== -->
+  <div class="sec-header">📕 단락 5</div>
+  <div class="para-block">
+    <div class="eng-text">
+      Another key to
+      <!-- 84: making/make -->
+      <span class="q-tag">84)</span><span class="sel-group" data-q="83" data-ans="0"><button class="sel-btn" onclick="pickSel(this,83,0)">making</button><button class="sel-btn" onclick="pickSel(this,83,1)">make</button></span>
+      fashion sustainable is the consumer: us. If we want the fashion industry to
+      <!-- 85: adopt/adapt -->
+      <span class="q-tag">85)</span><span class="sel-group" data-q="84" data-ans="0"><button class="sel-btn" onclick="pickSel(this,84,0)">adopt</button><button class="sel-btn" onclick="pickSel(this,84,1)">adapt</button></span>
+      more sustainable practices,
+      <!-- 86: 순서배열 -->
+      <span class="q-tag">86)</span>
+      <div class="arrange-wrap" id="arr86">
+        <div class="arrange-label">단어를 클릭해 순서대로 배열하세요:</div>
+        <div class="arrange-pool" id="pool86"></div>
+        <div class="arrange-answer" id="ans86"><span style="color:#c0b4a4;font-size:.75rem;font-family:'Gowun Dodum',serif">여기에 단어를 배열하세요...</span></div>
+        <button class="q-check-btn" onclick="checkArrange(85,'pool86','ans86','we must care about how clothes come to us')">채점</button>
+        <div class="q-feedback" id="fb85"></div>
+      </div>
+      We should then demonstrate our concerns through
+      <!-- 87: which/what -->
+      <span class="q-tag">87)</span><span class="sel-group" data-q="86" data-ans="1"><button class="sel-btn" onclick="pickSel(this,86,0)">which</button><button class="sel-btn" onclick="pickSel(this,86,1)">what</button></span>
+      we buy.<br><br>
+      The market, of course, will respond. We can also
+      <!-- 88: reduce/increase -->
+      <span class="q-tag">88)</span><span class="sel-group" data-q="87" data-ans="0"><button class="sel-btn" onclick="pickSel(this,87,0)">reduce</button><button class="sel-btn" onclick="pickSel(this,87,1)">increase</button></span>
+      waste by
+      <!-- 89: discarding/discard -->
+      <span class="q-tag">89)</span><span class="sel-group" data-q="88" data-ans="0"><button class="sel-btn" onclick="pickSel(this,88,0)">discarding</button><button class="sel-btn" onclick="pickSel(this,88,1)">discard</button></span>
+      clothes responsibly.
+      <!-- 90: 빈칸 To be specific -->
+      <span class="q-tag">90)</span><input class="blank-input" id="b90" data-q="89" placeholder="빈칸 (세 단어)" style="min-width:120px" oninput="autoCheck(89)"/>,
+      <!-- 91: 순서배열 -->
+      <span class="q-tag">91)</span>
+      <div class="arrange-wrap" id="arr91">
+        <div class="arrange-label">단어를 클릭해 순서대로 배열하세요:</div>
+        <div class="arrange-pool" id="pool91"></div>
+        <div class="arrange-answer" id="ans91"><span style="color:#c0b4a4;font-size:.75rem;font-family:'Gowun Dodum',serif">여기에 단어를 배열하세요...</span></div>
+        <button class="q-check-btn" onclick="checkArrange(90,'pool91','ans91','we should buy only what we need and pass clothing on to someone who will wear it or to a thrift shop')">채점</button>
+        <div class="q-feedback" id="fb90"></div>
+      </div>
+      when
+      <!-- 92: 빈칸 discarding -->
+      <span class="q-tag">92)</span><input class="blank-input" id="b92" data-q="91" placeholder="빈칸" style="min-width:90px" oninput="autoCheck(91)"/>
+      it. Circular fashion will not
+      <!-- 93: 알맞지않은단어 cause -->
+      <span class="q-tag">93)</span><span class="sel-group exclude-group" data-q="92" data-ans="2"><button class="sel-btn" onclick="pickExclude(this,92,0)">solve</button><button class="sel-btn" onclick="pickExclude(this,92,1)">deal with</button><button class="sel-btn" onclick="pickExclude(this,92,2)">cause</button><button class="sel-btn" onclick="pickExclude(this,92,3)">address</button></span>
+      every problem in the fashion industry overnight.<br><br>
+      <!-- 94: However/Therefore -->
+      <span class="q-tag">94)</span><span class="sel-group" data-q="93" data-ans="0"><button class="sel-btn" onclick="pickSel(this,93,0)">However</button><button class="sel-btn" onclick="pickSel(this,93,1)">Therefore</button></span>,
+      small steps in the
+      <!-- 95: right/wrong -->
+      <span class="q-tag">95)</span><span class="sel-group" data-q="94" data-ans="0"><button class="sel-btn" onclick="pickSel(this,94,0)">right</button><button class="sel-btn" onclick="pickSel(this,94,1)">wrong</button></span>
+      direction are better than
+      <!-- 96: 빈칸 nothing -->
+      <span class="q-tag">96)</span><input class="blank-input" id="b96" data-q="95" placeholder="빈칸" style="min-width:70px" oninput="autoCheck(95)"/>.
+      <!-- 97: 순서배열 -->
+      <span class="q-tag">97)</span>
+      <div class="arrange-wrap" id="arr97">
+        <div class="arrange-label">단어를 클릭해 순서대로 배열하세요:</div>
+        <div class="arrange-pool" id="pool97"></div>
+        <div class="arrange-answer" id="ans97"><span style="color:#c0b4a4;font-size:.75rem;font-family:'Gowun Dodum',serif">여기에 단어를 배열하세요...</span></div>
+        <button class="q-check-btn" onclick="checkArrange(96,'pool97','ans97','keeping things in the supply chain for as many cycles as possible is really important')">채점</button>
+        <div class="q-feedback" id="fb96"></div>
+      </div>
+      <br>
+      By making small changes to our clothing habits today, the fashion industry will
+      <!-- 98: abruptly/gradually -->
+      <span class="q-tag">98)</span><span class="sel-group" data-q="97" data-ans="1"><button class="sel-btn" onclick="pickSel(this,97,0)">abruptly</button><button class="sel-btn" onclick="pickSel(this,97,1)">gradually</button></span>
+      improve. After all,
+      <!-- 99: 영작 -->
+      <span class="q-tag">99)</span>
+      <div class="writing-wrap">
+        <div class="writing-label">🖊 영작: 지구를 구하는 것보다 더 유행에 따르는 것은 없다.<br><small style="color:#9a8a7a">(nothing, fashionable, planet)</small></div>
+        <input class="writing-input" id="w99" placeholder="여기에 영작하세요..." maxlength="150"/>
+        <button class="q-check-btn" onclick="checkWriting(98,'w99','nothing is more fashionable than saving the planet')">채점</button>
+        <div class="q-feedback" id="fb98"></div>
+      </div>
+    </div>
+    <div class="kr-text">
+      패션을 지속 가능하게 만드는 또 다른 핵심 요소는 소비자, 즉 우리이다. 패션 산업이 더 지속 가능한 관행을 택하길 원한다면, 우리는 어떻게 옷이 우리에게 오는지에 대해 관심을 가져야 한다. 우리는 그다음에 우리가 구매하는 것을 통해 우리의 관심을 보여 주어야 한다.<br>
+      물론, 시장은 반응할 것이다. 우리는 또한 옷을 책임감 있게 버림으로써 폐기물을 줄일 수 있다. 구체적으로, 우리는 필요한 것만 사고, 옷을 버릴 때는 그 옷을 입을 사람이나 중고품 가게에 전달해야 한다. 순환 패션이 패션 산업의 모든 문제를 하루아침에 해결하지는 못할 것이다.<br>
+      그러나 올바른 방향으로 나아가는 작은 단계가 아무것도 하지 않는 것보다 낫다. 공급망 내에서 물건을 가능한 한 많은 순환 주기 동안 유지하는 것이 매우 중요하다.<br>
+      오늘날 우리의 옷 습관에 작은 변화를 줌으로써 패션 산업은 점진적으로 개선될 것이다. 결국, 지구를 구하는 것보다 더 유행에 따르는 것은 없다.
+    </div>
+  </div>
+
+  <!-- RESULT -->
+  <div class="result-card" id="result">
+    <div style="font-family:'Black Han Sans',sans-serif;font-size:1.1rem;color:var(--accent)">🎉 워크북 10 Check 완료!</div>
+    <div class="result-score" id="r-score"></div>
+    <div class="result-msg" id="r-msg"></div>
+    <div class="result-btns">
+      <button class="btn-retry" onclick="retryAll()">🔄 다시 풀기</button>
+      <button class="btn-back" onclick="location.href='https://bomnalenglish.github.io/bomnalquizz/'">← 허브로</button>
+    </div>
+  </div>
+</main>
+
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getFirestore,collection,addDoc,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+const cfg={apiKey:"AIzaSyCxS524S8KAaF87DomPtl9sJdF-eqes404",authDomain:"bomnalvaca.firebaseapp.com",projectId:"bomnalvaca",storageBucket:"bomnalvaca.firebasestorage.app",messagingSenderId:"115868052300",appId:"1:115868052300:web:765c08867b6f1ce0987de9"};
+const app=initializeApp(cfg);const db=getFirestore(app);
+window._log=async(d)=>{try{await addDoc(collection(db,"quiz_results"),{...d,timestamp:serverTimestamp(),file:"jongchonko_1grade_lesson3_workbook"});}catch(e){}};
+</script>
+<script>
+const NAME=sessionStorage.getItem("bn_name")||localStorage.getItem("bn_name")||"학생";
+const SCHOOL=sessionStorage.getItem("bn_school")||localStorage.getItem("bn_school")||"종촌고등학교";
+
+// 정답 맵: q인덱스 → 정답
+// 선택형: 버튼인덱스(0,1,...)
+// 빈칸: 문자열
+const BLANK_ANSWERS={
+  3:'guess what', 4:'secondhand', 7:'attached',
+  13:'worth', 15:'linear approach', 19:'supply chain',
+  27:'end up in', 28:'equal to',
+  37:'sustainable', 43:'minimize', 49:'benefiting',
+  59:'break down', 61:'alternatives', 67:'another',
+  69:'without', 71:'break down', 72:'in addition to',
+  79:'in the long run', 82:'logistics emissions',
+  89:'to be specific', 91:'discarding', 95:'nothing'
+};
+
+function nm(s){return s.trim().toLowerCase().replace(/[?.!,]/g,'').replace(/\s+/g,' ');}
+
+// 선택 문제 상태
+let selDone={};
+let blankDone={};
+let arrangeDone={};
+let writingDone={};
+let totalQ=0; let doneQ=0; let totalPt=0; let earnedPt=0;
+
+// 선택형 클릭
+function pickSel(btn, qIdx, btnIdx){
+  const grp=btn.closest('.sel-group');
+  if(grp.dataset.checked) return;
+  grp.dataset.checked='1';
+  const ans=parseInt(grp.dataset.ans);
+  const btns=grp.querySelectorAll('.sel-btn');
+  btns.forEach(b=>b.disabled=true);
+  if(btnIdx===ans){
+    btn.classList.add('correct');
+    earnedPt++;
+  } else {
+    btn.classList.add('wrong');
+    btns[ans].classList.add('correct');
+  }
+  if(!selDone[qIdx]){selDone[qIdx]=true;doneQ++;updateUI();}
+  if(window._log)window._log({name:NAME,school:SCHOOL,q:'sel-'+qIdx,result:btnIdx===ans?'ok':'fail',earned:btnIdx===ans?1:0,total:1});
+}
+
+// 알맞지않은 단어 (exclude): 맞는게 틀린거, 나머지는 맞는거
+function pickExclude(btn, qIdx, btnIdx){
+  const grp=btn.closest('.sel-group');
+  if(grp.dataset.checked) return;
+  grp.dataset.checked='1';
+  const ans=parseInt(grp.dataset.ans); // ans=정답(알맞지않은것)인덱스
+  const btns=grp.querySelectorAll('.sel-btn');
+  btns.forEach(b=>b.disabled=true);
+  if(btnIdx===ans){
+    btn.classList.add('correct'); // 맞게 고름
+    earnedPt++;
+  } else {
+    btn.classList.add('wrong');
+    btns[ans].classList.add('correct');
+  }
+  if(!selDone[qIdx]){selDone[qIdx]=true;doneQ++;updateUI();}
+  if(window._log)window._log({name:NAME,school:SCHOOL,q:'exc-'+qIdx,result:btnIdx===ans?'ok':'fail',earned:btnIdx===ans?1:0,total:1});
+}
+
+// 빈칸 자동채점
+function autoCheck(qIdx){
+  if(blankDone[qIdx]) return;
+  const inp=document.querySelector('[data-q="'+qIdx+'"]');
+  if(!inp) return;
+  const ans=BLANK_ANSWERS[qIdx];
+  const val=nm(inp.value);
+  if(!ans) return;
+  const correct=nm(ans);
+  if(val===correct){
+    inp.classList.add('correct-inp');
+    inp.disabled=true;
+    blankDone[qIdx]=true;
+    earnedPt++;
+    doneQ++;
+    updateUI();
+    if(window._log)window._log({name:NAME,school:SCHOOL,q:'blank-'+qIdx,result:'ok',earned:1,total:1,ans:inp.value});
+  } else if(val.length>2 && correct.startsWith(val)){
+    inp.style.borderBottomColor='#f0a000'; // 입력중
+  }
+}
+
+// 순서배열
+const ARRANGE_WORDS={
+  8:['be','waiting','discovered','another','always','exciting','is','outfit','to','there'],
+  50:['the environment','utilize','chemicals','and','circular processes','for','human health','safe','and','materials'],
+  73:['technology','become','will','to produce','it','clothes','normal','may','that','improve','in such a way'],
+  85:['come','clothes','we','must','to us','how','care about'],
+  90:['on','to a thrift shop','should','who','we','clothing','what','need','we','will','wear','it','only','or','and','pass','buy','to someone'],
+  96:['important','keeping','as','possible','for','in the supply chain','really','as','many cycles','things','is']
+};
+
+function initArranges(){
+  Object.keys(ARRANGE_WORDS).forEach(qIdx=>{
+    const poolId='pool'+getPoolId(qIdx);
+    const pool=document.getElementById(poolId);
+    if(!pool)return;
+    const words=[...ARRANGE_WORDS[qIdx]].sort(()=>Math.random()-.5);
+    pool.innerHTML='';
+    words.forEach(w=>{
+      const chip=document.createElement('span');
+      chip.className='word-chip';
+      chip.textContent=w;
+      chip.onclick=()=>moveToAnswer(chip,poolId,getAnsId(qIdx));
+      pool.appendChild(chip);
+    });
+  });
+}
+
+function getPoolId(qIdx){
+  const m={8:9,50:51,73:74,85:86,90:91,96:97};return m[qIdx];
+}
+function getAnsId(qIdx){
+  const m={8:9,50:51,73:74,85:86,90:91,96:97};return m[qIdx];
+}
+
+function moveToAnswer(chip,poolId,ansId){
+  if(chip.classList.contains('disabled'))return;
+  const ans=document.getElementById('ans'+ansId);
+  const placeholder=ans.querySelector('span');
+  if(placeholder)placeholder.remove();
+  chip.classList.remove('word-chip');
+  chip.classList.add('word-chip');
+  chip.onclick=()=>moveToPool(chip,poolId,ansId);
+  ans.appendChild(chip);
+}
+function moveToPool(chip,poolId,ansId){
+  if(chip.classList.contains('disabled'))return;
+  const pool=document.getElementById(poolId);
+  chip.onclick=()=>moveToAnswer(chip,poolId,ansId);
+  pool.appendChild(chip);
+  const ans=document.getElementById('ans'+ansId);
+  if(ans.children.length===0){
+    ans.innerHTML='<span style="color:#c0b4a4;font-size:.75rem;font-family:\'Gowun Dodum\',serif">여기에 단어를 배열하세요...</span>';
+  }
+}
+
+function checkArrange(qIdx,poolId,ansId,correctStr){
+  if(arrangeDone[qIdx])return;
+  const ans=document.getElementById('ans'+ansId);
+  const chips=ans.querySelectorAll('.word-chip');
+  const userStr=Array.from(chips).map(c=>c.textContent.trim()).join(' ');
+  const correct=nm(correctStr);
+  const user=nm(userStr);
+  const ok=user===correct;
+  chips.forEach(c=>{c.classList.add(ok?'correct-chip':'wrong-chip');c.classList.add('disabled');c.onclick=null;});
+  document.getElementById('pool'+getPoolId(qIdx)).querySelectorAll('.word-chip').forEach(c=>{c.classList.add('disabled');c.onclick=null;});
+  const fb=document.getElementById('fb'+qIdx);
+  fb.className='q-feedback '+(ok?'ok':'fail')+' show';
+  fb.innerHTML=ok?'✅ 정답! <span class="pt-tag">+1점</span>':'❌ 오답<br><span style="font-weight:700">정답: '+correctStr+'</span>';
+  const btn=ans.closest('.arrange-wrap')?.querySelector('.q-check-btn');
+  if(btn)btn.disabled=true;
+  arrangeDone[qIdx]=true;
+  if(ok)earnedPt++;
+  doneQ++;
+  updateUI();
+  if(window._log)window._log({name:NAME,school:SCHOOL,q:'arr-'+qIdx,result:ok?'ok':'fail',earned:ok?1:0,total:1,ans:userStr});
+}
+
+function checkWriting(qIdx,inputId,correctStr){
+  if(writingDone[qIdx])return;
+  const inp=document.getElementById(inputId);
+  const user=nm(inp.value);
+  const correct=nm(correctStr);
+  // 핵심 키워드 체크
+  const keyChecks={
+    31:['alarming numbers','keep increasing','maintain'],
+    41:['make','use','reuse','materials','as long as possible','extract','maximum value'],
+    78:['enable','people','see','fit','online','without','store'],
+    98:['nothing','more fashionable','saving the planet']
+  };
+  const keys=keyChecks[qIdx]||[];
+  const hitCount=keys.filter(k=>user.includes(nm(k))).length;
+  const ok=user===correct||(keys.length>0&&hitCount>=keys.length);
+  const partial=!ok&&hitCount>=Math.ceil(keys.length/2);
+  inp.disabled=true;
+  const fb=document.getElementById('fb'+qIdx);
+  let earned=ok?1:partial?0:0; // 영작은 정답만 1점
+  if(ok) earned=1;
+  fb.className='q-feedback '+(ok?'ok':partial?'ok':'fail')+' show';
+  fb.innerHTML=(ok?'✅ 정답! <span class="pt-tag">+1점</span>':partial?'🟡 거의 정답! 모범답안 확인: <br><strong>'+correctStr+'</strong>':'❌ 오답<br><strong>모범답안: '+correctStr+'</strong>');
+  inp.closest('.writing-wrap')?.querySelector('.q-check-btn')?.setAttribute('disabled','');
+  writingDone[qIdx]=true;
+  if(ok)earnedPt++;
+  doneQ++;
+  updateUI();
+  if(window._log)window._log({name:NAME,school:SCHOOL,q:'writ-'+qIdx,result:ok?'ok':partial?'partial':'fail',earned,total:1,ans:inp.value.substring(0,200)});
+}
+
+function countTotalQ(){
+  const sels=document.querySelectorAll('.sel-group').length;
+  const blanks=document.querySelectorAll('.blank-input').length;
+  const arranges=document.querySelectorAll('.arrange-wrap').length;
+  const writings=document.querySelectorAll('.writing-wrap').length;
+  return sels+blanks+arranges+writings;
+}
+
+function updateUI(){
+  totalQ=countTotalQ();
+  totalPt=totalQ;
+  document.getElementById('score-val').textContent=earnedPt;
+  document.getElementById('score-max').textContent=totalPt;
+  document.getElementById('prog').style.width=(doneQ/totalQ*100)+'%';
+  document.getElementById('prog-txt').textContent=doneQ+' / '+totalQ+' 문제 완료';
+  if(doneQ>=totalQ) showResult();
+}
+
+function showResult(){
+  const pct=Math.round(earnedPt/totalPt*100);
+  document.getElementById('r-score').textContent=earnedPt+' / '+totalPt+'점 ('+pct+'%)';
+  document.getElementById('r-msg').textContent=
+    pct>=90?'완벽합니다! 워크북 마스터! 🌟':
+    pct>=70?'훌륭해요! 틀린 문제 다시 확인해봐요. 💪':
+    pct>=50?'절반 이상! 꾸준히 복습하면 금방 올라갈 거예요. 📖':
+    '기초부터 차근차근! 해석 보면서 다시 도전해봐요. 🔄';
+  document.getElementById('result').classList.add('show');
+  setTimeout(()=>window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'}),200);
+}
+
+function retryAll(){
+  location.reload();
+}
+
+// 초기화
+window.addEventListener('load',()=>{
+  initArranges();
+  updateUI();
+});
+</script>
+</body>
+</html>
