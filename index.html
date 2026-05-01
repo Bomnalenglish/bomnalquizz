@@ -301,16 +301,23 @@ const SCHOOLS = [
     id:"jongchon-ko", name:"종촌고등학교", emoji:"🧸", color:"sc-purple",
     sub:"1·2·3학년", count:"YBM 김은형 · 어법·어휘·모의고사·수능",
     sections:[
-      {title:"🔵 1학년", items:[
-        {file:"jongchonko_1grade_lesson1",           title:"교과서 1과",       sub:"YBM 김은형 · 어법선택형",  emoji:"📘"},
-        {file:"jongchonko_1grade_lesson1_autograde", title:"1과 어법 자동채점", sub:"YBM 김은형 · 기출 25문제", emoji:"✅", badge:"NEW"},
-        {file:"jongchonko_1grade_lesson2",           title:"교과서 2과",       sub:"YBM 김은형 · 어법선택형",  emoji:"📗"},
-
-        {file:"jongchonko_1grade_lesson3",           title:"교과서 3과",       sub:"YBM 김은형 · 어법선택형",  emoji:"📕"},
-        {file:"jongchonko_1grade_lesson3_vocab",     title:"3과 어휘 퀴즈",    sub:"뜻·유의어·영영풀이",        emoji:"🔊", badge:"NEW"},
-        {file:"jongchonko_1grade_lesson4",           title:"교과서 4과",       sub:"YBM 김은형 · 어법선택형",  emoji:"📒"},
-        {file:"jongchonko_1grade_lesson4_vocab",     title:"4과 어휘 퀴즈",    sub:"뜻·유의어·영영풀이",        emoji:"🔊", badge:"NEW"},
-        {file:"bomnalquizz_jongchon1_mc",            title:"어휘 퀴즈",        sub:"교과서1·2과+수능기출 318개",emoji:"🔊", badge:"⏱10초"}
+      {title:"🔵 1학년", groups:[
+        {label:"1과", emoji:"📘", items:[
+          {file:"jongchonko_1grade_lesson1",           title:"교과서 1과",       sub:"YBM 김은형 · 어법선택형",  emoji:"📘"},
+          {file:"jongchonko_1grade_lesson1_autograde", title:"1과 어법 자동채점", sub:"YBM 김은형 · 기출 25문제", emoji:"✅", badge:"NEW"},
+          {file:"bomnalquizz_jongchon1_mc",            title:"어휘 퀴즈",        sub:"교과서1·2과+수능기출 318개",emoji:"🔊", badge:"⏱10초"}
+        ]},
+        {label:"2과", emoji:"📗", items:[
+          {file:"jongchonko_1grade_lesson2",           title:"교과서 2과",       sub:"YBM 김은형 · 어법선택형",  emoji:"📗"}
+        ]},
+        {label:"3과", emoji:"📕", items:[
+          {file:"jongchonko_1grade_lesson3",           title:"교과서 3과",       sub:"YBM 김은형 · 어법선택형",  emoji:"📕"},
+          {file:"jongchonko_1grade_lesson3_vocab",     title:"3과 어휘 퀴즈",    sub:"뜻·유의어·영영풀이",        emoji:"🔊", badge:"NEW"}
+        ]},
+        {label:"4과", emoji:"📒", items:[
+          {file:"jongchonko_1grade_lesson4",           title:"교과서 4과",       sub:"YBM 김은형 · 어법선택형",  emoji:"📒"},
+          {file:"jongchonko_1grade_lesson4_vocab",     title:"4과 어휘 퀴즈",    sub:"뜻·유의어·영영풀이",        emoji:"🔊", badge:"NEW"}
+        ]}
       ]},
       {title:"🟢 2학년", items:[
       ]},
@@ -504,8 +511,52 @@ function renderSchoolGrid() {
   });
 }
 
+
+function openGroup(group, sectionTitle) {
+  const container = document.getElementById("quiz-sections");
+  container.innerHTML = "";
+  // 뒤로가기 버튼
+  const back = document.createElement("button");
+  back.style.cssText = "margin-bottom:16px;background:none;border:none;font-size:.85rem;color:var(--soft);cursor:pointer;display:flex;align-items:center;gap:6px;padding:0;font-family:inherit;";
+  back.innerHTML = "← " + sectionTitle + " 목록으로";
+  back.onclick = () => { openSchool(currentSchool); };
+  container.appendChild(back);
+
+  const title = document.createElement("div");
+  title.className = "section-title";
+  title.style.marginBottom = "16px";
+  title.textContent = sectionTitle + " · " + group.label;
+  container.appendChild(title);
+
+  const grid = document.createElement("div");
+  grid.className = "cards";
+  group.items.forEach(item => {
+    const isComingItem = item.file === "__coming__";
+    const a = document.createElement("a");
+    a.className = "card " + nc() + (isComingItem ? " coming" : "");
+    if (!isComingItem) {
+      a.href = BASE + item.file + ".html";
+      a.target = "_blank";
+      a.rel = "noopener";
+    }
+    a.innerHTML =
+      `<span class="card-emoji">${item.emoji}</span>` +
+      `<div class="card-title">${item.title}</div>` +
+      (item.sub ? `<div class="card-sub">${item.sub}</div>` : "") +
+      (item.badge ? `<span class="badge${item.badge==='coming'?' coming-badge':item.badge==='skip'?' skip-badge':''}">${item.badge==='coming'?'준비중':item.badge==='skip'?'제외':item.badge}</span>` : "");
+    if (!isComingItem) {
+      a.addEventListener("click", () => {
+        if (window._logAccess) window._logAccess({type:"quiz_click",name:studentName,school:studentSchool,quiz:item.title,file:item.file});
+      });
+    }
+    grid.appendChild(a);
+  });
+  container.appendChild(grid);
+}
+
 function openSchool(s) {
   ci = 0;
+  currentSchool = s;
   document.getElementById("banner-emoji").textContent = s.emoji;
   document.getElementById("banner-name").textContent  = s.name;
   document.getElementById("banner-sub").textContent   = s.count;
@@ -521,6 +572,20 @@ function openSchool(s) {
     div.innerHTML = `<div class="section-title">${sec.title}</div>`;
     const grid = document.createElement("div");
     grid.className = "cards";
+    // groups 구조 (과 단위 묶음)
+    if (sec.groups) {
+      sec.groups.forEach(group => {
+        const btn = document.createElement("button");
+        btn.className = "card " + nc();
+        btn.style.cssText = "cursor:pointer;border:none;text-align:left;";
+        btn.innerHTML =
+          `<span class="card-emoji">${group.emoji}</span>` +
+          `<div class="card-title">${group.label}</div>` +
+          `<div class="card-sub">${group.items.length}개 파일</div>`;
+        btn.onclick = () => openGroup(group, sec.title);
+        grid.appendChild(btn);
+      });
+    } else {
     sec.items.forEach(item => {
       const isComingItem = item.file === "__coming__";
       const a = document.createElement("a");
@@ -542,6 +607,7 @@ function openSchool(s) {
       }
       grid.appendChild(a);
     });
+    }
     div.appendChild(grid);
     container.appendChild(div);
   });
@@ -556,6 +622,7 @@ const MOCK_DATA = {
 const MOCK_GRADE_MAP = {'고1':'go1','고2':'go2','고3':'go3'};
 const MOCK_MONTH_MAP = {'3월':'03','6월':'06','9월':'09','11월':'11','12월':'12','수능':'suneung'};
 let mockGrade='', mockYear='', mockMonth='';
+let currentSchool = null;
 
 function openMock(){ goStep('screen-mock-grade'); }
 function selectMockGrade(grade){
