@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>종촌고 2학년 4과 어휘 퀴즈</title>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#f4f1ec;--card:#fff;--ink:#1c1a16;--soft:#6b6456;
+  --border:#e0d8cc;--correct:#2e7d52;--wrong:#c0392b;
+  --s1:#2a7ab8;--s2:#b85c2a;--s3:#2e7d52;--s4:#7b3fa0;--s5:#c0680a;
+}
+body{font-family:"Noto Sans KR",sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;}
+header{background:var(--ink);color:#fff;padding:32px 24px 24px;text-align:center;}
+.header-tag{display:inline-block;font-size:.72rem;font-weight:500;letter-spacing:3px;color:#7ab8e8;border:1px solid #7ab8e8;border-radius:2px;padding:4px 12px;margin-bottom:10px;}
+header h1{font-family:"Black Han Sans",sans-serif;font-size:clamp(1.4rem,5vw,2.2rem);color:#fff;}
+header h1 span{color:#e8a07a;}
+.header-sub{font-size:.82rem;color:rgba(255,255,255,.5);margin-top:6px;}
+
+.tab-wrap{background:#fff;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;}
+.tabs{display:flex;overflow-x:auto;scrollbar-width:none;}
+.tabs::-webkit-scrollbar{display:none;}
+.tab-btn{flex-shrink:0;padding:11px 16px;font-family:"Black Han Sans",sans-serif;font-size:.8rem;color:var(--soft);background:none;border:none;border-bottom:3px solid transparent;cursor:pointer;transition:all .2s;white-space:nowrap;}
+.tab-btn.s1.active{color:var(--s1);border-bottom-color:var(--s1);}
+.tab-btn.s2.active{color:var(--s2);border-bottom-color:var(--s2);}
+.tab-btn.s3.active{color:var(--s3);border-bottom-color:var(--s3);}
+.tab-btn.s4.active{color:var(--s4);border-bottom-color:var(--s4);}
+.tab-btn.s5.active{color:var(--s5);border-bottom-color:var(--s5);}
+.tab-info{display:flex;justify-content:space-between;padding:6px 20px;font-size:.75rem;color:var(--soft);border-top:1px solid var(--border);background:#faf8f5;}
+
+.panel{display:none;padding:18px 16px 80px;max-width:700px;margin:0 auto;}
+.panel.active{display:block;}
+
+.step-header{display:flex;align-items:center;gap:10px;margin-bottom:18px;padding:12px 16px;border-radius:10px;}
+.step-header.s1{background:#dbeeff;} .step-header.s2{background:#fde8d8;}
+.step-header.s3{background:#d8f0e0;} .step-header.s4{background:#ede0f5;}
+.step-header.s5{background:#fdecd8;}
+.step-badge{font-family:"Black Han Sans",sans-serif;font-size:.8rem;padding:4px 12px;border-radius:20px;}
+.step-badge.s1{background:var(--s1);color:#fff;} .step-badge.s2{background:var(--s2);color:#fff;}
+.step-badge.s3{background:var(--s3);color:#fff;} .step-badge.s4{background:var(--s4);color:#fff;}
+.step-badge.s5{background:var(--s5);color:#fff;}
+.step-desc{font-size:.8rem;color:var(--soft);}
+
+/* STEP1: 뜻 맞추기 */
+.q-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px 18px;margin-bottom:13px;box-shadow:0 2px 8px rgba(0,0,0,.04);}
+.word-display{text-align:center;margin:8px 0 6px;}
+.word-en{font-family:"Black Han Sans",sans-serif;font-size:1.8rem;color:var(--ink);cursor:pointer;display:inline-flex;align-items:center;gap:8px;}
+.speaker{font-size:.95rem;opacity:.45;transition:opacity .2s;}
+.word-en:hover .speaker{opacity:1;}
+.q-prompt{font-size:.85rem;color:var(--soft);margin-bottom:12px;text-align:center;}
+
+/* STEP2: 빈칸 */
+.sent-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:13px;box-shadow:0 2px 8px rgba(0,0,0,.04);}
+.sent-text{font-size:.92rem;line-height:1.9;margin-bottom:12px;color:var(--ink);}
+.sent-blank{display:inline-block;border-bottom:2.5px solid var(--s2);min-width:80px;padding:0 4px;color:var(--ink);font-weight:700;vertical-align:middle;}
+
+/* STEP3: 영영풀이 */
+.def-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:13px;box-shadow:0 2px 8px rgba(0,0,0,.04);}
+.def-text{font-size:.85rem;color:#444;background:#f8f6f2;border-radius:8px;padding:11px 14px;margin-bottom:14px;line-height:1.7;font-style:italic;text-align:center;}
+
+/* STEP4: 다의어 */
+.poly-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:13px;box-shadow:0 2px 8px rgba(0,0,0,.04);}
+.poly-word{font-family:"Black Han Sans",sans-serif;font-size:1.5rem;color:var(--s4);margin-bottom:12px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;}
+.poly-prompt{font-size:.85rem;color:var(--soft);margin-bottom:10px;}
+.poly-sentence{font-size:.88rem;color:#333;background:#f8f6f2;border-radius:8px;padding:10px 12px;margin-bottom:12px;line-height:1.7;}
+.poly-sentence .blank{border-bottom:2px solid var(--s4);padding:0 3px;min-width:60px;display:inline-block;font-weight:700;}
+
+/* STEP5: 유의어/반의어 */
+.syn-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:13px;box-shadow:0 2px 8px rgba(0,0,0,.04);}
+.syn-word{font-family:"Black Han Sans",sans-serif;font-size:1.6rem;color:var(--ink);cursor:pointer;display:inline-flex;align-items:center;gap:8px;margin-bottom:4px;}
+.syn-kor{font-size:.8rem;color:var(--soft);margin-bottom:10px;}
+.syn-type{display:inline-block;font-size:.7rem;font-weight:700;padding:3px 10px;border-radius:20px;margin-bottom:10px;}
+.syn-type.syn{background:#dbeeff;color:var(--s1);}
+.syn-type.ant{background:#fde8d8;color:var(--s2);}
+
+/* 공통 options */
+.options{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+.opt-btn{background:#f8f6f2;border:2px solid var(--border);border-radius:10px;padding:11px 12px;font-family:"Noto Sans KR",sans-serif;font-size:.88rem;color:var(--ink);cursor:pointer;text-align:center;transition:all .15s;width:100%;}
+.opt-btn:hover:not(:disabled){background:#eee8df;border-color:#c0b8aa;}
+.opt-btn.selected{background:#eee8df;border-color:#8a7a65;font-weight:700;}
+.opt-btn.correct{background:#e8f5ee;border-color:var(--correct);color:var(--correct);font-weight:700;}
+.opt-btn.wrong{background:#fdecea;border-color:var(--wrong);color:var(--wrong);opacity:.7;}
+.opt-btn:disabled{cursor:default;}
+
+.check-btn{margin-top:10px;width:100%;color:#fff;border:none;border-radius:9px;padding:11px;font-family:"Black Han Sans",sans-serif;font-size:.9rem;cursor:pointer;letter-spacing:.5px;transition:opacity .2s;}
+.check-btn.s1{background:var(--s1);} .check-btn.s2{background:var(--s2);}
+.check-btn.s3{background:var(--s3);} .check-btn.s4{background:var(--s4);}
+.check-btn.s5{background:var(--s5);}
+.check-btn:disabled{opacity:.35;cursor:default;}
+.check-btn:not(:disabled):hover{opacity:.85;}
+
+.feedback{margin-top:9px;font-size:.82rem;padding:8px 12px;border-radius:7px;display:none;}
+.feedback.show{display:block;}
+.feedback.ok{background:#e8f5ee;color:var(--correct);}
+.feedback.bad{background:#fdecea;color:var(--wrong);}
+
+.step-done{text-align:center;padding:18px;font-family:"Black Han Sans",sans-serif;font-size:1rem;border-radius:12px;display:none;margin-top:8px;}
+.step-done.show{display:block;}
+.step-done.s1{background:#dbeeff;color:var(--s1);}
+.step-done.s2{background:#fde8d8;color:var(--s2);}
+.step-done.s3{background:#d8f0e0;color:var(--s3);}
+.step-done.s4{background:#ede0f5;color:var(--s4);}
+.step-done.s5{background:#fdecd8;color:var(--s5);}
+
+.summary{background:var(--ink);color:#fff;border-radius:14px;padding:32px 24px;text-align:center;display:none;margin-top:16px;}
+.summary.show{display:block;}
+.summary-title{font-family:"Black Han Sans",sans-serif;font-size:1.4rem;margin-bottom:10px;}
+.summary-title span{color:#e8a07a;}
+.step-scores{display:flex;justify-content:center;gap:16px;margin:12px 0 6px;flex-wrap:wrap;}
+.ss-item .label{font-size:.68rem;color:rgba(255,255,255,.5);margin-bottom:3px;}
+.ss-item .val{font-family:"Black Han Sans",sans-serif;font-size:1.5rem;}
+.total-score{font-size:2.2rem;font-weight:700;color:#e8a07a;font-family:"Black Han Sans",sans-serif;margin:8px 0 4px;}
+.summary-sub{font-size:.8rem;color:rgba(255,255,255,.5);margin-bottom:12px;}
+.summary-msg{font-size:.9rem;color:rgba(255,255,255,.8);margin-bottom:20px;}
+.btn-retry{background:var(--s2);color:#fff;border:none;border-radius:8px;padding:10px 28px;font-family:"Black Han Sans",sans-serif;font-size:.95rem;cursor:pointer;letter-spacing:.5px;}
+</style>
+</head>
+<body>
+<header>
+  <div class="header-tag">종촌고 2학년 · YBM 박준언</div>
+  <h1>Lesson <span>4</span> 어휘 퀴즈</h1>
+  <p class="header-sub">뜻 · 빈칸 · 영영풀이 · 다의어 · 유의어/반의어 5단계</p>
+</header>
+<div class="tab-wrap">
+  <div class="tabs">
+    <button class="tab-btn s1 active" onclick="switchTab(0)">① 뜻 맞추기</button>
+    <button class="tab-btn s2" onclick="switchTab(1)">② 빈칸 채우기</button>
+    <button class="tab-btn s3" onclick="switchTab(2)">③ 영영풀이</button>
+    <button class="tab-btn s4" onclick="switchTab(3)">④ 다의어</button>
+    <button class="tab-btn s5" onclick="switchTab(4)">⑤ 유의어/반의어</button>
+  </div>
+  <div class="tab-info">
+    <span id="tabInfo">0 / 0 완료</span>
+    <span id="tabScore">점수: 0</span>
+  </div>
+</div>
+
+<div class="panel active" id="panel0">
+  <div class="step-header s1"><span class="step-badge s1">STEP 1</span><span class="step-desc">단어를 보고 알맞은 뜻을 고르세요.</span></div>
+  <div id="s1cards"></div>
+  <div class="step-done s1" id="done0">🎉 STEP 1 완료!</div>
+</div>
+<div class="panel" id="panel1">
+  <div class="step-header s2"><span class="step-badge s2">STEP 2</span><span class="step-desc">문장의 빈칸에 알맞은 단어를 고르세요.</span></div>
+  <div id="s2cards"></div>
+  <div class="step-done s2" id="done1">🎉 STEP 2 완료!</div>
+</div>
+<div class="panel" id="panel2">
+  <div class="step-header s3"><span class="step-badge s3">STEP 3</span><span class="step-desc">영영풀이를 읽고 알맞은 단어를 고르세요.</span></div>
+  <div id="s3cards"></div>
+  <div class="step-done s3" id="done2">🎉 STEP 3 완료!</div>
+</div>
+<div class="panel" id="panel3">
+  <div class="step-header s4"><span class="step-badge s4">STEP 4</span><span class="step-desc">문장의 빈칸에 알맞은 단어를 고르세요. (다의어)</span></div>
+  <div id="s4cards"></div>
+  <div class="step-done s4" id="done3">🎉 STEP 4 완료!</div>
+</div>
+<div class="panel" id="panel4">
+  <div class="step-header s5"><span class="step-badge s5">STEP 5</span><span class="step-desc">단어의 유의어 또는 반의어를 고르세요.</span></div>
+  <div id="s5cards"></div>
+  <div class="step-done s5" id="done4">🎉 STEP 5 완료!</div>
+</div>
+
+<script>
+const FIREBASE_SCHOOL = "\uc885\ucd0c\uace0";
+const LESSON_LABEL = "\uc885\ucd0c\uace02_4\uacfc";
+var studentName = sessionStorage.getItem('bn_name') || localStorage.getItem('bn_name') || '';
+function saveFirebase(stepLabel, correct, total) {
+  var qType = FIREBASE_SCHOOL + '_' + LESSON_LABEL + '_어휘퀴즈_' + stepLabel;
+  try {
+    var s1 = document.createElement('script');
+    s1.src = 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js';
+    s1.onload = function() {
+      var s2 = document.createElement('script');
+      s2.src = 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js';
+      s2.onload = function() {
+        try {
+          if (!firebase.apps.length) {
+            firebase.initializeApp({
+              apiKey:"AIzaSyCxS524S8KAaF87DomPtl9sJdF-eqes404",
+              authDomain:"bomnalvaca.firebaseapp.com",
+              projectId:"bomnalvaca",
+              storageBucket:"bomnalvaca.firebasestorage.app",
+              messagingSenderId:"115868052300",
+              appId:"1:115868052300:web:765c08867b6f1ce0987de9"
+            });
+          }
+          firebase.firestore().collection('quiz_results').add({
+            submittedAt: new Date().toISOString(),
+            studentName: studentName || '미입력',
+            school: FIREBASE_SCHOOL,
+            score: Math.round(correct/total*100),
+            correct: correct, wrong: total-correct, total: total,
+            quizType: qType
+          });
+        } catch(e) { console.warn('FB 오류:', e); }
+      };
+      document.head.appendChild(s2);
+    };
+    document.head.appendChild(s1);
+  } catch(e) {}
+}
+
+function shuffle(arr){const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function speak(t){if(!window.speechSynthesis)return;window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='en-US';u.rate=0.9;window.speechSynthesis.speak(u);}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+// ── DATA ──
+const S1 = [["grand", "(행사 등이) 성대한"], ["procession", "(의식 등의) 행렬, 행진"], ["introduce A to B", "A를 B에게 소개하다"], ["fascinating", "마음을 사로잡는, 흥미진진한, 매혹적인"], ["piece", "~의 하나"], ["remarkable", "놀랄 만한, 주목할 만한"], ["in front of", "~의 앞에"], ["palace", "성(城), 궁전"], ["crowd", "군중, 인파"], ["gather", "~을 모으다"], ["witness", "~을 목격하다"], ["imagine", "~을 상상하다, 마음속에 그리다"], ["soldier", "군인, 병사"], ["rider", "(말 등을) 타는 사람"], ["official", "관리, 간부 (직원)"], ["march", "행진하다, 행군하다"], ["alongside", "~ 옆에, ~와 나란히"], ["traditional", "전통의"], ["instrument", "악기"], ["cross", "(~을) 건너다, 횡단하다"], ["turn people's heads", "(사람들에게) 신선한 충격을 주다, 감명을 주다"], ["ordinary", "보통의, 통상의"], ["rarely", "거의[좀처럼] ~하지 않는"], ["put on", "(능력·솜씨·공연 등)을 선보이다"], ["show", "(뮤지컬·연극 등의) 쇼; ~을 보여주다"], ["serious", "진지한, 진심인; 중요한, 중대한"], ["business", "일, 사건, 사정"], ["last", "(시간·기간 동안) 계속되다, 지속되다"], ["cover", "(일정 거리)를 가다, 이동하다"], ["round trip", "왕복 (여행)"], ["have in mind", "~을 생각하고 있다, ~을 마음에 두고 있다"], ["respect", "존경, 경의"], ["around", "~쯤에, 무렵에"], ["turn", "(~한 상태로) 변하다[되다]"], ["meaning", "(삶·직업 등에서의) 의미, 의의"], ["tomb", "무덤, 묘"], ["hold", "(회의·회담 등)을 열다, 개최하다"], ["memorial service", "제사, 추도식"], ["honor", "~을 공경하다, ~에게 경의를 표하다"], ["late", "고인이 된, 작고한"], ["combine", "~을 결합하다, 조합하다"], ["mean", "(~에게) 의미[가치]가 있다"], ["make a statement", "표현하다, 나타내다"], ["strength", "(국가·조직 등의) 힘, 위력, 세력; 장점, 강점"], ["dress up", "분장하다, 가장하다"], ["military", "군의, 군사의, 군용의; 군, 군대"], ["leader", "지도자, 리더"], ["armor", "갑옷(투구), 갑주"], ["order", "정돈된[정리된] 상태"], ["protect", "~을 보호하다, 지키다"], ["powerful", "(국가·조직·사람 등이) 강력한, 영향력이 강한"], ["successful", "성공한, 출세한"], ["kingdom", "왕국"], ["twist", "반전"], ["have something to do with", "~와 관련이 있다"], ["fortress", "(대규모) 요새, 요새 도시"], ["self-sufficient", "자급자족할 수 있는"], ["farming", "영농, 농업, 농사"], ["trade", "무역, 교역, 거래"], ["capital", "수도"], ["political", "정치의, 정치적인"], ["chaos", "혼란, 무질서, 아수라장"], ["talent", "인재"], ["bring together", "~을 합치다"], ["fine", "질 높은, 좋은"], ["architectural", "건축의"], ["treat", "~을 대하다, 대우하다, 다루다"], ["construction", "건설, 건축, 공사"], ["receive", "~을 받다"], ["fair", "타당한, 합당한"], ["wage", "임금, 급여"], ["break", "휴식, 쉬는 시간"], ["unheard of", "전례가 없는, 전대미문의"], ["typically", "보통, 일반적으로"], ["public", "공적인"], ["once", "~하자마자"], ["get wind of", "~에 대한 풍문을 듣다, (비밀·음모 등)에 대해 낌새를 채다"], ["in a rush", "급하게, 서둘러"], ["finished", "(일 등을) 끝마친"], ["initially", "처음에, 초기에"], ["take", "생각, 의견, 해석; (시간)을 걸리게 하다"], ["impressive", "인상적인, 훌륭한, 감탄할 만한"], ["go back to", "~로 돌아가다"], ["fancy", "화려한, 이색적인"], ["actually", "실제로는, 사실"], ["way", "방법, 수"], ["up close and personal", "물리적으로 매우 가까운, 잘 알게 되는"], ["set up", "(회의·약속 등)을 잡다, 마련하다"], ["chance", "기회"], ["share", "(정보·의견 등)을 공유하다, 서로 나누다"], ["concern", "걱정거리, 우려하는 일"], ["especially", "특히"], ["direct", "직행의, 직통의"], ["government", "정부, 정권"], ["accessible", "접근 가능한, 도달할 수 있는"], ["hire", "~을 고용하다, 채용하다"], ["available", "입수[이용, 구입] 가능한"], ["a shot at", "~에의 도전"], ["join", "(단체·조직 등에) 가입하다, 들어가다"], ["move", "(성취·진전 등을 위한) 행동, 움직임, 조치"], ["innovative", "혁신적인, 획기적인"], ["diverse", "여러 가지의, 다양한"], ["forget", "(~을) 잊다"], ["single", "단 하나[한 사람]의"], ["detail", "세부 사항, 상세 항목"], ["document", "~을 기록하다"], ["properly", "적절하게, 알맞게, 제대로"], ["record", "기록"], ["lifesaver", "(매우 어려운 상황에서의) 도움, (비유적으로) 구세주"], ["damage", "~에 손상을 입히다, ~에 피해를 주다"], ["wartime", "전시(戰時)"], ["recognize", "(진가·중요성 등에서) ~을 인정하다"], ["World Heritage Site", "세계문화유산"], ["unsure", "확신이 없는, 잘 모르는"], ["the real deal", "진짜인 것[사람]"], ["totally", "전적으로, 완전히, 전혀"], ["authentic", "진품의, 진짜의"], ["check out", "(사실이거나 옳은지) ~을 확인하다"], ["translate", "(~을) 번역하다, 통역하다"], ["compare A with B", "A를 B와 비교하다"], ["restore", "(옛 건물·미술품 등)을 복원하다"], ["come around", "(반대·거절 등을 한 후에) 마음을 돌리다"], ["agree", "동의하다"], ["feature", "~을 특별히 포함하다; 특징, 특색"], ["crew", "팀, 조(組), 대(隊)"], ["focus on", "~에 초점을 맞추다"], ["figure", "인물, 저명인사"], ["kind", "친절한, 상냥한, 인정 많은"], ["big deal", "중요한 일, 신나는 일"], ["proof", "증거"], ["spirit", "(시대·장소·집단 등의) 정신"], ["symbolize", "~을 상징하다"], ["care for", "~을 보살피다, 돌보다"], ["significant", "중요한, 의미 있는, 중대한"], ["cultural", "문화의, 문화적인"]];
+const S2 = [["The city held a", "grand", "festival to celebrate its long history."], ["A long", "procession", "of soldiers moved slowly through the main street."], ["The tour guide told us a", "fascinating", "story about the King."], ["It's", "remarkable", "that no one noticed this fact earlier."], ["A large", "crowd", "of people gathered to watch the outdoor performance."], ["We should", "gather", "more information before we make a final decision."], ["Several residents claim to have", "witnessed", "the attack."], ["It is difficult to", "imagine", "what life was like in the past."], ["A government", "official", "gave an explanation of a new environmental protection policy."], ["Students learn how to play", "traditional", "musical instruments in this class."], ["The travelers had to", "cross", "the river to go to the city."], ["Her innovative design for the building", "turned heads", "in the industry."], ["He was an", "ordinary", "worker who became a hero during the war."], ["It", "rarely", "rains in this desert area in the summer."], ["The local high school will", "put on", "a play next Friday."], ["Is she", "serious", "about wanting to sell the house?"], ["The heavy rain is expected to", "last", "for at least three days."], ["The explorers had to", "cover", "a long distance on foot yesterday."], ["A", "round trip", "ticket to London is cheaper than two single tickets."], ["What kind of project do you", "have in mind", "for this semester?"], ["The leaves on the trees", "turn", "red and yellow in the autumn."], ["Volunteers find great", "meaning", "in helping people who are in need."], ["The committee will", "hold", "a meeting to discuss the new architectural plan."], ["Many people attended the", "memorial service", "for the late national hero."], ["The prize was created to", "honor", "scientists who made great discoveries."], ["The museum displays many beautiful paintings by the", "late", "famous artist."], ["The recipe", "combines", "traditional flavors with modern cooking techniques."], ["Your support", "means", "a lot to the students in the poor neighborhood."], ["The economic", "strength", "of a nation depends on its technological innovation."], ["Many children liked to", "dress up", "as their favorite movie characters."], ["The", "powerful", "empire controlled many small countries in ancient times."], ["He is a", "successful", "businessman who owns several companies in this city."], ["The movie has an unexpected", "twist", "at the end of the story."], ["Global warming", "has something to do with", "the rising sea levels."], ["The soldiers built a strong", "fortress", "to defend the capital city."], ["The island was once", "self-sufficient", "in food and energy for many years."], ["International", "trade", "allows countries to exchange goods and services with others."], ["Seoul has been the", "capital", "city of Korea for many centuries."], ["The sudden power failure caused total", "chaos", "throughout the city."], ["The company is looking for young", "talent", "to lead its future projects."], ["The ancient palace is famous for its unique and beautiful", "architectural", "style."], ["The", "construction", "of the new stadium will be finished by next month."], ["It's not", "fair", "to expect her to do all the work."], ["Workers are demanding a higher", "wage", "to cover their rising living costs."], ["All visitors are required to show their ID cards at the entrance.", "be required to", "show their ID cards at the entrance."], ["High school students", "typically", "spend many hours studying for their entrance exams."], ["The government decided to build more", "public", "libraries."], ["She left the house", "in a rush", "because she was late."], ["The project was", "initially", "difficult, but it became easier after some time."], ["Let's hear your", "take", "on what just happened."], ["The student gave an", "impressive", "presentation about the history of architecture."], ["They went to a", "fancy", "restaurant to celebrate their wedding anniversary yesterday."], ["I will", "set up", "a meeting with the manager for next Monday."], ["We should", "share", "our ideas with each other for the project."], ["There are", "concerns", "that the two men may not receive fair trials."], ["There is a", "direct", "bus from the city center to the airport."], ["The new", "government", "promised to create more jobs for the young generation."], ["The island is only", "accessible", "by boat."], ["The local company plans to", "hire", "ten new employees next month."], ["Ski equipment is", "available", "for rent from the ski school."], ["The young athlete finally got a shot at the Olympic gold medal. She decided to", "join", "the school choir to improve her singing skills."], ["The company is famous for its", "innovative", "solutions to complex technical problems."], ["The city has a", "diverse", "population from many different cultural backgrounds."], ["The report addresses all the", "details", "of the stadium construction project."], ["You must follow the instructions to use the machine", "properly", "and safely."], ["The strong wind caused severe", "damage", "to the roof of the house."], ["His work is widely", "recognized", "for its literary importance."], ["Experts confirmed that it was an", "authentic", "Picasso."], ["The experts worked for months to", "restore", "the damaged historical building."], ["Most people", "agree", "that we should protect the environment for the future."], ["Admiral Yi Sun-sin is a legendary", "figure", "in the history of Korea."], ["Scientists found clear", "proof", "that water once existed on the planet Mars."], ["The Olympic Games aim to promote the", "spirit", "of friendship and peace."], ["The white dove is a bird that", "symbolizes", "peace throughout the world."], ["The invention of the internet has caused", "significant", "changes in our lives."]];
+const S3 = [["grand", "big and very impressive"], ["procession", "a line of people or vehicles that move forward slowly as part of a ceremony"], ["fascinating", "extremely interesting"], ["remarkable", "unusual or special and therefore surprising and worth mentioning"], ["palace", "the official home of a king, queen, president, etc."], ["crowd", "a large group of people who have gathered together to do something"], ["gather", "to bring people or things together"], ["witness", "to see something happen, especially a crime or an accident"], ["imagine", "to form a picture in your mind of what something might be like"], ["soldier", "a person who is in an army"], ["official", "a person who has a position of responsibility in an organization"], ["march", "to walk with regular steps as a group of people, often in a military context"], ["traditional", "following or belonging to the customs or ways of behaving that have continued in a group of people or society for a long time"], ["instrument", "an object, such as a piano, guitar, or drum, that is played to produce musical sounds"], ["cross", "to go from one side of something to the other"], ["ordinary", "average, common, or usual, not different or special"], ["serious", "quiet and serious in manner, and not joking"], ["last", "to continue to exist"], ["cover", "to travel a particular distance"], ["round trip", "a journey to a place and back again"], ["respect", "a feeling of admiring someone or something because of their qualities or achievements"], ["around", "approximately"], ["turn", "to start to have a different quality"], ["meaning", "the importance or value that a person or a thing has"], ["tomb", "a place where a dead person is buried, especially one that has a large stone structure"], ["hold", "to have a meeting, party, election etc. in a particular place or at a particular time"], ["memorial service", "a religious service to remember a dead person"], ["honor", "to treat someone with special respect"], ["combine", "to join or bring together two or more things to form a whole"], ["mean", "to have a particular importance or value"], ["strength", "the political, military, or economic power of an organization, country, or system"], ["military", "relating to the armed forces"], ["leader", "a person in control of a group, country, or situation"], ["armor", "strong protective clothing used by soldiers in the past in battle"], ["order", "a state in which everything is in its correct or appropriate place"], ["protect", "to keep someone or something safe from injury, damage, or loss"], ["powerful", "having a lot of strength or force"], ["successful", "having achieved a lot or become popular or wealthy"], ["kingdom", "a country ruled by a king or queen"], ["twist", "an unexpected change or development in a story or situation"], ["fortress", "a large, strong building that can be defended from attack"], ["self-sufficient", "able to provide everything that you need without help from other people"], ["trade", "the activity of buying, selling, or exchanging goods within a country or between countries"], ["capital", "an important city where the main government of a country, state etc. is located"], ["political", "relating to the government or the public affairs of a country"], ["chaos", "a state of total confusion with no order"], ["talent", "a person or people with a natural ability or skill"], ["fine", "very good; of a high quality"], ["architectural", "relating to the design and construction of buildings"], ["treat", "to behave towards someone or deal with something in a particular way"], ["construction", "the work of building or making something, especially buildings, bridges, etc."], ["receive", "to get or be given something"], ["wage", "money you earn that is paid according to the number of hours, days, or weeks that you work"], ["break", "a short period of rest from work or an activity"], ["typically", "in a way that is usual for a particular person, thing, or group"], ["public", "relating to the government and the services it provides for people"], ["once", "as soon as"], ["finished", "no longer doing, dealing with, or using something"], ["initially", "at the beginning"], ["take", "an opinion or a way of understanding something"], ["fancy", "bright, colorful, or unusual"], ["actually", "used for emphasizing what is really true or what really happened"], ["way", "a method that you use to do or achieve something"], ["chance", "an occasion or situation that makes it possible to do something"], ["share", "to tell someone else about your thoughts, feelings, ideas, etc."], ["concern", "something that involves problems or anxiety"], ["direct", "going straight from one place to another without stopping or changing"], ["government", "the group of people who officially control a country"], ["accessible", "able to be reached or used"], ["hire", "to employ someone"], ["available", "able to be bought or used"], ["join", "to become a member of an organization"], ["move", "something that you do in order to achieve something"], ["innovative", "using new methods or ideas"], ["diverse", "including many different types of people or things"], ["detail", "a single feature, fact, or piece of information about something"], ["document", "to record information about something in writing, on film, etc."], ["properly", "in a way that is correct or suitable"], ["record", "information about something that is written down or stored on computer, film etc. so that it can be looked at in the future"], ["lifesaver", "something that helps you in a difficult situation"], ["damage", "to harm or spoil something"], ["wartime", "a period of time during which a war is being fought"], ["recognize", "to accept that something is true, important, or has value"], ["unsure", "not certain because you do not know much about something"], ["totally", "completely"], ["authentic", "being what it is claimed to be; real"], ["translate", "to change words from one language into another"], ["restore", "to return something to an earlier good condition or position"], ["agree", "to have the same opinion as someone else"], ["feature", "to include something as a special or important part"], ["crew", "a group of people who work together"], ["figure", "a person who is well known"], ["kind", "generous, helpful, and thinking about other people's feelings"], ["big deal", "something that is very important or exciting"], ["proof", "a fact or a piece of information that shows that something exists or is true"], ["spirit", "the particular way that a person or group of people feel or think"], ["symbolize", "to be a symbol of something"], ["significant", "having an important effect or influence, especially on what will happen in the future"], ["cultural", "relating to the habits, traditions, and beliefs of a society"]];
+const S4 = [["piece", [["1", "조각, 일부분, 파편", "He cut the cake into a large piece for me.", "그는 나를 위해 케이크를 커다란 한 조각으로 잘랐다."], ["2", "(미술·문학 등의) 작품, 곡", "This is a beautiful piece of music by a famous composer.", "이것은 유명한 작곡가의 아름다운 음악 작품이다."], ["3", "~의 하나", "I would like to buy a piece of furniture for my room.", "나는 내 방을 위해 가구 한 점을 사고 싶다."]]], ["official", [["1", "관리, 간부 (직원)", "A high-ranking official held a press conference about the local economic crisis.", "한 고위 관리가 지역 경제 위기에 대하여 기자 회견을 열었다."], ["2", "공인된, 정식의 (형용사)", "You need an official document to apply for a new passport.", "당신은 새 여권을 신청하기 위해 정식 서류가 필요하다."], ["3", "(행사 등이) 공식적인 (형용사)", "The President will make an official visit to the neighboring country.", "대통령은 이웃 국가로 공식적인 방문을 할 예정이다."]]], ["show", [["1", "~을 보여주다", "The guide will show you the way to the ancient temple.", "가이드가 당신에게 그 고대 사원으로 가는 길을 보여줄 것이다."], ["2", "(조사/연구 등이) ~을 나타내다, 입증하다", "Recent studies show that lack of sleep affects your health.", "최근 연구들은 수면 부족이 당신의 건강에 영향을 준다는 것을 나타낸다."], ["3", "(그림/사진 등이) ~을 보여주다, 나타내다", "These photographs show the daily life of people in the village.", "이 사진들은 마을 사람들의 일상적인 삶을 보여준다."]]], ["serious", [["1", "(문제/질병 등이) 심각한", "Air pollution has become a serious problem in many big cities.", "대기 오염은 많은 대도시에서 심각한 문제가 되었다."], ["2", "진지한, 진심인", "She is serious about learning how to cook traditional dishes.", "그녀는 전통 요리를 배우는 것에 대해 진심이다."], ["3", "중요한, 중대한", "I need your advice on this serious matter.", "나는 이 중요한 문제에 대해 너의 조언이 필요하다."]]], ["cover", [["1", "~을 덮다, 가리다", "She used a large cloth to cover the old wooden table.", "그녀는 낡은 나무 탁자를 덮기 위해 큰 천을 사용했다."], ["2", "~을 다루다, 포함하다", "This textbook will cover all the topics for the final exam.", "이 교과서는 기말고사를 위한 모든 주제들을 다룰 것이다."], ["3", "(일정 거리)를 가다, 이동하다", "The hikers covered ten miles before the sun set.", "등산객들은 해가 지기 전에 10마일의 거리를 이동했다."]]], ["turn", [["1", "(~을) 돌리다", "You should turn the handle clockwise to open the door.", "문을 열기 위해 손잡이를 시계 방향으로 돌려야 한다."], ["2", "(~의) 방향을 바꾸다", "The pilot turned the plane around and flew back to Washington.", "조종사는 비행기를 돌려 워싱턴으로 되돌아갔다."], ["3", "(~한 상태로) 변하다[되다]", "As autumn approached, the leaves on the trees began to turn orange.", "가을이 다가오면서 나뭇잎들이 주황색으로 변하기 시작했다."]]], ["meaning", [["1", "뜻, 의미", "I do not understand the exact meaning of this difficult word.", "나는 이 어려운 단어의 정확한 뜻을 이해하지 못한다."], ["2", "의도, 취지", "The speaker explained the true meaning of his earlier comments today.", "화자는 오늘 자신의 이전 발언들의 진정한 취지를 설명했다."], ["3", "(삶/직업 등에서의) 의미, 의의", "Many people seek meaning in their work beyond just earning money.", "많은 사람들은 단지 돈을 버는 것 이상의 직업적 의미를 찾는다."]]], ["hold", [["1", "~을 들다, 잡다, 쥐다", "Please hold the baby carefully while I open the front door.", "내가 현관문을 여는 동안 아기를 조심스럽게 들고 있어 주세요."], ["2", "~을 유지하다", "We must try to hold the current price of our products.", "우리는 제품의 현재 가격을 유지하기 위해 노력해야 한다."], ["3", "(회의/회담 등)을 열다, 개최하다", "The school will hold a special meeting for the students' parents.", "학교는 학생들의 학부모들을 위해 특별 회의를 열 것이다."]]], ["late", [["1", "늦은", "I am sorry for being late for the meeting this morning.", "오늘 아침 회의에 늦은 것에 대해 사과드립니다."], ["2", "후기의, 후반의", "He started his own business in his late forties.", "그는 40대 후반에 자신의 사업을 시작했다."], ["3", "고인이 된, 작고한", "This museum was built in memory of the late king here.", "이 박물관은 이곳의 고인이 된 왕을 추모하여 세워졌다."]]], ["strength", [["1", "힘, 기운, 체력", "He did not have enough strength to lift the heavy box.", "그는 그 무거운 상자를 들어 올릴 충분한 힘이 없었다."], ["2", "(국가/조직 등의) 힘, 위력, 세력", "The economic strength of the nation has grown rapidly recently.", "그 국가의 경제력은 최근에 빠르게 성장했다."], ["3", "장점, 강점", "Knowing your own strength and weakness is important for personal growth.", "자신의 장단점을 아는 것은 개인적 성장에 중요하다."]]], ["order", [["1", "순서, 차례", "The names on the list are arranged in alphabetical order now.", "명단에 이름들은 현재 알파벳 순서로 배열되어 있다."], ["2", "명령", "Disobeying an order can have serious consequences in the military.", "군대에서 명령을 거역하는 것은 심각한 결과를 초래할 수 있다."], ["3", "정돈된[정리된] 상태", "It is important to keep your desk in good order.", "당신의 책상을 잘 정돈된 상태로 유지하는 것이 중요하다."]]], ["fine", [["1", "질 높은, 좋은", "She wore a dress made of fine silk.", "그녀는 질 좋은 실크로 만든 드레스를 입었다."], ["2", "건강한", "She'll be just fine after a rest.", "그녀는 쉬고 나면 괜찮아질 것이다."], ["3", "괜찮은, 만족할 만한", "I think this plan is fine for now, but we may need to revise it later.", "지금은 이 계획이 만족할 만하지만, 나중에 수정할 필요가 있을 수도 있다."]]], ["public", [["1", "대중의", "The government should listen to public opinion on the new policy.", "정부는 새 정책에 대한 대중의 의견에 귀를 기울여야 한다."], ["2", "공공의", "There are growing proposals to ban smoking in public places across the country.", "전국적으로 공공장소에서 흡연을 금지하자는 제안이 증가하고 있다."], ["3", "공적인", "He resigned from his public office after the political scandal.", "그는 정치 스캔들 이후 그의 공직에서 사임했다."]]], ["set up", [["1", "~을 세우다, 설립하다", "We plan to set up a new charity for children.", "우리는 아이들을 위해 새로운 자선 단체를 설립할 계획이다."], ["2", "(회의·약속 등)을 잡다, 마련하다", "I will set up a meeting with the manager tomorrow.", "나는 내일 매니저와 회의를 잡을 것이다."], ["3", "~을 준비하다, 설치하다", "We need to set up the equipment before the concert begins.", "우리는 콘서트가 시작되기 전에 장비를 설치해야 한다."]]], ["share", [["1", "(~을) 같이 쓰다", "You'll have to share if there aren't enough books.", "책이 충분하지 않으면 서로 같이 봐야 합니다."], ["2", "(문화/역사 등)을 공유하다, 공통으로 가지다", "The two neighboring countries share a very long and complex history.", "두 인접 국가는 매우 길고 복잡한 역사를 공유한다."], ["3", "(정보/의견 등)을 공유하다, 서로 나누다", "Social media allows people to share information with their friends quickly.", "소셜 미디어는 사람들이 친구들과 정보를 빠르게 공유하도록 해준다."]]], ["join", [["1", "(단체/조직 등에) 가입하다, 들어가다", "I decided to join the school basketball team this winter break.", "나는 이번 겨울 방학에 학교 농구팀에 가입하기로 결정했다."], ["2", "~에 동참하다, 참여하다", "We invite everyone to join the protest against the new policy.", "우리는 모두에게 새로운 정책에 반대하는 시위에 동참할 것을 요청한다."], ["3", "~와 합류하다, 같이 하다", "Would you like to join us for dinner?", "우리와 같이 저녁 식사를 하실래요?"]]], ["move", [["1", "(성취/진전 등을 위한) 행동, 움직임, 조치", "This was a wise move to improve the company's financial status.", "이것은 회사의 재무 상태를 개선하기 위한 현명한 조치였다."], ["2", "(신체의) 동작, 움직임", "Every move of the dancer was graceful and full of energy.", "그 무용수의 모든 동작은 우아하고 에너지가 넘쳤다."], ["3", "이사, 이전", "The family is busy preparing for their move to another city.", "그 가족은 다른 도시로의 이사를 준비하느라 바쁘다."]]], ["recognize", [["1", "~을 알아보다, 알다", "I could not recognize him because he had changed so much.", "그가 너무 많이 변해서 그를 알아볼 수 없었다."], ["2", "(존재/진실성 등을) 인정하다, 인식하다", "They recognize the need for change in the current educational system.", "그들은 현재의 교육 시스템에서 변화의 필요성을 인식한다."], ["3", "(진가/중요성 등에서) ~을 인정하다", "The world began to recognize his talent as a gifted writer.", "세계는 그를 재능 있는 작가로서 그의 진가를 인정하기 시작했다."]]], ["figure", [["1", "수치, 통계", "The official figure shows that the unemployment rate is decreasing slowly.", "공식 통계는 실업률이 천천히 감소하고 있음을 보여준다."], ["2", "형체, 모습", "I saw a dark figure moving in the shadows of the garden.", "나는 정원의 그림자 속에서 움직이는 어두운 형체를 보았다."], ["3", "인물, 저명인사", "She is a leading figure in the field of modern science today.", "그녀는 오늘날 현대 과학 분야의 선도적인 인물이다."]]], ["significant", [["1", "중요한, 의미 있는, 중대한", "This discovery will have a significant impact on our future lives.", "이 발견은 우리의 미래 삶에 중요한 영향을 미칠 것이다."], ["2", "(상승/하락 등이) 현저한, (수량/비율 등이) 상당한", "There has been a significant increase in the number of tourists.", "관광객의 수에 있어서 상당한 증가가 있어 왔다."]]]];
+const S5 = [["fascinating", "매혹적인, 마음을 사로잡는, 흥미진진한", "반의어", "boring, dull"], ["remarkable", "놀랄 만한, 주목할 만한", "유의어", "extraordinary, amazing, astonishing"], ["gather", "~을 모으다", "반의어", "disperse"], ["witness", "~을 목격하다", "유의어", "see, observe, watch"], ["cross", "(~을) 건너다, 횡단하다", "유의어", "travel across ~"], ["ordinary", "보통의", "유의어", "common, average, regular"], ["rarely", "거의[좀처럼] ~하지 않는", "유의어", "seldom, hardly ever"], ["serious", "진지한, 진심인; 중요한, 중대한", "반의어", "trivial, unimportant"], ["respect", "존경, 경의", "반의어", "contempt"], ["turn", "(~한 상태로) 변하다[되다]", "유의어", "become"], ["meaning", "(삶·직업 등에서의) 의미, 의의", "유의어", "importance, significance"], ["late", "고인이 된, 작고한", "유의어", "dead, deceased"], ["combine", "~을 결합하다", "반의어", "separate"], ["strength", "(국가/조직 등의) 힘, 위력, 세력", "반의어", "weakness"], ["protect", "~을 보호하다, 지키다", "유의어", "defend"], ["powerful", "(국가·조직·사람 등이) 강력한, 영향력이 강한", "반의어", "weak, powerless"], ["successful", "성공한, 출세한", "반의어", "unsuccessful"], ["kingdom", "왕국", "유의어", "country, realm, nation"], ["receive", "~을 받다", "반의어", "give"], ["fair", "타당한, 합당한", "반의어", "unfair, unjust"], ["wage", "임금, 급여", "유의어", "pay"], ["initially", "처음에, 초기에", "유의어", "at first, originally"], ["impressive", "인상적인, 훌륭한, 감탄할 만한", "반의어", "unimpressive"], ["fancy", "화려한, 이색적인", "반의어", "plain"], ["way", "방법, 수", "유의어", "method, means"], ["chance", "기회", "유의어", "opportunity"], ["concern", "걱정거리", "유의어", "anxiety, worry"], ["especially", "특히", "유의어", "notably, particularly"], ["direct", "직행의, 직통의", "반의어", "indirect"], ["accessible", "접근 가능한, 도달할 수 있는", "반의어", "inaccessible"], ["hire", "~을 고용하다, 채용하다", "유의어", "employ, recruit"], ["available", "입수[이용, 구입] 가능한", "반의어", "unavailable"], ["join", "(단체/조직 등에) 가입하다, 들어가다", "유의어", "enter"], ["move", "(성취/진전 등을 위한) 행동, 움직임, 조치", "유의어", "step, action, measure"], ["diverse", "여러 가지의, 다양한", "반의어", "uniform"], ["forget", "(~을) 잊다", "반의어", "remember"], ["properly", "적절하게, 알맞게, 제대로", "유의어", "rightly"], ["damage", "~에 손상을 입히다", "반의어", "repair, fix"], ["wartime", "전시(戰時)", "반의어", "peacetime"], ["unsure", "확신이 없는, 잘 모르는", "반의어", "sure, certain"], ["authentic", "진품의, 진짜의", "반의어", "fake"], ["restore", "(옛 건물/미술품 등)을 복원하다", "유의어", "repair, renovate"], ["agree", "동의하다", "반의어", "disagree"], ["kind", "친절한, 상냥한", "반의어", "unkind, mean"], ["significant", "중요한, 의미 있는, 중대한", "반의어", "insignificant"]];
+
+// scores[tab][qIdx] = true/false
+const scores = [[], [], [], [], []];
+const answered = [0,0,0,0,0];
+const correct_cnt = [0,0,0,0,0];
+let curTab = 0;
+
+// ── STEP 1: 뜻 맞추기 ──
+function buildS1() {
+  const sw = shuffle([...S1]);
+  const el = document.getElementById('s1cards');
+  sw.forEach((item, qi) => {
+    const [word, meaning] = item;
+    const wrong3 = shuffle(S1.filter(x=>x[1]!==meaning)).slice(0,3).map(x=>x[1]);
+    const opts = shuffle([meaning, ...wrong3]);
+    const card = document.createElement('div');
+    card.className = 'q-card';
+    card.id = 's1_'+qi;
+    card.innerHTML = `
+      <div class="word-display"><span class="word-en" onclick="speak('${esc(word)}')"><span>${esc(word)}</span><span class="speaker">🔊</span></span></div>
+      <div class="q-prompt">위 단어의 뜻은?</div>
+      <div class="options">${opts.map(o=>`<button class="opt-btn" onclick="ansQ(0,${qi},'${o.replace(/'/g,"\'")}',this)" data-v="${esc(o)}">${esc(o)}</button>`).join('')}</div>
+      <div class="feedback" id="fb_s1_${qi}"></div>
+      <button class="check-btn s1" id="cb_s1_${qi}" onclick="submitQ(0,${qi},'${meaning.replace(/'/g,"\'")}',this)" disabled>확인</button>
+    `;
+    el.appendChild(card);
+  });
+  // store shuffled for reference
+  window._s1_shuffled = sw;
+}
+
+// ── STEP 2: 빈칸 채우기 ──
+function buildS2() {
+  const sw = shuffle([...S2]);
+  const el = document.getElementById('s2cards');
+  sw.forEach((item, qi) => {
+    const [before, blank, after] = item;
+    const wrong3 = shuffle(S2.filter(x=>x[1]!==blank)).slice(0,3).map(x=>x[1]);
+    const opts = shuffle([blank, ...wrong3]);
+    const card = document.createElement('div');
+    card.className = 'sent-card';
+    card.id = 's2_'+qi;
+    card.innerHTML = `
+      <div class="sent-text">${esc(before)} <span class="sent-blank" id="blank_${qi}">_____</span> ${esc(after)}</div>
+      <div class="options">${opts.map(o=>`<button class="opt-btn" onclick="selSent(${qi},'${o.replace(/'/g,"\'")}',this)" data-v="${esc(o)}">${esc(o)}</button>`).join('')}</div>
+      <div class="feedback" id="fb_s2_${qi}"></div>
+      <button class="check-btn s2" id="cb_s2_${qi}" onclick="submitSent(${qi},'${blank.replace(/'/g,"\'")}',this)" disabled>확인</button>
+    `;
+    el.appendChild(card);
+  });
+  window._s2_shuffled = sw;
+}
+function selSent(qi, val, btn) {
+  const card = document.getElementById('s2_'+qi);
+  card.querySelectorAll('.opt-btn').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+  document.getElementById('blank_'+qi).textContent = val;
+  document.getElementById('cb_s2_'+qi).disabled = false;
+}
+function submitSent(qi, answer, btn) {
+  if(btn.disabled) return;
+  const card = document.getElementById('s2_'+qi);
+  const sel = card.querySelector('.opt-btn.selected');
+  if(!sel) return;
+  btn.style.display = 'none';
+  card.querySelectorAll('.opt-btn').forEach(b=>b.disabled=true);
+  const ok = sel.dataset.v === answer;
+  sel.classList.add(ok?'correct':'wrong');
+  if(!ok) card.querySelectorAll('.opt-btn').forEach(b=>{if(b.dataset.v===answer)b.classList.add('correct');});
+  scores[1][qi] = ok;
+  answered[1]++;
+  if(ok) correct_cnt[1]++;
+  const fb = document.getElementById('fb_s2_'+qi);
+  fb.className = 'feedback show '+(ok?'ok':'bad');
+  fb.textContent = ok?'✅ 정답!':'❌ 정답: '+answer;
+  document.getElementById('blank_'+qi).textContent = answer;
+  document.getElementById('blank_'+qi).style.color = ok?'var(--correct)':'var(--wrong)';
+  updateTabInfo();
+  if(answered[1]===S2.length) { setTimeout(()=>document.getElementById('done1').classList.add('show'),400); saveFirebase('빈칸채우기',correct_cnt[1],S2.length); }
+}
+
+// ── STEP 3: 영영풀이 ──
+function buildS3() {
+  const sw = shuffle([...S3]);
+  const el = document.getElementById('s3cards');
+  sw.forEach((item, qi) => {
+    const [word, def] = item;
+    const wrong3 = shuffle(S3.filter(x=>x[0]!==word)).slice(0,3).map(x=>x[0]);
+    const opts = shuffle([word, ...wrong3]);
+    const card = document.createElement('div');
+    card.className = 'def-card';
+    card.id = 's3_'+qi;
+    card.innerHTML = `
+      <div class="def-text">"${esc(def)}"</div>
+      <div class="q-prompt">위 영영풀이에 알맞은 단어는?</div>
+      <div class="options">${opts.map(o=>`<button class="opt-btn" onclick="ansQ(2,${qi},'${o.replace(/'/g,"\'")}',this)" data-v="${esc(o)}">${esc(o)}</button>`).join('')}</div>
+      <div class="feedback" id="fb_s3_${qi}"></div>
+      <button class="check-btn s3" id="cb_s3_${qi}" onclick="submitQ(2,${qi},'${word.replace(/'/g,"\'")}',this)" disabled>확인</button>
+    `;
+    el.appendChild(card);
+  });
+  window._s3_shuffled = sw;
+}
+
+// ── STEP 4: 다의어 ──
+function buildS4() {
+  const el = document.getElementById('s4cards');
+  // flatten: each meaning of each word = one question
+  const questions = [];
+  S4.forEach(([word, meanings]) => {
+    meanings.forEach(([num, meaning_ko, example_en, example_ko]) => {
+      questions.push({word, num, meaning_ko, example_en, example_ko});
+    });
+  });
+  const sw = shuffle(questions);
+  window._s4_questions = sw;
+  sw.forEach((q, qi) => {
+    // blank out the word in example
+    const re = new RegExp(q.word.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'gi');
+    const blanked = q.example_en.replace(re, `<span class="blank" id="poly_blank_${qi}">_____</span>`);
+    const wrong3 = shuffle(S4.filter(x=>x[0]!==q.word)).slice(0,3).map(x=>x[0]);
+    const opts = shuffle([q.word, ...wrong3]);
+    const card = document.createElement('div');
+    card.className = 'poly-card';
+    card.id = 's4_'+qi;
+    card.innerHTML = `
+      <div style="margin-bottom:6px;"><span class="poly-word" onclick="speak('${esc(q.word)}')"><span>${esc(q.word)}</span><span class="speaker" style="font-size:.9rem;opacity:.4;">🔊</span></span></div>
+      <div class="syn-kor" style="margin-bottom:10px;">뜻 ${q.num}: <strong>${esc(q.meaning_ko)}</strong></div>
+      <div class="poly-sentence">${blanked}</div>
+      <div class="poly-prompt">빈칸에 알맞은 단어는?</div>
+      <div class="options">${opts.map(o=>`<button class="opt-btn" onclick="ansQ(3,${qi},'${o.replace(/'/g,"\'")}',this)" data-v="${esc(o)}">${esc(o)}</button>`).join('')}</div>
+      <div class="feedback" id="fb_s4_${qi}"></div>
+      <button class="check-btn s4" id="cb_s4_${qi}" onclick="submitQ(3,${qi},'${q.word.replace(/'/g,"\'")}',this)" disabled>확인</button>
+    `;
+    el.appendChild(card);
+  });
+}
+
+// ── STEP 5: 유의어/반의어 ──
+function buildS5() {
+  const sw = shuffle([...S5]);
+  const el = document.getElementById('s5cards');
+  sw.forEach((item, qi) => {
+    const [word, meaning_ko, type, answer] = item;
+    // answer may have commas → use first token
+    const ans_first = answer.split(',')[0].trim();
+    // build wrong options from other answers
+    const allAnswers = S5.map(x=>x[3].split(',')[0].trim()).filter(x=>x!==ans_first);
+    const wrong3 = shuffle(allAnswers).slice(0,3);
+    const opts = shuffle([ans_first, ...wrong3]);
+    const typeLabel = type==='유의어'?'유의어':'반의어';
+    const typeClass = type==='유의어'?'syn':'ant';
+    const card = document.createElement('div');
+    card.className = 'syn-card';
+    card.id = 's5_'+qi;
+    card.innerHTML = `
+      <div><span class="syn-word" onclick="speak('${esc(word)}')"><span>${esc(word)}</span><span class="speaker" style="font-size:.9rem;opacity:.4;">🔊</span></span></div>
+      <div class="syn-kor">${esc(meaning_ko)}</div>
+      <span class="syn-type ${typeClass}">${typeLabel}는?</span>
+      <div class="options">${opts.map(o=>`<button class="opt-btn" onclick="ansQ(4,${qi},'${o.replace(/'/g,"\'")}',this)" data-v="${esc(o)}">${esc(o)}</button>`).join('')}</div>
+      <div class="feedback" id="fb_s5_${qi}"></div>
+      <button class="check-btn s5" id="cb_s5_${qi}" onclick="submitQ(4,${qi},'${ans_first.replace(/'/g,"\'")}',this)" disabled>확인</button>
+    `;
+    el.appendChild(card);
+  });
+  window._s5_shuffled = sw;
+}
+
+// ── 공통 answer/select ──
+function ansQ(tab, qi, val, btn) {
+  const pfx = ['s1','s2','s3','s4','s5'][tab];
+  const card = document.getElementById(pfx+'_'+qi);
+  card.querySelectorAll('.opt-btn').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+  const cbId = 'cb_'+pfx+'_'+qi;
+  const cb = document.getElementById(cbId);
+  if(cb) cb.disabled = false;
+}
+function submitQ(tab, qi, answer, btn) {
+  if(btn.disabled) return;
+  const pfx = ['s1','s2','s3','s4','s5'][tab];
+  const card = document.getElementById(pfx+'_'+qi);
+  const sel = card.querySelector('.opt-btn.selected');
+  if(!sel) return;
+  btn.style.display = 'none';
+  card.querySelectorAll('.opt-btn').forEach(b=>b.disabled=true);
+  const ok = sel.dataset.v === answer;
+  sel.classList.add(ok?'correct':'wrong');
+  if(!ok) card.querySelectorAll('.opt-btn').forEach(b=>{if(b.dataset.v===answer)b.classList.add('correct');});
+  scores[tab][qi] = ok;
+  answered[tab]++;
+  if(ok) correct_cnt[tab]++;
+  const fb = document.getElementById('fb_'+pfx+'_'+qi);
+  fb.className = 'feedback show '+(ok?'ok':'bad');
+  fb.textContent = ok?'✅ 정답!':'❌ 정답: '+answer;
+  if(tab===0){const nx=document.getElementById('s1_'+(qi+1));if(nx){const w=nx.querySelector('.word-en span:first-child');if(w)setTimeout(()=>speak(w.textContent),500);}}
+  updateTabInfo();
+  // check done
+  const totals = [S1.length, S2.length, S3.length, window._s4_questions?.length||0, S5.length];
+  if(answered[tab] === totals[tab]) {
+    const labels = ['뜻맞추기','빈칸채우기','영영풀이','다의어','유의어반의어'];
+    setTimeout(()=>document.getElementById('done'+tab).classList.add('show'),400);
+    saveFirebase(labels[tab], correct_cnt[tab], totals[tab]);
+    if([0,1,2,3,4].every(t=>answered[t]===totals[t])) setTimeout(showSummary,800);
+  }
+}
+
+function updateTabInfo() {
+  const totals = [S1.length, S2.length, S3.length, window._s4_questions?.length||0, S5.length];
+  const t = curTab;
+  document.getElementById('tabInfo').textContent = answered[t]+' / '+totals[t]+' 완료';
+  document.getElementById('tabScore').textContent = '점수: '+correct_cnt[t];
+}
+
+function switchTab(t) {
+  curTab = t;
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',i===t));
+  document.querySelectorAll('.panel').forEach((p,i)=>p.classList.toggle('active',i===t));
+  updateTabInfo();
+}
+
+function showSummary() {
+  const totals = [S1.length, S2.length, S3.length, window._s4_questions?.length||0, S5.length];
+  const totalAll = totals.reduce((a,b)=>a+b,0);
+  const correctAll = correct_cnt.reduce((a,b)=>a+b,0);
+  const pct = Math.round(correctAll/totalAll*100);
+  const msg = pct===100?'🎉 완벽합니다!':pct>=80?'👍 훌륭해요!':pct>=60?'📖 잘 했어요!':'💪 다시 도전해봐요!';
+  const colors = ['s1','s2','s3','s4','s5'];
+  const labels = ['① 뜻','② 빈칸','③ 영영','④ 다의어','⑤ 유반의'];
+  const s = document.getElementById('s1cards').closest('.panel').parentElement.querySelector('.summary') ||
+    (() => { const d = document.createElement('div'); d.className='summary'; document.querySelector('main, body').appendChild(d); return d; })();
+  // append summary to last panel
+  const lastPanel = document.getElementById('panel4');
+  const sum = document.createElement('div');
+  sum.className = 'summary show';
+  sum.innerHTML = `
+    <div class="summary-title">최종 결과 <span>확인</span></div>
+    <div class="step-scores">${labels.map((l,i)=>`<div class="ss-item"><div class="label">${l}</div><div class="val" style="color:var(--${colors[i]})">${correct_cnt[i]}/${totals[i]}</div></div>`).join('')}</div>
+    <div class="total-score">${correctAll}<span style="font-size:1.1rem;opacity:.4">/${totalAll}</span></div>
+    <div class="summary-sub">전체 정답률 ${pct}%</div>
+    <div class="summary-msg">${msg}</div>
+    <button class="btn-retry" onclick="location.reload()">🔄 다시 풀기</button>
+  `;
+  lastPanel.appendChild(sum);
+}
+
+// INIT
+buildS1(); buildS2(); buildS3(); buildS4(); buildS5();
+updateTabInfo();
+</script>
+</body>
+</html>
