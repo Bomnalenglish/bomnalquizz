@@ -81,6 +81,7 @@ main { max-width: 960px; margin: 0 auto; padding: 36px 20px 80px; }
 .card-sub { font-size: .72rem; color: var(--soft); margin-top: 4px; font-family: "Gowun Dodum", serif; }
 .badge { display: inline-block; font-size: .63rem; background: #3d3d3d; color: #f0ede8; border-radius: 30px; padding: 2px 9px; margin-top: 6px; letter-spacing: .3px; }
 .badge.coming-badge { background: #b0a890; }
+.badge.skip-badge { background: #d0ccc4; color: #8a8070; }
 .c-0{background:#f2ede5}.c-1{background:#ede8e0}.c-2{background:#f0e9de}
 .c-3{background:#ece5d8}.c-4{background:#f3ede4}.c-5{background:#ede7dc}
 .c-6{background:#eae6df}.c-7{background:#f0ebe2}
@@ -319,20 +320,20 @@ const SCHOOLS = [
         {file:"jongchonko_3grade_blank",       title:"빈칸추론 언스크램블", sub:"EBS 수능특강 · 62문제",         emoji:"📝", badge:"빈칸추론"}
       ]},
       {title:"📚 Review", items:[
-        {file:"jongchon3_review_13",  title:"13강 Review", sub:"수능특강 · 독해훈련 1~2번", emoji:"📖", badge:"13강"},
-        {file:"__coming__", title:"14강 Review", sub:"준비중", emoji:"🔒", badge:"coming"},
-        {file:"__coming__", title:"15강 Review", sub:"준비중", emoji:"🔒", badge:"coming"},
-        {file:"__coming__", title:"16강 Review", sub:"준비중", emoji:"🔒", badge:"coming"},
-        {file:"__coming__", title:"17강 Review", sub:"준비중", emoji:"🔒", badge:"coming"},
-        {file:"__coming__", title:"18강 Review", sub:"준비중", emoji:"🔒", badge:"coming"},
-        {file:"__coming__", title:"19강 Review", sub:"준비중", emoji:"🔒", badge:"coming"},
-        {file:"__coming__", title:"20강 Review", sub:"준비중", emoji:"🔒", badge:"coming"},
-        {file:"__coming__", title:"21강 Review", sub:"준비중", emoji:"🔒", badge:"coming"},
-        {file:"__coming__", title:"22강 Review", sub:"준비중", emoji:"🔒", badge:"coming"},
-        {file:"__coming__", title:"23강 Review", sub:"준비중", emoji:"🔒", badge:"coming"},
-        {file:"__coming__", title:"24강 Review", sub:"준비중", emoji:"🔒", badge:"coming"},
-        {file:"__coming__", title:"Test 2",      sub:"준비중", emoji:"🔒", badge:"coming"},
-        {file:"__coming__", title:"Test 3",      sub:"준비중", emoji:"🔒", badge:"coming"}
+        {file:"jongchon3_review_13",  title:"13강 Review", sub:"빈칸 추론 · Gateway+1~4", emoji:"📖", badge:"13강"},
+        {file:"__coming__",           title:"14강 Review", sub:"시험 범위 제외",            emoji:"➖", badge:"skip"},
+        {file:"jongchon3_review_15",  title:"15강 Review", sub:"흐름 무관 · Gateway+1~4", emoji:"📖", badge:"15강"},
+        {file:"jongchon3_review_16",  title:"16강 Review", sub:"글의 순서 · Gateway+1~6", emoji:"📖", badge:"16강"},
+        {file:"jongchon3_review_17",  title:"17강 Review", sub:"문장 삽입 · Gateway+1~6", emoji:"📖", badge:"17강"},
+        {file:"__coming__",           title:"18강 Review", sub:"시험 범위 제외",            emoji:"➖", badge:"skip"},
+        {file:"__coming__",           title:"19강 Review", sub:"시험 범위 제외",            emoji:"➖", badge:"skip"},
+        {file:"__coming__",           title:"20강 Review", sub:"시험 범위 제외",            emoji:"➖", badge:"skip"},
+        {file:"__coming__",           title:"21강 Review", sub:"시험 범위 제외",            emoji:"➖", badge:"skip"},
+        {file:"__coming__",           title:"22강 Review", sub:"시험 범위 제외",            emoji:"➖", badge:"skip"},
+        {file:"jongchon3_review_23",  title:"23강 Review", sub:"물리·화학·생명·지구 · Gateway+1~3", emoji:"📖", badge:"23강"},
+        {file:"__coming__",           title:"24강 Review", sub:"준비중",                    emoji:"🔒", badge:"coming"},
+        {file:"__coming__",           title:"Test 2",      sub:"준비중",                    emoji:"🔒", badge:"coming"},
+        {file:"__coming__",           title:"Test 3",      sub:"준비중",                    emoji:"🔒", badge:"coming"}
       ]}
     ]
   },
@@ -533,7 +534,7 @@ function openSchool(s) {
         `<span class="card-emoji">${item.emoji}</span>` +
         `<div class="card-title">${item.title}</div>` +
         (item.sub ? `<div class="card-sub">${item.sub}</div>` : "") +
-        (item.badge ? `<span class="badge${item.badge==='coming'?' coming-badge':''}">${item.badge==='coming'?'준비중':item.badge}</span>` : "");
+        (item.badge ? `<span class="badge${item.badge==='coming'?' coming-badge':item.badge==='skip'?' skip-badge':''}">${item.badge==='coming'?'준비중':item.badge==='skip'?'제외':item.badge}</span>` : "");
       if (!isComingItem) {
         a.addEventListener("click", () => {
           if (window._logAccess) window._logAccess({type:"quiz_click",name:studentName,school:studentSchool,quiz:item.title,file:item.file});

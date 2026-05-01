@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>15강 Gateway | Self-Care & Prioritization</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700&family=Space+Mono:wght@400;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f5f0e8; --surface: #fdfaf4; --surface2: #ede8dc; --border: #d8d0bc;
+  --accent: #4a7cf0; --accent2: #d95f5f; --accent3: #b87a0a; --accent4: #2a9d6f;
+  --text: #2d2a22; --text-muted: #7a7060; --text-dim: #b0a890;
+  --correct: #2a9d6f; --wrong: #d95f5f;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: 'Noto Sans KR', sans-serif; min-height: 100vh; overflow-x: hidden; }
+.site-header { border-bottom: 1px solid var(--border); padding: 16px 28px; display: flex; align-items: center; gap: 14px; background: var(--surface); position: sticky; top: 0; z-index: 100; }
+.logo { font-family: 'Space Mono', monospace; font-size: 13px; color: var(--accent); letter-spacing: 2px; }
+.subtitle { font-size: 11px; color: var(--text-muted); }
+.back-link { margin-left: auto; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-family: 'Space Mono', monospace; border: 1px solid var(--border); background: transparent; color: var(--text-muted); text-decoration: none; transition: all .2s; }
+.back-link:hover { border-color: var(--accent); color: var(--accent); }
+.main-wrap { max-width: 960px; margin: 0 auto; padding: 36px 24px 80px; }
+.passage-title { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--accent); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 6px; }
+.passage-headline { font-family: 'Noto Serif KR', serif; font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+.passage-desc { font-size: 13px; color: var(--text-muted); margin-bottom: 28px; }
+.stage-nav { display: flex; gap: 4px; margin-bottom: 28px; flex-wrap: wrap; }
+.stage-btn { padding: 7px 14px; border-radius: 6px; font-size: 12px; font-family: 'Space Mono', monospace; cursor: pointer; border: 1px solid var(--border); background: transparent; color: var(--text-muted); transition: all .2s; }
+.stage-btn:hover { border-color: var(--accent); color: var(--accent); }
+.stage-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+.stage-btn .dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--accent4); margin-left: 5px; vertical-align: middle; opacity: 0; }
+.stage-btn.done .dot { opacity: 1; }
+.section-label { display: inline-block; padding: 3px 10px; border-radius: 4px; font-size: 10px; font-family: 'Space Mono', monospace; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px; }
+.section-label.sec1 { background: rgba(74,124,240,.1); color: var(--accent); border: 1px solid rgba(74,124,240,.25); }
+.section-label.sec2 { background: rgba(184,122,10,.1); color: var(--accent3); border: 1px solid rgba(184,122,10,.25); }
+.stage-panel { display: none; }
+.stage-panel.active { display: block; animation: fadeUp .3s ease; }
+@keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+.stage-heading { font-size: 17px; font-weight: 700; margin-bottom: 6px; }
+.stage-desc { font-size: 13px; color: var(--text-muted); margin-bottom: 22px; line-height: 1.7; }
+.chunk-row { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; margin-bottom: 14px; }
+.chunk-meta { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--text-dim); letter-spacing: .5px; margin-bottom: 8px; }
+.chunk-en { font-family: 'Noto Serif KR', serif; font-size: 15px; color: var(--text); line-height: 2.1; }
+.chunk-kr { font-size: 12.5px; color: var(--text-muted); line-height: 1.8; margin-top: 8px; padding-left: 10px; border-left: 2px solid var(--border); }
+.b-wrap { display: inline-block; position: relative; margin: 0 3px; vertical-align: middle; }
+.b-wrap select { appearance: none; -webkit-appearance: none; background: var(--surface2); border: 1px solid var(--accent); border-radius: 6px; color: var(--accent); font-size: 13px; padding: 3px 26px 3px 10px; cursor: pointer; font-family: 'Noto Sans KR', sans-serif; transition: all .2s; min-width: 120px; }
+.b-wrap::after { content:'▾'; position:absolute; right:8px; top:50%; transform:translateY(-50%); color:var(--accent); pointer-events:none; font-size:11px; }
+.b-wrap select.correct { border-color:var(--correct); color:var(--correct); background:rgba(42,157,111,.1); }
+.b-wrap select.wrong   { border-color:var(--wrong);   color:var(--wrong);   background:rgba(217,95,95,.1); }
+.full-passage-box { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px 22px; margin-bottom: 24px; }
+.fp-title { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--text-dim); letter-spacing: 1px; margin-bottom: 10px; }
+.fp-sentence { font-family: 'Noto Serif KR', serif; font-size: 14px; line-height: 1.9; color: var(--text); margin-bottom: 4px; }
+.fp-sentence span.hl { background: rgba(74,124,240,.12); border-radius: 3px; padding: 1px 3px; color: var(--accent); }
+.fp-sentence span.odd { background: rgba(217,95,95,.1); border-radius: 3px; padding: 1px 3px; color: var(--wrong); text-decoration: line-through; }
+.s2-qblock { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; margin-bottom: 14px; transition: border-color .2s; }
+.s2-qblock.graded-correct { border-color: var(--correct); }
+.s2-qblock.graded-wrong   { border-color: var(--wrong); }
+.s2-qnum { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--accent3); letter-spacing: 1px; margin-bottom: 6px; }
+.s2-question { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 14px; line-height: 1.7; }
+.s2-opts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.s2-opt { padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface2); font-size: 13px; cursor: pointer; transition: all .2s; color: var(--text); line-height: 1.5; }
+.s2-opt:hover { border-color: var(--accent); color: var(--accent); }
+.s2-opt.selected { border-color: var(--accent); background: rgba(74,124,240,.1); color: var(--accent); }
+.s2-opt.reveal-correct { border-color: var(--correct); background: rgba(42,157,111,.1); color: var(--correct); }
+.s2-opt.reveal-wrong   { border-color: var(--wrong);   background: rgba(217,95,95,.1); color: var(--wrong); }
+.s3-opts-label { font-size: 12px; color: var(--text-muted); margin-bottom: 8px; font-family: 'Space Mono', monospace; }
+.s3-opts { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+.s3-opt { padding: 12px 16px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface2); font-size: 13px; cursor: pointer; transition: all .2s; color: var(--text); line-height: 1.6; }
+.s3-opt:hover { border-color: var(--accent3); color: var(--accent3); }
+.s3-opt.used { opacity: .3; pointer-events: none; }
+.s3-main { font-size: 13px; font-weight: 500; }
+.s3-easy { font-size: 12px; color: var(--text-muted); margin-top: 4px; line-height: 1.6; padding-left: 8px; border-left: 2px solid var(--border); }
+.s3-structure { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+.s3-slot { display: flex; align-items: flex-start; gap: 12px; padding: 14px 16px; margin-bottom: 10px; border-radius: 8px; border: 1.5px dashed var(--border); min-height: 60px; transition: all .2s; }
+.s3-slot.filled { border-style: solid; border-color: var(--accent); background: rgba(74,124,240,.05); }
+.s3-slot.slot-correct { border-color: var(--correct); background: rgba(42,157,111,.05); }
+.s3-slot.slot-wrong   { border-color: var(--wrong);   background: rgba(217,95,95,.05); }
+.s3-slot-label { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--text-muted); white-space: nowrap; padding-top: 2px; min-width: 48px; }
+.s3-slot-text { font-size: 13px; color: var(--text); line-height: 1.7; flex: 1; }
+.s3-slot-placeholder { font-size: 13px; color: var(--text-dim); font-style: italic; }
+.s3-remove { background: none; border: 1px solid var(--border); color: var(--text-dim); cursor: pointer; font-size: 12px; padding: 2px 8px; border-radius: 4px; transition: all .2s; white-space: nowrap; }
+.s3-remove:hover { border-color: var(--wrong); color: var(--wrong); }
+.s4-box { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px 24px 18px; margin-bottom: 18px; }
+.s4-qtype { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--accent3); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; }
+.s4-question { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 18px; line-height: 1.7; }
+.s4-opts { display: flex; flex-direction: column; gap: 8px; }
+.s4-opt { padding: 12px 16px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface2); font-size: 13.5px; cursor: pointer; transition: all .2s; color: var(--text); line-height: 1.6; }
+.s4-opt:hover { border-color: var(--accent3); color: var(--accent3); }
+.s4-opt.selected { border-color: var(--accent3); background: rgba(184,122,10,.08); color: var(--accent3); }
+.s4-opt.reveal-correct { border-color: var(--correct); background: rgba(42,157,111,.1); color: var(--correct); }
+.s4-opt.reveal-wrong   { border-color: var(--wrong);   background: rgba(217,95,95,.1); color: var(--wrong); }
+.sec2-notice { background: rgba(184,122,10,.06); border: 1px solid rgba(184,122,10,.2); border-radius: 10px; padding: 14px 18px; margin-bottom: 22px; font-size: 13px; color: var(--accent3); line-height: 1.7; }
+.unscramble-block { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px 20px 18px; margin-bottom: 16px; }
+.us-label { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--accent2); letter-spacing: 2px; margin-bottom: 8px; }
+.us-kr-hint { font-size: 13px; color: var(--text-muted); margin-bottom: 14px; line-height: 1.7; background: rgba(217,95,95,.05); border-left: 3px solid var(--accent2); padding: 8px 12px; border-radius: 0 6px 6px 0; }
+.us-answer-zone { min-height: 52px; background: var(--surface2); border: 1.5px dashed var(--border); border-radius: 8px; padding: 10px 14px; margin-bottom: 12px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; transition: border-color .2s; }
+.us-answer-zone.has-words { border-color: var(--accent); border-style: solid; }
+.us-answer-zone.correct-zone { border-color: var(--correct); background: rgba(42,157,111,.05); }
+.us-answer-zone.wrong-zone  { border-color: var(--wrong);   background: rgba(217,95,95,.05); }
+.us-word-pool { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.us-word { display: inline-block; padding: 6px 12px; border-radius: 6px; border: 1px solid var(--accent); background: rgba(74,124,240,.1); color: var(--accent); font-size: 13px; font-family: 'Space Mono', monospace; cursor: pointer; transition: all .2s; user-select: none; }
+.us-word:hover { background: rgba(74,124,240,.22); transform: translateY(-1px); }
+.us-word.in-answer { border-color: var(--accent3); background: rgba(184,122,10,.1); color: var(--accent3); }
+.us-word.in-answer:hover { background: rgba(217,95,95,.1); color: var(--wrong); border-color: var(--wrong); }
+.us-actions { display: flex; gap: 8px; align-items: center; }
+.us-reset-btn { background: none; border: 1px solid var(--border); border-radius: 6px; color: var(--text-muted); font-size: 12px; padding: 5px 14px; cursor: pointer; }
+.us-reset-btn:hover { border-color: var(--text-muted); color: var(--text); }
+.us-check-btn { background: var(--accent2); border: none; border-radius: 6px; color: #fff; font-size: 12px; font-family: 'Space Mono', monospace; padding: 6px 16px; cursor: pointer; font-weight: 700; }
+.us-check-btn:hover { opacity: .85; }
+.us-result { font-size: 12px; margin-top: 8px; padding: 8px 12px; border-radius: 6px; display: none; }
+.us-result.show { display: block; }
+.us-result.pass { background: rgba(42,157,111,.1); color: var(--correct); border: 1px solid rgba(42,157,111,.3); }
+.us-result.fail { background: rgba(217,95,95,.1); color: var(--wrong); border: 1px solid rgba(217,95,95,.3); }
+.check-btn { display: inline-flex; align-items: center; gap: 8px; padding: 11px 26px; border-radius: 8px; font-size: 13px; font-family: 'Space Mono', monospace; cursor: pointer; border: none; background: var(--accent); color: #fff; font-weight: 700; transition: all .2s; margin-top: 14px; letter-spacing: 1px; }
+.check-btn:hover { background: #6e9af5; transform: translateY(-1px); }
+.result-banner { display: none; margin-top: 14px; padding: 12px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; align-items: center; gap: 8px; }
+.result-banner.show { display: flex; }
+.result-banner.pass { background: rgba(42,157,111,.1); border: 1px solid var(--correct); color: var(--correct); }
+.result-banner.fail { background: rgba(217,95,95,.1); border: 1px solid var(--wrong); color: var(--wrong); }
+.gw-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(74,124,240,.08); border: 1px solid rgba(74,124,240,.2); border-radius: 8px; padding: 8px 14px; margin-bottom: 24px; font-size: 12px; color: var(--accent); font-family: 'Space Mono', monospace; }
+@media (max-width: 600px) { .s2-opts { grid-template-columns: 1fr; } .stage-btn { padding: 5px 9px; font-size: 11px; } }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div>
+    <div class="logo">Reading Lab</div>
+    <div class="subtitle">2027 EBS 수능특강 영어 · 15강 Gateway</div>
+  </div>
+  <a class="back-link" href="jongchon3_review_15.html">← 목록으로</a>
+</header>
+
+<div class="main-wrap">
+  <div class="gw-badge">🚪 Gateway · 2026학년도 수능 35번</div>
+  <div class="passage-title">Gateway · 26005-0071</div>
+  <div class="passage-headline">Self-Care &amp; Prioritization</div>
+  <div class="passage-desc">자기돌봄은 왜 항상 가장 먼저 포기되는가? 누적된 영향을 인식해야 한다.</div>
+
+  <div class="stage-nav">
+    <button class="stage-btn active" onclick="switchStage(1)" id="nav1">STAGE 1<span class="dot">●</span></button>
+    <button class="stage-btn" onclick="switchStage(2)" id="nav2">STAGE 2<span class="dot">●</span></button>
+    <button class="stage-btn" onclick="switchStage(3)" id="nav3">STAGE 3<span class="dot">●</span></button>
+    <button class="stage-btn" onclick="switchStage(4)" id="nav4">STAGE 4<span class="dot">●</span></button>
+    <button class="stage-btn" onclick="switchStage(5)" id="nav5">§2 변형<span class="dot">●</span></button>
+    <button class="stage-btn" onclick="switchStage(6)" id="nav6">✍ 서술형</button>
+  </div>
+
+  <!-- ── STAGE 1 ── -->
+  <div class="stage-panel active" id="s1">
+    <span class="section-label sec1">Section 1 · Stage 1</span>
+    <div class="stage-heading">📌 청크 해석 + 핵심어휘 빈칸</div>
+    <div class="stage-desc">동사·준동사·핵심 어휘 자리를 영어 보기에서 골라 채우세요.</div>
+
+    <div class="chunk-row">
+      <div class="chunk-meta">S1 · 주어 + 동사 + 부정사구</div>
+      <div class="chunk-en">
+        There are few of us / who don't at least
+        <span class="b-wrap"><select onchange="markBlank(this,'want to make')"><option value="">▾</option><option>refuse to make</option><option>want to make</option><option>fail to find</option><option>choose to skip</option></select></span>
+        time / for
+        <span class="b-wrap"><select onchange="markBlank(this,'self-care')"><option value="">▾</option><option>work-related</option><option>self-care</option><option>competitive</option><option>deadline-driven</option></select></span>
+        activities / such as exercise, hobbies, or relaxation
+      </div>
+      <div class="chunk-kr">우리 중 적어도 자기돌봄 활동을 위한 시간을 / 만들고 싶지 않은 사람은 거의 없다 / 운동, 취미, 휴식 같은</div>
+    </div>
+
+    <div class="chunk-row">
+      <div class="chunk-meta">S2 · 역접 + 수동태</div>
+      <div class="chunk-en">
+        We start each day with the best of
+        <span class="b-wrap"><select onchange="markBlank(this,'intentions')"><option value="">▾</option><option>excuses</option><option>intentions</option><option>mistakes</option><option>failures</option></select></span>
+        / but then
+        <span class="b-wrap"><select onchange="markBlank(this,'get stuck')"><option value="">▾</option><option>get inspired</option><option>get stuck</option><option>stay focused</option><option>move forward</option></select></span>
+        by the flood of email messages / or
+        <span class="b-wrap"><select onchange="markBlank(this,'pulled into')"><option value="">▾</option><option>kept away from</option><option>pulled into</option><option>released from</option><option>invited to skip</option></select></span>
+        an unexpected meeting
+      </div>
+      <div class="chunk-kr">우리는 매일 최선의 의도로 시작하지만 / 쏟아지는 이메일에 갇히거나 / 예상치 못한 회의로 끌려들어간다</div>
+    </div>
+
+    <div class="chunk-row">
+      <div class="chunk-meta">S3 ① · 부사절 + 주어</div>
+      <div class="chunk-en">
+        As we struggle to
+        <span class="b-wrap"><select onchange="markBlank(this,'reprioritize')"><option value="">▾</option><option>ignore priorities</option><option>reprioritize</option><option>abandon tasks</option><option>complete nothing</option></select></span>
+        so we can get everything done / before our
+        <span class="b-wrap"><select onchange="markBlank(this,'deadlines')"><option value="">▾</option><option>meetings</option><option>deadlines</option><option>vacations</option><option>promotions</option></select></span>
+        , / often our self-care activities are the first thing to be
+        <span class="b-wrap"><select onchange="markBlank(this,'given up')"><option value="">▾</option><option>prioritized</option><option>given up</option><option>completed</option><option>scheduled</option></select></span>
+      </div>
+      <div class="chunk-kr">마감 전에 모든 것을 끝내기 위해 우선순위를 다시 정하려 애쓰면서 / 종종 자기돌봄 활동이 가장 먼저 포기된다</div>
+    </div>
+
+    <div class="chunk-row">
+      <div class="chunk-meta">S4 ② · 양보절</div>
+      <div class="chunk-en">
+        No matter how much we
+        <span class="b-wrap"><select onchange="markBlank(this,'plan')"><option value="">▾</option><option>rest</option><option>plan</option><option>worry</option><option>argue</option></select></span>
+        , / we all
+        <span class="b-wrap"><select onchange="markBlank(this,'occasionally')"><option value="">▾</option><option>never</option><option>occasionally</option><option>constantly</option><option>rarely</option></select></span>
+        have days when that happens
+      </div>
+      <div class="chunk-kr">아무리 많이 계획해도 / 우리 모두는 때때로 그런 일이 일어나는 날이 있다</div>
+    </div>
+
+    <div class="chunk-row">
+      <div class="chunk-meta">S5 ③ · 비교 구조</div>
+      <div class="chunk-en">
+        In the short term, / the
+        <span class="b-wrap"><select onchange="markBlank(this,'impact')"><option value="">▾</option><option>pleasure</option><option>impact</option><option>memory</option><option>cost</option></select></span>
+        of missing that
+        <span class="b-wrap"><select onchange="markBlank(this,'grant deadline')"><option value="">▾</option><option>woodworking class</option><option>grant deadline</option><option>design class</option><option>exercise session</option></select></span>
+        / may be greater than / the impact of missing a woodworking class
+      </div>
+      <div class="chunk-kr">단기적으로 / 그 보조금 마감을 놓친 영향이 / 목공 수업을 놓친 영향보다 더 클 수 있다</div>
+    </div>
+
+    <div class="chunk-row">
+      <div class="chunk-meta">S6 ⑤ · 역접 + 중요성 강조</div>
+      <div class="chunk-en">
+        But it's important to
+        <span class="b-wrap"><select onchange="markBlank(this,'recognize')"><option value="">▾</option><option>ignore</option><option>recognize</option><option>deny</option><option>celebrate</option></select></span>
+        the
+        <span class="b-wrap"><select onchange="markBlank(this,'cumulative')"><option value="">▾</option><option>temporary</option><option>cumulative</option><option>minimal</option><option>immediate</option></select></span>
+        impact of not prioritizing self-care / and to make sure that in the long term, / this is the
+        <span class="b-wrap"><select onchange="markBlank(this,'exception')"><option value="">▾</option><option>norm</option><option>exception</option><option>standard</option><option>routine</option></select></span>
+        rather than the norm
+      </div>
+      <div class="chunk-kr">하지만 자기돌봄을 우선시하지 않는 것의 누적된 영향을 인식하고 / 장기적으로 이것이 표준이 아닌 예외임을 확인하는 것이 중요하다</div>
+    </div>
+
+    <button class="check-btn" onclick="checkStage1()">✓ 전체 채점</button>
+    <div class="result-banner" id="s1-result"></div>
+  </div>
+
+  <!-- ── STAGE 2 ── -->
+  <div class="stage-panel" id="s2">
+    <span class="section-label sec1">Section 1 · Stage 2</span>
+    <div class="stage-heading">📋 문장별 요약 4지선다</div>
+    <div class="stage-desc">지문 전체를 읽고, 각 문장의 핵심 내용을 골라보세요. ④번 문장은 흐름에 무관한 문장이에요!</div>
+
+    <div class="full-passage-box">
+      <div class="fp-title">FULL PASSAGE · Gateway 15</div>
+      <div class="fp-sentence">There are few of us who don't want to make time for <span class="hl">self-care activities</span> such as exercise, hobbies, or relaxation.</div>
+      <div class="fp-sentence">We start each day with the best of <span class="hl">intentions</span> but then <span class="hl">get stuck</span> by emails or pulled into unexpected meetings.</div>
+      <div class="fp-sentence">① As we struggle to <span class="hl">reprioritize</span>, often our <span class="hl">self-care activities are the first to be given up</span>.</div>
+      <div class="fp-sentence">② No matter how much we plan, we all <span class="hl">occasionally</span> have days when that happens.</div>
+      <div class="fp-sentence">③ In the short term, missing a <span class="hl">grant deadline</span> may matter more than missing a woodworking class.</div>
+      <div class="fp-sentence"><span class="odd">④ Needless to say, we should enroll in woodworking before design class — more competitive and beneficial. ← 흐름 무관</span></div>
+      <div class="fp-sentence">⑤ But it's important to recognize the <span class="hl">cumulative impact</span> of not prioritizing self-care — make it the <span class="hl">exception, not the norm</span>.</div>
+    </div>
+
+    <div class="s2-qblock" data-correct="1" id="q1">
+      <div class="s2-qnum">Q1 · 도입 + 문장 ①</div>
+      <div class="s2-question">자기돌봄이 항상 먼저 포기되는 이유는?</div>
+      <div class="s2-opts">
+        <div class="s2-opt" onclick="pickS2(this,'q1',false)">① 자기돌봄이 실제로 중요하지 않기 때문에</div>
+        <div class="s2-opt" onclick="pickS2(this,'q1',true)">② 이메일·예상치 못한 회의로 인해 마감 전 우선순위를 재조정하면서</div>
+        <div class="s2-opt" onclick="pickS2(this,'q1',false)">③ 운동이나 취미가 마감보다 항상 덜 중요하기 때문에</div>
+        <div class="s2-opt" onclick="pickS2(this,'q1',false)">④ 상사가 자기돌봄 시간을 허락하지 않기 때문에</div>
+      </div>
+    </div>
+
+    <div class="s2-qblock" data-correct="0" id="q2">
+      <div class="s2-qnum">Q2 · 문장 ② + ③</div>
+      <div class="s2-question">단기적 관점에서 자기돌봄 포기가 받아들여지는 이유는?</div>
+      <div class="s2-opts">
+        <div class="s2-opt" onclick="pickS2(this,'q2',true)">① 누구나 가끔 그런 날이 있고, 단기적으로 업무 마감이 더 큰 영향을 미치기 때문에</div>
+        <div class="s2-opt" onclick="pickS2(this,'q2',false)">② 자기돌봄은 주말에 몰아서 해도 충분하기 때문에</div>
+        <div class="s2-opt" onclick="pickS2(this,'q2',false)">③ 직장에서의 성과가 개인 건강보다 항상 우선이기 때문에</div>
+        <div class="s2-opt" onclick="pickS2(this,'q2',false)">④ 목공 수업이 보조금 마감보다 더 중요하기 때문에</div>
+      </div>
+    </div>
+
+    <div class="s2-qblock" data-correct="2" id="q3">
+      <div class="s2-qnum">Q3 · 흐름 무관 문장 찾기</div>
+      <div class="s2-question">전체 흐름과 관계 없는 문장은? (수능형)</div>
+      <div class="s2-opts">
+        <div class="s2-opt" onclick="pickS2(this,'q3',false)">① 자기돌봄이 우선순위에서 밀려나는 현실</div>
+        <div class="s2-opt" onclick="pickS2(this,'q3',false)">② 단기적으로는 업무 마감이 더 중요할 수 있음</div>
+        <div class="s2-opt" onclick="pickS2(this,'q3',true)">③ ④목공 수업을 디자인 수업보다 먼저 등록해야 한다는 조언</div>
+        <div class="s2-opt" onclick="pickS2(this,'q3',false)">④ 장기적으로 자기돌봄 포기가 예외여야 함을 강조</div>
+      </div>
+    </div>
+
+    <div class="s2-qblock" data-correct="1" id="q4">
+      <div class="s2-qnum">Q4 · 문장 ⑤ 결론</div>
+      <div class="s2-question">글쓴이가 궁극적으로 강조하는 것은?</div>
+      <div class="s2-opts">
+        <div class="s2-opt" onclick="pickS2(this,'q4',false)">① 자기돌봄은 항상 업무보다 우선되어야 한다</div>
+        <div class="s2-opt" onclick="pickS2(this,'q4',true)">② 자기돌봄을 포기하는 것의 누적 영향을 인식하고 장기적으로 예외로 만들어야 한다</div>
+        <div class="s2-opt" onclick="pickS2(this,'q4',false)">③ 마감 기한은 개인 건강보다 덜 중요하다</div>
+        <div class="s2-opt" onclick="pickS2(this,'q4',false)">④ 목공이나 운동 같은 취미는 생산성을 높인다</div>
+      </div>
+    </div>
+
+    <button class="check-btn" onclick="gradeAllS2(4,'s2-result','nav2')">✓ 채점하기</button>
+    <div class="result-banner" id="s2-result"></div>
+  </div>
+
+  <!-- ── STAGE 3 ── -->
+  <div class="stage-panel" id="s3">
+    <span class="section-label sec1">Section 1 · Stage 3</span>
+    <div class="stage-heading">🧩 요약 문장 배치</div>
+    <div class="stage-desc">보기에서 알맞은 요약 문장을 골라 서론·본론·예시·결론 자리에 배치해보세요.</div>
+
+    <div class="s3-opts-label">[ 보기 ]</div>
+    <div class="s3-opts" id="s3-pool">
+      <div class="s3-opt" onclick="placeS3('intro',this,'A')">
+        <div class="s3-main">A. 대부분의 사람들은 자기돌봄 활동을 원하지만, 일상의 업무 압박으로 가장 먼저 포기하게 된다.</div>
+        <div class="s3-easy">💬 운동이나 취미를 하고 싶은데 이메일이랑 갑작스러운 회의에 치이다 보면 그게 제일 먼저 사라져버려.</div>
+      </div>
+      <div class="s3-opt" onclick="placeS3('body',this,'B')">
+        <div class="s3-main">B. 우선순위를 재조정하는 과정에서 자기돌봄은 마감보다 덜 긴급하게 보여 반복적으로 희생된다.</div>
+        <div class="s3-easy">💬 마감이 다가오면 "오늘은 어쩔 수 없지" 하고 운동을 미루게 되는데, 이게 자꾸 반복되는 거야.</div>
+      </div>
+      <div class="s3-opt" onclick="placeS3('example',this,'C')">
+        <div class="s3-main">C. 단기적으로는 보조금 마감 같은 업무가 목공 수업보다 더 큰 영향을 미치기에 이런 선택이 합리적으로 느껴진다.</div>
+        <div class="s3-easy">💬 오늘 당장 보조금 마감을 놓치면 큰일나지만 목공 수업 한 번 빠지는 건 별일 아닌 것처럼 느껴지잖아.</div>
+      </div>
+      <div class="s3-opt" onclick="placeS3('conclusion',this,'D')">
+        <div class="s3-main">D. 그러나 자기돌봄 포기의 누적 영향을 인식하고, 장기적으로 이것이 예외가 되도록 해야 한다.</div>
+        <div class="s3-easy">💬 한 번은 괜찮지만 계속 반복되면 결국 몸과 마음이 무너져 — 그게 일상이 되지 않도록 주의해야 해.</div>
+      </div>
+    </div>
+
+    <div class="s3-structure">
+      <div class="s3-slot" id="slot-intro" data-correct="A">
+        <div class="s3-slot-label">서론</div>
+        <div class="s3-slot-text"><span class="s3-slot-placeholder">보기를 클릭해 배치하세요</span></div>
+        <button class="s3-remove" style="display:none" onclick="removeS3('intro')">✕ 제거</button>
+      </div>
+      <div class="s3-slot" id="slot-body" data-correct="B">
+        <div class="s3-slot-label">본론</div>
+        <div class="s3-slot-text"><span class="s3-slot-placeholder">보기를 클릭해 배치하세요</span></div>
+        <button class="s3-remove" style="display:none" onclick="removeS3('body')">✕ 제거</button>
+      </div>
+      <div class="s3-slot" id="slot-example" data-correct="C">
+        <div class="s3-slot-label">예시</div>
+        <div class="s3-slot-text"><span class="s3-slot-placeholder">보기를 클릭해 배치하세요</span></div>
+        <button class="s3-remove" style="display:none" onclick="removeS3('example')">✕ 제거</button>
+      </div>
+      <div class="s3-slot" id="slot-conclusion" data-correct="D">
+        <div class="s3-slot-label">결론</div>
+        <div class="s3-slot-text"><span class="s3-slot-placeholder">보기를 클릭해 배치하세요</span></div>
+        <button class="s3-remove" style="display:none" onclick="removeS3('conclusion')">✕ 제거</button>
+      </div>
+    </div>
+
+    <button class="check-btn" onclick="gradeS3('s3-result','nav3')">✓ 채점하기</button>
+    <div class="result-banner" id="s3-result"></div>
+  </div>
+
+  <!-- ── STAGE 4 ── -->
+  <div class="stage-panel" id="s4">
+    <span class="section-label sec1">Section 1 · Stage 4</span>
+    <div class="stage-heading">🎯 글의 제목 / 주제 / 대의</div>
+
+    <div class="s4-box">
+      <div class="s4-qtype">TITLE</div>
+      <div class="s4-question">Q1. 이 글의 제목으로 가장 적절한 것은?</div>
+      <div class="s4-opts" id="s4q1">
+        <div class="s4-opt" onclick="pickS4(this,'s4q1',false)">① Why Deadlines Always Come Before Personal Health</div>
+        <div class="s4-opt" onclick="pickS4(this,'s4q1',true)">② Don't Let Self-Care Become the First Thing You Sacrifice</div>
+        <div class="s4-opt" onclick="pickS4(this,'s4q1',false)">③ How to Plan a Perfect Daily Routine for Maximum Productivity</div>
+        <div class="s4-opt" onclick="pickS4(this,'s4q1',false)">④ The Benefits of Enrolling in Hobbies Like Woodworking</div>
+      </div>
+    </div>
+
+    <div class="s4-box">
+      <div class="s4-qtype">MAIN IDEA</div>
+      <div class="s4-question">Q2. 이 글의 주제로 가장 적절한 것은?</div>
+      <div class="s4-opts" id="s4q2">
+        <div class="s4-opt" onclick="pickS4(this,'s4q2',false)">① 업무 마감을 철저히 지키는 것이 성공의 핵심이다</div>
+        <div class="s4-opt" onclick="pickS4(this,'s4q2',false)">② 취미 활동은 생산성 향상에 직접적 효과가 없다</div>
+        <div class="s4-opt" onclick="pickS4(this,'s4q2',true)">③ 자기돌봄을 반복해서 포기하는 것의 누적 영향을 인식하고 장기적으로 예외로 만들어야 한다</div>
+        <div class="s4-opt" onclick="pickS4(this,'s4q2',false)">④ 매일 일정한 루틴을 유지하면 자기돌봄과 업무를 균형 있게 할 수 있다</div>
+      </div>
+    </div>
+
+    <div class="s4-box">
+      <div class="s4-qtype">PURPOSE</div>
+      <div class="s4-question">Q3. 이 글의 목적으로 가장 적절한 것은?</div>
+      <div class="s4-opts" id="s4q3">
+        <div class="s4-opt" onclick="pickS4(this,'s4q3',false)">① 자기돌봄 활동의 종류를 소개하기 위해</div>
+        <div class="s4-opt" onclick="pickS4(this,'s4q3',false)">② 업무 효율을 높이는 시간 관리 기술을 설명하기 위해</div>
+        <div class="s4-opt" onclick="pickS4(this,'s4q3',false)">③ 취미 활동 등록 방법을 안내하기 위해</div>
+        <div class="s4-opt" onclick="pickS4(this,'s4q3',true)">④ 자기돌봄을 지속적으로 포기하는 것의 위험성을 경고하고 장기적 균형을 촉구하기 위해</div>
+      </div>
+    </div>
+
+    <button class="check-btn" onclick="gradeS4(['s4q1','s4q2','s4q3'],'s4-result','nav4')">✓ 채점하기</button>
+    <div class="result-banner" id="s4-result"></div>
+  </div>
+
+  <!-- ── STAGE 5 VARIANT ── -->
+  <div class="stage-panel" id="s5">
+    <span class="section-label sec2">Section 2 · 유의어 변형</span>
+    <div class="sec2-notice">⚡ 핵심 어휘가 유의어/반의어로 교체된 변형 버전입니다. 올바른 영어를 고르세요.</div>
+    <div class="stage-heading">🔄 유의어 변형판 복습</div>
+
+    <div class="chunk-row">
+      <div class="chunk-meta">V1 · 도입 — 자기돌봄 활동 원하는 마음</div>
+      <div class="chunk-en">
+        Hardly anyone among us
+        <span class="b-wrap"><select onchange="markBlank(this,'fails to desire')"><option value="">▾</option><option>refuses to schedule</option><option>fails to desire</option><option>succeeds in avoiding</option><option>tends to overdo</option></select></span>
+        time for
+        <span class="b-wrap"><select onchange="markBlank(this,'personal wellness routines')"><option value="">▾</option><option>urgent deadlines</option><option>personal wellness routines</option><option>competitive tasks</option><option>professional obligations</option></select></span>
+        / like physical activity,
+        <span class="b-wrap"><select onchange="markBlank(this,'leisure pursuits')"><option value="">▾</option><option>work assignments</option><option>mandatory meetings</option><option>leisure pursuits</option><option>financial planning</option></select></span>
+        , or rest
+      </div>
+      <div class="chunk-kr">우리 중 운동, 여가 활동, 휴식 같은 개인 웰빙 루틴을 위한 시간을 원하지 않는 사람은 거의 없다</div>
+    </div>
+
+    <div class="chunk-row">
+      <div class="chunk-meta">V2 · 좋은 의도 → 방해</div>
+      <div class="chunk-en">
+        We
+        <span class="b-wrap"><select onchange="markBlank(this,'begin each day')"><option value="">▾</option><option>end each week</option><option>begin each day</option><option>start each month</option><option>finish each task</option></select></span>
+        with
+        <span class="b-wrap"><select onchange="markBlank(this,'the finest of motives')"><option value="">▾</option><option>a clear schedule</option><option>the finest of motives</option><option>a list of failures</option><option>a set of excuses</option></select></span>
+        / but are then
+        <span class="b-wrap"><select onchange="markBlank(this,'overwhelmed')"><option value="">▾</option><option>inspired</option><option>motivated</option><option>overwhelmed</option><option>organized</option></select></span>
+        by
+        <span class="b-wrap"><select onchange="markBlank(this,'an avalanche of emails')"><option value="">▾</option><option>a shortage of tasks</option><option>an avalanche of emails</option><option>a surplus of free time</option><option>a wave of motivation</option></select></span>
+        or
+        <span class="b-wrap"><select onchange="markBlank(this,'dragged into unplanned meetings')"><option value="">▾</option><option>excused from all meetings</option><option>dragged into unplanned meetings</option><option>given extra break time</option><option>freed from urgent tasks</option></select></span>
+      </div>
+      <div class="chunk-kr">우리는 매일 최선의 동기로 시작하지만 / 이메일의 쇄도에 압도되거나 / 계획에 없던 회의로 끌려 들어간다</div>
+    </div>
+
+    <div class="chunk-row">
+      <div class="chunk-meta">V3 ① · 자기돌봄이 가장 먼저 희생</div>
+      <div class="chunk-en">
+        As we
+        <span class="b-wrap"><select onchange="markBlank(this,'struggle to reorder our tasks')"><option value="">▾</option><option>choose to ignore our tasks</option><option>struggle to reorder our tasks</option><option>succeed in completing everything</option><option>refuse to change our schedule</option></select></span>
+        to meet
+        <span class="b-wrap"><select onchange="markBlank(this,'pressing work obligations')"><option value="">▾</option><option>personal goals</option><option>pressing work obligations</option><option>leisure activities</option><option>social commitments</option></select></span>
+        / before
+        <span class="b-wrap"><select onchange="markBlank(this,'due dates')"><option value="">▾</option><option>vacations</option><option>promotions</option><option>due dates</option><option>pay raises</option></select></span>
+        , / personal well-being activities are
+        <span class="b-wrap"><select onchange="markBlank(this,'first to be abandoned')"><option value="">▾</option><option>last to be considered</option><option>first to be abandoned</option><option>always maintained</option><option>never sacrificed</option></select></span>
+      </div>
+      <div class="chunk-kr">마감일 전에 긴박한 업무 의무를 맞추기 위해 과제를 재정렬하려 애쓰다보면 / 개인 웰빙 활동이 가장 먼저 포기된다</div>
+    </div>
+
+    <div class="chunk-row">
+      <div class="chunk-meta">V4 ② · 누구나 가끔 그런 날이 있음</div>
+      <div class="chunk-en">
+        <span class="b-wrap"><select onchange="markBlank(this,'Regardless of')"><option value="">▾</option><option>Because of</option><option>Regardless of</option><option>Thanks to</option><option>In addition to</option></select></span>
+        how thoroughly we
+        <span class="b-wrap"><select onchange="markBlank(this,'organize in advance')"><option value="">▾</option><option>ignore in advance</option><option>organize in advance</option><option>rush at the last minute</option><option>give up planning</option></select></span>
+        , / all of us
+        <span class="b-wrap"><select onchange="markBlank(this,'from time to time')"><option value="">▾</option><option>without exception</option><option>from time to time</option><option>always and consistently</option><option>almost never</option></select></span>
+        encounter days when
+        <span class="b-wrap"><select onchange="markBlank(this,'self-care gets skipped')"><option value="">▾</option><option>productivity peaks</option><option>self-care gets skipped</option><option>everything goes perfectly</option><option>deadlines are met easily</option></select></span>
+      </div>
+      <div class="chunk-kr">아무리 철저히 미리 계획해도 / 우리 모두는 때때로 자기돌봄이 생략되는 날을 맞이한다</div>
+    </div>
+
+    <div class="chunk-row">
+      <div class="chunk-meta">V5 ③ · 단기적으로는 업무 마감이 더 큰 영향</div>
+      <div class="chunk-en">
+        In the
+        <span class="b-wrap"><select onchange="markBlank(this,'near term')"><option value="">▾</option><option>distant future</option><option>near term</option><option>long run</option><option>overall picture</option></select></span>
+        , / the
+        <span class="b-wrap"><select onchange="markBlank(this,'consequences')"><option value="">▾</option><option>benefits</option><option>consequences</option><option>rewards</option><option>causes</option></select></span>
+        of
+        <span class="b-wrap"><select onchange="markBlank(this,'overlooking a funding deadline')"><option value="">▾</option><option>attending a woodworking class</option><option>overlooking a funding deadline</option><option>skipping a design course</option><option>missing a team meeting</option></select></span>
+        / may
+        <span class="b-wrap"><select onchange="markBlank(this,'outweigh')"><option value="">▾</option><option>equal</option><option>outweigh</option><option>fall below</option><option>match</option></select></span>
+        those of missing a craft workshop
+      </div>
+      <div class="chunk-kr">단기적으로는 / 자금 마감을 놓친 결과가 / 공예 워크숍을 빠진 것보다 더 클 수 있다</div>
+    </div>
+
+    <div class="chunk-row">
+      <div class="chunk-meta">V6 ⑤ · 누적 영향 인식 + 예외로 만들기</div>
+      <div class="chunk-en">
+        It is
+        <span class="b-wrap"><select onchange="markBlank(this,'vital')"><option value="">▾</option><option>pointless</option><option>optional</option><option>vital</option><option>impossible</option></select></span>
+        to
+        <span class="b-wrap"><select onchange="markBlank(this,'acknowledge')"><option value="">▾</option><option>ignore</option><option>celebrate</option><option>acknowledge</option><option>deny</option></select></span>
+        the
+        <span class="b-wrap"><select onchange="markBlank(this,'compounding')"><option value="">▾</option><option>temporary</option><option>immediate</option><option>compounding</option><option>minimal</option></select></span>
+        effect of
+        <span class="b-wrap"><select onchange="markBlank(this,'neglecting personal wellness')"><option value="">▾</option><option>prioritizing self-care</option><option>neglecting personal wellness</option><option>completing all deadlines</option><option>enrolling in hobbies</option></select></span>
+        / and ensure that over time, this
+        <span class="b-wrap"><select onchange="markBlank(this,'remains an anomaly')"><option value="">▾</option><option>becomes the standard</option><option>remains an anomaly</option><option>defines our lifestyle</option><option>is encouraged daily</option></select></span>
+        rather than the
+        <span class="b-wrap"><select onchange="markBlank(this,'default')"><option value="">▾</option><option>exception</option><option>surprise</option><option>default</option><option>achievement</option></select></span>
+      </div>
+      <div class="chunk-kr">개인 웰빙을 소홀히 하는 것의 복리 효과를 인정하는 것이 중요하며 / 시간이 지나도 그것이 기본값이 아닌 변칙으로 남도록 해야 한다</div>
+    </div>
+
+    <div class="s4-box" style="margin-top:20px">
+      <div class="s4-qtype">변형판 MAIN IDEA</div>
+      <div class="s4-question">변형 지문의 핵심으로 가장 적절한 것은?</div>
+      <div class="s4-opts" id="s5q1">
+        <div class="s4-opt" onclick="pickS4(this,'s5q1',false)">① 업무 효율을 위해 개인 시간을 완전히 포기해야 한다</div>
+        <div class="s4-opt" onclick="pickS4(this,'s5q1',true)">② 웰빙 활동을 지속적으로 희생하는 것의 누적 효과를 인식하고 예외로 유지해야 한다</div>
+        <div class="s4-opt" onclick="pickS4(this,'s5q1',false)">③ 긴박한 마감을 항상 개인 건강보다 우선해야 한다</div>
+        <div class="s4-opt" onclick="pickS4(this,'s5q1',false)">④ 취미 활동을 체계적으로 일정에 넣는 것이 생산성을 높인다</div>
+      </div>
+    </div>
+
+    <button class="check-btn" onclick="gradeVariant('s5-result','nav5')">✓ 변형 채점하기</button>
+    <div class="result-banner" id="s5-result"></div>
+  </div>
+
+  <!-- ── STAGE 6 UNSCRAMBLE ── -->
+  <div class="stage-panel" id="s6">
+    <span class="section-label sec2">서술형 대비 · Unscramble</span>
+    <div class="stage-heading">✍ 핵심 문장 단어 배열</div>
+    <div class="stage-desc">한국어 해석을 보고, 단어 조각을 클릭해 올바른 순서로 배열하세요.</div>
+
+    <div class="unscramble-block" id="us-1">
+      <div class="us-label">KEY SENTENCE 01 · 핵심 메커니즘</div>
+      <div class="us-kr-hint">💡 우선순위를 다시 정하려 애쓰면서, 종종 우리의 자기돌봄 활동이 가장 먼저 포기되는 것이다.</div>
+      <div class="us-answer-zone" id="us-1-ans"></div>
+      <div class="us-word-pool" id="us-1-pool"></div>
+      <div class="us-actions">
+        <button class="us-reset-btn" onclick="resetUS('us-1')">↺ 초기화</button>
+        <button class="us-check-btn" onclick="checkUS('us-1')">CHECK</button>
+      </div>
+      <div class="us-result" id="us-1-result"></div>
+    </div>
+
+    <div class="unscramble-block" id="us-2">
+      <div class="us-label">KEY SENTENCE 02 · 결론 핵심</div>
+      <div class="us-kr-hint">💡 자기돌봄을 우선시하지 않는 것의 누적된 영향을 인식하고, 장기적으로 이것이 표준이 아닌 예외임을 확인하는 것이 중요하다.</div>
+      <div class="us-answer-zone" id="us-2-ans"></div>
+      <div class="us-word-pool" id="us-2-pool"></div>
+      <div class="us-actions">
+        <button class="us-reset-btn" onclick="resetUS('us-2')">↺ 초기화</button>
+        <button class="us-check-btn" onclick="checkUS('us-2')">CHECK</button>
+      </div>
+      <div class="us-result" id="us-2-result"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const US_DATA = {
+  'us-1': {
+    words: ['As','we','struggle','to','reprioritize','so','we','can','get','everything','done','before','our','deadlines',',','often','our','self-care','activities','are','the','first','thing','to','be','given','up','.'],
+    answer: 'As we struggle to reprioritize so we can get everything done before our deadlines , often our self-care activities are the first thing to be given up .'
+  },
+  'us-2': {
+    words: ["it's",'important','to','recognize','the','cumulative','impact','of','not','prioritizing','self-care','and','to','make','sure','that','in','the','long','term',',','this','is','the','exception','rather','than','the','norm','.'],
+    answer: "it's important to recognize the cumulative impact of not prioritizing self-care and to make sure that in the long term , this is the exception rather than the norm ."
+  }
+};
+
+const usState = {};
+function initUS(id) {
+  usState[id] = { placed: [], pool: [...US_DATA[id].words].sort(() => Math.random() - .5) };
+  renderUS(id);
+}
+function renderUS(id) {
+  const st = usState[id];
+  const poolEl = document.getElementById(id+'-pool');
+  const ansEl  = document.getElementById(id+'-ans');
+  poolEl.innerHTML = ''; ansEl.innerHTML = '';
+  st.pool.forEach((w, i) => {
+    const span = document.createElement('span');
+    span.className = 'us-word'; span.textContent = w;
+    span.onclick = () => moveToAnswer(id, i);
+    poolEl.appendChild(span);
+  });
+  st.placed.forEach((w, i) => {
+    const span = document.createElement('span');
+    span.className = 'us-word in-answer'; span.textContent = w;
+    span.onclick = () => moveToPool(id, i);
+    ansEl.appendChild(span);
+  });
+  if (st.placed.length > 0) ansEl.classList.add('has-words');
+  else { ansEl.classList.remove('has-words'); ansEl.innerHTML = '<span style="color:var(--text-dim);font-size:13px;font-style:italic">단어를 클릭해 여기에 배치하세요</span>'; }
+}
+function moveToAnswer(id, i) {
+  const st = usState[id]; const w = st.pool[i]; st.pool.splice(i,1); st.placed.push(w);
+  renderUS(id); clearUSResult(id);
+}
+function moveToPool(id, i) {
+  const st = usState[id]; const w = st.placed[i]; st.placed.splice(i,1); st.pool.push(w);
+  renderUS(id); clearUSResult(id);
+}
+function clearUSResult(id) {
+  const r = document.getElementById(id+'-result');
+  r.className='us-result'; r.style.display='none';
+  document.getElementById(id+'-ans').classList.remove('correct-zone','wrong-zone');
+}
+function resetUS(id) {
+  usState[id] = { placed: [], pool: [...US_DATA[id].words].sort(() => Math.random()-.5) };
+  renderUS(id); clearUSResult(id);
+}
+function checkUS(id) {
+  const placed = usState[id].placed.join(' ');
+  const correct = US_DATA[id].answer;
+  const isOk = placed === correct;
+  const ansEl = document.getElementById(id+'-ans');
+  ansEl.classList.remove('correct-zone','wrong-zone');
+  ansEl.classList.add(isOk ? 'correct-zone' : 'wrong-zone');
+  const r = document.getElementById(id+'-result');
+  r.className = 'us-result show ' + (isOk ? 'pass' : 'fail');
+  r.style.display = 'block';
+  r.textContent = isOk ? '✓ 정답입니다!' : `✗ 다시 확인해보세요. 정답: "${correct}"`;
+}
+
+function switchStage(n) {
+  document.querySelectorAll('.stage-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById(`s${n}`).classList.add('active');
+  document.querySelectorAll('.stage-btn').forEach((b,i) => b.classList.toggle('active', i===n-1));
+}
+function markBlank(sel, correct) {
+  if (!sel.value) { sel.className=''; return; }
+  sel.className = sel.value === correct ? 'correct' : 'wrong';
+}
+function checkStage1() {
+  const selects = document.querySelectorAll('#s1 select');
+  let total=0, correct=0;
+  selects.forEach(sel => { total++; if(sel.className==='correct') correct++; else if(!sel.className&&sel.value) sel.className='wrong'; });
+  const banner = document.getElementById('s1-result');
+  const pass = correct===total;
+  banner.className = `result-banner show ${pass?'pass':'fail'}`;
+  banner.textContent = pass ? `🎉 완벽! (${correct}/${total})` : `${correct}/${total} 정답 — 빨간 항목을 다시 확인하세요.`;
+  if(pass) document.getElementById('nav1').classList.add('done');
+}
+const s2Picks = {};
+function pickS2(el, blockId, isCorrect) {
+  if(s2Picks[blockId]?.locked) return;
+  document.querySelectorAll(`#${blockId} .s2-opt`).forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  s2Picks[blockId] = { el, isCorrect };
+}
+function gradeAllS2(count, resultId, navId) {
+  let total=0, correct=0;
+  for(let i=1; i<=count; i++) {
+    const id=`q${i}`; const block=document.getElementById(id); const pick=s2Picks[id]; total++;
+    const opts=block.querySelectorAll('.s2-opt'); const correctIdx=parseInt(block.dataset.correct);
+    if(pick?.el) { pick.el.classList.remove('selected'); pick.el.classList.add(pick.isCorrect?'reveal-correct':'reveal-wrong'); if(pick.isCorrect) correct++; block.classList.add(pick.isCorrect?'graded-correct':'graded-wrong'); }
+    opts[correctIdx].classList.add('reveal-correct');
+    if(s2Picks[id]) s2Picks[id].locked=true;
+  }
+  const banner=document.getElementById(resultId); const pass=correct===total;
+  banner.className=`result-banner show ${pass?'pass':'fail'}`;
+  banner.textContent=pass?`🎉 전부 정답! (${correct}/${total})`:`${correct}/${total} 정답 — 초록이 정답입니다.`;
+  if(pass) document.getElementById(navId).classList.add('done');
+}
+const s3Data = {};
+function placeS3(slot, optEl, label) {
+  if(optEl.classList.contains('used')) return;
+  const slotEl=document.getElementById(`slot-${slot}`);
+  const old=document.querySelector(`#s3-pool [data-placed="${slot}"]`);
+  if(old){old.classList.remove('used');old.removeAttribute('data-placed');}
+  s3Data[slot]=label; optEl.classList.add('used'); optEl.setAttribute('data-placed',slot);
+  slotEl.classList.add('filled'); slotEl.classList.remove('slot-correct','slot-wrong');
+  slotEl.querySelector('.s3-slot-text').innerHTML=optEl.innerHTML;
+  slotEl.querySelector('.s3-remove').style.display='inline-block';
+}
+function removeS3(slot) {
+  const slotEl=document.getElementById(`slot-${slot}`);
+  const opt=document.querySelector(`#s3-pool [data-placed="${slot}"]`);
+  if(opt){opt.classList.remove('used');opt.removeAttribute('data-placed');}
+  delete s3Data[slot];
+  slotEl.classList.remove('filled','slot-correct','slot-wrong');
+  slotEl.querySelector('.s3-slot-text').innerHTML='<span class="s3-slot-placeholder">보기를 클릭해 배치하세요</span>';
+  slotEl.querySelector('.s3-remove').style.display='none';
+}
+function gradeS3(resultId, navId) {
+  let correct=0;
+  ['intro','body','example','conclusion'].forEach(slot=>{
+    const slotEl=document.getElementById(`slot-${slot}`);
+    const placed=s3Data[slot]; const expected=slotEl.dataset.correct;
+    slotEl.classList.remove('slot-correct','slot-wrong','filled');
+    if(placed){const ok=placed===expected;if(ok)correct++;slotEl.classList.add(ok?'slot-correct':'slot-wrong');}
+  });
+  const banner=document.getElementById(resultId); const pass=correct===4;
+  banner.className=`result-banner show ${pass?'pass':'fail'}`;
+  banner.textContent=pass?'🎉 완벽한 구조 파악!':`${correct}/4 정답`;
+  if(pass) document.getElementById(navId).classList.add('done');
+}
+const s4Picks = {};
+function pickS4(el, groupId, isCorrect) {
+  if(s4Picks[groupId]?.locked) return;
+  document.querySelectorAll(`#${groupId} .s4-opt`).forEach(o=>o.classList.remove('selected'));
+  el.classList.add('selected'); s4Picks[groupId]={el,isCorrect};
+}
+function gradeS4(groupIds, resultId, navId) {
+  let correct=0, total=groupIds.length;
+  groupIds.forEach(gid=>{
+    const pick=s4Picks[gid];
+    if(pick?.el){pick.el.classList.remove('selected');pick.el.classList.add(pick.isCorrect?'reveal-correct':'reveal-wrong');if(pick.isCorrect)correct++;s4Picks[gid].locked=true;}
+  });
+  const banner=document.getElementById(resultId); const pass=correct===total;
+  banner.className=`result-banner show ${pass?'pass':'fail'}`;
+  banner.textContent=pass?'🎉 완벽!':`${correct}/${total} 정답`;
+  if(pass) document.getElementById(navId).classList.add('done');
+}
+function gradeVariant(resultId, navId) {
+  const selects=document.querySelectorAll('#s5 select');
+  let total=0, correct=0;
+  selects.forEach(sel=>{total++;if(sel.className==='correct')correct++;else if(!sel.className&&sel.value)sel.className='wrong';});
+  const mcId='s5q1'; const pick=s4Picks[mcId]; total++;
+  if(pick?.el){pick.el.classList.remove('selected');pick.el.classList.add(pick.isCorrect?'reveal-correct':'reveal-wrong');if(pick.isCorrect)correct++;s4Picks[mcId].locked=true;}
+  const banner=document.getElementById(resultId); const pass=correct===total;
+  banner.className=`result-banner show ${pass?'pass':'fail'}`;
+  banner.textContent=pass?'🎉 변형 완벽 통과!':`${correct}/${total} 정답`;
+  if(pass) document.getElementById(navId).classList.add('done');
+}
+window.addEventListener('DOMContentLoaded',()=>{Object.keys(US_DATA).forEach(id=>initUS(id));});
+</script>
+</body>
+</html>

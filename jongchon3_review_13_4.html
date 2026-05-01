@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>13강 4번 | McLuhan & Technology Extension</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700&family=Space+Mono:wght@400;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f5f0e8; --surface: #fdfaf4; --surface2: #ede8dc; --border: #d8d0bc;
+  --accent: #4a7cf0; --accent2: #d95f5f; --accent3: #b87a0a; --accent4: #2a9d6f;
+  --text: #2d2a22; --text-muted: #7a7060; --text-dim: #b0a890;
+  --correct: #2a9d6f; --wrong: #d95f5f;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: 'Noto Sans KR', sans-serif; min-height: 100vh; overflow-x: hidden; }
+.site-header { border-bottom: 1px solid var(--border); padding: 16px 28px; display: flex; align-items: center; gap: 14px; background: var(--surface); position: sticky; top: 0; z-index: 100; }
+.logo { font-family: 'Space Mono', monospace; font-size: 13px; color: var(--accent); letter-spacing: 2px; }
+.subtitle { font-size: 11px; color: var(--text-muted); }
+.back-link { margin-left: auto; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-family: 'Space Mono', monospace; border: 1px solid var(--border); background: transparent; color: var(--text-muted); text-decoration: none; transition: all .2s; }
+.back-link:hover { border-color: var(--accent); color: var(--accent); }
+.main-wrap { max-width: 960px; margin: 0 auto; padding: 36px 24px 80px; }
+.passage-panel { display: block; }
+.passage-title { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--accent); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 6px; }
+.passage-headline { font-family: 'Noto Serif KR', serif; font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+.passage-desc { font-size: 13px; color: var(--text-muted); margin-bottom: 28px; }
+.stage-nav { display: flex; gap: 4px; margin-bottom: 28px; flex-wrap: wrap; }
+.stage-btn { padding: 7px 14px; border-radius: 6px; font-size: 12px; font-family: 'Space Mono', monospace; cursor: pointer; border: 1px solid var(--border); background: transparent; color: var(--text-muted); transition: all .2s; }
+.stage-btn:hover { border-color: var(--accent); color: var(--accent); }
+.stage-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+.stage-btn .dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--accent4); margin-left: 5px; vertical-align: middle; opacity: 0; }
+.stage-btn.done .dot { opacity: 1; }
+.section-label { display: inline-block; padding: 3px 10px; border-radius: 4px; font-size: 10px; font-family: 'Space Mono', monospace; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px; }
+.section-label.sec1 { background: rgba(74,124,240,.1); color: var(--accent); border: 1px solid rgba(74,124,240,.25); }
+.section-label.sec2 { background: rgba(184,122,10,.1); color: var(--accent3); border: 1px solid rgba(184,122,10,.25); }
+.stage-panel { display: none; }
+.stage-panel.active { display: block; animation: fadeUp .3s ease; }
+@keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+.stage-heading { font-size: 17px; font-weight: 700; margin-bottom: 6px; }
+.stage-desc { font-size: 13px; color: var(--text-muted); margin-bottom: 22px; line-height: 1.7; }
+.chunk-row { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; margin-bottom: 14px; }
+.chunk-meta { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--text-dim); letter-spacing: .5px; margin-bottom: 8px; }
+.chunk-en { font-family: 'Noto Serif KR', serif; font-size: 15px; color: var(--text); line-height: 2.1; }
+.chunk-kr { font-size: 12.5px; color: var(--text-muted); line-height: 1.8; margin-top: 8px; padding-left: 10px; border-left: 2px solid var(--border); }
+.b-wrap { display: inline-block; position: relative; margin: 0 3px; vertical-align: middle; }
+.b-wrap select { appearance: none; -webkit-appearance: none; background: var(--surface2); border: 1px solid var(--accent); border-radius: 6px; color: var(--accent); font-size: 13px; padding: 3px 26px 3px 10px; cursor: pointer; font-family: 'Noto Sans KR', sans-serif; transition: all .2s; min-width: 110px; }
+.b-wrap::after { content:'▾'; position:absolute; right:8px; top:50%; transform:translateY(-50%); color:var(--accent); pointer-events:none; font-size:11px; }
+.b-wrap select.correct { border-color:var(--correct); color:var(--correct); background:rgba(42,157,111,.1); }
+.b-wrap select.wrong   { border-color:var(--wrong);   color:var(--wrong);   background:rgba(217,95,95,.1); }
+.full-passage-box { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px 22px; margin-bottom: 24px; }
+.fp-title { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--text-dim); letter-spacing: 1px; margin-bottom: 10px; }
+.fp-sentence { font-family: 'Noto Serif KR', serif; font-size: 14px; line-height: 1.9; color: var(--text); margin-bottom: 4px; }
+.fp-sentence span.hl { background: rgba(74,124,240,.12); border-radius: 3px; padding: 1px 3px; color: var(--accent); }
+.s2-qblock { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; margin-bottom: 14px; transition: border-color .2s; }
+.s2-qblock.graded-correct { border-color: var(--correct); }
+.s2-qblock.graded-wrong   { border-color: var(--wrong); }
+.s2-qnum { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--accent3); letter-spacing: 1px; margin-bottom: 6px; }
+.s2-question { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 14px; line-height: 1.7; }
+.s2-opts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.s2-opt { padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface2); font-size: 13px; cursor: pointer; transition: all .2s; color: var(--text); line-height: 1.5; }
+.s2-opt:hover { border-color: var(--accent); color: var(--accent); }
+.s2-opt.selected { border-color: var(--accent); background: rgba(74,124,240,.1); color: var(--accent); }
+.s2-opt.reveal-correct { border-color: var(--correct); background: rgba(42,157,111,.1); color: var(--correct); }
+.s2-opt.reveal-wrong   { border-color: var(--wrong);   background: rgba(217,95,95,.1); color: var(--wrong); }
+.s3-opts-label { font-size: 12px; color: var(--text-muted); margin-bottom: 8px; font-family: 'Space Mono', monospace; }
+.s3-opts { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+.s3-opt { padding: 12px 16px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface2); font-size: 13px; cursor: pointer; transition: all .2s; color: var(--text); line-height: 1.6; }
+.s3-opt:hover { border-color: var(--accent3); color: var(--accent3); }
+.s3-opt.used { opacity: .3; pointer-events: none; }
+.s3-main { font-size: 13px; font-weight: 500; }
+.s3-easy { font-size: 12px; color: var(--text-muted); margin-top: 4px; line-height: 1.6; padding-left: 8px; border-left: 2px solid var(--border); }
+.s3-structure { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+.s3-slot { display: flex; align-items: flex-start; gap: 12px; padding: 14px 16px; margin-bottom: 10px; border-radius: 8px; border: 1.5px dashed var(--border); min-height: 60px; transition: all .2s; }
+.s3-slot.filled { border-style: solid; border-color: var(--accent); background: rgba(74,124,240,.05); }
+.s3-slot.slot-correct { border-color: var(--correct); background: rgba(42,157,111,.05); }
+.s3-slot.slot-wrong   { border-color: var(--wrong);   background: rgba(217,95,95,.05); }
+.s3-slot-label { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--text-muted); white-space: nowrap; padding-top: 2px; min-width: 48px; }
+.s3-slot-text { font-size: 13px; color: var(--text); line-height: 1.7; flex: 1; }
+.s3-slot-placeholder { font-size: 13px; color: var(--text-dim); font-style: italic; }
+.s3-remove { background: none; border: 1px solid var(--border); color: var(--text-dim); cursor: pointer; font-size: 12px; padding: 2px 8px; border-radius: 4px; transition: all .2s; white-space: nowrap; }
+.s3-remove:hover { border-color: var(--wrong); color: var(--wrong); }
+.s4-box { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px 24px 18px; margin-bottom: 18px; }
+.s4-qtype { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--accent3); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; }
+.s4-question { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 18px; line-height: 1.7; }
+.s4-opts { display: flex; flex-direction: column; gap: 8px; }
+.s4-opt { padding: 12px 16px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface2); font-size: 13.5px; cursor: pointer; transition: all .2s; color: var(--text); line-height: 1.6; }
+.s4-opt:hover { border-color: var(--accent3); color: var(--accent3); }
+.s4-opt.selected { border-color: var(--accent3); background: rgba(184,122,10,.08); color: var(--accent3); }
+.s4-opt.reveal-correct { border-color: var(--correct); background: rgba(42,157,111,.1); color: var(--correct); }
+.s4-opt.reveal-wrong   { border-color: var(--wrong);   background: rgba(217,95,95,.1); color: var(--wrong); }
+.sec2-notice { background: rgba(184,122,10,.06); border: 1px solid rgba(184,122,10,.2); border-radius: 10px; padding: 14px 18px; margin-bottom: 22px; font-size: 13px; color: var(--accent3); line-height: 1.7; }
+.unscramble-block { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px 20px 18px; margin-bottom: 16px; }
+.us-label { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--accent2); letter-spacing: 2px; margin-bottom: 8px; }
+.us-kr-hint { font-size: 13px; color: var(--text-muted); margin-bottom: 14px; line-height: 1.7; background: rgba(217,95,95,.05); border-left: 3px solid var(--accent2); padding: 8px 12px; border-radius: 0 6px 6px 0; }
+.us-answer-zone { min-height: 52px; background: var(--surface2); border: 1.5px dashed var(--border); border-radius: 8px; padding: 10px 14px; margin-bottom: 12px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; transition: border-color .2s; }
+.us-answer-zone.has-words { border-color: var(--accent); border-style: solid; }
+.us-answer-zone.correct-zone { border-color: var(--correct); background: rgba(42,157,111,.05); }
+.us-answer-zone.wrong-zone  { border-color: var(--wrong);   background: rgba(217,95,95,.05); }
+.us-word-pool { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.us-word { display: inline-block; padding: 6px 12px; border-radius: 6px; border: 1px solid var(--accent); background: rgba(74,124,240,.1); color: var(--accent); font-size: 13px; font-family: 'Space Mono', monospace; cursor: pointer; transition: all .2s; user-select: none; }
+.us-word:hover { background: rgba(74,124,240,.22); transform: translateY(-1px); }
+.us-word.in-answer { border-color: var(--accent3); background: rgba(184,122,10,.1); color: var(--accent3); }
+.us-word.in-answer:hover { background: rgba(217,95,95,.1); color: var(--wrong); border-color: var(--wrong); }
+.us-actions { display: flex; gap: 8px; align-items: center; }
+.us-reset-btn { background: none; border: 1px solid var(--border); border-radius: 6px; color: var(--text-muted); font-size: 12px; padding: 5px 14px; cursor: pointer; transition: all .2s; }
+.us-reset-btn:hover { border-color: var(--text-muted); color: var(--text); }
+.us-check-btn { background: var(--accent2); border: none; border-radius: 6px; color: #fff; font-size: 12px; font-family: 'Space Mono', monospace; padding: 6px 16px; cursor: pointer; font-weight: 700; }
+.us-check-btn:hover { opacity: .85; }
+.us-result { font-size: 12px; margin-top: 8px; padding: 8px 12px; border-radius: 6px; display: none; }
+.us-result.show { display: block; }
+.us-result.pass { background: rgba(42,157,111,.1); color: var(--correct); border: 1px solid rgba(42,157,111,.3); }
+.us-result.fail { background: rgba(217,95,95,.1); color: var(--wrong); border: 1px solid rgba(217,95,95,.3); }
+.check-btn { display: inline-flex; align-items: center; gap: 8px; padding: 11px 26px; border-radius: 8px; font-size: 13px; font-family: 'Space Mono', monospace; cursor: pointer; border: none; background: var(--accent); color: #fff; font-weight: 700; transition: all .2s; margin-top: 14px; letter-spacing: 1px; }
+.check-btn:hover { background: #6e9af5; transform: translateY(-1px); }
+.result-banner { display: none; margin-top: 14px; padding: 12px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; align-items: center; gap: 8px; }
+.result-banner.show { display: flex; }
+.result-banner.pass { background: rgba(42,157,111,.1); border: 1px solid var(--correct); color: var(--correct); }
+.result-banner.fail { background: rgba(217,95,95,.1); border: 1px solid var(--wrong); color: var(--wrong); }
+@media (max-width: 600px) { .s2-opts { grid-template-columns: 1fr; } .stage-btn { padding: 5px 9px; font-size: 11px; } }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div>
+    <div class="logo">Reading Lab</div>
+    <div class="subtitle">2027 EBS 수능특강 영어 · 13강 04번</div>
+  </div>
+  <a class="back-link" href="jongchon3_review_13.html">← 목록으로</a>
+</header>
+
+<div class="main-wrap">
+<div class="passage-panel active">
+  <div class="passage-title">Passage 04 · 26005-0065</div>
+  <div class="passage-headline">McLuhan &amp; Technology Extension</div>
+  <div class="passage-desc">기술 확장이 인간 능력을 절단한다? McLuhan의 경고.</div>
+
+  <div class="stage-nav">
+    <button class="stage-btn active" onclick="switchStage(1)" id="p0-nav1">STAGE 1<span class="dot">●</span></button>
+    <button class="stage-btn" onclick="switchStage(2)" id="p0-nav2">STAGE 2<span class="dot">●</span></button>
+    <button class="stage-btn" onclick="switchStage(3)" id="p0-nav3">STAGE 3<span class="dot">●</span></button>
+    <button class="stage-btn" onclick="switchStage(4)" id="p0-nav4">STAGE 4<span class="dot">●</span></button>
+    <button class="stage-btn" onclick="switchStage(5)" id="p0-nav5">§2 변형<span class="dot">●</span></button>
+    <button class="stage-btn" onclick="switchStage(6)" id="p0-nav6">✍ 서술형</button>
+  </div>
+
+  <!-- ── STAGE 1 ── -->
+  <div class="stage-panel active" id="p0-s1">
+    <span class="section-label sec1">Section 1 · Stage 1</span>
+    <div class="stage-heading">📌 청크 해석 + 핵심어휘 빈칸</div>
+    <div class="stage-desc">동사·준동사·핵심 어휘 자리를 영어 보기에서 골라 채우세요.</div>
+
+    <div class="chunk-row">
+      <div class="chunk-meta">S1 · 주어 + 동사 + 목적어</div>
+      <div class="chunk-en">
+        The strongest criticisms of the
+        <span class="b-wrap"><select onchange="markBlank(this,'overextension')"><option value="">▾</option><option>development</option><option>overextension</option><option>reduction</option><option>promotion</option></select></span>
+        of technology /
+        <span class="b-wrap"><select onchange="markBlank(this,'involve')"><option value="">▾</option><option>avoid</option><option>involve</option><option>reject</option><option>ignore</option></select></span>
+        claims of
+        <span class="b-wrap"><select onchange="markBlank(this,'dehumanization')"><option value="">▾</option><option>civilization</option><option>dehumanization</option><option>modernization</option><option>rationalization</option></select></span>
+      </div>
+      <div class="chunk-kr">기술의 과잉 확장에 대한 가장 강력한 비판은 / 비인간화 주장을 포함한다</div>
+    </div>
+
+    <div class="chunk-row">
+      <div class="chunk-meta">S2 · 주어 + 역접 + 준동사</div>
+      <div class="chunk-en">
+        McLuhan was primarily a techno-utopian, / but he also
+        <span class="b-wrap"><select onchange="markBlank(this,'cautioned')"><option value="">▾</option><option>celebrated</option><option>cautioned</option><option>ignored</option><option>promoted</option></select></span>
+        decades ago / against too much human
+        <span class="b-wrap"><select onchange="markBlank(this,'extension')"><option value="">▾</option><option>withdrawal</option><option>extension</option><option>rejection</option><option>isolation</option></select></span>
+        into technology
+      </div>
+      <div class="chunk-kr">McLuhan은 주로 기술 낙관론자였지만 / 수십 년 전에 경고했다 / 기술로의 과도한 인간 확장을 반대하며</div>
+    </div>
+
+    <div class="chunk-row">
+      <div class="chunk-meta">S3 · 주어 + 동사 + 명사절</div>
+      <div class="chunk-en">
+        McLuhan famously
+        <span class="b-wrap"><select onchange="markBlank(this,'claimed')"><option value="">▾</option><option>denied</option><option>claimed</option><option>avoided</option><option>ignored</option></select></span>
+        / that every media extension of man is an
+        <span class="b-wrap"><select onchange="markBlank(this,'amputation')"><option value="">▾</option><option>addition</option><option>improvement</option><option>amputation</option><option>enhancement</option></select></span>
+      </div>
+      <div class="chunk-kr">McLuhan은 유명하게 주장했다 / 인간의 모든 미디어 확장은 절단이라고</div>
+    </div>
+
+    <div class="chunk-row">
+      <div class="chunk-meta">S4 · 예시 병렬구조</div>
+      <div class="chunk-en">
+        Once we have a car, / we don't
+        <span class="b-wrap"><select onchange="markBlank(this,'walk')"><option value="">▾</option><option>drive</option><option>walk</option><option>run</option><option>cycle</option></select></span>
+        to the shops / ; once we have a computer hard-drive, / we don't have to
+        <span class="b-wrap"><select onchange="markBlank(this,'remember')"><option value="">▾</option><option>forget</option><option>create</option><option>remember</option><option>calculate</option></select></span>
+        things
+      </div>
+      <div class="chunk-kr">차가 생기면 걸어서 가게에 가지 않고 / 컴퓨터 하드드라이브가 생기면 직접 기억할 필요가 없다</div>
+    </div>
+
+    <div class="chunk-row">
+      <div class="chunk-meta">S5 · 주어 + 동사 + 이유절</div>
+      <div class="chunk-en">
+        Based on McLuhan's philosophy, / we are becoming
+        <span class="b-wrap"><select onchange="markBlank(this,'post-literate')"><option value="">▾</option><option>highly literate</option><option>post-literate</option><option>fully educated</option><option>deeply analytical</option></select></span>
+        / because we
+        <span class="b-wrap"><select onchange="markBlank(this,'rely on')"><option value="">▾</option><option>reject</option><option>rely on</option><option>avoid</option><option>create</option></select></span>
+        screens full of pictures, / rather than print media
+      </div>
+      <div class="chunk-kr">McLuhan의 철학에 따르면 / 우리는 탈문해화되고 있다 / 책 같은 인쇄 매체보다 그림 가득한 화면에 의존하기 때문에</div>
+    </div>
+
+    <div class="chunk-row">
+      <div class="chunk-meta">S6 · 결론 + 빈칸 추론</div>
+      <div class="chunk-en">
+        It is thus possible that extensions of human faculties, / through techno- and bio-enhancement, / will
+        <span class="b-wrap"><select onchange="markBlank(this,'bring about')"><option value="">▾</option><option>prevent</option><option>bring about</option><option>eliminate</option><option>celebrate</option></select></span>
+        <span class="b-wrap"><select onchange="markBlank(this,'arrested development')"><option value="">▾</option><option>rapid growth</option><option>arrested development</option><option>renewed emphasis</option><option>accelerated progression</option></select></span>
+        in the natural evolution of higher human faculties
+      </div>
+      <div class="chunk-kr">따라서 기술·생체 향상을 통한 인간 능력의 확장은 / 고등 인간 능력의 자연적 진화에서 / 발달 저해를 야기할 수 있다</div>
+    </div>
+
+    <button class="check-btn" onclick="checkStage1()">✓ 전체 채점</button>
+    <div class="result-banner" id="p0-s1-result"></div>
+  </div>
+
+  <!-- ── STAGE 2 ── -->
+  <div class="stage-panel" id="p0-s2">
+    <span class="section-label sec1">Section 1 · Stage 2</span>
+    <div class="stage-heading">📋 문장별 요약 4지선다</div>
+    <div class="stage-desc">지문 전체를 읽고, 각 문장의 핵심 내용을 가장 잘 나타낸 선택지를 고르세요.</div>
+
+    <div class="full-passage-box">
+      <div class="fp-title">FULL PASSAGE · 04</div>
+      <div class="fp-sentence">The strongest criticisms of the <span class="hl">overextension of technology</span> involve claims of <span class="hl">dehumanization</span>.</div>
+      <div class="fp-sentence">McLuhan was primarily a <span class="hl">techno-utopian</span>, but also <span class="hl">cautioned</span> against too much human extension into technology.</div>
+      <div class="fp-sentence">McLuhan claimed every <span class="hl">media extension of man is an amputation</span>.</div>
+      <div class="fp-sentence">Car → no walking; hard-drive → no remembering; GPS → <span class="hl">no navigating</span> — technology replaces natural human abilities.</div>
+      <div class="fp-sentence">We are becoming <span class="hl">post-literate</span> — relying on screens over print media.</div>
+      <div class="fp-sentence">Extensions through techno/bio-enhancement may bring about <span class="hl">arrested development</span> in the natural evolution of higher human faculties.</div>
+    </div>
+
+    <div class="s2-qblock" data-correct="1" id="p0-q1">
+      <div class="s2-qnum">Q1 · 문장 1~2</div>
+      <div class="s2-question">McLuhan의 입장을 가장 정확하게 설명한 것은?</div>
+      <div class="s2-opts">
+        <div class="s2-opt" onclick="pickS2(this,'p0-q1',false)">① 기술 발전을 전적으로 반대하는 반기술론자였다</div>
+        <div class="s2-opt" onclick="pickS2(this,'p0-q1',true)">② 기술 낙관론자이면서도 과도한 기술 의존에 경고했다</div>
+        <div class="s2-opt" onclick="pickS2(this,'p0-q1',false)">③ 기술이 인간을 완전히 대체할 것이라 주장했다</div>
+        <div class="s2-opt" onclick="pickS2(this,'p0-q1',false)">④ 비인간화는 기술과 무관하다고 주장했다</div>
+      </div>
+    </div>
+
+    <div class="s2-qblock" data-correct="0" id="p0-q2">
+      <div class="s2-qnum">Q2 · 문장 3~4</div>
+      <div class="s2-question">"media extension = amputation" 주장과 예시가 공통으로 보여주는 것은?</div>
+      <div class="s2-opts">
+        <div class="s2-opt" onclick="pickS2(this,'p0-q2',true)">① 기술이 편리함을 주는 동시에 인간의 자연적 능력을 약화시킨다</div>
+        <div class="s2-opt" onclick="pickS2(this,'p0-q2',false)">② 기술은 인간 능력을 보완하여 더 강화시킨다</div>
+        <div class="s2-opt" onclick="pickS2(this,'p0-q2',false)">③ 기술 발전은 인간의 지적 능력을 크게 향상시킨다</div>
+        <div class="s2-opt" onclick="pickS2(this,'p0-q2',false)">④ 기술 의존은 창의성을 높이는 결과를 낳는다</div>
+      </div>
+    </div>
+
+    <div class="s2-qblock" data-correct="1" id="p0-q3">
+      <div class="s2-qnum">Q3 · 문장 5~6</div>
+      <div class="s2-question">지문의 결론이 시사하는 것은?</div>
+      <div class="s2-opts">
+        <div class="s2-opt" onclick="pickS2(this,'p0-q3',false)">① 기술·생체 향상은 인간 고등 능력을 비약적으로 발전시킨다</div>
+        <div class="s2-opt" onclick="pickS2(this,'p0-q3',true)">② 기술·생체 향상을 통한 확장이 인간 고등 능력의 자연적 진화를 저해할 수 있다</div>
+        <div class="s2-opt" onclick="pickS2(this,'p0-q3',false)">③ 탈문해화는 미디어 교육으로 충분히 해결 가능하다</div>
+        <div class="s2-opt" onclick="pickS2(this,'p0-q3',false)">④ AI와 인간의 경쟁이 불가피하게 심화될 것이다</div>
+      </div>
+    </div>
+
+    <button class="check-btn" onclick="gradeAllS2(3,'p0-s2-result','p0-nav2')">✓ 채점하기</button>
+    <div class="result-banner" id="p0-s2-result"></div>
+  </div>
+
+  <!-- ── STAGE 3 ── -->
+  <div class="stage-panel" id="p0-s3">
+    <span class="section-label sec1">Section 1 · Stage 3</span>
+    <div class="stage-heading">🧩 요약 문장 배치</div>
+    <div class="stage-desc">보기에서 알맞은 요약 문장을 골라 서론·본론·예시·결론 자리에 배치해보세요.</div>
+
+    <div class="s3-opts-label">[ 보기 ]</div>
+    <div class="s3-opts" id="p0-s3-pool">
+      <div class="s3-opt" onclick="placeS3('intro',this,'A')">
+        <div class="s3-main">A. 기술 과잉 확장에 대한 비판은 비인간화 우려에서 시작되며, McLuhan은 기술 낙관론자이면서도 과도한 확장을 경고했다.</div>
+        <div class="s3-easy">💬 기술이 너무 많이 퍼지면 사람답지 않게 된다는 걱정이 있고, McLuhan도 기술을 좋아하면서 동시에 "너무 많이 쓰지 마"라고 경고했어.</div>
+      </div>
+      <div class="s3-opt" onclick="placeS3('body',this,'B')">
+        <div class="s3-main">B. McLuhan은 모든 미디어 확장은 인간 능력의 절단이라고 주장했다 — 기술이 편리함을 주는 대신 자연 능력을 대체한다.</div>
+        <div class="s3-easy">💬 새 기능이 생길수록 원래 우리가 갖고 있던 능력이 잘려나간다는 거야 — 마치 팔을 잘라내는 것처럼.</div>
+      </div>
+      <div class="s3-opt" onclick="placeS3('example',this,'C')">
+        <div class="s3-main">C. 차는 걷기를, 하드드라이브는 기억력을, GPS는 길 찾기 능력을 대체했고, 화면 의존은 독서 능력을 약화시킨다.</div>
+        <div class="s3-easy">💬 차 생기면 걷기 싫어지고, 스마트폰 생기면 외울 필요 없어지고, GPS 생기면 길 못 찾게 되는 것처럼 기술이 우리 능력을 가져가버려.</div>
+      </div>
+      <div class="s3-opt" onclick="placeS3('conclusion',this,'D')">
+        <div class="s3-main">D. 기술·생체 향상을 통한 인간 능력 확장은 결국 고등 인간 능력의 자연적 진화를 저해할 수 있다.</div>
+        <div class="s3-easy">💬 기술이 더 발전할수록 우리가 스스로 발전해야 할 고등 능력들이 자라지 못하고 멈춰버릴 수 있어.</div>
+      </div>
+    </div>
+
+    <div class="s3-structure">
+      <div class="s3-slot" id="p0-slot-intro" data-correct="A">
+        <div class="s3-slot-label">서론</div>
+        <div class="s3-slot-text"><span class="s3-slot-placeholder">보기를 클릭해 배치하세요</span></div>
+        <button class="s3-remove" style="display:none" onclick="removeS3('intro')">✕ 제거</button>
+      </div>
+      <div class="s3-slot" id="p0-slot-body" data-correct="B">
+        <div class="s3-slot-label">본론</div>
+        <div class="s3-slot-text"><span class="s3-slot-placeholder">보기를 클릭해 배치하세요</span></div>
+        <button class="s3-remove" style="display:none" onclick="removeS3('body')">✕ 제거</button>
+      </div>
+      <div class="s3-slot" id="p0-slot-example" data-correct="C">
+        <div class="s3-slot-label">예시</div>
+        <div class="s3-slot-text"><span class="s3-slot-placeholder">보기를 클릭해 배치하세요</span></div>
+        <button class="s3-remove" style="display:none" onclick="removeS3('example')">✕ 제거</button>
+      </div>
+      <div class="s3-slot" id="p0-slot-conclusion" data-correct="D">
+        <div class="s3-slot-label">결론</div>
+        <div class="s3-slot-text"><span class="s3-slot-placeholder">보기를 클릭해 배치하세요</span></div>
+        <button class="s3-remove" style="display:none" onclick="removeS3('conclusion')">✕ 제거</button>
+      </div>
+    </div>
+
+    <button class="check-btn" onclick="gradeS3('p0-s3-result','p0-nav3')">✓ 채점하기</button>
+    <div class="result-banner" id="p0-s3-result"></div>
+  </div>
+
+  <!-- ── STAGE 4 ── -->
+  <div class="stage-panel" id="p0-s4">
+    <span class="section-label sec1">Section 1 · Stage 4</span>
+    <div class="stage-heading">🎯 글의 제목 / 빈칸 / 주장</div>
+
+    <div class="s4-box">
+      <div class="s4-qtype">TITLE</div>
+      <div class="s4-question">Q1. 이 글의 제목으로 가장 적절한 것은?</div>
+      <div class="s4-opts" id="s4q1">
+        <div class="s4-opt" onclick="pickS4(this,'s4q1',false)">① Technology: The Ultimate Tool for Human Evolution</div>
+        <div class="s4-opt" onclick="pickS4(this,'s4q1',false)">② McLuhan's Vision: How Media Unites Humanity</div>
+        <div class="s4-opt" onclick="pickS4(this,'s4q1',true)">③ Every Extension Is an Amputation: Technology's Hidden Cost</div>
+        <div class="s4-opt" onclick="pickS4(this,'s4q1',false)">④ Post-Literacy: A New Era of Human Intelligence</div>
+      </div>
+    </div>
+
+    <div class="s4-box">
+      <div class="s4-qtype">BLANK · 수능형 빈칸</div>
+      <div class="s4-question">Q2. 지문 마지막 빈칸에 들어갈 말로 가장 적절한 것은?<br><span style="font-size:13px;color:var(--text-muted);font-weight:400">"extensions of human faculties...will bring about ___."</span></div>
+      <div class="s4-opts" id="s4q2">
+        <div class="s4-opt" onclick="pickS4(this,'s4q2',false)">① renewed emphasis on traditional literacy in modern society</div>
+        <div class="s4-opt" onclick="pickS4(this,'s4q2',false)">② accelerated progression in the intellectual growth of human cognition</div>
+        <div class="s4-opt" onclick="pickS4(this,'s4q2',false)">③ rapid changes in the application of human faculties to daily activities</div>
+        <div class="s4-opt" onclick="pickS4(this,'s4q2',true)">④ arrested development in the natural evolution of higher human faculties</div>
+        <div class="s4-opt" onclick="pickS4(this,'s4q2',false)">⑤ an unprecedented competition between human abilities and artificial intelligence</div>
+      </div>
+    </div>
+
+    <button class="check-btn" onclick="gradeS4(['s4q1','s4q2'],'p0-s4-result','p0-nav4')">✓ 채점하기</button>
+    <div class="result-banner" id="p0-s4-result"></div>
+  </div>
+
+  <!-- ── STAGE 5 VARIANT ── -->
+  <div class="stage-panel" id="p0-s5">
+    <span class="section-label sec2">Section 2 · 유의어 변형</span>
+    <div class="sec2-notice">⚡ 핵심 어휘가 유의어/반의어로 교체된 변형 버전입니다. 올바른 영어를 고르세요.</div>
+    <div class="stage-heading">🔄 유의어 변형판 복습</div>
+
+    <div class="chunk-row">
+      <div class="chunk-meta">V1 · McLuhan의 주장</div>
+      <div class="chunk-en">
+        McLuhan
+        <span class="b-wrap"><select onchange="markBlank(this,'warned')"><option value="">▾</option><option>celebrated</option><option>warned</option><option>ignored</option><option>promoted</option></select></span>
+        that each
+        <span class="b-wrap"><select onchange="markBlank(this,'technological enhancement')"><option value="">▾</option><option>human improvement</option><option>technological enhancement</option><option>cultural tradition</option><option>social agreement</option></select></span>
+        of human ability / simultaneously
+        <span class="b-wrap"><select onchange="markBlank(this,'diminishes')"><option value="">▾</option><option>strengthens</option><option>preserves</option><option>diminishes</option><option>expands</option></select></span>
+        a natural capacity
+      </div>
+      <div class="chunk-kr">McLuhan은 경고했다 / 인간 능력의 각 기술적 향상이 / 동시에 자연적 역량을 약화시킨다고</div>
+    </div>
+
+    <div class="chunk-row">
+      <div class="chunk-meta">V2 · 결론</div>
+      <div class="chunk-en">
+        It is therefore likely that tech-driven
+        <span class="b-wrap"><select onchange="markBlank(this,'augmentation')"><option value="">▾</option><option>rejection</option><option>isolation</option><option>augmentation</option><option>limitation</option></select></span>
+        of human abilities / may
+        <span class="b-wrap"><select onchange="markBlank(this,'hinder')"><option value="">▾</option><option>accelerate</option><option>hinder</option><option>celebrate</option><option>guarantee</option></select></span>
+        the
+        <span class="b-wrap"><select onchange="markBlank(this,'organic')"><option value="">▾</option><option>artificial</option><option>rapid</option><option>organic</option><option>logical</option></select></span>
+        growth of superior human faculties
+      </div>
+      <div class="chunk-kr">따라서 기술 주도의 인간 능력 증강은 / 우월한 인간 능력의 유기적 성장을 방해할 수 있다</div>
+    </div>
+
+    <div class="s4-box" style="margin-top:20px">
+      <div class="s4-qtype">변형판 MAIN IDEA</div>
+      <div class="s4-question">변형 지문의 핵심으로 가장 적절한 것은?</div>
+      <div class="s4-opts" id="s5q1">
+        <div class="s4-opt" onclick="pickS4(this,'s5q1',false)">① 기술 향상은 인간의 모든 능력을 균형 있게 발전시킨다</div>
+        <div class="s4-opt" onclick="pickS4(this,'s5q1',true)">② 기술 주도의 능력 확장이 오히려 인간 고등 능력의 자연적 성장을 저해할 수 있다</div>
+        <div class="s4-opt" onclick="pickS4(this,'s5q1',false)">③ AI와의 경쟁이 인간 능력 향상의 핵심 동력이다</div>
+        <div class="s4-opt" onclick="pickS4(this,'s5q1',false)">④ 기술을 완전히 거부해야만 인간 능력이 보존된다</div>
+      </div>
+    </div>
+
+    <button class="check-btn" onclick="gradeVariant('p0-s5-result','p0-nav5')">✓ 변형 채점하기</button>
+    <div class="result-banner" id="p0-s5-result"></div>
+  </div>
+
+  <!-- ── STAGE 6 UNSCRAMBLE ── -->
+  <div class="stage-panel" id="p0-s6">
+    <span class="section-label sec2">서술형 대비 · Unscramble</span>
+    <div class="stage-heading">✍ 핵심 문장 단어 배열</div>
+    <div class="stage-desc">한국어 해석을 보고, 단어 조각을 클릭해 올바른 순서로 배열하세요.</div>
+
+    <div class="unscramble-block" id="us-1">
+      <div class="us-label">KEY SENTENCE 01 · 핵심 주장</div>
+      <div class="us-kr-hint">💡 McLuhan은 인간의 모든 미디어 확장은 절단이라고 유명하게 주장했다.</div>
+      <div class="us-answer-zone" id="us-1-ans"></div>
+      <div class="us-word-pool" id="us-1-pool"></div>
+      <div class="us-actions">
+        <button class="us-reset-btn" onclick="resetUS('us-1')">↺ 초기화</button>
+        <button class="us-check-btn" onclick="checkUS('us-1')">CHECK</button>
+      </div>
+      <div class="us-result" id="us-1-result"></div>
+    </div>
+
+    <div class="unscramble-block" id="us-2">
+      <div class="us-label">KEY SENTENCE 02 · 결론</div>
+      <div class="us-kr-hint">💡 기술·생체 향상을 통한 인간 능력의 확장은 고등 인간 능력의 자연적 진화에서 발달 저해를 야기할 수 있다.</div>
+      <div class="us-answer-zone" id="us-2-ans"></div>
+      <div class="us-word-pool" id="us-2-pool"></div>
+      <div class="us-actions">
+        <button class="us-reset-btn" onclick="resetUS('us-2')">↺ 초기화</button>
+        <button class="us-check-btn" onclick="checkUS('us-2')">CHECK</button>
+      </div>
+      <div class="us-result" id="us-2-result"></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+const US_DATA = {
+  'us-1': {
+    words: ['McLuhan','famously','claimed','that','every','media','extension','of','man','is','an','amputation','.'],
+    answer: 'McLuhan famously claimed that every media extension of man is an amputation .'
+  },
+  'us-2': {
+    words: ['extensions','of','human','faculties',',','through','techno-','and','bio-enhancement',',','will','bring','about','arrested','development','in','the','natural','evolution','of','higher','human','faculties','.'],
+    answer: 'extensions of human faculties , through techno- and bio-enhancement , will bring about arrested development in the natural evolution of higher human faculties .'
+  }
+};
+
+const usState = {};
+function initUS(id) {
+  const data = US_DATA[id];
+  const shuffled = [...data.words].sort(() => Math.random() - .5);
+  usState[id] = { placed: [], pool: [...shuffled] };
+  renderUS(id);
+}
+function renderUS(id) {
+  const st = usState[id];
+  const poolEl = document.getElementById(id+'-pool');
+  const ansEl  = document.getElementById(id+'-ans');
+  poolEl.innerHTML = ''; ansEl.innerHTML = '';
+  st.pool.forEach((w, i) => {
+    const span = document.createElement('span');
+    span.className = 'us-word'; span.textContent = w;
+    span.onclick = () => moveToAnswer(id, i);
+    poolEl.appendChild(span);
+  });
+  st.placed.forEach((w, i) => {
+    const span = document.createElement('span');
+    span.className = 'us-word in-answer'; span.textContent = w;
+    span.onclick = () => moveToPool(id, i);
+    ansEl.appendChild(span);
+  });
+  if (st.placed.length > 0) ansEl.classList.add('has-words');
+  else { ansEl.classList.remove('has-words'); ansEl.innerHTML = '<span style="color:var(--text-dim);font-size:13px;font-style:italic">단어를 클릭해 여기에 배치하세요</span>'; }
+}
+function moveToAnswer(id, i) {
+  const st = usState[id]; const w = st.pool[i]; st.pool.splice(i,1); st.placed.push(w);
+  renderUS(id); clearUSResult(id);
+}
+function moveToPool(id, i) {
+  const st = usState[id]; const w = st.placed[i]; st.placed.splice(i,1); st.pool.push(w);
+  renderUS(id); clearUSResult(id);
+}
+function clearUSResult(id) {
+  const r = document.getElementById(id+'-result');
+  r.className='us-result'; r.style.display='none';
+  document.getElementById(id+'-ans').classList.remove('correct-zone','wrong-zone');
+}
+function resetUS(id) {
+  usState[id] = { placed: [], pool: [...US_DATA[id].words].sort(() => Math.random()-.5) };
+  renderUS(id); clearUSResult(id);
+}
+function checkUS(id) {
+  const placed = usState[id].placed.join(' ');
+  const correct = US_DATA[id].answer;
+  const isOk = placed === correct;
+  const ansEl = document.getElementById(id+'-ans');
+  ansEl.classList.remove('correct-zone','wrong-zone');
+  ansEl.classList.add(isOk ? 'correct-zone' : 'wrong-zone');
+  const r = document.getElementById(id+'-result');
+  r.className = 'us-result show ' + (isOk ? 'pass' : 'fail');
+  r.style.display = 'block';
+  r.textContent = isOk ? '✓ 정답입니다!' : `✗ 다시 확인해보세요. 정답: "${correct}"`;
+}
+
+function switchStage(n) {
+  document.querySelectorAll('.stage-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById(`p0-s${n}`).classList.add('active');
+  document.querySelectorAll('.stage-btn').forEach((b,i) => b.classList.toggle('active', i===n-1));
+}
+function markBlank(sel, correct) {
+  if (!sel.value) { sel.className=''; return; }
+  sel.className = sel.value === correct ? 'correct' : 'wrong';
+}
+function checkStage1() {
+  const selects = document.querySelectorAll('#p0-s1 select');
+  let total=0, correct=0;
+  selects.forEach(sel => { total++; if(sel.className==='correct') correct++; else if(!sel.className&&sel.value) sel.className='wrong'; });
+  const banner = document.getElementById('p0-s1-result');
+  const pass = correct===total;
+  banner.className = `result-banner show ${pass?'pass':'fail'}`;
+  banner.textContent = pass ? `🎉 완벽! (${correct}/${total})` : `${correct}/${total} 정답 — 빨간 항목을 다시 확인하세요.`;
+  if(pass) document.getElementById('p0-nav1').classList.add('done');
+}
+const s2Picks = {};
+function pickS2(el, blockId, isCorrect) {
+  if(s2Picks[blockId]?.locked) return;
+  document.querySelectorAll(`#${blockId} .s2-opt`).forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  s2Picks[blockId] = { el, isCorrect };
+}
+function gradeAllS2(count, resultId, navId) {
+  let total=0, correct=0;
+  for(let i=1; i<=count; i++) {
+    const id=`p0-q${i}`; const block=document.getElementById(id); const pick=s2Picks[id]; total++;
+    const opts=block.querySelectorAll('.s2-opt'); const correctIdx=parseInt(block.dataset.correct);
+    if(pick?.el) { pick.el.classList.remove('selected'); pick.el.classList.add(pick.isCorrect?'reveal-correct':'reveal-wrong'); if(pick.isCorrect) correct++; block.classList.add(pick.isCorrect?'graded-correct':'graded-wrong'); }
+    opts[correctIdx].classList.add('reveal-correct');
+    if(s2Picks[id]) s2Picks[id].locked=true;
+  }
+  const banner=document.getElementById(resultId); const pass=correct===total;
+  banner.className=`result-banner show ${pass?'pass':'fail'}`;
+  banner.textContent=pass?`🎉 전부 정답! (${correct}/${total})`:`${correct}/${total} 정답`;
+  if(pass) document.getElementById(navId).classList.add('done');
+}
+const s3Data = {};
+function placeS3(slot, optEl, label) {
+  if(optEl.classList.contains('used')) return;
+  const slotEl=document.getElementById(`p0-slot-${slot}`);
+  const old=document.querySelector(`#p0-s3-pool [data-placed="${slot}"]`);
+  if(old) { old.classList.remove('used'); old.removeAttribute('data-placed'); }
+  s3Data[slot]=label; optEl.classList.add('used'); optEl.setAttribute('data-placed',slot);
+  slotEl.classList.add('filled'); slotEl.classList.remove('slot-correct','slot-wrong');
+  slotEl.querySelector('.s3-slot-text').innerHTML=optEl.innerHTML;
+  slotEl.querySelector('.s3-remove').style.display='inline-block';
+}
+function removeS3(slot) {
+  const slotEl=document.getElementById(`p0-slot-${slot}`);
+  const opt=document.querySelector(`#p0-s3-pool [data-placed="${slot}"]`);
+  if(opt){opt.classList.remove('used');opt.removeAttribute('data-placed');}
+  delete s3Data[slot];
+  slotEl.classList.remove('filled','slot-correct','slot-wrong');
+  slotEl.querySelector('.s3-slot-text').innerHTML='<span class="s3-slot-placeholder">보기를 클릭해 배치하세요</span>';
+  slotEl.querySelector('.s3-remove').style.display='none';
+}
+function gradeS3(resultId, navId) {
+  let correct=0;
+  ['intro','body','example','conclusion'].forEach(slot=>{
+    const slotEl=document.getElementById(`p0-slot-${slot}`);
+    const placed=s3Data[slot]; const expected=slotEl.dataset.correct;
+    slotEl.classList.remove('slot-correct','slot-wrong','filled');
+    if(placed){const ok=placed===expected;if(ok)correct++;slotEl.classList.add(ok?'slot-correct':'slot-wrong');}
+  });
+  const banner=document.getElementById(resultId); const pass=correct===4;
+  banner.className=`result-banner show ${pass?'pass':'fail'}`;
+  banner.textContent=pass?'🎉 완벽한 구조 파악!':`${correct}/4 정답`;
+  if(pass) document.getElementById(navId).classList.add('done');
+}
+const s4Picks = {};
+function pickS4(el, groupId, isCorrect) {
+  if(s4Picks[groupId]?.locked) return;
+  document.querySelectorAll(`#${groupId} .s4-opt`).forEach(o=>o.classList.remove('selected'));
+  el.classList.add('selected'); s4Picks[groupId]={el,isCorrect};
+}
+function gradeS4(groupIds, resultId, navId) {
+  let correct=0, total=groupIds.length;
+  groupIds.forEach(gid=>{
+    const pick=s4Picks[gid];
+    if(pick?.el){pick.el.classList.remove('selected');pick.el.classList.add(pick.isCorrect?'reveal-correct':'reveal-wrong');if(pick.isCorrect)correct++;s4Picks[gid].locked=true;}
+  });
+  const banner=document.getElementById(resultId); const pass=correct===total;
+  banner.className=`result-banner show ${pass?'pass':'fail'}`;
+  banner.textContent=pass?'🎉 완벽!':`${correct}/${total} 정답`;
+  if(pass) document.getElementById(navId).classList.add('done');
+}
+function gradeVariant(resultId, navId) {
+  const selects=document.querySelectorAll('#p0-s5 select');
+  let total=0, correct=0;
+  selects.forEach(sel=>{total++;if(sel.className==='correct')correct++;else if(!sel.className&&sel.value)sel.className='wrong';});
+  const mcId='s5q1'; const pick=s4Picks[mcId]; total++;
+  if(pick?.el){pick.el.classList.remove('selected');pick.el.classList.add(pick.isCorrect?'reveal-correct':'reveal-wrong');if(pick.isCorrect)correct++;s4Picks[mcId].locked=true;}
+  const banner=document.getElementById(resultId); const pass=correct===total;
+  banner.className=`result-banner show ${pass?'pass':'fail'}`;
+  banner.textContent=pass?'🎉 변형 완벽 통과!':`${correct}/${total} 정답`;
+  if(pass) document.getElementById(navId).classList.add('done');
+}
+window.addEventListener('DOMContentLoaded',()=>{Object.keys(US_DATA).forEach(id=>initUS(id));});
+</script>
+</body>
+</html>
