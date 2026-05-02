@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>종촌고 1학년 4과 어법선택형 · 봄날 ENGLISH</title>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Black+Han+Sans&family=Noto+Sans+KR:wght@300;400;700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--ink:#2a2a2a;--soft:#7a7570;--bg:#f5efe6;--card:#fdf8f2;--border:#e0d8ce;--accent:#5c3d1e}
+body{font-family:"Noto Sans KR",sans-serif;background:var(--bg);min-height:100vh;color:var(--ink)}
+header{background:linear-gradient(135deg,#f7efe4,#f0e6d8 50%,#ece0d2);padding:28px 24px 20px;text-align:center;border-bottom:1px solid var(--border)}
+.logo-row{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;margin-bottom:8px}
+.logo-circle{width:48px;height:48px;border-radius:50%;background:#f0ebe3;border:2px solid #e0d8ce;overflow:hidden;flex-shrink:0}
+.logo-circle img{width:100%;height:100%;object-fit:cover}
+.logo-title{font-family:"Black Han Sans",sans-serif;font-size:1rem;color:#5c3d1e}
+.quiz-meta{font-family:"Gowun Dodum",serif;font-size:.76rem;color:var(--soft);margin-top:2px}
+.test-badge{display:inline-block;background:#3d3d3d;color:#f0ede8;border-radius:30px;padding:3px 14px;font-size:.73rem;font-weight:700;letter-spacing:.5px;margin-top:6px}
+.score-display{font-family:"Gowun Dodum",serif;font-size:.83rem;color:var(--soft);margin-top:5px}
+#score-val{color:var(--accent);font-family:"Black Han Sans",sans-serif;font-size:.95rem}
+main{max-width:860px;margin:0 auto;padding:20px 14px 80px}
+.prog-wrap{margin-bottom:18px}
+.prog-bg{height:5px;background:#e0d8ce;border-radius:5px;overflow:hidden}
+.prog-fill{height:5px;background:linear-gradient(90deg,#5c3d1e,#a0724a);border-radius:5px;transition:width .4s}
+.prog-text{font-family:"Gowun Dodum",serif;font-size:.72rem;color:var(--soft);margin-top:4px;text-align:right}
+.back-nav{display:inline-flex;align-items:center;gap:6px;background:white;border:1.5px solid #d0c8bc;border-radius:10px;padding:6px 13px;font-family:inherit;font-size:.78rem;color:var(--soft);cursor:pointer;margin-bottom:16px;transition:border-color .15s;text-decoration:none}
+.back-nav:hover{border-color:#3d3d3d;color:#3d3d3d}
+.sec-header{background:#3d3d3d;color:#f0ede8;font-family:"Black Han Sans",sans-serif;font-size:.88rem;padding:9px 16px;border-radius:12px;margin:24px 0 12px;letter-spacing:.4px}
+.q-card{background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:16px 16px 14px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,.04);transition:border-color .2s,background .2s}
+.q-card.ok{border-color:#81c784;background:#f7fff8}
+.q-card.fail{border-color:#e57373;background:#fff8f8}
+.q-num{font-family:"Black Han Sans",sans-serif;font-size:.75rem;color:var(--soft);margin-bottom:8px}
+.ko-text{font-size:.8rem;color:#5a5a5a;font-family:"Gowun Dodum",serif;line-height:1.8;margin-bottom:8px;padding:7px 10px;background:#f0ebe3;border-radius:8px}
+.eng-text{font-size:.88rem;line-height:2.2;color:#2a2a2a;font-family:"Gowun Dodum",serif}
+.sel-group{display:inline-flex;align-items:center;border:1.5px solid #c0b4a4;border-radius:6px;overflow:hidden;vertical-align:middle;margin:0 2px;font-size:.83rem}
+.sel-btn{padding:2px 9px;background:#fff;border:none;cursor:pointer;font-family:"Gowun Dodum",serif;font-size:.83rem;color:#3a3a3a;transition:background .12s;line-height:1.7;white-space:nowrap}
+.sel-btn:not(:last-child){border-right:1px solid #c0b4a4}
+.sel-btn:hover{background:#f0ebe3}
+.sel-btn:disabled{cursor:not-allowed}
+.sel-btn.correct{background:#2e7d32 !important;color:#fff !important}
+.sel-btn.wrong{background:#c0392b !important;color:#fff !important}
+.q-feedback{margin-top:8px;font-size:.78rem;font-family:"Gowun Dodum",serif;display:none}
+.q-feedback.show{display:block}
+.q-feedback.ok{color:#1b5e20}
+.q-feedback.fail{color:#7f0000}
+.result-card{background:var(--card);border-radius:20px;border:2px solid var(--border);padding:32px 22px;text-align:center;display:none;box-shadow:0 6px 24px rgba(0,0,0,.08);margin-top:12px}
+.result-card.show{display:block;animation:fadeUp .5s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.result-score{font-family:"Black Han Sans",sans-serif;font-size:2.6rem;color:var(--accent);margin:12px 0}
+.result-msg{font-family:"Gowun Dodum",serif;font-size:.88rem;color:var(--soft);line-height:1.8}
+.result-btns{display:flex;gap:10px;justify-content:center;margin-top:18px;flex-wrap:wrap}
+.result-btns button{padding:10px 20px;border-radius:12px;font-family:inherit;font-size:.82rem;font-weight:700;cursor:pointer;border:2px solid #3d3d3d}
+.btn-retry{background:#3d3d3d;color:#fff}.btn-retry:hover{opacity:.85}
+.btn-back{background:transparent;color:#3d3d3d}.btn-back:hover{background:#f0ede8}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo-row">
+    <div class="logo-circle"><img src="https://bomnalenglish.github.io/bomnalquizz/IMG_6063.jpg" alt="봄날" onerror="this.style.display='none'"/></div>
+    <div><div class="logo-title">봄날 BOMNAL ENGLISH</div><div class="quiz-meta">종촌고등학교 1학년 · YBM 김은형 · 4과</div></div>
+  </div>
+  <div><span class="test-badge">📗 어법 선택형 연습 — 워크북 6</span></div>
+  <div class="score-display">현재 점수: <span id="score-val">0</span> / <span id="score-max">0</span>점</div>
+</header>
+<main>
+  <a class="back-nav" href="javascript:history.back()">← 허브로 돌아가기</a>
+  <div class="prog-wrap">
+    <div class="prog-bg"><div class="prog-fill" id="prog" style="width:0%"></div></div>
+    <div class="prog-text" id="prog-txt">0 / 0 완료</div>
+  </div>
+
+  <div class="sec-header">📘 교과서 본문</div>
+
+  <!-- 1 -->
+  <div class="q-card" id="c0">
+    <div class="q-num">1번</div>
+    <div class="ko-text">영국인 작가인 우바 버틀러는 얼마나 쉽게 온라인에서 대중의 의견을 조작할 수 있는지 실험하기를 원했다.</div>
+    <div class="eng-text">British writer Oobah Butler wanted <span class="sel-group" data-qi="0" data-ans="0"><button class="sel-btn" onclick="pick(this,0,0)">to experiment</button><button class="sel-btn" onclick="pick(this,0,1)">experimenting</button></span> with how <span class="sel-group" data-qi="1" data-ans="0"><button class="sel-btn" onclick="pick(this,1,0)">easily</button><button class="sel-btn" onclick="pick(this,1,1)">easy</button></span> one can manipulate public opinion online.</div>
+    <div class="q-feedback" id="fb0"></div>
+  </div>
+
+  <!-- 2 -->
+  <div class="q-card" id="c1">
+    <div class="q-num">2번</div>
+    <div class="ko-text">그는 The Shed at Dulwich라는 가짜 식당을 만들었다. 버틀러는 인기 있는 온라인 리뷰 사이트에 그의 '식당' 계정을 만들었다.</div>
+    <div class="eng-text">He created a fake restaurant <span class="sel-group" data-qi="2" data-ans="0"><button class="sel-btn" onclick="pick(this,2,0)">called</button><button class="sel-btn" onclick="pick(this,2,1)">calling</button></span> The Shed at Dulwich. Butler set up an account for his "restaurant" on a popular online review site.</div>
+    <div class="q-feedback" id="fb1"></div>
+  </div>
+
+  <!-- 3 -->
+  <div class="q-card" id="c2">
+    <div class="q-num">3번</div>
+    <div class="ko-text">그는 정확한 주소를 제공하지 않았고 예약만 가능하다고 적었다. 그는 사람들이 The Shed가 특별한 식당이라고 생각하게 만들기 위해 이렇게 했다.</div>
+    <div class="eng-text">He did not provide an exact address and wrote it was reservations only. He did this to make people <span class="sel-group" data-qi="3" data-ans="0"><button class="sel-btn" onclick="pick(this,3,0)">think</button><button class="sel-btn" onclick="pick(this,3,1)">to think</button></span> The Shed was a special restaurant.</div>
+    <div class="q-feedback" id="fb2"></div>
+  </div>
+
+  <!-- 4 -->
+  <div class="q-card" id="c3">
+    <div class="q-num">4번</div>
+    <div class="ko-text">그는 The Shed의 음식 사진을 면도 크림, 표백제, 그리고 심지어 그 자신의 발로 위조했다. 그는 그러고 나서 친구들에게 리뷰 사이트에 우호적인 가짜 리뷰를 써 달라고 요청했다.</div>
+    <div class="eng-text">He faked photos of The Shed's food with shaving cream, whitening tablets, and even his own foot. He then asked his friends <span class="sel-group" data-qi="4" data-ans="0"><button class="sel-btn" onclick="pick(this,4,0)">to write</button><button class="sel-btn" onclick="pick(this,4,1)">writing</button></span> favorable fake reviews on the review site.</div>
+    <div class="q-feedback" id="fb3"></div>
+  </div>
+
+  <!-- 5 -->
+  <div class="q-card" id="c4">
+    <div class="q-num">5번</div>
+    <div class="ko-text">버틀러의 말에 의하면, 상황은 빠르게 '조금 손 쓸 수 없게' 되었다. 리뷰 사이트의 최하위에서 시작한 The Shed는 런던 순위를 계속해서 올라갔다. 그는 예약을 요청하는 이메일과 전화를 받기 시작했다.</div>
+    <div class="eng-text">Things quickly got, in Butler's words, "a little out of hand." From the lowest of the charts of the review site, The Shed continuously climbed the London rankings. He started <span class="sel-group" data-qi="5" data-ans="1"><button class="sel-btn" onclick="pick(this,5,0)">get</button><button class="sel-btn" onclick="pick(this,5,1)">getting</button></span> e-mails and phone calls <span class="sel-group" data-qi="6" data-ans="0"><button class="sel-btn" onclick="pick(this,6,0)">requesting</button><button class="sel-btn" onclick="pick(this,6,1)">request</button></span> reservations.</div>
+    <div class="q-feedback" id="fb4"></div>
+  </div>
+
+  <!-- 6 -->
+  <div class="q-card" id="c5">
+    <div class="q-num">6번</div>
+    <div class="ko-text">그가 전화를 건 사람들에게 The Shed가 '다음 6주간 예약이 꽉 찼다'고 말했을 때 관심은 더욱 증가했다. 더욱 재미있게도 식품 공급자들은 The Shed의 주소를 추측하기 시작했고 그에게 무료 샘플을 보냈으며, 많은 구직 지원서가 들어왔다.</div>
+    <div class="eng-text">Interest further increased when he told callers The Shed was "fully <span class="sel-group" data-qi="7" data-ans="1"><button class="sel-btn" onclick="pick(this,7,0)">booking</button><button class="sel-btn" onclick="pick(this,7,1)">booked</button></span> for the next six weeks." Even funnier, food suppliers started guessing The Shed's address and sent <span class="sel-group" data-qi="8" data-ans="0"><button class="sel-btn" onclick="pick(this,8,0)">him</button><button class="sel-btn" onclick="pick(this,8,1)">to him</button></span> free samples, and many job applications <span class="sel-group" data-qi="9" data-ans="1"><button class="sel-btn" onclick="pick(this,9,0)">were come</button><button class="sel-btn" onclick="pick(this,9,1)">came</button></span> in.</div>
+    <div class="q-feedback" id="fb5"></div>
+  </div>
+
+  <!-- 7 -->
+  <div class="q-card" id="c6">
+    <div class="q-num">7번</div>
+    <div class="ko-text">이런 일들은 버틀러가 단 한 끼의 식사도 제공하지 않고 일어났다. The Shed는 결국 가장 신뢰를 얻는 식당 리뷰 사이트 중 하나에서 런던의 1위 식당이 되었다. 버틀러의 말에 따르면 The Shed는 그 순위를 2주간 유지했다.</div>
+    <div class="eng-text">These things happened without Butler <span class="sel-group" data-qi="10" data-ans="1"><button class="sel-btn" onclick="pick(this,10,0)">serve</button><button class="sel-btn" onclick="pick(this,10,1)">serving</button></span> a single meal. The Shed eventually became London's number-one restaurant on one of the most <span class="sel-group" data-qi="11" data-ans="0"><button class="sel-btn" onclick="pick(this,11,0)">trusted</button><button class="sel-btn" onclick="pick(this,11,1)">trusting</button></span> restaurant review sites. According to Butler, The Shed <span class="sel-group" data-qi="12" data-ans="0"><button class="sel-btn" onclick="pick(this,12,0)">held</button><button class="sel-btn" onclick="pick(this,12,1)">was held</button></span> that ranking for two weeks.</div>
+    <div class="q-feedback" id="fb6"></div>
+  </div>
+
+  <!-- 8 -->
+  <div class="q-card" id="c7">
+    <div class="q-num">8번</div>
+    <div class="ko-text">버틀러의 이야기는 우리가 인터넷에서 보는 것 중 많은 부분이 신뢰할 수 없음을 보여 준다. 이것은 디지털 문해력의 중요성을 강조한다.</div>
+    <div class="eng-text">Butler's story shows that <span class="sel-group" data-qi="13" data-ans="1"><button class="sel-btn" onclick="pick(this,13,0)">many</button><button class="sel-btn" onclick="pick(this,13,1)">much</button></span> of <span class="sel-group" data-qi="14" data-ans="0"><button class="sel-btn" onclick="pick(this,14,0)">what</button><button class="sel-btn" onclick="pick(this,14,1)">that</button></span> we see on the Internet cannot <span class="sel-group" data-qi="15" data-ans="1"><button class="sel-btn" onclick="pick(this,15,0)">trust</button><button class="sel-btn" onclick="pick(this,15,1)">be trusted</button></span>. This emphasizes the importance of digital literacy.</div>
+    <div class="q-feedback" id="fb7"></div>
+  </div>
+
+  <!-- 9 -->
+  <div class="q-card" id="c8">
+    <div class="q-num">9번</div>
+    <div class="ko-text">디지털 문해력은 그저 컴퓨터를 사용하는 것 그 이상에 관한 것이다. 그것은 정보를 찾고, 평가하고, 만들고, 소통하기 위해 디지털 기술을 이용하는 능력이다.</div>
+    <div class="eng-text">Digital literacy is about more than just <span class="sel-group" data-qi="16" data-ans="1"><button class="sel-btn" onclick="pick(this,16,0)">use</button><button class="sel-btn" onclick="pick(this,16,1)">using</button></span> computers. It is the ability <span class="sel-group" data-qi="17" data-ans="0"><button class="sel-btn" onclick="pick(this,17,0)">to use</button><button class="sel-btn" onclick="pick(this,17,1)">using</button></span> digital technology <span class="sel-group" data-qi="18" data-ans="1"><button class="sel-btn" onclick="pick(this,18,0)">finding</button><button class="sel-btn" onclick="pick(this,18,1)">to find</button></span>, evaluate, create, and communicate information.</div>
+    <div class="q-feedback" id="fb8"></div>
+  </div>
+
+  <!-- 10 -->
+  <div class="q-card" id="c9">
+    <div class="q-num">10번</div>
+    <div class="ko-text">디지털 문해력을 갖추기 위해 우리는 우리가 온라인상의 거짓 정보를 탐지할 수 있게 하는 태도와 지식을 키워야 한다.</div>
+    <div class="eng-text">To become digitally literate, we need <span class="sel-group" data-qi="19" data-ans="1"><button class="sel-btn" onclick="pick(this,19,0)">developing</button><button class="sel-btn" onclick="pick(this,19,1)">to develop</button></span> an attitude and knowledge <span class="sel-group" data-qi="20" data-ans="0"><button class="sel-btn" onclick="pick(this,20,0)">that</button><button class="sel-btn" onclick="pick(this,20,1)">what</button></span> enable us <span class="sel-group" data-qi="21" data-ans="1"><button class="sel-btn" onclick="pick(this,21,0)">detect</button><button class="sel-btn" onclick="pick(this,21,1)">to detect</button></span> false information online.</div>
+    <div class="q-feedback" id="fb9"></div>
+  </div>
+
+  <!-- 11 -->
+  <div class="q-card" id="c10">
+    <div class="q-num">11번</div>
+    <div class="ko-text">거짓 정보는 잘못된 정보를 제공하거나 사람들을 속이는 모든 정보이다. 그것은 많은 플랫폼상의 건강, 환경, 그리고 경제와 같은 모든 것에 관한 것일 수 있다.</div>
+    <div class="eng-text">False information is any information <span class="sel-group" data-qi="22" data-ans="0"><button class="sel-btn" onclick="pick(this,22,0)">that</button><button class="sel-btn" onclick="pick(this,22,1)">what</button></span> <span class="sel-group" data-qi="23" data-ans="0"><button class="sel-btn" onclick="pick(this,23,0)">misinforms</button><button class="sel-btn" onclick="pick(this,23,1)">misinform</button></span> or <span class="sel-group" data-qi="24" data-ans="0"><button class="sel-btn" onclick="pick(this,24,0)">deceives</button><button class="sel-btn" onclick="pick(this,24,1)">deceive</button></span> people. It can be about anything such as health, the environment, and economics across many platforms. It can be influential, as The Shed incident shows.</div>
+    <div class="q-feedback" id="fb10"></div>
+  </div>
+
+  <!-- 12 -->
+  <div class="q-card" id="c11">
+    <div class="q-num">12번</div>
+    <div class="ko-text">만약 사람들이 디지털 문해력이 있었더라면 그들은 The Shed 실험에 그렇게 쉽게 속아 넘어가지 않았을 것이다.</div>
+    <div class="eng-text">If people <span class="sel-group" data-qi="25" data-ans="0"><button class="sel-btn" onclick="pick(this,25,0)">had been</button><button class="sel-btn" onclick="pick(this,25,1)">were</button></span> digitally literate, they would not have <span class="sel-group" data-qi="26" data-ans="1"><button class="sel-btn" onclick="pick(this,26,0)">fooled</button><button class="sel-btn" onclick="pick(this,26,1)">been fooled</button></span> by The Shed experiment so easily.</div>
+    <div class="q-feedback" id="fb11"></div>
+  </div>
+
+  <!-- 13 -->
+  <div class="q-card" id="c12">
+    <div class="q-num">13번</div>
+    <div class="ko-text">디지털 문해력이 있는 사람들은 다른 사람들의 반응에 방해받지 않고 The Shed에 관한 정보를 신중하게 고려했을 것이다.</div>
+    <div class="eng-text">Digitally literate people would have carefully <span class="sel-group" data-qi="27" data-ans="0"><button class="sel-btn" onclick="pick(this,27,0)">considered</button><button class="sel-btn" onclick="pick(this,27,1)">consider</button></span> information about The Shed without <span class="sel-group" data-qi="28" data-ans="1"><button class="sel-btn" onclick="pick(this,28,0)">distracting</button><button class="sel-btn" onclick="pick(this,28,1)">being distracted</button></span> by other people's reactions.</div>
+    <div class="q-feedback" id="fb12"></div>
+  </div>
+
+  <!-- 14 -->
+  <div class="q-card" id="c13">
+    <div class="q-num">14번</div>
+    <div class="ko-text">그들은 그 식당에 주소가 없다는 것을 의심했을 것이다.</div>
+    <div class="eng-text">They would <span class="sel-group" data-qi="29" data-ans="1"><button class="sel-btn" onclick="pick(this,29,0)">be</button><button class="sel-btn" onclick="pick(this,29,1)">have been</button></span> suspicious that the restaurant did not have an address.</div>
+    <div class="q-feedback" id="fb13"></div>
+  </div>
+
+  <!-- 15 -->
+  <div class="q-card" id="c14">
+    <div class="q-num">15번</div>
+    <div class="ko-text">그들은 왜 이 식당에 대한 리뷰가 다른 더 믿을 만한 매체에 나타나지 않는지 궁금해했을 것이다.</div>
+    <div class="eng-text">They would <span class="sel-group" data-qi="30" data-ans="0"><button class="sel-btn" onclick="pick(this,30,0)">have wondered</button><button class="sel-btn" onclick="pick(this,30,1)">wonder</button></span> why reviews on the restaurant did not appear in other more credible media.</div>
+    <div class="q-feedback" id="fb14"></div>
+  </div>
+
+  <!-- 16 -->
+  <div class="q-card" id="c15">
+    <div class="q-num">16번</div>
+    <div class="ko-text">만약 그들이 이런 것들을 했더라면 그들은 무언가 옳지 않다는 것을 의심했을 것이다.</div>
+    <div class="eng-text">If they <span class="sel-group" data-qi="31" data-ans="0"><button class="sel-btn" onclick="pick(this,31,0)">had done</button><button class="sel-btn" onclick="pick(this,31,1)">did</button></span> these things, they would likely have <span class="sel-group" data-qi="32" data-ans="1"><button class="sel-btn" onclick="pick(this,32,0)">been suspected</button><button class="sel-btn" onclick="pick(this,32,1)">suspected</button></span> that something was not right.</div>
+    <div class="q-feedback" id="fb15"></div>
+  </div>
+
+  <!-- 17 -->
+  <div class="q-card" id="c16">
+    <div class="q-num">17번</div>
+    <div class="ko-text">다행히도, The Shed 사건은 피해를 거의 끼치지 않은 실험이었다.</div>
+    <div class="eng-text">Fortunately, The Shed incident was an experiment <span class="sel-group" data-qi="33" data-ans="0"><button class="sel-btn" onclick="pick(this,33,0)">that</button><button class="sel-btn" onclick="pick(this,33,1)">what</button></span> caused little damage.</div>
+    <div class="q-feedback" id="fb16"></div>
+  </div>
+
+  <!-- 18 -->
+  <div class="q-card" id="c17">
+    <div class="q-num">18번</div>
+    <div class="ko-text">그러나 거짓 정보는 사람들에게 정서적 또는 재정적 피해를 유발할 수 있다. 예를 들어, 특정 성별 혹은 이념 집단에 대한 거짓 정보는 그 집단에 대한 적대감을 불러일으킬 수 있다.</div>
+    <div class="eng-text">However, false information can cause emotional or financial harm to people. For example, false information about a certain gender or belief group can <span class="sel-group" data-qi="34" data-ans="0"><button class="sel-btn" onclick="pick(this,34,0)">stir</button><button class="sel-btn" onclick="pick(this,34,1)">be stirred</button></span> up hatred against that group.</div>
+    <div class="q-feedback" id="fb17"></div>
+  </div>
+
+  <!-- 19 -->
+  <div class="q-card" id="c18">
+    <div class="q-num">19번</div>
+    <div class="ko-text">그것은 그 집단을 지지하는 사람들과 그렇지 않은 사람들 사이의 싸움을 유발할 수 있다. 게다가, 의심스러운 상품에 대한 잘못된 정보를 주는 온라인 리뷰는 종종 사람들을 속여 돈을 낭비하게 한다.</div>
+    <div class="eng-text">It can cause fights between those <span class="sel-group" data-qi="35" data-ans="0"><button class="sel-btn" onclick="pick(this,35,0)">who</button><button class="sel-btn" onclick="pick(this,35,1)">which</button></span> support the group and those <span class="sel-group" data-qi="36" data-ans="0"><button class="sel-btn" onclick="pick(this,36,0)">who</button><button class="sel-btn" onclick="pick(this,36,1)">which</button></span> do not. In addition, misleading online reviews about questionable products often <span class="sel-group" data-qi="37" data-ans="1"><button class="sel-btn" onclick="pick(this,37,0)">tricks</button><button class="sel-btn" onclick="pick(this,37,1)">trick</button></span> people into wasting money.</div>
+    <div class="q-feedback" id="fb18"></div>
+  </div>
+
+  <!-- 20 -->
+  <div class="q-card" id="c19">
+    <div class="q-num">20번</div>
+    <div class="ko-text">거짓 정보에 속는 것을 피하기 위해 우리는 우리가 온라인상에서 보는 것을 비판적으로 평가하는 습관을 길러야 한다.</div>
+    <div class="eng-text">To avoid <span class="sel-group" data-qi="38" data-ans="0"><button class="sel-btn" onclick="pick(this,38,0)">being deceived</button><button class="sel-btn" onclick="pick(this,38,1)">deceiving</button></span> by false information, we need to develop a habit of critically <span class="sel-group" data-qi="39" data-ans="1"><button class="sel-btn" onclick="pick(this,39,0)">evaluate</button><button class="sel-btn" onclick="pick(this,39,1)">evaluating</button></span> <span class="sel-group" data-qi="40" data-ans="1"><button class="sel-btn" onclick="pick(this,40,0)">that</button><button class="sel-btn" onclick="pick(this,40,1)">what</button></span> we see online.</div>
+    <div class="q-feedback" id="fb19"></div>
+  </div>
+
+  <!-- 21 -->
+  <div class="q-card" id="c20">
+    <div class="q-num">21번</div>
+    <div class="ko-text">만약 당신이 너무 좋거나 너무 나빠서 사실일 것 같지 않은 이야기를 본다면 출처를 먼저 확인해 보아라. 그 이야기가 나온 웹 사이트를 살펴보아라. 진짜처럼 보이는가? 철자 오류가 있는가? 다른 이야기들도 있는가 아니면 당신이 읽은 것 딱 하나만 가지고 있는가?</div>
+    <div class="eng-text">If you see a story <span class="sel-group" data-qi="41" data-ans="0"><button class="sel-btn" onclick="pick(this,41,0)">that</button><button class="sel-btn" onclick="pick(this,41,1)">what</button></span> looks too good or too bad to be true, check the source first. Look at the website the story <span class="sel-group" data-qi="42" data-ans="1"><button class="sel-btn" onclick="pick(this,42,0)">to come</button><button class="sel-btn" onclick="pick(this,42,1)">comes</button></span> from. Does it look real? Are there spelling errors? Does it have other stories or just the one you <span class="sel-group" data-qi="43" data-ans="0"><button class="sel-btn" onclick="pick(this,43,0)">read</button><button class="sel-btn" onclick="pick(this,43,1)">to read</button></span>?</div>
+    <div class="q-feedback" id="fb20"></div>
+  </div>
+
+  <!-- 22 -->
+  <div class="q-card" id="c21">
+    <div class="q-num">22번</div>
+    <div class="ko-text">이야기가 참고 문헌과 다른 정보로 연결되는 링크를 포함하는지 확인해 보아라. 그 링크를 클릭하고 다른 정보가 믿을 만해 보이는지 확인해라.</div>
+    <div class="eng-text">Check that the story <span class="sel-group" data-qi="44" data-ans="0"><button class="sel-btn" onclick="pick(this,44,0)">contains</button><button class="sel-btn" onclick="pick(this,44,1)">contain</button></span> references and links to other information. Click on those links and see if the other information looks <span class="sel-group" data-qi="45" data-ans="1"><button class="sel-btn" onclick="pick(this,45,0)">reliably</button><button class="sel-btn" onclick="pick(this,45,1)">reliable</button></span>.</div>
+    <div class="q-feedback" id="fb21"></div>
+  </div>
+
+  <!-- 23 -->
+  <div class="q-card" id="c22">
+    <div class="q-num">23번</div>
+    <div class="ko-text">거짓 정보가 있는 웹 사이트들은 종종 다른 주제에 대한 많은 실제 이야기들을 가지고 있지 않다. 그들은 또한 당신이 사이트를 방문했을 때 팝업으로 뜨는 많은 광고가 흔하다.</div>
+    <div class="eng-text">Websites with false information often <span class="sel-group" data-qi="46" data-ans="0"><button class="sel-btn" onclick="pick(this,46,0)">do</button><button class="sel-btn" onclick="pick(this,46,1)">does</button></span> not have many real stories about other topics. They also often have lots of advertisements <span class="sel-group" data-qi="47" data-ans="0"><button class="sel-btn" onclick="pick(this,47,0)">that</button><button class="sel-btn" onclick="pick(this,47,1)">what</button></span> <span class="sel-group" data-qi="48" data-ans="1"><button class="sel-btn" onclick="pick(this,48,0)">popping</button><button class="sel-btn" onclick="pick(this,48,1)">pop</button></span> up when you visit the sites.</div>
+    <div class="q-feedback" id="fb22"></div>
+  </div>
+
+  <!-- 24 -->
+  <div class="q-card" id="c23">
+    <div class="q-num">24번</div>
+    <div class="ko-text">그러고 나서 당신은 내용 창작자의 신뢰도를 확인해야 한다. 만약 이야기에 작가 이름이 없다면 이것은 그것의 내용이 의심스럽다는 신호일 수 있다.</div>
+    <div class="eng-text">You should then check the credibility of the content creator. If a story <span class="sel-group" data-qi="49" data-ans="1"><button class="sel-btn" onclick="pick(this,49,0)">had</button><button class="sel-btn" onclick="pick(this,49,1)">has</button></span> no writer's name, this could be a sign <span class="sel-group" data-qi="50" data-ans="1"><button class="sel-btn" onclick="pick(this,50,0)">which</button><button class="sel-btn" onclick="pick(this,50,1)">that</button></span> its content is questionable.</div>
+    <div class="q-feedback" id="fb23"></div>
+  </div>
+
+  <!-- 25 -->
+  <div class="q-card" id="c24">
+    <div class="q-num">25번</div>
+    <div class="ko-text">만약 이름이 있다면 그 사람이 이전에 무엇을 어디에 보도했는지 찾아보아라. 만약 그 사람이 아무것도 쓰지 않았거나 신뢰할 수 없어 보이는 웹 사이트에 글을 쓴다면, 그 내용을 믿기 전에 두 번 생각해라.</div>
+    <div class="eng-text">If there is a name, find out what and where <span class="sel-group" data-qi="51" data-ans="0"><button class="sel-btn" onclick="pick(this,51,0)">the person has</button><button class="sel-btn" onclick="pick(this,51,1)">has the person</button></span> reported before. If the person has not written anything else or writes for a website <span class="sel-group" data-qi="52" data-ans="1"><button class="sel-btn" onclick="pick(this,52,0)">what</button><button class="sel-btn" onclick="pick(this,52,1)">that</button></span> looks unreliable, think twice before <span class="sel-group" data-qi="53" data-ans="0"><button class="sel-btn" onclick="pick(this,53,0)">believing</button><button class="sel-btn" onclick="pick(this,53,1)">believe</button></span> the content.</div>
+    <div class="q-feedback" id="fb24"></div>
+  </div>
+
+  <!-- 26 -->
+  <div class="q-card" id="c25">
+    <div class="q-num">26번</div>
+    <div class="ko-text">마지막으로, 다른 누가 그 이야기를 보도하고 있는지 확인해라. 만약 똑같은 이야기를 보도하는 다른 매체가 없다면, 그 이야기는 사실이 아닐 수도 있다.</div>
+    <div class="eng-text">Finally, check who else is <span class="sel-group" data-qi="54" data-ans="0"><button class="sel-btn" onclick="pick(this,54,0)">reporting</button><button class="sel-btn" onclick="pick(this,54,1)">reported</button></span> the story. If no other media are reporting the same story, the story may not be true.</div>
+    <div class="q-feedback" id="fb25"></div>
+  </div>
+
+  <!-- 27 -->
+  <div class="q-card" id="c26">
+    <div class="q-num">27번</div>
+    <div class="ko-text">다른 매체가 이 이야기를 뒷받침하는지 확인하기 위해 이야기에서 몇몇 키워드를 골라 검색 사이트에 입력해 보아라.</div>
+    <div class="eng-text">Pick a few keywords from the story and put them in a search site <span class="sel-group" data-qi="55" data-ans="0"><button class="sel-btn" onclick="pick(this,55,0)">to see</button><button class="sel-btn" onclick="pick(this,55,1)">seeing</button></span> if other media are supporting the story.</div>
+    <div class="q-feedback" id="fb26"></div>
+  </div>
+
+  <!-- 28 -->
+  <div class="q-card" id="c27">
+    <div class="q-num">28번</div>
+    <div class="ko-text">온라인에서 만들어지고 공유된 엄청난 양의 정보를 살펴보는 것은 어렵다.</div>
+    <div class="eng-text">Sorting through the vast amount of information <span class="sel-group" data-qi="56" data-ans="1"><button class="sel-btn" onclick="pick(this,56,0)">creating</button><button class="sel-btn" onclick="pick(this,56,1)">created</button></span> and shared online <span class="sel-group" data-qi="57" data-ans="0"><button class="sel-btn" onclick="pick(this,57,0)">is</button><button class="sel-btn" onclick="pick(this,57,1)">are</button></span> challenging.</div>
+    <div class="q-feedback" id="fb27"></div>
+  </div>
+
+  <!-- 29 -->
+  <div class="q-card" id="c28">
+    <div class="q-num">29번</div>
+    <div class="ko-text">그러나 거짓 정보가 무엇이고 그것이 어떻게 확산되는지 우리가 아는 것이 중요하다. 우리가 거짓 정보를 더 잘 인지할수록, 우리는 그것을 피하고 다른 사람들도 그렇게 하도록 돕는 것을 더 잘하게 될 것이다.</div>
+    <div class="eng-text">However, it is important that we know <span class="sel-group" data-qi="58" data-ans="1"><button class="sel-btn" onclick="pick(this,58,0)">that</button><button class="sel-btn" onclick="pick(this,58,1)">what</button></span> false information is and how <span class="sel-group" data-qi="59" data-ans="0"><button class="sel-btn" onclick="pick(this,59,0)">it spreads</button><button class="sel-btn" onclick="pick(this,59,1)">spreads it</button></span>. The better we recognize false information, the better we will be at <span class="sel-group" data-qi="60" data-ans="1"><button class="sel-btn" onclick="pick(this,60,0)">avoid</button><button class="sel-btn" onclick="pick(this,60,1)">avoiding</button></span> it and <span class="sel-group" data-qi="61" data-ans="0"><button class="sel-btn" onclick="pick(this,61,0)">helping</button><button class="sel-btn" onclick="pick(this,61,1)">help</button></span> others do the same.</div>
+    <div class="q-feedback" id="fb28"></div>
+  </div>
+
+  <div class="sec-header">📙 본문 외 지문 — Digital Footprint</div>
+
+  <!-- 외1 -->
+  <div class="q-card" id="c29">
+    <div class="q-num">외 1번</div>
+    <div class="ko-text">해변을 걸을 때에는 발자국에 대해서 걱정할 필요가 없다. 그것들은 파도와 함께 사라진다.</div>
+    <div class="eng-text"><span class="sel-group" data-qi="62" data-ans="1"><button class="sel-btn" onclick="pick(this,62,0)">Walk</button><button class="sel-btn" onclick="pick(this,62,1)">Walking</button></span> on the beach, you do not need <span class="sel-group" data-qi="63" data-ans="0"><button class="sel-btn" onclick="pick(this,63,0)">to worry</button><button class="sel-btn" onclick="pick(this,63,1)">worrying</button></span> about footprints. They vanish with the waves.</div>
+    <div class="q-feedback" id="fb29"></div>
+  </div>
+
+  <!-- 외2 -->
+  <div class="q-card" id="c30">
+    <div class="q-num">외 2번</div>
+    <div class="ko-text">그러나 당신이 가입할 때, 접속할 때, 또는 내용을 전송할 때 남는 데이터의 흔적인 '디지털 발자국'은 제거가 어려움이 증명되었을 뿐만 아니라 당신의 행동, 선호, 그리고 견해를 추적할 수 있게 한다.</div>
+    <div class="eng-text">However, a "digital footprint" — the data trail <span class="sel-group" data-qi="64" data-ans="1"><button class="sel-btn" onclick="pick(this,64,0)">leaving</button><button class="sel-btn" onclick="pick(this,64,1)">left</button></span> when you sign up, access, or send content — not only <span class="sel-group" data-qi="65" data-ans="1"><button class="sel-btn" onclick="pick(this,65,0)">prove</button><button class="sel-btn" onclick="pick(this,65,1)">proves</button></span> <span class="sel-group" data-qi="66" data-ans="1"><button class="sel-btn" onclick="pick(this,66,0)">challenged</button><button class="sel-btn" onclick="pick(this,66,1)">challenging</button></span> to remove but <span class="sel-group" data-qi="67" data-ans="1"><button class="sel-btn" onclick="pick(this,67,0)">enable</button><button class="sel-btn" onclick="pick(this,67,1)">enables</button></span> tracking of your behavior, preferences, and opinions.</div>
+    <div class="q-feedback" id="fb30"></div>
+  </div>
+
+  <!-- 외3 -->
+  <div class="q-card" id="c31">
+    <div class="q-num">외 3번</div>
+    <div class="ko-text">디지털 발자국은 두 가지 유형이 있다. 소셜 미디어 게시물과 같은 능동적 발자국은 의도적으로 생성된 데이터인 반면, 웹사이트 쿠키와 휴대폰 활동과 같은 수동적 발자국은 당신의 직접적인 개입이 없더라도 발생한다.</div>
+    <div class="eng-text">There are two types of digital footprints. Active footprints, like social media posts, are intentionally <span class="sel-group" data-qi="68" data-ans="0"><button class="sel-btn" onclick="pick(this,68,0)">created</button><button class="sel-btn" onclick="pick(this,68,1)">creating</button></span> data, while passive footprints, such as website cookies and mobile phone activity, <span class="sel-group" data-qi="69" data-ans="0"><button class="sel-btn" onclick="pick(this,69,0)">occur</button><button class="sel-btn" onclick="pick(this,69,1)">occurred</button></span> without your direct involvement.</div>
+    <div class="q-feedback" id="fb31"></div>
+  </div>
+
+  <!-- 외4 -->
+  <div class="q-card" id="c32">
+    <div class="q-num">외 4번</div>
+    <div class="ko-text">디지털 발자국을 만들어 내는 행동을 살펴보자. 다음 활동들을 검토하고 당신이 참여하지 않는 활동에 표시해 보아라. 소셜 미디어에 게시물을 올리고 댓글 달기</div>
+    <div class="eng-text">Let's explore actions <span class="sel-group" data-qi="70" data-ans="0"><button class="sel-btn" onclick="pick(this,70,0)">that</button><button class="sel-btn" onclick="pick(this,70,1)">what</button></span> create digital footprints. Review the following activities and <span class="sel-group" data-qi="71" data-ans="0"><button class="sel-btn" onclick="pick(this,71,0)">mark</button><button class="sel-btn" onclick="pick(this,71,1)">marks</button></span> the ones <span class="sel-group" data-qi="72" data-ans="0"><button class="sel-btn" onclick="pick(this,72,0)">that</button><button class="sel-btn" onclick="pick(this,72,1)">what</button></span> you do not participate in. Your answer should be "NONE." … Posting and <span class="sel-group" data-qi="73" data-ans="1"><button class="sel-btn" onclick="pick(this,73,0)">comment</button><button class="sel-btn" onclick="pick(this,73,1)">commenting</button></span> on social media</div>
+    <div class="q-feedback" id="fb32"></div>
+  </div>
+
+  <!-- 외5 -->
+  <div class="q-card" id="c33">
+    <div class="q-num">외 5번</div>
+    <div class="ko-text">이런 활동들에서 비롯된 당신의 디지털 발자국은 아마 영구적으로 남아 있을 수도 있다.</div>
+    <div class="eng-text">Your digital footprints from these activities may remain <span class="sel-group" data-qi="74" data-ans="0"><button class="sel-btn" onclick="pick(this,74,0)">permanently</button><button class="sel-btn" onclick="pick(this,74,1)">permanent</button></span>.</div>
+    <div class="q-feedback" id="fb33"></div>
+  </div>
+
+  <!-- 외6 -->
+  <div class="q-card" id="c34">
+    <div class="q-num">외 6번</div>
+    <div class="ko-text">당신이 웹 사이트나 소셜 미디어 플랫폼에 당신의 개인 정보를 없애 달라고 요청한다고 할지라도, 누군가가 아마 벌써 나쁜 의도를 가지고 당신의 정보를 수집했을 수 있다.</div>
+    <div class="eng-text">Even if you request a website or social media platform <span class="sel-group" data-qi="75" data-ans="1"><button class="sel-btn" onclick="pick(this,75,0)">removing</button><button class="sel-btn" onclick="pick(this,75,1)">to remove</button></span> your personal information, someone might have already <span class="sel-group" data-qi="76" data-ans="0"><button class="sel-btn" onclick="pick(this,76,0)">collected</button><button class="sel-btn" onclick="pick(this,76,1)">collect</button></span> your information with bad intent.</div>
+    <div class="q-feedback" id="fb34"></div>
+  </div>
+
+  <!-- 외7 -->
+  <div class="q-card" id="c35">
+    <div class="q-num">외 7번</div>
+    <div class="ko-text">또한 당신의 부정적인 온라인 활동은 잠재적으로 당신의 평판이나 경력에 해를 끼칠 수 있다. 당신의 디지털 발자국을 관리하고 줄이는 것이 중요하다.</div>
+    <div class="eng-text">Additionally, your negative online activity can potentially harm your reputation or career. It is important <span class="sel-group" data-qi="77" data-ans="0"><button class="sel-btn" onclick="pick(this,77,0)">to manage</button><button class="sel-btn" onclick="pick(this,77,1)">manage</button></span> and reduce your digital footprints.</div>
+    <div class="q-feedback" id="fb35"></div>
+  </div>
+
+  <!-- RESULT -->
+  <div class="result-card" id="result">
+    <div style="font-family:'Black Han Sans',sans-serif;font-size:1.1rem;color:var(--accent)">🎉 어법 선택형 완료!</div>
+    <div class="result-score" id="r-score"></div>
+    <div class="result-msg" id="r-msg"></div>
+    <div class="result-btns">
+      <button class="btn-retry" onclick="location.reload()">🔄 다시 풀기</button>
+      <button class="btn-back" onclick="location.href='https://bomnalenglish.github.io/bomnalquizz/'">← 허브로</button>
+    </div>
+  </div>
+</main>
+
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getFirestore,collection,addDoc,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+const cfg={apiKey:"AIzaSyCxS524S8KAaF87DomPtl9sJdF-eqes404",authDomain:"bomnalvaca.firebaseapp.com",projectId:"bomnalvaca",storageBucket:"bomnalvaca.firebasestorage.app",messagingSenderId:"115868052300",appId:"1:115868052300:web:765c08867b6f1ce0987de9"};
+const app=initializeApp(cfg);const db=getFirestore(app);
+window._log=async(d)=>{try{await addDoc(collection(db,"quiz_results"),{...d,timestamp:serverTimestamp(),file:"jongchonko_1grade_lesson4"});}catch(e){}};
+</script>
+<script>
+const NAME=sessionStorage.getItem("bn_name")||localStorage.getItem("bn_name")||"학생";
+const SCHOOL=sessionStorage.getItem("bn_school")||localStorage.getItem("bn_school")||"종촌고등학교";
+
+// qi → card index 매핑
+const QI2CARD=[
+  0,0,           // 1번: qi 0,1
+  1,             // 2번: qi 2
+  2,             // 3번: qi 3
+  3,             // 4번: qi 4
+  4,4,           // 5번: qi 5,6
+  5,5,5,         // 6번: qi 7,8,9
+  6,6,6,         // 7번: qi 10,11,12
+  7,7,7,         // 8번: qi 13,14,15
+  8,8,8,         // 9번: qi 16,17,18
+  9,9,9,         // 10번: qi 19,20,21
+  10,10,10,      // 11번: qi 22,23,24
+  11,11,         // 12번: qi 25,26
+  12,12,         // 13번: qi 27,28
+  13,            // 14번: qi 29
+  14,            // 15번: qi 30
+  15,15,         // 16번: qi 31,32
+  16,            // 17번: qi 33
+  17,            // 18번: qi 34
+  18,18,18,      // 19번: qi 35,36,37
+  19,19,19,      // 20번: qi 38,39,40
+  20,20,20,      // 21번: qi 41,42,43
+  21,21,         // 22번: qi 44,45
+  22,22,22,      // 23번: qi 46,47,48
+  23,23,         // 24번: qi 49,50
+  24,24,24,      // 25번: qi 51,52,53
+  25,            // 26번: qi 54
+  26,            // 27번: qi 55
+  27,27,         // 28번: qi 56,57
+  28,28,28,28,   // 29번: qi 58,59,60,61
+  29,29,         // 외1: qi 62,63
+  30,30,30,30,   // 외2: qi 64,65,66,67
+  31,31,         // 외3: qi 68,69
+  32,32,32,32,   // 외4: qi 70,71,72,73
+  33,            // 외5: qi 74
+  34,34,         // 외6: qi 75,76
+  35             // 외7: qi 77
+];
+
+const TOTAL_CARDS=36;
+let cardDone={};
+let cardWrong={};
+let earned=0;
+
+function pick(btn,qi,idx){
+  const grp=btn.closest('.sel-group');
+  if(grp.dataset.checked)return;
+  grp.dataset.checked='1';
+  const ans=parseInt(grp.dataset.ans);
+  const btns=grp.querySelectorAll('.sel-btn');
+  btns.forEach(b=>b.disabled=true);
+  const ok=idx===ans;
+  btn.classList.add(ok?'correct':'wrong');
+  if(!ok) btns[ans].classList.add('correct');
+
+  const ci=QI2CARD[qi];
+  if(!(ci in cardWrong)) cardWrong[ci]=0;
+  if(!ok) cardWrong[ci]++;
+
+  const card=document.getElementById('c'+ci);
+  const grps=card.querySelectorAll('.sel-group');
+  const allDone=Array.from(grps).every(g=>g.dataset.checked);
+  if(allDone&&!cardDone[ci]){
+    cardDone[ci]=true;
+    const isOk=cardWrong[ci]===0;
+    if(isOk) earned++;
+    card.classList.add(isOk?'ok':'fail');
+    const fb=document.getElementById('fb'+ci);
+    fb.className='q-feedback '+(isOk?'ok':'fail')+' show';
+    fb.innerHTML=isOk?'✅ 정답!':'❌ 틀렸어요. 초록색이 정답입니다.';
+    updateUI();
+    if(Object.keys(cardDone).length>=TOTAL_CARDS) showResult();
+    if(window._log)window._log({name:NAME,school:SCHOOL,q:'c'+ci,result:isOk?'ok':'fail',earned:isOk?1:0,total:1});
+  }
+}
+
+function updateUI(){
+  const done=Object.keys(cardDone).length;
+  document.getElementById('score-val').textContent=earned;
+  document.getElementById('score-max').textContent=TOTAL_CARDS;
+  document.getElementById('prog').style.width=(done/TOTAL_CARDS*100)+'%';
+  document.getElementById('prog-txt').textContent=done+' / '+TOTAL_CARDS+' 완료';
+}
+
+function showResult(){
+  const pct=Math.round(earned/TOTAL_CARDS*100);
+  document.getElementById('r-score').textContent=earned+' / '+TOTAL_CARDS+'점 ('+pct+'%)';
+  document.getElementById('r-msg').textContent=
+    pct>=90?'완벽합니다! 어법 완전 정복! 🌟':
+    pct>=70?'잘했어요! 틀린 문제 다시 확인해봐요. 💪':
+    pct>=50?'절반 이상! 해석 보면서 다시 도전해봐요. 📖':
+    '기초부터 차근차근! 해석을 먼저 꼼꼼히 읽어봐요. 🔄';
+  document.getElementById('result').classList.add('show');
+  setTimeout(()=>window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'}),200);
+}
+
+updateUI();
+</script>
+</body>
+</html>
