@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>4과 서술형 TEST 1 · 봄날 ENGLISH</title>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Black+Han+Sans&family=Noto+Sans+KR:wght@300;400;700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--ink:#2a2a2a;--soft:#7a7570;--bg:#f5efe6;--card:#fdf8f2;--border:#e0d8ce;--accent:#5c3d1e}
+body{font-family:"Noto Sans KR",sans-serif;background:var(--bg);min-height:100vh;color:var(--ink)}
+header{background:linear-gradient(135deg,#f7efe4,#f0e6d8 50%,#ece0d2);padding:32px 24px 24px;text-align:center;border-bottom:1px solid var(--border)}
+.logo-row{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;margin-bottom:8px}
+.logo-circle{width:50px;height:50px;border-radius:50%;background:#f0ebe3;border:2px solid #e0d8ce;overflow:hidden;flex-shrink:0}
+.logo-circle img{width:100%;height:100%;object-fit:cover}
+.logo-title{font-family:"Black Han Sans",sans-serif;font-size:1.05rem;color:#5c3d1e}
+.quiz-meta{font-family:"Gowun Dodum",serif;font-size:.78rem;color:var(--soft);margin-top:2px}
+.test-badge{display:inline-block;background:#3d3d3d;color:#f0ede8;border-radius:30px;padding:3px 14px;font-size:.75rem;font-weight:700;letter-spacing:.5px;margin-top:8px}
+.score-display{font-family:"Gowun Dodum",serif;font-size:.85rem;color:var(--soft);margin-top:6px}
+#score-val{color:var(--accent);font-family:"Black Han Sans",sans-serif;font-size:1rem}
+main{max-width:860px;margin:0 auto;padding:24px 16px 80px}
+.prog-wrap{margin-bottom:22px}
+.prog-bg{height:6px;background:#e0d8ce;border-radius:6px;overflow:hidden}
+.prog-fill{height:6px;background:linear-gradient(90deg,#5c3d1e,#a0724a);border-radius:6px;transition:width .4s ease}
+.prog-text{font-family:"Gowun Dodum",serif;font-size:.75rem;color:var(--soft);margin-top:5px;text-align:right}
+.back-nav{display:inline-flex;align-items:center;gap:6px;background:white;border:1.5px solid #d0c8bc;border-radius:10px;padding:7px 14px;font-family:inherit;font-size:.8rem;color:var(--soft);cursor:pointer;margin-bottom:20px;transition:border-color .15s;text-decoration:none}
+.back-nav:hover{border-color:#3d3d3d;color:#3d3d3d}
+.q-card{background:var(--card);border-radius:16px;border:1.5px solid var(--border);padding:22px 20px 18px;margin-bottom:20px;box-shadow:0 2px 10px rgba(0,0,0,.04);transition:border-color .2s,background .2s}
+.q-card.ok{border-color:#81c784;background:#f7fff8}
+.q-card.partial{border-color:#ffb74d;background:#fffdf5}
+.q-card.fail{border-color:#e57373;background:#fff8f8}
+.q-header{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.q-num{font-family:"Black Han Sans",sans-serif;font-size:.82rem;color:var(--soft)}
+.badge{border-radius:20px;padding:2px 10px;font-size:.67rem;font-weight:700}
+.b-school{background:#ede9e4;color:#7a6a5a}
+.b-type{background:#d8ead4;color:#3a5a38}
+.b-pts{background:#e8e2da;color:#5a5048;margin-left:auto}
+.q-text{font-size:.88rem;line-height:1.75;color:var(--ink);margin-bottom:10px}
+.q-text strong{color:var(--accent)}
+.passage{background:#f5f0ea;border-left:3px solid #c0a882;border-radius:0 10px 10px 0;padding:14px 16px;margin:10px 0 12px;font-size:.84rem;line-height:2;color:#3a3a3a;font-family:"Gowun Dodum",serif}
+.passage .ko{color:#2d5fa0;font-weight:700}
+.cond-box{background:#f0ebe3;border:1.5px solid #d4c9bc;border-radius:10px;padding:12px 15px;margin:10px 0;font-size:.8rem;line-height:1.9;font-family:"Gowun Dodum",serif}
+.cond-box .ct{font-family:"Black Han Sans",sans-serif;font-size:.79rem;color:#5c3d1e;margin-bottom:6px}
+.cond-box ul{margin-left:18px;color:#4a4a4a}
+.word-box{background:#fff;border:1.5px dashed #c0b4a4;border-radius:10px;padding:10px 14px;margin:10px 0;font-size:.8rem;line-height:1.9;color:#3a3a3a;font-family:"Gowun Dodum",serif}
+.word-box .wt{font-weight:700;color:#5c3d1e;font-size:.77rem;margin-bottom:4px}
+.ans-row{display:flex;gap:8px;align-items:flex-start;margin-top:12px;flex-wrap:wrap}
+.ans-input{flex:1;min-width:180px;padding:10px 13px;border:2px solid #d0c8bc;border-radius:10px;font-size:.85rem;font-family:inherit;outline:none;background:#fff;transition:border-color .2s;resize:vertical;min-height:42px}
+.ans-input:focus{border-color:#5c3d1e}
+.ans-input:disabled{background:#f5f0ea;color:#6a6a6a;cursor:not-allowed}
+.check-btn{padding:9px 18px;background:#3d3d3d;color:#fff;border:none;border-radius:10px;font-family:inherit;font-size:.83rem;font-weight:700;cursor:pointer;transition:opacity .2s;white-space:nowrap}
+.check-btn:hover{opacity:.85}
+.check-btn:disabled{background:#b0a898;cursor:not-allowed;opacity:1}
+.multi-ans{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.multi-row{display:flex;align-items:center;gap:8px;font-family:"Gowun Dodum",serif;font-size:.83rem;color:var(--soft)}
+.multi-row label{min-width:30px;font-weight:700;color:var(--accent)}
+.feedback{margin-top:12px;border-radius:10px;padding:12px 16px;font-size:.83rem;line-height:1.85;display:none;font-family:"Gowun Dodum",serif}
+.feedback.show{display:block}
+.feedback.ok{background:#e8f5e9;border:1px solid #a5d6a7;color:#1b5e20}
+.feedback.partial{background:#fff8e1;border:1px solid #ffe082;color:#5d4037}
+.feedback.fail{background:#ffebee;border:1px solid #ef9a9a;color:#7f0000}
+.feedback .key{font-weight:700;margin-top:5px;color:#3a3a3a;line-height:1.9}
+.pt-tag{display:inline-block;background:rgba(0,0,0,.12);border-radius:20px;padding:1px 9px;font-size:.7rem;font-weight:700;margin-left:6px}
+.result-card{background:var(--card);border-radius:20px;border:2px solid var(--border);padding:36px 24px;text-align:center;display:none;box-shadow:0 6px 24px rgba(0,0,0,.08);margin-top:8px}
+.result-card.show{display:block;animation:fadeUp .5s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.result-score{font-family:"Black Han Sans",sans-serif;font-size:2.8rem;color:var(--accent);margin:14px 0}
+.result-msg{font-family:"Gowun Dodum",serif;font-size:.9rem;color:var(--soft);line-height:1.8}
+.result-btns{display:flex;gap:10px;justify-content:center;margin-top:20px;flex-wrap:wrap}
+.result-btns button{padding:11px 22px;border-radius:12px;font-family:inherit;font-size:.84rem;font-weight:700;cursor:pointer;border:2px solid #3d3d3d}
+.btn-retry{background:#3d3d3d;color:#fff}.btn-retry:hover{opacity:.85}
+.btn-back{background:transparent;color:#3d3d3d}.btn-back:hover{background:#f0ede8}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo-row">
+    <div class="logo-circle"><img src="https://bomnalenglish.github.io/bomnalquizz/IMG_6063.jpg" alt="봄날" onerror="this.style.display='none'"/></div>
+    <div><div class="logo-title">봄날 BOMNAL ENGLISH</div><div class="quiz-meta">고운고등학교 1학년 · YBM 박준언 · 4과</div></div>
+  </div>
+  <div><span class="test-badge">✍️ 서술형 TEST 1 — 전국기출 19문제</span></div>
+  <div class="score-display">현재 점수: <span id="score-val">0</span> / <span id="score-max">0</span>점</div>
+</header>
+<main>
+  <a class="back-nav" href="javascript:history.back()">← 허브로 돌아가기</a>
+  <div class="prog-wrap">
+    <div class="prog-bg"><div class="prog-fill" id="prog" style="width:0%"></div></div>
+    <div class="prog-text" id="prog-txt">0 / 19 문제 완료</div>
+  </div>
+
+  <!-- Q1 신광여고 영작 (가) -->
+  <div class="q-card" id="c0">
+    <div class="q-header"><span class="q-num">1번</span><span class="badge b-school">신광여고</span><span class="badge b-type">조건 영작</span><span class="badge b-pts">2점</span></div>
+    <div class="q-text">밑줄 친 우리말 (가)와 같은 뜻이 되도록 주어진 단어를 사용하여 영작하시오.<br><small style="color:#9a8a7a">※ 'meet, see, watch, look, piece' 사용 금지</small></div>
+    <div class="passage"><span class="ko">(가) 이 비범한 예술가의 신작을 맞이하게 되다니 얼마나 경이로운 일인가!</span><br><small style="color:#7a6a5a">(a(n), ordinary)</small></div>
+    <div class="ans-row">
+      <input class="ans-input" id="a0" placeholder="여기에 영작하세요..." maxlength="150" onkeydown="if(event.key==='Enter')check(0)"/>
+      <button class="check-btn" onclick="check(0)">채점</button>
+    </div>
+    <div class="feedback" id="f0"></div>
+  </div>
+
+  <!-- Q2 신광여고 관계대명사 -->
+  <div class="q-card" id="c1">
+    <div class="q-header"><span class="q-num">2번</span><span class="badge b-school">신광여고</span><span class="badge b-type">관계대명사 한 문장 영작</span><span class="badge b-pts">2점</span></div>
+    <div class="q-text">두 문장을 <strong>관계대명사를 이용하여 한 문장으로</strong> 바꾸어 쓰시오.</div>
+    <div class="passage">Mina undertook the demanding task. And <span class="ko">이것은 그녀에게 너무 많은 스트레스를 주었다</span>(stress, so).<br><small style="color:#7a6a5a">*'이것'은 'Mina undertook the demanding task'란 문장 전체를 의미</small></div>
+    <div class="ans-row">
+      <input class="ans-input" id="a1" placeholder="여기에 영작하세요..." maxlength="200" onkeydown="if(event.key==='Enter')check(1)"/>
+      <button class="check-btn" onclick="check(1)">채점</button>
+    </div>
+    <div class="feedback" id="f1"></div>
+  </div>
+
+  <!-- Q3 봉담고 서술 -->
+  <div class="q-card" id="c2">
+    <div class="q-header"><span class="q-num">3번</span><span class="badge b-school">봉담고</span><span class="badge b-type">질문 답변 서술</span><span class="badge b-pts">2점</span></div>
+    <div class="q-text">지문에서 근거를 찾아 <strong>변형 없이 완전한 하나의 문장</strong>으로 서술하시오.</div>
+    <div class="passage">Q. What makes it difficult to answer questions about AI and authorship?</div>
+    <div class="ans-row">
+      <input class="ans-input" id="a2" placeholder="여기에 쓰세요..." maxlength="200" onkeydown="if(event.key==='Enter')check(2)"/>
+      <button class="check-btn" onclick="check(2)">채점</button>
+    </div>
+    <div class="feedback" id="f2"></div>
+  </div>
+
+  <!-- Q4 봉담고 어법 오류 3개 -->
+  <div class="q-card" id="c3">
+    <div class="q-header"><span class="q-num">4번</span><span class="badge b-school">봉담고</span><span class="badge b-type">어법 오류 수정 (3개)</span><span class="badge b-pts">3점</span></div>
+    <div class="q-text">ⓐ~ⓔ 중 <strong>어법상 어색한 표현</strong>의 기호를 고르고 바르게 고치시오.</div>
+    <div class="passage">...the AI or the human <u>ⓐused it</u>?... artworks created by AI programs <u>ⓑwhich</u> they developed... <u>ⓓinputs</u> a prompt. Could an AI machine <u>ⓔit</u> ever be considered an author...</div>
+    <div class="multi-ans">
+      <div class="multi-row"><label>(1)</label><input class="ans-input" id="a3a" placeholder="기호 → 올바른 표현" maxlength="40" style="flex:1"/></div>
+      <div class="multi-row"><label>(2)</label><input class="ans-input" id="a3b" placeholder="기호 → 올바른 표현" maxlength="40" style="flex:1"/></div>
+      <div class="multi-row"><label>(3)</label><input class="ans-input" id="a3c" placeholder="기호 → 올바른 표현" maxlength="40" style="flex:1"/></div>
+    </div>
+    <div style="margin-top:8px"><button class="check-btn" onclick="check(3)">채점</button></div>
+    <div class="feedback" id="f3"></div>
+  </div>
+
+  <!-- Q5 작전고 빈칸 (a)(b) -->
+  <div class="q-card" id="c4">
+    <div class="q-header"><span class="q-num">5번</span><span class="badge b-school">작전고</span><span class="badge b-type">빈칸 완성 (영영풀이)</span><span class="badge b-pts">4점</span></div>
+    <div class="q-text">영영풀이에 맞게 빈칸 (a)(b)에 들어갈 <strong>한 단어</strong>씩 쓰시오.</div>
+    <div class="passage">
+      (a) c______: the legal right given to a person who creates a work to control how it is used by others.<br>
+      (b) n______: relating to a nerve or the nervous system, especially the brain.
+    </div>
+    <div class="multi-ans">
+      <div class="multi-row"><label>(a)</label><input class="ans-input" id="a4a" placeholder="c로 시작..." maxlength="20" style="flex:1"/></div>
+      <div class="multi-row"><label>(b)</label><input class="ans-input" id="a4b" placeholder="n로 시작..." maxlength="20" style="flex:1"/></div>
+    </div>
+    <div style="margin-top:8px"><button class="check-btn" onclick="check(4)">채점</button></div>
+    <div class="feedback" id="f4"></div>
+  </div>
+
+  <!-- Q6 호산고 빈칸 완성 -->
+  <div class="q-card" id="c5">
+    <div class="q-header"><span class="q-num">6번</span><span class="badge b-school">호산고</span><span class="badge b-type">빈칸 조건 영작</span><span class="badge b-pts">2점</span></div>
+    <div class="q-text">빈칸에 들어갈 적절한 말을 <strong>&lt;보기&gt;의 표현만 모두 사용</strong>하여 작성하시오.</div>
+    <div class="passage">Let us look at the mechanism of AI creativity, <strong>______________________________________</strong>. Think of the AI technology of neural networks.</div>
+    <div class="word-box"><div class="wt">〈보기〉</div>in a similar way / program / to work / to human creativity / which</div>
+    <div class="ans-row">
+      <input class="ans-input" id="a5" placeholder="여기에 영작하세요..." maxlength="150" onkeydown="if(event.key==='Enter')check(5)"/>
+      <button class="check-btn" onclick="check(5)">채점</button>
+    </div>
+    <div class="feedback" id="f5"></div>
+  </div>
+
+  <!-- Q7 부명고 메모 빈칸 -->
+  <div class="q-card" id="c6">
+    <div class="q-header"><span class="q-num">7번</span><span class="badge b-school">부명고</span><span class="badge b-type">메모 빈칸 완성 (A)~(E)</span><span class="badge b-pts">5점</span></div>
+    <div class="q-text">빈칸 (A)~(E)에 들어갈 말을 <strong>본문에서 찾아 각각 한 단어</strong>로 기술하시오.</div>
+    <div class="passage" style="font-size:.78rem">
+      1. Human creativity and AI creativity<br>
+      &nbsp;&nbsp;- (A)_______ working principle between AI neural networks and a human brain<br>
+      &nbsp;&nbsp;- Building their own style through learning<br><br>
+      2. (B)_______ of AI creation<br>
+      &nbsp;&nbsp;- Learning through (C)_______ learning<br>
+      &nbsp;&nbsp;- Discovering patterns from (D)_______ data<br>
+      &nbsp;&nbsp;- Learning (E)_______ styles with the purpose of avoiding them
+    </div>
+    <div class="multi-ans">
+      <div class="multi-row"><label>(A)</label><input class="ans-input" id="a6a" placeholder="한 단어..." maxlength="20" style="flex:1"/></div>
+      <div class="multi-row"><label>(B)</label><input class="ans-input" id="a6b" placeholder="한 단어..." maxlength="20" style="flex:1"/></div>
+      <div class="multi-row"><label>(C)</label><input class="ans-input" id="a6c" placeholder="한 단어..." maxlength="20" style="flex:1"/></div>
+      <div class="multi-row"><label>(D)</label><input class="ans-input" id="a6d" placeholder="한 단어..." maxlength="20" style="flex:1"/></div>
+      <div class="multi-row"><label>(E)</label><input class="ans-input" id="a6e" placeholder="한 단어..." maxlength="20" style="flex:1"/></div>
+    </div>
+    <div style="margin-top:8px"><button class="check-btn" onclick="check(6)">채점</button></div>
+    <div class="feedback" id="f6"></div>
+  </div>
+
+  <!-- Q8 호산고 빈칸 -->
+  <div class="q-card" id="c7">
+    <div class="q-header"><span class="q-num">8번</span><span class="badge b-school">호산고</span><span class="badge b-type">빈칸 조건 영작</span><span class="badge b-pts">2점</span></div>
+    <div class="q-text">빈칸에 들어갈 적절한 말을 <strong>&lt;보기&gt;의 표현만 모두 사용</strong>하여 작성하시오.</div>
+    <div class="passage">In 2018, a portrait created by AI was sold for nearly half a million dollars... <strong>______________________________________</strong>. In 2022, an AI-generated picture... won first prize in the Colorado State Fair's art contest.</div>
+    <div class="word-box"><div class="wt">〈보기〉</div>more accepted / enable / become / AI artworks / in the traditional art world / this sale</div>
+    <div class="ans-row">
+      <input class="ans-input" id="a7" placeholder="여기에 영작하세요..." maxlength="150" onkeydown="if(event.key==='Enter')check(7)"/>
+      <button class="check-btn" onclick="check(7)">채점</button>
+    </div>
+    <div class="feedback" id="f7"></div>
+  </div>
+
+  <!-- Q9 강서고 어법 -->
+  <div class="q-card" id="c8">
+    <div class="q-header"><span class="q-num">9번</span><span class="badge b-school">강서고</span><span class="badge b-type">어법 오류 찾기</span><span class="badge b-pts">2점</span></div>
+    <div class="q-text">ⓐ~ⓔ 중 <strong>어법상 어색한 것</strong>의 번호를 쓰시오.</div>
+    <div class="passage">...This learning process enables a machine <u>ⓑdiscover</u> distinct patterns...</div>
+    <div class="ans-row">
+      <input class="ans-input" id="a8" placeholder="번호 (예: ②)" maxlength="10" style="max-width:160px" onkeydown="if(event.key==='Enter')check(8)"/>
+      <button class="check-btn" onclick="check(8)">채점</button>
+    </div>
+    <div class="feedback" id="f8"></div>
+  </div>
+
+  <!-- Q10 강서고 AI 응답 -->
+  <div class="q-card" id="c9">
+    <div class="q-header"><span class="q-num">10번</span><span class="badge b-school">강서고</span><span class="badge b-type">내용 이해 (2개 고르기)</span><span class="badge b-pts">2점</span></div>
+    <div class="q-text">AI가 할 수 있는 응답으로 <strong>적절한 것 2개</strong>를 고르시오.</div>
+    <div class="passage">Q: How can you draw a picture?<br>① I can learn established art styles to avoid them.<br>② I can draw on my own without any special training.<br>③ I simply draw what a human programmer orders me to draw.<br>④ I raise ethical, social, or emotional questions before I draw.<br>⑤ If I have lots of data, I can discover patterns and learn to create a new style.</div>
+    <div class="ans-row">
+      <input class="ans-input" id="a9" placeholder="번호 두 개 (예: ①⑤)" maxlength="20" style="max-width:220px" onkeydown="if(event.key==='Enter')check(9)"/>
+      <button class="check-btn" onclick="check(9)">채점</button>
+    </div>
+    <div class="feedback" id="f9"></div>
+  </div>
+
+  <!-- Q11 강서고 한 문장 -->
+  <div class="q-card" id="c10">
+    <div class="q-header"><span class="q-num">11번</span><span class="badge b-school">강서고</span><span class="badge b-type">한 문장으로 연결</span><span class="badge b-pts">2점</span></div>
+    <div class="q-text">밑줄 친 'this'를 적절한 구로 대체하여 <strong>한 문장으로</strong> 쓰시오.</div>
+    <div class="passage">We will arrive at the meeting on time. My boss has requested this.<br>→ My boss has requested <strong>_______________________________</strong>.</div>
+    <div class="ans-row">
+      <input class="ans-input" id="a10" placeholder="us to arrive at ..." maxlength="100" onkeydown="if(event.key==='Enter')check(10)"/>
+      <button class="check-btn" onclick="check(10)">채점</button>
+    </div>
+    <div class="feedback" id="f10"></div>
+  </div>
+
+  <!-- Q12 강서고 관계대명사 -->
+  <div class="q-card" id="c11">
+    <div class="q-header"><span class="q-num">12번</span><span class="badge b-school">강서고</span><span class="badge b-type">어법 수정 + 관계대명사 연결</span><span class="badge b-pts">3점</span></div>
+    <div class="q-text">(A)에서 어법상 어색한 부분을 고치고, 고친 문장과 (B)를 <strong>계속적 용법의 관계대명사</strong>로 한 문장으로 연결하시오.</div>
+    <div class="passage">(A) The teacher asked Mina <u>undertaking</u> the demanding task.<br>(B) This gave her so much stress.</div>
+    <div class="ans-row">
+      <input class="ans-input" id="a11" placeholder="여기에 영작하세요..." maxlength="200" onkeydown="if(event.key==='Enter')check(11)"/>
+      <button class="check-btn" onclick="check(11)">채점</button>
+    </div>
+    <div class="feedback" id="f11"></div>
+  </div>
+
+  <!-- Q13 신흥고 어법 -->
+  <div class="q-card" id="c12">
+    <div class="q-header"><span class="q-num">13번</span><span class="badge b-school">신흥고</span><span class="badge b-type">어법 오류 찾기</span><span class="badge b-pts">2점</span></div>
+    <div class="q-text">ⓐ~ⓔ 중 <strong>어법상 어색한 것</strong>의 번호를 쓰시오.</div>
+    <div class="passage">...which is done through a branch of machine learning <u>ⓒcalls</u> deep learning...</div>
+    <div class="ans-row">
+      <input class="ans-input" id="a12" placeholder="번호 (예: ③)" maxlength="10" style="max-width:160px" onkeydown="if(event.key==='Enter')check(12)"/>
+      <button class="check-btn" onclick="check(12)">채점</button>
+    </div>
+    <div class="feedback" id="f12"></div>
+  </div>
+
+  <!-- Q14 신흥고 영작 13단어 -->
+  <div class="q-card" id="c13">
+    <div class="q-header"><span class="q-num">14번</span><span class="badge b-school">신흥고</span><span class="badge b-type">5형식 조건 영작 (13단어)</span><span class="badge b-pts">3점</span></div>
+    <div class="q-text">밑줄 친 (A)를 <strong>조건에 맞게 13단어</strong>의 영어 문장으로 완성하시오.</div>
+    <div class="passage"><span class="ko">(A) 이 학습 과정은 기계가 수많은 자료로부터 눈에 띄는(구분되는) 패턴들을 발견하는 것을 가능하게 한다.</span></div>
+    <div class="cond-box"><div class="ct">📋 조건</div><ul><li>문장형식 중 <strong>'5형식'</strong>을 사용할 것</li><li>enable, process, distinct 포함 (어형 변화 가능)</li></ul></div>
+    <div class="ans-row">
+      <input class="ans-input" id="a13" placeholder="13단어 영작..." maxlength="200" onkeydown="if(event.key==='Enter')check(13)"/>
+      <button class="check-btn" onclick="check(13)">채점</button>
+    </div>
+    <div class="feedback" id="f13"></div>
+  </div>
+
+  <!-- Q15 청주고 6단어 -->
+  <div class="q-card" id="c14">
+    <div class="q-header"><span class="q-num">15번</span><span class="badge b-school">청주고</span><span class="badge b-type">조건 영작 (6단어)</span><span class="badge b-pts">2점</span></div>
+    <div class="q-text">우리말과 이어지도록 <strong>조건을 활용하여 6단어</strong>로 완성하시오.</div>
+    <div class="passage">우리는 인간의 창의적인 활동들을 모방할 수 있는 점점 더 발전된 AI 기술을 가지고 있다.<br>→ We have more and more advanced AI techniques <strong>_______________________________</strong>.</div>
+    <div class="cond-box"><div class="ct">📋 조건</div><ul><li>activity, human, imitate, that을 반드시 사용할 것 (필요한 경우 어형 변형)</li><li>4단어를 포함하여 총 6단어로 완성할 것</li></ul></div>
+    <div class="ans-row">
+      <input class="ans-input" id="a14" placeholder="6단어로..." maxlength="80" onkeydown="if(event.key==='Enter')check(14)"/>
+      <button class="check-btn" onclick="check(14)">채점</button>
+    </div>
+    <div class="feedback" id="f14"></div>
+  </div>
+
+  <!-- Q16 삼문고 (A)(B) -->
+  <div class="q-card" id="c15">
+    <div class="q-header"><span class="q-num">16번</span><span class="badge b-school">삼문고</span><span class="badge b-type">재귀대명사 수정</span><span class="badge b-pts">2점</span></div>
+    <div class="q-text">(A), (B)를 <strong>의미상 올바른 형태</strong>로 바꾸시오.</div>
+    <div class="passage">...learns by (A)<u>it</u>...<br>These artists trained (B)<u>them</u> by learning...</div>
+    <div class="multi-ans">
+      <div class="multi-row"><label>(A)</label><input class="ans-input" id="a15a" placeholder="올바른 형태..." maxlength="20" style="flex:1"/></div>
+      <div class="multi-row"><label>(B)</label><input class="ans-input" id="a15b" placeholder="올바른 형태..." maxlength="20" style="flex:1"/></div>
+    </div>
+    <div style="margin-top:8px"><button class="check-btn" onclick="check(15)">채점</button></div>
+    <div class="feedback" id="f15"></div>
+  </div>
+
+  <!-- Q17 삼문고 영작 -->
+  <div class="q-card" id="c16">
+    <div class="q-header"><span class="q-num">17번</span><span class="badge b-school">삼문고</span><span class="badge b-type">조건 영작 (5형식)</span><span class="badge b-pts">2점</span></div>
+    <div class="q-text">ⓐ를 <strong>조건에 맞게 영어로</strong> 적으시오.</div>
+    <div class="passage"><span class="ko">ⓐ 이 학습과정은 기계가 수많은 데이터로부터 뚜렷한 패턴을 발견할 수 있게 한다.</span></div>
+    <div class="word-box"><div class="wt">〈보기〉</div>process / a machine / discover / numerous data / enable</div>
+    <div class="ans-row">
+      <input class="ans-input" id="a16" placeholder="여기에 영작하세요..." maxlength="150" onkeydown="if(event.key==='Enter')check(16)"/>
+      <button class="check-btn" onclick="check(16)">채점</button>
+    </div>
+    <div class="feedback" id="f16"></div>
+  </div>
+
+  <!-- Q18 삼문고 ⓐ 의미 -->
+  <div class="q-card" id="c17">
+    <div class="q-header"><span class="q-num">18번</span><span class="badge b-school">삼문고</span><span class="badge b-type">밑줄 친 ⓐ의 의미</span><span class="badge b-pts">1점</span></div>
+    <div class="q-text">밑줄 친 ⓐ가 <strong>의미하는 것</strong>을 찾아서 쓰시오.</div>
+    <div class="passage">...this does not mean that an AI system <u>ⓐdoes</u> in the same way that a human does.</div>
+    <div class="ans-row">
+      <input class="ans-input" id="a17" placeholder="의미하는 것을 쓰세요..." maxlength="60" style="max-width:280px" onkeydown="if(event.key==='Enter')check(17)"/>
+      <button class="check-btn" onclick="check(17)">채점</button>
+    </div>
+    <div class="feedback" id="f17"></div>
+  </div>
+
+  <!-- Q19 삼문고 관계대명사 영작 -->
+  <div class="q-card" id="c18">
+    <div class="q-header"><span class="q-num">19번</span><span class="badge b-school">삼문고</span><span class="badge b-type">관계대명사 조건 영작</span><span class="badge b-pts">2점</span></div>
+    <div class="q-text">밑줄 친 (A)를 <strong>관계대명사를 사용하여</strong> 영작하시오.</div>
+    <div class="passage"><span class="ko">(A) AI는 이미 어떤 감상자들이 인간의 예술보다 더 인상적이고 혹은 더 감동적이라 생각하는 예술 작품을 만들어냈다.</span><br>→ AI has already generated art <strong>_______________________________</strong></div>
+    <div class="word-box"><div class="wt">〈보기〉</div>consider / impressive or moving / than</div>
+    <div class="ans-row">
+      <input class="ans-input" id="a18" placeholder="여기에 영작하세요..." maxlength="150" onkeydown="if(event.key==='Enter')check(18)"/>
+      <button class="check-btn" onclick="check(18)">채점</button>
+    </div>
+    <div class="feedback" id="f18"></div>
+  </div>
+
+  <!-- RESULT -->
+  <div class="result-card" id="result">
+    <div style="font-family:'Black Han Sans',sans-serif;font-size:1.15rem;color:var(--accent)">🎉 전국기출 19문제 완료!</div>
+    <div class="result-score" id="r-score"></div>
+    <div class="result-msg" id="r-msg"></div>
+    <div class="result-btns">
+      <button class="btn-retry" onclick="retryAll()">🔄 다시 풀기</button>
+      <button class="btn-back" onclick="location.href='https://bomnalenglish.github.io/bomnalquizz/'">← 허브로</button>
+    </div>
+  </div>
+</main>
+
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getFirestore,collection,addDoc,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+const cfg={apiKey:"AIzaSyCxS524S8KAaF87DomPtl9sJdF-eqes404",authDomain:"bomnalvaca.firebaseapp.com",projectId:"bomnalvaca",storageBucket:"bomnalvaca.firebasestorage.app",messagingSenderId:"115868052300",appId:"1:115868052300:web:765c08867b6f1ce0987de9"};
+const app=initializeApp(cfg);const db=getFirestore(app);
+window._log=async(d)=>{try{await addDoc(collection(db,"quiz_results"),{...d,timestamp:serverTimestamp(),file:"gounko_1grade_lesson4_writing1"});}catch(e){}};
+</script>
+<script>
+const NAME=sessionStorage.getItem("bn_name")||localStorage.getItem("bn_name")||"학생";
+const SCHOOL=sessionStorage.getItem("bn_school")||localStorage.getItem("bn_school")||"고운고등학교";
+const PTS=[2,2,2,3,4,2,5,2,2,2,2,3,2,3,2,2,2,1,2];
+const TQ=19;
+function nm(s){return s.trim().toLowerCase().replace(/[?.!,'"]/g,'').replace(/\s+/g,' ');}
+
+const CHK=[
+  // 0: 신광여고 영작
+  s=>{const k=nm(s);if(k.includes('how wonderful to greet a new work of this extraordinary artist'))return'ok';if(k.includes('wonderful')&&k.includes('extraordinary')&&k.includes('greet'))return'partial';return'fail';},
+  // 1: 신광여고 관계대명사
+  s=>{const k=nm(s);if(k.includes('mina undertook the demanding task')&&k.includes('which gave her so much stress'))return'ok';if(k.includes('undertook the demanding task')&&k.includes('which')&&k.includes('stress'))return'partial';return'fail';},
+  // 2: 봉담고 서술
+  s=>{const k=nm(s);if(k.includes('it is not always clear who undertook the arrangements'))return'ok';if(k.includes('not always clear')&&k.includes('undertook')&&k.includes('arrangements'))return'partial';return'fail';},
+  // 3: 봉담고 어법 3개
+  s=>{const p=s.split('|||');const a=nm(p[0]||''),b=nm(p[1]||''),c=nm(p[2]||'');
+    const aok=a.includes('a')&&a.includes('using');const bok=b.includes('d')&&b.includes('input');const cok=c.includes('e')&&c.includes('itself');
+    if(aok&&bok&&cok)return'ok';if([aok,bok,cok].filter(Boolean).length>=2)return'partial';return'fail';},
+  // 4: 작전고 (a)(b)
+  s=>{const p=s.split('|||');const a=nm(p[0]||''),b=nm(p[1]||'');const aok=a==='copyright';const bok=b==='neural';if(aok&&bok)return'ok';if(aok||bok)return'partial';return'fail';},
+  // 5: 호산고 빈칸
+  s=>{const k=nm(s);if(k.includes('which is programmed to work in a similar way to human creativity'))return'ok';if(k.includes('programmed to work')&&k.includes('similar way')&&k.includes('human creativity'))return'partial';return'fail';},
+  // 6: 부명고 메모
+  s=>{const p=s.split('|||');const a=nm(p[0]||''),b=nm(p[1]||''),c=nm(p[2]||''),d=nm(p[3]||''),e=nm(p[4]||'');
+    const ok=[a==='similar',b==='mechanism',c==='deep',d==='numerous',e==='established'];
+    const cnt=ok.filter(Boolean).length;if(cnt===5)return'ok';if(cnt>=3)return'partial';return'fail';},
+  // 7: 호산고 빈칸
+  s=>{const k=nm(s);if(k.includes('this sale enabled ai artworks to become more accepted in the traditional art world'))return'ok';if(k.includes('this sale')&&k.includes('ai artworks')&&k.includes('become more accepted'))return'partial';return'fail';},
+  // 8: 강서고 번호
+  s=>{const k=nm(s);if(k.includes('②')||k==='2'||k==='b')return'ok';return'fail';},
+  // 9: 강서고 2개
+  s=>{const k=nm(s);if((k.includes('①')&&k.includes('⑤'))||(k.includes('1')&&k.includes('5')))return'ok';return'fail';},
+  // 10: 강서고 한 문장
+  s=>{const k=nm(s);if(k.includes('us to arrive at the meeting on time'))return'ok';if(k.includes('arrive at the meeting on time'))return'partial';return'fail';},
+  // 11: 강서고 관계대명사
+  s=>{const k=nm(s);if(k.includes('the teacher asked mina to undertake the demanding task')&&k.includes('which gave her so much stress'))return'ok';if(k.includes('to undertake the demanding task')&&k.includes('which')&&k.includes('stress'))return'partial';return'fail';},
+  // 12: 신흥고 번호
+  s=>{const k=nm(s);if(k.includes('③')||k==='3'||k==='c')return'ok';return'fail';},
+  // 13: 신흥고 영작 13단어
+  s=>{const k=nm(s);if(k.includes('this learning process enables a machine to discover distinct patterns from numerous data'))return'ok';if(k.includes('enables')&&k.includes('a machine')&&k.includes('discover distinct patterns')&&k.includes('numerous data'))return'partial';return'fail';},
+  // 14: 청주고 6단어
+  s=>{const k=nm(s);if(k.includes('that can imitate human creative activities'))return'ok';if(k.includes('imitate')&&k.includes('human')&&k.includes('activities'))return'partial';return'fail';},
+  // 15: 삼문고 (A)(B)
+  s=>{const p=s.split('|||');const a=nm(p[0]||''),b=nm(p[1]||'');const aok=a==='itself';const bok=b==='themselves';if(aok&&bok)return'ok';if(aok||bok)return'partial';return'fail';},
+  // 16: 삼문고 영작
+  s=>{const k=nm(s);if(k.includes('this learning process enables a machine to discover distinct patterns from numerous data'))return'ok';if(k.includes('enables')&&k.includes('discover distinct patterns')&&k.includes('numerous data'))return'partial';return'fail';},
+  // 17: 삼문고 의미
+  s=>{const k=nm(s);if(k.includes('becomes an artist'))return'ok';if(k.includes('artist'))return'partial';return'fail';},
+  // 18: 삼문고 관계대명사
+  s=>{const k=nm(s);if(k.includes('that some viewers consider more impressive or moving than human art'))return'ok';if(k.includes('viewers consider')&&k.includes('impressive or moving')&&k.includes('than human art'))return'partial';return'fail';},
+];
+
+const KEYS=[
+  "How wonderful to greet a new work of this extraordinary artist(!)","Mina undertook the demanding task, which gave her so much stress.",
+  "However, it is not always clear who undertook the arrangements.",
+  "(1) ⓐ → using\n(2) ⓓ → input\n(3) ⓔ → itself",
+  "(a) copyright\n(b) neural",
+  "which is programmed to work in a similar way to human creativity",
+  "(A) similar\n(B) mechanism\n(C) deep\n(D) numerous\n(E) established",
+  "This sale enabled AI artworks to become more accepted in the traditional art world.",
+  "② (ⓑdiscover → to discover)","①⑤",
+  "us to arrive at the meeting on time",
+  "The teacher asked Mina to undertake the demanding task, which gave her so much stress.",
+  "③ (ⓒcalls → called)","This learning process enables a machine to discover distinct patterns from numerous data.",
+  "that can imitate human creative activities",
+  "(A) itself\n(B) themselves",
+  "This learning process enables a machine to discover distinct patterns from numerous data.",
+  "becomes an artist",
+  "that some viewers consider more impressive or moving than human art",
+];
+
+let done=new Array(TQ).fill(false);let scores=new Array(TQ).fill(0);
+
+function check(i){
+  if(done[i])return;
+  let raw;
+  if(i===3)raw=[document.getElementById('a3a'),document.getElementById('a3b'),document.getElementById('a3c')].map(el=>el?.value||'').join('|||');
+  else if(i===4)raw=(document.getElementById('a4a').value||'')+'|||'+(document.getElementById('a4b').value||'');
+  else if(i===6)raw=[document.getElementById('a6a'),document.getElementById('a6b'),document.getElementById('a6c'),document.getElementById('a6d'),document.getElementById('a6e')].map(el=>el?.value||'').join('|||');
+  else if(i===15)raw=(document.getElementById('a15a').value||'')+'|||'+(document.getElementById('a15b').value||'');
+  else raw=document.getElementById('a'+i)?.value||'';
+  commit(i,CHK[i](raw),raw);
+}
+
+function commit(i,res,raw){
+  done[i]=true;
+  const pt=PTS[i];const earned=res==='ok'?pt:res==='partial'?Math.ceil(pt/2):0;scores[i]=earned;
+  const fb=document.getElementById('f'+i);
+  document.getElementById('c'+i).className='q-card '+(res==='ok'?'ok':res==='partial'?'partial':'fail');
+  fb.className='feedback '+res+' show';
+  fb.innerHTML=(res==='ok'?'✅ 정답!':res==='partial'?'🟡 부분 정답':'❌ 오답')+' <span class="pt-tag">+'+earned+'점</span><div class="key">모범답안: '+KEYS[i].replace(/\n/g,'<br>')+'</div>';
+  document.querySelectorAll('#c'+i+' .ans-input').forEach(el=>el.disabled=true);
+  document.querySelectorAll('#c'+i+' .check-btn').forEach(b=>b.disabled=true);
+  updateUI();if(done.every(Boolean))showResult();
+  if(window._log)window._log({name:NAME,school:SCHOOL,q:i+1,result:res,earned,total:pt,ans:String(raw).substring(0,200)});
+}
+
+function updateUI(){
+  const tot=scores.reduce((a,b)=>a+b,0),max=PTS.reduce((a,b)=>a+b,0),n=done.filter(Boolean).length;
+  document.getElementById('score-val').textContent=tot;document.getElementById('score-max').textContent=max;
+  document.getElementById('prog').style.width=(n/TQ*100)+'%';document.getElementById('prog-txt').textContent=n+' / '+TQ+' 문제 완료';
+}
+
+function showResult(){
+  const tot=scores.reduce((a,b)=>a+b,0),max=PTS.reduce((a,b)=>a+b,0),pct=Math.round(tot/max*100);
+  document.getElementById('r-score').textContent=tot+' / '+max+'점 ('+pct+'%)';
+  document.getElementById('r-msg').textContent=pct>=90?'완벽합니다! 전국기출 서술형 마스터! 🌟':pct>=70?'훌륭해요! 💪':pct>=50?'절반 이상! 모범답안 다시 확인! 📖':'서술형은 반복이 답! 다시 도전! 🔄';
+  document.getElementById('result').classList.add('show');setTimeout(()=>window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'}),100);
+}
+
+function retryAll(){
+  done=new Array(TQ).fill(false);scores=new Array(TQ).fill(0);
+  document.querySelectorAll('.q-card').forEach(c=>c.className='q-card');
+  document.querySelectorAll('.feedback').forEach(f=>{f.className='feedback';f.innerHTML='';});
+  document.querySelectorAll('.ans-input').forEach(el=>{el.disabled=false;el.value='';});
+  document.querySelectorAll('.check-btn').forEach(b=>b.disabled=false);
+  document.getElementById('result').classList.remove('show');updateUI();window.scrollTo({top:0,behavior:'smooth'});
+}
+updateUI();
+</script>
+</body>
+</html>
