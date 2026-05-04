@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>영어I 3·4과 내용 일치 · 봄날 ENGLISH</title>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Black+Han+Sans&family=Noto+Sans+KR:wght@300;400;700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--ink:#2a2a2a;--soft:#7a7570;--bg:#f5efe6;--card:#fdf8f2;--border:#e0d8ce;--accent:#5c3d1e}
+body{font-family:"Noto Sans KR",sans-serif;background:var(--bg);min-height:100vh;color:var(--ink)}
+header{background:linear-gradient(135deg,#f7efe4,#f0e6d8 50%,#ece0d2);padding:28px 24px 20px;text-align:center;border-bottom:1px solid var(--border)}
+.logo-row{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;margin-bottom:8px}
+.logo-circle{width:48px;height:48px;border-radius:50%;background:#f0ebe3;border:2px solid #e0d8ce;overflow:hidden;flex-shrink:0}
+.logo-circle img{width:100%;height:100%;object-fit:cover}
+.logo-title{font-family:"Black Han Sans",sans-serif;font-size:1rem;color:#5c3d1e}
+.quiz-meta{font-family:"Gowun Dodum",serif;font-size:.76rem;color:var(--soft);margin-top:2px}
+.test-badge{display:inline-block;background:#3d3d3d;color:#f0ede8;border-radius:30px;padding:3px 14px;font-size:.73rem;font-weight:700;margin-top:6px}
+.score-display{font-family:"Gowun Dodum",serif;font-size:.83rem;color:var(--soft);margin-top:5px}
+#score-val{color:var(--accent);font-family:"Black Han Sans",sans-serif;font-size:.95rem}
+main{max-width:860px;margin:0 auto;padding:20px 14px 80px}
+.prog-bg{height:5px;background:#e0d8ce;border-radius:5px;overflow:hidden;margin-bottom:4px}
+.prog-fill{height:5px;background:linear-gradient(90deg,#5c3d1e,#a0724a);border-radius:5px;transition:width .4s}
+.prog-text{font-family:"Gowun Dodum",serif;font-size:.72rem;color:var(--soft);text-align:right;margin-bottom:16px}
+.back-nav{display:inline-flex;align-items:center;gap:6px;background:white;border:1.5px solid #d0c8bc;border-radius:10px;padding:6px 13px;font-family:inherit;font-size:.78rem;color:var(--soft);cursor:pointer;margin-bottom:16px;text-decoration:none}
+.back-nav:hover{border-color:#3d3d3d}
+.sec-header{background:#3d3d3d;color:#f0ede8;font-family:"Black Han Sans",sans-serif;font-size:.88rem;padding:9px 16px;border-radius:12px;margin:24px 0 12px}
+.q-card{background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:18px 18px 14px;margin-bottom:16px;box-shadow:0 2px 8px rgba(0,0,0,.04);transition:border-color .2s,background .2s}
+.q-card.ok{border-color:#81c784;background:#f7fff8}
+.q-card.fail{border-color:#e57373;background:#fff8f8}
+.q-header{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.q-num{font-family:"Black Han Sans",sans-serif;font-size:.8rem;color:var(--soft)}
+.q-tag{background:#ede9e4;border-radius:20px;padding:2px 9px;font-size:.68rem;font-weight:700;color:#7a6a5a;font-family:"Noto Sans KR",sans-serif}
+.passage-box{background:#f5f0ea;border-left:3px solid #c0a882;border-radius:0 8px 8px 0;padding:12px 14px;margin-bottom:12px;font-size:.82rem;line-height:1.85;color:#3a3a3a;font-family:"Gowun Dodum",serif}
+.stem{font-size:.85rem;font-weight:700;color:var(--ink);margin-bottom:10px;font-family:"Gowun Dodum",serif}
+.mc-btn{display:block;width:100%;text-align:left;padding:9px 13px;margin-bottom:6px;background:#fff;border:1.5px solid #d0c8bc;border-radius:9px;font-family:"Gowun Dodum",serif;font-size:.83rem;cursor:pointer;transition:background .12s,border-color .12s;line-height:1.6}
+.mc-btn:hover{background:#f5f0ea;border-color:#a09080}
+.mc-btn:disabled{cursor:not-allowed}
+.mc-btn.ok-ans{background:#e8f5e9;border-color:#81c784;color:#1b5e20}
+.mc-btn.wrong-ans{background:#ffebee;border-color:#e57373;color:#7f0000}
+.mc-btn.show-ans{background:#e8f5e9;border-color:#81c784;color:#1b5e20}
+.q-feedback{margin-top:8px;font-size:.79rem;font-family:"Gowun Dodum",serif;line-height:1.75;display:none;padding:9px 12px;border-radius:8px}
+.q-feedback.show{display:block}
+.q-feedback.ok{background:#e8f5e9;border:1px solid #a5d6a7;color:#1b5e20}
+.q-feedback.fail{background:#ffebee;border:1px solid #ef9a9a;color:#7f0000}
+.result-card{background:var(--card);border-radius:20px;border:2px solid var(--border);padding:32px 22px;text-align:center;display:none;box-shadow:0 6px 24px rgba(0,0,0,.08);margin-top:12px}
+.result-card.show{display:block;animation:fadeUp .5s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.result-score{font-family:"Black Han Sans",sans-serif;font-size:2.6rem;color:var(--accent);margin:12px 0}
+.result-msg{font-family:"Gowun Dodum",serif;font-size:.88rem;color:var(--soft);line-height:1.8}
+.result-btns{display:flex;gap:10px;justify-content:center;margin-top:18px;flex-wrap:wrap}
+.result-btns button{padding:10px 20px;border-radius:12px;font-family:inherit;font-size:.82rem;font-weight:700;cursor:pointer;border:2px solid #3d3d3d}
+.btn-retry{background:#3d3d3d;color:#fff}
+.btn-back{background:transparent;color:#3d3d3d}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo-row">
+    <div class="logo-circle"><img src="https://bomnalenglish.github.io/bomnalquizz/IMG_6063.jpg" alt="봄날" onerror="this.style.display='none'"/></div>
+    <div><div class="logo-title">봄날 BOMNAL ENGLISH</div><div class="quiz-meta">영어I · YBM 박준언 · 3과·4과</div></div>
+  </div>
+  <div><span class="test-badge">📝 내용 일치 문제 — 25문항</span></div>
+  <div class="score-display">현재 점수: <span id="score-val">0</span> / <span id="score-max">0</span>점</div>
+</header>
+<main>
+  <a class="back-nav" href="javascript:history.back()">← 허브로 돌아가기</a>
+  <div class="prog-bg"><div class="prog-fill" id="prog" style="width:0%"></div></div>
+  <div class="prog-text" id="prog-txt">0 / 25 완료</div>
+<div class="sec-header">📘 3과 — Sports Analytics</div>
+<div class="q-card" id="c0">
+  <div class="q-header"><span class="q-num">1번</span><span class="q-tag">[3-1]</span></div>
+  <div class="passage-box">When the Oakland Athletics, a Major League Baseball team, won 20 games in a row in 2002, the professional sports industry was shocked. The Oakland Athletics were a small team with limited funds, which made it difficult for them to attract elite players. How did they do it? The key to their success was adopting sabermetrics, a statistical model used for making decisions in baseball.</div>
+  <div class="stem">다음 글의 내용과 일치하는 것은?</div>
+  <button class="mc-btn" id="q0o0" onclick="pick(0,0)">① 오클랜드 애슬레틱스는 풍부한 자금을 바탕으로 뛰어난 선수들을 영입했다.</button>
+<button class="mc-btn" id="q0o1" onclick="pick(0,1)">② 이 팀의 연승은 우연에 가깝다고 스포츠 업계는 평가했다.</button>
+<button class="mc-btn" id="q0o2" onclick="pick(0,2)">③ 사버메트릭스는 경기 중 선수들의 움직임을 실시간으로 분석하는 기술이다.</button>
+<button class="mc-btn" id="q0o3" onclick="pick(0,3)">④ 오클랜드 애슬레틱스는 전통적인 선수 선발 방식을 끝까지 고수했다.</button>
+<button class="mc-btn" id="q0o4" onclick="pick(0,4)">⑤ 오클랜드 애슬레틱스는 통계에 기반한 의사결정 방식을 통해 성공을 거두었다.</button>
+
+  <div class="q-feedback" id="fb0"></div>
+</div>
+<div class="q-card" id="c1">
+  <div class="q-header"><span class="q-num">2번</span><span class="q-tag">[3-1]</span></div>
+  
+  <div class="stem">다음 글의 내용을 읽고 답할 수 있는 질문을 고르시오.</div>
+  <button class="mc-btn" id="q1o0" onclick="pick(1,0)">① What was the Oakland Athletics' winning percentage before 2002?</button>
+<button class="mc-btn" id="q1o1" onclick="pick(1,1)">② Why were elite players unwilling to join the Oakland Athletics in 2002?</button>
+<button class="mc-btn" id="q1o2" onclick="pick(1,2)">③ Which specific players contributed most to the Oakland Athletics' success in 2002?</button>
+<button class="mc-btn" id="q1o3" onclick="pick(1,3)">④ How did other professional sports teams respond to the Athletics' strategy after 2002?</button>
+<button class="mc-btn" id="q1o4" onclick="pick(1,4)">⑤ How did the Oakland Athletics manage to achieve a winning streak despite limited financial resources?</button>
+
+  <div class="q-feedback" id="fb1"></div>
+</div>
+<div class="q-card" id="c2">
+  <div class="q-header"><span class="q-num">3번</span><span class="q-tag">[3-2]</span></div>
+  <div class="passage-box">Sabermetrics was created in the late 1970s. It tries to use large amounts of information to discover patterns, trends, and insights that are difficult to find with traditional ways of studying statistics. Normally, coaches and managers prefer players who can hit the ball hard and far, for such players tend to hit more home runs and extra-base hits. Sabermetrics suggests that players' offensive skills can be better measured by the frequency with which they safely reach base. It does not matter whether this is achieved through hits, walks, or hits by pitch. Sabermetrics had not been widely used until the Athletics adopted it in 2002. With sabermetrics, the Athletics were able to identify underrated players with significant contributions to winning and built a strong team on a small budget. The success of the Athletics prompted other teams to quickly adopt sabermetrics, sparking a movement to utilize data not only in baseball but also in other sports. Thus, sports data analytics emerged as a systematic approach to predict game outcomes.</div>
+  <div class="stem">다음 글의 내용과 일치하는 것은?</div>
+  <button class="mc-btn" id="q2o0" onclick="pick(2,0)">① Sabermetrics was first introduced in the early 21st century.</button>
+<button class="mc-btn" id="q2o1" onclick="pick(2,1)">② Traditional managers ignored players who could hit the ball far.</button>
+<button class="mc-btn" id="q2o2" onclick="pick(2,2)">③ Hitting home runs is the only skill measured by sabermetrics.</button>
+<button class="mc-btn" id="q2o3" onclick="pick(2,3)">④ Sabermetrics focuses only on baseball and is not used in other sports.</button>
+<button class="mc-btn" id="q2o4" onclick="pick(2,4)">⑤ Data analytics emerged as a method to forecast the results of games.</button>
+
+  <div class="q-feedback" id="fb2"></div>
+</div>
+<div class="q-card" id="c3">
+  <div class="q-header"><span class="q-num">4번</span><span class="q-tag">[3-2]</span></div>
+  
+  <div class="stem">다음 글의 내용과 일치하는 것은? (한국어 선택지)</div>
+  <button class="mc-btn" id="q3o0" onclick="pick(3,0)">① 사버메트릭스는 전통적인 통계 방법으로는 찾기 어려운 규칙성과 경향을 발견하기 위해 고안되었다.</button>
+<button class="mc-btn" id="q3o1" onclick="pick(3,1)">② 기존의 감독과 코치들은 출루보다 장타 능력이 팀 승리에 덜 중요하다고 보았다.</button>
+<button class="mc-btn" id="q3o2" onclick="pick(3,2)">③ 출루 방식에 따라 선수의 공격 가치를 다르게 평가해야 한다는 점이 강조되었다.</button>
+<button class="mc-btn" id="q3o3" onclick="pick(3,3)">④ 애슬레틱스는 사버메트릭스를 활용해 많은 예산을 투자함으로써 강팀을 만들었다.</button>
+<button class="mc-btn" id="q3o4" onclick="pick(3,4)">⑤ 한 구단의 성공을 계기로 데이터 분석 기법이 야구를 넘어 다른 스포츠로까지 확산되었다.</button>
+
+  <div class="q-feedback" id="fb3"></div>
+</div>
+<div class="q-card" id="c4">
+  <div class="q-header"><span class="q-num">5번</span><span class="q-tag">[3-2]</span></div>
+  
+  <div class="stem">In what specific way did sabermetrics help the team?</div>
+  <button class="mc-btn" id="q4o0" onclick="pick(4,0)">① It allowed the team to increase its budget and sign more star players.</button>
+<button class="mc-btn" id="q4o1" onclick="pick(4,1)">② It helped coaches focus mainly on players' physical strength and power.</button>
+<button class="mc-btn" id="q4o2" onclick="pick(4,2)">③ It was mainly used to predict weather conditions affecting baseball games.</button>
+<button class="mc-btn" id="q4o3" onclick="pick(4,3)">④ It improved team morale by strengthening personal relationships among players.</button>
+<button class="mc-btn" id="q4o4" onclick="pick(4,4)">⑤ It enabled the team to identify undervalued players who contributed significantly to winning.</button>
+
+  <div class="q-feedback" id="fb4"></div>
+</div>
+<div class="q-card" id="c5">
+  <div class="q-header"><span class="q-num">6번</span><span class="q-tag">[3-3]</span></div>
+  <div class="passage-box">In soccer, the Liverpool Football Club of the English Premier League is similar to the Oakland Athletics in baseball. In 2010, Liverpool underwent a change in ownership. While data analysis was already prevailing in the Premier League at that time, the new owner of the club, who also owned a baseball team in the United States, aimed to push data analysis in soccer to new heights. So he demanded that the club form a new data team. The new team included a physicist from Cambridge, a nuclear scientist from Harvard, and a former chess champion. What they had in common was significant expertise in data. The team started to apply data analysis in key areas of club management, including player recruitment, injury prevention, and strategy during the game.</div>
+  <div class="stem">다음 글의 내용과 일치하는 것은?</div>
+  <button class="mc-btn" id="q5o0" onclick="pick(5,0)">① In 2010, Liverpool FC's ownership remained the same.</button>
+<button class="mc-btn" id="q5o1" onclick="pick(5,1)">② At that time, data analysis was not used in the Premier League.</button>
+<button class="mc-btn" id="q5o2" onclick="pick(5,2)">③ The new owner of Liverpool FC did not own any other sports teams.</button>
+<button class="mc-btn" id="q5o3" onclick="pick(5,3)">④ The data team was made up of people who were only soccer experts.</button>
+<button class="mc-btn" id="q5o4" onclick="pick(5,4)">⑤ Data analysis was used for managing injuries and game strategies.</button>
+
+  <div class="q-feedback" id="fb5"></div>
+</div>
+<div class="q-card" id="c6">
+  <div class="q-header"><span class="q-num">7번</span><span class="q-tag">[3-3]</span></div>
+  
+  <div class="stem">다음 글의 내용과 일치하는 것은? (한국어 선택지)</div>
+  <button class="mc-btn" id="q6o0" onclick="pick(6,0)">① 리버풀은 프리미어리그에서 데이터 분석을 가장 먼저 도입한 구단이었다.</button>
+<button class="mc-btn" id="q6o1" onclick="pick(6,1)">② 구단주 교체 이전에는 축구 구단 운영에 데이터 분석이 거의 사용되지 않았다.</button>
+<button class="mc-btn" id="q6o2" onclick="pick(6,2)">③ 새 구단주는 기존 방식보다 직관과 경험에 기반한 운영을 강화하고자 했다.</button>
+<button class="mc-btn" id="q6o3" onclick="pick(6,3)">④ 새로 구성된 데이터 팀은 동일한 학문 분야 출신의 전문가들로 이루어졌다.</button>
+<button class="mc-btn" id="q6o4" onclick="pick(6,4)">⑤ 구단은 선수 영입과 경기 전략 등 여러 운영 영역에 데이터 분석을 활용하기 시작했다.</button>
+
+  <div class="q-feedback" id="fb6"></div>
+</div>
+<div class="q-card" id="c7">
+  <div class="q-header"><span class="q-num">8번</span><span class="q-tag">[3-3]</span></div>
+  
+  <div class="stem">Which of the following questions can be answered based on the passage?</div>
+  <button class="mc-btn" id="q7o0" onclick="pick(7,0)">① How did the new owner's demand change Liverpool's day-to-day training routines?</button>
+<button class="mc-btn" id="q7o1" onclick="pick(7,1)">② In what key areas of club management did Liverpool's new data team begin applying data analysis?</button>
+<button class="mc-btn" id="q7o2" onclick="pick(7,2)">③ What specific statistical model did Liverpool adopt to improve match strategy?</button>
+<button class="mc-btn" id="q7o3" onclick="pick(7,3)">④ Why was data analysis already widespread across the Premier League before 2010?</button>
+<button class="mc-btn" id="q7o4" onclick="pick(7,4)">⑤ How did Liverpool's new data team affect the club's profits after the ownership change?</button>
+
+  <div class="q-feedback" id="fb7"></div>
+</div>
+<div class="q-card" id="c8">
+  <div class="q-header"><span class="q-num">9번</span><span class="q-tag">[3-4]</span></div>
+  <div class="passage-box">The team analyzed large amounts of data to recruit players who fit the team's style of play. In training, they collected data on players' movement patterns, heart rates, and vital signs by using GPS trackers and sensors to prevent injuries. During games, they used live data to make tactical decisions such as substitutions and formations. The data team was praised for its efforts when the Liverpool Football Club won the league championship for the first time in 30 years in 2020. The emergence of sports analytics did not go unnoticed by the Korean sports industry. One notable example of success is the Korean women's curling team. Following its debut at the Winter Olympic Games of 2014, the team recognized the need to enhance its sweeping technique. Sweeping melts the ice and makes the stone move faster. If too much ice melts, however, the stone moves too fast and misses the target. On the other hand, if not enough ice melts, the stone stops before reaching the target. The amount of ice melting depends on the sweeping speed and pressure. Applying too much pressure slows down the sweeping speed, and focusing only on speed makes it hard to transfer enough force to the broom. Finding the right balance between speed and pressure is important to melt the right amount of ice.</div>
+  <div class="stem">다음 글의 내용과 일치하는 것은? (한국어 선택지)</div>
+  <button class="mc-btn" id="q8o0" onclick="pick(8,0)">① 훈련 중 GPS 추적기와 센서를 사용하여 부상 방지를 위한 데이터를 수집했다.</button>
+<button class="mc-btn" id="q8o1" onclick="pick(8,1)">② 리버풀의 데이터 팀은 2020년 우승 후 그들의 노력에 대해 비판을 받았다.</button>
+<button class="mc-btn" id="q8o2" onclick="pick(8,2)">③ 한국 스포츠 산업은 초기에 스포츠 분석의 등장에 크게 주목하지 않았다.</button>
+<button class="mc-btn" id="q8o3" onclick="pick(8,3)">④ 한국 여자 컬링팀은 첫 올림픽 출전부터 완벽한 스위핑 기술을 보유하고 있었다.</button>
+<button class="mc-btn" id="q8o4" onclick="pick(8,4)">⑤ 컬링에서 얼음이 너무 많이 녹으면 스톤이 목표 지점에 도달하기 전에 멈춘다.</button>
+
+  <div class="q-feedback" id="fb8"></div>
+</div>
+<div class="q-card" id="c9">
+  <div class="q-header"><span class="q-num">10번</span><span class="q-tag">[3-4]</span></div>
+  
+  <div class="stem">다음 글의 내용과 일치하는 것은? (영어 선택지)</div>
+  <button class="mc-btn" id="q9o0" onclick="pick(9,0)">① Liverpool FC failed to win the league championship in 2020.</button>
+<button class="mc-btn" id="q9o1" onclick="pick(9,1)">② Data on players' heart rates was collected to improve ticket sales.</button>
+<button class="mc-btn" id="q9o2" onclick="pick(9,2)">③ The Korean women's curling team debuted at the 2014 Winter Olympics.</button>
+<button class="mc-btn" id="q9o3" onclick="pick(9,3)">④ Sweeping makes the stone move slower by increasing the friction on the ice.</button>
+<button class="mc-btn" id="q9o4" onclick="pick(9,4)">⑤ Applying too much pressure to the broom results in a faster sweeping speed.</button>
+
+  <div class="q-feedback" id="fb9"></div>
+</div>
+<div class="q-card" id="c10">
+  <div class="q-header"><span class="q-num">11번</span><span class="q-tag">[3-5]</span></div>
+  <div class="passage-box">To identify the most effective technique, the Korean team designed a sweeping measurement device. The device consisted of infrared cameras and sensors attached to the players' bodies, shoes, and brooms. Through the device and motion-capture screens, foot pressure values and other data were obtained for analysis. After monitoring changes in the temperature of the ice surface, the team concluded that speed was more economical than strength for sweeping. The use of data analysis was critical in the team's winning of a silver medal at the 2018 Pyeongchang Winter Olympics.</div>
+  <div class="stem">다음 글의 내용과 일치하는 것은? (한국어 선택지)</div>
+  <button class="mc-btn" id="q10o0" onclick="pick(10,0)">① 한국 팀은 2018년 동계올림픽에서 금메달을 획득했다.</button>
+<button class="mc-btn" id="q10o1" onclick="pick(10,1)">② 측정 장치는 오직 스위핑의 힘만을 측정하도록 설계되었다.</button>
+<button class="mc-btn" id="q10o2" onclick="pick(10,2)">③ 모션 캡처 스크린이 선수들의 빗자루에 직접 부착되었다.</button>
+<button class="mc-btn" id="q10o3" onclick="pick(10,3)">④ 팀은 얼음 표면의 온도 변화를 모니터링한 후 결론을 내렸다.</button>
+<button class="mc-btn" id="q10o4" onclick="pick(10,4)">⑤ 온도 모니터링 결과 얼음 표면에 유의미한 변화가 없었다.</button>
+
+  <div class="q-feedback" id="fb10"></div>
+</div>
+<div class="q-card" id="c11">
+  <div class="q-header"><span class="q-num">12번</span><span class="q-tag">[3-5]</span></div>
+  
+  <div class="stem">다음 글의 내용과 일치하는 것은? (영어 선택지)</div>
+  <button class="mc-btn" id="q11o0" onclick="pick(11,0)">① The Korean team used only cameras to collect data.</button>
+<button class="mc-btn" id="q11o1" onclick="pick(11,1)">② Foot pressure values were not used for the data analysis.</button>
+<button class="mc-btn" id="q11o2" onclick="pick(11,2)">③ The team concluded that strength is better than speed for sweeping.</button>
+<button class="mc-btn" id="q11o3" onclick="pick(11,3)">④ The sweeping measurement device was used during the actual game.</button>
+<button class="mc-btn" id="q11o4" onclick="pick(11,4)">⑤ The team won a silver medal at the 2018 Pyeongchang Winter Olympics.</button>
+
+  <div class="q-feedback" id="fb11"></div>
+</div>
+<div class="q-card" id="c12">
+  <div class="q-header"><span class="q-num">13번</span><span class="q-tag">[3-6]</span></div>
+  <div class="passage-box">The successful use of sports analytics was not limited to the curling team. The Korean women's archery team had dominated the sport for decades. However, the team turned to sports analytics to maintain its edge over its rivals in preparation for the 2020 Tokyo Olympics. The team developed a system to monitor players' heart rates by using advanced visual computing technology to convert facial color variations into heart rates. This data was used for psychological training to help players maintain stable heart rates during crucial moments. The team also created an AI coach that helped adjust shooting form. The team managers requested that the AI coach edit training videos of the players to assist with practical analysis. Players and coaches used the edited videos to analyze the players' usual habits or weaknesses. The active use of data analysis by the Korean women's archery team handed them their ninth Olympic gold medal in a row in Tokyo.</div>
+  <div class="stem">다음 글의 내용과 일치하는 것은? (한국어 선택지)</div>
+  <button class="mc-btn" id="q12o0" onclick="pick(12,0)">① 양궁팀은 도쿄 올림픽 이후 처음으로 스포츠 분석을 도입했다.</button>
+<button class="mc-btn" id="q12o1" onclick="pick(12,1)">② 얼굴 색 변화 기술은 선수들의 체온을 측정하는 데 사용되었다.</button>
+<button class="mc-btn" id="q12o2" onclick="pick(12,2)">③ AI 코치는 선수들의 슈팅 자세를 조정하는 데 도움을 주었다.</button>
+<button class="mc-btn" id="q12o3" onclick="pick(12,3)">④ 훈련 영상은 팀 매니저들이 직접 편집하여 분석에 활용했다.</button>
+<button class="mc-btn" id="q12o4" onclick="pick(12,4)">⑤ 양궁팀은 도쿄 올림픽에서 처음으로 금메달을 획득했다.</button>
+
+  <div class="q-feedback" id="fb12"></div>
+</div>
+<div class="q-card" id="c13">
+  <div class="q-header"><span class="q-num">14번</span><span class="q-tag">[3-6]</span></div>
+  
+  <div class="stem">다음 글의 내용과 일치하는 것은? (영어 선택지)</div>
+  <button class="mc-btn" id="q13o0" onclick="pick(13,0)">① Sports analytics was only used by the curling team, not the archery team.</button>
+<button class="mc-btn" id="q13o1" onclick="pick(13,1)">② The Korean archery team had been struggling in the sport for decades.</button>
+<button class="mc-btn" id="q13o2" onclick="pick(13,2)">③ Heart rates were measured by attaching sensors directly to the players' skin.</button>
+<button class="mc-btn" id="q13o3" onclick="pick(13,3)">④ The AI coach was developed to replace all human coaches in the archery team.</button>
+<button class="mc-btn" id="q13o4" onclick="pick(13,4)">⑤ Data analysis contributed to the team winning nine consecutive gold medals.</button>
+
+  <div class="q-feedback" id="fb13"></div>
+</div>
+<div class="q-card" id="c14">
+  <div class="q-header"><span class="q-num">15번</span><span class="q-tag">[3-7]</span></div>
+  <div class="passage-box">There are still limitations to what data analysis can capture in games. Factors such as team chemistry, which is related to how well people get along, will likely remain difficult to measure. Similarly, predicting player performance in a match cannot be entirely accurate as players are humans and not machines. Still, sports analytics is undeniably elevating the level of play across various sports, and fans are enjoying this development.</div>
+  <div class="stem">다음 글의 내용과 일치하는 것은? (한국어 선택지)</div>
+  <button class="mc-btn" id="q14o0" onclick="pick(14,0)">① 스포츠 분석은 팀 화합과 같은 인간적 요소를 정확하게 수치로 측정할 수 있다.</button>
+<button class="mc-btn" id="q14o1" onclick="pick(14,1)">② 선수는 기계와 같기 때문에 경기력 예측은 거의 완벽하게 가능하다.</button>
+<button class="mc-btn" id="q14o2" onclick="pick(14,2)">③ 스포츠 분석은 한계가 있지만, 여러 스포츠에서 경기 수준을 높이는 데 도움을 주고 있다.</button>
+<button class="mc-btn" id="q14o3" onclick="pick(14,3)">④ 팬들은 스포츠 분석의 발전으로 인해 스포츠에 대한 흥미를 잃고 있다.</button>
+<button class="mc-btn" id="q14o4" onclick="pick(14,4)">⑤ 스포츠 분석은 인간적 요소보다 데이터만을 더 중요하게 여긴다고 주장한다.</button>
+
+  <div class="q-feedback" id="fb14"></div>
+</div>
+<div class="q-card" id="c15">
+  <div class="q-header"><span class="q-num">16번</span><span class="q-tag">[3-7]</span></div>
+  
+  <div class="stem">다음 글의 내용과 일치하는 것은? (한국어 선택지 2)</div>
+  <button class="mc-btn" id="q15o0" onclick="pick(15,0)">① 데이터 분석은 팀워크와 같은 요소까지 정확히 수치화할 수 있다</button>
+<button class="mc-btn" id="q15o1" onclick="pick(15,1)">② 선수의 경기력은 기계처럼 일정하므로 예측의 오차가 거의 없다</button>
+<button class="mc-btn" id="q15o2" onclick="pick(15,2)">③ 스포츠 분석은 인간 요소의 한계 때문에 경기 수준 향상에 기여하지 못한다</button>
+<button class="mc-btn" id="q15o3" onclick="pick(15,3)">④ 스포츠 분석의 발전은 팬들의 경기 관람 만족도와 무관하다</button>
+<button class="mc-btn" id="q15o4" onclick="pick(15,4)">⑤ 스포츠 분석은 한계가 있음에도 불구하고 경기 수준 향상에 기여하고 있다</button>
+
+  <div class="q-feedback" id="fb15"></div>
+</div>
+<div class="sec-header">📒 4과 — King Jeongjo's Royal Procession</div>
+<div class="q-card" id="c16">
+  <div class="q-header"><span class="q-num">17번</span><span class="q-tag">[4-1]</span></div>
+  <div class="passage-box">Hey there! Let me introduce you to a fascinating piece of Korean history. Back on February 9, 1795, something remarkable happened in front of Changdeokgung Palace, where King Jeongjo lived. There was quite a crowd gathered there to witness a very special procession that's still talked about in Korea today. Now, imagine this: more than 2,000 soldiers, hundreds of horse riders, and lots of important officials, all marching alongside the king and his mother with 50 musicians playing traditional instruments. When they crossed a bridge made of 36 boats on the Hangang River, you can imagine how that turned heads! That must have been something ordinary people rarely saw. Talk about a big event! This was not just about putting on a show. No, it was serious business. Lasting four days and covering 68 kilometers, the procession moved alongside the king and his mother as they made a round trip to Hwaseong Haenggung.</div>
+  <div class="stem">다음 글의 내용과 일치하는 것은?</div>
+  <button class="mc-btn" id="q16o0" onclick="pick(16,0)">① The royal procession was a frequent event for ordinary people in Korea.</button>
+<button class="mc-btn" id="q16o1" onclick="pick(16,1)">② King Jeongjo led more horse riders than soldiers in the parade.</button>
+<button class="mc-btn" id="q16o2" onclick="pick(16,2)">③ The musicians in the procession played modern Western instruments.</button>
+<button class="mc-btn" id="q16o3" onclick="pick(16,3)">④ The king and his mother used a permanent stone bridge to cross the river.</button>
+<button class="mc-btn" id="q16o4" onclick="pick(16,4)">⑤ The grand parade was a significant official task, not just a simple show.</button>
+
+  <div class="q-feedback" id="fb16"></div>
+</div>
+<div class="q-card" id="c17">
+  <div class="q-header"><span class="q-num">18번</span><span class="q-tag">[4-2]</span></div>
+  <div class="passage-box">Why did all of this happen? The first thing King Jeongjo had in mind was to show respect to his family. It happened around his mother's sixtieth birthday. Back in the Joseon Dynasty, just like today, turning 60 years old had a special meaning. And his father's tomb was near Hwaseong Haenggung. He was planning to hold a memorial service to honor his late father. By combining the two events, he was telling everyone how much family meant to him. But wait. There's more. King Jeongjo was also making a statement about the Joseon Dynasty's strength. He dressed up like a military leader, wearing armor and sitting on a horse with his soldiers marching in perfect order. It was a way of saying, "We're ready to protect our land." He was really serious about making the Joseon Dynasty a powerful and successful kingdom.</div>
+  <div class="stem">다음 글의 내용과 일치하는 것은? (한국어 선택지)</div>
+  <button class="mc-btn" id="q17o0" onclick="pick(17,0)">① 정조 대왕은 가족에 대한 존중보다 왕실의 권위를 세우는 것을 가장 우선시했다.</button>
+<button class="mc-btn" id="q17o1" onclick="pick(17,1)">② 조선 시대에 60세가 되는 것은 오늘날과 달리 큰 의미가 없는 평범한 일이었다.</button>
+<button class="mc-btn" id="q17o2" onclick="pick(17,2)">③ 정조는 두 행사를 결합하여 가족이 자신에게 갖는 큰 의미를 사람들에게 전달했다.</button>
+<button class="mc-btn" id="q17o3" onclick="pick(17,3)">④ 군사들의 행진은 정조가 나라를 지키는 일보다 의례적인 행사에 관심이 많음을 보여주었다.</button>
+<button class="mc-btn" id="q17o4" onclick="pick(17,4)">⑤ 정조는 조선 왕조를 군사력보다는 문화적 예술성이 뛰어난 왕국으로 만들고자 노력했다.</button>
+
+  <div class="q-feedback" id="fb17"></div>
+</div>
+<div class="q-card" id="c18">
+  <div class="q-header"><span class="q-num">19번</span><span class="q-tag">[4-3]</span></div>
+  <div class="passage-box">Now, here's the twist: the procession also had something to do with Hwaseong Fortress, which was being built. In King Jeongjo's mind were big plans for Hwaseong. He wanted it to be a self-sufficient city with a strong military, farming, and trade as he hoped to make it the new capital, away from all the political chaos in Hanyang. So King Jeongjo gathered the best talents, such as Jeong Yakyong, and let them bring together the finest architectural techniques of his time from both the East and the West to build Hwaseong Fortress. There's more to King Jeongjo's story. He treated his people well during the construction of the fortress. They received fair wages and breaks during bad weather and were even paid when they were sick, something that was unheard of at that time. Back then, ordinary people were typically required to work on public projects without getting paid. Once people got wind of King Jeongjo's plan, workers from all over the country came together in a rush. So, in under three years was the project finished, though it was initially thought to take about 10 years. Impressive, right?</div>
+  <div class="stem">다음 글의 내용과 일치하는 것은? (한국어 선택지)</div>
+  <button class="mc-btn" id="q18o0" onclick="pick(18,0)">① 왕의 행차가 있었을 당시 화성은 이미 모든 건설이 완료된 상태였다.</button>
+<button class="mc-btn" id="q18o1" onclick="pick(18,1)">② 정조는 한양의 정치적 안정을 유지하고자 화성을 제2의 수도로 계획했다.</button>
+<button class="mc-btn" id="q18o2" onclick="pick(18,2)">③ 정약용은 동양의 기술만을 활용하여 화성을 전통적인 방식으로 설계했다.</button>
+<button class="mc-btn" id="q18o3" onclick="pick(18,3)">④ 정조는 건설 노동자들이 아파서 일을 하지 못할 때도 정당한 임금을 지불했다.</button>
+<button class="mc-btn" id="q18o4" onclick="pick(18,4)">⑤ 화성 축조는 공사 과정의 어려움으로 인해 예상 기간인 10년을 훨씬 넘겼다.</button>
+
+  <div class="q-feedback" id="fb18"></div>
+</div>
+<div class="q-card" id="c19">
+  <div class="q-header"><span class="q-num">20번</span><span class="q-tag">[4-4]</span></div>
+  <div class="passage-box">Let's go back to the procession. The procession wasn't just some fancy show for ordinary people. It was actually a way for them to get up close and personal with the king. King Jeongjo set up a chance during the procession for common people to meet him and to share their concerns. This was a big deal, especially for those who couldn't read or write. They didn't have any other way to tell the king what was on their minds, so this was a direct line to him. And here's the cherry on top: through the procession, King Jeongjo made government more accessible. During that time, the government used to hold exams to hire officials every three years. So, there weren't many chances available. He added special exams during the procession, giving more people a shot at joining the government. This move was innovative back then and made the government more diverse.</div>
+  <div class="stem">다음 글의 내용과 일치하는 것은? (영어 선택지)</div>
+  <button class="mc-btn" id="q19o0" onclick="pick(19,0)">① King Jeongjo limited access to the procession to educated people only.</button>
+<button class="mc-btn" id="q19o1" onclick="pick(19,1)">② People had several alternative ways to communicate with the king.</button>
+<button class="mc-btn" id="q19o2" onclick="pick(19,2)">③ The procession allowed common people to directly express their concerns to the king.</button>
+<button class="mc-btn" id="q19o3" onclick="pick(19,3)">④ Government exams were held frequently, giving many opportunities to people.</button>
+<button class="mc-btn" id="q19o4" onclick="pick(19,4)">⑤ The special exams reduced the diversity of government officials.</button>
+
+  <div class="q-feedback" id="fb19"></div>
+</div>
+<div class="q-card" id="c20">
+  <div class="q-header"><span class="q-num">21번</span><span class="q-tag">[4-4]</span></div>
+  
+  <div class="stem">다음 글의 내용과 일치하는 것은? (영어 선택지 2)</div>
+  <button class="mc-btn" id="q20o0" onclick="pick(20,0)">① The procession was intended to be nothing more than a formal visual display for the public.</button>
+<button class="mc-btn" id="q20o1" onclick="pick(20,1)">② Illiterate commoners were required to submit their concerns in writing during the procession.</button>
+<button class="mc-btn" id="q20o2" onclick="pick(20,2)">③ The procession functioned as an immediate communication channel between the king and his subjects.</button>
+<button class="mc-btn" id="q20o3" onclick="pick(20,3)">④ Under the existing system of that time, the government provided frequent opportunities for official recruitment.</button>
+<button class="mc-btn" id="q20o4" onclick="pick(20,4)">⑤ The introduction of special exams was a conventional method to maintain the traditional government structure.</button>
+
+  <div class="q-feedback" id="fb20"></div>
+</div>
+<div class="q-card" id="c21">
+  <div class="q-header"><span class="q-num">22번</span><span class="q-tag">[4-5]</span></div>
+  <div class="passage-box">And guess what? King Jeongjo didn't forget a single detail. He made sure everything was documented properly by creating records for the procession and the construction of Hwaseong Fortress. These construction records were especially a lifesaver when the fortress was damaged during wartime. They were even part of why UNESCO recognized Hwaseong Fortress as a World Heritage Site. At first, the people at UNESCO were a bit unsure about recognizing Hwaseong Fortress as the real deal. They weren't totally convinced it was authentic. But after checking out translated documents and comparing them with the restored fortress, they finally came around and agreed that the fortress had actually been restored just the way it was meant to be.</div>
+  <div class="stem">다음 글의 내용과 일치하는 것은? (영어 선택지)</div>
+  <button class="mc-btn" id="q21o0" onclick="pick(21,0)">① The records were created only after the fortress was damaged during wartime.</button>
+<button class="mc-btn" id="q21o1" onclick="pick(21,1)">② The records were not useful in restoring the damaged fortress.</button>
+<button class="mc-btn" id="q21o2" onclick="pick(21,2)">③ The comparison between translated documents and the restored fortress influenced UNESCO's decision.</button>
+<button class="mc-btn" id="q21o3" onclick="pick(21,3)">④ UNESCO was fully convinced of the fortress's authenticity from the beginning.</button>
+<button class="mc-btn" id="q21o4" onclick="pick(21,4)">⑤ The records had no connection to the UNESCO World Heritage recognition.</button>
+
+  <div class="q-feedback" id="fb21"></div>
+</div>
+<div class="q-card" id="c22">
+  <div class="q-header"><span class="q-num">23번</span><span class="q-tag">[4-5]</span></div>
+  
+  <div class="stem">다음 글의 내용과 일치하는 것은? (영어 선택지 2)</div>
+  <button class="mc-btn" id="q22o0" onclick="pick(22,0)">① King Jeongjo focused more on the grand scale of the fortress than on recording minor details.</button>
+<button class="mc-btn" id="q22o1" onclick="pick(22,1)">② The records of the fortress construction were instrumental in its repair after wartime destruction.</button>
+<button class="mc-btn" id="q22o2" onclick="pick(22,2)">③ UNESCO granted World Heritage status to Hwaseong Fortress immediately upon its initial application.</button>
+<button class="mc-btn" id="q22o3" onclick="pick(22,3)">④ The lack of translated documents made it difficult for UNESCO to verify the fortress's authenticity.</button>
+<button class="mc-btn" id="q22o4" onclick="pick(22,4)">⑤ The final restoration of the fortress was modified to suit modern architectural styles.</button>
+
+  <div class="q-feedback" id="fb22"></div>
+</div>
+<div class="q-card" id="c23">
+  <div class="q-header"><span class="q-num">24번</span><span class="q-tag">[4-6]</span></div>
+  <div class="passage-box">And among the records of the procession, there are these amazing paintings. One painting, Hwaneo Haengryeoldo, doesn't just feature the king's crew, but it also shows ordinary people watching along the road. It's a different take from the usual art of that time, which only focused on important figures. So being kind to the people was a big deal for kings of the Joseon Dynasty. King Jeongjo's 1795 procession and Hwaseong Fortress stand as proof of that spirit. Hwaseong is more than just a fortress; it symbolizes a king who cared for his people. And this is a significant part of Korean cultural heritage.</div>
+  <div class="stem">다음 글의 내용과 일치하는 것은? (영어 선택지)</div>
+  <button class="mc-btn" id="q23o0" onclick="pick(23,0)">① Hwaneo Haengryeoldo excludes ordinary people and focuses exclusively on royal attendants.</button>
+<button class="mc-btn" id="q23o1" onclick="pick(23,1)">② The painting conforms to the conventional artistic trend of emphasizing only high-ranking figures.</button>
+<button class="mc-btn" id="q23o2" onclick="pick(23,2)">③ The depiction of the procession expands the scope of subjects beyond traditional limitations.</button>
+<button class="mc-btn" id="q23o3" onclick="pick(23,3)">④ Hwaseong Fortress serves solely as a defensive structure without any symbolic implication.</button>
+<button class="mc-btn" id="q23o4" onclick="pick(23,4)">⑤ The primary purpose of the paintings is to document the everyday routines of commoners.</button>
+
+  <div class="q-feedback" id="fb23"></div>
+</div>
+<div class="q-card" id="c24">
+  <div class="q-header"><span class="q-num">25번</span><span class="q-tag">[4-6]</span></div>
+  
+  <div class="stem">다음 글의 내용과 일치하는 것은? (영어 선택지 2)</div>
+  <button class="mc-btn" id="q24o0" onclick="pick(24,0)">① The painting Hwaneo Haengryeoldo exclusively depicts the royal family and their staff.</button>
+<button class="mc-btn" id="q24o1" onclick="pick(24,1)">② The artistic style of Hwaneo Haengryeoldo followed the standard conventions of its era.</button>
+<button class="mc-btn" id="q24o2" onclick="pick(24,2)">③ King Jeongjo's 1795 procession served as evidence of the king's affection for his people.</button>
+<button class="mc-btn" id="q24o3" onclick="pick(24,3)">④ Hwaseong Fortress is primarily recognized for its strategic military strength alone.</button>
+<button class="mc-btn" id="q24o4" onclick="pick(24,4)">⑤ The benevolent spirit of Joseon kings was a minor concern in the dynasty's history.</button>
+
+  <div class="q-feedback" id="fb24"></div>
+</div>
+
+  <div class="result-card" id="result">
+    <div style="font-family:'Black Han Sans',sans-serif;font-size:1.1rem;color:var(--accent)">🎉 25문제 완료!</div>
+    <div class="result-score" id="r-score"></div>
+    <div class="result-msg" id="r-msg"></div>
+    <div class="result-btns">
+      <button class="btn-retry" onclick="retryAll()">🔄 다시 풀기</button>
+      <button class="btn-back" onclick="location.href='https://bomnalenglish.github.io/bomnalquizz/'">← 허브로</button>
+    </div>
+  </div>
+</main>
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getFirestore,collection,addDoc,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+const cfg={apiKey:"AIzaSyCxS524S8KAaF87DomPtl9sJdF-eqes404",authDomain:"bomnalvaca.firebaseapp.com",projectId:"bomnalvaca",storageBucket:"bomnalvaca.firebasestorage.app",messagingSenderId:"115868052300",appId:"1:115868052300:web:765c08867b6f1ce0987de9"};
+const app=initializeApp(cfg);const db=getFirestore(app);
+window._log=async(d)=>{try{await addDoc(collection(db,"quiz_results"),{...d,timestamp:serverTimestamp(),file:"ei_match_quiz"})}catch(e){}};
+</script>
+<script>
+const NAME=sessionStorage.getItem("bn_name")||localStorage.getItem("bn_name")||"학생";
+const SCHOOL=sessionStorage.getItem("bn_school")||localStorage.getItem("bn_school")||"학교";
+const ANSWERS=[4, 4, 4, 4, 4, 4, 4, 1, 0, 2, 3, 4, 2, 4, 2, 4, 4, 2, 3, 2, 2, 2, 1, 2, 2];
+const EXPS=['EXPS_PLACEHOLDER'];
+const TQ=25;
+let done=new Array(TQ).fill(false);let earned=0;
+
+function pick(qi,idx){
+  if(done[qi])return;done[qi]=true;
+  const ans=ANSWERS[qi];const ok=idx===ans;if(ok)earned++;
+  for(let j=0;j<5;j++){
+    const b=document.getElementById("q"+qi+"o"+j);if(!b)continue;
+    b.disabled=true;
+    if(j===ans)b.classList.add(ok&&j===idx?'ok-ans':'show-ans');
+    if(j===idx&&!ok)b.classList.add('wrong-ans');
+  }
+  const fb=document.getElementById("fb"+qi);
+  fb.className='q-feedback '+(ok?'ok':'fail')+' show';
+  fb.innerHTML=(ok?'✅ 정답!':'❌ 오답 — 정답: '+['①','②','③','④','⑤'][ans])+'<br>'+EXPS[qi];
+  document.getElementById("c"+qi).classList.add(ok?'ok':'fail');
+  const doneN=done.filter(Boolean).length;
+  document.getElementById('score-val').textContent=earned;
+  document.getElementById('score-max').textContent=TQ;
+  document.getElementById('prog').style.width=(doneN/TQ*100)+'%';
+  document.getElementById('prog-txt').textContent=doneN+' / '+TQ+' 완료';
+  if(window._log)window._log({name:NAME,school:SCHOOL,q:qi+1,result:ok?'ok':'fail',earned:ok?1:0,total:1});
+  if(doneN>=TQ)showResult();
+}
+
+function showResult(){
+  const pct=Math.round(earned/TQ*100);
+  document.getElementById('r-score').textContent=earned+' / '+TQ+'점 ('+pct+'%)';
+  document.getElementById('r-msg').textContent=pct>=90?'완벽합니다! 내용 일치 마스터! 🌟':pct>=70?'잘했어요! 💪':pct>=50?'절반 이상! 지문을 다시 꼼꼼히 읽어봐요 📖':'지문 해석 연습이 필요해요 🔄';
+  document.getElementById('result').classList.add('show');
+  setTimeout(()=>window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'}),200);
+}
+
+function retryAll(){
+  done=new Array(TQ).fill(false);earned=0;
+  document.querySelectorAll('.q-card').forEach(c=>c.className='q-card');
+  document.querySelectorAll('.mc-btn').forEach(b=>{b.disabled=false;b.className='mc-btn';});
+  document.querySelectorAll('.q-feedback').forEach(f=>{f.className='q-feedback';f.innerHTML='';});
+  document.getElementById('result').classList.remove('show');
+  document.getElementById('score-val').textContent=0;
+  document.getElementById('score-max').textContent=TQ;
+  document.getElementById('prog').style.width='0%';
+  document.getElementById('prog-txt').textContent='0 / '+TQ+' 완료';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+document.getElementById('score-max').textContent=TQ;
+</script>
+</body>
+</html>

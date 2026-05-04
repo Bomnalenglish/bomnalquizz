@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>영어I 3과 어법선택형 · 봄날 ENGLISH</title>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Black+Han+Sans&family=Noto+Sans+KR:wght@300;400;700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--ink:#2a2a2a;--soft:#7a7570;--bg:#f5efe6;--card:#fdf8f2;--border:#e0d8ce;--accent:#5c3d1e}
+body{font-family:"Noto Sans KR",sans-serif;background:var(--bg);min-height:100vh;color:var(--ink)}
+header{background:linear-gradient(135deg,#f7efe4,#f0e6d8 50%,#ece0d2);padding:28px 24px 20px;text-align:center;border-bottom:1px solid var(--border)}
+.logo-row{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;margin-bottom:8px}
+.logo-circle{width:48px;height:48px;border-radius:50%;background:#f0ebe3;border:2px solid #e0d8ce;overflow:hidden;flex-shrink:0}
+.logo-circle img{width:100%;height:100%;object-fit:cover}
+.logo-title{font-family:"Black Han Sans",sans-serif;font-size:1rem;color:#5c3d1e}
+.quiz-meta{font-family:"Gowun Dodum",serif;font-size:.76rem;color:var(--soft);margin-top:2px}
+.test-badge{display:inline-block;background:#3d3d3d;color:#f0ede8;border-radius:30px;padding:3px 14px;font-size:.73rem;font-weight:700;letter-spacing:.5px;margin-top:6px}
+.score-display{font-family:"Gowun Dodum",serif;font-size:.83rem;color:var(--soft);margin-top:5px}
+#score-val{color:var(--accent);font-family:"Black Han Sans",sans-serif;font-size:.95rem}
+main{max-width:860px;margin:0 auto;padding:20px 14px 80px}
+.prog-bg{height:5px;background:#e0d8ce;border-radius:5px;overflow:hidden;margin-bottom:4px}
+.prog-fill{height:5px;background:linear-gradient(90deg,#5c3d1e,#a0724a);border-radius:5px;transition:width .4s}
+.prog-text{font-family:"Gowun Dodum",serif;font-size:.72rem;color:var(--soft);text-align:right;margin-bottom:16px}
+.back-nav{display:inline-flex;align-items:center;gap:6px;background:white;border:1.5px solid #d0c8bc;border-radius:10px;padding:6px 13px;font-family:inherit;font-size:.78rem;color:var(--soft);cursor:pointer;margin-bottom:16px;text-decoration:none}
+.back-nav:hover{border-color:#3d3d3d;color:#3d3d3d}
+.sec-header{background:#3d3d3d;color:#f0ede8;font-family:"Black Han Sans",sans-serif;font-size:.88rem;padding:9px 16px;border-radius:12px;margin:24px 0 12px;letter-spacing:.4px}
+.q-card{background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:16px 16px 14px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,.04);transition:border-color .2s,background .2s}
+.q-card.ok{border-color:#81c784;background:#f7fff8}
+.q-card.fail{border-color:#e57373;background:#fff8f8}
+.q-num{font-family:"Black Han Sans",sans-serif;font-size:.75rem;color:var(--soft);margin-bottom:8px}
+.ko-text{font-size:.8rem;color:#5a5a5a;font-family:"Gowun Dodum",serif;line-height:1.8;margin-bottom:8px;padding:7px 10px;background:#f0ebe3;border-radius:8px}
+.eng-text{font-size:.88rem;line-height:2.2;color:#2a2a2a;font-family:"Gowun Dodum",serif}
+.sel-group{display:inline-flex;align-items:center;border:1.5px solid #c0b4a4;border-radius:6px;overflow:hidden;vertical-align:middle;margin:0 2px;font-size:.83rem}
+.sel-btn{padding:2px 9px;background:#fff;border:none;cursor:pointer;font-family:"Gowun Dodum",serif;font-size:.83rem;color:#3a3a3a;transition:background .12s;line-height:1.7;white-space:nowrap}
+.sel-btn:not(:last-child){border-right:1px solid #c0b4a4}
+.sel-btn:hover{background:#f0ebe3}
+.sel-btn:disabled{cursor:not-allowed}
+.sel-btn.correct{background:#2e7d32!important;color:#fff!important}
+.sel-btn.wrong{background:#c0392b!important;color:#fff!important}
+.q-feedback{margin-top:8px;font-size:.78rem;font-family:"Gowun Dodum",serif;display:none}
+.q-feedback.show{display:block}
+.q-feedback.ok{color:#1b5e20}
+.q-feedback.fail{color:#7f0000}
+.result-card{background:var(--card);border-radius:20px;border:2px solid var(--border);padding:32px 22px;text-align:center;display:none;box-shadow:0 6px 24px rgba(0,0,0,.08);margin-top:12px}
+.result-card.show{display:block;animation:fadeUp .5s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.result-score{font-family:"Black Han Sans",sans-serif;font-size:2.6rem;color:var(--accent);margin:12px 0}
+.result-msg{font-family:"Gowun Dodum",serif;font-size:.88rem;color:var(--soft);line-height:1.8}
+.result-btns{display:flex;gap:10px;justify-content:center;margin-top:18px;flex-wrap:wrap}
+.result-btns button{padding:10px 20px;border-radius:12px;font-family:inherit;font-size:.82rem;font-weight:700;cursor:pointer;border:2px solid #3d3d3d}
+.btn-retry{background:#3d3d3d;color:#fff}
+.btn-back{background:transparent;color:#3d3d3d}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo-row">
+    <div class="logo-circle"><img src="https://bomnalenglish.github.io/bomnalquizz/IMG_6063.jpg" alt="봄날" onerror="this.style.display='none'"/></div>
+    <div><div class="logo-title">봄날 BOMNAL ENGLISH</div><div class="quiz-meta">영어I · YBM 박준언 · 3과</div></div>
+  </div>
+  <div><span class="test-badge">📗 어법 선택형 연습 — 워크북 6</span></div>
+  <div class="score-display">현재 점수: <span id="score-val">0</span> / <span id="score-max">0</span>점</div>
+</header>
+<main>
+  <a class="back-nav" href="javascript:history.back()">← 허브로 돌아가기</a>
+  <div class="prog-bg"><div class="prog-fill" id="prog" style="width:0%"></div></div>
+  <div class="prog-text" id="prog-txt">0 / 0 완료</div>
+<div class="sec-header">📘 교과서 본문 — Sports and Data</div>
+<div class="q-card" id="c0">
+  <div class="q-num">1번</div>
+  <div class="ko-text">2002년 메이저리그 야구팀인 오클랜드 애슬레틱스가 20연승을 거두자 프로 스포츠 업계는 큰 충격을 받았다.</div>
+  <div class="eng-text">When the Oakland Athletics, a Major League Baseball team, <span class="sel-group" data-qi="0" data-ans="1"><button class="sel-btn" onclick="pick(this,0,0)">winning</button><button class="sel-btn" onclick="pick(this,0,1)">won</button></span> 20 games in a row in 2002, the professional sports industry was <span class="sel-group" data-qi="1" data-ans="1"><button class="sel-btn" onclick="pick(this,1,0)">shocking</button><button class="sel-btn" onclick="pick(this,1,1)">shocked</button></span>.</div>
+  <div class="q-feedback" id="fb0"></div>
+</div>
+<div class="q-card" id="c1">
+  <div class="q-num">2번</div>
+  <div class="ko-text">오클랜드 애슬레틱스는 자금이 부족한 소규모 팀이었기 때문에 우수한 선수를 끌어오는 데 어려움을 겪었다.</div>
+  <div class="eng-text">The Oakland Athletics were a small team with limited funds, <span class="sel-group" data-qi="2" data-ans="0"><button class="sel-btn" onclick="pick(this,2,0)">which</button><button class="sel-btn" onclick="pick(this,2,1)">that</button></span> made <span class="sel-group" data-qi="3" data-ans="0"><button class="sel-btn" onclick="pick(this,3,0)">it</button><button class="sel-btn" onclick="pick(this,3,1)">that</button></span> <span class="sel-group" data-qi="4" data-ans="1"><button class="sel-btn" onclick="pick(this,4,0)">difficultly</button><button class="sel-btn" onclick="pick(this,4,1)">difficult</button></span> for them <span class="sel-group" data-qi="5" data-ans="1"><button class="sel-btn" onclick="pick(this,5,0)">attracting</button><button class="sel-btn" onclick="pick(this,5,1)">to attract</button></span> elite players.</div>
+  <div class="q-feedback" id="fb1"></div>
+</div>
+<div class="q-card" id="c2">
+  <div class="q-num">3번</div>
+  <div class="ko-text">성공의 열쇠는 야구에서 의사결정을 내리는 데 사용되는 통계 모델인 세이버메트릭스를 도입한 것이었다.</div>
+  <div class="eng-text">The key to their success <span class="sel-group" data-qi="6" data-ans="0"><button class="sel-btn" onclick="pick(this,6,0)">was</button><button class="sel-btn" onclick="pick(this,6,1)">were</button></span> <span class="sel-group" data-qi="7" data-ans="0"><button class="sel-btn" onclick="pick(this,7,0)">adopting</button><button class="sel-btn" onclick="pick(this,7,1)">adopted</button></span> sabermetrics, a statistical model <span class="sel-group" data-qi="8" data-ans="1"><button class="sel-btn" onclick="pick(this,8,0)">using</button><button class="sel-btn" onclick="pick(this,8,1)">used</button></span> for making decisions in baseball.</div>
+  <div class="q-feedback" id="fb2"></div>
+</div>
+<div class="q-card" id="c3">
+  <div class="q-num">4번</div>
+  <div class="ko-text">세이버메트릭스는 전통적인 통계 연구 방법으로는 찾기 어려운 패턴, 추세 및 통찰을 발견하기 위해 대량의 정보를 사용하려고 한다.</div>
+  <div class="eng-text">It tries to use large amounts of information to <span class="sel-group" data-qi="9" data-ans="0"><button class="sel-btn" onclick="pick(this,9,0)">discover</button><button class="sel-btn" onclick="pick(this,9,1)">discovering</button></span> patterns, trends, and insights <span class="sel-group" data-qi="10" data-ans="1"><button class="sel-btn" onclick="pick(this,10,0)">what</button><button class="sel-btn" onclick="pick(this,10,1)">that</button></span> <span class="sel-group" data-qi="11" data-ans="1"><button class="sel-btn" onclick="pick(this,11,0)">is</button><button class="sel-btn" onclick="pick(this,11,1)">are</button></span> difficult to <span class="sel-group" data-qi="12" data-ans="0"><button class="sel-btn" onclick="pick(this,12,0)">find</button><button class="sel-btn" onclick="pick(this,12,1)">finding</button></span> with traditional ways of studying statistics.</div>
+  <div class="q-feedback" id="fb3"></div>
+</div>
+<div class="q-card" id="c4">
+  <div class="q-num">5번</div>
+  <div class="ko-text">일반적으로, 코치와 감독은 공을 강하고 멀리 칠 수 있는 선수를 선호하는데, 그런 선수는 홈런과 장타를 더 많이 치는 경향이 있기 때문이다.</div>
+  <div class="eng-text">Normally, coaches and managers prefer players <span class="sel-group" data-qi="13" data-ans="0"><button class="sel-btn" onclick="pick(this,13,0)">who</button><button class="sel-btn" onclick="pick(this,13,1)">whose</button></span> can hit the ball hard and far, for such players tend <span class="sel-group" data-qi="14" data-ans="1"><button class="sel-btn" onclick="pick(this,14,0)">hitting</button><button class="sel-btn" onclick="pick(this,14,1)">to hit</button></span> more home runs and extra-base hits.</div>
+  <div class="q-feedback" id="fb4"></div>
+</div>
+<div class="q-card" id="c5">
+  <div class="q-num">6번</div>
+  <div class="ko-text">세이버메트릭스는 베이스에 안전하게 도착하는 빈도로 선수의 공격 기술이 더 잘 측정될 수 있다고 제안한다.</div>
+  <div class="eng-text">Sabermetrics suggests <span class="sel-group" data-qi="15" data-ans="0"><button class="sel-btn" onclick="pick(this,15,0)">that</button><button class="sel-btn" onclick="pick(this,15,1)">what</button></span> players' offensive skills can be better <span class="sel-group" data-qi="16" data-ans="1"><button class="sel-btn" onclick="pick(this,16,0)">measuring</button><button class="sel-btn" onclick="pick(this,16,1)">measured</button></span> by the frequency <span class="sel-group" data-qi="17" data-ans="1"><button class="sel-btn" onclick="pick(this,17,0)">which</button><button class="sel-btn" onclick="pick(this,17,1)">with which</button></span> they safely reach base.</div>
+  <div class="q-feedback" id="fb5"></div>
+</div>
+<div class="q-card" id="c6">
+  <div class="q-num">7번</div>
+  <div class="ko-text">진루가 안타, 볼넷 또는 데드볼을 통해 이루어졌는지 여부는 중요하지 않다.</div>
+  <div class="eng-text">It <span class="sel-group" data-qi="18" data-ans="1"><button class="sel-btn" onclick="pick(this,18,0)">is</button><button class="sel-btn" onclick="pick(this,18,1)">does</button></span> not <span class="sel-group" data-qi="19" data-ans="0"><button class="sel-btn" onclick="pick(this,19,0)">matter</button><button class="sel-btn" onclick="pick(this,19,1)">mattered</button></span> whether this is <span class="sel-group" data-qi="20" data-ans="1"><button class="sel-btn" onclick="pick(this,20,0)">achieving</button><button class="sel-btn" onclick="pick(this,20,1)">achieved</button></span> through hits, walks, or hits by pitch.</div>
+  <div class="q-feedback" id="fb6"></div>
+</div>
+<div class="q-card" id="c7">
+  <div class="q-num">8번</div>
+  <div class="ko-text">세이버메트릭스는 2002년에 애슬레틱스가 도입하기 전까지는 널리 사용되지 않았다.</div>
+  <div class="eng-text">Sabermetrics had not been widely <span class="sel-group" data-qi="21" data-ans="1"><button class="sel-btn" onclick="pick(this,21,0)">using</button><button class="sel-btn" onclick="pick(this,21,1)">used</button></span> until the Athletics <span class="sel-group" data-qi="22" data-ans="0"><button class="sel-btn" onclick="pick(this,22,0)">adopted</button><button class="sel-btn" onclick="pick(this,22,1)">was adopted</button></span> it in 2002.</div>
+  <div class="q-feedback" id="fb7"></div>
+</div>
+<div class="q-card" id="c8">
+  <div class="q-num">9번</div>
+  <div class="ko-text">세이버메트릭스를 통해 애슬레틱스는 저평가된 선수 중 승리에 크게 기여하는 선수를 찾아낼 수 있었고, 적은 예산으로 강력한 팀을 구축했다.</div>
+  <div class="eng-text">With sabermetrics, the Athletics were able to identify <span class="sel-group" data-qi="23" data-ans="0"><button class="sel-btn" onclick="pick(this,23,0)">underrated</button><button class="sel-btn" onclick="pick(this,23,1)">underrating</button></span> players with significant contributions to <span class="sel-group" data-qi="24" data-ans="1"><button class="sel-btn" onclick="pick(this,24,0)">win</button><button class="sel-btn" onclick="pick(this,24,1)">winning</button></span> and built a strong team on a small budget.</div>
+  <div class="q-feedback" id="fb8"></div>
+</div>
+<div class="q-card" id="c9">
+  <div class="q-num">10번</div>
+  <div class="ko-text">애슬레틱스의 성공은 다른 팀들이 빠르게 세이버메트릭스를 도입하도록 자극했고, 야구뿐만 아니라 다른 스포츠에서도 데이터를 활용하려는 움직임을 촉발시켰다.</div>
+  <div class="eng-text">The success of the Athletics prompted <span class="sel-group" data-qi="25" data-ans="0"><button class="sel-btn" onclick="pick(this,25,0)">other</button><button class="sel-btn" onclick="pick(this,25,1)">another</button></span> teams to quickly adopt sabermetrics, <span class="sel-group" data-qi="26" data-ans="1"><button class="sel-btn" onclick="pick(this,26,0)">sparked</button><button class="sel-btn" onclick="pick(this,26,1)">sparking</button></span> a movement to utilize data not only in baseball but also in other sports.</div>
+  <div class="q-feedback" id="fb9"></div>
+</div>
+<div class="q-card" id="c10">
+  <div class="q-num">11번</div>
+  <div class="ko-text">스포츠 데이터 분석은 경기 결과를 예측하기 위한 체계적인 접근 방식으로 부상했다.</div>
+  <div class="eng-text">Thus, sports data analytics <span class="sel-group" data-qi="27" data-ans="0"><button class="sel-btn" onclick="pick(this,27,0)">emerged</button><button class="sel-btn" onclick="pick(this,27,1)">was emerged</button></span> as a systematic approach to <span class="sel-group" data-qi="28" data-ans="0"><button class="sel-btn" onclick="pick(this,28,0)">predict</button><button class="sel-btn" onclick="pick(this,28,1)">predicting</button></span> game outcomes.</div>
+  <div class="q-feedback" id="fb10"></div>
+</div>
+<div class="q-card" id="c11">
+  <div class="q-num">12번</div>
+  <div class="ko-text">2010년에 리버풀은 소유주가 바뀌었다.</div>
+  <div class="eng-text">In soccer, the Liverpool Football Club of the English Premier League is similar to the Oakland Athletics in baseball. In 2010, Liverpool <span class="sel-group" data-qi="29" data-ans="0"><button class="sel-btn" onclick="pick(this,29,0)">underwent</button><button class="sel-btn" onclick="pick(this,29,1)">was undergone</button></span> a change in ownership.</div>
+  <div class="q-feedback" id="fb11"></div>
+</div>
+<div class="q-card" id="c12">
+  <div class="q-num">13번</div>
+  <div class="ko-text">당시 프리미어 리그에서는 이미 데이터 분석이 널리 퍼져 있었지만, 미국에서 야구팀을 소유하고 있던 새 구단주는 축구에서의 데이터 분석을 새로운 차원으로 끌어올리고자 했다.</div>
+  <div class="eng-text">While data analysis was already prevailing in the Premier League at that time, the new owner of the club, <span class="sel-group" data-qi="30" data-ans="0"><button class="sel-btn" onclick="pick(this,30,0)">who</button><button class="sel-btn" onclick="pick(this,30,1)">which</button></span> also owned a baseball team in the United States, <span class="sel-group" data-qi="31" data-ans="1"><button class="sel-btn" onclick="pick(this,31,0)">aiming</button><button class="sel-btn" onclick="pick(this,31,1)">aimed</button></span> <span class="sel-group" data-qi="32" data-ans="1"><button class="sel-btn" onclick="pick(this,32,0)">pushing</button><button class="sel-btn" onclick="pick(this,32,1)">to push</button></span> data analysis in soccer to new heights.</div>
+  <div class="q-feedback" id="fb12"></div>
+</div>
+<div class="q-card" id="c13">
+  <div class="q-num">14번</div>
+  <div class="ko-text">그래서 그는 구단에 새로운 데이터 팀을 구성할 것을 요구했다.</div>
+  <div class="eng-text">So he demanded <span class="sel-group" data-qi="33" data-ans="0"><button class="sel-btn" onclick="pick(this,33,0)">that</button><button class="sel-btn" onclick="pick(this,33,1)">what</button></span> the club <span class="sel-group" data-qi="34" data-ans="0"><button class="sel-btn" onclick="pick(this,34,0)">form</button><button class="sel-btn" onclick="pick(this,34,1)">formed</button></span> a new data team.</div>
+  <div class="q-feedback" id="fb13"></div>
+</div>
+<div class="q-card" id="c14">
+  <div class="q-num">15번</div>
+  <div class="ko-text">새 팀에는 케임브리지 출신의 물리학자, 하버드 출신의 핵 과학자, 전 체스 챔피언이 포함되었다.</div>
+  <div class="eng-text">The new team <span class="sel-group" data-qi="35" data-ans="0"><button class="sel-btn" onclick="pick(this,35,0)">included</button><button class="sel-btn" onclick="pick(this,35,1)">was included</button></span> a physicist from Cambridge, a nuclear scientist from Harvard, and a former chess champion.</div>
+  <div class="q-feedback" id="fb14"></div>
+</div>
+<div class="q-card" id="c15">
+  <div class="q-num">16번</div>
+  <div class="ko-text">이들의 공통점은 데이터에 대한 상당한 전문성을 갖추고 있다는 것이었다.</div>
+  <div class="eng-text"><span class="sel-group" data-qi="36" data-ans="1"><button class="sel-btn" onclick="pick(this,36,0)">That</button><button class="sel-btn" onclick="pick(this,36,1)">What</button></span> they had in common <span class="sel-group" data-qi="37" data-ans="0"><button class="sel-btn" onclick="pick(this,37,0)">was</button><button class="sel-btn" onclick="pick(this,37,1)">were</button></span> significant expertise in data.</div>
+  <div class="q-feedback" id="fb15"></div>
+</div>
+<div class="q-card" id="c16">
+  <div class="q-num">17번</div>
+  <div class="ko-text">이 팀은 선수 영입, 부상 예방, 경기 중 전략 등 구단 운영의 주요 영역에 데이터 분석을 적용하기 시작했다. 그 팀은 팀의 플레이 스타일에 맞는 선수를 영입하기 위해 대량의 데이터를 분석했다.</div>
+  <div class="eng-text">The team started to <span class="sel-group" data-qi="38" data-ans="0"><button class="sel-btn" onclick="pick(this,38,0)">apply</button><button class="sel-btn" onclick="pick(this,38,1)">applying</button></span> data analysis in key areas of club management, including player recruitment, injury prevention, and strategy during the game. The team analyzed large amounts of data to recruit players <span class="sel-group" data-qi="39" data-ans="0"><button class="sel-btn" onclick="pick(this,39,0)">who</button><button class="sel-btn" onclick="pick(this,39,1)">what</button></span> <span class="sel-group" data-qi="40" data-ans="0"><button class="sel-btn" onclick="pick(this,40,0)">fit</button><button class="sel-btn" onclick="pick(this,40,1)">fits</button></span> the team's style of play.</div>
+  <div class="q-feedback" id="fb16"></div>
+</div>
+<div class="q-card" id="c17">
+  <div class="q-num">18번</div>
+  <div class="ko-text">훈련 중에는 부상을 방지하기 위해 GPS 트래커와 센서를 사용하여 데이터를 수집했다. 경기 중에는 실시간 데이터를 활용했다. 2020년 리버풀이 30년 만에 처음으로 리그 우승 시 데이터 팀은 찬사를 받았다.</div>
+  <div class="eng-text">In training, they collected data on players' movement patterns, heart rates, and vital signs by using GPS trackers and sensors to <span class="sel-group" data-qi="41" data-ans="0"><button class="sel-btn" onclick="pick(this,41,0)">prevent</button><button class="sel-btn" onclick="pick(this,41,1)">preventing</button></span> injuries. During games, they used live data to <span class="sel-group" data-qi="42" data-ans="0"><button class="sel-btn" onclick="pick(this,42,0)">make</button><button class="sel-btn" onclick="pick(this,42,1)">making</button></span> tactical decisions such as substitutions and formations. The data team was <span class="sel-group" data-qi="43" data-ans="1"><button class="sel-btn" onclick="pick(this,43,0)">praising</button><button class="sel-btn" onclick="pick(this,43,1)">praised</button></span> for its efforts when the Liverpool Football Club won the league championship for the first time in 30 years in 2020.</div>
+  <div class="q-feedback" id="fb17"></div>
+</div>
+<div class="q-card" id="c18">
+  <div class="q-num">19번</div>
+  <div class="ko-text">스포츠 분석의 등장은 한국 스포츠 업계에서도 주목하지 않을 수 없었다. 2014년 동계 올림픽에 처음 등장한 이후, 한국 여자 컬링 대표팀은 스위핑 기술을 개선해야 할 필요성을 인식했다.</div>
+  <div class="eng-text">One notable example of success <span class="sel-group" data-qi="44" data-ans="0"><button class="sel-btn" onclick="pick(this,44,0)">is</button><button class="sel-btn" onclick="pick(this,44,1)">are</button></span> the Korean women's curling team. Following its debut at the Winter Olympic Games of 2014, the team recognized the need <span class="sel-group" data-qi="45" data-ans="1"><button class="sel-btn" onclick="pick(this,45,0)">enhancing</button><button class="sel-btn" onclick="pick(this,45,1)">to enhance</button></span> its sweeping technique.</div>
+  <div class="q-feedback" id="fb18"></div>
+</div>
+<div class="q-card" id="c19">
+  <div class="q-num">20번</div>
+  <div class="ko-text">스위핑은 얼음을 녹여 스톤을 더 빠르게 움직이게 한다. 하지만 얼음이 너무 많이 녹으면 스톤이 너무 빨리 움직여 과녁을 빗나가게 된다. 얼음이 녹는 양은 스위핑 속도와 압력에 달려있다.</div>
+  <div class="eng-text">Sweeping melts the ice and <span class="sel-group" data-qi="46" data-ans="1"><button class="sel-btn" onclick="pick(this,46,0)">make</button><button class="sel-btn" onclick="pick(this,46,1)">makes</button></span> the stone <span class="sel-group" data-qi="47" data-ans="0"><button class="sel-btn" onclick="pick(this,47,0)">move</button><button class="sel-btn" onclick="pick(this,47,1)">to move</button></span> faster. If too much ice melts, however, the stone moves too fast and <span class="sel-group" data-qi="48" data-ans="1"><button class="sel-btn" onclick="pick(this,48,0)">miss</button><button class="sel-btn" onclick="pick(this,48,1)">misses</button></span> the target. The amount of ice melting <span class="sel-group" data-qi="49" data-ans="1"><button class="sel-btn" onclick="pick(this,49,0)">depend</button><button class="sel-btn" onclick="pick(this,49,1)">depends</button></span> on the sweeping speed and pressure.</div>
+  <div class="q-feedback" id="fb19"></div>
+</div>
+<div class="q-card" id="c20">
+  <div class="q-num">21번</div>
+  <div class="ko-text">너무 큰 압력을 가하면 스위핑 속도가 느려지고, 속도에만 집중하면 빗자루에 충분한 힘을 전달하기 어렵다. 적절한 양의 얼음을 녹이려면 속도와 압력 사이의 적절한 균형을 찾는 것이 중요하다.</div>
+  <div class="eng-text"><span class="sel-group" data-qi="50" data-ans="1"><button class="sel-btn" onclick="pick(this,50,0)">Apply</button><button class="sel-btn" onclick="pick(this,50,1)">Applying</button></span> too much pressure slows down the sweeping speed, and <span class="sel-group" data-qi="51" data-ans="0"><button class="sel-btn" onclick="pick(this,51,0)">focusing</button><button class="sel-btn" onclick="pick(this,51,1)">focuses</button></span> only on speed makes it hard <span class="sel-group" data-qi="52" data-ans="1"><button class="sel-btn" onclick="pick(this,52,0)">transferring</button><button class="sel-btn" onclick="pick(this,52,1)">to transfer</button></span> enough force to the broom. Finding the right balance between speed and pressure <span class="sel-group" data-qi="53" data-ans="0"><button class="sel-btn" onclick="pick(this,53,0)">is</button><button class="sel-btn" onclick="pick(this,53,1)">are</button></span> important to <span class="sel-group" data-qi="54" data-ans="0"><button class="sel-btn" onclick="pick(this,54,0)">melt</button><button class="sel-btn" onclick="pick(this,54,1)">melting</button></span> the right amount of ice.</div>
+  <div class="q-feedback" id="fb20"></div>
+</div>
+<div class="q-card" id="c21">
+  <div class="q-num">22번</div>
+  <div class="ko-text">가장 효과적인 기술을 파악하기 위해 한국 팀은 스위핑 측정 장치를 설계했다. 이 장치는 적외선 카메라와 선수들의 몸, 신발, 빗자루에 부착된 센서로 구성되었다. 이 장치와 모션 캡처 화면을 통해 분석을 위한 발의 압력 값과 기타 데이터가 수집되었다.</div>
+  <div class="eng-text"><span class="sel-group" data-qi="55" data-ans="1"><button class="sel-btn" onclick="pick(this,55,0)">Identify</button><button class="sel-btn" onclick="pick(this,55,1)">To identify</button></span> the most effective technique, the Korean team designed a sweeping measurement device. The device <span class="sel-group" data-qi="56" data-ans="0"><button class="sel-btn" onclick="pick(this,56,0)">consisted</button><button class="sel-btn" onclick="pick(this,56,1)">was consisted</button></span> of infrared cameras and sensors <span class="sel-group" data-qi="57" data-ans="1"><button class="sel-btn" onclick="pick(this,57,0)">attaching</button><button class="sel-btn" onclick="pick(this,57,1)">attached</button></span> to the players' bodies, shoes, and brooms. Through the device and motion-capture screens, foot pressure values and other data were <span class="sel-group" data-qi="58" data-ans="1"><button class="sel-btn" onclick="pick(this,58,0)">obtaining</button><button class="sel-btn" onclick="pick(this,58,1)">obtained</button></span> for analysis.</div>
+  <div class="q-feedback" id="fb21"></div>
+</div>
+<div class="q-card" id="c22">
+  <div class="q-num">23번</div>
+  <div class="ko-text">빙판 표면의 온도 변화를 모니터링한 결과, 컬링팀은 힘보다는 속도가 더 경제적이라는 결론을 내렸다. 이 팀의 2018 평창 동계올림픽 은메달 획득에 데이터 분석의 활용이 결정적이었다. 스포츠 분석의 성공적인 활용은 컬링 대표팀에만 국한되지 않았다.</div>
+  <div class="eng-text">After <span class="sel-group" data-qi="59" data-ans="1"><button class="sel-btn" onclick="pick(this,59,0)">monitor</button><button class="sel-btn" onclick="pick(this,59,1)">monitoring</button></span> changes in the temperature of the ice surface, the team concluded <span class="sel-group" data-qi="60" data-ans="1"><button class="sel-btn" onclick="pick(this,60,0)">what</button><button class="sel-btn" onclick="pick(this,60,1)">that</button></span> speed was more economical than strength for sweeping. The use of data analysis <span class="sel-group" data-qi="61" data-ans="0"><button class="sel-btn" onclick="pick(this,61,0)">was</button><button class="sel-btn" onclick="pick(this,61,1)">were</button></span> critical in the team's winning of a silver medal at the 2018 Pyeongchang Winter Olympics. The successful use of sports analytics <span class="sel-group" data-qi="62" data-ans="0"><button class="sel-btn" onclick="pick(this,62,0)">was</button><button class="sel-btn" onclick="pick(this,62,1)">were</button></span> not <span class="sel-group" data-qi="63" data-ans="1"><button class="sel-btn" onclick="pick(this,63,0)">limiting</button><button class="sel-btn" onclick="pick(this,63,1)">limited</button></span> to the curling team.</div>
+  <div class="q-feedback" id="fb22"></div>
+</div>
+<div class="q-card" id="c23">
+  <div class="q-num">24번</div>
+  <div class="ko-text">한국 여자 양궁 대표팀은 수십 년 동안 이 종목을 지배해왔다. 하지만 대표팀은 경쟁국에 대한 우위를 유지하기 위해 스포츠 분석에 눈을 돌렸다. 대표팀은 선수들의 심박수를 모니터링하는 시스템을 개발했다. 이 데이터는 심리 훈련에 활용되었다.</div>
+  <div class="eng-text">The Korean women's archery team <span class="sel-group" data-qi="64" data-ans="1"><button class="sel-btn" onclick="pick(this,64,0)">was</button><button class="sel-btn" onclick="pick(this,64,1)">had</button></span> dominated the sport for decades. However, the team turned to sports analytics to <span class="sel-group" data-qi="65" data-ans="0"><button class="sel-btn" onclick="pick(this,65,0)">maintain</button><button class="sel-btn" onclick="pick(this,65,1)">maintaining</button></span> its edge over its rivals in preparation for the 2020 Tokyo Olympics. The team developed a system to <span class="sel-group" data-qi="66" data-ans="0"><button class="sel-btn" onclick="pick(this,66,0)">monitor</button><button class="sel-btn" onclick="pick(this,66,1)">monitoring</button></span> players' heart rates by using advanced visual computing technology to <span class="sel-group" data-qi="67" data-ans="0"><button class="sel-btn" onclick="pick(this,67,0)">convert</button><button class="sel-btn" onclick="pick(this,67,1)">converting</button></span> facial color variations into heart rates. This data was <span class="sel-group" data-qi="68" data-ans="1"><button class="sel-btn" onclick="pick(this,68,0)">using</button><button class="sel-btn" onclick="pick(this,68,1)">used</button></span> for psychological training to <span class="sel-group" data-qi="69" data-ans="0"><button class="sel-btn" onclick="pick(this,69,0)">help</button><button class="sel-btn" onclick="pick(this,69,1)">helping</button></span> players <span class="sel-group" data-qi="70" data-ans="0"><button class="sel-btn" onclick="pick(this,70,0)">maintain</button><button class="sel-btn" onclick="pick(this,70,1)">maintaining</button></span> stable heart rates during crucial moments.</div>
+  <div class="q-feedback" id="fb23"></div>
+</div>
+<div class="q-card" id="c24">
+  <div class="q-num">25번</div>
+  <div class="ko-text">또한 대표팀은 슈팅 자세를 교정하는 데 도움이 되는 AI 코치도 만들었다. 팀 매니저들은 AI 코치에게 훈련 영상을 편집하도록 요청했다. 선수들과 코치진은 편집된 영상을 사용했다. 한국 여자 양궁 대표팀의 적극적인 데이터 분석 활용은 도쿄에서 그들에게 9회 연속 금메달을 안겨 주었다.</div>
+  <div class="eng-text">The team also created an AI coach <span class="sel-group" data-qi="71" data-ans="0"><button class="sel-btn" onclick="pick(this,71,0)">that</button><button class="sel-btn" onclick="pick(this,71,1)">what</button></span> helped adjust shooting form. The team managers requested <span class="sel-group" data-qi="72" data-ans="1"><button class="sel-btn" onclick="pick(this,72,0)">what</button><button class="sel-btn" onclick="pick(this,72,1)">that</button></span> the AI coach <span class="sel-group" data-qi="73" data-ans="0"><button class="sel-btn" onclick="pick(this,73,0)">edit</button><button class="sel-btn" onclick="pick(this,73,1)">edited</button></span> training videos of the players to <span class="sel-group" data-qi="74" data-ans="0"><button class="sel-btn" onclick="pick(this,74,0)">assist</button><button class="sel-btn" onclick="pick(this,74,1)">assisting</button></span> with practical analysis. Players and coaches used the edited videos to <span class="sel-group" data-qi="75" data-ans="0"><button class="sel-btn" onclick="pick(this,75,0)">analyze</button><button class="sel-btn" onclick="pick(this,75,1)">analyzing</button></span> the players' usual habits or weaknesses. The active use of data analysis by the Korean women's archery team <span class="sel-group" data-qi="76" data-ans="1"><button class="sel-btn" onclick="pick(this,76,0)">handing</button><button class="sel-btn" onclick="pick(this,76,1)">handed</button></span> them their ninth Olympic gold medal in a row in Tokyo.</div>
+  <div class="q-feedback" id="fb24"></div>
+</div>
+<div class="q-card" id="c25">
+  <div class="q-num">26번</div>
+  <div class="ko-text">경기에서 데이터 분석이 포착할 수 있는 것에는 여전히 한계가 있다. 사람들이 얼마나 잘 어울리는지와 관련된 팀 화합과 같은 요소는 여전히 측정하기 어려울 가능성이 높다.</div>
+  <div class="eng-text">There <span class="sel-group" data-qi="77" data-ans="1"><button class="sel-btn" onclick="pick(this,77,0)">is</button><button class="sel-btn" onclick="pick(this,77,1)">are</button></span> still limitations to <span class="sel-group" data-qi="78" data-ans="0"><button class="sel-btn" onclick="pick(this,78,0)">what</button><button class="sel-btn" onclick="pick(this,78,1)">that</button></span> data analysis can capture in games. Factors such as team chemistry, <span class="sel-group" data-qi="79" data-ans="0"><button class="sel-btn" onclick="pick(this,79,0)">which</button><button class="sel-btn" onclick="pick(this,79,1)">that</button></span> <span class="sel-group" data-qi="80" data-ans="0"><button class="sel-btn" onclick="pick(this,80,0)">is</button><button class="sel-btn" onclick="pick(this,80,1)">are</button></span> related to how well <span class="sel-group" data-qi="81" data-ans="0"><button class="sel-btn" onclick="pick(this,81,0)">people get</button><button class="sel-btn" onclick="pick(this,81,1)">do people get</button></span> along, will likely remain <span class="sel-group" data-qi="82" data-ans="0"><button class="sel-btn" onclick="pick(this,82,0)">difficult</button><button class="sel-btn" onclick="pick(this,82,1)">difficultly</button></span> to <span class="sel-group" data-qi="83" data-ans="0"><button class="sel-btn" onclick="pick(this,83,0)">measure</button><button class="sel-btn" onclick="pick(this,83,1)">measuring</button></span>.</div>
+  <div class="q-feedback" id="fb25"></div>
+</div>
+<div class="q-card" id="c26">
+  <div class="q-num">27번</div>
+  <div class="ko-text">마찬가지로, 선수는 기계가 아닌 사람이기 때문에 경기 중 선수의 경기력을 예측하는 것도 완전히 정확할 수는 없다. 그럼에도 불구하고 스포츠 분석은 명백하게 다양한 스포츠에서 경기의 수준을 높이고 있으며, 팬들은 이러한 발전을 즐기고 있다.</div>
+  <div class="eng-text">Similarly, <span class="sel-group" data-qi="84" data-ans="1"><button class="sel-btn" onclick="pick(this,84,0)">predict</button><button class="sel-btn" onclick="pick(this,84,1)">predicting</button></span> player performance in a match cannot be entirely accurate as players are humans and not machines. Still, sports analytics is undeniably <span class="sel-group" data-qi="85" data-ans="0"><button class="sel-btn" onclick="pick(this,85,0)">elevating</button><button class="sel-btn" onclick="pick(this,85,1)">elevated</button></span> the level of play across various sports, and fans are <span class="sel-group" data-qi="86" data-ans="0"><button class="sel-btn" onclick="pick(this,86,0)">enjoying</button><button class="sel-btn" onclick="pick(this,86,1)">enjoyed</button></span> this development.</div>
+  <div class="q-feedback" id="fb26"></div>
+</div>
+<div class="sec-header">📙 본문 외 지문 — Baseball: Ball and Bat</div>
+<div class="q-card" id="c27">
+  <div class="q-num">외 1번</div>
+  <div class="ko-text">야구에서 공과 배트에는 경기 결과에 큰 영향을 미칠 수 있는 숨겨진 숫자가 있다. 야구공에는 108개의 이중 바늘땀이 있어 공에 솔기라고 불리는 돌출된 선을 만들어낸다.</div>
+  <div class="eng-text">In baseball, the ball and the bat have hidden numbers <span class="sel-group" data-qi="87" data-ans="0"><button class="sel-btn" onclick="pick(this,87,0)">that</button><button class="sel-btn" onclick="pick(this,87,1)">what</button></span> can greatly impact the outcome of a game. A baseball has 108 double stitches, <span class="sel-group" data-qi="88" data-ans="0"><button class="sel-btn" onclick="pick(this,88,0)">creating</button><button class="sel-btn" onclick="pick(this,88,1)">created</button></span> raised lines on the ball <span class="sel-group" data-qi="89" data-ans="1"><button class="sel-btn" onclick="pick(this,89,0)">calling</button><button class="sel-btn" onclick="pick(this,89,1)">called</button></span> seams.</div>
+  <div class="q-feedback" id="fb27"></div>
+</div>
+<div class="q-card" id="c28">
+  <div class="q-num">외 2번</div>
+  <div class="ko-text">솔기는 투수가 공을 더 잘 잡고, 던질 때 더 많은 힘과 회전을 전달할 수 있도록 도와준다. 회전하는 공은 주변의 공기 압력으로 인해 공중에서 방향을 바꿀 수 있다. 이를 마그누스 효과라고 한다. 솔기가 이 효과를 더 강하게 만든다.</div>
+  <div class="eng-text">The seams help pitchers <span class="sel-group" data-qi="90" data-ans="0"><button class="sel-btn" onclick="pick(this,90,0)">grip</button><button class="sel-btn" onclick="pick(this,90,1)">gripping</button></span> the ball better and <span class="sel-group" data-qi="91" data-ans="0"><button class="sel-btn" onclick="pick(this,91,0)">transfer</button><button class="sel-btn" onclick="pick(this,91,1)">transferring</button></span> more power and spin when <span class="sel-group" data-qi="92" data-ans="0"><button class="sel-btn" onclick="pick(this,92,0)">throwing</button><button class="sel-btn" onclick="pick(this,92,1)">thrown</button></span> it. A spinning ball can <span class="sel-group" data-qi="93" data-ans="0"><button class="sel-btn" onclick="pick(this,93,0)">change</button><button class="sel-btn" onclick="pick(this,93,1)">be changed</button></span> directions in the air because of the air pressure around it. This is <span class="sel-group" data-qi="94" data-ans="1"><button class="sel-btn" onclick="pick(this,94,0)">calling</button><button class="sel-btn" onclick="pick(this,94,1)">called</button></span> the Magnus effect.</div>
+  <div class="q-feedback" id="fb28"></div>
+</div>
+<div class="q-card" id="c29">
+  <div class="q-num">외 3번</div>
+  <div class="ko-text">투수는 공의 방향과 속도를 제어하기 위해 이 효과를 이용할 수 있고 타자가 치기 어려운 투구를 만들 수 있다. 투수는 공의 솔기를 이용해 치기 어려운 공을 던지려고 노력하는 반면, 타자는 홈런을 치기를 바라며 공을 정확하게 맞히려고 노력한다.</div>
+  <div class="eng-text">Pitchers can use this effect to <span class="sel-group" data-qi="95" data-ans="0"><button class="sel-btn" onclick="pick(this,95,0)">control</button><button class="sel-btn" onclick="pick(this,95,1)">controlling</button></span> the ball's direction and speed, <span class="sel-group" data-qi="96" data-ans="0"><button class="sel-btn" onclick="pick(this,96,0)">creating</button><button class="sel-btn" onclick="pick(this,96,1)">created</button></span> pitches <span class="sel-group" data-qi="97" data-ans="1"><button class="sel-btn" onclick="pick(this,97,0)">who</button><button class="sel-btn" onclick="pick(this,97,1)">that</button></span> <span class="sel-group" data-qi="98" data-ans="1"><button class="sel-btn" onclick="pick(this,98,0)">is</button><button class="sel-btn" onclick="pick(this,98,1)">are</button></span> difficult for batters <span class="sel-group" data-qi="99" data-ans="1"><button class="sel-btn" onclick="pick(this,99,0)">hitting</button><button class="sel-btn" onclick="pick(this,99,1)">to hit</button></span>. While pitchers try to throw challenging pitches by utilizing the ball's seams, batters attempt <span class="sel-group" data-qi="100" data-ans="0"><button class="sel-btn" onclick="pick(this,100,0)">to make</button><button class="sel-btn" onclick="pick(this,100,1)">making</button></span> contact with the ball accurately in the hope of hitting a home run.</div>
+  <div class="q-feedback" id="fb29"></div>
+</div>
+<div class="q-card" id="c30">
+  <div class="q-num">외 4번</div>
+  <div class="ko-text">홈런을 치는 비결은 야구 배트에 있다. 배트의 전체 길이는 106.8cm 미만이어야 하고 가장 두꺼운 부분의 지름은 7cm 미만이어야 한다. 배트 끝에서 약 5~10cm 떨어진 지점으로 공을 치면 공이 가장 멀리 날아가 선수에게 가장 짜릿하고 기분 좋은 느낌을 준다. 그래서 이 부분이 '스위트 스폿'이라고 불린다.</div>
+  <div class="eng-text">The secret to <span class="sel-group" data-qi="101" data-ans="1"><button class="sel-btn" onclick="pick(this,101,0)">hit</button><button class="sel-btn" onclick="pick(this,101,1)">hitting</button></span> a home run <span class="sel-group" data-qi="102" data-ans="1"><button class="sel-btn" onclick="pick(this,102,0)">lie</button><button class="sel-btn" onclick="pick(this,102,1)">lies</button></span> in the baseball bat. The bat's overall length must be <span class="sel-group" data-qi="103" data-ans="1"><button class="sel-btn" onclick="pick(this,103,0)">little</button><button class="sel-btn" onclick="pick(this,103,1)">less</button></span> than 106.8 cm long and the diameter of the thickest part must be <span class="sel-group" data-qi="104" data-ans="1"><button class="sel-btn" onclick="pick(this,104,0)">little</button><button class="sel-btn" onclick="pick(this,104,1)">less</button></span> than 7 cm. If a player hits the ball about 5-10 cm from the end of the bat, the ball will fly the farthest and <span class="sel-group" data-qi="105" data-ans="0"><button class="sel-btn" onclick="pick(this,105,0)">give</button><button class="sel-btn" onclick="pick(this,105,1)">gives</button></span> the player the most <span class="sel-group" data-qi="106" data-ans="0"><button class="sel-btn" onclick="pick(this,106,0)">thrilling</button><button class="sel-btn" onclick="pick(this,106,1)">thrilled</button></span> and sweetest feeling. That is why this area is <span class="sel-group" data-qi="107" data-ans="1"><button class="sel-btn" onclick="pick(this,107,0)">calling</button><button class="sel-btn" onclick="pick(this,107,1)">called</button></span> the 'sweet spot.'</div>
+  <div class="q-feedback" id="fb30"></div>
+</div>
+
+  <div class="result-card" id="result">
+    <div style="font-family:'Black Han Sans',sans-serif;font-size:1.1rem;color:var(--accent)">🎉 어법 선택형 완료!</div>
+    <div class="result-score" id="r-score"></div>
+    <div class="result-msg" id="r-msg"></div>
+    <div class="result-btns">
+      <button class="btn-retry" onclick="location.reload()">🔄 다시 풀기</button>
+      <button class="btn-back" onclick="location.href='https://bomnalenglish.github.io/bomnalquizz/'">← 허브로</button>
+    </div>
+  </div>
+</main>
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getFirestore,collection,addDoc,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+const cfg={apiKey:"AIzaSyCxS524S8KAaF87DomPtl9sJdF-eqes404",authDomain:"bomnalvaca.firebaseapp.com",projectId:"bomnalvaca",storageBucket:"bomnalvaca.firebasestorage.app",messagingSenderId:"115868052300",appId:"1:115868052300:web:765c08867b6f1ce0987de9"};
+const app=initializeApp(cfg);const db=getFirestore(app);
+window._log=async(d)=>{try{await addDoc(collection(db,"quiz_results"),{...d,timestamp:serverTimestamp(),file:"ei_lesson3_grammar"})}catch(e){}};
+</script>
+<script>
+const NAME=sessionStorage.getItem("bn_name")||localStorage.getItem("bn_name")||"학생";
+const SCHOOL=sessionStorage.getItem("bn_school")||localStorage.getItem("bn_school")||"학교";
+const QI2CARD=[0, 0, 1, 1, 1, 1, 2, 2, 2, 3, 3, 3, 3, 4, 4, 5, 5, 5, 6, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 11, 12, 12, 12, 13, 13, 14, 15, 15, 16, 16, 16, 17, 17, 17, 18, 18, 19, 19, 19, 19, 20, 20, 20, 20, 20, 21, 21, 21, 21, 22, 22, 22, 22, 22, 23, 23, 23, 23, 23, 23, 23, 24, 24, 24, 24, 24, 24, 25, 25, 25, 25, 25, 25, 25, 26, 26, 26, 27, 27, 27, 28, 28, 28, 28, 28, 29, 29, 29, 29, 29, 29, 30, 30, 30, 30, 30, 30, 30];
+const TOTAL_CARDS=31;
+let cardDone={};let cardWrong={};let earned=0;
+
+function pick(btn,qi,idx){
+  const grp=btn.closest('.sel-group');if(grp.dataset.checked)return;
+  grp.dataset.checked='1';
+  const ans=parseInt(grp.dataset.ans);
+  const btns=grp.querySelectorAll('.sel-btn');btns.forEach(b=>b.disabled=true);
+  const ok=idx===ans;btn.classList.add(ok?'correct':'wrong');if(!ok)btns[ans].classList.add('correct');
+  const ci=QI2CARD[qi];
+  if(!(ci in cardWrong))cardWrong[ci]=0;
+  if(!ok)cardWrong[ci]++;
+  const card=document.getElementById('c'+ci);
+  const grps=card.querySelectorAll('.sel-group');
+  const allDone=Array.from(grps).every(g=>g.dataset.checked);
+  if(allDone&&!cardDone[ci]){
+    cardDone[ci]=true;const isOk=cardWrong[ci]===0;if(isOk)earned++;
+    card.classList.add(isOk?'ok':'fail');
+    const fb=document.getElementById('fb'+ci);
+    fb.className='q-feedback '+(isOk?'ok':'fail')+' show';
+    fb.innerHTML=isOk?'✅ 정답!':'❌ 틀렸어요. 초록색이 정답입니다.';
+    updateUI();if(Object.keys(cardDone).length>=TOTAL_CARDS)showResult();
+    if(window._log)window._log({name:NAME,school:SCHOOL,q:'c'+ci,result:isOk?'ok':'fail',earned:isOk?1:0,total:1});
+  }
+}
+function updateUI(){
+  const done=Object.keys(cardDone).length;
+  document.getElementById('score-val').textContent=earned;
+  document.getElementById('score-max').textContent=TOTAL_CARDS;
+  document.getElementById('prog').style.width=(done/TOTAL_CARDS*100)+'%';
+  document.getElementById('prog-txt').textContent=done+' / '+TOTAL_CARDS+' 완료';
+}
+function showResult(){
+  const pct=Math.round(earned/TOTAL_CARDS*100);
+  document.getElementById('r-score').textContent=earned+' / '+TOTAL_CARDS+'점 ('+pct+'%)';
+  document.getElementById('r-msg').textContent=pct>=90?'완벽합니다! 어법 완전 정복! 🌟':pct>=70?'잘했어요! 틀린 문제 다시 확인해봐요. 💪':pct>=50?'절반 이상! 해석 보면서 다시 도전해봐요. 📖':'기초부터 차근차근! 🔄';
+  document.getElementById('result').classList.add('show');
+  setTimeout(()=>window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'}),200);
+}
+updateUI();
+</script>
+</body>
+</html>
