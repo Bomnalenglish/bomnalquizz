@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>봄날 퀴즈 | 고2 25년 6월 본문 암기</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&family=Black+Han+Sans&display=swap');
+:root{--pri:#1565c0;--acc:#f57f17;--bg:#e3f2fd;--card:#fff;--bdr:#90caf9;--muted:#757575;--green:#2e7d32;--red:#c62828;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Nanum Gothic',sans-serif;background:var(--bg);min-height:100vh;color:#1a1a2e;}
+.hidden{display:none!important;}
+
+/* START */
+#startScreen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
+.s-card{background:var(--card);border-radius:24px;padding:36px 28px;text-align:center;max-width:520px;width:100%;box-shadow:0 8px 32px rgba(21,101,192,.15);}
+.s-card h1{font-family:'Black Han Sans',sans-serif;font-size:20px;color:var(--pri);margin-bottom:6px;}
+.s-sub{font-size:13px;color:var(--muted);margin-bottom:20px;}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:18px;}
+.info-item{background:var(--bg);border-radius:10px;padding:10px;text-align:center;font-size:12px;color:var(--pri);font-weight:700;}
+.ni{width:100%;padding:11px 14px;border:2px solid var(--bdr);border-radius:12px;font-size:14px;font-family:'Nanum Gothic',sans-serif;outline:none;margin-bottom:10px;}
+.ni:focus{border-color:var(--pri);}
+.start-btn{width:100%;padding:14px;border-radius:12px;border:none;background:linear-gradient(135deg,#1565c0,#f57f17);color:white;font-size:1rem;font-weight:800;cursor:pointer;font-family:inherit;}
+
+/* PASSAGE SELECT */
+#passageScreen{padding:20px;max-width:680px;margin:0 auto;}
+.ps-header{background:linear-gradient(135deg,#1565c0,#1976d2);color:white;border-radius:16px;padding:18px 22px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;}
+.ps-title{font-family:'Black Han Sans',sans-serif;font-size:16px;}
+.ps-sub{font-size:11px;opacity:.8;margin-top:3px;}
+.user-info{background:rgba(255,255,255,.2);border-radius:10px;padding:6px 14px;font-size:12px;font-weight:700;}
+.filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
+.fb{padding:7px 16px;border:2px solid var(--pri);border-radius:20px;background:white;color:var(--pri);font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s;}
+.fb.on{background:var(--pri);color:white;}
+.passage-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-bottom:20px;}
+.p-card{background:white;border-radius:14px;padding:16px 12px;text-align:center;cursor:pointer;border:2.5px solid #e0e0e0;transition:all .18s;position:relative;}
+.p-card:hover{border-color:var(--pri);transform:translateY(-2px);box-shadow:0 6px 18px rgba(21,101,192,.12);}
+.p-card.sel{border-color:var(--pri);background:#e3f2fd;}
+.p-card.done{border-color:#4caf50;background:#e8f5e9;}
+.p-no{font-family:'Black Han Sans',sans-serif;font-size:22px;color:var(--pri);margin-bottom:4px;}
+.p-topic{font-size:10px;color:var(--muted);line-height:1.4;}
+.p-badge{position:absolute;top:6px;right:6px;font-size:9px;padding:2px 6px;border-radius:8px;font-weight:700;}
+.done-badge{background:#e8f5e9;color:#2e7d32;}
+.sel-all-btn{width:100%;padding:12px;border-radius:12px;border:2px solid var(--pri);background:white;color:var(--pri);font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;margin-bottom:10px;}
+.go-btn{width:100%;padding:14px;border-radius:12px;border:none;background:linear-gradient(135deg,#1565c0,#f57f17);color:white;font-size:1rem;font-weight:800;cursor:pointer;font-family:inherit;}
+
+/* QUIZ HEADER */
+.hdr{background:#1565c0;color:white;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.ht{font-family:'Black Han Sans',sans-serif;font-size:15px;}
+.hs{font-size:10px;opacity:.7;margin-top:2px;}
+.hb{background:rgba(255,255,255,.2);border-radius:16px;padding:4px 12px;font-size:12px;font-weight:700;}
+.pw{height:4px;background:#bbdefb;}.pf{height:100%;background:linear-gradient(90deg,#1565c0,#f57f17);transition:width .4s;}
+
+/* QUIZ AREA */
+#quizArea{padding:20px;max-width:680px;margin:0 auto;}
+.qc{background:white;border-radius:18px;padding:22px 20px;margin-bottom:16px;box-shadow:0 3px 16px rgba(21,101,192,.08);}
+.q-no-badge{display:inline-flex;align-items:center;gap:6px;margin-bottom:10px;}
+.qno{font-family:'Black Han Sans',sans-serif;font-size:13px;color:white;background:var(--pri);padding:3px 12px;border-radius:12px;}
+.qtype{font-size:11px;font-weight:700;padding:3px 10px;border-radius:10px;}
+.qtype.blank{background:#fff3e0;color:#e65100;}
+.qtype.tf{background:#f3e5f5;color:#6a1b9a;}
+.passage-box{background:#f8faff;border-left:4px solid var(--pri);border-radius:0 10px 10px 0;padding:14px 16px;font-size:14px;line-height:1.9;margin-bottom:14px;color:#1a237e;}
+.blank{display:inline-block;min-width:80px;border-bottom:2.5px solid var(--acc);color:transparent;background:#fff3e0;border-radius:4px;padding:0 4px;font-weight:800;vertical-align:middle;}
+.q-prompt{font-size:13px;font-weight:700;color:#1565c0;margin-bottom:10px;}
+.choices{display:grid;gap:8px;}
+.cb{background:#f5f5f5;border:2px solid #e0e0e0;border-radius:11px;padding:12px 15px;font-family:'Nanum Gothic',sans-serif;font-size:13px;font-weight:700;cursor:pointer;text-align:left;transition:all .15s;display:flex;align-items:center;gap:10px;}
+.cb:hover:not(:disabled){border-color:var(--pri);background:#e3f2fd;}
+.cb.correct{background:#e8f5e9;border-color:#2e7d32;color:#1b5e20;}
+.cb.wrong{background:#ffebee;border-color:#c62828;color:#b71c1c;}
+.cb.reveal{background:#e8f5e9;border-color:#2e7d32;}
+.cn{width:22px;height:22px;border-radius:50%;background:#90caf9;color:white;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;flex-shrink:0;}
+.tf-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.tfb{padding:16px;border:2px solid #e0e0e0;border-radius:12px;background:#f5f5f5;font-family:'Nanum Gothic',sans-serif;font-size:15px;font-weight:800;cursor:pointer;transition:all .15s;}
+.tfb:hover:not(:disabled){transform:translateY(-2px);}
+.tfb.ob{border-color:#4caf50;color:#2e7d32;}.tfb.xb{border-color:#e91e63;color:#880e4f;}
+.tfb.correct{background:#e8f5e9;}.tfb.wrong{background:#ffebee;}
+.fb-msg{padding:10px 14px;border-radius:10px;font-size:13px;font-weight:800;margin-top:10px;display:none;}
+.fb-msg.ok{background:#e8f5e9;color:#1b5e20;display:block;}
+.fb-msg.no{background:#ffebee;color:#b71c1c;display:block;}
+
+/* RESULT */
+#resultScreen{padding:20px;max-width:600px;margin:0 auto;}
+.rc{background:white;border-radius:24px;padding:30px 22px;box-shadow:0 8px 32px rgba(21,101,192,.1);text-align:center;}
+.rs{font-family:'Black Han Sans',sans-serif;font-size:52px;color:var(--pri);line-height:1;}
+.rsub{font-size:13px;color:var(--muted);margin-top:4px;}
+.sr{display:flex;justify-content:center;gap:20px;margin-top:16px;flex-wrap:wrap;}
+.si{text-align:center;}.sn{font-family:'Black Han Sans',sans-serif;font-size:24px;}.sl{font-size:11px;color:var(--muted);margin-top:2px;}
+.wl{background:var(--bg);border-radius:14px;padding:14px;text-align:left;margin-top:14px;max-height:300px;overflow-y:auto;}
+.wl h3{font-size:12px;font-weight:800;color:var(--red);margin-bottom:8px;}
+.wi{background:white;border-radius:8px;padding:8px 12px;margin-bottom:6px;font-size:11px;border-left:3px solid #e91e63;}
+.wie{font-weight:800;color:var(--pri);}.wid{font-size:10px;color:var(--muted);margin-top:2px;}
+.rbtns{display:flex;gap:10px;justify-content:center;margin-top:18px;flex-wrap:wrap;}
+.rbtn{padding:12px 24px;border-radius:12px;border:none;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;}
+.rbtn-p{background:linear-gradient(135deg,#1565c0,#f57f17);color:white;}
+.rbtn-s{background:#f5f5f5;color:#1565c0;border:2px solid #90caf9;}
+
+@media(max-width:480px){.passage-grid{grid-template-columns:repeat(3,1fr)}.tf-btns{grid-template-columns:1fr 1fr}}
+</style>
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getFirestore,collection,addDoc,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+const cfg={apiKey:"AIzaSyCxS524S8KAaF87DomPtl9sJdF-eqes404",authDomain:"bomnalvaca.firebaseapp.com",projectId:"bomnalvaca",storageBucket:"bomnalvaca.firebasestorage.app",messagingSenderId:"115868052300",appId:"1:115868052300:web:765c08867b6f1ce0987de9"};
+const app=initializeApp(cfg);
+const db=getFirestore(app);
+window._fbSave=async function(data){
+  try{await addDoc(collection(db,'quiz_results'),{...data,timestamp:serverTimestamp()});}
+  catch(e){console.warn('FB 저장 오류:',e);}
+};
+</script>
+</head>
+<body>
+
+<!-- START -->
+<div id="startScreen">
+  <div class="s-card">
+    <h1>📖 고2 25년 6월 본문 암기</h1>
+    <div class="s-sub">2025년 6월 고2 모의고사 · 빈칸추론 + 내용일치 T/F</div>
+    <div class="info-grid">
+      <div class="info-item">📝 20~24 · 29~40번</div>
+      <div class="info-item">🎯 지문별 선택 가능</div>
+      <div class="info-item">🔲 빈칸 추론</div>
+      <div class="info-item">✅ 내용일치 T/F</div>
+    </div>
+    <select class="ni" id="si" style="background:white;color:#1565c0;font-weight:700;cursor:pointer;">
+      <option value="">학교 선택</option>
+      <option value="종촌고">종촌고</option>
+      <option value="고운고">고운고</option>
+      <option value="대성고">대성고</option>
+      <option value="기타">기타</option>
+    </select>
+    <input type="text" class="ni" id="ni" placeholder="이름 입력" maxlength="10">
+    <button class="start-btn" onclick="goPassageSelect()">다음 → 지문 선택</button>
+  </div>
+</div>
+
+<!-- PASSAGE SELECT -->
+<div id="passageScreen" class="hidden">
+  <div class="ps-header">
+    <div>
+      <div class="ps-title">📖 지문 선택</div>
+      <div class="ps-sub">풀고 싶은 지문을 선택하세요 (복수 선택 가능)</div>
+    </div>
+    <div class="user-info" id="userInfo"></div>
+  </div>
+  <div class="filter-bar">
+    <button class="fb on" onclick="filterPassage('all',this)">전체</button>
+    <button class="fb" onclick="filterPassage('20-24',this)">20~24번</button>
+    <button class="fb" onclick="filterPassage('29-40',this)">29~40번</button>
+  </div>
+  <div class="passage-grid" id="passageGrid"></div>
+  <button class="sel-all-btn" onclick="selectAll()">전체 선택 / 해제</button>
+  <button class="go-btn" onclick="startQuiz()">선택한 지문 풀기 🚀</button>
+</div>
+
+<!-- QUIZ HEADER (sticky) -->
+<div id="hdr" class="hdr hidden">
+  <div><div class="ht">📖 고2 25년 6월 본문 암기</div><div class="hs" id="hs"></div></div>
+  <div class="hb" id="hb">0/0</div>
+</div>
+<div id="pw" class="pw hidden"><div class="pf" id="pf" style="width:0%"></div></div>
+<div id="quizArea" class="hidden"></div>
+<div id="resultScreen" class="hidden"></div>
+
+<script>
+// ── Firebase ──────────────────────────────────────
+window._fbSave = async function(){};
+
+// ── DATA ──────────────────────────────────────────
+// 각 지문: blanks = 진짜 영어 빈칸 추론, topic_q = 주제/요지 선택
+const PASSAGES = [
+  {
+    no:20, topic:"티백과 연결",
+    text:`Imagine you have the best tea in the world and you put it into a bag that's [impermeable]. It won't work. For the teabag to work, it needs to be [porous]. In our lives too, we cannot survive and [thrive] in isolation. Leaders need to be careful not to build [walls] around themselves that prevent people from reaching out to them. Similarly all of us were designed to [work with] other people, with teams, and with society at large.`,
+    blanks:[
+      {sentence:`You put the tea into a bag that's _____ — it won't work.`, opts:["impermeable","transparent","flexible","porous"], ans:"impermeable"},
+      {sentence:`For the teabag to work, it needs to be _____.`, opts:["impermeable","porous","sealed","rigid"], ans:"porous"},
+      {sentence:`We cannot survive and _____ in isolation.`, opts:["thrive","suffer","remain","exist"], ans:"thrive"},
+      {sentence:`Leaders need to be careful not to build _____ around themselves.`, opts:["walls","teams","bridges","networks"], ans:"walls"},
+      {sentence:`All of us were designed to _____ other people, teams, and society.`, opts:["compete with","work with","ignore","avoid"], ans:"work with"},
+    ],
+    topic_q:{q:"이 글의 주제로 가장 적절한 것은?",opts:["티백의 작동 원리와 차 만드는 방법","고립을 피하고 타인과 연결되어야 하는 필요성","리더가 갖춰야 할 다양한 조건","차와 물의 화학적 반응 과정"],ans:"고립을 피하고 타인과 연결되어야 하는 필요성"},
+    tf:[
+      {stmt:"티백이 작용하려면 스며들지 않아야(impermeable) 한다.", ans:false, exp:"porous(구멍이 있어야)해야 한다."},
+      {stmt:"리더는 사람들과의 연결을 위해 벽을 쌓지 말아야 한다.", ans:true, exp:"본문 직접 언급 내용"},
+      {stmt:"우리 모두는 혼자 일하도록 설계되었다.", ans:false, exp:"다른 사람들, 팀, 사회와 함께 일하도록 설계되었다고 함"},
+    ]
+  },
+  {
+    no:21, topic:"욕망과 상대적 행복",
+    text:`It is difficult to [define] the limits which reason should impose on the desire for wealth; for there is no [absolute] or definite amount of wealth which will satisfy a man. The amount is always [relative], just so much as will maintain the proportion between what he wants and what he gets. A man never feels the loss of things which it never [occurs] to him to ask for; whilst another feels [miserable] because he has not got the one thing he wants.`,
+    blanks:[
+      {sentence:`It is difficult to _____ the limits which reason should impose on desire.`, opts:["define","ignore","remove","measure"], ans:"define"},
+      {sentence:`There is no _____ or definite amount of wealth which will satisfy a man.`, opts:["relative","absolute","flexible","proportional"], ans:"absolute"},
+      {sentence:`The amount is always _____, maintaining the proportion between wants and gains.`, opts:["absolute","fixed","relative","certain"], ans:"relative"},
+      {sentence:`A man never feels the loss of things which it never _____ to him to ask for.`, opts:["occurs","happens to","matters","belongs"], ans:"occurs"},
+      {sentence:`Another feels _____ because he has not got the one thing he wants.`, opts:["satisfied","joyful","miserable","content"], ans:"miserable"},
+    ],
+    topic_q:{q:"이 글의 주제로 가장 적절한 것은?",opts:["부를 축적하는 가장 효과적인 방법","행복은 절대적 부가 아닌 기대와 현실의 비율에 달려 있다","이성이 욕망을 완전히 통제할 수 있는 이유","부자와 가난한 사람의 생활 방식 비교"],ans:"행복은 절대적 부가 아닌 기대와 현실의 비율에 달려 있다"},
+    tf:[
+      {stmt:"한 사람을 만족시킬 절대적인 부의 양이 존재한다.", ans:false, exp:"절대적이거나 정해진 부의 양은 없다고 함"},
+      {stmt:"요구할 생각조차 없던 것을 잃어도 상실감을 느끼지 않는다.", ans:true, exp:"본문 직접 언급 내용"},
+      {stmt:"모든 사람은 같은 기대치를 가진다.", ans:false, exp:"모든 사람은 그만의 지평선(기대치)을 가진다고 함"},
+    ]
+  },
+  {
+    no:22, topic:"꽃의 광고 전략",
+    text:`All of the restaurants are using carefully chosen words to [evoke] vivid mental images of delicious food in order to [draw] the potential customer to their establishment. Just like the restaurants, nature has its own dining establishments. The restaurateurs of the natural world (flowers) must also [attract] potential diners to sample their offerings. In the natural world, there are no [neon signs] or flashy words. Instead of using a written language, they advertise their offerings using the [language of smell].`,
+    blanks:[
+      {sentence:`Restaurants use words to _____ vivid mental images of delicious food.`, opts:["evoke","suppress","block","eliminate"], ans:"evoke"},
+      {sentence:`Restaurants use words in order to _____ the potential customer to their establishment.`, opts:["repel","draw","warn","confuse"], ans:"draw"},
+      {sentence:`Flowers must also _____ potential diners to sample their offerings.`, opts:["ignore","repel","attract","avoid"], ans:"attract"},
+      {sentence:`In the natural world, there are no _____ or flashy words to market a meal.`, opts:["neon signs","sweet smells","bright colors","loud sounds"], ans:"neon signs"},
+      {sentence:`They advertise their offerings using the _____.`, opts:["colorful petals only","the language of smell","written words","neon signs"], ans:"language of smell"},
+    ],
+    topic_q:{q:"이 글의 주제로 가장 적절한 것은?",opts:["음식점이 고객을 유치하는 다양한 마케팅 전략","꽃이 냄새를 통해 생물을 유혹하는 방식은 음식점의 광고와 유사하다","자연 세계에서 동물이 먹이를 찾는 방법","네온사인 광고가 자연에서 효과적인 이유"],ans:"꽃이 냄새를 통해 생물을 유혹하는 방식은 음식점의 광고와 유사하다"},
+    tf:[
+      {stmt:"자연 세계에서 꽃들은 네온사인을 사용하여 동물을 유혹한다.", ans:false, exp:"네온사인이나 화려한 말은 없고, 냄새의 언어를 사용한다."},
+      {stmt:"꽃은 식당처럼 잠재적 손님(생물)을 끌어들여야 한다.", ans:true, exp:"음식점과 유사한 방식으로 잠재적 손님을 유혹해야 한다고 함"},
+      {stmt:"꽃의 잠재적 손님은 넥타와 자원을 얻으러 오는 생물들이다.", ans:true, exp:"본문 직접 언급 내용"},
+    ]
+  },
+  {
+    no:23, topic:"현재 편향",
+    text:`Would you rather receive $1,000 in a year or $1,100 in a year and a month? Most people will [opt for] the larger sum — a wise choice, since the interest will [compensate] you generously. Second question: Would you prefer $1,000 today or $1,100 in a month? Most people take the $1,000 right away. The introduction of "now" causes us to make [inconsistent] decisions. Science calls this phenomenon [hyperbolic discounting]. The closer a reward is, the higher our [emotional interest rate] rises.`,
+    blanks:[
+      {sentence:`Most people will _____ the larger sum in thirteen months.`, opts:["opt for","reject","ignore","avoid"], ans:"opt for"},
+      {sentence:`The interest will _____ you generously for any risks you face by waiting.`, opts:["compensate","penalize","ignore","replace"], ans:"compensate"},
+      {sentence:`The introduction of "now" causes us to make _____ decisions.`, opts:["rational","consistent","inconsistent","wise"], ans:"inconsistent"},
+      {sentence:`Science calls this phenomenon _____.`, opts:["hyperbolic discounting","rational choice","loss aversion","compound interest"], ans:"hyperbolic discounting"},
+      {sentence:`The closer a reward is, the higher our _____ rises.`, opts:["emotional interest rate","logical reasoning","patience level","savings rate"], ans:"emotional interest rate"},
+    ],
+    topic_q:{q:"이 글의 주제로 가장 적절한 것은?",opts:["이자율이 높을수록 더 오래 기다려야 하는 이유","현재 보상을 과대평가하여 비일관적 선택을 하는 심리적 현상","금융 투자에서 장기적 수익의 중요성","과학적 실험으로 밝혀진 합리적 의사결정 방법"],ans:"현재 보상을 과대평가하여 비일관적 선택을 하는 심리적 현상"},
+    tf:[
+      {stmt:"첫 번째 질문에서 대부분의 사람들은 13개월을 기다려 더 큰 금액을 선택한다.", ans:true, exp:"현명한 선택이라고 언급함"},
+      {stmt:"보상이 가까울수록 감정적 이율이 높아진다.", ans:true, exp:"본문 직접 언급 내용"},
+      {stmt:"두 질문 모두에서 사람들의 선택 방식은 일관적이다.", ans:false, exp:"'지금'의 도입으로 비일관적 결정을 내린다고 함"},
+    ]
+  },
+  {
+    no:24, topic:"손잡이 결정 시기",
+    text:`Of central importance for understanding [handedness] is the answer to the question of when it is determined. It was long thought that handedness could only be [reliably] determined in elementary school. However, this assumption is [incorrect]. Scientific studies show that left-handedness is [established] even before birth. Using ultrasound images, a clear preference for the right arm exists as early as [10 weeks after fertilization].`,
+    blanks:[
+      {sentence:`Of central importance for understanding _____ is when it is determined.`, opts:["handedness","intelligence","language","memory"], ans:"handedness"},
+      {sentence:`It was long thought handedness could only be _____ determined in elementary school.`, opts:["reliably","incorrectly","rarely","randomly"], ans:"reliably"},
+      {sentence:`However, this assumption is _____.`, opts:["correct","proven","incorrect","confirmed"], ans:"incorrect"},
+      {sentence:`Scientific studies show that left-handedness is _____ even before birth.`, opts:["disproven","ignored","established","suggested"], ans:"established"},
+      {sentence:`A clear preference for the right arm exists as early as _____.`, opts:["at birth","5 years old","10 weeks after fertilization","elementary school age"], ans:"10 weeks after fertilization"},
+    ],
+    topic_q:{q:"이 글의 주제로 가장 적절한 것은?",opts:["왼손잡이와 오른손잡이의 뇌 구조 차이","손잡이는 초등학교 이전, 심지어 태어나기 전에 이미 결정된다","초음파 기술의 발전과 의학적 활용","오른손잡이가 왼손잡이보다 많은 사회적 이유"],ans:"손잡이는 초등학교 이전, 심지어 태어나기 전에 이미 결정된다"},
+    tf:[
+      {stmt:"손잡이는 초등학교에서만 확실히 결정될 수 있다.", ans:false, exp:"이 가정은 잘못되었으며, 출생 전에도 결정될 수 있다."},
+      {stmt:"수정 후 10주 태아의 85%가 오른팔 움직임을 더 많이 보였다.", ans:true, exp:"본문 직접 언급 내용"},
+      {stmt:"성인의 약 89.4%가 오른손잡이이다.", ans:true, exp:"본문 직접 언급 내용"},
+    ]
+  },
+  {
+    no:29, topic:"원근법과 깊이 표현",
+    text:`In art, there are many ways to use [perspective] to obtain the [illusion of depth]. In order to achieve perspective, you must make a number of [observations]. The forms or objects you draw on a flat surface have depth and dimension in real life. Try to [represent] that depth to make the objects appear realistic. Objects appear differently when viewed from various positions. It's important to [establish the viewpoint], and stick with it.`,
+    blanks:[
+      {sentence:`In art, many ways use _____ to obtain the illusion of depth.`, opts:["perspective","color","texture","proportion"], ans:"perspective"},
+      {sentence:`Artists use perspective to obtain the _____.`, opts:["sense of color","illusion of depth","flat surface","abstract form"], ans:"illusion of depth"},
+      {sentence:`In order to achieve perspective, you must make a number of _____.`, opts:["mistakes","observations","assumptions","sketches"], ans:"observations"},
+      {sentence:`Try to _____ that depth to make the objects appear realistic.`, opts:["hide","remove","represent","flatten"], ans:"represent"},
+      {sentence:`It's important to _____, and stick with it.`, opts:["establish the viewpoint","change your style","use bright colors","simplify the drawing"], ans:"establish the viewpoint"},
+    ],
+    topic_q:{q:"이 글의 주제로 가장 적절한 것은?",opts:["색상과 명암을 통해 그림을 아름답게 만드는 방법","관찰점 설정과 깊이 표현을 통해 원근법을 구현하는 방법","3차원 물체를 평면에 그리는 것이 불가능한 이유","기하학적 시스템의 역사와 발전 과정"],ans:"관찰점 설정과 깊이 표현을 통해 원근법을 구현하는 방법"},
+    tf:[
+      {stmt:"평면에 그린 형태는 실제로도 깊이와 차원이 없다.", ans:false, exp:"실제 실생활에서는 깊이와 차원이 있다고 함"},
+      {stmt:"관찰점을 설정하고 그것을 고수하는 것이 중요하다.", ans:true, exp:"본문 직접 언급 내용"},
+      {stmt:"물체는 어느 위치에서 보아도 동일하게 보인다.", ans:false, exp:"다양한 위치에서 보면 다르게 보인다고 함"},
+    ]
+  },
+  {
+    no:30, topic:"유가와 경제",
+    text:`Low oil prices are a good thing, because it means lower energy costs for the [majority] of industries. Firms directly [benefit from] the decrease in costs. This has the effect of [stimulating the aggregate supply]. Conversely, a sudden rise in oil prices due to a [shrink in oil production] is never good news. Following an oil price jump of 10%, an economy typically sees its [output (GDP)] slowed by close to 1 percentage point.`,
+    blanks:[
+      {sentence:`Low oil prices mean lower energy costs for the _____ of industries.`, opts:["majority","minority","smallest part","elite"], ans:"majority"},
+      {sentence:`Firms directly _____ the decrease in their costs of production.`, opts:["suffer from","benefit from","ignore","cause"], ans:"benefit from"},
+      {sentence:`Lower oil prices have the effect of _____.`, opts:["reducing consumer demand","stimulating the aggregate supply","increasing inflation","shrinking the energy sector"], ans:"stimulating the aggregate supply"},
+      {sentence:`A rise in oil prices due to a _____ is never good news.`, opts:["shrink in oil production","rise in demand","fall in exports","global recession"], ans:"shrink in oil production"},
+      {sentence:`An economy typically sees its _____ slowed by close to 1 percentage point.`, opts:["output (GDP)","inflation rate","interest rate","employment rate"], ans:"output (GDP)"},
+    ],
+    topic_q:{q:"이 글의 주제로 가장 적절한 것은?",opts:["석유 생산국과 소비국의 경제적 갈등","낮은 유가는 경제에 이롭고, 급격한 유가 상승은 경제에 해롭다","에너지 절약이 환경과 경제에 미치는 영향","미국 경제가 세계 유가를 결정하는 방식"],ans:"낮은 유가는 경제에 이롭고, 급격한 유가 상승은 경제에 해롭다"},
+    tf:[
+      {stmt:"낮은 유가는 물류 산업에 긍정적인 영향을 미친다.", ans:true, exp:"자동차와 물류 산업에서 더 낮은 에너지 비용을 의미한다고 함"},
+      {stmt:"유가가 10% 상승하면 GDP가 10% 감소한다.", ans:false, exp:"1퍼센트포인트 가까이 둔화된다고 함"},
+      {stmt:"공급 과잉에 따른 유가 하락은 항상 큰 우려의 대상이었다.", ans:false, exp:"유가 하락에 대해서는 크게 우려한 적이 없었다고 함"},
+    ]
+  },
+  {
+    no:31, topic:"자아와 정보 처리",
+    text:`We might [forget] an anecdote about a stranger, but we won't forget gossip about our cousin. There's one complex network larger than all others — the [self]. If a new piece of information has something to do with us, it will be more easily and [thoroughly processed]. The most effective communicators find ways to make the [abstract personal]. "Look to your left, look to your right. One of the three of you won't be joining us next fall" [wakes up the self].`,
+    blanks:[
+      {sentence:`We might _____ an anecdote about a stranger because it makes few connections.`, opts:["forget","remember","enjoy","share"], ans:"forget"},
+      {sentence:`There's one complex network larger than all others — the _____.`, opts:["internet","brain","self","community"], ans:"self"},
+      {sentence:`Information related to us will be more easily and _____.`, opts:["quickly forgotten","thoroughly processed","rarely noticed","slowly absorbed"], ans:"thoroughly processed"},
+      {sentence:`The most effective communicators find ways to make the _____.`, opts:["abstract simpler","data more accurate","abstract personal","message shorter"], ans:"abstract personal"},
+      {sentence:`"Look to your left... One of you won't be here next fall" _____.`, opts:["confuses students","wakes up the self","states a statistic","motivates dropout"], ans:"wakes up the self"},
+    ],
+    topic_q:{q:"이 글의 주제로 가장 적절한 것은?",opts:["인간의 기억력이 낯선 사람보다 지인에게 더 정확한 이유","자신과 관련된 정보는 더 잘 처리되므로, 소통 시 개인과 연결시키는 것이 효과적이다","소셜 미디어가 인간의 자아 인식에 미치는 영향","법대에서 학생들을 동기 부여하는 다양한 방법"],ans:"자신과 관련된 정보는 더 잘 처리되므로, 소통 시 개인과 연결시키는 것이 효과적이다"},
+    tf:[
+      {stmt:"낯선 사람의 일화는 기존 연상과 연관이 없어 잊을 수 있다.", ans:true, exp:"본문 직접 언급 내용"},
+      {stmt:"자신과 관련된 정보는 더 쉽고 철저하게 처리된다.", ans:true, exp:"본문 직접 언급 내용"},
+      {stmt:"'중도 탈락률 33%'는 자아를 깨우는 구체적 표현이다.", ans:false, exp:"추상적인 통계이고, '왼쪽을 보세요...'가 자아를 깨우는 표현임"},
+    ]
+  },
+  {
+    no:32, topic:"스티브 잡스와 유사성",
+    text:`Steve Jobs used [analogy] to get people to [embrace] the new technology. The idea of working in a virtual world was [radically different]. What Jobs understood was that a physical office was fundamentally similar to a virtual office. To [win over the masses], Jobs drew strong analogies between the traditional and new virtual workplace. Jobs understood that using [familiar terms] would make the new technology easier to understand.`,
+    blanks:[
+      {sentence:`Steve Jobs used _____ to get people to embrace the new technology.`, opts:["analogy","force","money","advertising"], ans:"analogy"},
+      {sentence:`Jobs used analogy to get people to _____ the new technology.`, opts:["fear","reject","embrace","avoid"], ans:"embrace"},
+      {sentence:`The idea of working in a virtual world was _____.`, opts:["similar to reality","radically different","easy to accept","already familiar"], ans:"radically different"},
+      {sentence:`To _____, Jobs drew strong analogies between workplaces.`, opts:["win over the masses","confuse people","sell his products","simplify technology"], ans:"win over the masses"},
+      {sentence:`Jobs understood that using _____ would make new technology easier to understand.`, opts:["new terminology","technical jargon","familiar terms","complex words"], ans:"familiar terms"},
+    ],
+    topic_q:{q:"이 글의 주제로 가장 적절한 것은?",opts:["스티브 잡스의 혁신적인 제품 디자인 철학","잡스는 친숙한 용어로 물리적·가상 세계의 유사성을 연결해 신기술 수용을 도왔다","컴퓨터 이전 시대의 사무 환경과 현대의 차이점","가상 현실이 실제 업무 환경을 대체할 수 있는 이유"],ans:"잡스는 친숙한 용어로 물리적·가상 세계의 유사성을 연결해 신기술 수용을 도왔다"},
+    tf:[
+      {stmt:"컴퓨터 이전 시대에 종이에 쓰인 생각은 '폴더'라 불렸다.", ans:false, exp:"문서(document)라고 불렸다"},
+      {stmt:"잡스는 친숙한 용어를 사용하면 새 기술을 이해하기 쉽다고 생각했다.", ans:true, exp:"본문 직접 언급 내용"},
+      {stmt:"물리적 일터와 가상 일터의 유사점은 여전히 불분명하다.", ans:false, exp:"지금은 분명해 보인다(obvious)고 함"},
+    ]
+  },
+  {
+    no:33, topic:"거북이의 진화와 현대 빛",
+    text:`Turtle hatchlings have [evolved] to crawl toward the light. For millions of years this was a [rational] strategy because the light represented the reflection of the moon on the water. The problems started when humans began building [beachfront homes]. Now turtles were being guided straight into [traffic]. Turtles base their decisions on cues that were rational for their [ancestors]; their evolved decision-making is being blinded by modern lights.`,
+    blanks:[
+      {sentence:`Turtle hatchlings have _____ to crawl toward the light.`, opts:["evolved","failed","refused","learned"], ans:"evolved"},
+      {sentence:`For millions of years this was a _____ strategy.`, opts:["irrational","random","rational","dangerous"], ans:"rational"},
+      {sentence:`Problems started when humans began building _____.`, opts:["beachfront homes","parking lots","fishing boats","underwater tunnels"], ans:"beachfront homes"},
+      {sentence:`Turtles heading for the brightest lights were guided straight into _____.`, opts:["traffic","the sea","their nests","safe zones"], ans:"traffic"},
+      {sentence:`Turtles base their decisions on cues rational for their _____.`, opts:["ancestors","offspring","predators","environment"], ans:"ancestors"},
+    ],
+    topic_q:{q:"이 글의 주제로 가장 적절한 것은?",opts:["거북이 보호를 위한 해변 조명 규제의 필요성","과거에는 합리적이었던 진화적 행동이 현대 환경 변화로 인해 역효과를 낳을 수 있다","인간의 개발이 해양 생태계를 파괴하는 방식","거북이가 바다를 찾는 다양한 방법들"],ans:"과거에는 합리적이었던 진화적 행동이 현대 환경 변화로 인해 역효과를 낳을 수 있다"},
+    tf:[
+      {stmt:"갓 부화한 거북이가 빛을 향해 가는 것은 현대에도 완벽히 이성적이다.", ans:false, exp:"현대 세상에서는 비이성적이라고 함"},
+      {stmt:"문제는 인간이 해변가에 건물을 짓기 시작하면서 발생했다.", ans:true, exp:"본문 직접 언급 내용"},
+      {stmt:"거북이들의 의사결정은 그들의 조상에게도 비합리적이었다.", ans:false, exp:"조상들에게는 완벽하게 이성적이었다고 함"},
+    ]
+  },
+  {
+    no:34, topic:"감각기관과 뇌",
+    text:`Sensory organs are the [only channels] of communication between the brain and the outside world. The brain is not designed to [sense on its own]. An exposed brain would neither sense light nor feel something touching it. Aristotle recognized this characteristic 2,000 years ago. When volunteers are placed in a [sensory deprivation tank], they experience visual, [auditory], and tactile hallucinations. We need [constant input] from our senses to carry out functions that give us personality and intellect.`,
+    blanks:[
+      {sentence:`Sensory organs are the _____ of communication between the brain and the outside world.`, opts:["main pathway","only channels","primary barriers","secondary filters"], ans:"only channels"},
+      {sentence:`The brain is not designed to _____.`, opts:["sense on its own","process emotions","store memories","control movement"], ans:"sense on its own"},
+      {sentence:`Volunteers are placed in a _____ and experience hallucinations.`, opts:["sensory deprivation tank","dark room only","silent chamber","cold environment"], ans:"sensory deprivation tank"},
+      {sentence:`They experience visual, _____, and tactile hallucinations.`, opts:["physical","auditory","mental","emotional"], ans:"auditory"},
+      {sentence:`We need _____ from our senses to carry out functions that give us personality.`, opts:["constant input","occasional signals","random noise","basic output"], ans:"constant input"},
+    ],
+    topic_q:{q:"이 글의 주제로 가장 적절한 것은?",opts:["아리스토텔레스의 철학이 현대 신경과학에 미친 영향","뇌는 스스로 감지하지 못하며 감각기관의 지속적인 입력이 필수적이다","감각 차단 실험이 심리 치료에 활용되는 방법","시각, 청각, 촉각 중 인간에게 가장 중요한 감각"],ans:"뇌는 스스로 감지하지 못하며 감각기관의 지속적인 입력이 필수적이다"},
+    tf:[
+      {stmt:"노출된 뇌는 빛을 감지할 수 있다.", ans:false, exp:"노출된 뇌는 빛을 감지하지 못한다고 함"},
+      {stmt:"아리스토텔레스는 감각을 통과하지 않는 것은 머릿속에 없다고 했다.", ans:true, exp:"본문 직접 인용 내용"},
+      {stmt:"감각 차단 수조에서는 시각 환각만 경험한다.", ans:false, exp:"시각, 청각, 촉각 환각 모두 경험한다"},
+    ]
+  },
+  {
+    no:35, topic:"발과 감정 표현",
+    text:`Desmond Morris observed that our feet communicate what we think [more honestly] than any other part of our bodies. For millions of years, our legs reacted to environmental [threats] instantaneously, without the need for [conscious thought]. Our limbic brains made sure our feet reacted by either [ceasing motion], running away, or kicking. These reactions are still so [hardwired] in us that our feet react even to disagreeable things as they did in prehistoric times.`,
+    blanks:[
+      {sentence:`Our feet communicate what we think _____ than any other part of our bodies.`, opts:["more honestly","less clearly","more slowly","less reliably"], ans:"more honestly"},
+      {sentence:`Our legs reacted to environmental _____ instantaneously.`, opts:["threats","rewards","sounds","changes"], ans:"threats"},
+      {sentence:`They reacted without the need for _____.`, opts:["conscious thought","physical movement","emotional response","visual input"], ans:"conscious thought"},
+      {sentence:`Our limbic brains made feet react by either _____, running away, or kicking.`, opts:["ceasing motion","speeding up","jumping high","making noise"], ans:"ceasing motion"},
+      {sentence:`These reactions are still so _____ in us that feet react to disagreeable things.`, opts:["forgotten","flexible","hardwired","conscious"], ans:"hardwired"},
+    ],
+    topic_q:{q:"이 글의 주제로 가장 적절한 것은?",opts:["발과 다리 운동이 건강에 미치는 긍정적 효과","발과 다리는 진화적으로 형성된 본능적 반응을 통해 감정을 솔직하게 드러낸다","변연계 뇌가 인간의 도덕적 판단에 미치는 영향","동물과 인간의 위협 반응 방식 비교"],ans:"발과 다리는 진화적으로 형성된 본능적 반응을 통해 감정을 솔직하게 드러낸다"},
+    tf:[
+      {stmt:"발과 다리의 반응은 의식적 사고가 필요하다.", ans:false, exp:"의식적 사고에 대한 필요 없이 즉시 반응한다고 함"},
+      {stmt:"변연계 뇌는 발과 다리가 위협에 반응하도록 한다.", ans:true, exp:"본문 직접 언급 내용"},
+      {stmt:"이러한 반응들은 현대에 와서 완전히 사라졌다.", ans:false, exp:"오늘날에도 계속 그러하다고 함"},
+    ]
+  },
+  {
+    no:36, topic:"종이와 문자 문화",
+    text:`The transition from an [oral culture] to a literate one was [held back] for centuries by the lack of suitable writing material. Stone and clay tablets were [prone to fracture] and were bulky. Wood is susceptible to [decay]. The invention of paper solved these problems, but paper reached its full potential only when Romans replaced the [scroll] with the codex. Paper, a softer material, won out as the [guardian of the written word].`,
+    blanks:[
+      {sentence:`The transition from an _____ to a literate one was held back for centuries.`, opts:["oral culture","written tradition","digital age","visual culture"], ans:"oral culture"},
+      {sentence:`The transition was _____ for centuries by the lack of suitable writing material.`, opts:["held back","pushed forward","ignored","celebrated"], ans:"held back"},
+      {sentence:`Stone and clay tablets were _____ and bulky to transport.`, opts:["prone to fracture","easy to write on","light and portable","resistant to decay"], ans:"prone to fracture"},
+      {sentence:`Wood suffers from splitting and is susceptible to _____.`, opts:["decay","fire only","water damage","breakage"], ans:"decay"},
+      {sentence:`Romans replaced the _____ with the codex (book).`, opts:["scroll","clay tablet","stone slab","wooden board"], ans:"scroll"},
+      {sentence:`Paper won out as the _____.`, opts:["guardian of the written word","cheapest material","most durable substance","heaviest carrier"], ans:"guardian of the written word"},
+    ],
+    topic_q:{q:"이 글의 주제로 가장 적절한 것은?",opts:["중국이 세계 문명 발전에 기여한 4대 발명품","종이는 다른 쓰기 재료의 한계를 극복하며 문자 문화의 수호자가 되었다","구전 문화가 문자 문화보다 우수한 이유","로마 제국이 유럽 문화 발전에 미친 영향"],ans:"종이는 다른 쓰기 재료의 한계를 극복하며 문자 문화의 수호자가 되었다"},
+    tf:[
+      {stmt:"점토판은 가볍고 운반하기 쉬웠다.", ans:false, exp:"부피가 크고 무거워 운반하기 어려웠다고 함"},
+      {stmt:"종이는 중국의 4대 위대한 발명품 중 하나로 불린다.", ans:true, exp:"본문 직접 언급 내용"},
+      {stmt:"코덱스(책)는 현재도 문자의 지배적인 형태이다.", ans:true, exp:"여전히 지배적인 형태라고 함"},
+    ]
+  },
+  {
+    no:37, topic:"이유와 전제의 연쇄",
+    text:`A reason for a conclusion is very unlikely to [consist in] a single claim. It is a complex [interaction] of many ideas and implications. The reason must be broken down into a chain of more [precise premises]. The purpose of reasoning is to avoid [assuming the 'obvious'] by carefully working through the [connections] between various ideas in the initial statement.`,
+    blanks:[
+      {sentence:`A reason for a conclusion is unlikely to _____ a single claim.`, opts:["consist in","depend on","result from","apply to"], ans:"consist in"},
+      {sentence:`It is a complex _____ of many ideas and implications.`, opts:["interaction","collection","summary","rejection"], ans:"interaction"},
+      {sentence:`The reason must be broken down into a chain of more _____.`, opts:["obvious conclusions","precise premises","simple statements","general ideas"], ans:"precise premises"},
+      {sentence:`The purpose of reasoning is to avoid _____.`, opts:["making mistakes","assuming the 'obvious'","complex analysis","initial statements"], ans:"assuming the 'obvious'"},
+      {sentence:`Reasoning carefully works through the _____ between various ideas.`, opts:["connections","differences","conflicts","similarities"], ans:"connections"},
+    ],
+    topic_q:{q:"이 글의 주제로 가장 적절한 것은?",opts:["대학 교육을 무료로 해야 하는 경제적 근거","결론을 뒷받침하는 이유는 단일 주장이 아닌 정밀한 전제들의 연쇄로 분석되어야 한다","호주의 교육 정책과 경제 성장의 관계","논리적 사고를 방해하는 심리적 요인들"],ans:"결론을 뒷받침하는 이유는 단일 주장이 아닌 정밀한 전제들의 연쇄로 분석되어야 한다"},
+    tf:[
+      {stmt:"결론에 대한 이유는 항상 단 하나의 주장으로 구성된다.", ans:false, exp:"단 하나의 주장에 존재할 가능성은 매우 낮다고 함"},
+      {stmt:"대학 교육 무료화 주장은 경제적 이익이라는 이유로 뒷받침될 수 있다.", ans:true, exp:"본문 직접 예시로 언급"},
+      {stmt:"추론의 목적은 '명백한' 것을 그대로 받아들이는 것이다.", ans:false, exp:"'명백한' 것을 가정하는 것을 피하는 것이 목적"},
+    ]
+  },
+  {
+    no:38, topic:"이주의 실제 모습",
+    text:`The word "migration" is almost always reported as a [problem or crisis]. Migrants are assumed to [overcrowd] cities and increase poverty. The other questionable assumption is that most migration is [involuntary]. The reality is more complex — many migrants are simply seeking greater [economic opportunity]. Migration is generally [selective] of persons who are younger, healthier, and more flexible. Most research finds positive long-term effects on both origin and destination.`,
+    blanks:[
+      {sentence:`Migration is almost always reported as a _____.`, opts:["problem or crisis","positive development","natural process","economic opportunity"], ans:"problem or crisis"},
+      {sentence:`Migrants are assumed to _____ cities and increase poverty.`, opts:["overcrowd","beautify","develop","organize"], ans:"overcrowd"},
+      {sentence:`The questionable assumption is that most migration is _____.`, opts:["voluntary","economic","involuntary","selective"], ans:"involuntary"},
+      {sentence:`Many migrants are simply seeking greater _____.`, opts:["political power","social status","economic opportunity","cultural experience"], ans:"economic opportunity"},
+      {sentence:`Migration is generally _____ of persons who are younger and more flexible.`, opts:["selective","random","equal","indiscriminate"], ans:"selective"},
+    ],
+    topic_q:{q:"이 글의 주제로 가장 적절한 것은?",opts:["이주민이 도시 경제에 미치는 부정적 영향","이주는 위기가 아니라 경제적 기회 추구 등 복잡한 원인을 가지며 장기적으로 긍정적 효과를 낳는다","자연재해가 이주를 유발하는 주된 원인","선진국이 이주민을 수용해야 하는 도덕적 의무"],ans:"이주는 위기가 아니라 경제적 기회 추구 등 복잡한 원인을 가지며 장기적으로 긍정적 효과를 낳는다"},
+    tf:[
+      {stmt:"대중 매체는 이주를 주로 긍정적으로 보도한다.", ans:false, exp:"문제나 위기로 거의 항상 보도된다고 함"},
+      {stmt:"많은 이주민들은 단순히 더 큰 경제적 기회를 찾는다.", ans:true, exp:"본문 직접 언급 내용"},
+      {stmt:"이주의 장기적 결과 연구는 모두 부정적인 효과를 발견한다.", ans:false, exp:"긍정적인 장기적 효과를 발견한다고 함"},
+    ]
+  },
+  {
+    no:39, topic:"금과 화폐",
+    text:`The big problem with government money is the [temptation] to create more and spend it, leading to [inflation]. Many countries preferred using gold since it is [inherently limited] in supply — a way of depriving governments of power. Gold has long been considered [ideal] for this purpose. When paper money is [convertible] into gold, the money is "backed up" by gold. The real point is that gold simply limits the amount of paper money that can be [issued].`,
+    blanks:[
+      {sentence:`The big problem is the _____ to create more money and spend it.`, opts:["temptation","obligation","ability","desire"], ans:"temptation"},
+      {sentence:`This has led to _____ and many economic and social problems.`, opts:["deflation","stability","inflation","growth"], ans:"inflation"},
+      {sentence:`Many countries prefer gold since it is _____ in supply.`, opts:["inherently limited","always growing","easily controlled","artificially fixed"], ans:"inherently limited"},
+      {sentence:`Gold has long been considered _____ for this purpose.`, opts:["ideal","useless","risky","outdated"], ans:"ideal"},
+      {sentence:`When paper money is _____ into gold, it is "backed up" by gold.`, opts:["convertible","printed","distributed","destroyed"], ans:"convertible"},
+      {sentence:`Gold limits the amount of paper money that can be _____.`, opts:["issued","burned","stored","traded"], ans:"issued"},
+    ],
+    topic_q:{q:"이 글의 주제로 가장 적절한 것은?",opts:["금의 채굴 방법과 경제적 가치","정부의 화폐 남발로 인한 인플레이션을 금이 제한하는 역할을 한다","종이돈과 금의 교환 비율을 결정하는 방법","현대 국가들이 금본위제를 포기한 이유"],ans:"정부의 화폐 남발로 인한 인플레이션을 금이 제한하는 역할을 한다"},
+    tf:[
+      {stmt:"금은 공급이 급격히 증가될 수 있어 이상적인 화폐 재료이다.", ans:false, exp:"공급이 보통 급격히 증가될 수 없기 때문에 이상적이라고 함"},
+      {stmt:"종이돈이 금으로 전환될 수 있을 때 금에 의해 보장된다고 한다.", ans:true, exp:"본문 직접 언급 내용"},
+      {stmt:"금의 가치가 종이돈으로 전환된다는 표현은 정확하다.", ans:false, exp:"오해를 살 수 있는 표현이라고 함"},
+    ]
+  },
+  {
+    no:40, topic:"감정과 의사결정",
+    text:`The study of emotions and decision making is now of [considerable importance]. Damasio finds that when the [emotional part] of the brain is damaged, this reduces the [efficacy] of decision making. Good decisions are a product of the emotional part working [in conjunction with] the deliberative part. This contradicts [conventional economics], where emotions play a negative role. Evidence suggests emotions actually play an important and [positive role] in decision making.`,
+    blanks:[
+      {sentence:`The study of emotions and decision making is now of _____.`, opts:["considerable importance","little interest","minor concern","secondary value"], ans:"considerable importance"},
+      {sentence:`When the _____ of the brain is damaged, decision-making efficacy is reduced.`, opts:["emotional part","logical center","memory section","language area"], ans:"emotional part"},
+      {sentence:`Damage reduces the _____ of decision making.`, opts:["efficacy","speed","emotion","logic"], ans:"efficacy"},
+      {sentence:`Good decisions are a product of the emotional part working _____ the deliberative part.`, opts:["independently from","in conflict with","in conjunction with","separately from"], ans:"in conjunction with"},
+      {sentence:`This contradicts _____, where emotions play a negative role.`, opts:["conventional economics","behavioral science","neuroscience research","psychological studies"], ans:"conventional economics"},
+      {sentence:`Evidence suggests emotions play an important and _____ in decision making.`, opts:["positive role","negative effect","minor influence","confusing part"], ans:"positive role"},
+    ],
+    topic_q:{q:"이 글의 주제로 가장 적절한 것은?",opts:["전통 경제학이 의사결정 이론에 미친 긍정적 영향","감정은 의사결정에서 부정적 역할이 아닌 중요하고 긍정적인 역할을 한다","뇌 손상 환자들을 치료하는 신경과학적 방법","냉정하고 이성적인 의사결정이 항상 최적인 이유"],ans:"감정은 의사결정에서 부정적 역할이 아닌 중요하고 긍정적인 역할을 한다"},
+    tf:[
+      {stmt:"전통 경제학에서는 감정이 의사결정에 긍정적인 역할을 한다고 본다.", ans:false, exp:"부정적인 역할을 한다고 가정한다"},
+      {stmt:"좋은 결정은 뇌의 감정적 부분과 숙고적 부분이 함께 작용한 결과이다.", ans:true, exp:"본문 직접 언급 내용"},
+      {stmt:"증거에 따르면 감정은 실제로 의사결정에서 중요하고 긍정적인 역할을 한다.", ans:true, exp:"본문 직접 언급 내용"},
+    ]
+  }
+];
+
+// ── STATE ──────────────────────────────────────────
+let userName='', userSchool='', selectedNos=new Set(), doneNos=new Set();
+let qs=[], idx=0, cor=0, wrn=0, wrongs=[], allResults=[], answered=false, t0=0;
+let filterMode='all';
+
+// ── START ──────────────────────────────────────────
+function goPassageSelect(){
+  userSchool = document.getElementById('si').value;
+  userName = document.getElementById('ni').value.trim();
+  if(!userSchool){alert('학교를 선택해주세요!');return;}
+  if(!userName){alert('이름을 입력해주세요!');return;}
+  document.getElementById('startScreen').classList.add('hidden');
+  document.getElementById('userInfo').textContent = userName + ' · ' + userSchool;
+  renderPassageGrid();
+  document.getElementById('passageScreen').classList.remove('hidden');
+}
+
+function renderPassageGrid(){
+  const grid = document.getElementById('passageGrid');
+  grid.innerHTML='';
+  PASSAGES.forEach(p=>{
+    if(filterMode==='20-24' && (p.no<20||p.no>24)) return;
+    if(filterMode==='29-40' && (p.no<29||p.no>40)) return;
+    const d = document.createElement('div');
+    d.className='p-card'+(selectedNos.has(p.no)?' sel':'')+(doneNos.has(p.no)?' done':'');
+    d.onclick=()=>togglePassage(p.no, d);
+    d.innerHTML=`<div class="p-no">${p.no}번</div><div class="p-topic">${p.topic}</div>`
+      +(doneNos.has(p.no)?'<span class="p-badge done-badge">완료✓</span>':'')
+      +(selectedNos.has(p.no)&&!doneNos.has(p.no)?'<span class="p-badge" style="background:#e3f2fd;color:#1565c0;">선택</span>':'');
+    grid.appendChild(d);
+  });
+}
+
+function togglePassage(no, el){
+  if(selectedNos.has(no)){selectedNos.delete(no);el.classList.remove('sel');}
+  else{selectedNos.add(no);el.classList.add('sel');}
+}
+
+function filterPassage(mode, btn){
+  filterMode=mode;
+  document.querySelectorAll('.filter-bar .fb').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  renderPassageGrid();
+}
+
+function selectAll(){
+  const visible = PASSAGES.filter(p=>{
+    if(filterMode==='20-24') return p.no>=20&&p.no<=24;
+    if(filterMode==='29-40') return p.no>=29&&p.no<=40;
+    return true;
+  });
+  const allSel = visible.every(p=>selectedNos.has(p.no));
+  visible.forEach(p=>{ if(allSel) selectedNos.delete(p.no); else selectedNos.add(p.no); });
+  renderPassageGrid();
+}
+
+function startQuiz(){
+  if(selectedNos.size===0){alert('지문을 하나 이상 선택하세요!');return;}
+  // build question list
+  qs=[];
+  PASSAGES.filter(p=>selectedNos.has(p.no)).forEach(p=>{
+    // blanks
+    p.blanks.forEach((b,i)=>qs.push({pno:p.no,topic:p.topic,type:'blank',data:b,passageText:p.text,pid:p.no+'_b'+i}));
+    // topic_q
+    qs.push({pno:p.no,topic:p.topic,type:'topic',data:p.topic_q,passageText:p.text,pid:p.no+'_tq'});
+    // tf
+    p.tf.forEach((t,i)=>qs.push({pno:p.no,topic:p.topic,type:'tf',data:t,passageText:p.text,pid:p.no+'_t'+i}));
+  });
+  // shuffle within each passage group is already ordered; shuffle all
+  idx=0; cor=0; wrn=0; wrongs=[]; allResults=[]; answered=false; t0=Date.now();
+  document.getElementById('passageScreen').classList.add('hidden');
+  document.getElementById('hdr').classList.remove('hidden');
+  document.getElementById('pw').classList.remove('hidden');
+  document.getElementById('quizArea').classList.remove('hidden');
+  document.getElementById('hs').textContent=userName+' · '+selectedNos.size+'개 지문';
+  showQ();
+}
+
+// ── QUIZ ──────────────────────────────────────────
+function showQ(){
+  if(idx>=qs.length){showResult();return;}
+  answered=false;
+  const q=qs[idx];
+  document.getElementById('pf').style.width=(idx/qs.length*100).toFixed(0)+'%';
+  document.getElementById('hb').textContent=(idx+1)+'/'+qs.length;
+  const area=document.getElementById('quizArea');
+
+  if(q.type==='blank'){
+    const d=q.data;
+    const shuf=arr=>{const b=[...arr];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;};
+    const opts=shuf(d.opts);
+
+    // 지문에서 현재 문제의 정답만 블록 처리, 나머지 [ ]는 일반 텍스트로
+    let passageDisplay = q.passageText;
+    passageDisplay = passageDisplay.replace(/\[([^\]]+)\]/g,(match, inner)=>{
+      if(inner === d.ans || d.ans.includes(inner) || inner.includes(d.ans)){
+        return `<span style="display:inline-block;min-width:80px;background:#1565c0;color:#1565c0;border-radius:5px;padding:1px 6px;font-weight:800;letter-spacing:2px;user-select:none;">░░░░░░░</span>`;
+      }
+      // 나머지는 그냥 일반 텍스트로
+      return inner;
+    });
+
+    // 빈칸 문장 표시 (_____ → 파란 빈칸)
+    const blankSentence = d.sentence.replace('_____',
+      `<span style="display:inline-block;min-width:120px;border-bottom:3px solid #1565c0;background:#bbdefb;border-radius:4px;padding:2px 10px;font-weight:800;color:#1565c0;">_____</span>`);
+
+    area.innerHTML=`
+      <div class="qc">
+        <div class="q-no-badge"><span class="qno">${q.pno}번</span><span class="qtype blank">빈칸 추론</span></div>
+        <div style="font-size:11px;font-weight:700;color:#1565c0;margin-bottom:6px;">📄 지문 — 파란 빈칸에 들어갈 말을 고르세요 (${q.topic})</div>
+        <div class="passage-box" style="font-size:13px;margin-bottom:14px;line-height:2;">${passageDisplay}</div>
+        <div style="background:#e3f2fd;border:2px solid #1565c0;border-radius:10px;padding:12px 14px;font-size:13px;font-weight:700;color:#1a237e;margin-bottom:12px;line-height:1.9;">${blankSentence}</div>
+        <div class="choices" id="qChoices"></div>
+        <div class="fb-msg" id="fb"></div>
+      </div>`;
+    const cc=document.getElementById('qChoices');
+    opts.forEach((o,i)=>{
+      const b=document.createElement('button');
+      b.className='cb';
+      b.innerHTML=`<span class="cn">${i+1}</span>${o}`;
+      b.addEventListener('click',()=>selBlank(b,o,d.ans));
+      cc.appendChild(b);
+    });
+  } else if(q.type==='topic'){
+    const d=q.data;
+    const shuf=arr=>{const b=[...arr];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;};
+    const opts=shuf(d.opts);
+    const cleanText = q.passageText.replace(/\[([^\]]+)\]/g,'<span style="background:#fff3e0;border-bottom:2.5px solid #f57f17;font-weight:800;padding:0 3px;border-radius:3px;">$1</span>');
+    area.innerHTML=`
+      <div class="qc">
+        <div class="q-no-badge"><span class="qno">${q.pno}번</span><span class="qtype" style="background:#e8f5e9;color:#2e7d32;">주제/요지</span></div>
+        <div style="font-size:11px;font-weight:700;color:#1565c0;margin-bottom:6px;">📄 지문 (${q.topic})</div>
+        <div class="passage-box" style="font-size:13px;margin-bottom:14px;">${cleanText}</div>
+        <div class="q-prompt">🎯 ${d.q}</div>
+        <div class="choices" id="qChoices"></div>
+        <div class="fb-msg" id="fb"></div>
+      </div>`;
+    const cc=document.getElementById('qChoices');
+    opts.forEach((o,i)=>{
+      const b=document.createElement('button');
+      b.className='cb';
+      b.innerHTML=`<span class="cn">${i+1}</span>${o}`;
+      b.addEventListener('click',()=>selBlank(b,o,d.ans));
+      cc.appendChild(b);
+    });
+  } else {
+    const d=q.data;
+    // 지문 원문에서 [ ] 제거해서 보여주기
+    const cleanText = q.passageText.replace(/\[([^\]]+)\]/g,'$1');
+    area.innerHTML=`
+      <div class="qc">
+        <div class="q-no-badge"><span class="qno">${q.pno}번</span><span class="qtype tf">내용 일치 T/F</span></div>
+        <div style="font-size:11px;font-weight:700;color:#1565c0;margin-bottom:6px;">📄 지문 (${q.topic})</div>
+        <div class="passage-box" style="font-size:13px;margin-bottom:14px;">${cleanText}</div>
+        <div class="q-prompt">✅ 다음 문장이 본문 내용과 일치하면 O, 아니면 X를 선택하세요.</div>
+        <div style="background:#fff8e1;border:2px solid #f57f17;border-radius:10px;padding:12px 14px;font-size:14px;font-weight:700;color:#333;margin:10px 0 14px;">${d.stmt}</div>
+        <div class="tf-btns">
+          <button class="tfb ob" id="btnO" onclick="selTF(this,true,${d.ans})">⭕ 일치</button>
+          <button class="tfb xb" id="btnX" onclick="selTF(this,false,${d.ans})">❌ 불일치</button>
+        </div>
+        <div class="fb-msg" id="fb"></div>
+      </div>`;
+  }
+}
+
+function selBlank(btn,sel,ans){
+  if(answered)return;
+  answered=true;
+  document.querySelectorAll('.cb').forEach(b=>b.disabled=true);
+  const fb=document.getElementById('fb');
+  const q=qs[idx];
+  const typeLabel = q.type==='topic' ? '주제' : '빈칸';
+  if(sel===ans){
+    btn.classList.add('correct');
+    fb.className='fb-msg ok';fb.textContent='✅ 정답!';
+    cor++;
+    allResults.push({pno:q.pno, type:typeLabel, correct:true, my:sel, ans:ans});
+  } else {
+    btn.classList.add('wrong');
+    document.querySelectorAll('.cb').forEach(b=>{if(b.textContent.trim()===ans)b.classList.add('reveal');});
+    fb.className='fb-msg no';fb.textContent='❌ 오답! 정답: '+ans;
+    wrn++;
+    wrongs.push({pid:q.pid, label:q.pno+'번 '+typeLabel, my:sel, correct:ans, exp:''});
+    allResults.push({pno:q.pno, type:typeLabel, correct:false, my:sel, ans:ans});
+  }
+  setTimeout(()=>{idx++;showQ();},sel===ans?700:1800);
+}
+
+function selTF(btn,sel,ans){
+  if(answered)return;
+  answered=true;
+  document.querySelectorAll('.tfb').forEach(b=>b.disabled=true);
+  const fb=document.getElementById('fb');
+  const correct=(sel===ans);
+  btn.classList.add(correct?'correct':'wrong');
+  if(!correct){
+    const other=document.getElementById(sel?'btnX':'btnO');
+    other.classList.add('reveal');
+  }
+  const q=qs[idx];
+  const d=q.data;
+  if(correct){
+    fb.className='fb-msg ok';fb.textContent='✅ 정답! '+d.exp;
+    cor++;
+    allResults.push({pno:q.pno, type:'T/F', correct:true, my:sel?'O':'X', ans:ans?'O':'X', stmt:d.stmt});
+  } else {
+    fb.className='fb-msg no';fb.textContent='❌ 오답! '+d.exp;
+    wrn++;
+    wrongs.push({pid:q.pid, label:q.pno+'번 T/F', my:sel?'O':'X', correct:ans?'O':'X', exp:d.exp});
+    allResults.push({pno:q.pno, type:'T/F', correct:false, my:sel?'O':'X', ans:ans?'O':'X', stmt:d.stmt});
+  }
+  setTimeout(()=>{idx++;showQ();},correct?700:1800);
+}
+
+// ── RESULT ──────────────────────────────────────────
+let wrongQs = []; // 오답 문제 저장용
+
+function showResult(){
+  document.getElementById('pf').style.width='100%';
+  document.getElementById('quizArea').classList.add('hidden');
+  const total=idx, pct=total>0?Math.round(cor/total*100):0;
+  const el=Math.round((Date.now()-t0)/60000);
+  selectedNos.forEach(n=>doneNos.add(n));
+  // 오답 문제 저장 (다시풀기용)
+  wrongQs = qs.filter((q,i)=>{
+    // wrongs 배열의 pid와 매칭
+    return wrongs.some(w=>w.pid===q.pid);
+  });
+
+  const wHTML=wrongs.length>0
+    ?'<div class="wl"><h3>❌ 오답 ('+wrongs.length+'개)</h3>'+wrongs.map(w=>'<div class="wi"><div class="wie">'+w.label+'</div><div class="wid">내 답: '+w.my+' → 정답: '+w.correct+(w.exp?' | '+w.exp:'')+'</div></div>').join('')+'</div>'
+    :'<div style="color:#2e7d32;font-weight:800;padding:14px;text-align:center;">🎉 전부 정답!</div>';
+
+  const retryBtn = wrongs.length>0
+    ? `<button class="rbtn" style="background:linear-gradient(135deg,#c62828,#e91e63);color:white;" onclick="retryWrongs()">❌ 오답 다시풀기 (${wrongs.length}개)</button>`
+    : '';
+
+  const rs=document.getElementById('resultScreen');
+  rs.classList.remove('hidden');
+  rs.innerHTML=`<div class="rc">
+    <div style="font-size:12px;color:var(--muted);margin-bottom:4px;">고2 25년 6월 본문 암기 · ${selectedNos.size}개 지문</div>
+    <div class="rs">${pct}점</div>
+    <div class="rsub">${userName}의 결과</div>
+    <div class="sr">
+      <div class="si"><div class="sn" style="color:#2e7d32;">${cor}</div><div class="sl">정답</div></div>
+      <div class="si"><div class="sn" style="color:#c62828;">${wrn}</div><div class="sl">오답</div></div>
+      <div class="si"><div class="sn" style="color:#1565c0;">${total}</div><div class="sl">총문제</div></div>
+      <div class="si"><div class="sn" style="color:#f57f17;">${el}분</div><div class="sl">소요</div></div>
+    </div>
+    ${wHTML}
+    <div class="rbtns">
+      ${retryBtn}
+      <button class="rbtn rbtn-p" onclick="goBack()">← 지문 다시 선택</button>
+      <button class="rbtn rbtn-s" onclick="location.reload()">처음부터 🔄</button>
+    </div>
+  </div>`;
+
+  if(window._fbSave) window._fbSave({
+    submittedAt: new Date().toISOString(),
+    studentName: userName,
+    school: userSchool,
+    score: pct,
+    correct: cor,
+    wrong: wrn,
+    total: total,
+    elapsedMin: el,
+    quizType: '고2_25년6월_본문암기',
+    passages: [...selectedNos].sort((a,b)=>a-b),
+    // 문제별 상세 결과: 몇 번 지문, 유형(빈칸/주제/T·F), 맞음/틀림, 내 답, 정답
+    details: allResults.map(r=>({
+      지문: r.pno+'번',
+      유형: r.type,
+      결과: r.correct ? '✅정답' : '❌오답',
+      내답: r.my,
+      정답: r.ans,
+      ...(r.stmt ? {문장: r.stmt} : {})
+    })),
+    wrongWords: wrongs.map(w=>({label:w.label, my:w.my, correct:w.correct}))
+  });
+}
+
+function retryWrongs(){
+  if(wrongQs.length===0) return;
+  qs=[...wrongQs];
+  idx=0; cor=0; wrn=0; wrongs=[]; allResults=[]; answered=false; t0=Date.now();
+  document.getElementById('resultScreen').classList.add('hidden');
+  document.getElementById('quizArea').classList.remove('hidden');
+  document.getElementById('hdr').classList.remove('hidden');
+  document.getElementById('pw').classList.remove('hidden');
+  document.getElementById('hs').textContent=userName+' · 오답 다시풀기';
+  showQ();
+}
+
+function goBack(){
+  document.getElementById('resultScreen').classList.add('hidden');
+  document.getElementById('hdr').classList.add('hidden');
+  document.getElementById('pw').classList.add('hidden');
+  selectedNos.clear();
+  renderPassageGrid();
+  document.getElementById('passageScreen').classList.remove('hidden');
+}
+
+// localStorage 자동입력
+window.addEventListener('DOMContentLoaded',()=>{
+  const n=localStorage.getItem('bomnal_name');
+  const s=localStorage.getItem('bomnal_school');
+  if(n) document.getElementById('ni').value=n;
+  if(s){
+    const sel=document.getElementById('si');
+    for(let i=0;i<sel.options.length;i++){
+      if(sel.options[i].value&&s.includes(sel.options[i].value)){sel.value=sel.options[i].value;break;}
+    }
+  }
+});
+</script>
+</body>
+</html>
