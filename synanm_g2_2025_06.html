@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>고2 2025년 6월 모의고사 동반의어</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', sans-serif; background: #f0f4f8; color: #333; }
+
+  #login-screen {
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center; min-height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  }
+  #login-screen h1 { color: white; font-size: 1.6rem; margin-bottom: 8px; text-align: center; }
+  #login-screen p { color: rgba(255,255,255,0.85); margin-bottom: 24px; font-size: 0.95rem; }
+  #login-box {
+    background: white; border-radius: 16px; padding: 32px;
+    width: 320px; box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+  }
+  #login-box input {
+    width: 100%; padding: 12px 14px; margin-bottom: 12px;
+    border: 1.5px solid #ddd; border-radius: 8px; font-size: 1rem;
+  }
+  #login-box input:focus { outline: none; border-color: #667eea; }
+  #login-btn {
+    width: 100%; padding: 13px; background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white; border: none; border-radius: 8px; font-size: 1rem;
+    font-weight: 700; cursor: pointer;
+  }
+  #login-btn:hover { opacity: 0.92; }
+
+  #quiz-screen { display: none; padding: 20px; max-width: 760px; margin: 0 auto; }
+  .quiz-header {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white; border-radius: 14px; padding: 18px 22px;
+    margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;
+  }
+  .quiz-header h2 { font-size: 1.1rem; }
+  .quiz-header .info { font-size: 0.88rem; opacity: 0.9; margin-top: 4px; }
+  #score-badge {
+    background: rgba(255,255,255,0.25); border-radius: 10px;
+    padding: 8px 14px; text-align: center; min-width: 80px;
+  }
+  #score-badge .score-num { font-size: 1.4rem; font-weight: 800; }
+  #score-badge .score-label { font-size: 0.75rem; opacity: 0.85; }
+
+  .filter-bar {
+    display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px;
+  }
+  .filter-btn {
+    padding: 7px 14px; border: 2px solid #667eea; border-radius: 20px;
+    background: white; color: #667eea; font-size: 0.85rem;
+    cursor: pointer; font-weight: 600; transition: all 0.2s;
+  }
+  .filter-btn.active { background: #667eea; color: white; }
+
+  .card {
+    background: white; border-radius: 14px; padding: 20px;
+    margin-bottom: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    transition: transform 0.15s;
+  }
+  .card:hover { transform: translateY(-1px); }
+  .card.correct { border-left: 4px solid #22c55e; }
+  .card.wrong { border-left: 4px solid #ef4444; }
+  .card.unanswered { border-left: 4px solid #d1d5db; }
+
+  .card-top {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    margin-bottom: 12px;
+  }
+  .word-ko {
+    font-size: 1.15rem; font-weight: 700; color: #1e293b;
+  }
+  .word-en {
+    font-size: 0.88rem; color: #64748b; margin-top: 2px;
+  }
+  .no-badge {
+    background: #f1f5f9; color: #64748b; border-radius: 6px;
+    padding: 3px 10px; font-size: 0.8rem; font-weight: 600; white-space: nowrap;
+  }
+
+  .type-row { display: flex; gap: 10px; margin-bottom: 10px; }
+  .type-label {
+    font-size: 0.75rem; font-weight: 700; padding: 3px 9px;
+    border-radius: 12px; letter-spacing: 0.3px;
+  }
+  .type-syn { background: #dbeafe; color: #1d4ed8; }
+  .type-ant { background: #fce7f3; color: #be185d; }
+
+  .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .opt-btn {
+    padding: 10px 12px; border: 2px solid #e2e8f0; border-radius: 10px;
+    background: #f8fafc; color: #334155; font-size: 0.9rem;
+    cursor: pointer; text-align: left; transition: all 0.18s; font-family: inherit;
+  }
+  .opt-btn:hover:not(:disabled) { border-color: #667eea; background: #eef2ff; }
+  .opt-btn.selected-correct { background: #dcfce7; border-color: #22c55e; color: #166534; font-weight: 700; }
+  .opt-btn.selected-wrong { background: #fee2e2; border-color: #ef4444; color: #991b1b; }
+  .opt-btn.reveal-correct { background: #dcfce7; border-color: #22c55e; color: #166534; }
+  .opt-btn:disabled { cursor: default; }
+
+  .feedback {
+    margin-top: 10px; font-size: 0.88rem; font-weight: 600;
+    display: none; padding: 6px 10px; border-radius: 7px;
+  }
+  .feedback.correct { display: block; color: #166534; background: #dcfce7; }
+  .feedback.wrong { display: block; color: #991b1b; background: #fee2e2; }
+
+  #result-screen {
+    display: none; padding: 40px 20px; max-width: 500px;
+    margin: 0 auto; text-align: center;
+  }
+  .result-box {
+    background: white; border-radius: 20px; padding: 40px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  }
+  .result-score { font-size: 3.5rem; font-weight: 900; color: #667eea; }
+  .result-total { font-size: 1.1rem; color: #64748b; margin-bottom: 20px; }
+  .result-msg { font-size: 1.2rem; font-weight: 700; margin-bottom: 8px; }
+  .result-sub { color: #64748b; margin-bottom: 28px; }
+  .retry-btn {
+    padding: 14px 32px; background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white; border: none; border-radius: 12px; font-size: 1rem;
+    font-weight: 700; cursor: pointer; margin: 6px;
+  }
+  .retry-btn:hover { opacity: 0.9; }
+
+  #submit-bar {
+    position: sticky; bottom: 0; background: white;
+    padding: 14px 0; box-shadow: 0 -2px 10px rgba(0,0,0,0.08);
+    display: flex; gap: 10px; justify-content: center; margin-top: 10px;
+  }
+  #submit-btn {
+    padding: 13px 40px; background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white; border: none; border-radius: 12px;
+    font-size: 1rem; font-weight: 700; cursor: pointer;
+  }
+  #reset-btn {
+    padding: 13px 24px; background: #f1f5f9; color: #64748b;
+    border: none; border-radius: 12px;
+    font-size: 1rem; font-weight: 600; cursor: pointer;
+  }
+  .progress-bar-wrap { background: #e2e8f0; border-radius: 6px; height: 6px; margin-bottom: 16px; }
+  .progress-bar-fill { height: 6px; border-radius: 6px; background: linear-gradient(90deg, #667eea, #764ba2); transition: width 0.3s; }
+
+  @media(max-width: 500px) {
+    .options-grid { grid-template-columns: 1fr; }
+    .quiz-header { flex-direction: column; gap: 10px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <h1>📚 고2 2025년 6월 모의고사</h1>
+  <p>동반의어 (유의어/반의어) 퀴즈</p>
+  <div id="login-box">
+    <input type="text" id="input-name" placeholder="이름" />
+    <input type="text" id="input-school" placeholder="학교" />
+    <button id="login-btn" onclick="startQuiz()">시작하기 →</button>
+  </div>
+</div>
+
+<!-- QUIZ -->
+<div id="quiz-screen">
+  <div class="quiz-header">
+    <div>
+      <h2>고2 2025년 6월 모의고사 동반의어</h2>
+      <div class="info" id="header-info"></div>
+    </div>
+    <div id="score-badge">
+      <div class="score-num" id="live-score">0</div>
+      <div class="score-label">점수</div>
+    </div>
+  </div>
+
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-fill" id="progress-fill" style="width:0%"></div>
+  </div>
+
+  <div class="filter-bar" id="filter-bar">
+    <button class="filter-btn active" onclick="filterBy('all', this)">전체</button>
+    <button class="filter-btn" onclick="filterBy('syn', this)">유의어만</button>
+    <button class="filter-btn" onclick="filterBy('ant', this)">반의어만</button>
+    <button class="filter-btn" onclick="filterBy('wrong', this)">틀린 것만</button>
+  </div>
+
+  <div id="cards-container"></div>
+
+  <div id="submit-bar">
+    <button id="reset-btn" onclick="resetAll()">↺ 다시풀기</button>
+    <button id="submit-btn" onclick="submitQuiz()">제출하기</button>
+  </div>
+</div>
+
+<!-- RESULT -->
+<div id="result-screen">
+  <div class="result-box">
+    <div style="font-size:3rem; margin-bottom:12px;">🎉</div>
+    <div class="result-score" id="final-score"></div>
+    <div class="result-total" id="final-total"></div>
+    <div class="result-msg" id="result-msg"></div>
+    <div class="result-sub" id="result-sub"></div>
+    <button class="retry-btn" onclick="resetAll()">↺ 다시 풀기</button>
+    <button class="retry-btn" style="background:#f1f5f9; color:#667eea;" onclick="goToQuiz()">문제 다시 보기</button>
+  </div>
+</div>
+
+<script>
+// ──────────────────────────────────────────────
+// DATA  (문제번호: 18~40, 41~42, 43~45)
+// ──────────────────────────────────────────────
+const RAW = [
+  // No.18
+  {no:"18", word:"express", ko:"표현하다", syn:["convey","communicate"], ant:["suppress","conceal"]},
+  {no:"18", word:"gratitude", ko:"감사", syn:["thankfulness","appreciation"], ant:["ingratitude","resentment"]},
+  {no:"18", word:"dedication", ko:"헌신", syn:["commitment","devotion"], ant:["indifference","apathy"]},
+  {no:"18", word:"exceptional", ko:"뛰어난", syn:["outstanding","remarkable"], ant:["ordinary","mediocre"]},
+  {no:"18", word:"significantly", ko:"상당히", syn:["considerably","notably"], ant:["slightly","marginally"]},
+  {no:"18", word:"improve", ko:"향상시키다", syn:["enhance","upgrade"], ant:["worsen","degrade"]},
+  {no:"18", word:"progress", ko:"발전", syn:["advancement","development"], ant:["setback","regression"]},
+  {no:"18", word:"confidence", ko:"자신감", syn:["self-assurance","certainty"], ant:["doubt","insecurity"]},
+  {no:"18", word:"reflect on", ko:"되돌아보다", syn:["think about","contemplate"], ant:["ignore","disregard"]},
+  {no:"18", word:"contribution", ko:"기여", syn:["donation","input"], ant:["withdrawal","subtraction"]},
+  {no:"18", word:"renewal", ko:"갱신", syn:["extension","continuation"], ant:["expiration","termination"]},
+  {no:"18", word:"offer", ko:"제안하다", syn:["propose","present"], ant:["withhold","retract"]},
+  {no:"18", word:"enhance", ko:"향상시키다", syn:["boost","improve"], ant:["diminish","weaken"]},
+  {no:"18", word:"achievement", ko:"성취", syn:["accomplishment","success"], ant:["failure","defeat"]},
+  {no:"18", word:"look forward to", ko:"고대하다", syn:["anticipate","await"], ant:["dread","fear"]},
+  // No.19
+  {no:"19", word:"bright", ko:"밝은", syn:["radiant","brilliant"], ant:["dull","dim"]},
+  {no:"19", word:"harsh", ko:"강렬한/혹독한", syn:["severe","intense"], ant:["mild","gentle"]},
+  {no:"19", word:"unwell", ko:"아픈", syn:["sick","ill"], ant:["healthy","well"]},
+  {no:"19", word:"effort", ko:"노력", syn:["attempt","endeavor"], ant:["laziness","idleness"]},
+  {no:"19", word:"symptom", ko:"증상", syn:["sign","indication"], ant:["health","wellness"]},
+  {no:"19", word:"concern", ko:"걱정", syn:["worry","anxiety"], ant:["peace","calm"]},
+  {no:"19", word:"reassure", ko:"안심시키다", syn:["comfort","console"], ant:["alarm","upset"]},
+  {no:"19", word:"examine", ko:"진찰하다", syn:["inspect","investigate"], ant:["overlook","ignore"]},
+  {no:"19", word:"comfortable", ko:"편안한", syn:["cozy","relaxed"], ant:["uncomfortable","uneasy"]},
+  {no:"19", word:"calm", ko:"차분함", syn:["tranquility","composure"], ant:["anxiety","agitation"]},
+  // No.20
+  {no:"20", word:"thrive", ko:"번창하다", syn:["flourish","prosper"], ant:["decline","wither"]},
+  {no:"20", word:"isolation", ko:"고립", syn:["solitude","separation"], ant:["connection","integration"]},
+  // No.21
+  {no:"21", word:"define", ko:"규정하다", syn:["describe","specify"], ant:["confuse","obscure"]},
+  {no:"21", word:"impose", ko:"강요하다", syn:["enforce","inflict"], ant:["lift","exempt"]},
+  {no:"21", word:"desire", ko:"욕망", syn:["craving","longing"], ant:["aversion","indifference"]},
+  {no:"21", word:"absolute", ko:"절대적인", syn:["total","complete"], ant:["relative","partial"]},
+  {no:"21", word:"satisfy", ko:"만족시키다", syn:["please","fulfill"], ant:["disappoint","frustrate"]},
+  {no:"21", word:"relative", ko:"상대적인", syn:["comparative","proportional"], ant:["absolute","fixed"]},
+  {no:"21", word:"pointless", ko:"무의미한", syn:["meaningless","futile"], ant:["meaningful","purposeful"]},
+  {no:"21", word:"occur", ko:"발생하다", syn:["happen","take place"], ant:["stop","cease"]},
+  {no:"21", word:"miserable", ko:"비참한", syn:["unhappy","wretched"], ant:["joyful","content"]},
+  // No.22
+  {no:"22", word:"evoke", ko:"불러일으키다", syn:["arouse","stir up"], ant:["suppress","ignore"]},
+  {no:"22", word:"vivid", ko:"생생한", syn:["bright","graphic"], ant:["dull","faint"]},
+  {no:"22", word:"financial", ko:"재정적인", syn:["economic","monetary"], ant:["nonfinancial","worthless"]},
+  {no:"22", word:"attract", ko:"유혹하다", syn:["lure","entice"], ant:["repel","deter"]},
+  {no:"22", word:"flashy", ko:"화려한", syn:["showy","ostentatious"], ant:["modest","simple"]},
+  {no:"22", word:"obtain", ko:"얻다", syn:["acquire","gain"], ant:["lose","forfeit"]},
+  {no:"22", word:"advertise", ko:"광고하다", syn:["promote","publicize"], ant:["conceal","hide"]},
+  // No.23
+  {no:"23", word:"opt for", ko:"선택하다", syn:["choose","select"], ant:["reject","avoid"]},
+  {no:"23", word:"wise", ko:"현명한", syn:["prudent","sensible"], ant:["foolish","ignorant"]},
+  {no:"23", word:"compensate", ko:"보상하다", syn:["reimburse","repay"], ant:["deprive","penalize"]},
+  {no:"23", word:"prefer", ko:"선호하다", syn:["favor","choose"], ant:["reject","dislike"]},
+  {no:"23", word:"hold out", ko:"버티다", syn:["resist","endure"], ant:["surrender","yield"]},
+  {no:"23", word:"cause", ko:"유발하다", syn:["trigger","provoke"], ant:["prevent","stop"]},
+  {no:"23", word:"inconsistent", ko:"일관되지 않은", syn:["contradictory","erratic"], ant:["consistent","steady"]},
+  {no:"23", word:"reward", ko:"보상", syn:["prize","compensation"], ant:["punishment","penalty"]},
+  {no:"23", word:"give up", ko:"포기하다", syn:["surrender","abandon"], ant:["persist","continue"]},
+  // No.24
+  {no:"24", word:"determine", ko:"결정하다", syn:["decide","establish"], ant:["hesitate","waver"]},
+  {no:"24", word:"incorrect", ko:"잘못된", syn:["wrong","inaccurate"], ant:["correct","accurate"]},
+  {no:"24", word:"evaluate", ko:"평가하다", syn:["assess","judge"], ant:["neglect","ignore"]},
+  // No.26(인물)
+  {no:"26", word:"found", ko:"설립하다", syn:["establish","initiate"], ant:["abolish","dissolve"]},
+  {no:"26", word:"talented", ko:"재능있는", syn:["gifted","skilled"], ant:["unskilled","untalented"]},
+  {no:"26", word:"strengthen", ko:"강화하다", syn:["reinforce","fortify"], ant:["weaken","reduce"]},
+  {no:"26", word:"stunning", ko:"멋진", syn:["impressive","magnificent"], ant:["dull","ordinary"]},
+  // No.27
+  {no:"27", word:"participation", ko:"참여", syn:["involvement","engagement"], ant:["absence","withdrawal"]},
+  {no:"27", word:"available", ko:"이용 가능한", syn:["accessible","obtainable"], ant:["unavailable","inaccessible"]},
+  // No.28
+  {no:"28", word:"conserve", ko:"보존하다", syn:["preserve","save"], ant:["waste","destroy"]},
+  {no:"28", word:"cancel", ko:"취소하다", syn:["call off","revoke"], ant:["confirm","validate"]},
+  // No.29
+  {no:"29", word:"perspective", ko:"관점", syn:["viewpoint","angle"], ant:["blindness","ignorance"]},
+  {no:"29", word:"illusion", ko:"착시", syn:["delusion","mirage"], ant:["reality","truth"]},
+  {no:"29", word:"apply", ko:"적용하다", syn:["implement","use"], ant:["remove","ignore"]},
+  {no:"29", word:"represent", ko:"나타내다", syn:["depict","symbolize"], ant:["distort","obscure"]},
+  {no:"29", word:"realistic", ko:"현실적인", syn:["practical","real"], ant:["idealistic","imaginary"]},
+  {no:"29", word:"viewpoint", ko:"관점", syn:["perspective","stance"], ant:["ignorance","oblivion"]},
+  // No.30
+  {no:"30", word:"stimulate", ko:"촉진하다", syn:["encourage","activate"], ant:["suppress","discourage"]},
+  {no:"30", word:"shrink", ko:"축소", syn:["contract","dwindle"], ant:["expand","grow"]},
+  {no:"30", word:"confirm", ko:"확인하다", syn:["verify","validate"], ant:["deny","contradict"]},
+  {no:"30", word:"fluctuation", ko:"변동", syn:["variation","swing"], ant:["stability","consistency"]},
+  {no:"30", word:"potential", ko:"잠재적인", syn:["possible","latent"], ant:["unlikely","impossible"]},
+  {no:"30", word:"concern", ko:"우려", syn:["worry","anxiety"], ant:["confidence","assurance"]},
+  // No.31
+  {no:"31", word:"complex", ko:"복잡한", syn:["complicated","intricate"], ant:["simple","straightforward"]},
+  {no:"31", word:"motivate", ko:"동기를 부여하다", syn:["inspire","encourage"], ant:["discourage","demotivate"]},
+  {no:"31", word:"abstract", ko:"추상적인", syn:["conceptual","theoretical"], ant:["concrete","specific"]},
+  // No.32
+  {no:"32", word:"embrace", ko:"받아들이다", syn:["accept","welcome"], ant:["reject","exclude"]},
+  {no:"32", word:"win over", ko:"사로잡다", syn:["persuade","gain favor"], ant:["lose","alienate"]},
+  {no:"32", word:"obvious", ko:"분명한", syn:["clear","evident"], ant:["unclear","ambiguous"]},
+  // No.33
+  {no:"33", word:"strategy", ko:"전략", syn:["plan","tactic"], ant:["improvisation","spontaneity"]},
+  {no:"33", word:"rational", ko:"이성적인", syn:["logical","reasonable"], ant:["irrational","emotional"]},
+  {no:"33", word:"irrational", ko:"비이성적인", syn:["unreasonable","illogical"], ant:["rational","sensible"]},
+  {no:"33", word:"destructive", ko:"파괴적인", syn:["damaging","ruinous"], ant:["constructive","beneficial"]},
+  // No.34
+  {no:"34", word:"expose", ko:"노출시키다", syn:["reveal","uncover"], ant:["hide","conceal"]},
+  {no:"34", word:"isolate", ko:"분리하다", syn:["separate","seclude"], ant:["connect","unite"]},
+  {no:"34", word:"recognize", ko:"인식하다", syn:["identify","acknowledge"], ant:["ignore","overlook"]},
+  {no:"34", word:"deprivation", ko:"박탈", syn:["loss","denial"], ant:["provision","access"]},
+  {no:"34", word:"hallucination", ko:"환각", syn:["delusion","illusion"], ant:["reality","truth"]},
+  {no:"34", word:"constant", ko:"지속적인", syn:["continuous","steady"], ant:["irregular","occasional"]},
+  // No.35
+  {no:"35", word:"accurate", ko:"정확한", syn:["correct","exact"], ant:["inaccurate","wrong"]},
+  {no:"35", word:"react", ko:"반응하다", syn:["respond","reply"], ant:["ignore","neglect"]},
+  {no:"35", word:"cease", ko:"멈추다", syn:["stop","halt"], ant:["continue","proceed"]},
+  {no:"35", word:"retain", ko:"유지하다", syn:["keep","preserve"], ant:["lose","release"]},
+  {no:"35", word:"hardwired", ko:"굳어진", syn:["fixed","ingrained"], ant:["flexible","changeable"]},
+  {no:"35", word:"disagreeable", ko:"불쾌한", syn:["unpleasant","offensive"], ant:["pleasant","agreeable"]},
+  // No.36
+  {no:"36", word:"transition", ko:"전환", syn:["change","shift"], ant:["stability","stagnation"]},
+  {no:"36", word:"hold back", ko:"지연시키다", syn:["delay","restrain"], ant:["advance","accelerate"]},
+  {no:"36", word:"suitable", ko:"적절한", syn:["appropriate","proper"], ant:["unsuitable","improper"]},
+  {no:"36", word:"dominant", ko:"지배적인", syn:["prevailing","leading"], ant:["minor","inferior"]},
+  {no:"36", word:"remarkable", ko:"놀라운", syn:["extraordinary","notable"], ant:["ordinary","unremarkable"]},
+  // No.37
+  {no:"37", word:"complex", ko:"복잡한", syn:["complicated","intricate"], ant:["simple","clear"]},
+  {no:"37", word:"precise", ko:"정확한", syn:["accurate","exact"], ant:["vague","imprecise"]},
+  {no:"37", word:"obvious", ko:"분명한", syn:["clear","evident"], ant:["obscure","ambiguous"]},
+  {no:"37", word:"assume", ko:"가정하다", syn:["suppose","presume"], ant:["doubt","question"]},
+  // No.38
+  {no:"38", word:"crisis", ko:"위기", syn:["emergency","disaster"], ant:["stability","security"]},
+  {no:"38", word:"questionable", ko:"의문스러운", syn:["doubtful","uncertain"], ant:["certain","trustworthy"]},
+  {no:"38", word:"involuntary", ko:"본의 아닌", syn:["unintentional","forced"], ant:["voluntary","willing"]},
+  {no:"38", word:"flee", ko:"도망가다", syn:["escape","run away"], ant:["stay","confront"]},
+  {no:"38", word:"flexible", ko:"유연한", syn:["adaptable","adjustable"], ant:["rigid","inflexible"]},
+  {no:"38", word:"endure", ko:"견디다", syn:["tolerate","survive"], ant:["quit","give up"]},
+  {no:"38", word:"selective", ko:"선택적인", syn:["particular","discriminating"], ant:["random","indiscriminate"]},
+  // No.39
+  {no:"39", word:"prefer", ko:"선호하다", syn:["favor","choose"], ant:["avoid","dislike"]},
+  {no:"39", word:"ideal", ko:"이상적인", syn:["perfect","optimal"], ant:["flawed","imperfect"]},
+  {no:"39", word:"misleading", ko:"오해의 소지가 있는", syn:["deceptive","confusing"], ant:["clear","honest"]},
+  {no:"39", word:"expand", ko:"확장하다", syn:["enlarge","extend"], ant:["shrink","contract"]},
+  // No.40
+  {no:"40", word:"considerable", ko:"상당한", syn:["significant","substantial"], ant:["insignificant","minor"]},
+  {no:"40", word:"cognitive", ko:"인지적인", syn:["mental","intellectual"], ant:["emotional","intuitive"]},
+  {no:"40", word:"efficacy", ko:"효율성", syn:["effectiveness","efficiency"], ant:["inefficacy","uselessness"]},
+  {no:"40", word:"conventional", ko:"전통적인", syn:["traditional","customary"], ant:["modern","innovative"]},
+  {no:"40", word:"generate", ko:"생성하다", syn:["produce","create"], ant:["destroy","eliminate"]},
+  {no:"40", word:"enhance", ko:"향상시키다", syn:["improve","boost"], ant:["diminish","worsen"]},
+  // No.41-42
+  {no:"41-42", word:"compare", ko:"비교하다", syn:["contrast","evaluate"], ant:["ignore","separate"]},
+  {no:"41-42", word:"acknowledge", ko:"인정하다", syn:["recognize","admit"], ant:["deny","reject"]},
+  {no:"41-42", word:"disadvantage", ko:"단점", syn:["drawback","shortcoming"], ant:["advantage","benefit"]},
+  {no:"41-42", word:"constrain", ko:"제약하다", syn:["restrict","limit"], ant:["free","liberate"]},
+  {no:"41-42", word:"tyranny", ko:"횡포", syn:["oppression","dictatorship"], ant:["freedom","democracy"]},
+  // No.43-45
+  {no:"43-45", word:"struggle", ko:"씨름하다", syn:["fight","strive"], ant:["surrender","quit"]},
+  {no:"43-45", word:"hesitate", ko:"주저하다", syn:["pause","waver"], ant:["decide","proceed"]},
+  {no:"43-45", word:"urgency", ko:"긴박함", syn:["emergency","haste"], ant:["calmness","delay"]},
+  {no:"43-45", word:"reassure", ko:"안심시키다", syn:["comfort","encourage"], ant:["alarm","discourage"]},
+  {no:"43-45", word:"gather", ko:"모으다", syn:["collect","assemble"], ant:["scatter","disperse"]},
+];
+
+// ──────────────────────────────────────────────
+// QUIZ GENERATION
+// ──────────────────────────────────────────────
+let userName = '', userSchool = '';
+let questions = [];
+let userAnswers = {};
+let submitted = false;
+let activeFilter = 'all';
+
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function buildQuestions() {
+  questions = [];
+  RAW.forEach(item => {
+    // Synonym question
+    const synDistractors = getDistractors(item.syn, 'syn', item.word);
+    const synOpts = shuffle([...item.syn, ...synDistractors.slice(0, 2)]);
+    questions.push({
+      id: `${item.word}_syn`,
+      no: item.no,
+      word: item.word,
+      ko: item.ko,
+      type: 'syn',
+      correct: item.syn,
+      options: synOpts.slice(0, 4),
+    });
+    // Antonym question
+    const antDistractors = getDistractors(item.ant, 'ant', item.word);
+    const antOpts = shuffle([...item.ant, ...antDistractors.slice(0, 2)]);
+    questions.push({
+      id: `${item.word}_ant`,
+      no: item.no,
+      word: item.word,
+      ko: item.ko,
+      type: 'ant',
+      correct: item.ant,
+      options: antOpts.slice(0, 4),
+    });
+  });
+}
+
+function getDistractors(correct, type, excludeWord) {
+  const pool = [];
+  RAW.forEach(item => {
+    if (item.word === excludeWord) return;
+    const src = type === 'syn' ? item.syn : item.ant;
+    src.forEach(w => {
+      if (!correct.includes(w)) pool.push(w);
+    });
+  });
+  shuffle(pool);
+  return [...new Set(pool)].slice(0, 4);
+}
+
+function startQuiz() {
+  userName = document.getElementById('input-name').value.trim()
+    || localStorage.getItem('bomnal_name') || '학생';
+  userSchool = document.getElementById('input-school').value.trim()
+    || localStorage.getItem('bomnal_school') || '';
+
+  // Pre-fill from localStorage
+  if (!document.getElementById('input-name').value.trim() && localStorage.getItem('bomnal_name')) {
+    userName = localStorage.getItem('bomnal_name');
+  }
+
+  if (!userName) { alert('이름을 입력해주세요'); return; }
+  buildQuestions();
+  userAnswers = {};
+  submitted = false;
+  activeFilter = 'all';
+
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('quiz-screen').style.display = 'block';
+  document.getElementById('header-info').textContent = `${userName} · ${userSchool}`;
+  document.getElementById('submit-btn').textContent = '제출하기';
+  document.getElementById('submit-btn').disabled = false;
+
+  renderCards();
+  updateProgress();
+}
+
+function renderCards() {
+  const container = document.getElementById('cards-container');
+  container.innerHTML = '';
+
+  let filtered = questions;
+  if (activeFilter === 'syn') filtered = questions.filter(q => q.type === 'syn');
+  else if (activeFilter === 'ant') filtered = questions.filter(q => q.type === 'ant');
+  else if (activeFilter === 'wrong') filtered = questions.filter(q => {
+    const ans = userAnswers[q.id];
+    return ans && !q.correct.includes(ans);
+  });
+
+  filtered.forEach(q => {
+    const ans = userAnswers[q.id];
+    let cardClass = 'unanswered';
+    if (ans) cardClass = q.correct.includes(ans) ? 'correct' : 'wrong';
+
+    const card = document.createElement('div');
+    card.className = `card ${submitted ? cardClass : (ans ? (q.correct.includes(ans)?'correct':'wrong') : '')}`;
+    card.id = `card-${q.id}`;
+
+    const typeLabel = q.type === 'syn'
+      ? '<span class="type-label type-syn">유의어</span>'
+      : '<span class="type-label type-ant">반의어</span>';
+
+    let optsHtml = '';
+    q.options.forEach(opt => {
+      let cls = 'opt-btn';
+      if (ans) {
+        if (opt === ans) {
+          cls += q.correct.includes(ans) ? ' selected-correct' : ' selected-wrong';
+        } else if (submitted && q.correct.includes(opt)) {
+          cls += ' reveal-correct';
+        }
+      }
+      optsHtml += `<button class="${cls}" onclick="selectAnswer('${q.id}','${opt}')" ${ans?'disabled':''}>${opt}</button>`;
+    });
+
+    let fbHtml = '';
+    if (ans) {
+      if (q.correct.includes(ans)) {
+        fbHtml = `<div class="feedback correct">✓ 정답! 정답: ${q.correct.join(', ')}</div>`;
+      } else {
+        fbHtml = `<div class="feedback wrong">✗ 오답. 정답: ${q.correct.join(', ')}</div>`;
+      }
+    }
+
+    card.innerHTML = `
+      <div class="card-top">
+        <div>
+          <div class="word-ko">${q.word}</div>
+          <div class="word-en">${q.ko}</div>
+        </div>
+        <span class="no-badge">No.${q.no}</span>
+      </div>
+      <div class="type-row">${typeLabel} <span style="font-size:0.82rem;color:#94a3b8;align-self:center;">${q.type==='syn'?'유의어를 고르세요':'반의어를 고르세요'}</span></div>
+      <div class="options-grid">${optsHtml}</div>
+      ${fbHtml}
+    `;
+    container.appendChild(card);
+  });
+}
+
+function selectAnswer(qId, opt) {
+  if (submitted) return;
+  userAnswers[qId] = opt;
+
+  const q = questions.find(x => x.id === qId);
+  const card = document.getElementById(`card-${qId}`);
+  const btns = card.querySelectorAll('.opt-btn');
+
+  btns.forEach(btn => {
+    btn.disabled = true;
+    btn.classList.remove('selected-correct','selected-wrong','reveal-correct');
+    if (btn.textContent === opt) {
+      btn.classList.add(q.correct.includes(opt) ? 'selected-correct' : 'selected-wrong');
+    } else if (q.correct.includes(btn.textContent)) {
+      btn.classList.add('reveal-correct');
+    }
+  });
+
+  let fb = card.querySelector('.feedback');
+  if (!fb) { fb = document.createElement('div'); card.appendChild(fb); }
+  fb.className = q.correct.includes(opt) ? 'feedback correct' : 'feedback wrong';
+  if (q.correct.includes(opt)) {
+    fb.textContent = `✓ 정답! 정답: ${q.correct.join(', ')}`;
+  } else {
+    fb.textContent = `✗ 오답. 정답: ${q.correct.join(', ')}`;
+  }
+
+  card.className = `card ${q.correct.includes(opt) ? 'correct' : 'wrong'}`;
+  updateProgress();
+  updateScore();
+}
+
+function updateProgress() {
+  const answered = Object.keys(userAnswers).length;
+  const total = questions.length;
+  document.getElementById('progress-fill').style.width = `${(answered/total)*100}%`;
+}
+
+function updateScore() {
+  let score = 0;
+  questions.forEach(q => {
+    if (userAnswers[q.id] && q.correct.includes(userAnswers[q.id])) score++;
+  });
+  document.getElementById('live-score').textContent = score;
+}
+
+function filterBy(type, btn) {
+  activeFilter = type;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderCards();
+}
+
+function submitQuiz() {
+  submitted = true;
+  let score = 0, total = questions.length;
+  questions.forEach(q => {
+    if (userAnswers[q.id] && q.correct.includes(userAnswers[q.id])) score++;
+  });
+
+  document.getElementById('quiz-screen').style.display = 'none';
+  document.getElementById('result-screen').style.display = 'block';
+  document.getElementById('final-score').textContent = `${score}점`;
+  document.getElementById('final-total').textContent = `총 ${total}문제`;
+
+  const pct = Math.round(score / total * 100);
+  let msg = '', sub = '';
+  if (pct >= 90) { msg = '🏆 완벽해요!'; sub = '정말 훌륭한 결과예요!'; }
+  else if (pct >= 70) { msg = '👍 잘했어요!'; sub = '조금만 더 연습하면 완벽해요!'; }
+  else if (pct >= 50) { msg = '📚 절반 통과!'; sub = '틀린 문제를 다시 복습해봐요.'; }
+  else { msg = '💪 더 열심히!'; sub = '다시 도전해봐요!'; }
+
+  document.getElementById('result-msg').textContent = msg;
+  document.getElementById('result-sub').textContent = sub;
+
+  // Firebase save
+  saveResult(score, total);
+}
+
+function saveResult(score, total) {
+  try {
+    const FIREBASE_URL = 'https://firestore.googleapis.com/v1/projects/bomnalvaca/databases/(default)/documents/quiz_results';
+    const data = {
+      fields: {
+        name: { stringValue: userName },
+        school: { stringValue: userSchool },
+        quiz: { stringValue: '고2_2025_6월_동반의어' },
+        score: { integerValue: score },
+        total: { integerValue: total },
+        timestamp: { stringValue: new Date().toISOString() }
+      }
+    };
+    fetch(FIREBASE_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+  } catch(e) { console.log('Firebase save failed', e); }
+}
+
+function goToQuiz() {
+  document.getElementById('result-screen').style.display = 'none';
+  document.getElementById('quiz-screen').style.display = 'block';
+  renderCards();
+}
+
+function resetAll() {
+  userAnswers = {};
+  submitted = false;
+  activeFilter = 'all';
+  buildQuestions();
+  document.getElementById('result-screen').style.display = 'none';
+  document.getElementById('quiz-screen').style.display = 'block';
+  document.querySelectorAll('.filter-btn').forEach((b,i) => b.classList.toggle('active', i===0));
+  document.getElementById('live-score').textContent = '0';
+  document.getElementById('submit-btn').disabled = false;
+  renderCards();
+  updateProgress();
+}
+
+// Pre-fill from localStorage
+window.addEventListener('DOMContentLoaded', () => {
+  const n = localStorage.getItem('bomnal_name');
+  const s = localStorage.getItem('bomnal_school');
+  if (n) document.getElementById('input-name').value = n;
+  if (s) document.getElementById('input-school').value = s;
+});
+</script>
+</body>
+</html>
