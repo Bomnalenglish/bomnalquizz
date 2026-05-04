@@ -1,0 +1,1467 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>봄날 퀴즈 | 고2 25년 6월 어법·어휘</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&family=Black+Han+Sans&display=swap');
+:root{--pri:#2e7d32;--acc:#f57f17;--bg:#f0f0eb;--card:#fff;--muted:#888;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Nanum Gothic',sans-serif;background:var(--bg);min-height:100vh;color:#222;}
+.hidden{display:none!important;}
+
+/* ── 시작 화면 ── */
+#startScreen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
+.s-card{background:white;border-radius:20px;padding:36px 28px;text-align:center;max-width:480px;width:100%;box-shadow:0 4px 24px rgba(0,0,0,.08);}
+.s-card h1{font-family:'Black Han Sans',sans-serif;font-size:20px;color:var(--pri);margin-bottom:6px;}
+.s-sub{font-size:13px;color:var(--muted);margin-bottom:22px;}
+.ni{width:100%;padding:11px 14px;border:2px solid #ddd;border-radius:10px;font-size:14px;font-family:'Nanum Gothic',sans-serif;outline:none;margin-bottom:10px;background:white;}
+.ni:focus{border-color:var(--pri);}
+.start-btn{width:100%;padding:14px;border-radius:10px;border:none;background:#2e7d32;color:white;font-size:1rem;font-weight:800;cursor:pointer;font-family:inherit;}
+
+/* ── 지문 선택 화면 ── */
+#passageScreen{padding:20px;max-width:720px;margin:0 auto;}
+.ps-header{background:#2e7d32;color:white;border-radius:14px;padding:16px 20px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;}
+.ps-title{font-family:'Black Han Sans',sans-serif;font-size:16px;}
+.ps-sub{font-size:11px;opacity:.75;margin-top:2px;}
+.user-info{background:rgba(255,255,255,.2);border-radius:8px;padding:5px 12px;font-size:12px;font-weight:700;}
+.filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+.fb{padding:7px 16px;border:2px solid #2e7d32;border-radius:20px;background:white;color:#2e7d32;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;}
+.fb.on{background:#2e7d32;color:white;}
+.passage-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin-bottom:16px;}
+.p-card{background:white;border-radius:12px;padding:14px 10px;text-align:center;cursor:pointer;border:2px solid #e0e0e0;transition:all .15s;position:relative;}
+.p-card:hover{border-color:#2e7d32;box-shadow:0 4px 12px rgba(46,125,50,.1);}
+.p-card.sel{border-color:#2e7d32;background:#f1f8f1;}
+.p-card.done{border-color:#66bb6a;background:#f1f8f1;}
+.p-no{font-family:'Black Han Sans',sans-serif;font-size:22px;color:#2e7d32;margin-bottom:3px;}
+.p-topic{font-size:10px;color:var(--muted);line-height:1.4;}
+.p-qcount{font-size:10px;color:#66bb6a;font-weight:700;margin-top:3px;}
+.p-badge{position:absolute;top:5px;right:5px;font-size:9px;padding:2px 5px;border-radius:6px;font-weight:700;background:#e8f5e9;color:#2e7d32;}
+.sel-all-btn{width:100%;padding:11px;border-radius:10px;border:2px solid #2e7d32;background:white;color:#2e7d32;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit;margin-bottom:8px;}
+.go-btn{width:100%;padding:13px;border-radius:10px;border:none;background:#2e7d32;color:white;font-size:1rem;font-weight:800;cursor:pointer;font-family:inherit;}
+
+/* ── 헤더/진행바 ── */
+.hdr{background:#2e7d32;color:white;padding:11px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.ht{font-family:'Black Han Sans',sans-serif;font-size:15px;}
+.hs{font-size:10px;opacity:.7;margin-top:1px;}
+.hb-wrap{display:flex;align-items:center;gap:10px;}
+.hb{background:rgba(255,255,255,.2);border-radius:14px;padding:3px 10px;font-size:12px;font-weight:700;}
+.submit-hdr-btn{background:#f57f17;border:none;color:white;border-radius:8px;padding:6px 14px;font-size:12px;font-weight:800;cursor:pointer;font-family:inherit;}
+.pw{height:3px;background:rgba(255,255,255,.2);position:sticky;top:44px;z-index:99;}
+.pf{height:100%;background:#f57f17;transition:width .3s;}
+
+/* ── 퀴즈 영역 ── */
+#quizArea{max-width:720px;margin:0 auto;padding:20px;}
+
+/* 지문 섹션 헤더 */
+.passage-section{margin-bottom:28px;}
+.passage-header{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.passage-num{font-family:'Black Han Sans',sans-serif;font-size:15px;background:#2e7d32;color:white;padding:4px 14px;border-radius:20px;}
+.passage-topic{font-size:13px;color:var(--muted);font-weight:700;}
+.passage-score{font-size:12px;color:#f57f17;font-weight:800;margin-left:auto;}
+
+/* 문장 카드 */
+.sent-card{background:white;border-radius:14px;padding:16px 18px;margin-bottom:10px;border:1.5px solid #e8e8e8;}
+.sent-card.all-done{border-color:#a5d6a7;background:#fafff8;}
+.sent-top{display:flex;align-items:flex-start;gap:10px;margin-bottom:8px;}
+.sent-num{min-width:26px;height:26px;border-radius:50%;background:#222;color:white;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0;margin-top:1px;}
+.sent-ko{font-size:12px;color:#666;line-height:1.5;}
+.sent-en{font-size:14px;line-height:2.2;color:#222;padding-left:2px;}
+
+/* 인라인 선택 버튼 */
+.choice-group{display:inline-flex;align-items:center;border:1.5px solid #ccc;border-radius:8px;overflow:hidden;background:#fafafa;vertical-align:middle;margin:0 2px;}
+.choice-btn{padding:3px 10px;font-family:'Nanum Gothic',sans-serif;font-size:13px;font-weight:700;border:none;background:transparent;cursor:pointer;color:#444;transition:all .15s;white-space:nowrap;}
+.choice-btn:not(:last-child){border-right:1px solid #ddd;}
+.choice-btn:hover:not(:disabled){background:#f0f0f0;}
+.choice-btn.selected-correct{background:#e8f5e9;color:#1b5e20;border-color:#4caf50;}
+.choice-btn.selected-wrong{background:#ffebee;color:#b71c1c;}
+.choice-btn.reveal-correct{background:#e8f5e9;color:#1b5e20;}
+.choice-btn:disabled{cursor:default;}
+.choice-sep{color:#bbb;font-size:12px;padding:0 1px;pointer-events:none;}
+/* 선택 완료 후 그룹 테두리 색상 */
+.choice-group.done-correct{border-color:#4caf50;}
+.choice-group.done-wrong{border-color:#ef9a9a;}
+
+/* 제출 버튼 */
+.submit-wrap{text-align:center;padding:10px 0 30px;}
+.submit-btn{background:#2e7d32;color:white;border:none;border-radius:12px;padding:14px 48px;font-size:16px;font-weight:800;cursor:pointer;font-family:inherit;}
+.submit-btn:disabled{background:#aaa;cursor:default;}
+
+/* ── 결과 화면 ── */
+#resultScreen{max-width:680px;margin:0 auto;padding:20px;}
+.rc{background:white;border-radius:20px;padding:28px 22px;box-shadow:0 4px 20px rgba(0,0,0,.07);text-align:center;}
+.rs{font-family:'Black Han Sans',sans-serif;font-size:56px;color:#2e7d32;line-height:1;}
+.rsub{font-size:13px;color:var(--muted);margin-top:4px;}
+.sr{display:flex;justify-content:center;gap:24px;margin-top:18px;flex-wrap:wrap;}
+.si{text-align:center;}.sn{font-family:'Black Han Sans',sans-serif;font-size:26px;}.sl{font-size:11px;color:var(--muted);margin-top:2px;}
+.wl{background:#fff5f5;border-radius:12px;padding:14px;text-align:left;margin-top:16px;max-height:320px;overflow-y:auto;}
+.wl h3{font-size:12px;font-weight:800;color:#c62828;margin-bottom:10px;}
+.wi{background:white;border-radius:8px;padding:9px 12px;margin-bottom:7px;font-size:12px;border-left:3px solid #ef9a9a;}
+.wie{font-weight:800;color:#2e7d32;margin-bottom:3px;}
+.wid{font-size:11px;color:#555;}
+.rbtns{display:flex;gap:10px;justify-content:center;margin-top:18px;flex-wrap:wrap;}
+.rbtn{padding:12px 22px;border-radius:10px;border:none;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;}
+.rbtn-p{background:#2e7d32;color:white;}
+.rbtn-s{background:#f5f5f5;color:#333;border:1.5px solid #ddd;}
+.rbtn-r{background:#c62828;color:white;}
+
+@media(max-width:480px){
+  .passage-grid{grid-template-columns:repeat(3,1fr);}
+  .sent-en{font-size:13px;}
+  .choice-btn{font-size:12px;padding:3px 7px;}
+}
+</style>
+</head>
+<body>
+
+<div id="startScreen">
+  <div class="s-card">
+    <h1>✏️ 고2 25년 6월 어법·어휘</h1>
+    <div class="s-sub">2025년 6월 고2 모의고사 · 어법·어휘 고르기</div>
+    <select class="ni" id="si" style="color:#2e7d32;font-weight:700;cursor:pointer;">
+      <option value="">학교 선택</option>
+      <option value="종촌고">종촌고</option>
+      <option value="고운고">고운고</option>
+      <option value="대성고">대성고</option>
+      <option value="기타">기타</option>
+    </select>
+    <input type="text" class="ni" id="ni" placeholder="이름 입력" maxlength="10">
+    <button class="start-btn" onclick="goPassageSelect()">다음 → 지문 선택</button>
+  </div>
+</div>
+
+<div id="passageScreen" class="hidden">
+  <div class="ps-header">
+    <div>
+      <div class="ps-title">✏️ 지문 선택</div>
+      <div class="ps-sub">풀고 싶은 지문을 선택하세요 (복수 선택 가능)</div>
+    </div>
+    <div class="user-info" id="userInfo"></div>
+  </div>
+  <div class="filter-bar">
+    <button class="fb on" onclick="filterPassage('all',this)">전체</button>
+    <button class="fb" onclick="filterPassage('20-24',this)">20~24번</button>
+    <button class="fb" onclick="filterPassage('29-40',this)">29~40번</button>
+    <button class="fb" onclick="filterPassage('41-45',this)">41~45번</button>
+  </div>
+  <div class="passage-grid" id="passageGrid"></div>
+  <button class="sel-all-btn" onclick="selectAll()">전체 선택 / 해제</button>
+  <button class="go-btn" onclick="startQuiz()">선택한 지문 풀기 🚀</button>
+</div>
+
+<div id="hdr" class="hdr hidden">
+  <div><div class="ht">✏️ 고2 25년 6월 어법·어휘</div><div class="hs" id="hs"></div></div>
+  <div class="hb-wrap">
+    <div class="hb" id="hb">0/0</div>
+    <button class="submit-hdr-btn" id="submitHdrBtn" onclick="doSubmit()" style="display:none;">채점 →</button>
+  </div>
+</div>
+<div id="pw" class="pw hidden"><div class="pf" id="pf" style="width:0%"></div></div>
+<div id="quizArea" class="hidden"></div>
+<div id="resultScreen" class="hidden"></div>
+
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getFirestore,collection,addDoc,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+const cfg={apiKey:"AIzaSyCxS524S8KAaF87DomPtl9sJdF-eqes404",authDomain:"bomnalvaca.firebaseapp.com",projectId:"bomnalvaca",storageBucket:"bomnalvaca.firebasestorage.app",messagingSenderId:"115868052300",appId:"1:115868052300:web:765c08867b6f1ce0987de9"};
+const app=initializeApp(cfg);
+const db=getFirestore(app);
+window._fbSave=async function(data){
+  try{await addDoc(collection(db,'quiz_results'),{...data,timestamp:serverTimestamp()});}
+  catch(e){console.warn('FB 저장 오류:',e);}
+};
+</script>
+
+<script>
+window._fbSave = window._fbSave || async function(){};
+
+// ── DATA ─────────────────────────────────────────────────────────────
+// 각 문항: {ko:"한국어", en:"영어 문장 (정답에 __표시)", opts:["A","B"], ans:"정답"}
+const PASSAGES = [
+  {
+    no:20, topic:"티백과 연결",
+    qs:[
+      {ko:"당신이 그것을 스며들지 않는 티백에 넣는다고 상상해 보라.",
+       en:"[Imagine / Imagining] you have the best tea and you put it into a bag [that's / what's] [permeable / impermeable].",
+       items:[
+         {pre:"", blank:"Imagine / Imagining", post:" you have the best tea...", opts:["Imagine","Imagining"], ans:"Imagine"},
+         {pre:"...into a bag ", blank:"that's / what's", post:" impermeable.", opts:["that's","what's"], ans:"that's"},
+         {pre:"...a bag that's ", blank:"permeable / impermeable", post:".", opts:["permeable","impermeable"], ans:"impermeable"},
+       ]},
+      {ko:"그것은 작용하지 않을 것이다.",
+       en:"It won't [work / be worked].",
+       items:[{pre:"It won't ", blank:"work / be worked", post:".", opts:["work","be worked"], ans:"work"}]},
+      {ko:"당신은 그저 차 한 잔을 만들 수 없을 것이다.",
+       en:"You just won't be able to [make / making] a cup of tea.",
+       items:[{pre:"...able to ", blank:"make / making", post:" a cup of tea.", opts:["make","making"], ans:"make"}]},
+      {ko:"티백이 작용하려면, 그것은 구멍이 있어야 한다.",
+       en:"For the teabag to [work / working], it needs [being / to be] [porous / non-porous].",
+       items:[
+         {pre:"For the teabag to ", blank:"work / working", post:", it needs...", opts:["work","working"], ans:"work"},
+         {pre:"...it needs ", blank:"being / to be", post:" porous.", opts:["being","to be"], ans:"to be"},
+         {pre:"...it needs to be ", blank:"porous / non-porous", post:".", opts:["porous","non-porous"], ans:"porous"},
+       ]},
+      {ko:"우리는 고립된 채로는 살아갈 수도 성장할 수도 없다.",
+       en:"We cannot survive and [thrive / thriving] in isolation.",
+       items:[{pre:"...survive and ", blank:"thrive / thriving", post:" in isolation.", opts:["thrive","thriving"], ans:"thrive"}]},
+      {ko:"리더는 사람들이 다가오지 못하게 막는 벽을 쌓지 않도록 주의해야 한다.",
+       en:"Leaders need [being / to be] careful not to [build / building] walls [that / what] [prevent / prevents] people from [reach / reaching] out.",
+       items:[
+         {pre:"Leaders need ", blank:"being / to be", post:" careful...", opts:["being","to be"], ans:"to be"},
+         {pre:"...not to ", blank:"build / building", post:" walls...", opts:["build","building"], ans:"build"},
+         {pre:"...walls ", blank:"that / what", post:" prevent...", opts:["that","what"], ans:"that"},
+         {pre:"...walls that ", blank:"prevent / prevents", post:" people...", opts:["prevent","prevents"], ans:"prevent"},
+         {pre:"...from ", blank:"reach / reaching", post:" out.", opts:["reach","reaching"], ans:"reaching"},
+       ]},
+      {ko:"차는 물과 섞이도록 의도되었다.",
+       en:"The tea was [meaning / meant] to [mix with / separate from] the water.",
+       items:[
+         {pre:"The tea was ", blank:"meaning / meant", post:" to...", opts:["meaning","meant"], ans:"meant"},
+         {pre:"...was meant to ", blank:"mix with / separate from", post:" the water.", opts:["mix with","separate from"], ans:"mix with"},
+       ]},
+      {ko:"마찬가지로 우리 모두도 다른 사람들과 함께 일하도록 설계되었다.",
+       en:"[Conversely / Similarly] [all / all of] us were [designing / designed] to [work / working] with other people.",
+       items:[
+         {pre:"", blank:"Conversely / Similarly", post:" all of us...", opts:["Conversely","Similarly"], ans:"Similarly"},
+         {pre:"Similarly ", blank:"all / all of", post:" us were...", opts:["all","all of"], ans:"all of"},
+         {pre:"...us were ", blank:"designing / designed", post:" to work...", opts:["designing","designed"], ans:"designed"},
+         {pre:"...designed to ", blank:"work / working", post:" with other people.", opts:["work","working"], ans:"work"},
+       ]},
+    ]
+  },
+  {
+    no:21, topic:"욕망과 상대적 행복",
+    qs:[
+      {ko:"이성이 부에 대한 욕망에 두어야 할 한계를 규정하는 것은 어렵다.",
+       en:"...define the limits [which / whose] reason should impose; for there [is / are] no amount of wealth [what / which] will satisfy a man.",
+       items:[
+         {pre:"...limits ", blank:"which / whose", post:" reason should impose...", opts:["which","whose"], ans:"which"},
+         {pre:"...for there ", blank:"is / are", post:" no absolute amount...", opts:["is","are"], ans:"is"},
+         {pre:"...no amount of wealth ", blank:"what / which", post:" will satisfy a man.", opts:["what","which"], ans:"which"},
+       ]},
+      {ko:"그 양은 항상 상대적인데, 그가 원하는 것과 얻는 것 사이의 비율을 유지할 정도만큼이다.",
+       en:"The amount is always [absolute / relative], between [that / what] he wants and [that / what] he gets; ...to measure happiness by [what / that] he gets [is / are] as pointless as to [express / expresses] a fraction [who / which] shall have a numerator.",
+       items:[
+         {pre:"The amount is always ", blank:"absolute / relative", post:", that is to say...", opts:["absolute","relative"], ans:"relative"},
+         {pre:"...between ", blank:"that / what", post:" he wants and...", opts:["that","what"], ans:"what"},
+         {pre:"...and ", blank:"that / what", post:" he gets;", opts:["that","what"], ans:"what"},
+         {pre:"...by ", blank:"what / that", post:" he gets,...", opts:["what","that"], ans:"what"},
+         {pre:"...happiness by what he gets ", blank:"is / are", post:" as pointless...", opts:["is","are"], ans:"is"},
+         {pre:"...as to try and ", blank:"express / expresses", post:" a fraction...", opts:["express","expresses"], ans:"express"},
+         {pre:"...a fraction ", blank:"who / which", post:" shall have a numerator...", opts:["who","which"], ans:"which"},
+       ]},
+      {ko:"한 사람은 요구할 생각도 없었던 것들에 대해 결코 상실감을 느끼지 않는다.",
+       en:"A man never feels the loss of things [what / which] it [never occurs / is never occurred] to him to [ask / asking] for; whilst another, [who / that] may have a hundred times as much, [feel / feels] [satisfied / miserable] [because / because of] he has not got the one thing he wants.",
+       items:[
+         {pre:"...things ", blank:"what / which", post:" it never occurs...", opts:["what","which"], ans:"which"},
+         {pre:"...things which it ", blank:"never occurs / is never occurred", post:" to him...", opts:["never occurs","is never occurred"], ans:"never occurs"},
+         {pre:"...to him to ", blank:"ask / asking", post:" for;", opts:["ask","asking"], ans:"ask"},
+         {pre:"...whilst another, ", blank:"who / that", post:" may have...", opts:["who","that"], ans:"who"},
+         {pre:"...as much, ", blank:"feel / feels", post:" miserable...", opts:["feel","feels"], ans:"feels"},
+         {pre:"...feels ", blank:"satisfied / miserable", post:" because...", opts:["satisfied","miserable"], ans:"miserable"},
+         {pre:"...miserable ", blank:"because / because of", post:" he has not got...", opts:["because","because of"], ans:"because"},
+       ]},
+      {ko:"사실, 모든 사람은 그만의 지평선을 가지고 있으며, 그는 얻을 수 있다고 생각하는 만큼을 기대할 것이다.",
+       en:"In fact, every [man / men] [have / has] a horizon of his own, and he will expect as much as he thinks [it / that] is [possible / impossible] for him to get.",
+       items:[
+         {pre:"every ", blank:"man / men", post:" has a horizon...", opts:["man","men"], ans:"man"},
+         {pre:"every man ", blank:"have / has", post:" a horizon...", opts:["have","has"], ans:"has"},
+         {pre:"...he thinks ", blank:"it / that", post:" is possible...", opts:["it","that"], ans:"it"},
+         {pre:"...he thinks it is ", blank:"possible / impossible", post:" for him to get.", opts:["possible","impossible"], ans:"possible"},
+       ]},
+    ]
+  },
+  {
+    no:22, topic:"꽃의 광고 전략",
+    qs:[
+      {ko:"모든 음식점은 잠재적 고객을 끌어들이기 위해 신중하게 선택된 단어를 사용하고 있다.",
+       en:"All of the restaurants [is / are] [using / used] carefully chosen words to [evoke / evoking] vivid mental images in order [drawing / to draw] the potential customer.",
+       items:[
+         {pre:"All of the restaurants ", blank:"is / are", post:" using...", opts:["is","are"], ans:"are"},
+         {pre:"...restaurants are ", blank:"using / used", post:" carefully chosen words...", opts:["using","used"], ans:"using"},
+         {pre:"...words to ", blank:"evoke / evoking", post:" vivid mental images...", opts:["evoke","evoking"], ans:"evoke"},
+         {pre:"...in order ", blank:"drawing / to draw", post:" the potential customer.", opts:["drawing","to draw"], ans:"to draw"},
+       ]},
+      {ko:"음식점들과 같이, 자연도 자신만의 식당을 가지고 있다.",
+       en:"Just like the restaurants, nature [has / having] its own dining establishments.",
+       items:[{pre:"nature ", blank:"has / having", post:" its own...", opts:["has","having"], ans:"has"}]},
+      {ko:"자연 세계의 식당 경영자들(꽃들)도 잠재적 손님들을 유혹해야 한다.",
+       en:"In a fashion [similar / dissimilar] to the restaurants' dependence upon [draw / drawing] in many customers, flowers must also attract diners to [sample / sampling] their offerings.",
+       items:[
+         {pre:"In a fashion ", blank:"similar / dissimilar", post:" to the restaurants'...", opts:["similar","dissimilar"], ans:"similar"},
+         {pre:"...dependence upon ", blank:"draw / drawing", post:" in many customers,", opts:["draw","drawing"], ans:"drawing"},
+         {pre:"...attract diners to ", blank:"sample / sampling", post:" their offerings.", opts:["sample","sampling"], ans:"sample"},
+       ]},
+      {ko:"자연 세계에는, 잠재적인 식사를 광고할 수 있는 네온사인이나 화려한 말이 없다.",
+       en:"In the natural world, there [is / are] no neon signs or flashy words in which [marketing / to market] a potential meal to hungry animals.",
+       items:[
+         {pre:"there ", blank:"is / are", post:" no neon signs...", opts:["is","are"], ans:"are"},
+         {pre:"...in which ", blank:"marketing / to market", post:" a potential meal...", opts:["marketing","to market"], ans:"to market"},
+       ]},
+      {ko:"이러한 식당들은 세계의 꽃들이며, 잠재적인 손님들은 꽃을 방문하는 여러 생물들이다.",
+       en:"These restaurants [that / what] I am referring to [is / are] the world's flowers, and the guests are organisms [that / what] [visit / visits] flowers to [obtain / obtaining] nectar and [another / other] valuable resources.",
+       items:[
+         {pre:"These restaurants ", blank:"that / what", post:" I am referring to...", opts:["that","what"], ans:"that"},
+         {pre:"...referring to ", blank:"is / are", post:" the world's flowers,", opts:["is","are"], ans:"are"},
+         {pre:"...organisms ", blank:"that / what", post:" visit flowers...", opts:["that","what"], ans:"that"},
+         {pre:"...organisms that ", blank:"visit / visits", post:" flowers...", opts:["visit","visits"], ans:"visit"},
+         {pre:"...flowers to ", blank:"obtain / obtaining", post:" nectar...", opts:["obtain","obtaining"], ans:"obtain"},
+         {pre:"...nectar and ", blank:"another / other", post:" valuable resources.", opts:["another","other"], ans:"other"},
+       ]},
+      {ko:"문자 언어나 네온사인을 사용하는 대신, 그들은 냄새라는 언어를 사용하여 광고한다.",
+       en:"[Instead of / Because of] using a written language, they advertise their offerings just as effectively [use / using] the language of smell.",
+       items:[
+         {pre:"", blank:"Instead of / Because of", post:" using a written language...", opts:["Instead of","Because of"], ans:"Instead of"},
+         {pre:"...effectively ", blank:"use / using", post:" the language of smell.", opts:["use","using"], ans:"using"},
+       ]},
+    ]
+  },
+  {
+    no:23, topic:"현재 편향",
+    qs:[
+      {ko:"당신은 1년 후에 1,000달러를 받을 것인가 아니면 1년 1개월 후에 1,100달러를 받을 것인가?",
+       en:"Would you rather [receive / receiving] $1,000 in a year or $1,100 in a year and a month?",
+       items:[{pre:"Would you rather ", blank:"receive / receiving", post:" $1,000...", opts:["receive","receiving"], ans:"receive"}]},
+      {ko:"대부분의 사람들은 13개월 후 더 큰 금액을 선택할 것이다.",
+       en:"Most people will opt for the larger sum — where else will you [find / be found] a monthly interest rate of 10 percent.",
+       items:[{pre:"...will you ", blank:"find / be found", post:" a monthly interest rate...", opts:["find","be found"], ans:"find"}]},
+      {ko:"현명한 선택인데, 왜냐하면 이자가 위험에 대해 충분히 보상해 줄 것이기 때문이다.",
+       en:"A [wise / stupid] choice, since the interest will compensate you generously by [wait / waiting] the extra [few / little] weeks.",
+       items:[
+         {pre:"A ", blank:"wise / stupid", post:" choice, since...", opts:["wise","stupid"], ans:"wise"},
+         {pre:"...by ", blank:"wait / waiting", post:" the extra...", opts:["wait","waiting"], ans:"waiting"},
+         {pre:"...the extra ", blank:"few / little", post:" weeks.", opts:["few","little"], ans:"few"},
+       ]},
+      {ko:"만약 당신이 대부분의 사람들처럼 생각한다면, 당신은 즉시 1,000달러를 가져갈 것이다.",
+       en:"If you think [like / alike] most people, you'll take the $1,000 right away.",
+       items:[{pre:"If you think ", blank:"like / alike", post:" most people,", opts:["like","alike"], ans:"like"}]},
+      {ko:"이는 놀랍다.",
+       en:"This is [amazing / amazed].",
+       items:[{pre:"This is ", blank:"amazing / amazed", post:".", opts:["amazing","amazed"], ans:"amazing"}]},
+      {ko:"두 경우 모두, 당신이 한 달만 더 오래 기다린다면, 100달러를 더 받는다.",
+       en:"In both cases, if you hold out for just a month longer, you [get / to get] $100 more.",
+       items:[{pre:"you ", blank:"get / to get", post:" $100 more.", opts:["get","to get"], ans:"get"}]},
+      {ko:"첫 번째 경우, 그것은 충분히 간단하다.",
+       en:"In the first case, it's [enough simple / simple enough].",
+       items:[{pre:"it's ", blank:"enough simple / simple enough", post:".", opts:["enough simple","simple enough"], ans:"simple enough"}]},
+      {ko:"나는 이미 12개월을 기다렸어; 한 달 더가 뭐라고?",
+       en:"\"I've [already waited / been already waited] twelve months; what's one more?\"",
+       items:[{pre:"I've ", blank:"already waited / been already waited", post:" twelve months;", opts:["already waited","been already waited"], ans:"already waited"}]},
+      {ko:"'지금'의 도입은 우리가 일관되지 않은 결정을 내리게 만든다.",
+       en:"The introduction of 'now' causes us [make / to make] [consistent / inconsistent] decisions.",
+       items:[
+         {pre:"...causes us ", blank:"make / to make", post:" decisions.", opts:["make","to make"], ans:"to make"},
+         {pre:"...to make ", blank:"consistent / inconsistent", post:" decisions.", opts:["consistent","inconsistent"], ans:"inconsistent"},
+       ]},
+      {ko:"과학은 이러한 현상을 하이퍼볼릭 디스카운팅이라고 부른다.",
+       en:"Science [calls / is called] this phenomenon hyperbolic discounting.",
+       items:[{pre:"Science ", blank:"calls / is called", post:" this phenomenon...", opts:["calls","is called"], ans:"calls"}]},
+      {ko:"보상이 더 가까울수록, 우리의 '감정적 이율'이 더 높이 상승하고 우리는 더 기꺼이 포기하려 한다.",
+       en:"The [closer / closest] a reward is, the [higher / lower] our 'emotional interest rate' rises and the [more / most] we are [willing / reluctant] to give up.",
+       items:[
+         {pre:"The ", blank:"closer / closest", post:" a reward is,", opts:["closer","closest"], ans:"closer"},
+         {pre:"...the ", blank:"higher / lower", post:" our 'emotional interest rate' rises...", opts:["higher","lower"], ans:"higher"},
+         {pre:"...and the ", blank:"more / most", post:" we are willing...", opts:["more","most"], ans:"more"},
+         {pre:"...we are ", blank:"willing / reluctant", post:" to give up.", opts:["willing","reluctant"], ans:"willing"},
+       ]},
+    ]
+  },
+  {
+    no:24, topic:"손잡이 결정 시기",
+    qs:[
+      {ko:"잘 쓰는 쪽 손의 발달을 이해하는 데 있어서 매우 중요한 것은 언제 결정되는지에 대한 답이다.",
+       en:"Of central importance for [understand / understanding] the development of handedness [is / are] the answer to the question...",
+       items:[
+         {pre:"...for ", blank:"understand / understanding", post:" the development...", opts:["understand","understanding"], ans:"understanding"},
+         {pre:"...of handedness ", blank:"is / are", post:" the answer...", opts:["is","are"], ans:"is"},
+       ]},
+      {ko:"잘 쓰는 쪽 손은 초등학교에서 확실히 결정될 수 있다고만 오랫동안 생각되었다.",
+       en:"It was long [thinking / thought] [what / that] handedness could only be reliably determined in elementary school, when a child learns [writing / to write].",
+       items:[
+         {pre:"It was long ", blank:"thinking / thought", post:" that handedness...", opts:["thinking","thought"], ans:"thought"},
+         {pre:"...long thought ", blank:"what / that", post:" handedness could...", opts:["what","that"], ans:"that"},
+         {pre:"...when a child learns ", blank:"writing / to write", post:".", opts:["writing","to write"], ans:"to write"},
+       ]},
+      {ko:"그러나, 이 가정은 잘못되었다.",
+       en:"However, this assumption is [correct / incorrect].",
+       items:[{pre:"this assumption is ", blank:"correct / incorrect", post:".", opts:["correct","incorrect"], ans:"incorrect"}]},
+      {ko:"사실, 과학적 연구들은 왼손을 잘 쓰는 것이 초등학교 훨씬 이전에 확립된다는 것을 보여준다.",
+       en:"[In addition / In fact], scientific studies show that left-handedness is [establishing / established] in many children long before elementary school.",
+       items:[
+         {pre:"", blank:"In addition / In fact", post:", scientific studies...", opts:["In addition","In fact"], ans:"In fact"},
+         {pre:"...is ", blank:"establishing / established", post:" in many children...", opts:["establishing","established"], ans:"established"},
+       ]},
+      {ko:"자궁에서 태아의 손과 팔의 움직임이 초음파 이미지를 사용하여 기록된다.",
+       en:"The hand and arm movements of unborn children in the womb [is / are] recorded [using / used] ultrasound images.",
+       items:[
+         {pre:"...movements of unborn children ", blank:"is / are", post:" recorded...", opts:["is","are"], ans:"are"},
+         {pre:"...recorded ", blank:"using / used", post:" ultrasound images.", opts:["using","used"], ans:"using"},
+       ]},
+      {ko:"이 기술을 사용하여, 오른팔 움직임에 대한 명확한 선호가 수정 후 10주만큼 일찍 존재한다는 것이 밝혀졌다.",
+       en:"[Use / Using] this technique, it was shown [what / that] a clear preference for the right arm [exist / exists] as early as 10 weeks.",
+       items:[
+         {pre:"", blank:"Use / Using", post:" this technique,", opts:["Use","Using"], ans:"Using"},
+         {pre:"...shown ", blank:"what / that", post:" a clear preference...", opts:["what","that"], ans:"that"},
+         {pre:"...right arm ", blank:"exist / exists", post:" as early as 10 weeks.", opts:["exist","exists"], ans:"exists"},
+       ]},
+      {ko:"이 연구에서는, 72명의 태아의 초음파 이미지가 평가되었고 85%가 오른팔의 더 많은 움직임을 보였다.",
+       en:"In this study, ultrasound images of 72 unborn children [was / were] evaluated and 85% showed more movements of the right arm.",
+       items:[{pre:"...72 unborn children ", blank:"was / were", post:" evaluated...", opts:["was","were"], ans:"were"}]},
+      {ko:"이 수치는 이미 성인들 중 약 89.4%의 오른손잡이에 매우 근접하다.",
+       en:"This number [is / to be] already very close to the approximately 89.4% right-handers among adults.",
+       items:[{pre:"This number ", blank:"is / to be", post:" already very close...", opts:["is","to be"], ans:"is"}]},
+    ]
+  },
+  {
+    no:29, topic:"원근법과 깊이 표현",
+    qs:[
+      {ko:"미술에서, 깊이의 착시를 얻기 위해 원근법을 사용하는 많은 방법이 있다.",
+       en:"In art, there [is / are] a number of ways [using / to use] perspective to [obtain / obtaining] the illusion of depth, including [use / using] colors and [apply / applying] the rules of perspective.",
+       items:[
+         {pre:"there ", blank:"is / are", post:" a number of ways...", opts:["is","are"], ans:"are"},
+         {pre:"...a number of ways ", blank:"using / to use", post:" perspective...", opts:["using","to use"], ans:"to use"},
+         {pre:"...perspective to ", blank:"obtain / obtaining", post:" the illusion...", opts:["obtain","obtaining"], ans:"obtain"},
+         {pre:"...including ", blank:"use / using", post:" colors...", opts:["use","using"], ans:"using"},
+         {pre:"...and accurately drawing by ", blank:"apply / applying", post:" the rules...", opts:["apply","applying"], ans:"applying"},
+       ]},
+      {ko:"원근법을 구현하기 위해서, 당신은 많은 관찰을 해야 한다.",
+       en:"In order [achieving / to achieve] perspective, you must make a number of observations.",
+       items:[{pre:"In order ", blank:"achieving / to achieve", post:" perspective,", opts:["achieving","to achieve"], ans:"to achieve"}]},
+      {ko:"당신이 평면에 그리는 형태나 물체는 실제로 실생활에서는 깊이와 차원이 있다.",
+       en:"The forms or objects [that / what] you draw on a flat surface actually [have / has] depth and dimension in real life.",
+       items:[
+         {pre:"The forms or objects ", blank:"that / what", post:" you draw...", opts:["that","what"], ans:"that"},
+         {pre:"...flat surface actually ", blank:"have / has", post:" depth and dimension...", opts:["have","has"], ans:"have"},
+       ]},
+      {ko:"물체들이 현실적이고 3차원처럼 보이도록 그 깊이를 나타내려고 노력하라.",
+       en:"[try / trying] to represent that depth to [make / making] the objects appear realistic.",
+       items:[
+         {pre:"", blank:"try / trying", post:" to represent that depth...", opts:["try","trying"], ans:"try"},
+         {pre:"...depth to ", blank:"make / making", post:" the objects appear...", opts:["make","making"], ans:"make"},
+       ]},
+      {ko:"물체는 다양한 위치에서 보여질 때 다르게 나타난다.",
+       en:"Objects [appear / are appeared] [equally / differently] when viewed from various positions.",
+       items:[
+         {pre:"Objects ", blank:"appear / are appeared", post:" differently...", opts:["appear","are appeared"], ans:"appear"},
+         {pre:"Objects appear ", blank:"equally / differently", post:" when viewed...", opts:["equally","differently"], ans:"differently"},
+       ]},
+      {ko:"관찰점을 설정하고, 그것을 고수하는 것이 중요하다.",
+       en:"It's important to establish the viewpoint, and [change / stick with] it.",
+       items:[{pre:"...viewpoint, and ", blank:"change / stick with", post:" it.", opts:["change","stick with"], ans:"stick with"}]},
+      {ko:"어떤 대상을 관찰할 때, 당신은 깊이와 3차원을 본다.",
+       en:"When [observe / observing] a subject, you see depth and three dimensions.",
+       items:[{pre:"When ", blank:"observe / observing", post:" a subject,", opts:["observe","observing"], ans:"observing"}]},
+      {ko:"당신이 이 대상을 그것이 눈에 보이는 대로 평면에 그릴 때, 당신은 원근법으로 그리고 있는 것이다.",
+       en:"When you draw this subject onto a flat surface as it [appears / is appeared] to the eye, you are drawing in perspective.",
+       items:[{pre:"as it ", blank:"appears / is appeared", post:" to the eye,", opts:["appears","is appeared"], ans:"appears"}]},
+    ]
+  },
+  {
+    no:30, topic:"유가와 경제",
+    qs:[
+      {ko:"낮은 유가는 좋은 것인데, 왜냐하면 그것은 다수의 산업에서 더 낮은 에너지 비용을 의미하기 때문이다.",
+       en:"Low oil prices are a good thing, [because / because of] it means lower energy costs of production for the majority of industries.",
+       items:[{pre:"a good thing, ", blank:"because / because of", post:" it means...", opts:["because","because of"], ans:"because"}]},
+      {ko:"회사들은 생산 및 서비스 제공 비용의 감소로 직접적으로 혜택을 본다.",
+       en:"Firms directly [benefit / benefiting] from the [increase / decrease] in their costs of production.",
+       items:[
+         {pre:"Firms directly ", blank:"benefit / benefiting", post:" from the decrease...", opts:["benefit","benefiting"], ans:"benefit"},
+         {pre:"...from the ", blank:"increase / decrease", post:" in their costs...", opts:["increase","decrease"], ans:"decrease"},
+       ]},
+      {ko:"이는 총공급을 촉진하는 효과가 있으며 성장에 자극을 제공한다.",
+       en:"This has the effect of [stimulate / stimulating] the aggregate supply and [provide / provides] a stimulus for growth.",
+       items:[
+         {pre:"...effect of ", blank:"stimulate / stimulating", post:" the aggregate supply...", opts:["stimulate","stimulating"], ans:"stimulating"},
+         {pre:"...supply and ", blank:"provide / provides", post:" a stimulus...", opts:["provide","provides"], ans:"provides"},
+       ]},
+      {ko:"반대로, 석유 생산 감소로 인한 유가 급등은 결코 좋은 소식이 아니다.",
+       en:"[Conversely / Similarly], a sudden rise in oil prices due to a shrink in oil production [is / are] never good news.",
+       items:[
+         {pre:"", blank:"Conversely / Similarly", post:", a sudden rise...", opts:["Conversely","Similarly"], ans:"Conversely"},
+         {pre:"...in oil production ", blank:"is / are", post:" never good news,", opts:["is","are"], ans:"is"},
+       ]},
+      {ko:"유가 변동 역사의 검토는 이 개념을 확증한다.",
+       en:"A look through the history of oil price fluctuations [confirm / confirms] this notion.",
+       items:[{pre:"A look through the history ", blank:"confirm / confirms", post:" this notion,", opts:["confirm","confirms"], ans:"confirms"}]},
+      {ko:"경제는 일반적으로 그것의 생산량(GDP)이 1퍼센트포인트 가까이 둔화되는 것을 본다.",
+       en:"...an economy typically sees its output (GDP) [slowing / slowed] by close to 1 percentage point.",
+       items:[{pre:"...sees its output (GDP) ", blank:"slowing / slowed", post:" by close to 1%...", opts:["slowing","slowed"], ans:"slowed"}]},
+      {ko:"15조 달러 규모의 경제에서, 그것은 잠재적 부 또는 경제 성장에서 1,500억 달러의 손실이다.",
+       en:"For a $15 trillion economy, that is a [gain / loss] of $150 billion in potential wealth.",
+       items:[{pre:"that is a ", blank:"gain / loss", post:" of $150 billion...", opts:["gain","loss"], ans:"loss"}]},
+      {ko:"반대로, 그것의 공급 과잉에 따른 유가 하락에 대해서는 크게 우려한 적이 결코 없었다.",
+       en:"[Therefore / Conversely], there [have / has] never been much concern with oil price decreases following an excess in its supply.",
+       items:[
+         {pre:"", blank:"Therefore / Conversely", post:", there has never been...", opts:["Therefore","Conversely"], ans:"Conversely"},
+         {pre:"...there ", blank:"have / has", post:" never been much concern...", opts:["have","has"], ans:"has"},
+       ]},
+    ]
+  },
+  {
+    no:31, topic:"자아와 정보 처리",
+    qs:[
+      {ko:"우리는 낯선 사람에 관한 일화는 잊을지 모르지만, 사촌에 관한 소문은 잊지 않을 것이다.",
+       en:"We might forget an anecdote about a stranger [because of / because] it makes few connections with our existing associations.",
+       items:[{pre:"...about a stranger ", blank:"because of / because", post:" it makes few connections...", opts:["because of","because"], ans:"because"}]},
+      {ko:"다른 모든 것보다 더 크고 접근하기에 더 빠른 하나의 복잡한 네트워크가 있다 — 자아.",
+       en:"[There's / There're] one complex network [who / that] is larger and quicker to [access / accessing] than all others — the self.",
+       items:[
+         {pre:"", blank:"There's / There're", post:" one complex network...", opts:["There's","There're"], ans:"There's"},
+         {pre:"...one complex network ", blank:"who / that", post:" is larger...", opts:["who","that"], ans:"that"},
+         {pre:"...quicker to ", blank:"access / accessing", post:" than all others...", opts:["access","accessing"], ans:"access"},
+       ]},
+      {ko:"우리는 평생 우리 자신에 대해 생각해 왔다.",
+       en:"We've been [thinking / thought] about ourselves in our whole lives.",
+       items:[{pre:"We've been ", blank:"thinking / thought", post:" about ourselves...", opts:["thinking","thought"], ans:"thinking"}]},
+      {ko:"사실, 중학교 시절 내내 우리는 많은 다른 것들을 생각할 수 없었다.",
+       en:"(In fact, there [was / were] entire years during junior high when we weren't capable of [think / thinking] about [else much / much else].)",
+       items:[
+         {pre:"there ", blank:"was / were", post:" entire years...", opts:["was","were"], ans:"were"},
+         {pre:"...capable of ", blank:"think / thinking", post:" about much else...", opts:["think","thinking"], ans:"thinking"},
+         {pre:"...thinking about ", blank:"else much / much else", post:".", opts:["else much","much else"], ans:"much else"},
+       ]},
+      {ko:"그래서 어떤 새로운 정보가 우리와 관련이 있다면, 그것은 더 쉽게 그리고 더 철저하게 처리될 것이다.",
+       en:"So if a new piece of information has [something / nothing] [doing / to do] with us, it will be more easily and thoroughly processed.",
+       items:[
+         {pre:"...information has ", blank:"something / nothing", post:" to do with us,", opts:["something","nothing"], ans:"something"},
+         {pre:"...has something ", blank:"doing / to do", post:" with us,", opts:["doing","to do"], ans:"to do"},
+       ]},
+      {ko:"그것은 우리의 실제 집보다 훨씬 더 가깝게 와닿는다.",
+       en:"It hits [very / even] closer to home than our actual home.",
+       items:[{pre:"It hits ", blank:"very / even", post:" closer to home...", opts:["very","even"], ans:"even"}]},
+      {ko:"가장 효과적인 의사소통자는 추상적인 것을 개인적으로 만드는 방법을 찾는다.",
+       en:"The most effective communicators find ways [to make / making] the abstract [personal / personally].",
+       items:[
+         {pre:"...find ways ", blank:"to make / making", post:" the abstract personal.", opts:["to make","making"], ans:"to make"},
+         {pre:"...make the abstract ", blank:"personal / personally", post:".", opts:["personal","personally"], ans:"personal"},
+       ]},
+      {ko:"로스쿨이 1학년 법대생들을 동기 부여하기 위해 주는 경고를 생각해 보라.",
+       en:"[Consider / Considering] the warning [what / that] law schools give to [motivate / motivating] first-year law students.",
+       items:[
+         {pre:"", blank:"Consider / Considering", post:" the warning that...", opts:["Consider","Considering"], ans:"Consider"},
+         {pre:"...the warning ", blank:"what / that", post:" law schools give...", opts:["what","that"], ans:"that"},
+         {pre:"...give to ", blank:"motivate / motivating", post:" first-year law students...", opts:["motivate","motivating"], ans:"motivate"},
+       ]},
+      {ko:"'첫 해 중도 탈락률은 33%입니다'라고 듣는 것은 추상적인 통계이다.",
+       en:"[Hear / Hearing] that 'the first-year dropout rate is 33%' [is / are] a(n) [abstract / concrete] statistic.",
+       items:[
+         {pre:"", blank:"Hear / Hearing", post:" that 'the dropout rate...'", opts:["Hear","Hearing"], ans:"Hearing"},
+         {pre:"...dropout rate is 33%' ", blank:"is / are", post:" a(n) abstract statistic.", opts:["is","are"], ans:"is"},
+         {pre:"...is a(n) ", blank:"abstract / concrete", post:" statistic.", opts:["abstract","concrete"], ans:"abstract"},
+       ]},
+      {ko:"'당신의 왼쪽을 보세요, 당신의 오른쪽을 보세요. 당신들 세 명 중 한 명은 내년 가을에 우리와 함께하지 않을 것입니다'는 자아를 깨운다.",
+       en:"'One of the three of you won't be [joining / joined] us next fall' [wake / wakes] up the self.",
+       items:[
+         {pre:"...won't be ", blank:"joining / joined", post:" us next fall'", opts:["joining","joined"], ans:"joining"},
+         {pre:"...next fall' ", blank:"wake / wakes", post:" up the self.", opts:["wake","wakes"], ans:"wakes"},
+       ]},
+    ]
+  },
+  {
+    no:32, topic:"스티브 잡스와 유사성",
+    qs:[
+      {ko:"Steve Jobs는 사람들이 새로운 기술을 받아들이도록 하기 위해 유사성을 사용했다.",
+       en:"Steve Jobs used [analogy / diversity] to [get / getting] people [embrace / to embrace] the new technology.",
+       items:[
+         {pre:"Steve Jobs used ", blank:"analogy / diversity", post:" to get people...", opts:["analogy","diversity"], ans:"analogy"},
+         {pre:"...used analogy to ", blank:"get / getting", post:" people to embrace...", opts:["get","getting"], ans:"get"},
+         {pre:"...people ", blank:"embrace / to embrace", post:" the new technology.", opts:["embrace","to embrace"], ans:"to embrace"},
+       ]},
+      {ko:"컴퓨터 이전에, 사람들은 물리적인 세계에서 일을 했다.",
+       en:"Before computers, people [working / worked] in a physical world.",
+       items:[{pre:"people ", blank:"working / worked", post:" in a physical world.", opts:["working","worked"], ans:"worked"}]},
+      {ko:"우리는 종이와 펜과 물리적인 파일 폴더 등을 사용했다.",
+       en:"We [used / were used] paper and pens and physical file folders and so on.",
+       items:[{pre:"We ", blank:"used / were used", post:" paper and pens...", opts:["used","were used"], ans:"used"}]},
+      {ko:"가상 세계에서 일한다는 개념은 혁신적으로 달랐다.",
+       en:"The idea of working in a virtual world [was / were] radically different.",
+       items:[{pre:"The idea of working ", blank:"was / were", post:" radically different.", opts:["was","were"], ans:"was"}]},
+      {ko:"혹은 적어도 혁신적으로 다르게 보였다.",
+       en:"Or at least seemed radically [different / differently].",
+       items:[{pre:"...seemed radically ", blank:"different / differently", post:".", opts:["different","differently"], ans:"different"}]},
+      {ko:"Jobs가 이해한 것은 물리적인 사무실이 근본적으로 가상 사무실과 유사하다는 것이었다.",
+       en:"[That / What] Jobs understood was [what / that] a physical office was fundamentally similar to a virtual office.",
+       items:[
+         {pre:"", blank:"That / What", post:" Jobs understood was...", opts:["That","What"], ans:"What"},
+         {pre:"...Jobs understood was ", blank:"what / that", post:" a physical office...", opts:["what","that"], ans:"that"},
+       ]},
+      {ko:"대중을 사로잡기 위해, Jobs는 전통적인 일터와 가상 일터 간의 강한 유사성을 끌어냈다.",
+       en:"To [win / winning] over the masses, Jobs drew strong analogies between the traditional and new virtual workplace.",
+       items:[{pre:"To ", blank:"win / winning", post:" over the masses,", opts:["win","winning"], ans:"win"}]},
+      {ko:"컴퓨터 이전의 일터에서, 생각이 종이에 쓰이면 그것은 문서(document)라고 불렸다.",
+       en:"When ideas were [writing / written] on paper it was [calling / called] ... a document.",
+       items:[
+         {pre:"...ideas were ", blank:"writing / written", post:" on paper...", opts:["writing","written"], ans:"written"},
+         {pre:"...it was ", blank:"calling / called", post:" ... a document.", opts:["calling","called"], ans:"called"},
+       ]},
+      {ko:"그 문서들이 저장될 필요가 있을 때 그것들은 폴더(folder)에 넣어졌다.",
+       en:"When those documents needed to [store / be stored] they were put in ... a folder.",
+       items:[{pre:"...documents needed to ", blank:"store / be stored", post:" they were put...", opts:["store","be stored"], ans:"be stored"}]},
+      {ko:"그리고 그 폴더들은 책상(desk)에 보관되었다.",
+       en:"And those folders were [keeping / kept] on ... a desk.",
+       items:[{pre:"...folders were ", blank:"keeping / kept", post:" on ... a desk.", opts:["keeping","kept"], ans:"kept"}]},
+      {ko:"Steve Jobs가 친숙한 용어를 사용하는 것이 새로운 기술을 이해하기 더 쉽게 만들 것이라는 것을 이해했기 때문에 우리가 우리의 가상 작업에서 사용하는 용어들이다.",
+       en:"...are the terms we use [because of / because] Steve Jobs understood that [use / using] [familiar / unfamiliar] terms would make the new technology easier to [understand / understanding].",
+       items:[
+         {pre:"...we use ", blank:"because of / because", post:" Steve Jobs understood...", opts:["because of","because"], ans:"because"},
+         {pre:"...understood that ", blank:"use / using", post:" familiar terms...", opts:["use","using"], ans:"using"},
+         {pre:"...that using ", blank:"familiar / unfamiliar", post:" terms would make...", opts:["familiar","unfamiliar"], ans:"familiar"},
+         {pre:"...easier to ", blank:"understand / understanding", post:".", opts:["understand","understanding"], ans:"understand"},
+       ]},
+      {ko:"물리적 일터와 가상 일터 사이의 유사점이 지금은 분명해 보인다.",
+       en:"The parallels between the physical and virtual workplace now [seem / seems] [obvious / vague].",
+       items:[
+         {pre:"The parallels now ", blank:"seem / seems", post:" obvious.", opts:["seem","seems"], ans:"seem"},
+         {pre:"...now seem ", blank:"obvious / vague", post:".", opts:["obvious","vague"], ans:"obvious"},
+       ]},
+    ]
+  },
+  {
+    no:33, topic:"거북이의 진화와 현대 빛",
+    qs:[
+      {ko:"갓 부화한 거북이들은 빛을 향해 기어가도록 진화한 듯하다.",
+       en:"Turtle hatchlings have evolved to [crawl / crawling] toward the light.",
+       items:[{pre:"...evolved to ", blank:"crawl / crawling", post:" toward the light.", opts:["crawl","crawling"], ans:"crawl"}]},
+      {ko:"수백만 년 동안 이것은 매우 이성적이고 효과적인 전략이었다.",
+       en:"For millions of years this was a rational strategy [because / because of] the light represented the reflection of the moon on the water.",
+       items:[{pre:"...rational strategy ", blank:"because / because of", post:" the light represented...", opts:["because","because of"], ans:"because"}]},
+      {ko:"빛을 따라가는 것은 새끼 거북이들이 바다로 돌아가게 이끌었다.",
+       en:"[Follow / Following] the lights led baby turtles back home to the sea.",
+       items:[{pre:"", blank:"Follow / Following", post:" the lights led baby turtles...", opts:["Follow","Following"], ans:"Following"}]},
+      {ko:"문제는 인간이 해변 반대편에 해변가 주택과 번쩍이는 호텔을 짓기 시작할 때 시작되었다.",
+       en:"The problems [started / disappeared] when humans began building beachfront homes and sparkling hotels.",
+       items:[{pre:"The problems ", blank:"started / disappeared", post:" when humans began building...", opts:["started","disappeared"], ans:"started"}]},
+      {ko:"이제는 부화한 후에, 근처의 가장 밝은 빛을 향해 가던 거북이들은 곧장 차량으로 유도되고 있었다.",
+       en:"Now after hatching, turtles [heading / headed] for the brightest nearby lights [was / were] being guided straight into traffic.",
+       items:[
+         {pre:"...turtles ", blank:"heading / headed", post:" for the brightest...", opts:["heading","headed"], ans:"heading"},
+         {pre:"...brightest nearby lights ", blank:"was / were", post:" being guided...", opts:["was","were"], ans:"were"},
+       ]},
+      {ko:"자멸적인 바다 거북이들이 선천적으로 비이성적인가?",
+       en:"Are [self-protective / self-destructive] sea turtles naturally irrational?",
+       items:[{pre:"Are ", blank:"self-protective / self-destructive", post:" sea turtles...", opts:["self-protective","self-destructive"], ans:"self-destructive"}]},
+      {ko:"하지만 더 심오한 진실이 있다.",
+       en:"But [there's / there're] a deeper truth.",
+       items:[{pre:"But ", blank:"there's / there're", post:" a deeper truth.", opts:["there's","there're"], ans:"there's"}]},
+      {ko:"거북이들은 조상들에겐 완벽하게 이성적이었던 단순한 단서에 기반을 두고 있다; 그들의 진화된 의사결정 메커니즘은 현대의 빛에 의해 가려지고 있다.",
+       en:"Turtles are [basing / based] their decisions on simple cues [that / what] [was / were] perfectly rational for their ancestors; their evolved mechanisms are [blinding / being blinded] by modern lights.",
+       items:[
+         {pre:"Turtles are ", blank:"basing / based", post:" their decisions...", opts:["basing","based"], ans:"basing"},
+         {pre:"...simple cues ", blank:"that / what", post:" were perfectly rational...", opts:["that","what"], ans:"that"},
+         {pre:"...cues that ", blank:"was / were", post:" perfectly rational...", opts:["was","were"], ans:"were"},
+         {pre:"...mechanisms are ", blank:"blinding / being blinded", post:" by modern lights.", opts:["blinding","being blinded"], ans:"being blinded"},
+       ]},
+    ]
+  },
+  {
+    no:34, topic:"감각기관과 뇌",
+    qs:[
+      {ko:"감각 기관은 뇌와 외부 세계 사이의 유일한 소통 채널이다.",
+       en:"Sensory organs [are / to be] the only channels of communication between the brain and the outside world.",
+       items:[{pre:"Sensory organs ", blank:"are / to be", post:" the only channels...", opts:["are","to be"], ans:"are"}]},
+      {ko:"간단히 말해, 뇌는 스스로 감지하도록 설계되지 않았다.",
+       en:"Simply put, the brain is not [designing / designed] to sense on its own.",
+       items:[{pre:"the brain is not ", blank:"designing / designed", post:" to sense...", opts:["designing","designed"], ans:"designed"}]},
+      {ko:"예를 들어, 노출된 뇌는 그것에 비추어지는 빛을 감지하지 못하거나 그것을 접촉하는 어떤 것을 느끼지도 못할 것이다.",
+       en:"[However / For instance], an exposed brain would neither sense light [shine / shining] on it nor [feel / feels] something [touching / touched] it.",
+       items:[
+         {pre:"", blank:"However / For instance", post:", an exposed brain...", opts:["However","For instance"], ans:"For instance"},
+         {pre:"...sense light ", blank:"shine / shining", post:" on it...", opts:["shine","shining"], ans:"shining"},
+         {pre:"...nor ", blank:"feel / feels", post:" something touching it.", opts:["feel","feels"], ans:"feel"},
+         {pre:"...nor feel something ", blank:"touching / touched", post:" it.", opts:["touching","touched"], ans:"touching"},
+       ]},
+      {ko:"환자들은 뇌 수술 중에 종종 계속 깨어 있게 되는데, 이는 외과 의사가 뇌의 특정 영역을 분리하는 데 도움이 될 수 있다.",
+       en:"In fact, patients are often [keeping / kept] [asleep / awake] during brain surgery, [that / which] can help a surgeon [isolate / isolating] specific regions.",
+       items:[
+         {pre:"...are often ", blank:"keeping / kept", post:" awake...", opts:["keeping","kept"], ans:"kept"},
+         {pre:"...are often kept ", blank:"asleep / awake", post:" during brain surgery,", opts:["asleep","awake"], ans:"awake"},
+         {pre:"...during brain surgery, ", blank:"that / which", post:" can help a surgeon...", opts:["that","which"], ans:"which"},
+         {pre:"...can help a surgeon ", blank:"isolate / isolating", post:" specific regions...", opts:["isolate","isolating"], ans:"isolate"},
+       ]},
+      {ko:"아리스토텔레스가 '머릿속에 감각을 통과하지 않는 것은 어떤 것도 없다.'라고 말했을 때, 그는 뇌의 이러한 특성을 인식했다.",
+       en:"Aristotle said, 'Nothing is in the mind [that / what] [do / does] not pass through the senses.'",
+       items:[
+         {pre:"...in the mind ", blank:"that / what", post:" does not pass...", opts:["that","what"], ans:"that"},
+         {pre:"...in the mind that ", blank:"do / does", post:" not pass through...", opts:["do","does"], ans:"does"},
+       ]},
+      {ko:"이 개념은 지원자들이 눈이 가려지고 감각 차단 수조의 따뜻한 물 속에 놓였을 때 명확하게 보여질 수 있다.",
+       en:"This concept can [see / be seen] clearly when volunteers are blind-folded and [place / placed] in the warm water of a sensory deprivation tank.",
+       items:[
+         {pre:"This concept can ", blank:"see / be seen", post:" clearly when...", opts:["see","be seen"], ans:"be seen"},
+         {pre:"...blind-folded and ", blank:"place / placed", post:" in the warm water...", opts:["place","placed"], ans:"placed"},
+       ]},
+      {ko:"그들은 일관성 없는 사고 패턴뿐만 아니라, 시각적인, 청각적인, 그리고 촉각적인 환각을 곧 경험한다.",
+       en:"They [soon experience / are soon experienced] visual, auditory, and tactile hallucinations, as well as incoherent thought patterns.",
+       items:[{pre:"They ", blank:"soon experience / are soon experienced", post:" visual, auditory...", opts:["soon experience","are soon experienced"], ans:"soon experience"}]},
+      {ko:"우리는 우리의 감각으로부터 지속적인 입력이 필요하다.",
+       en:"...it is apparent [that / what] we need constant input from our senses to [carry / carrying] out functions [that / who] [give / gives] us personality and intellect.",
+       items:[
+         {pre:"it is apparent ", blank:"that / what", post:" we need constant input...", opts:["that","what"], ans:"that"},
+         {pre:"...our senses to ", blank:"carry / carrying", post:" out functions...", opts:["carry","carrying"], ans:"carry"},
+         {pre:"...out functions ", blank:"that / who", post:" give us personality...", opts:["that","who"], ans:"that"},
+         {pre:"...functions that ", blank:"give / gives", post:" us personality...", opts:["give","gives"], ans:"give"},
+       ]},
+    ]
+  },
+  {
+    no:35, topic:"발과 감정 표현",
+    qs:[
+      {ko:"Desmond Morris는 우리의 발이 우리가 생각하는 것을 정확하게 전달하고 어떤 다른 부위보다 더 정직하게 느낀다는 것을 관찰했다.",
+       en:"Desmond Morris observed [that / what] our feet communicate exactly [what / that] we think and [feel / felt] more honestly than any other part.",
+       items:[
+         {pre:"Morris observed ", blank:"that / what", post:" our feet communicate...", opts:["that","what"], ans:"that"},
+         {pre:"...communicate exactly ", blank:"what / that", post:" we think...", opts:["what","that"], ans:"what"},
+         {pre:"...what we think and ", blank:"feel / felt", post:" more honestly...", opts:["feel","felt"], ans:"feel"},
+       ]},
+      {ko:"왜 발과 다리는 우리 감정의 그토록 정확한 반사경인걸까?",
+       en:"Why [is / are] the feet and legs such [accurate / inaccurate] reflectors of our sentiments?",
+       items:[
+         {pre:"Why ", blank:"is / are", post:" the feet and legs...", opts:["is","are"], ans:"are"},
+         {pre:"...such ", blank:"accurate / inaccurate", post:" reflectors...", opts:["accurate","inaccurate"], ans:"accurate"},
+       ]},
+      {ko:"수백만 년 동안, 우리의 다리와 발은 환경적인 위협에 대해 즉시 반응했다.",
+       en:"For millions of years, our legs and feet [reacting / reacted] to environmental threats instantaneously, without the need for conscious thought.",
+       items:[{pre:"our legs and feet ", blank:"reacting / reacted", post:" to environmental threats...", opts:["reacting","reacted"], ans:"reacted"}]},
+      {ko:"우리의 변연계 뇌는 필요에 따라 우리의 발과 다리가 반드시 반응하도록 했다.",
+       en:"Our limbic brains made sure [that / what] our feet reacted as [needing / needed] by either ceasing motion, [ran / running] away, or [kicking / kicked] at a threat.",
+       items:[
+         {pre:"Our limbic brains made sure ", blank:"that / what", post:" our feet reacted...", opts:["that","what"], ans:"that"},
+         {pre:"...reacted as ", blank:"needing / needed", post:" by either...", opts:["needing","needed"], ans:"needed"},
+         {pre:"...by either ceasing motion, ", blank:"ran / running", post:" away, or kicking...", opts:["ran","running"], ans:"running"},
+         {pre:"...running away, or ", blank:"kicking / kicked", post:" at a threat.", opts:["kicking","kicked"], ans:"kicking"},
+       ]},
+      {ko:"이러한 생존 양생법은 우리에게 도움이 되어 왔고 오늘날에도 계속 그러하다.",
+       en:"This survival regimen, [retaining / retained] from our ancestral heritage, has served us well and [continues / continued] to do so today.",
+       items:[
+         {pre:"...regimen, ", blank:"retaining / retained", post:" from our ancestral heritage,", opts:["retaining","retained"], ans:"retained"},
+         {pre:"...served us well and ", blank:"continues / continued", post:" to do so today.", opts:["continues","continued"], ans:"continues"},
+       ]},
+      {ko:"사실, 이러한 오래된 반응은 여전히 우리에게 매우 굳어져 있어서 우리의 발과 다리는 선사시대에 그랬던 것처럼 여전히 반응한다.",
+       en:"[In fact / In contrast], these age-old reactions are still so hardwired in us [what / that] our feet and legs still react as they [were / did] in prehistoric times.",
+       items:[
+         {pre:"", blank:"In fact / In contrast", post:", these age-old reactions...", opts:["In fact","In contrast"], ans:"In fact"},
+         {pre:"...hardwired in us ", blank:"what / that", post:" when we are presented...", opts:["what","that"], ans:"that"},
+         {pre:"...still react as they ", blank:"were / did", post:" in prehistoric times.", opts:["were","did"], ans:"did"},
+       ]},
+    ]
+  },
+  {
+    no:36, topic:"종이와 문자 문화",
+    qs:[
+      {ko:"구전 문화에서 문자 문화로의 전환은 적절한 쓰기 재료의 부족으로 인해 수 세기 동안 지연되었다.",
+       en:"The transition from an oral culture, [which / in which] knowledge was handed down, to a literate one, [based / was based] on the written word, [was / were] held back for centuries by the [excess / lack] of suitable writing material.",
+       items:[
+         {pre:"...oral culture, ", blank:"which / in which", post:" knowledge was handed down...", opts:["which","in which"], ans:"in which"},
+         {pre:"...to a literate one, ", blank:"based / was based", post:" on the written word,", opts:["based","was based"], ans:"based"},
+         {pre:"...on the written word, ", blank:"was / were", post:" held back...", opts:["was","were"], ans:"was"},
+         {pre:"...held back by the ", blank:"excess / lack", post:" of suitable writing material.", opts:["excess","lack"], ans:"lack"},
+       ]},
+      {ko:"석판과 점토판이 사용되었지만, 그것들은 깨지기 쉽고 운반하기에는 부피가 크고 무거웠다.",
+       en:"Stone and clay tablets [used / were used], but they were prone [fracturing / to fracture] and [was / were] bulky and heavy [transporting / to transport].",
+       items:[
+         {pre:"Stone and clay tablets ", blank:"used / were used", post:", but they were prone...", opts:["used","were used"], ans:"were used"},
+         {pre:"...they were prone ", blank:"fracturing / to fracture", post:" and were bulky...", opts:["fracturing","to fracture"], ans:"to fracture"},
+         {pre:"...to fracture and ", blank:"was / were", post:" bulky and heavy...", opts:["was","were"], ans:"were"},
+         {pre:"...bulky and heavy ", blank:"transporting / to transport", post:".", opts:["transporting","to transport"], ans:"to transport"},
+       ]},
+      {ko:"목재는 갈라짐을 겪고 부패하기 쉽다.",
+       en:"Wood suffers from splitting and [is / are] susceptible [decaying / to decay].",
+       items:[
+         {pre:"Wood suffers from splitting and ", blank:"is / are", post:" susceptible to decay.", opts:["is","are"], ans:"is"},
+         {pre:"...susceptible ", blank:"decaying / to decay", post:".", opts:["decaying","to decay"], ans:"to decay"},
+       ]},
+      {ko:"벽화는 고정되어 있고 공간이 제한되어 있다.",
+       en:"Wall paintings are static and space is [limiting / limited].",
+       items:[{pre:"space is ", blank:"limiting / limited", post:".", opts:["limiting","limited"], ans:"limited"}]},
+      {ko:"종이의 발명은 이러한 문제들을 해결했지만, 로마인들이 두루마리를 코덱스로 대체한 후에야 그 재료가 완전한 잠재력에 다다랐다.",
+       en:"The invention of paper, [saying / said] to be one of the four great inventions of the Chinese, [caused / solved] these problems, but it wasn't until the Romans replaced the scroll with the codex [what / that] the material reached its full potential.",
+       items:[
+         {pre:"...paper, ", blank:"saying / said", post:" to be one of the four great inventions...", opts:["saying","said"], ans:"said"},
+         {pre:"...the Chinese, ", blank:"caused / solved", post:" these problems,", opts:["caused","solved"], ans:"solved"},
+         {pre:"...with the codex — or, as we call it now, the book — ", blank:"what / that", post:" the material reached...", opts:["what","that"], ans:"that"},
+       ]},
+      {ko:"그것은 2천 년 전이었으며, 그것은 여전히 문자의 지배적인 형태이다.",
+       en:"That was two thousand years ago, and it is still a [dominant / secondary] form of the written word.",
+       items:[{pre:"still a ", blank:"dominant / secondary", post:" form of the written word.", opts:["dominant","secondary"], ans:"dominant"}]},
+      {ko:"돌이나 목재보다 훨씬 더 부드러운 재료인 종이가, 문자의 수호자로서 역할을 해낸 것은 놀라운 재료 이야기이다.",
+       en:"That paper, a [very / much] softer material than either stone or wood, [winning / won] out as the guardian of the written word [is / are] a remarkable materials story.",
+       items:[
+         {pre:"a ", blank:"very / much", post:" softer material than stone...", opts:["very","much"], ans:"much"},
+         {pre:"...wood, ", blank:"winning / won", post:" out as the guardian...", opts:["winning","won"], ans:"won"},
+         {pre:"...guardian of the written word ", blank:"is / are", post:" a remarkable materials story.", opts:["is","are"], ans:"is"},
+       ]},
+    ]
+  },
+  {
+    no:37, topic:"이유와 전제의 연쇄",
+    qs:[
+      {ko:"어떤 결론에 대한 어떤 이유가 단 하나의 주장에 존재할 가능성은 매우 낮다.",
+       en:"A reason for a conclusion is very [likely / unlikely] to consist in a single claim.",
+       items:[{pre:"...is very ", blank:"likely / unlikely", post:" to consist in a single claim.", opts:["likely","unlikely"], ans:"unlikely"}]},
+      {ko:"우리가 그것을 아무리 빨리 진술하더라도, 그것은, 분석적으로, 많은 아이디어들과 함의들의 복잡한 상호작용이다.",
+       en:"No matter how we might [state / be stated] it in short-hand, it is, analytically, a complex interaction of many ideas.",
+       items:[{pre:"how we might ", blank:"state / be stated", post:" it in short-hand,", opts:["state","be stated"], ans:"state"}]},
+      {ko:"그 이유는 더 정확한 전제들의 연결 고리로 나누어져야 한다.",
+       en:"The reason must [break / be broken] down into a chain of more precise premises.",
+       items:[{pre:"The reason must ", blank:"break / be broken", post:" down into a chain...", opts:["break","be broken"], ans:"be broken"}]},
+      {ko:"예를 들어, '대학 교육이 모든 호주인에게 무료여야 한다'라는 주장은 경제적 이익이라는 이유로 뒷받침될 수도 있다.",
+       en:"[However / For example], the claim [what / that] 'university education should be free' might be supported by the reason [what / that] 'the economy benefits'.",
+       items:[
+         {pre:"", blank:"However / For example", post:", the claim that...", opts:["However","For example"], ans:"For example"},
+         {pre:"...the claim ", blank:"what / that", post:" 'university education...'", opts:["what","that"], ans:"that"},
+         {pre:"...supported by the reason ", blank:"what / that", post:" 'the economy benefits'.", opts:["what","that"], ans:"that"},
+       ]},
+      {ko:"하지만 그 상황에 대한 우리의 분석이 단 하나의 진술로 명확하게 표현되는가?",
+       en:"But [is / are] our analysis of the situation clearly expressed in just one statement? Hardly.",
+       items:[{pre:"But ", blank:"is / are", post:" our analysis...clearly expressed?", opts:["is","are"], ans:"is"}]},
+      {ko:"그 결론은 대학과 무상 교육에 관한 것인 반면에, 그 이유는 몇 가지 새로운 아이디어를 도입한다.",
+       en:"The conclusion [is / being] about universities and free education, while the reason introduces some new ideas.",
+       items:[{pre:"The conclusion ", blank:"is / being", post:" about universities...", opts:["is","being"], ans:"is"}]},
+      {ko:"이 두 아이디어와 그 결론 사이의 연결이 명백해 보일 수도 있지만, 추론의 목적은 '명백한' 것을 가정하는 것을 피하는 것이다.",
+       en:"While the link might seem [obvious / obviously], the purpose of reasoning is [avoided / to avoid] assuming the '[vague / obvious]' by carefully [work / working] through the connections.",
+       items:[
+         {pre:"...the link might seem ", blank:"obvious / obviously", post:", the purpose...", opts:["obvious","obviously"], ans:"obvious"},
+         {pre:"...the purpose of reasoning is ", blank:"avoided / to avoid", post:" assuming...", opts:["avoided","to avoid"], ans:"to avoid"},
+         {pre:"...to avoid assuming the '", blank:"vague / obvious", post:"' by carefully working...", opts:["vague","obvious"], ans:"obvious"},
+         {pre:"...by carefully ", blank:"work / working", post:" through the connections...", opts:["work","working"], ans:"working"},
+       ]},
+    ]
+  },
+  {
+    no:38, topic:"이주의 실제 모습",
+    qs:[
+      {ko:"'이주'라는 단어는 대중 매체와 심지어 과학 문헌에서도 문제나 위기로 거의 항상 보도된다.",
+       en:"The word 'migration' is almost always [reporting / reported] in the popular media as a problem or a crisis.",
+       items:[{pre:"...is almost always ", blank:"reporting / reported", post:" in the popular media...", opts:["reporting","reported"], ans:"reported"}]},
+      {ko:"예를 들어, 이 주민들이 도시를 과밀화시키고, 노동 시장을 막히게 하며, 빈곤을 증가시킨다고 가정된다.",
+       en:"[For example / In addition], migrants are [assuming / assumed] to overcrowd cities, [clog / clogged] up labor markets, and increase poverty.",
+       items:[
+         {pre:"", blank:"For example / In addition", post:", migrants are assumed...", opts:["For example","In addition"], ans:"For example"},
+         {pre:"...migrants are ", blank:"assuming / assumed", post:" to overcrowd cities,", opts:["assuming","assumed"], ans:"assumed"},
+         {pre:"...migrants are assumed to overcrowd cities, ", blank:"clog / clogged", post:" up labor markets,", opts:["clog","clogged"], ans:"clog"},
+       ]},
+      {ko:"또 다른 의문스러운 가정은 대부분의 이주가 본의가 아니라는 것이다 — 자연적 또는 인위적인 재난을 피해 떠나는 사람들.",
+       en:"The other questionable assumption is [what / that] most migration is [voluntary / involuntary] — people [fleeing / fled] natural or man-made disasters.",
+       items:[
+         {pre:"...assumption is ", blank:"what / that", post:" most migration is involuntary...", opts:["what","that"], ans:"that"},
+         {pre:"...most migration is ", blank:"voluntary / involuntary", post:" — people fleeing...", opts:["voluntary","involuntary"], ans:"involuntary"},
+         {pre:"...— people ", blank:"fleeing / fled", post:" natural or man-made disasters.", opts:["fleeing","fled"], ans:"fleeing"},
+       ]},
+      {ko:"그러나, 현실은 더 복잡하고, 많은 이주민들은 단순히 더 큰 경제적 기회를 찾고 있다.",
+       en:"The reality, [therefore / however], is more complex, and many migrants are simply [seeking / sought] greater economic opportunity.",
+       items:[
+         {pre:"The reality, ", blank:"therefore / however", post:", is more complex,", opts:["therefore","however"], ans:"however"},
+         {pre:"...migrants are simply ", blank:"seeking / sought", post:" greater economic opportunity.", opts:["seeking","sought"], ans:"seeking"},
+       ]},
+      {ko:"물론 이주는 사회적, 경제적 문제를 일으킬 수 있고 정말로 일으킨다.",
+       en:"Of course migration can and [is / does] create social and economic problems.",
+       items:[{pre:"...migration can and ", blank:"is / does", post:" create social and economic problems.", opts:["is","does"], ans:"does"}]},
+      {ko:"하지만 이주는 또한 많은 기존의 문제에 대한 해결책이 될 수 있다.",
+       en:"But migration can also be a [cause / solution] for many preexisting problems.",
+       items:[{pre:"...can also be a ", blank:"cause / solution", post:" for many preexisting problems.", opts:["cause","solution"], ans:"solution"}]},
+      {ko:"외부 이주는 일반적으로 노동 과잉 지역에서 더 큰 수요나 더 많은 기회가 있는 지역으로 노동자를 재분배한다.",
+       en:"...out-migration redistributes workers from places of labor surplus to areas [which / where] there [is / are] greater demand.",
+       items:[
+         {pre:"...to areas ", blank:"which / where", post:" there is greater demand.", opts:["which","where"], ans:"where"},
+         {pre:"...to areas where there ", blank:"is / are", post:" greater demand...", opts:["is","are"], ans:"is"},
+       ]},
+      {ko:"이주는 더 젊고, 더 건강하고, 더 유연하며, 고난을 더 기꺼이 견딜 사람들을 일반적으로 선택한다.",
+       en:"Migration is generally selective of persons [who / which] [is / are] younger, healthier, more flexible, and more [willing / unwilling] to endure hardship.",
+       items:[
+         {pre:"...of persons ", blank:"who / which", post:" are younger, healthier...", opts:["who","which"], ans:"who"},
+         {pre:"...of persons who ", blank:"is / are", post:" younger, healthier...", opts:["is","are"], ans:"are"},
+         {pre:"...and more ", blank:"willing / unwilling", post:" to endure hardship...", opts:["willing","unwilling"], ans:"willing"},
+       ]},
+      {ko:"이주의 장기적인 결과를 조사하는 대부분의 연구는 긍정적인 '장기적' 효과를 발견한다.",
+       en:"Most research [that / what] [examine / examines] long-term outcomes of migration, [find / finds] [positive / negative] 'long-term' effects.",
+       items:[
+         {pre:"Most research ", blank:"that / what", post:" examines long-term outcomes...", opts:["that","what"], ans:"that"},
+         {pre:"...Most research that ", blank:"examine / examines", post:" long-term outcomes...", opts:["examine","examines"], ans:"examines"},
+         {pre:"...intergenerational mobility, ", blank:"find / finds", post:" positive 'long-term' effects.", opts:["find","finds"], ans:"finds"},
+         {pre:"...finds ", blank:"positive / negative", post:" 'long-term' effects.", opts:["positive","negative"], ans:"positive"},
+       ]},
+    ]
+  },
+  {
+    no:39, topic:"금과 화폐",
+    qs:[
+      {ko:"정부에 의해 만들어지는 돈에 대한 큰 문제는 정부를 운영하는 사람들이 더 많은 돈을 만들고 그것을 쓰고 싶은 유혹에 항상 직면한다는 것이다.",
+       en:"The big problem with money [creating / created] by the government [is / are] [what / that] those who [run / runs] the government always [face / faces] the temptation to [create / creating] more money.",
+       items:[
+         {pre:"...money ", blank:"creating / created", post:" by the government...", opts:["creating","created"], ans:"created"},
+         {pre:"...by the government ", blank:"is / are", post:" that those who...", opts:["is","are"], ans:"is"},
+         {pre:"...government is ", blank:"what / that", post:" those who run...", opts:["what","that"], ans:"that"},
+         {pre:"...those who ", blank:"run / runs", post:" the government...", opts:["run","runs"], ans:"run"},
+         {pre:"...always ", blank:"face / faces", post:" the temptation...", opts:["face","faces"], ans:"face"},
+         {pre:"...the temptation to ", blank:"create / creating", post:" more money...", opts:["create","creating"], ans:"create"},
+       ]},
+      {ko:"이것은 수세기 동안 반복되어 일어났으며, 인플레이션과 많은 경제적, 사회적 문제들을 초래했다.",
+       en:"...this has [happened / been happened] again and again over the centuries, [leading / led] to inflation and the problems [that / what] [follow / follows] from inflation.",
+       items:[
+         {pre:"...this has ", blank:"happened / been happened", post:" again and again...", opts:["happened","been happened"], ans:"happened"},
+         {pre:"...over the centuries, ", blank:"leading / led", post:" to inflation...", opts:["leading","led"], ans:"leading"},
+         {pre:"...the problems ", blank:"that / what", post:" follow from inflation.", opts:["that","what"], ans:"that"},
+         {pre:"...the problems that ", blank:"follow / follows", post:" from inflation.", opts:["follow","follows"], ans:"follow"},
+       ]},
+      {ko:"많은 국가들은 금, 은, 또는 본질적으로 공급이 제한된 어떤 다른 물질을 돈으로 사용하는 것을 선호해 왔다.",
+       en:"Many countries have preferred [use / using] gold or some other material [what / that] is inherently [limited / unlimited] in supply, as money.",
+       items:[
+         {pre:"...have preferred ", blank:"use / using", post:" gold, silver...", opts:["use","using"], ans:"using"},
+         {pre:"...some other material ", blank:"what / that", post:" is inherently limited...", opts:["what","that"], ans:"that"},
+         {pre:"...is inherently ", blank:"limited / unlimited", post:" in supply,", opts:["limited","unlimited"], ans:"limited"},
+       ]},
+      {ko:"그것은 정부에게서 돈 공급을 인플레이션 수준으로 확장할 수 있는 권한을 박탈하는 방법이다.",
+       en:"It is a way of [giving / depriving] governments of the power to [expand / expanding] the money supply to inflationary levels.",
+       items:[
+         {pre:"...a way of ", blank:"giving / depriving", post:" governments of the power...", opts:["giving","depriving"], ans:"depriving"},
+         {pre:"...of the power to ", blank:"expand / expanding", post:" the money supply...", opts:["expand","expanding"], ans:"expand"},
+       ]},
+      {ko:"금은 오랫동안 이 목적에 이상적인 것으로 여겨져 왔는데, 전 세계의 금 공급이 보통 급격히 증가될 수 없기 때문이다.",
+       en:"Gold has long [considered / been considered] ideal for this purpose, since the supply of gold usually cannot be increased rapidly.",
+       items:[{pre:"Gold has long ", blank:"considered / been considered", post:" ideal for this purpose,", opts:["considered","been considered"], ans:"been considered"}]},
+      {ko:"개인이 그렇게 하기를 선택할 때마다 종이돈이 금으로 전환될 수 있을 때, 그러면 그 돈은 금에 의해 '보장된다'라고 말해진다.",
+       en:"When the individual chooses [doing / to do] so, the money is [saying / said] to be '[backing / backed] up' by gold.",
+       items:[
+         {pre:"...the individual chooses ", blank:"doing / to do", post:" so,", opts:["doing","to do"], ans:"to do"},
+         {pre:"...the money is ", blank:"saying / said", post:" to be 'backed up' by gold.", opts:["saying","said"], ans:"said"},
+         {pre:"...to be '", blank:"backing / backed", post:" up' by gold.", opts:["backing","backed"], ans:"backed"},
+       ]},
+      {ko:"사실상 진짜 요점은 금은 발행될 수 있는 종이돈의 양을 단순히 제한한다는 것이다.",
+       en:"...the real point is [what / that] the gold simply [increases / limits] the amount of paper money [what / that] can be issued.",
+       items:[
+         {pre:"...the real point is ", blank:"what / that", post:" the gold simply limits...", opts:["what","that"], ans:"that"},
+         {pre:"...the gold simply ", blank:"increases / limits", post:" the amount of paper money...", opts:["increases","limits"], ans:"limits"},
+         {pre:"...the amount of paper money ", blank:"what / that", post:" can be issued.", opts:["what","that"], ans:"that"},
+       ]},
+    ]
+  },
+  {
+    no:40, topic:"감정과 의사결정",
+    qs:[
+      {ko:"감정과 의사결정에 관한 연구는 이제 상당히 중요하다.",
+       en:"The study of emotions and decision making [is / are] now of considerable importance.",
+       items:[{pre:"The study of emotions and decision making ", blank:"is / are", post:" now of considerable importance.", opts:["is","are"], ans:"is"}]},
+      {ko:"이것은 신경과학에 의해 제공되는 다양한 도구의 적용을 포함한다.",
+       en:"This involves the application of various tools [affording / afforded] by neuroscience.",
+       items:[{pre:"...various tools ", blank:"affording / afforded", post:" by neuroscience.", opts:["affording","afforded"], ans:"afforded"}]},
+      {ko:"뇌의 특정 부분 손상이 의사결정에 어떻게 영향을 주는지 고찰한다.",
+       en:"...how damage to particular parts of the brain known to [be / being] responsible for particular cognitive functions [impact / impacts] on decision making.",
+       items:[
+         {pre:"...brain known to ", blank:"be / being", post:" responsible for...", opts:["be","being"], ans:"be"},
+         {pre:"...particular cognitive functions ", blank:"impact / impacts", post:" on decision making.", opts:["impact","impacts"], ans:"impacts"},
+       ]},
+      {ko:"이러한 연구의 한 예는 Antonio Damasio의 연구인데, 그는 뇌의 감정적인 부분이 손상되면 이것이 실제로 의사결정의 효율성을 감소시킨다는 것을 발견한다.",
+       en:"One example of this research [is / are] the work of Antonio Damasio, [who / which] [find / finds] [that / what] when the emotional part is damaged, this [increases / reduces] the efficacy of decision making.",
+       items:[
+         {pre:"One example of this research ", blank:"is / are", post:" the work of Antonio Damasio,", opts:["is","are"], ans:"is"},
+         {pre:"...Antonio Damasio, ", blank:"who / which", post:" finds that...", opts:["who","which"], ans:"who"},
+         {pre:"...Antonio Damasio, who ", blank:"find / finds", post:" that when...", opts:["find","finds"], ans:"finds"},
+         {pre:"...who finds ", blank:"that / what", post:" when the emotional part...", opts:["that","what"], ans:"that"},
+         {pre:"...this actually ", blank:"increases / reduces", post:" the efficacy...", opts:["increases","reduces"], ans:"reduces"},
+       ]},
+      {ko:"좋은 결정은 뇌의 감정적인 부분이 숙고적인 부분과 함께 작용하는 결과물이다.",
+       en:"Good decisions are a product of the emotional part of the brain [working / worked] in conjunction with the deliberative part.",
+       items:[{pre:"...of the brain ", blank:"working / worked", post:" in conjunction with...", opts:["working","worked"], ans:"working"}]},
+      {ko:"이것은 전통적인 경제학의 가정과 모순되는데, 그것에서는 감정이 의사결정 과정에서 부정적인 역할을 한다.",
+       en:"This [supports / contradicts] the assumptions of conventional economics, [which / where] emotions play a negative role in the decision-making process.",
+       items:[
+         {pre:"This ", blank:"supports / contradicts", post:" the assumptions of conventional economics,", opts:["supports","contradicts"], ans:"contradicts"},
+         {pre:"...conventional economics, ", blank:"which / where", post:" emotions play a negative role...", opts:["which","where"], ans:"where"},
+       ]},
+      {ko:"여기서는 의사결정이 냉정하고, 감정적이지 않은 방식으로 이루어지는 것으로 모델링될 수 있다고 가정된다.",
+       en:"Here it is assumed [what / that] decision making can be modeled as [generating / being generated] in a stoic, unemotional fashion, and decisions tend [being / to be] optimal.",
+       items:[
+         {pre:"Here it is assumed ", blank:"what / that", post:" decision making can be modeled...", opts:["what","that"], ans:"that"},
+         {pre:"...modeled as ", blank:"generating / being generated", post:" in a stoic fashion,", opts:["generating","being generated"], ans:"being generated"},
+         {pre:"...decisions tend ", blank:"being / to be", post:" optimal.", opts:["being","to be"], ans:"to be"},
+       ]},
+      {ko:"그러나 증거는 감정은 실제로 의사결정에 중요하고, 종종, 긍정적인 역할을 한다는 것을 시사한다.",
+       en:"But the evidence suggests [that / what] emotions actually play an important and, often, a [positive / negative] role in decision making.",
+       items:[
+         {pre:"...evidence suggests ", blank:"that / what", post:" emotions actually...", opts:["that","what"], ans:"that"},
+         {pre:"...play an important and, often, a ", blank:"positive / negative", post:" role in decision making.", opts:["positive","negative"], ans:"positive"},
+       ]},
+      {ko:"뇌의 숙고적인 부분과 함께 작용하는 뇌의 감정적인 부분이 의사결정의 효율성을 향상시키며, 이것은 전통적인 경제학의 감정에 대한 생각에 반한다.",
+       en:"The brain's emotional part [working / worked] in relation with its deliberative part [enhances / diminishes] the effectiveness, which [counter / counters] the ideas of traditional economics.",
+       items:[
+         {pre:"The brain's emotional part ", blank:"working / worked", post:" in relation with...", opts:["working","worked"], ans:"working"},
+         {pre:"...deliberative part ", blank:"enhances / diminishes", post:" the effectiveness,", opts:["enhances","diminishes"], ans:"enhances"},
+         {pre:"...effectiveness, which ", blank:"counter / counters", post:" the ideas...", opts:["counter","counters"], ans:"counters"},
+       ]},
+    ]
+  },
+  {
+    no:"41-42", topic:"선택의 횡포",
+    qs:[
+      {ko:"서른 가지 서로 다른 종류의 고급 초콜릿 중의 선택에 직면한 쇼핑객들은, 여섯 가지의 선택지만 제시받았을 때와 비교했을 때, 어떤 것도 사지 않고 떠날 가능성이 더 높다.",
+       en:"Shoppers confronted with the choice of thirty different varieties of gourmet chocolates [is / are] more likely [walking / to walk] away without [buy / buying] any.",
+       items:[
+         {pre:"...Shoppers ...of gourmet chocolates ", blank:"is / are", post:" more likely to walk away...", opts:["is","are"], ans:"are"},
+         {pre:"...are more likely ", blank:"walking / to walk", post:" away without buying any,", opts:["walking","to walk"], ans:"to walk"},
+         {pre:"...to walk away without ", blank:"buy / buying", post:" any,", opts:["buy","buying"], ans:"buying"},
+       ]},
+      {ko:"직원들이 파리로의 무료 여행을 제공받으면, 그들은 행복하다.",
+       en:"If employees are [giving / given] a free trip to Paris, they are happy.",
+       items:[{pre:"employees are ", blank:"giving / given", post:" a free trip to Paris,", opts:["giving","given"], ans:"given"}]},
+      {ko:"하지만 당신이 두 목적지 중 선택권을 준다면, 그들은 무엇을 선택하든, 덜 행복하다.",
+       en:"But if you offer [them / to them] the choice between the two destinations, they are less happy.",
+       items:[{pre:"...if you offer ", blank:"them / to them", post:" the choice between...", opts:["them","to them"], ans:"them"}]},
+      {ko:"선택이 왜 그렇게 혼란스러울 수 있을까?",
+       en:"Why might choice be so [amusing / disruptive]?",
+       items:[{pre:"Why might choice be so ", blank:"amusing / disruptive", post:"?", opts:["amusing","disruptive"], ans:"disruptive"}]},
+      {ko:"그 이유는 선택이 우리로 하여금 비교를 하고 상대적인 단점을 인정하도록 강요하기 때문이다.",
+       en:"The reason is [what / that] choice forces us [making / to make] comparisons and [acknowledge / acknowledging] relative [advantages / disadvantages].",
+       items:[
+         {pre:"The reason is ", blank:"what / that", post:" choice forces us...", opts:["what","that"], ans:"that"},
+         {pre:"...choice forces us ", blank:"making / to make", post:" comparisons...", opts:["making","to make"], ans:"to make"},
+         {pre:"...comparisons and ", blank:"acknowledge / acknowledging", post:" relative disadvantages.", opts:["acknowledge","acknowledging"], ans:"acknowledge"},
+         {pre:"...acknowledge relative ", blank:"advantages / disadvantages", post:".", opts:["advantages","disadvantages"], ans:"disadvantages"},
+       ]},
+      {ko:"파리를 선택하는 사람들은 바다가 없다고 불평하고 하와이를 선택하는 사람들은 박물관이 없다고 후회한다.",
+       en:"People [which / who] choose Paris [complain / complains] that it doesn't have the ocean and those [who / whose] choose Hawaii [regret / regrets] [what / that] it doesn't have the museums.",
+       items:[
+         {pre:"People ", blank:"which / who", post:" choose Paris complain...", opts:["which","who"], ans:"who"},
+         {pre:"People who choose Paris ", blank:"complain / complains", post:" that it doesn't have...", opts:["complain","complains"], ans:"complain"},
+         {pre:"...and those ", blank:"who / whose", post:" choose Hawaii regret...", opts:["who","whose"], ans:"who"},
+         {pre:"...choose Hawaii ", blank:"regret / regrets", post:" that it doesn't have...", opts:["regret","regrets"], ans:"regret"},
+         {pre:"...regret ", blank:"what / that", post:" it doesn't have the museums.", opts:["what","that"], ans:"that"},
+       ]},
+      {ko:"심리학자 Barry Schwartz는 이를 '선택의 횡포'라고 부르는데 이는 자유를 제공하기보다는, 그것은 실제로 우리의 의사결정을 제약하기 때문이다.",
+       en:"Psychologist Barry Schwartz calls this the 'tyranny of choice' because rather than [provide / providing] freedom, it actually constrains our decision-making.",
+       items:[{pre:"...rather than ", blank:"provide / providing", post:" freedom,", opts:["provide","providing"], ans:"providing"}]},
+      {ko:"그는 더 많은 선택이 불행을 증가시킨다고 주장한다.",
+       en:"He argues [what / that] greater choice [increases / decreases] unhappiness [because / because of] we worry that we are going to make the wrong decision and so we get stressed about [try / trying] to process all the comparisons in an effort to [get / getting] it right.",
+       items:[
+         {pre:"He argues ", blank:"what / that", post:" greater choice increases...", opts:["what","that"], ans:"that"},
+         {pre:"...greater choice ", blank:"increases / decreases", post:" unhappiness because...", opts:["increases","decreases"], ans:"increases"},
+         {pre:"...unhappiness ", blank:"because / because of", post:" we worry that...", opts:["because","because of"], ans:"because"},
+         {pre:"...we get stressed about ", blank:"try / trying", post:" to process all...", opts:["try","trying"], ans:"trying"},
+         {pre:"...in an effort to ", blank:"get / getting", post:" it right.", opts:["get","getting"], ans:"get"},
+       ]},
+      {ko:"이는 잘못된 선택을 하는 것에 대한 우리의 두려움을 증가시키고 우리가 최상의 선택을 할 수 있어야 한다는 기대를 함께 높인다.",
+       en:"This both increases our fear of [make / making] the wrong choice and [raise / raises] expectations [that / what] we should be able to get the best choice.",
+       items:[
+         {pre:"...our fear of ", blank:"make / making", post:" the wrong choice...", opts:["make","making"], ans:"making"},
+         {pre:"...the wrong choice and ", blank:"raise / raises", post:" expectations...", opts:["raise","raises"], ans:"raises"},
+         {pre:"...expectations ", blank:"that / what", post:" we should be able...", opts:["that","what"], ans:"that"},
+       ]},
+      {ko:"선택을 하면, 그 후 우리는 후회하기 시작하며, 그것이 옳은 것이었는지 궁금해한다.",
+       en:"Having [made / been made] the choice, we then [start / cease] to regret, [wondering / wondered] whether it was the right one.",
+       items:[
+         {pre:"Having ", blank:"made / been made", post:" the choice,", opts:["made","been made"], ans:"made"},
+         {pre:"...we then ", blank:"start / cease", post:" to regret,", opts:["start","cease"], ans:"start"},
+         {pre:"...to regret, ", blank:"wondering / wondered", post:" whether it was the right one.", opts:["wondering","wondered"], ans:"wondering"},
+       ]},
+    ]
+  },
+  {
+    no:"43-45", topic:"Linda와 노인",
+    qs:[
+      {ko:"기차가 조용한 시골 역에 정차하자, 승객들의 부드러운 대화 소리가 공기를 가득 채웠다.",
+       en:"As the train pulled into a quiet countryside station, the gentle chatter of passengers [filling / filled] the air.",
+       items:[{pre:"...chatter of passengers ", blank:"filling / filled", post:" the air.", opts:["filling","filled"], ans:"filled"}]},
+      {ko:"Linda는 2년만에 드디어 조부모님을 방문하게 되어 들떠 있었다.",
+       en:"Linda was [exciting / excited] to finally visit her grandparents after two years.",
+       items:[{pre:"Linda was ", blank:"exciting / excited", post:" to finally visit...", opts:["exciting","excited"], ans:"excited"}]},
+      {ko:"그녀는 사람들이 기차에 올라타고 분주히 그들의 좌석을 찾는 것을 보았다.",
+       en:"She watched people [getting / to get] onto the train and hurriedly [finding / found] their seats.",
+       items:[
+         {pre:"She watched people ", blank:"getting / to get", post:" onto the train...", opts:["getting","to get"], ans:"getting"},
+         {pre:"...and hurriedly ", blank:"finding / found", post:" their seats.", opts:["finding","found"], ans:"finding"},
+       ]},
+      {ko:"잠시 후, 한 노인이 무거운 가방과 씨름하였고, 그녀 옆에 앉으려 했다.",
+       en:"A moment later, an elderly woman struggled with a heavy bag, [try / trying] to sit down next to her.",
+       items:[{pre:"...a heavy bag, ", blank:"try / trying", post:" to sit down next to her.", opts:["try","trying"], ans:"trying"}]},
+      {ko:"그 가방은 그녀의 작은 몸집에 비해 거의 너무 커 보였다.",
+       en:"The bag [seemed / to seem] almost too big for her small body.",
+       items:[{pre:"The bag ", blank:"seemed / to seem", post:" almost too big...", opts:["seemed","to seem"], ans:"seemed"}]},
+      {ko:"Linda는 그 노인이 자신의 도움을 원할지 확신이 서지 않아, 망설였다.",
+       en:"Linda hesitated, [sure / unsure] if the elderly woman would want her help.",
+       items:[{pre:"Linda hesitated, ", blank:"sure / unsure", post:" if the elderly woman...", opts:["sure","unsure"], ans:"unsure"}]},
+      {ko:"그러나 곧, 그녀는 그 여성을 돕기로 했다.",
+       en:"But soon, she chose [assisting / to assist] the woman.",
+       items:[{pre:"she chose ", blank:"assisting / to assist", post:" the woman.", opts:["assisting","to assist"], ans:"to assist"}]},
+      {ko:"'제가 가방 드는 것을 도와 드릴게요,'라고 그녀가 말했다.",
+       en:"'Let me [help / to help] you with your bag,' she said.",
+       items:[{pre:"'Let me ", blank:"help / to help", post:" you with your bag,'", opts:["help","to help"], ans:"help"}]},
+      {ko:"그녀가 그 가방에 닿기 전에, 그 노인은 갑자기 균형을 잃고 쓰러졌다.",
+       en:"Before she could reach the bag, the elderly woman suddenly [kept / lost] her balance and [falls / fell] down.",
+       items:[
+         {pre:"...elderly woman suddenly ", blank:"kept / lost", post:" her balance...", opts:["kept","lost"], ans:"lost"},
+         {pre:"...her balance and ", blank:"falls / fell", post:" down.", opts:["falls","fell"], ans:"fell"},
+       ]},
+      {ko:"그녀는 등을 바닥에 대고 누워 있었고, 그녀의 얼굴은 창백했다.",
+       en:"She lay on her back, and her face [was / being] pale.",
+       items:[{pre:"...and her face ", blank:"was / being", post:" pale.", opts:["was","being"], ans:"was"}]},
+      {ko:"Linda는 상황의 긴박함을 느끼며, 순간 얼어붙었다.",
+       en:"Linda froze for a moment, [feeling / felt] the urgency of the situation.",
+       items:[{pre:"Linda froze for a moment, ", blank:"feeling / felt", post:" the urgency of the situation.", opts:["feeling","felt"], ans:"feeling"}]},
+      {ko:"그녀는 재빨리 쓰러진 여성의 곁에 무릎을 꿇었고, 그때 몇몇 사람들이 서둘러 달려왔다.",
+       en:"She quickly knelt down beside the fallen woman, as [a few / a little] people rushed over.",
+       items:[{pre:"...as ", blank:"a few / a little", post:" people rushed over.", opts:["a few","a little"], ans:"a few"}]},
+      {ko:"Linda는 그 노인의 어깨를 조심스럽게 두드려 그녀가 괜찮은지 확인했다.",
+       en:"Linda carefully tapped the elderly woman's shoulder to [check / checking] if she was alright.",
+       items:[{pre:"...shoulder to ", blank:"check / checking", post:" if she was alright.", opts:["check","checking"], ans:"check"}]},
+      {ko:"그 여성은 살며시 끙 소리를 내며 힘을 내려 노력했다.",
+       en:"The woman groaned softly, [try / trying] to gather her strength.",
+       items:[{pre:"The woman groaned softly, ", blank:"try / trying", post:" to gather her strength.", opts:["try","trying"], ans:"trying"}]},
+      {ko:"Linda는 가까이 다가가, 그 여성의 등 아래로 손을 살며시 넣었다.",
+       en:"Linda moved closer, [slide / sliding] a hand under the woman's back.",
+       items:[{pre:"Linda moved closer, ", blank:"slide / sliding", post:" a hand under...", opts:["slide","sliding"], ans:"sliding"}]},
+      {ko:"그 여성의 눈이 천천히 떠지자, 그녀는 '괜찮아요, 잠시만 편하게 계세요.'라고 상냥하게 그녀를 안심시켰다.",
+       en:"As the woman's eyes slowly opened, she reassured her softly, 'It's okay, just [relax / relaxing] for a moment.'",
+       items:[{pre:"'It's okay, just ", blank:"relax / relaxing", post:" for a moment.'", opts:["relax","relaxing"], ans:"relax"}]},
+      {ko:"Linda는 그 여성이 천천히 일어나 앉을 수 있도록 도왔고, 그 후 그녀를 자신의 자리로 돌아가도록 안내했다.",
+       en:"Linda helped the woman [sit / sitting] up slowly, then [guide / guided] her back to her seat.",
+       items:[
+         {pre:"Linda helped the woman ", blank:"sit / sitting", post:" up slowly,", opts:["sit","sitting"], ans:"sit"},
+         {pre:"...slowly, then ", blank:"guide / guided", post:" her back to her seat.", opts:["guide","guided"], ans:"guided"},
+       ]},
+      {ko:"상황이 안정되자, 주변 사람들이 다시 그들의 좌석으로 돌아갔다.",
+       en:"As the situation settled, people around [going / went] back to their seats.",
+       items:[{pre:"people around ", blank:"going / went", post:" back to their seats.", opts:["going","went"], ans:"went"}]},
+      {ko:"그 노인이 마침내 안정을 찾자, 그녀는 미소를 지으며 Linda를 보았다.",
+       en:"As the elderly woman finally calmed down, she [looked / was looked] at Linda with a smile.",
+       items:[{pre:"she ", blank:"looked / was looked", post:" at Linda with a smile.", opts:["looked","was looked"], ans:"looked"}]},
+      {ko:"'정말 미안해요,'라고 그녀가 말했다.",
+       en:"'I'm so sorry,' she [said / was said].",
+       items:[{pre:"'I'm so sorry,' she ", blank:"said / was said", post:".", opts:["said","was said"], ans:"said"}]},
+      {ko:"'기차가 갑자기 움직여 제가 어지러움을 느꼈던 것이 분명해요. 저를 도와줘서 정말 고마워요.'",
+       en:"'...the sudden movement of the train [must / should] have made me [feel / to feel] dizzy. Thank you so much for [help / helping] me.'",
+       items:[
+         {pre:"...the train ", blank:"must / should", post:" have made me feel dizzy.", opts:["must","should"], ans:"must"},
+         {pre:"...have made me ", blank:"feel / to feel", post:" dizzy.", opts:["feel","to feel"], ans:"feel"},
+         {pre:"...Thank you so much for ", blank:"help / helping", post:" me.'", opts:["help","helping"], ans:"helping"},
+       ]},
+      {ko:"Linda는 대답으로 부드럽게 고개를 끄덕인 후, 그녀의 시선을 다시 평화로운 시골 풍경으로 돌렸다.",
+       en:"Linda nodded gently in response, then [turns / turned] her gaze back to the peaceful countryside scene.",
+       items:[{pre:"...in response, then ", blank:"turns / turned", post:" her gaze back...", opts:["turns","turned"], ans:"turned"}]},
+      {ko:"그녀는 아무리 그녀가 확신이 서지 않게 느껴지더라도, 가장 작은 도움의 행위조차도 필요한 사람에게는 아무것도 하지 않는 것보다는 훨씬 더 나은 일이라고 생각했다.",
+       en:"She thought [what / that] no matter how unsure she might feel, even the smallest act of help is [very / much] better for someone in need than [do / doing] [something / nothing].",
+       items:[
+         {pre:"She thought ", blank:"what / that", post:" no matter how unsure...", opts:["what","that"], ans:"that"},
+         {pre:"...is ", blank:"very / much", post:" better for someone in need...", opts:["very","much"], ans:"much"},
+         {pre:"...in need than ", blank:"do / doing", post:" nothing.", opts:["do","doing"], ans:"doing"},
+         {pre:"...than doing ", blank:"something / nothing", post:".", opts:["something","nothing"], ans:"nothing"},
+       ]},
+    ]
+  }
+];
+
+
+// ── STATE ──────────────────────────────────────────
+let userName='', userSchool='', selectedNos=new Set(), doneNos=new Set();
+let filterMode='all';
+// 각 문항 답변 상태: key = "passageNo_qIdx_itemIdx", value = {sel, correct}
+let answers = {};
+let totalItems = 0;
+let t0 = 0;
+
+// ── START ──────────────────────────────────────────
+function goPassageSelect(){
+  userSchool = document.getElementById('si').value;
+  userName = document.getElementById('ni').value.trim();
+  if(!userSchool){alert('학교를 선택해주세요!');return;}
+  if(!userName){alert('이름을 입력해주세요!');return;}
+  localStorage.setItem('bomnal_name', userName);
+  localStorage.setItem('bomnal_school', userSchool);
+  document.getElementById('startScreen').classList.add('hidden');
+  document.getElementById('userInfo').textContent = userName + ' · ' + userSchool;
+  renderPassageGrid();
+  document.getElementById('passageScreen').classList.remove('hidden');
+}
+
+function renderPassageGrid(){
+  const grid = document.getElementById('passageGrid');
+  grid.innerHTML = '';
+  PASSAGES.forEach(p => {
+    const no = String(p.no);
+    if(filterMode==='20-24' && !['20','21','22','23','24'].includes(no)) return;
+    if(filterMode==='29-40' && !['29','30','31','32','33','34','35','36','37','38','39','40'].includes(no)) return;
+    if(filterMode==='41-45' && !['41-42','43-45'].includes(no)) return;
+    const totalQ = p.qs.reduce((s,q)=>s+q.items.length, 0);
+    const d = document.createElement('div');
+    d.className = 'p-card' + (selectedNos.has(no)?' sel':'') + (doneNos.has(no)?' done':'');
+    d.onclick = () => togglePassage(no, d);
+    d.innerHTML = `<div class="p-no">${p.no}번</div><div class="p-topic">${p.topic}</div><div class="p-qcount">${totalQ}문항</div>`
+      + (doneNos.has(no) ? '<span class="p-badge">완료✓</span>' : '')
+      + (selectedNos.has(no) && !doneNos.has(no) ? '<span class="p-badge" style="background:#e8f5e9;color:#2e7d32;">선택</span>' : '');
+    grid.appendChild(d);
+  });
+}
+
+function togglePassage(no, el){
+  if(selectedNos.has(no)){selectedNos.delete(no); el.classList.remove('sel');}
+  else{selectedNos.add(no); el.classList.add('sel');}
+}
+
+function filterPassage(mode, btn){
+  filterMode = mode;
+  document.querySelectorAll('.filter-bar .fb').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  renderPassageGrid();
+}
+
+function selectAll(){
+  const visible = PASSAGES.filter(p => {
+    const no = String(p.no);
+    if(filterMode==='20-24') return ['20','21','22','23','24'].includes(no);
+    if(filterMode==='29-40') return ['29','30','31','32','33','34','35','36','37','38','39','40'].includes(no);
+    if(filterMode==='41-45') return ['41-42','43-45'].includes(no);
+    return true;
+  });
+  const allSel = visible.every(p=>selectedNos.has(String(p.no)));
+  visible.forEach(p=>{
+    const no = String(p.no);
+    if(allSel) selectedNos.delete(no); else selectedNos.add(no);
+  });
+  renderPassageGrid();
+}
+
+// ── QUIZ 시작 ──────────────────────────────────────────
+function startQuiz(){
+  if(selectedNos.size===0){alert('지문을 하나 이상 선택하세요!');return;}
+  answers = {};
+  totalItems = 0;
+  t0 = Date.now();
+
+  document.getElementById('passageScreen').classList.add('hidden');
+  document.getElementById('hdr').classList.remove('hidden');
+  document.getElementById('pw').classList.remove('hidden');
+  document.getElementById('quizArea').classList.remove('hidden');
+  document.getElementById('hs').textContent = userName + ' · ' + selectedNos.size + '개 지문';
+
+  renderQuiz();
+}
+
+// ── 퀴즈 렌더링 ─────────────────────────────────────────
+function renderQuiz(){
+  const area = document.getElementById('quizArea');
+  area.innerHTML = '';
+
+  const selectedPassages = PASSAGES.filter(p => selectedNos.has(String(p.no)));
+
+  selectedPassages.forEach(p => {
+    const section = document.createElement('div');
+    section.className = 'passage-section';
+    section.id = 'section-' + p.no;
+
+    // 섹션 헤더
+    const totalQ = p.qs.reduce((s,q)=>s+q.items.length, 0);
+    totalItems += totalQ;
+    section.innerHTML = `
+      <div class="passage-header">
+        <span class="passage-num">${p.no}번</span>
+        <span class="passage-topic">${p.topic}</span>
+        <span class="passage-score" id="score-${p.no}">0 / ${totalQ}</span>
+      </div>`;
+
+    // 각 문장 카드
+    p.qs.forEach((q, qi) => {
+      const card = document.createElement('div');
+      card.className = 'sent-card';
+      card.id = `card-${p.no}-${qi}`;
+
+      // 영어 문장 파싱: [A / B] → 인라인 버튼 그룹
+      let enHTML = q.en;
+      let itemIdx = 0;
+      enHTML = enHTML.replace(/\[([^\]]+)\]/g, (match, inner) => {
+        const parts = inner.split(' / ').map(s=>s.trim());
+        const ii = itemIdx++;
+        const key = `${p.no}_${qi}_${ii}`;
+        const ans = q.items[ii] ? q.items[ii].ans : parts[0];
+        const btns = parts.map((opt, oi) =>
+          `<button class="choice-btn" id="btn-${key}-${oi}" onclick="selectChoice('${key}','${opt.replace(/'/g,"\\'")}','${ans.replace(/'/g,"\\'")}','${p.no}','${qi}')" data-opt="${opt.replace(/"/g,'&quot;')}">${opt}</button>`
+        ).join('<span class="choice-sep">/</span>');
+        return `<span class="choice-group" id="grp-${key}">${btns}</span>`;
+      });
+
+      card.innerHTML = `
+        <div class="sent-top">
+          <div class="sent-num">${qi+1}</div>
+          <div class="sent-ko">${q.ko}</div>
+        </div>
+        <div class="sent-en">${enHTML}</div>`;
+
+      section.appendChild(card);
+    });
+
+    area.appendChild(section);
+  });
+
+  // 제출 버튼
+  area.innerHTML += `<div class="submit-wrap">
+    <button class="submit-btn" id="mainSubmitBtn" onclick="doSubmit()">📊 채점하기</button>
+  </div>`;
+
+  updateProgress();
+}
+
+// ── 선택 처리 ──────────────────────────────────────────
+function selectChoice(key, sel, ans, pno, qi){
+  if(answers[key]) return; // 이미 답했으면 무시
+
+  const correct = (sel === ans);
+  answers[key] = {sel, ans, correct, pno, qi};
+
+  // 버튼 그룹 전체 비활성화
+  const grp = document.getElementById('grp-' + key);
+  if(!grp) return;
+
+  grp.querySelectorAll('.choice-btn').forEach(btn => {
+    btn.disabled = true;
+    const opt = btn.dataset.opt;
+    if(opt === sel && correct) btn.classList.add('selected-correct');
+    else if(opt === sel && !correct) btn.classList.add('selected-wrong');
+    else if(opt === ans && !correct) btn.classList.add('reveal-correct');
+  });
+  grp.classList.add(correct ? 'done-correct' : 'done-wrong');
+
+  // 지문별 점수 업데이트
+  updatePassageScore(pno);
+  updateProgress();
+  checkAllDone(pno, qi);
+}
+
+function updatePassageScore(pno){
+  const p = PASSAGES.find(p=>String(p.no)===String(pno));
+  if(!p) return;
+  let cor=0, tot=0;
+  p.qs.forEach((q,qi)=>{
+    q.items.forEach((item,ii)=>{
+      tot++;
+      const key = `${pno}_${qi}_${ii}`;
+      if(answers[key] && answers[key].correct) cor++;
+    });
+  });
+  const el = document.getElementById('score-'+pno);
+  if(el) el.textContent = cor + ' / ' + tot;
+}
+
+function checkAllDone(pno, qi){
+  const p = PASSAGES.find(p=>String(p.no)===String(pno));
+  if(!p) return;
+  const card = document.getElementById(`card-${pno}-${qi}`);
+  if(!card) return;
+  // 이 문장의 모든 아이템이 답변되었는지
+  const allAnswered = p.qs[qi].items.every((_,ii)=>answers[`${pno}_${qi}_${ii}`]);
+  if(allAnswered) card.classList.add('all-done');
+}
+
+function updateProgress(){
+  const done = Object.keys(answers).length;
+  const pct = totalItems > 0 ? Math.round(done/totalItems*100) : 0;
+  document.getElementById('pf').style.width = pct + '%';
+  document.getElementById('hb').textContent = done + '/' + totalItems;
+
+  // 모두 답했으면 채점 버튼 강조
+  const submitBtn = document.getElementById('mainSubmitBtn');
+  const submitHdrBtn = document.getElementById('submitHdrBtn');
+  if(done >= totalItems){
+    if(submitBtn) submitBtn.style.background = '#f57f17';
+    if(submitHdrBtn){submitHdrBtn.style.display='block';}
+  }
+}
+
+// ── 채점 ──────────────────────────────────────────
+function doSubmit(){
+  // 아직 안 답한 것 체크
+  const done = Object.keys(answers).length;
+  if(done < totalItems){
+    const remain = totalItems - done;
+    if(!confirm(`아직 ${remain}개의 문항이 남았어요. 그래도 채점할까요?`)) return;
+  }
+
+  let cor=0, wrn=0;
+  const wrongs=[], allResults=[];
+
+  PASSAGES.filter(p=>selectedNos.has(String(p.no))).forEach(p=>{
+    p.qs.forEach((q,qi)=>{
+      q.items.forEach((item,ii)=>{
+        const key=`${p.no}_${qi}_${ii}`;
+        const a=answers[key];
+        if(a){
+          if(a.correct) cor++;
+          else{
+            wrn++;
+            wrongs.push({pno:p.no, ko:q.ko, my:a.sel, correct:item.ans});
+          }
+          allResults.push({pno:p.no, type:'어법', correct:a.correct, my:a.sel, ans:item.ans});
+        } else {
+          wrn++;
+          wrongs.push({pno:p.no, ko:q.ko, my:'(미응답)', correct:item.ans});
+          allResults.push({pno:p.no, type:'어법', correct:false, my:'(미응답)', ans:item.ans});
+        }
+      });
+    });
+  });
+
+  const total = cor + wrn;
+  const pct = total > 0 ? Math.round(cor/total*100) : 0;
+  const el = Math.round((Date.now()-t0)/60000);
+  selectedNos.forEach(n=>doneNos.add(n));
+
+  // 결과 화면
+  document.getElementById('quizArea').classList.add('hidden');
+  document.getElementById('resultScreen').classList.remove('hidden');
+  document.getElementById('submitHdrBtn').style.display='none';
+
+  const wHTML = wrongs.length > 0
+    ? '<div class="wl"><h3>❌ 오답 ('+wrongs.length+'개)</h3>'
+      + wrongs.map(w=>`<div class="wi"><div class="wie">${w.pno}번 | ${w.ko.substring(0,36)}...</div><div class="wid">내 답: <b>${w.my}</b> → 정답: <b>${w.correct}</b></div></div>`).join('')
+      + '</div>'
+    : '<div style="color:#2e7d32;font-weight:800;padding:16px;text-align:center;font-size:15px;">🎉 전부 정답!</div>';
+
+  document.getElementById('resultScreen').innerHTML = `<div class="rc">
+    <div style="font-size:12px;color:var(--muted);margin-bottom:4px;">고2 25년 6월 어법·어휘 · ${selectedNos.size}개 지문</div>
+    <div class="rs">${pct}점</div>
+    <div class="rsub">${userName}의 결과</div>
+    <div class="sr">
+      <div class="si"><div class="sn" style="color:#2e7d32;">${cor}</div><div class="sl">정답</div></div>
+      <div class="si"><div class="sn" style="color:#c62828;">${wrn}</div><div class="sl">오답</div></div>
+      <div class="si"><div class="sn" style="color:#555;">${total}</div><div class="sl">총문제</div></div>
+      <div class="si"><div class="sn" style="color:#f57f17;">${el}분</div><div class="sl">소요</div></div>
+    </div>
+    ${wHTML}
+    <div class="rbtns">
+      <button class="rbtn rbtn-p" onclick="goBack()">← 지문 다시 선택</button>
+      <button class="rbtn rbtn-s" onclick="location.reload()">처음부터 🔄</button>
+    </div>
+  </div>`;
+
+  if(window._fbSave) window._fbSave({
+    submittedAt: new Date().toISOString(),
+    studentName: userName, school: userSchool,
+    score: pct, correct: cor, wrong: wrn, total: total, elapsedMin: el,
+    quizType: '고2_25년6월_어법어휘',
+    passages: [...selectedNos],
+    details: allResults.map(r=>({지문:r.pno+'번', 유형:r.type, 결과:r.correct?'✅정답':'❌오답', 내답:r.my, 정답:r.ans})),
+    wrongWords: wrongs.map(w=>({pno:w.pno, ko:w.ko.substring(0,40), my:w.my, correct:w.correct}))
+  });
+}
+
+function goBack(){
+  document.getElementById('resultScreen').classList.add('hidden');
+  document.getElementById('hdr').classList.add('hidden');
+  document.getElementById('pw').classList.add('hidden');
+  selectedNos.clear();
+  renderPassageGrid();
+  document.getElementById('passageScreen').classList.remove('hidden');
+}
+
+// ── localStorage 자동입력 ──────────────────────────────
+window.addEventListener('DOMContentLoaded',()=>{
+  const n=localStorage.getItem('bomnal_name');
+  const s=localStorage.getItem('bomnal_school');
+  if(n) document.getElementById('ni').value=n;
+  if(s){
+    const sel=document.getElementById('si');
+    for(let i=0;i<sel.options.length;i++){
+      if(sel.options[i].value && s.includes(sel.options[i].value)){sel.value=sel.options[i].value;break;}
+    }
+  }
+});
+</script>
+</body>
+</html>
