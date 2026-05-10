@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>봄날 퀴즈 | 고2 24년 6월 삽입 학습</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&family=Black+Han+Sans&display=swap');
+:root{--pri:#1565c0;--acc:#f57f17;--bg:#e8eaf6;--card:#fff;--muted:#757575;--ok:#2e7d32;--ng:#c62828;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Nanum Gothic',sans-serif;background:var(--bg);min-height:100vh;color:#1a1a2e;}
+.hidden{display:none!important;}
+
+/* 시작 */
+#startScreen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
+.s-card{background:#fff;border-radius:24px;padding:36px 28px;text-align:center;max-width:520px;width:100%;box-shadow:0 8px 32px rgba(21,101,192,.15);}
+.s-card h1{font-family:'Black Han Sans',sans-serif;font-size:20px;color:var(--pri);margin-bottom:6px;}
+.s-sub{font-size:13px;color:var(--muted);margin-bottom:20px;}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:22px;}
+.info-item{background:var(--bg);border-radius:10px;padding:10px;text-align:center;font-size:12px;color:var(--pri);font-weight:700;}
+.start-btn{width:100%;padding:14px;border-radius:12px;border:none;background:linear-gradient(135deg,#1565c0,#f57f17);color:#fff;font-size:1rem;font-weight:800;cursor:pointer;font-family:inherit;}
+
+/* 지문 선택 */
+#passageScreen{padding:20px;max-width:700px;margin:0 auto;}
+.ps-header{background:linear-gradient(135deg,#1565c0,#1976d2);color:#fff;border-radius:16px;padding:18px 22px;margin-bottom:20px;}
+.ps-title{font-family:'Black Han Sans',sans-serif;font-size:16px;}
+.ps-sub{font-size:11px;opacity:.8;margin-top:3px;}
+.passage-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-bottom:20px;}
+.p-card{background:#fff;border-radius:14px;padding:14px 12px;text-align:center;cursor:pointer;border:2.5px solid #e0e0e0;transition:all .18s;position:relative;}
+.p-card:hover{border-color:var(--pri);transform:translateY(-2px);box-shadow:0 6px 18px rgba(21,101,192,.12);}
+.p-card.sel{border-color:var(--pri);background:var(--bg);}
+.p-card.done{border-color:#4caf50;background:#e8f5e9;}
+.p-no{font-family:'Black Han Sans',sans-serif;font-size:18px;color:var(--pri);margin-bottom:4px;}
+.p-topic{font-size:10px;color:var(--muted);line-height:1.4;}
+.p-qcount{font-size:10px;color:#1976d2;font-weight:700;margin-top:3px;}
+.p-badge{position:absolute;top:6px;right:6px;font-size:9px;padding:2px 6px;border-radius:8px;font-weight:700;}
+.sel-all-btn{width:100%;padding:12px;border-radius:12px;border:2px solid var(--pri);background:#fff;color:var(--pri);font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;margin-bottom:10px;}
+.go-btn{width:100%;padding:14px;border-radius:12px;border:none;background:linear-gradient(135deg,#1565c0,#f57f17);color:#fff;font-size:1rem;font-weight:800;cursor:pointer;font-family:inherit;}
+
+/* 헤더 */
+.hdr{background:#1565c0;color:#fff;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.ht{font-family:'Black Han Sans',sans-serif;font-size:15px;}
+.hs{font-size:10px;opacity:.7;margin-top:2px;}
+.hb{background:rgba(255,255,255,.2);border-radius:16px;padding:4px 12px;font-size:12px;font-weight:700;}
+.pw{height:4px;background:#bbdefb;}
+.pf{height:100%;background:linear-gradient(90deg,#1565c0,#f57f17);transition:width .4s;}
+
+/* 퀴즈 */
+#quizArea{padding:20px;max-width:760px;margin:0 auto;}
+.qc{background:#fff;border-radius:18px;padding:22px 20px;margin-bottom:16px;box-shadow:0 3px 16px rgba(21,101,192,.08);}
+.q-no-badge{display:inline-flex;align-items:center;gap:6px;margin-bottom:12px;}
+.qno{font-family:'Black Han Sans',sans-serif;font-size:13px;color:#fff;background:var(--pri);padding:3px 12px;border-radius:12px;}
+.qtype-tag{font-size:11px;font-weight:700;padding:3px 10px;border-radius:10px;background:#e8eaf6;color:#1565c0;}
+
+/* 삽입 문장 박스 */
+.insert-box{background:#fff8e1;border:2px solid #f57f17;border-radius:12px;padding:13px 16px;font-size:13.5px;line-height:1.9;margin-bottom:16px;color:#1a1a2e;}
+.insert-label{font-family:'Black Han Sans',sans-serif;font-size:11px;color:#fff;background:#f57f17;border-radius:6px;padding:2px 10px;margin-bottom:8px;display:inline-block;}
+
+/* 본문 + 번호 표시 */
+.body-box{background:#f8faff;border-left:4px solid var(--pri);border-radius:0 10px 10px 0;padding:14px 16px;font-size:13.5px;line-height:2.1;margin-bottom:16px;color:#1a237e;}
+.slot{display:inline-block;background:#1565c0;color:#fff;border-radius:6px;padding:1px 9px;font-family:'Black Han Sans',sans-serif;font-size:13px;margin:0 3px;vertical-align:middle;}
+
+/* 5지선다 */
+.choices{display:grid;gap:8px;margin-bottom:12px;}
+.cb{background:#f5f5f5;border:2px solid #e0e0e0;border-radius:11px;padding:11px 15px;font-family:'Nanum Gothic',sans-serif;font-size:14px;font-weight:800;cursor:pointer;text-align:center;transition:all .15s;}
+.cb:hover:not(:disabled){border-color:var(--pri);background:var(--bg);}
+.cb.c-ok{background:#e8f5e9;border-color:#2e7d32;color:#1b5e20;}
+.cb.c-ng{background:#ffebee;border-color:#c62828;color:#b71c1c;}
+.cb.reveal{background:#e8f5e9;border-color:#2e7d32;}
+.cb:disabled{cursor:default;}
+
+.fb-box{padding:12px 16px;border-radius:12px;font-size:13px;font-weight:700;margin-top:10px;display:none;line-height:1.6;}
+.fb-box.ok{background:#e8f5e9;color:#1b5e20;border:1.5px solid #a5d6a7;display:block;}
+.fb-box.no{background:#ffebee;color:#b71c1c;border:1.5px solid #ef9a9a;display:block;}
+.next-btn{width:100%;padding:11px;border-radius:10px;border:none;background:#1565c0;color:#fff;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;margin-top:10px;display:none;}
+
+/* 결과 */
+#resultScreen{padding:20px;max-width:600px;margin:0 auto;}
+.rc{background:#fff;border-radius:24px;padding:30px 22px;box-shadow:0 8px 32px rgba(21,101,192,.1);text-align:center;}
+.rs{font-family:'Black Han Sans',sans-serif;font-size:52px;color:var(--pri);line-height:1;}
+.rsub{font-size:13px;color:var(--muted);margin-top:4px;}
+.sr{display:flex;justify-content:center;gap:20px;margin-top:16px;flex-wrap:wrap;}
+.si{text-align:center;}.sn{font-family:'Black Han Sans',sans-serif;font-size:24px;}.sl{font-size:11px;color:var(--muted);margin-top:2px;}
+.rbtns{display:flex;gap:10px;justify-content:center;margin-top:18px;flex-wrap:wrap;}
+.rbtn{padding:12px 24px;border-radius:12px;border:none;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;}
+.rbtn-p{background:linear-gradient(135deg,#1565c0,#f57f17);color:#fff;}
+.rbtn-s{background:#f5f5f5;color:#1565c0;border:2px solid #90caf9;}
+
+/* 오답노트 탭 */
+.tab-bar{display:flex;gap:0;margin-bottom:16px;border-radius:12px;overflow:hidden;border:2px solid var(--pri);}
+.tab-btn{flex:1;padding:10px;border:none;background:#fff;color:var(--pri);font-size:13px;font-weight:800;cursor:pointer;font-family:inherit;transition:all .15s;}
+.tab-btn.on{background:var(--pri);color:#fff;}
+.wn-card{background:#fff;border-radius:16px;margin-bottom:14px;box-shadow:0 2px 12px rgba(21,101,192,.08);overflow:hidden;}
+.wn-header{background:linear-gradient(135deg,#1565c0,#1976d2);color:#fff;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;}
+.wn-title{font-family:'Black Han Sans',sans-serif;font-size:14px;}
+.wn-badge{font-size:10px;background:rgba(255,255,255,.25);border-radius:8px;padding:2px 8px;}
+.wn-body{padding:14px 16px;}
+.wn-insert{background:#fff8e1;border:1.5px solid #f57f17;border-radius:8px;padding:10px 14px;font-size:13px;line-height:1.8;margin-bottom:10px;}
+.wn-insert-label{font-size:10px;font-weight:800;color:#e65100;margin-bottom:4px;}
+.wn-body-txt{font-size:13px;line-height:2;color:#1a237e;background:#f8faff;border-left:3px solid #90caf9;border-radius:0 8px 8px 0;padding:10px 14px;margin-bottom:10px;}
+.wn-ok{background:#e8f5e9;border-radius:8px;padding:4px 12px;font-size:12px;font-weight:800;color:#1b5e20;display:inline-block;margin-bottom:6px;}
+.wn-exp{font-size:12px;color:#555;line-height:1.6;border-top:1px solid #e8eaf6;padding-top:8px;margin-top:4px;}
+.wn-empty{text-align:center;padding:32px;color:var(--muted);font-size:14px;font-weight:700;}
+.wn-clear-btn{width:100%;padding:10px;border-radius:10px;border:2px solid #ef9a9a;background:#fff;color:#c62828;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit;margin-bottom:14px;}
+
+@media(max-width:480px){.passage-grid{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+
+<div id="startScreen">
+  <div class="s-card">
+    <h1>📌 고2 24년 6월 삽입 학습</h1>
+    <div class="s-sub">2024년 6월 부산광역시 교육청 학력평가 · 문장 삽입 위치 찾기</div>
+    <div class="info-grid">
+      <div class="info-item">📝 24~37번 지문</div>
+      <div class="info-item">🎯 지문별 선택 가능</div>
+      <div class="info-item">📌 삽입 위치 ①~⑤</div>
+      <div class="info-item">✅ 즉시 정오 피드백</div>
+    </div>
+    <button class="start-btn" onclick="goSel()">지문 선택하기 →</button>
+  </div>
+</div>
+
+<div id="passageScreen" class="hidden">
+  <div class="ps-header">
+    <div class="ps-title">📌 지문 선택</div>
+    <div class="ps-sub">풀고 싶은 지문을 선택하세요 (복수 선택 가능)</div>
+  </div>
+  <div class="passage-grid" id="passageGrid"></div>
+  <button class="sel-all-btn" onclick="selAll()">전체 선택 / 해제</button>
+  <button class="go-btn" onclick="startQuiz()">선택한 지문 풀기 🚀</button>
+</div>
+
+<div id="hdr" class="hdr hidden">
+  <div><div class="ht">📌 고2 24년 6월 삽입 학습</div><div class="hs" id="hs"></div></div>
+  <div class="hb" id="hb">0/0</div>
+</div>
+<div id="pw" class="pw hidden"><div class="pf" id="pf" style="width:0%"></div></div>
+<div id="quizArea" class="hidden"></div>
+<div id="resultScreen" class="hidden"></div>
+<div id="wrongNoteScreen" class="hidden"></div>
+
+<script>
+// ============================================================
+// DATA  insert: 삽입 문장 / body: 본문(①②③④⑤ 슬롯 포함) / ans: 정답번호 / exp: 해설
+// ============================================================
+const QLISTS = [
+  {
+    id:"24-1", passageNo:24, topic:"마감일과 시간 인식 ①",
+    insert:`What you need to do in that situation is find another way to think about the timeframe.`,
+    body:`We tend to break up time into units, such as weeks, months, and seasons. <slot>①</slot> In a series of studies among farmers in India and students in North America, psychologists found that if a deadline is on the other side of a "break" ― such as in the New Year ― we're more likely to see it as remote, and, as a result, be less ready to jump into action. <slot>②</slot> For example, if it's November and the deadline is in January, it's better to tell yourself you have to get it done "this winter" rather than "next year." <slot>③</slot> The best approach is to view deadlines as a challenge that you have to meet within a period that's imminent. <slot>④</slot> That way the stress is more manageable, and you have a better chance of starting ― and therefore finishing ― in good time. <slot>⑤</slot>`,
+    ans:"②",
+    exp:"마감이 '뉴 브레이크' 너머에 있으면 원거리로 느낀다는 내용(①) 뒤에, '그 상황에서 해야 할 일'을 제시하는 삽입 문장이 자연스럽게 연결되고, 그 뒤에 구체적 예시(For example)가 이어진다."
+  },
+  {
+    id:"24-2", passageNo:24, topic:"마감일과 시간 인식 ②",
+    insert:`Another example is to think of it as a task to finish "this week" instead of "next week" if it's Thursday and the deadline is next Monday.`,
+    body:`We tend to break up time into units, such as weeks, months, and seasons. <slot>①</slot> In a series of studies among farmers in India and students in North America, psychologists found that if a deadline falls on the other side of a significant time division, such as the New Year, we're more likely to perceive it as remote. <slot>②</slot> Consequently, we are less likely to take immediate action. <slot>③</slot> To counteract this tendency, it's helpful to reframe the timeframe. <slot>④</slot> For instance, if it's November and the deadline is in January, think of it as something you need to complete "this winter" rather than "next year." <slot>⑤</slot> By viewing deadlines as challenges to be met in the near term, you can manage stress more effectively and are more likely to start and complete tasks on time.`,
+    ans:"⑤",
+    exp:"'이번 겨울로 생각하라'는 예시(For instance) 뒤에, 또 다른 예시(Another example)로 '이번 주'로 생각하라는 내용이 자연스럽게 이어진다."
+  },
+  {
+    id:"32-1", passageNo:32, topic:"매몰 비용 오류 ①",
+    insert:`Rather than accept that we've lost a thousand dollars, we lay down another thousand and lose that too.`,
+    body:`If we've invested in something that hasn't repaid us ― be it money in a failing venture, or time in an unhappy relationship ― we find it very difficult to walk away. This is the sunk cost fallacy. Our instinct is to continue investing money or time as we hope that our investment will prove to be worthwhile in the end. <slot>①</slot> Giving up would mean acknowledging that we've wasted something we can't get back, and that thought is so painful that we prefer to avoid it if we can. <slot>②</slot> The problem, of course, is that if something really is a bad bet, then staying with it simply increases the amount we lose. <slot>③</slot> Rather than walk away from a bad five-year relationship, for example, we turn it into a bad 10-year relationship. <slot>④</slot> In the end, by delaying the pain of admitting our problem, we only add to it. <slot>⑤</slot> Sometimes we just have to cut our losses.`,
+    ans:"④",
+    exp:"'5년 나쁜 관계를 10년으로 만든다'는 예시 뒤에, 병렬 구조로 '천 달러 손실도 또 천 달러를 내놓는다'는 삽입 문장이 이어진다. Rather than ~ 구조 병렬."
+  },
+  {
+    id:"32-2", passageNo:32, topic:"매몰 비용 오류 ②",
+    insert:`The problem, of course, is that if something really is a bad bet, then staying with it simply increases the amount we lose.`,
+    body:`If we've invested in something that hasn't repaid us ― be it money in a failing venture, or time in an unhappy relationship ― we find it very difficult to walk away. This is the sunk cost fallacy. <slot>①</slot> Our instinct is to continue investing money or time as we hope that our investment will prove to be worthwhile in the end. <slot>②</slot> Giving up would mean acknowledging that we've wasted something we can't get back, and that thought is so painful that we prefer to avoid it if we can. <slot>③</slot> Rather than walk away from a bad five-year relationship, for example, we turn it into a bad 10-year relationship; rather than accept that we've lost a thousand dollars, we lay down another thousand and lose that too. <slot>④</slot> In the end, by delaying the pain of admitting our problem, we only add to it. <slot>⑤</slot> Sometimes we just have to cut our losses.`,
+    ans:"③",
+    exp:"포기가 고통스럽다는 내용(②) 뒤에, '그런데 문제는 나쁜 투자를 계속하면 손실이 커진다'는 전환이 자연스럽고, 뒤에 구체 예시가 이어진다."
+  },
+  {
+    id:"32-3", passageNo:32, topic:"매몰 비용 오류 ③",
+    insert:`That thought is so painful that we prefer to avoid it if we can.`,
+    body:`If we've invested in something that hasn't repaid us ― be it money in a failing venture, or time in an unhappy relationship ― we find it very difficult to walk away. This is the sunk cost fallacy. <slot>①</slot> Our instinct is to continue investing money or time as we hope that our investment will prove to be worthwhile in the end. <slot>②</slot> Giving up would mean acknowledging that we've wasted something we can't get back. <slot>③</slot> The problem, of course, is that if something really is a bad bet, then staying with it simply increases the amount we lose. <slot>④</slot> Rather than walk away from a bad five-year relationship, for example, we turn it into a bad 10-year relationship; rather than accept that we've lost a thousand dollars, we lay down another thousand and lose that too. <slot>⑤</slot> In the end, by delaying the pain of admitting our problem, we only add to it. Sometimes we just have to cut our losses.`,
+    ans:"③",
+    exp:"'돌이킬 수 없는 무언가를 낭비했다고 인정해야 한다'(②) 뒤에, '그 생각이 너무 고통스럽다'는 삽입 문장이 자연스럽게 연결된다."
+  },
+  {
+    id:"32-4", passageNo:32, topic:"매몰 비용 오류 ④",
+    insert:`The problem, of course, is that if something really is a bad bet, then staying with it simply increases the amount we lose.`,
+    body:`If we've invested in something that hasn't repaid us ― be it money in a failing venture, or time in an unhappy relationship ― we find it very difficult to walk away. <slot>①</slot> This is the sunk cost fallacy. Our instinct is to continue investing money or time as we hope that our investment will prove to be worthwhile in the end. <slot>②</slot> Giving up would mean acknowledging that we've wasted something we can't get back, and that thought is so painful that we prefer to avoid it if we can. <slot>③</slot> Rather than walk away from a bad five-year relationship, for example, we turn it into a bad 10-year relationship; rather than accept that we've lost a thousand dollars, we lay down another thousand and lose that too. <slot>④</slot> In the end, by delaying the pain of admitting our problem, we only add to it. <slot>⑤</slot> Sometimes we just have to cut our losses.`,
+    ans:"③",
+    exp:"포기가 고통스럽다는 내용(②) 뒤에, '그런데 나쁜 투자를 계속하면 손실이 증가한다'는 문제 제기가 자연스럽고, 뒤에 구체 예시가 이어진다."
+  },
+  {
+    id:"33-1", passageNo:33, topic:"빛의 속도와 우주 ①",
+    insert:`But if we're far enough away, an entire sun can go out and we'll continue to see it shining brightly.`,
+    body:`On our little world, light travels, for all practical purposes, instantaneously. If a lightbulb is glowing, then of course it's physically where we see it, shining away. We reach out our hand and touch it: It's there all right, and unpleasantly hot. <slot>①</slot> If the filament fails, then the light goes out. <slot>②</slot> We don't see it in the same place, glowing, illuminating the room years after the bulb breaks and it's removed from its socket. <slot>③</slot> The very notion seems nonsensical. <slot>④</slot> We won't learn of its death, it may be, for ages to come ― in fact, for how long it takes light, which travels fast but not infinitely fast, to cross the intervening vastness. <slot>⑤</slot> The immense distances to the stars and the galaxies mean that we see everything in space in the past.`,
+    ans:"④",
+    exp:"전구 이야기가 '말도 안 된다(nonsensical)'로 마무리된 뒤, '하지만 충분히 멀다면 꺼진 별도 계속 보인다'는 반전 문장이 ④에 자연스럽게 연결되고, 뒤에 그 이유 설명이 이어진다."
+  },
+  {
+    id:"33-2", passageNo:33, topic:"빛의 속도와 우주 ②",
+    insert:`The very notion seems nonsensical.`,
+    body:`On our little world, light travels, for all practical purposes, instantaneously. If a lightbulb is glowing, then of course it's physically where we see it, shining away. <slot>①</slot> We reach out our hand and touch it: It's there all right, and unpleasantly hot. <slot>②</slot> If the filament fails, then the light goes out. <slot>③</slot> We don't see it in the same place, glowing, illuminating the room years after the bulb breaks and it's removed from its socket. <slot>④</slot> But if we're far enough away, an entire sun can go out and we'll continue to see it shining brightly; we won't learn of its death, it may be, for ages to come ― in fact, for how long it takes light, which travels fast but not infinitely fast, to cross the intervening vastness. <slot>⑤</slot> The immense distances to the stars and the galaxies mean that we see everything in space in the past.`,
+    ans:"④",
+    exp:"'전구가 제거된 후 몇 년 뒤에도 같은 자리에서 빛나고 있는 것을 보지 못한다'(③) 뒤에, '그 개념이 말도 안 된다'는 평가가 자연스럽게 이어진다."
+  },
+  {
+    id:"34-1", passageNo:34, topic:"금융 시장과 소비 평활화 ①",
+    insert:`Financial markets are a more sophisticated way of managing the harvest.`,
+    body:`Financial markets do more than take capital from the rich and lend it to everyone else. <slot>①</slot> They enable each of us to smooth consumption over our lifetimes, which is a fancy way of saying that we don't have to spend income at the same time we earn it. <slot>②</slot> Shakespeare may have admonished us to be neither borrowers nor lenders; the fact is that most of us will be both at some point. <slot>③</slot> If we lived in an agrarian society, we would have to eat our crops reasonably soon after the harvest or find some way to store them. <slot>④</slot> We can spend income now that we have not yet earned ― as by borrowing for college or a home ― or we can earn income now and spend it later, as by saving for retirement. <slot>⑤</slot> The important point is that earning income has been divorced from spending it, allowing us much more flexibility in life.`,
+    ans:"④",
+    exp:"농업 사회에서 수확물을 바로 먹거나 저장해야 한다는 내용(③) 뒤에, '금융 시장은 수확을 관리하는 더 정교한 방식'이라는 비유 연결 문장이 자연스럽고, 뒤에 구체 예시가 이어진다."
+  },
+  {
+    id:"34-2", passageNo:34, topic:"금융 시장과 소비 평활화 ②",
+    insert:`Financial markets, meanwhile, are a more sophisticated way of managing the harvest.`,
+    body:`Financial markets do more than take capital from the rich and lend the money to everyone else. <slot>①</slot> They enable each of us to smooth consumption over our lifetimes, which must be a fancy way of saying that we don't have to spend income at the same time we earn it. <slot>②</slot> Shakespeare may have admonished us to be neither borrowers nor lenders; the fact is that most of us will be both at some point. <slot>③</slot> If we lived in an agrarian society, we would have to eat our crops reasonably soon after crop gathering or find some way to store them. <slot>④</slot> We can spend income now that we have not yet earned ― as by borrowing for college or a home ― or we can earn income now and spend it later, as by saving for retirement. <slot>⑤</slot> The important point is that earning income has been divorced from spending it, allowing us much more flexibility in life.`,
+    ans:"④",
+    exp:"농경 사회의 수확 저장 문제(③) 뒤에, 금융 시장이 그보다 '정교한 수확 관리 방식'이라는 비유 연결 문장이 ④에 자연스럽고, 뒤에 구체 설명이 이어진다."
+  },
+  {
+    id:"35-1", passageNo:35, topic:"무료 코드와 DNA 정보",
+    insert:`A lot of medical and genetic information will go this route in the coming decades.`,
+    body:`As the old joke goes: "Software, free. User manual, $10,000." But it's no joke. A couple of high-profile companies make their living selling instruction and paid support for free software. <slot>①</slot> The copy of code, being mere bits, is free. <slot>②</slot> The lines of free code become valuable to you only through support and guidance. <slot>③</slot> Right now getting a full copy of all your DNA is very expensive ($10,000), but soon it won't be. <slot>④</slot> The price is dropping so fast, it will be $100 soon, and then the next year insurance companies will offer to sequence you for free. <slot>⑤</slot> When a copy of your sequence costs nothing, the interpretation of what it means, what you can do about it, and how to use it ― the manual for your genes ― will be expensive.`,
+    ans:"③",
+    exp:"'무료 코드는 지원·안내를 통해서만 가치 있다'(②) 뒤에, 의료·유전 정보도 '이 경로를 따를 것'이라는 전환 문장이 자연스럽고, 뒤에 DNA 비용 언급이 이어진다."
+  },
+  {
+    id:"36-1", passageNo:36, topic:"뇌의 에너지 효율 ①",
+    insert:`Their actions should give away the game, but they can rest assured that your brain processes only small bits of the visual scene.`,
+    body:`Brains are expensive in terms of energy. Twenty percent of the calories we consume are used to power the brain. So brains try to operate in the most energy-efficient way possible, and that means processing only the minimum amount of information from our senses that we need to navigate the world. <slot>①</slot> Neuroscientists weren't the first to discover that fixing your gaze on something is no guarantee of seeing it. <slot>②</slot> Magicians figured this out long ago. <slot>③</slot> By directing your attention, they perform tricks with their hands in full view. <slot>④</slot> This all helps to explain the prevalence of traffic accidents in which drivers hit pedestrians in plain view, or collide with cars directly in front of them. <slot>⑤</slot> In many of these cases, the eyes are pointed in the right direction, but the brain isn't seeing what's really out there.`,
+    ans:"④",
+    exp:"마술사들이 눈에 보이는 곳에서 손으로 속임수를 행한다(③) 뒤에, '그들의 행동이 속임수를 드러낼 것 같지만 뇌는 작은 부분만 처리한다'는 삽입 문장이 자연스럽고, 뒤에 교통사고 설명이 이어진다."
+  },
+  {
+    id:"36-2", passageNo:36, topic:"뇌의 에너지 효율 ②",
+    insert:`This all helps to explain the prevalence of traffic accidents in which drivers hit pedestrians in plain view, or collide with cars directly in front of them.`,
+    body:`Brains are expensive in terms of energy. Twenty percent of the calories we consume are used to power the brain. So brains try to operate in the most energy-efficient way possible, and that means processing only the minimum amount of information from our senses that we need to navigate the world. <slot>①</slot> Neuroscientists weren't the first to discover that fixing your gaze on something is no guarantee of seeing it. <slot>②</slot> Magicians figured this out long ago. <slot>③</slot> By directing your attention, they perform tricks with their hands in full view. <slot>④</slot> Their actions should give away the game, but they can rest assured that your brain processes only small bits of the visual scene. <slot>⑤</slot> In many of these cases, the eyes are pointed in the right direction, but the brain isn't seeing what's really out there.`,
+    ans:"⑤",
+    exp:"마술사 예시로 뇌가 시각 장면의 작은 부분만 처리한다는 내용(④) 뒤에, '이것이 교통사고의 빈번함을 설명한다'는 결론 문장이 자연스럽고, 뒤에 구체 사례가 이어진다."
+  },
+  {
+    id:"37-1", passageNo:37, topic:"소비 vs 투자",
+    insert:`The crucial difference between these scenarios is that a college education makes a young person more productive for the rest of his or her life; a sports car does not.`,
+    body:`Buying a television is current consumption. It makes us happy today but does nothing to make us richer tomorrow. Yes, money spent on a television keeps workers employed at the television factory. <slot>①</slot> But if the same money were invested, it would create jobs somewhere else, say for scientists in a laboratory or workers on a construction site, while also making us richer in the long run. <slot>②</slot> Think about college as an example. <slot>③</slot> Sending students to college creates jobs for professors. <slot>④</slot> Using the same money to buy fancy sports cars for high school graduates would create jobs for auto workers. <slot>⑤</slot> Thus, college tuition is an investment; buying a sports car is consumption.`,
+    ans:"⑤",
+    exp:"'대학 등록금은 교수 일자리, 스포츠카는 자동차 노동자 일자리'라는 두 시나리오 제시(④) 뒤에, '두 시나리오의 결정적 차이'를 설명하는 삽입 문장이 자연스럽고, 뒤에 결론이 이어진다."
+  },
+  ,
+  {
+    id:"21-1", passageNo:21, topic:"성공의 대가",
+    insert:`Look instead at what they're forced to trade in return — look at what success has cost them.`,
+    body:`Take a look at some of the most powerful, rich, and famous people in the world. <slot>①</slot> Ignore the trappings of their success and what they're able to buy. <slot>②</slot> Mostly? Freedom. Their work demands they wear a suit. Their success depends on attending certain parties, kissing up to people they don't like. <slot>③</slot> It will require — inevitably — realizing they are unable to say what they actually think. Worse, it demands that they become a different type of person or do bad things. <slot>④</slot> Sure, it might pay well — but they haven't truly examined the transaction. As Seneca put it, "Slavery resides under marble and gold." <slot>⑤</slot> Too many successful people are prisoners in jails of their own making.`,
+    ans:"②",
+    exp:"성공의 장식을 무시하라(①) 뒤에, 대신 그들이 맞바꿔야 하는 것을 보라는 전환 문장이 자연스럽게 연결되고, 뒤에 대부분은? 자유라는 구체적 답이 이어진다."
+  },
+  {
+    id:"21-2", passageNo:21, topic:"성공의 대가",
+    insert:`Worse, it demands that they become a different type of person or do bad things.`,
+    body:`Take a look at some of the most powerful, rich, and famous people in the world. Ignore the trappings of their success and what they're able to buy. Look instead at what they're forced to trade in return — look at what success has cost them. <slot>①</slot> Mostly? Freedom. Their work demands they wear a suit. Their success depends on attending certain parties, kissing up to people they don't like. <slot>②</slot> It will require — inevitably — realizing they are unable to say what they actually think. <slot>③</slot> Sure, it might pay well — but they haven't truly examined the transaction. As Seneca put it, "Slavery resides under marble and gold." <slot>④</slot> Too many successful people are prisoners in jails of their own making. Is that what you want? Let's hope not. <slot>⑤</slot>`,
+    ans:"③",
+    exp:"실제로 생각하는 것을 말할 수 없다(②) 뒤에, 더 나쁜 것(Worse)으로 다른 유형의 사람이 되거나 나쁜 일을 해야 한다는 심화 문장이 자연스럽게 이어진다."
+  },
+  {
+    id:"22-1", passageNo:22, topic:"도덕적 해이",
+    insert:`This is an example of something known as moral hazard — when government support alters the decisions firms take.`,
+    body:`If a firm is going to be saved by the government, it might be easier to concentrate on lobbying the government for more money rather than taking the harder decision of restructuring the company to be able to be profitable and viable in the long term. <slot>①</slot> For example, if governments rescue banks who get into difficulty, as they did during the credit crisis of 2007-08, this could encourage banks to take greater risks in the future because they know there is a possibility that governments will intervene if they lose money. <slot>②</slot> Although the government rescue may be well intended, it can negatively affect the behavior of banks, encouraging risky and poor decision making. <slot>③</slot>`,
+    ans:"①",
+    exp:"정부 구제를 기다리며 로비에 집중하는 기업 행태 뒤에, 이것이 도덕적 해이의 예라는 정의 문장이 자연스럽게 연결되고, 뒤에 구체적 예시(For example)가 이어진다."
+  },
+  {
+    id:"22-2", passageNo:22, topic:"도덕적 해이",
+    insert:`Although the government rescue may be well intended, it can negatively affect the behavior of banks, encouraging risky and poor decision making.`,
+    body:`If a firm is going to be saved by the government, it might be easier to concentrate on lobbying the government for more money rather than taking the harder decision of restructuring the company. <slot>①</slot> This is an example of something known as moral hazard — when government support alters the decisions firms take. <slot>②</slot> For example, if governments rescue banks who get into difficulty, as they did during the credit crisis of 2007-08, this could encourage banks to take greater risks in the future because they know there is a possibility that governments will intervene if they lose money. <slot>③</slot>`,
+    ans:"③",
+    exp:"은행들이 더 큰 위험을 감수하도록 조장된다는 내용 뒤에, 정부의 구제는 좋은 의도일지라도 부정적으로 영향을 미친다는 결론 문장이 자연스럽게 마무리된다."
+  },
+  {
+    id:"23-1", passageNo:23, topic:"과학의 다양성",
+    insert:`The solution is that there should be far greater diversity in the practice of science: in gender, ethnicity, and social and cultural backgrounds.`,
+    body:`If there is little or no diversity of views, and all scientists see, think, and question the world in a similar way, then they will not, as a community, be as objective as they maintain they are, or at least aspire to be. <slot>①</slot> Science works because it is carried out by people who pursue their curiosity about the natural world and test their and each other's ideas from as many varied perspectives and angles as possible. <slot>②</slot> When science is done by a diverse group of people, and if consensus builds up about a particular area of scientific knowledge, then we can have more confidence in its objectivity and truth. <slot>③</slot>`,
+    ans:"①",
+    exp:"과학자 집단의 다양성 부족이 객관성을 떨어뜨린다는 문제 제기 뒤에, 해결책은 더 큰 다양성이라는 해결 문장이 자연스럽게 연결되고, 뒤에 다양성이 과학을 작동시킨다는 설명이 이어진다."
+  },
+  {
+    id:"23-2", passageNo:23, topic:"과학의 다양성",
+    insert:`When science is done by a diverse group of people, and if consensus builds up about a particular area of scientific knowledge, then we can have more confidence in its objectivity and truth.`,
+    body:`If there is little or no diversity of views, and all scientists see, think, and question the world in a similar way, then they will not, as a community, be as objective as they maintain they are, or at least aspire to be. <slot>①</slot> The solution is that there should be far greater diversity in the practice of science: in gender, ethnicity, and social and cultural backgrounds. <slot>②</slot> Science works because it is carried out by people who pursue their curiosity about the natural world and test their and each other's ideas from as many varied perspectives and angles as possible. <slot>③</slot>`,
+    ans:"③",
+    exp:"다양한 관점에서 아이디어를 검증하는 사람들이 과학을 작동시킨다는 내용 뒤에, 다양한 집단이 과학을 수행하면 의견 일치 시 더 큰 신뢰를 가질 수 있다는 결론이 자연스럽게 마무리된다."
+  },
+  {
+    id:"29-1", passageNo:29, topic:"미소의 선천적 능력",
+    insert:`Without the right feedback, smiling dies out.`,
+    body:`The built-in capacity for smiling is proven by the remarkable observation that babies who are congenitally both deaf and blind, who have never seen a human face, also start to smile at around 2 months. <slot>①</slot> However, smiling in blind babies eventually disappears if nothing is done to reinforce it. <slot>②</slot> But here's a fascinating fact: blind babies will continue to smile if they are cuddled, bounced, nudged, and tickled by an adult — anything to let them know that they are not alone and that someone cares about them. <slot>③</slot> This social feedback encourages the baby to continue smiling. In this way, early experience operates with our biology to establish social behaviors. <slot>④</slot> In fact, you don't need the cases of blind babies to make the point. Babies with sight smile more at you when you look at them or, better still, smile back at them. <slot>⑤</slot>`,
+    ans:"②",
+    exp:"강화하기 위해 아무것도 하지 않으면 결국 사라진다 뒤에, 적절한 피드백 없이는 미소 짓기가 사라진다는 보충 문장이 자연스럽게 연결되고, 뒤에 반전(But)이 이어진다."
+  },
+  {
+    id:"29-2", passageNo:29, topic:"미소의 선천적 능력",
+    insert:`This social feedback encourages the baby to continue smiling.`,
+    body:`The built-in capacity for smiling is proven by the remarkable observation that babies who are congenitally both deaf and blind, who have never seen a human face, also start to smile at around 2 months. However, smiling in blind babies eventually disappears if nothing is done to reinforce it. Without the right feedback, smiling dies out. <slot>①</slot> But here's a fascinating fact: blind babies will continue to smile if they are cuddled, bounced, nudged, and tickled by an adult — anything to let them know that they are not alone and that someone cares about them. <slot>②</slot> In this way, early experience operates with our biology to establish social behaviors. <slot>③</slot> In fact, you don't need the cases of blind babies to make the point. <slot>④</slot> Babies with sight smile more at you when you look at them or, better still, smile back at them. <slot>⑤</slot>`,
+    ans:"②",
+    exp:"신체 접촉을 통해 아기가 계속 미소 짓는다는 내용 뒤에, 이 사회적 피드백이 계속 미소 짓도록 격려한다는 결론 문장이 자연스럽게 연결되고, 뒤에 일반화(In this way)가 이어진다."
+  },
+  {
+    id:"29-3", passageNo:29, topic:"미소의 선천적 능력",
+    insert:`In fact, you don't need the cases of blind babies to make the point.`,
+    body:`The built-in capacity for smiling is proven by the remarkable observation that babies who are congenitally both deaf and blind, who have never seen a human face, also start to smile at around 2 months. However, smiling in blind babies eventually disappears if nothing is done to reinforce it. Without the right feedback, smiling dies out. But here's a fascinating fact: blind babies will continue to smile if they are cuddled, bounced, nudged, and tickled by an adult — anything to let them know that they are not alone and that someone cares about them. <slot>①</slot> This social feedback encourages the baby to continue smiling. <slot>②</slot> In this way, early experience operates with our biology to establish social behaviors. <slot>③</slot> Babies with sight smile more at you when you look at them or, better still, smile back at them. <slot>④</slot>`,
+    ans:"③",
+    exp:"초기 경험이 생물학과 함께 사회적 행동을 형성한다는 일반화 뒤에, 사실 시각장애 아기 사례 없이도 이 요점을 설명할 수 있다는 전환 문장이 자연스럽고, 뒤에 시력 있는 아기 예시가 이어진다."
+  },
+  {
+    id:"30-1", passageNo:30, topic:"적응과 즐거움",
+    insert:`But the opposite is true.`,
+    body:`Because people tend to adapt, interrupting positive things with negative ones can actually increase enjoyment. Take commercials. Most people hate them, so removing them should make shows or other entertainment more enjoyable. <slot>①</slot> Shows are actually more enjoyable when they're broken up by annoying commercials. Because these less enjoyable moments break up adaptation to the positive experience of the show. <slot>②</slot> Think about eating chocolate chips. The first chip is delicious: sweet, melt-in-your-mouth goodness. The second chip is also pretty good. <slot>③</slot> But by the fourth, fifth, or tenth chip in a row, the goodness is no longer as pleasurable. We adapt. <slot>④</slot> Interspersing positive experiences with less positive ones, however, can decelerate adaptation. Eating a Brussels sprout between chocolate chips or viewing commercials between parts of TV shows disrupts the process. <slot>⑤</slot>`,
+    ans:"①",
+    exp:"광고를 제거하면 더 즐거울 것 같다는 기대 바로 뒤에, 그러나 반대가 사실이다라는 반전 문장이 자연스럽게 연결되고, 뒤에 반전의 설명이 이어진다."
+  },
+  {
+    id:"30-2", passageNo:30, topic:"적응과 즐거움",
+    insert:`Interspersing positive experiences with less positive ones, however, can decelerate adaptation.`,
+    body:`Because people tend to adapt, interrupting positive things with negative ones can actually increase enjoyment. Take commercials. Most people hate them, so removing them should make shows or other entertainment more enjoyable. But the opposite is true. Shows are actually more enjoyable when they're broken up by annoying commercials. Because these less enjoyable moments break up adaptation to the positive experience of the show. <slot>①</slot> Think about eating chocolate chips. The first chip is delicious: sweet, melt-in-your-mouth goodness. The second chip is also pretty good. But by the fourth, fifth, or tenth chip in a row, the goodness is no longer as pleasurable. <slot>②</slot> We adapt. <slot>③</slot> Eating a Brussels sprout between chocolate chips or viewing commercials between parts of TV shows disrupts the process. <slot>④</slot> The less positive moment makes the following positive one new again and thus more enjoyable. <slot>⑤</slot>`,
+    ans:"③",
+    exp:"우리는 적응한다는 결론 뒤에, 그러나 덜 긍정적인 것들을 간격을 두고 배치하면 적응을 늦출 수 있다는 전환 문장이 자연스럽고, 뒤에 구체 예시가 이어진다."
+  },
+  {
+    id:"30-3", passageNo:30, topic:"적응과 즐거움",
+    insert:`Because these less enjoyable moments break up adaptation to the positive experience of the show.`,
+    body:`Because people tend to adapt, interrupting positive things with negative ones can actually increase enjoyment. Take commercials. Most people hate them, so removing them should make shows or other entertainment more enjoyable. But the opposite is true. <slot>①</slot> Shows are actually more enjoyable when they're broken up by annoying commercials. <slot>②</slot> Think about eating chocolate chips. The first chip is delicious: sweet, melt-in-your-mouth goodness. The second chip is also pretty good. But by the fourth, fifth, or tenth chip in a row, the goodness is no longer as pleasurable. We adapt. <slot>③</slot> Interspersing positive experiences with less positive ones, however, can decelerate adaptation. Eating a Brussels sprout between chocolate chips or viewing commercials between parts of TV shows disrupts the process. <slot>④</slot> The less positive moment makes the following positive one new again and thus more enjoyable. <slot>⑤</slot>`,
+    ans:"②",
+    exp:"광고로 중단될 때 쇼가 실제로 더 즐겁다 뒤에, 왜냐하면 이 덜 즐거운 순간들이 적응을 깨뜨리기 때문이라는 이유 문장이 자연스럽게 연결된다."
+  },
+  {
+    id:"31-1", passageNo:31, topic:"희소성과 리액턴스",
+    insert:`These are all side issues; the attraction is that they are in short supply.`,
+    body:`We collect stamps, coins, vintage cars even when they serve no practical purpose. <slot>①</slot> The post office doesn't accept the old stamps, the banks don't take old coins, and the vintage cars are no longer allowed on the road. <slot>②</slot> In one study, students were asked to arrange ten posters in order of attractiveness — with the agreement that afterward they could keep one poster as a reward for their participation. <slot>③</slot> Five minutes later, they were told that the poster with the third highest rating was no longer available. Then they were asked to judge all ten from scratch. <slot>④</slot> The poster that was no longer available was suddenly classified as the most beautiful. In psychology, this phenomenon is called reactance: when we are deprived of an option, we suddenly deem it more attractive. <slot>⑤</slot>`,
+    ans:"②",
+    exp:"우체국 동전 등 실용성 없음을 나열한 뒤, 이것들은 모두 부수적인 문제이고 매력은 희소성에 있다는 핵심 문장이 자연스럽게 연결되고, 뒤에 연구 사례가 이어진다."
+  },
+  {
+    id:"31-2", passageNo:31, topic:"희소성과 리액턴스",
+    insert:`Five minutes later, they were told that the poster with the third highest rating was no longer available.`,
+    body:`We collect stamps, coins, vintage cars even when they serve no practical purpose. The post office doesn't accept the old stamps, the banks don't take old coins, and the vintage cars are no longer allowed on the road. These are all side issues; the attraction is that they are in short supply. <slot>①</slot> In one study, students were asked to arrange ten posters in order of attractiveness — with the agreement that afterward they could keep one poster as a reward for their participation. <slot>②</slot> Then they were asked to judge all ten from scratch. <slot>③</slot> The poster that was no longer available was suddenly classified as the most beautiful. <slot>④</slot> In psychology, this phenomenon is called reactance: when we are deprived of an option, we suddenly deem it more attractive. <slot>⑤</slot>`,
+    ans:"②",
+    exp:"포스터를 매력도 순으로 배열했다는 내용 뒤에, 5분 후 세 번째 높은 평가의 포스터가 이용 불가라고 들었다는 다음 단계가 자연스럽게 연결된다."
+  },
+  {
+    id:"31-3", passageNo:31, topic:"희소성과 리액턴스",
+    insert:`In psychology, this phenomenon is called reactance: when we are deprived of an option, we suddenly deem it more attractive.`,
+    body:`We collect stamps, coins, vintage cars even when they serve no practical purpose. The post office doesn't accept the old stamps, the banks don't take old coins, and the vintage cars are no longer allowed on the road. These are all side issues; the attraction is that they are in short supply. <slot>①</slot> In one study, students were asked to arrange ten posters in order of attractiveness — with the agreement that afterward they could keep one poster as a reward for their participation. Five minutes later, they were told that the poster with the third highest rating was no longer available. <slot>②</slot> Then they were asked to judge all ten from scratch. <slot>③</slot> The poster that was no longer available was suddenly classified as the most beautiful. <slot>④</slot>`,
+    ans:"④",
+    exp:"더 이상 이용할 수 없는 포스터가 갑자기 가장 아름다운 것으로 분류되었다 뒤에, 심리학에서 이 현상을 리액턴스라고 부른다는 개념 정의가 자연스럽게 마무리된다."
+  },
+  {
+    id:"38-1", passageNo:38, topic:"인터넷의 양방향성",
+    insert:`The ability to exchange information online, to upload as well as download, has turned the Net into a thoroughfare for business and commerce.`,
+    body:`The Net differs from most of the mass media it replaces in an obvious and very important way: it's bidirectional. <slot>①</slot> We can send messages through the network as well as receive them, which has made the system all the more useful. <slot>②</slot> With a few clicks, people can search virtual catalogues, place orders, track shipments, and update information in corporate databases. <slot>③</slot> But the Net doesn't just connect us with businesses; it connects us with one another. It's a personal broadcasting medium as well as a commercial one. <slot>④</slot> Millions of people use it to distribute their own digital creations, in the form of blogs, videos, photos, songs, and podcasts, as well as to critique, edit, or otherwise modify the creations of others. <slot>⑤</slot>`,
+    ans:"②",
+    exp:"메시지를 보내고 받을 수 있어 더 유용해졌다 뒤에, 온라인 정보 교환과 업로드 능력이 상거래 통로가 됐다는 심화 문장이 자연스럽고, 뒤에 구체적 클릭 예시가 이어진다."
+  },
+  {
+    id:"38-2", passageNo:38, topic:"인터넷의 양방향성",
+    insert:`But the Net doesn't just connect us with businesses; it connects us with one another.`,
+    body:`The Net differs from most of the mass media it replaces in an obvious and very important way: it's bidirectional. We can send messages through the network as well as receive them, which has made the system all the more useful. The ability to exchange information online, to upload as well as download, has turned the Net into a thoroughfare for business and commerce. <slot>①</slot> With a few clicks, people can search virtual catalogues, place orders, track shipments, and update information in corporate databases. <slot>②</slot> It's a personal broadcasting medium as well as a commercial one. <slot>③</slot> Millions of people use it to distribute their own digital creations, in the form of blogs, videos, photos, songs, and podcasts, as well as to critique, edit, or otherwise modify the creations of others. <slot>④</slot>`,
+    ans:"②",
+    exp:"기업과의 연결 설명 뒤에, 그러나 인터넷은 기업뿐 아니라 서로를 연결한다는 전환 문장이 자연스럽고, 뒤에 개인 방송 매체 설명이 이어진다."
+  },
+  {
+    id:"38-3", passageNo:38, topic:"인터넷의 양방향성",
+    insert:`It's a personal broadcasting medium as well as a commercial one.`,
+    body:`The Net differs from most of the mass media it replaces in an obvious and very important way: it's bidirectional. We can send messages through the network as well as receive them, which has made the system all the more useful. The ability to exchange information online, to upload as well as download, has turned the Net into a thoroughfare for business and commerce. With a few clicks, people can search virtual catalogues, place orders, track shipments, and update information in corporate databases. <slot>①</slot> But the Net doesn't just connect us with businesses; it connects us with one another. <slot>②</slot> Millions of people use it to distribute their own digital creations, in the form of blogs, videos, photos, songs, and podcasts, as well as to critique, edit, or otherwise modify the creations of others. <slot>③</slot>`,
+    ans:"②",
+    exp:"기업뿐 아니라 서로를 연결한다 뒤에, 개인 방송 매체이기도 하다는 보충 문장이 자연스럽게 연결되고, 뒤에 수백만 명의 창작물 배포 예시가 이어진다."
+  },
+  {
+    id:"39-1", passageNo:39, topic:"산업혁명과 자동화",
+    insert:`But the displaced workers did not sit idle.`,
+    body:`Imagine that seven out of ten working Americans got fired tomorrow. What would they all do? It's hard to believe you'd have an economy at all if you gave pink slips to more than half the labor force. But that is what the industrial revolution did to the workforce of the early 19th century. Two hundred years ago, 70 percent of American workers lived on the farm. <slot>①</slot> Today automation has eliminated all but 1 percent of their jobs, replacing them with machines. <slot>②</slot> Instead, automation created hundreds of millions of jobs in entirely new fields. Those who once farmed were now manning the factories that manufactured farm equipment, cars, and other industrial products. <slot>③</slot> Since then, wave upon wave of new occupations have arrived — appliance repair person, food chemist, photographer, web designer — each building on previous automation. <slot>④</slot> Today, the vast majority of us are doing jobs that no farmer from the 1800s could have imagined. <slot>⑤</slot>`,
+    ans:"②",
+    exp:"자동화가 1%를 제외한 모든 일자리를 제거했다 뒤에, 하지만 노동자들은 한가롭게 앉아 있지 않았다는 반전 문장이 자연스럽게 연결되고, 뒤에 Instead로 새 일자리 창출이 이어진다."
+  },
+  {
+    id:"39-2", passageNo:39, topic:"산업혁명과 자동화",
+    insert:`Today automation has eliminated all but 1 percent of their jobs, replacing them with machines.`,
+    body:`Imagine that seven out of ten working Americans got fired tomorrow. What would they all do? It's hard to believe you'd have an economy at all if you gave pink slips to more than half the labor force. But that is what the industrial revolution did to the workforce of the early 19th century. <slot>①</slot> Two hundred years ago, 70 percent of American workers lived on the farm. <slot>②</slot> But the displaced workers did not sit idle. Instead, automation created hundreds of millions of jobs in entirely new fields. <slot>③</slot> Those who once farmed were now manning the factories that manufactured farm equipment, cars, and other industrial products. Since then, wave upon wave of new occupations have arrived — appliance repair person, food chemist, photographer, web designer — each building on previous automation. <slot>④</slot> Today, the vast majority of us are doing jobs that no farmer from the 1800s could have imagined. <slot>⑤</slot>`,
+    ans:"②",
+    exp:"200년 전 미국 노동자 70%가 농장에서 살았다 뒤에, 오늘날 자동화가 1%를 제외한 일자리를 제거했다는 현재 상황이 자연스럽게 연결되고, 뒤에 역설적 반전이 이어진다."
+  },
+  {
+    id:"39-3", passageNo:39, topic:"산업혁명과 자동화",
+    insert:`Since then, wave upon wave of new occupations have arrived — appliance repair person, food chemist, photographer, web designer — each building on previous automation.`,
+    body:`Imagine that seven out of ten working Americans got fired tomorrow. What would they all do? It's hard to believe you'd have an economy at all if you gave pink slips to more than half the labor force. But that is what the industrial revolution did to the workforce of the early 19th century. Two hundred years ago, 70 percent of American workers lived on the farm. Today automation has eliminated all but 1 percent of their jobs, replacing them with machines. But the displaced workers did not sit idle. Instead, automation created hundreds of millions of jobs in entirely new fields. <slot>①</slot> Those who once farmed were now manning the factories that manufactured farm equipment, cars, and other industrial products. <slot>②</slot> Today, the vast majority of us are doing jobs that no farmer from the 1800s could have imagined. <slot>③</slot>`,
+    ans:"②",
+    exp:"한때 농사를 짓던 사람들이 공장에서 일하게 됐다 뒤에, 그 이후로 새로운 직업들이 물결처럼 등장했다는 시간 경과 문장이 자연스럽고, 뒤에 오늘날의 결론이 이어진다."
+  },
+  {
+    id:"40-1", passageNo:40, topic:"부러움과 질투",
+    insert:`The subject of jealousy is the behaviour of a third person.`,
+    body:`Many things spark envy: ownership, status, health, youth, talent, popularity, beauty. It is often confused with jealousy because the physical reactions are identical. <slot>①</slot> The difference: the subject of envy is a thing (status, money, health etc.). <slot>②</slot> Envy needs two people. Jealousy, on the other hand, requires three: Peter is jealous of Sam because the beautiful girl next door rings him instead. <slot>③</slot> Paradoxically, with envy we direct resentments toward those who are most similar to us in age, career and residence. <slot>④</slot> We don't envy businesspeople from the century before last. We don't envy millionaires on the other side of the globe. <slot>⑤</slot>`,
+    ans:"②",
+    exp:"부러움의 대상은 사물 뒤에, 질투의 대상은 제3자의 행동이라는 대조 문장이 자연스럽게 짝을 이루고, 뒤에 부러움은 2명 질투는 3명 필요라는 설명이 이어진다."
+  },
+  {
+    id:"40-2", passageNo:40, topic:"부러움과 질투",
+    insert:`Paradoxically, with envy we direct resentments toward those who are most similar to us in age, career and residence.`,
+    body:`Many things spark envy: ownership, status, health, youth, talent, popularity, beauty. It is often confused with jealousy because the physical reactions are identical. The difference: the subject of envy is a thing (status, money, health etc.). The subject of jealousy is the behaviour of a third person. <slot>①</slot> Envy needs two people. Jealousy, on the other hand, requires three: Peter is jealous of Sam because the beautiful girl next door rings him instead. <slot>②</slot> We don't envy businesspeople from the century before last. We don't envy millionaires on the other side of the globe. <slot>③</slot> As a writer, I don't envy musicians, managers or dentists, but other writers. As a CEO you envy other, bigger CEOs. Aristotle knew this: 'Potters envy potters.' <slot>④</slot>`,
+    ans:"②",
+    exp:"질투는 세 사람이 필요하다는 내용 뒤에, 역설적으로 부러움은 가장 비슷한 사람에게 향한다는 부러움의 특성 전환 문장이 자연스럽고, 뒤에 구체 예시들이 이어진다."
+  },
+  {
+    id:"40-3", passageNo:40, topic:"부러움과 질투",
+    insert:`Envy needs two people.`,
+    body:`Many things spark envy: ownership, status, health, youth, talent, popularity, beauty. It is often confused with jealousy because the physical reactions are identical. The difference: the subject of envy is a thing (status, money, health etc.). <slot>①</slot> The subject of jealousy is the behaviour of a third person. <slot>②</slot> Jealousy, on the other hand, requires three: Peter is jealous of Sam because the beautiful girl next door rings him instead. <slot>③</slot> Paradoxically, with envy we direct resentments toward those who are most similar to us in age, career and residence. We don't envy businesspeople from the century before last. We don't envy millionaires on the other side of the globe. <slot>④</slot>`,
+    ans:"②",
+    exp:"질투의 대상은 제3자의 행동 뒤에, 부러움은 두 사람이 필요하다는 문장이 자연스럽게 연결되고, 뒤에 on the other hand로 질투는 세 사람이 필요하다는 대조가 이어진다."
+  }
+
+];
+
+// 지문 그루핑
+const PASSAGES = [];
+const pMap = {};
+QLISTS.forEach(q=>{
+  if(!pMap[q.passageNo]){
+    pMap[q.passageNo]={no:q.passageNo,topic:q.topic.replace(/ [①-⑨]/,'').replace(/ \(.*\)/,'').trim(),qs:[]};
+    PASSAGES.push(pMap[q.passageNo]);
+  }
+  pMap[q.passageNo].qs.push(q);
+});
+PASSAGES.sort((a,b)=>a.no-b.no);
+
+// 상태
+let selected=new Set(), doneSet=new Set();
+let qs=[], idx=0, cor=0, wrn=0, wrongs=[], answered=false, t0=0, wrongQs=[];
+
+function goSel(){
+  document.getElementById('startScreen').classList.add('hidden');
+  renderGrid();
+  document.getElementById('passageScreen').classList.remove('hidden');
+}
+
+function renderGrid(){
+  const g=document.getElementById('passageGrid'); g.innerHTML='';
+  PASSAGES.forEach(p=>{
+    const no=p.no, cnt=p.qs.length;
+    const d=document.createElement('div');
+    d.className='p-card'+(selected.has(no)?' sel':'')+(doneSet.has(no)?' done':'');
+    d.onclick=()=>{selected.has(no)?selected.delete(no):selected.add(no);d.classList.toggle('sel',selected.has(no));};
+    d.innerHTML=`<div class="p-no">${no}번</div><div class="p-topic">${p.topic}</div><div class="p-qcount">${cnt}문제</div>`
+      +(doneSet.has(no)?'<span class="p-badge" style="background:#e8f5e9;color:#2e7d32;">완료✓</span>':'')
+      +(selected.has(no)&&!doneSet.has(no)?'<span class="p-badge" style="background:#e8eaf6;color:#1565c0;">선택</span>':'');
+    g.appendChild(d);
+  });
+}
+
+function selAll(){
+  const all=PASSAGES.every(p=>selected.has(p.no));
+  PASSAGES.forEach(p=>{if(all)selected.delete(p.no);else selected.add(p.no);});
+  renderGrid();
+}
+
+function startQuiz(){
+  if(selected.size===0){alert('지문을 하나 이상 선택하세요!');return;}
+  qs=[];
+  PASSAGES.filter(p=>selected.has(p.no)).forEach(p=>p.qs.forEach(q=>qs.push(q)));
+  idx=0;cor=0;wrn=0;wrongs=[];answered=false;t0=Date.now();wrongQs=[];
+  document.getElementById('passageScreen').classList.add('hidden');
+  document.getElementById('hdr').classList.remove('hidden');
+  document.getElementById('pw').classList.remove('hidden');
+  document.getElementById('quizArea').classList.remove('hidden');
+  document.getElementById('hs').textContent=selected.size+'개 지문 · '+qs.length+'문제';
+  showQ();
+}
+
+function showQ(){
+  if(idx>=qs.length){showResult();return;}
+  answered=false;
+  const q=qs[idx];
+  document.getElementById('pf').style.width=(idx/qs.length*100).toFixed(0)+'%';
+  document.getElementById('hb').textContent=(idx+1)+'/'+qs.length;
+  const area=document.getElementById('quizArea');
+
+  // body에서 <slot>①</slot> → 파란 번호 뱃지로 변환
+  const bodyHTML = q.body.replace(/<slot>(①|②|③|④|⑤)<\/slot>/g,
+    (_,n)=>`<span class="slot">${n}</span>`);
+
+  const opts = ['①','②','③','④','⑤'];
+  let optHTML='';
+  opts.forEach(o=>{
+    optHTML+=`<button class="cb" onclick="pickAns(this,'${o}','${q.ans}')">${o}</button>`;
+  });
+
+  area.innerHTML=`<div class="qc">
+    <div class="q-no-badge"><span class="qno">${q.passageNo}번</span><span class="qtype-tag">문장 삽입</span></div>
+    <div style="font-size:11px;font-weight:700;color:var(--pri);margin-bottom:8px;">📌 주어진 문장이 들어가기에 가장 적절한 곳은? (${q.topic})</div>
+    <div class="insert-label">삽입할 문장</div>
+    <div class="insert-box">${q.insert}</div>
+    <div class="body-box">${bodyHTML}</div>
+    <div class="choices" style="grid-template-columns:repeat(5,1fr);">${optHTML}</div>
+    <div class="fb-box" id="fb"></div>
+    <button class="next-btn" id="nextBtn" onclick="goNext()">다음 문제 →</button>
+  </div>`;
+}
+
+function pickAns(btn,sel,ans){
+  if(answered)return;
+  answered=true;
+  document.querySelectorAll('.cb').forEach(b=>b.disabled=true);
+  const q=qs[idx];
+  const correct=(sel===ans);
+  if(correct){
+    btn.classList.add('c-ok');
+    document.getElementById('fb').className='fb-box ok';
+    document.getElementById('fb').textContent='✅ 정답! '+q.exp;
+    cor++;
+  } else {
+    btn.classList.add('c-ng');
+    document.querySelectorAll('.cb').forEach(b=>{if(b.textContent===ans)b.classList.add('reveal');});
+    document.getElementById('fb').className='fb-box no';
+    document.getElementById('fb').textContent='❌ 오답! 정답: '+ans+' | '+q.exp;
+    wrn++;
+    wrongs.push({label:q.passageNo+'번 삽입',my:sel,correct:ans,exp:q.exp});
+    wrongQs.push(q);
+  }
+  document.getElementById('nextBtn').style.display='block';
+}
+
+function goNext(){idx++;showQ();}
+
+// ── localStorage 오답 저장 ──────────────────────────────
+const LS_KEY='bomnal_insert_wrongs';
+
+function loadStoredWrongs(){
+  try{return JSON.parse(localStorage.getItem(LS_KEY)||'[]');}catch(e){return [];}
+}
+
+function saveWrongsToLS(newWrongs){
+  const stored=loadStoredWrongs();
+  newWrongs.forEach(w=>{
+    const i=stored.findIndex(s=>s.id===w.id);
+    if(i>=0)stored[i]=w;else stored.push(w);
+  });
+  localStorage.setItem(LS_KEY,JSON.stringify(stored));
+}
+
+function clearStoredWrongs(){
+  localStorage.removeItem(LS_KEY);
+  renderWrongNote();
+}
+
+// ── 결과 화면 ──────────────────────────────────────────
+function showResult(){
+  document.getElementById('pf').style.width='100%';
+  document.getElementById('quizArea').classList.add('hidden');
+  const total=idx, pct=total>0?Math.round(cor/total*100):0;
+  const el=Math.round((Date.now()-t0)/60000);
+  selected.forEach(n=>doneSet.add(n));
+
+  if(wrongQs.length>0){
+    const toSave=wrongQs.map(q=>({
+      id:q.id, passageNo:q.passageNo, topic:q.topic,
+      insert:q.insert, body:q.body,
+      ans:q.ans, exp:q.exp,
+      savedAt:new Date().toLocaleDateString('ko-KR')
+    }));
+    saveWrongsToLS(toSave);
+  }
+
+  const rs=document.getElementById('resultScreen');
+  rs.classList.remove('hidden');
+  rs.innerHTML=`<div class="rc">
+    <div style="font-size:12px;color:var(--muted);margin-bottom:4px;">고2 24년 6월 삽입 학습 · ${selected.size}개 지문</div>
+    <div class="rs">${pct}점</div>
+    <div class="rsub">나의 결과</div>
+    <div class="sr">
+      <div class="si"><div class="sn" style="color:#2e7d32;">${cor}</div><div class="sl">정답</div></div>
+      <div class="si"><div class="sn" style="color:#c62828;">${wrn}</div><div class="sl">오답</div></div>
+      <div class="si"><div class="sn" style="color:#1565c0;">${total}</div><div class="sl">총문제</div></div>
+      <div class="si"><div class="sn" style="color:#f57f17;">${el}분</div><div class="sl">소요</div></div>
+    </div>
+    <div class="rbtns">
+      ${wrongQs.length>0?`<button class="rbtn" style="background:linear-gradient(135deg,#c62828,#e91e63);color:#fff;" onclick="retryWrongs()">❌ 오답 다시풀기 (${wrongQs.length}개)</button>`:''}
+      <button class="rbtn" style="background:linear-gradient(135deg,#1565c0,#1976d2);color:#fff;" onclick="showWrongNote()">📒 오답 노트 보기</button>
+      <button class="rbtn rbtn-p" onclick="goBack()">← 지문 다시 선택</button>
+      <button class="rbtn rbtn-s" onclick="location.reload()">처음부터 🔄</button>
+    </div>
+  </div>`;
+}
+
+function retryWrongs(){
+  if(wrongQs.length===0)return;
+  qs=[...wrongQs];
+  idx=0;cor=0;wrn=0;wrongs=[];answered=false;t0=Date.now();wrongQs=[];
+  document.getElementById('resultScreen').classList.add('hidden');
+  document.getElementById('quizArea').classList.remove('hidden');
+  document.getElementById('hs').textContent='오답 다시풀기';
+  showQ();
+}
+
+function goBack(){
+  document.getElementById('resultScreen').classList.add('hidden');
+  document.getElementById('hdr').classList.add('hidden');
+  document.getElementById('pw').classList.add('hidden');
+  selected.clear();renderGrid();
+  document.getElementById('passageScreen').classList.remove('hidden');
+}
+
+// ── 오답 노트 ──────────────────────────────────────────
+function showWrongNote(){
+  document.getElementById('resultScreen').classList.add('hidden');
+  document.getElementById('wrongNoteScreen').classList.remove('hidden');
+  renderWrongNote();
+}
+
+function renderWrongNote(tab){
+  const stored=loadStoredWrongs();
+  const activeTab=tab||'note';
+  const ws=document.getElementById('wrongNoteScreen');
+
+  let tabContent='';
+  if(activeTab==='note'){
+    if(stored.length===0){
+      tabContent=`<div class="wn-empty">📭 저장된 오답이 없어요!</div>`;
+    } else {
+      tabContent=stored.map(q=>{
+        const bodyHTML=(q.body||'').replace(/<slot>(①|②|③|④|⑤)<\/slot>/g,
+          (_,n)=>`<span style="display:inline-block;background:#1565c0;color:#fff;border-radius:5px;padding:1px 8px;font-family:'Black Han Sans',sans-serif;font-size:12px;margin:0 2px;">${n}</span>`);
+        return `<div class="wn-card">
+          <div class="wn-header">
+            <span class="wn-title">${q.passageNo}번 · ${q.topic}</span>
+            <span class="wn-badge">문장 삽입 · ${q.savedAt||''}</span>
+          </div>
+          <div class="wn-body">
+            <div class="wn-insert-label">📌 삽입할 문장</div>
+            <div class="wn-insert">${q.insert}</div>
+            <div class="wn-body-txt">${bodyHTML}</div>
+            <div class="wn-ok">✅ 정답: ${q.ans}</div>
+            <div class="wn-exp">💡 ${q.exp}</div>
+          </div>
+        </div>`;
+      }).join('');
+    }
+  } else {
+    if(stored.length===0){
+      tabContent=`<div class="wn-empty">📭 저장된 오답이 없어요!</div>`;
+    } else {
+      tabContent=`<div style="text-align:center;padding:16px 0;">
+        <div style="font-size:14px;font-weight:800;color:var(--pri);margin-bottom:6px;">저장된 오답 ${stored.length}문제</div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:20px;">localStorage에 누적된 모든 오답입니다.</div>
+        <button class="rbtn" style="background:linear-gradient(135deg,#c62828,#e91e63);color:#fff;width:100%;padding:14px;" onclick="startStoredRetry()">❌ 오답 전체 다시풀기 (${stored.length}문제)</button>
+      </div>`;
+    }
+  }
+
+  ws.innerHTML=`
+    <div style="padding:20px;max-width:700px;margin:0 auto;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+        <button onclick="closeWrongNote()" style="border:none;background:none;font-size:20px;cursor:pointer;">←</button>
+        <span style="font-family:'Black Han Sans',sans-serif;font-size:18px;color:var(--pri);">📒 오답 노트</span>
+        <span style="font-size:12px;color:var(--muted);margin-left:4px;">총 ${stored.length}문제 누적</span>
+      </div>
+      <div class="tab-bar">
+        <button class="tab-btn ${activeTab==='note'?'on':''}" onclick="renderWrongNote('note')">📖 오답 읽기</button>
+        <button class="tab-btn ${activeTab==='retry'?'on':''}" onclick="renderWrongNote('retry')">🔁 다시 풀기</button>
+      </div>
+      ${stored.length>0?`<button class="wn-clear-btn" onclick="if(confirm('오답 노트를 전부 초기화할까요?'))clearStoredWrongs()">🗑️ 오답 노트 초기화</button>`:''}
+      ${tabContent}
+    </div>`;
+}
+
+function startStoredRetry(){
+  const stored=loadStoredWrongs();
+  if(stored.length===0)return;
+  qs=stored.map(q=>({...q}));
+  idx=0;cor=0;wrn=0;wrongs=[];answered=false;t0=Date.now();wrongQs=[];
+  document.getElementById('wrongNoteScreen').classList.add('hidden');
+  document.getElementById('hdr').classList.remove('hidden');
+  document.getElementById('pw').classList.remove('hidden');
+  document.getElementById('quizArea').classList.remove('hidden');
+  document.getElementById('hs').textContent='오답 노트 다시풀기';
+  showQ();
+}
+
+function closeWrongNote(){
+  document.getElementById('wrongNoteScreen').classList.add('hidden');
+  document.getElementById('resultScreen').classList.remove('hidden');
+}
+</script>
+</body>
+</html>
