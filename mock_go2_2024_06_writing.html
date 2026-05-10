@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>봄날 퀴즈 | 고2 24년 6월 서술형</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&family=Black+Han+Sans&display=swap');
+:root{--pri:#e65100;--acc:#1565c0;--bg:#fff3e0;--muted:#757575;--ok:#2e7d32;--ng:#c62828;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Nanum Gothic',sans-serif;background:var(--bg);min-height:100vh;color:#1a1a2e;}
+.hidden{display:none!important;}
+
+#startScreen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
+.s-card{background:#fff;border-radius:24px;padding:36px 28px;text-align:center;max-width:520px;width:100%;box-shadow:0 8px 32px rgba(230,81,0,.15);}
+.s-card h1{font-family:'Black Han Sans',sans-serif;font-size:20px;color:var(--pri);margin-bottom:6px;}
+.s-sub{font-size:13px;color:var(--muted);margin-bottom:20px;}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:22px;}
+.info-item{background:var(--bg);border-radius:10px;padding:10px;text-align:center;font-size:12px;color:var(--pri);font-weight:700;}
+.start-btn{width:100%;padding:14px;border-radius:12px;border:none;background:linear-gradient(135deg,#e65100,#1565c0);color:#fff;font-size:1rem;font-weight:800;cursor:pointer;font-family:inherit;}
+
+#passageScreen{padding:20px;max-width:700px;margin:0 auto;}
+.ps-header{background:linear-gradient(135deg,#e65100,#bf360c);color:#fff;border-radius:16px;padding:18px 22px;margin-bottom:20px;}
+.ps-title{font-family:'Black Han Sans',sans-serif;font-size:16px;}
+.ps-sub{font-size:11px;opacity:.8;margin-top:3px;}
+.passage-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-bottom:20px;}
+.p-card{background:#fff;border-radius:14px;padding:14px 12px;text-align:center;cursor:pointer;border:2.5px solid #e0e0e0;transition:all .18s;position:relative;}
+.p-card:hover{border-color:var(--pri);transform:translateY(-2px);box-shadow:0 6px 18px rgba(230,81,0,.12);}
+.p-card.sel{border-color:var(--pri);background:#fff3e0;}
+.p-card.done{border-color:#4caf50;background:#e8f5e9;}
+.p-no{font-family:'Black Han Sans',sans-serif;font-size:18px;color:var(--pri);margin-bottom:4px;}
+.p-topic{font-size:10px;color:var(--muted);line-height:1.4;}
+.p-qcount{font-size:10px;color:#bf360c;font-weight:700;margin-top:3px;}
+.p-badge{position:absolute;top:6px;right:6px;font-size:9px;padding:2px 6px;border-radius:8px;font-weight:700;}
+.sel-all-btn{width:100%;padding:12px;border-radius:12px;border:2px solid var(--pri);background:#fff;color:var(--pri);font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;margin-bottom:10px;}
+.go-btn{width:100%;padding:14px;border-radius:12px;border:none;background:linear-gradient(135deg,#e65100,#1565c0);color:#fff;font-size:1rem;font-weight:800;cursor:pointer;font-family:inherit;}
+
+.hdr{background:#e65100;color:#fff;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.ht{font-family:'Black Han Sans',sans-serif;font-size:15px;}
+.hs{font-size:10px;opacity:.7;margin-top:2px;}
+.hb{background:rgba(255,255,255,.2);border-radius:16px;padding:4px 12px;font-size:12px;font-weight:700;}
+.pw{height:4px;background:#ffccbc;}
+.pf{height:100%;background:linear-gradient(90deg,#e65100,#1565c0);transition:width .4s;}
+
+#quizArea{padding:20px;max-width:760px;margin:0 auto;}
+.qc{background:#fff;border-radius:18px;padding:22px 20px;margin-bottom:16px;box-shadow:0 3px 16px rgba(230,81,0,.08);}
+.q-no-badge{display:inline-flex;align-items:center;gap:6px;margin-bottom:12px;}
+.qno{font-family:'Black Han Sans',sans-serif;font-size:13px;color:#fff;background:var(--pri);padding:3px 12px;border-radius:12px;}
+.qtype-tag{font-size:11px;font-weight:700;padding:3px 10px;border-radius:10px;background:#fff3e0;color:#e65100;}
+
+.passage-box{background:#fffde7;border-left:4px solid var(--pri);border-radius:0 10px 10px 0;padding:13px 16px;font-size:13.5px;line-height:1.9;margin-bottom:14px;color:#1a1a2e;}
+.condition-box{background:#e8eaf6;border-radius:10px;padding:11px 14px;font-size:12px;line-height:1.8;margin-bottom:12px;color:#1a237e;}
+.condition-box b{color:#1565c0;}
+.word-box{background:#e8f5e9;border-radius:10px;padding:10px 14px;font-size:13px;font-weight:700;color:#1b5e20;margin-bottom:14px;line-height:1.8;}
+
+/* 입력 영역 */
+.answer-area{width:100%;min-height:70px;border:2px solid #ffccbc;border-radius:12px;padding:12px 14px;font-family:'Nanum Gothic',sans-serif;font-size:14px;resize:vertical;outline:none;line-height:1.7;transition:border-color .15s;}
+.answer-area:focus{border-color:var(--pri);}
+.answer-area.submitted{background:#f5f5f5;color:#777;}
+.check-btn{width:100%;padding:12px;border-radius:10px;border:none;background:var(--pri);color:#fff;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;margin-top:10px;transition:opacity .15s;}
+.check-btn:hover{opacity:.88;}
+.check-btn:disabled{opacity:.4;cursor:default;}
+
+/* 정답 공개 영역 */
+.ans-reveal{margin-top:14px;display:none;}
+.ans-reveal.show{display:block;}
+.ans-label{font-size:11px;font-weight:800;color:#e65100;margin-bottom:6px;}
+.ans-text{background:#fff8e1;border:1.5px solid #ffcc02;border-radius:10px;padding:12px 14px;font-size:13.5px;line-height:1.8;color:#1a1a2e;font-weight:700;}
+.exp-text{font-size:12px;color:#555;line-height:1.6;margin-top:8px;padding:8px 12px;background:#f5f5f5;border-radius:8px;}
+
+/* 자기채점 버튼 */
+.self-grade{display:flex;gap:10px;margin-top:12px;}
+.sg-btn{flex:1;padding:10px;border-radius:10px;border:2px solid;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit;transition:all .15s;}
+.sg-ok{border-color:#2e7d32;color:#2e7d32;background:#fff;}
+.sg-ok:hover,.sg-ok.active{background:#e8f5e9;}
+.sg-ng{border-color:#c62828;color:#c62828;background:#fff;}
+.sg-ng:hover,.sg-ng.active{background:#ffebee;}
+.sg-half{border-color:#f57f17;color:#f57f17;background:#fff;}
+.sg-half:hover,.sg-half.active{background:#fff8e1;}
+
+.next-btn{width:100%;padding:11px;border-radius:10px;border:none;background:#bf360c;color:#fff;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;margin-top:10px;display:none;}
+
+/* 결과 */
+#resultScreen{padding:20px;max-width:600px;margin:0 auto;}
+.rc{background:#fff;border-radius:24px;padding:30px 22px;box-shadow:0 8px 32px rgba(230,81,0,.1);text-align:center;}
+.rs{font-family:'Black Han Sans',sans-serif;font-size:52px;color:var(--pri);line-height:1;}
+.rsub{font-size:13px;color:var(--muted);margin-top:4px;}
+.sr{display:flex;justify-content:center;gap:16px;margin-top:16px;flex-wrap:wrap;}
+.si{text-align:center;}.sn{font-family:'Black Han Sans',sans-serif;font-size:24px;}.sl{font-size:11px;color:var(--muted);margin-top:2px;}
+.rbtns{display:flex;gap:10px;justify-content:center;margin-top:18px;flex-wrap:wrap;}
+.rbtn{padding:12px 22px;border-radius:12px;border:none;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit;}
+.rbtn-p{background:linear-gradient(135deg,#e65100,#1565c0);color:#fff;}
+.rbtn-s{background:#f5f5f5;color:#e65100;border:2px solid #ffccbc;}
+
+/* 오답노트 탭 */
+.tab-bar{display:flex;gap:0;margin-bottom:16px;border-radius:12px;overflow:hidden;border:2px solid var(--pri);}
+.tab-btn{flex:1;padding:10px;border:none;background:#fff;color:var(--pri);font-size:13px;font-weight:800;cursor:pointer;font-family:inherit;transition:all .15s;}
+.tab-btn.on{background:var(--pri);color:#fff;}
+.wn-card{background:#fff;border-radius:16px;margin-bottom:14px;box-shadow:0 2px 12px rgba(230,81,0,.08);overflow:hidden;}
+.wn-header{background:linear-gradient(135deg,#e65100,#bf360c);color:#fff;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;}
+.wn-title{font-family:'Black Han Sans',sans-serif;font-size:14px;}
+.wn-badge{font-size:10px;background:rgba(255,255,255,.25);border-radius:8px;padding:2px 8px;}
+.wn-body{padding:14px 16px;}
+.wn-passage{font-size:13px;line-height:1.85;color:#1a1a2e;background:#fffde7;border-left:3px solid #ffcc02;border-radius:0 8px 8px 0;padding:10px 14px;margin-bottom:10px;}
+.wn-cond{font-size:11px;color:#1a237e;background:#e8eaf6;border-radius:8px;padding:8px 12px;margin-bottom:8px;line-height:1.7;}
+.wn-ok{background:#e8f5e9;border-radius:8px;padding:6px 12px;font-size:13px;font-weight:800;color:#1b5e20;margin-bottom:6px;}
+.wn-exp{font-size:12px;color:#555;line-height:1.6;border-top:1px solid #fff3e0;padding-top:8px;margin-top:4px;}
+.wn-empty{text-align:center;padding:32px;color:var(--muted);font-size:14px;font-weight:700;}
+.wn-clear-btn{width:100%;padding:10px;border-radius:10px;border:2px solid #ef9a9a;background:#fff;color:#c62828;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit;margin-bottom:14px;}
+
+@media(max-width:480px){.passage-grid{grid-template-columns:repeat(2,1fr)}.self-grade{flex-direction:column}}
+</style>
+</head>
+<body>
+
+<div id="startScreen">
+  <div class="s-card">
+    <h1>✍️ 고2 24년 6월 서술형</h1>
+    <div class="s-sub">2024년 6월 부산광역시 교육청 학력평가 · 서술형 주관식</div>
+    <div class="info-grid">
+      <div class="info-item">📝 23~41번 지문</div>
+      <div class="info-item">🎯 지문별 선택 가능</div>
+      <div class="info-item">✍️ 직접 입력 후</div>
+      <div class="info-item">✅ 정답 확인·자기채점</div>
+    </div>
+    <button class="start-btn" onclick="goSel()">지문 선택하기 →</button>
+  </div>
+</div>
+
+<div id="passageScreen" class="hidden">
+  <div class="ps-header">
+    <div class="ps-title">✍️ 지문 선택</div>
+    <div class="ps-sub">풀고 싶은 지문을 선택하세요 (복수 선택 가능)</div>
+  </div>
+  <div class="passage-grid" id="passageGrid"></div>
+  <button class="sel-all-btn" onclick="selAll()">전체 선택 / 해제</button>
+  <button class="go-btn" onclick="startQuiz()">선택한 지문 풀기 🚀</button>
+</div>
+
+<div id="hdr" class="hdr hidden">
+  <div><div class="ht">✍️ 고2 24년 6월 서술형</div><div class="hs" id="hs"></div></div>
+  <div class="hb" id="hb">0/0</div>
+</div>
+<div id="pw" class="pw hidden"><div class="pf" id="pf" style="width:0%"></div></div>
+<div id="quizArea" class="hidden"></div>
+<div id="resultScreen" class="hidden"></div>
+<div id="wrongNoteScreen" class="hidden"></div>
+
+<script>
+const QLISTS = [
+  // ── 23번 ──────────────────────────────────────────────
+  {
+    id:"23-1", passageNo:23, topic:"과학의 다양성 — 요약문 완성",
+    passage:`If there is little or no diversity of views, and all scientists see, think, and question the world in a similar way, then they will not, as a community, be as objective as they maintain they are, or at least aspire to be. The solution is that there should be far greater diversity in the practice of science: in gender, ethnicity, and social and cultural backgrounds. Science works because it is carried out by people who pursue their curiosity about the natural world and test their and each other's ideas from as many varied perspectives and angles as possible. When science is done by a diverse group of people, and if consensus builds up about a particular area of scientific knowledge, then we can have more confidence in its objectivity and truth.`,
+    qtype:"영작",
+    question:`[보기]의 단어를 이용하여 글의 요약문을 완성하시오. (총 17단어, 필요시 어형 변화)`,
+    condition:`[조건] ① 단어 추가 없이 보기의 영단어만 포함, 총 17단어\n② 필요시 어형 변화\n[보기] the inclusion / inquiry / crucial / of / perspectives / scientific / uphold / is / the impartiality / in / of / a wide range of`,
+    ans:`The inclusion of a wide range of perspectives is crucial in upholding the impartiality of scientific inquiry.`,
+    exp:`uphold → upholding (in의 목적어로 동명사). '다양한 관점의 포함이 과학적 탐구의 공정성을 유지하는 데 매우 중요하다.'`
+  },
+  {
+    id:"23-2", passageNo:23, topic:"과학의 다양성 — 빈칸 한 단어",
+    passage:`If there is little or no diversity of views, and all scientists see, think, and question the world in a similar way, then they will not, as a community, be as objective as they maintain they are, or at least aspire to be. The solution is that there should be far greater diversity in the practice of science: in gender, ethnicity, and social and cultural backgrounds. Science works because it is carried out by people who pursue their curiosity about the natural world and test their and each other's ideas from as many _____ perspectives and angles as possible. When science is done by a diverse group of people, and if consensus builds up about a particular area of scientific knowledge, then we can have more confidence in its objectivity and truth.`,
+    qtype:"단어찾기",
+    question:`빈칸에 알맞은 한 단어를 글에서 찾아 변형 없이 그대로 쓰시오.`,
+    condition:`[조건] 글에서 찾아 변형 없이 그대로 쓸 것`,
+    ans:`varied`,
+    exp:`원문에는 'varied'(다양한, 여러 가지의)가 쓰였다. 문맥상 diverse와 유사한 의미.`
+  },
+  {
+    id:"23-3", passageNo:23, topic:"과학의 다양성 — 주제 영작",
+    passage:`If there is little or no diversity of views, and all scientists see, think, and question the world in a similar way, then they will not, as a community, be as objective as they maintain they are, or at least aspire to be. The solution is that there should be far greater diversity in the practice of science: in gender, ethnicity, and social and cultural backgrounds. Science works because it is carried out by people who pursue their curiosity about the natural world and test their and each other's ideas from as many varied perspectives and angles as possible. When science is done by a diverse group of people, and if consensus builds up about a particular area of scientific knowledge, then we can have more confidence in its objectivity and truth.`,
+    qtype:"영작",
+    question:`글의 주제를 주어진 우리말에 맞게 영작하시오.\n주제: '과학 연구를 수행함에 있어 다양한 관점의 필요성'`,
+    condition:`[보기] perspectives / various / research / the / carry / need / scientific / for / in / out\n[조건] ① 주어진 단어를 모두 사용하되 필요시 변형 ② 보기에 주어진 단어만 사용`,
+    ans:`The Need for Various Perspectives in carrying out scientific research`,
+    exp:`carry out → carrying out (전치사 in의 목적어로 동명사). '과학 연구를 수행함에 있어 다양한 관점의 필요성'`
+  },
+  {
+    id:"23-4", passageNo:23, topic:"과학의 다양성 — 주제문 완성",
+    passage:`If there is little or no diversity of views, and all scientists see, think, and question the world in a similar way, then they will not, as a community, be as objective as they maintain they are, or at least aspire to be. The solution is that there should be far greater diversity in the practice of science: in gender, ethnicity, and social and cultural backgrounds. Science works because it is carried out by people who pursue their curiosity about the natural world and test their and each other's ideas from as many varied perspectives and angles as possible. When science is done by a diverse group of people, and if consensus builds up about a certain field of scientific knowledge, then we can have more confidence in its objectivity and truth.`,
+    qtype:"영작",
+    question:`글의 주제문을 [조건]에 맞게 한 문장으로 쓰시오.`,
+    condition:`[조건] ① [보기] 어휘를 모두 한 번씩만 사용 ② 본문 어휘 1개 추가 ③ 단어 형태 변형 없이 그대로 사용\n[보기] participate / to / to / science / truth / people / backgrounds / and / from / ensure / is / for / its / it / in / diverse / important`,
+    ans:`It is important for people from diverse backgrounds to participate in science to ensure its objectivity and truth.`,
+    exp:`본문에서 추가할 어휘: objectivity. '다양한 배경의 사람들이 과학에 참여하는 것이 과학의 객관성과 진실성을 보장하기 위해 중요하다.'`
+  },
+
+  // ── 32번 ──────────────────────────────────────────────
+  {
+    id:"32-1", passageNo:32, topic:"매몰 비용 오류 — 빈칸 영작",
+    passage:`If we've invested in something that hasn't repaid us — be it money in a failing venture, or time in an unhappy relationship — we find it very difficult to walk away. This is the sunk cost fallacy. Our instinct is to continue investing money or time as we hope that our investment will prove to be worthwhile in the end. Giving up would mean acknowledging that we've wasted something we can't get back, and ___________. The problem, of course, is that if something really is a bad bet, then staying with it simply increases the amount we lose.`,
+    qtype:"영작",
+    question:`빈칸에 들어갈 말을 [조건]에 맞게 영작하시오. (총 14단어)`,
+    condition:`[조건] ① 보기의 단어를 포함하여 총 14단어 ② 필요시 어형 변화 및 단어 추가 ③ [so + 형용사/부사 that-절] 구문 사용\n[보기] if / we / painful / prefer / it / avoid / that / can / that thought`,
+    ans:`that thought is so painful that we prefer to avoid it if we can`,
+    exp:`so ~ that 구문: that thought(주어) + is so painful(so+형용사) + that we prefer to avoid it if we can(that절). 총 14단어.`
+  },
+  {
+    id:"32-2", passageNo:32, topic:"매몰 비용 오류 — 빈칸 A",
+    passage:`If we've invested in something that hasn't repaid us — be it money in a failing venture, or time in an unhappy relationship — we find it very difficult to walk away. This is the Ⓐ _____ _____ fallacy. Our instinct is to continue investing money or time as we hope that our investment will prove to be worthwhile in the end. Giving up would mean acknowledging that we've wasted something we can't get back, and that thought is so painful that we prefer to avoid it if we can. The problem, of course, is that if something really is a bad bet, then staying with it simply increases the amount we lose. Rather than walk away from a bad five-year relationship, for example, we turn it into a bad 10-year relationship; rather than accept that we've lost a thousand dollars, we lay down another thousand and lose that too. In the end, by delaying the pain of admitting our problem, we only add to it. Sometimes we just have to cut our losses.`,
+    qtype:"단어찾기",
+    question:`밑줄 친 빈칸 Ⓐ에 들어갈 말을 2단어로 쓰시오.`,
+    condition:`[조건] 2단어로 쓸 것`,
+    ans:`sunk cost`,
+    exp:`'매몰 비용 오류(sunk cost fallacy)' — 이미 투자한 비용에 집착하여 잘못된 결정을 계속하는 심리적 오류.`
+  },
+  {
+    id:"32-3", passageNo:32, topic:"매몰 비용 오류 — 내용 분석 (우리말)",
+    passage:`If we've invested in something that hasn't repaid us — be it money in a failing venture, or time in an unhappy relationship — we find it very difficult to walk away. This is the sunk cost fallacy. Our instinct is to continue investing money or time as we hope that our investment will prove to be worthwhile in the end. Giving up would mean acknowledging that we've wasted something we can't get back, and that thought is so painful that we prefer to avoid it if we can. The problem, of course, is that if something really is a bad bet, then staying with it simply increases the amount we lose. Rather than walk away from a bad five-year relationship, for example, we turn it into a bad 10-year relationship; rather than accept that we've lost a thousand dollars, we lay down another thousand and lose that too. In the end, by delaying the pain of admitting our problem, we only add to it. Sometimes we just have to cut our losses.`,
+    qtype:"서술",
+    question:`아래 표를 조건에 맞게 우리말로 완성하시오.\n① 본능이 바라는 것과 지속하는 것\n② 포기하는 것의 의미\n③ 계속하는 것의 결과\n④ ③을 뒷받침하는 본문 예시 (1가지)\n⑤ 해결책`,
+    condition:`[조건] ① 명사형 어미로 작성 ② 우리말로 작성`,
+    ans:`①우리의 투자가 결국 가치있는 것으로 증명되기를 바라면서 시간이나 돈을 계속해서 투자하는 것\n②우리가 돌려받을 수 없는 무언가를 낭비해 왔다는 것을 인정하는 것\n③우리가 잃는 총액을 증가시킴\n④5년간의 나쁜 관계를 10년간의 나쁜 관계로 만드는 것 (또는 수천 달러를 잃고 또 다른 천 달러를 넣어 잃는 것)\n⑤우리의 손실을 끊어야 함`,
+    exp:`각 번호별로 해당 문장에서 핵심 내용을 명사형(~하는 것, ~함)으로 요약.`
+  },
+
+  // ── 34번 ──────────────────────────────────────────────
+  {
+    id:"34-1", passageNo:34, topic:"금융 시장 — 요약문 빈칸",
+    passage:`Financial markets do more than take capital from the rich and lend it to everyone else. They enable each of us to smooth consumption over our lifetimes, which is a fancy way of saying that we don't have to spend income at the same time we earn it. Shakespeare may have admonished us to be neither borrowers nor lenders; the fact is that most of us will be both at some point. If we lived in an agrarian society, we would have to eat our crops reasonably soon after the harvest or find some way to store them. Financial markets are a more sophisticated way of managing the harvest. We can spend income now that we have not yet earned — as by borrowing for college or a home — or we can earn income now and spend it later, as by saving for retirement. The important point is that earning income has been divorced from spending it, allowing us much more flexibility in life.`,
+    qtype:"단어찾기",
+    question:`글을 아래와 같이 요약할 때 빈칸에 들어갈 적절한 말을 글에서 찾아 한 단어로 쓰시오. (필요시 어형 변형 가능)\n\n요약: "Financial markets allow for more _____ timing of income and spending."`,
+    condition:`[조건] 글에서 찾아 한 단어, 필요시 어형 변형 가능`,
+    ans:`flexible`,
+    exp:`원문의 'flexibility'에서 형용사 'flexible'로 변형. 금융 시장이 소득과 소비의 시기를 더 유연하게(flexible) 한다는 요약.`
+  },
+  {
+    id:"34-2", passageNo:34, topic:"금융 시장 — 가정법 영작",
+    passage:`Financial markets do more than take capital from the rich and lend it to everyone else. They enable each of us to smooth consumption over our lifetimes, which is a fancy way of saying that we don't have to spend income at the same time we earn it. Shakespeare may have admonished us to be neither borrowers nor lenders; the fact is that most of us will be both at some point. If __________(우리가 농경사회에 산다면, 우리는 우리의 농작물을 수확 직후에 합리적으로 먹거나 또는 그것들을 저장할 어떤 방법을 찾아야 할 것이다). Financial markets are a more sophisticated way of managing the harvest.`,
+    qtype:"영작",
+    question:`빈칸에 우리말 의미에 맞게 영작하시오.`,
+    condition:`[조건] ① 보기의 단어를 모두 포함하여 영작 ② 필요시 어형 변화 및 단어 추가\n[보기] will have to eat / society / soon after the / our crops reasonably / store / we / to / live / them / in an agrarian / or find some way / harvest`,
+    ans:`we lived in an agrarian society, we would have to eat our crops reasonably soon after the harvest or find some way to store them`,
+    exp:`가정법 과거: live → lived, will → would. 'If we lived ~, we would have to ~'`
+  },
+  {
+    id:"34-3", passageNo:34, topic:"금융 시장 — 빈칸 (A)(B)",
+    passage:`Modern society differs notably from agrarian society in terms of how flexible capital can be. Financial markets do more than take capital from the rich and lend it to everyone else. They enable each of us to smooth consumption over our lifetimes, which is a fancy way of saying that we don't have to spend income at the same time we earn it. Shakespeare may have admonished us to be neither borrowers nor lenders; the fact is that most of us will be both at some point. If we lived in an agrarian society, we would have to eat our crops reasonably soon after the harvest or find some way to store them. (A)_______ are a more sophisticated way of managing the harvest. We can spend income now that we have not yet earned — as by borrowing for college or a home — or we can earn income now and spend it later, as by saving for retirement. The important point is that earning income has been divorced from spending it, allowing us much more (B)_______ in life.`,
+    qtype:"단어찾기",
+    question:`빈칸 (A), (B)에 알맞은 말을 글에서 찾아 쓰시오.`,
+    condition:`[조건] ① 각 빈칸에 1~2단어 ② 필요시 변형\n(A): 1~2단어, (B): 1단어`,
+    ans:`(A) Financial markets\n(B) flexibility`,
+    exp:`(A) 수확 관리의 정교한 방법 = Financial markets. (B) 첫 문장 flexible → flexibility로 명사 변형.`
+  },
+  {
+    id:"34-4", passageNo:34, topic:"금융 시장 — 분사구문 영작",
+    passage:`Financial markets do more than take capital from the rich and lend it to everyone else. They enable each of us to smooth consumption over our lifetimes, which is a fancy way of saying that we don't have to spend income at the same time we earn it. Shakespeare may have admonished us to be neither borrowers nor lenders; the fact is that most of us will be both at some point. If we lived in an agrarian society, we would have to eat our crops reasonably soon after the harvest or find some way to store them. Financial markets are a more sophisticated way of managing the harvest. We can spend income now that we have not yet earned — as by borrowing for college or a home — or we can earn income now and spend it later, as by saving for retirement. The important point is that [소득을 버는 것이 그것을 소비하는 것과 분리되어 있고, 이는 우리에게 삶에서 훨씬 더 많은 유연성을 허용해준다].`,
+    qtype:"영작",
+    question:`[ ] 안의 우리말을 [조건]에 맞게 영작하시오.`,
+    condition:`[조건] ① 보기의 단어를 모두 포함하여 영작 ② 필요시 어형 변화 및 단어 추가 ③ 분사구문 사용\n[보기] allow / have / spend / much / divorce / flexibility / in life / earning income / from`,
+    ans:`earning income has been divorced from spending it, allowing us much more flexibility in life`,
+    exp:`divorce → has been divorced (현재완료 수동), allow → allowing (분사구문). '소득을 버는 것이 소비와 분리되어, 삶의 유연성을 허용한다.'`
+  },
+  {
+    id:"34-5", passageNo:34, topic:"금융 시장 — 빈칸 완성",
+    passage:`Financial markets do more than take capital from the rich and lend it to everyone else. They enable each of us to smooth consumption over our lifetimes, which is a fancy way of saying that we don't have to spend income at the same time we earn it. Shakespeare may have admonished us to be neither borrowers nor lenders; the fact is that most of us will be both at some point. If we lived in an agrarian society, we would have to eat our crops reasonably soon after the harvest or find some way to store them. Financial markets _____________. We can spend income now that we have not yet earned — as by borrowing for college or a home — or we can earn income now and spend it later, as by saving for retirement.`,
+    qtype:"영작",
+    question:`빈칸에 들어갈 말을 [조건]에 맞게 완성하시오.`,
+    condition:`[조건] ① 보기의 단어만을 모두 포함하여 영작 ② 필요시 어형 변화\n[보기] the harvest / more / be / manage / sophisticate / a / of / way`,
+    ans:`are a more sophisticated way of managing the harvest`,
+    exp:`sophisticate → sophisticated (형용사), manage → managing (전치사 of의 목적어로 동명사). '수확을 관리하는 더 정교한 방법이다.'`
+  },
+
+  // ── 35번 ──────────────────────────────────────────────
+  {
+    id:"35-1", passageNo:35, topic:"무료 코드와 DNA — Only 도치 영작",
+    passage:`As the old joke goes: "Software, free. User manual, $10,000." But it's no joke. A couple of high-profile companies make their living selling instruction and paid support for free software. The copy of code, being mere bits, is free. _____________. A lot of medical and genetic information will go this route in the coming decades. Right now getting a full copy of all your DNA is very expensive ($10,000), but soon it won't be.`,
+    qtype:"영작",
+    question:`빈칸에 들어갈 말을 [조건]에 맞게 영작하시오.`,
+    condition:`[조건] ① 보기의 단어만을 어형 변형 없이 모두 포함하여 영작 ② Only로 시작할 것\n[보기] do / code / only / valuable / through support / become / free / and / you / of / the / lines / guidance / to`,
+    ans:`Only through support and guidance do the lines of free code become valuable to you.`,
+    exp:`Only + 부사구 도치: Only through ~ do the lines ~ become. '무료 코드의 배열은 지원과 안내를 통해서만 당신에게 가치있게 된다.'`
+  },
+
+  // ── 36번 ──────────────────────────────────────────────
+  {
+    id:"36-1", passageNo:36, topic:"뇌의 에너지 효율 — 동명사+관계대명사 영작",
+    passage:`Brains are expensive in terms of energy. Twenty percent of the calories we consume are used to power the brain. So brains try to operate in the most energy-efficient way possible, and that means [우리가 세상을 항해하는 데 필요로 하는, 감각으로부터 들어온 정보의 최소한을 처리하는 것]. Neuroscientists weren't the first to discover that fixing your gaze on something is no guarantee of seeing it.`,
+    qtype:"영작",
+    question:`[ ] 안의 우리말을 [조건]에 맞게 영작하시오.`,
+    condition:`[조건] ① 보기의 단어를 모두 포함하여 영작 ② 필요시 어형 변화 및 단어 추가 ③ 동명사 형태의 목적어로 시작 ④ 목적격 관계대명사 that 사용\n[보기] we / the / from our senses / navigate / process / minimum / the world / amount of / need to / only / information`,
+    ans:`processing only the minimum amount of information from our senses that we need to navigate the world`,
+    exp:`process → processing (동명사로 시작), that we need to navigate the world (목적격 관계대명사 that). '우리가 세상을 항해하는 데 필요로 하는 감각으로부터의 최소한의 정보만을 처리하는 것'`
+  },
+
+  // ── 37번 ──────────────────────────────────────────────
+  {
+    id:"37-1", passageNo:37, topic:"소비 vs 투자 — 5형식 영작",
+    passage:`Buying a television is current consumption. It makes us happy today but does nothing to make us richer tomorrow. Yes, [텔레비전에 소비되는 돈은 노동자들이 텔레비전 공장에 계속 고용되게 한다]. But if the same money were invested, it would create jobs somewhere else.`,
+    qtype:"영작",
+    question:`[ ] 안의 우리말을 [조건]에 맞게 영작하시오.`,
+    condition:`[조건] ① 보기의 단어를 모두 포함하여 영작 ② 필요시 어형 변화 및 단어 추가\n[보기] on / keep / the / workers / spend / television / money / at / a / employ / television / factory`,
+    ans:`money spent on a television keeps workers employed at the television factory`,
+    exp:`spend → spent (과거분사로 money 수식), keep + 목적어 + 과거분사 (5형식): keeps workers employed. '텔레비전에 소비되는 돈은 노동자들을 공장에 계속 고용된 상태로 유지한다.'`
+  },
+  {
+    id:"37-2", passageNo:37, topic:"소비 vs 투자 — 가정법 영작",
+    passage:`Buying a television is current consumption. It makes us happy today but does nothing to make us richer tomorrow. Yes, money spent on a television keeps workers employed at the television factory. But [만약 같은 돈이 투자된다면, 어딘가 다른 곳의 일자리를 창출할 것이다], say for scientists in a laboratory or workers on a construction site.`,
+    qtype:"영작",
+    question:`[ ] 안의 우리말을 [조건]에 맞게 영작하시오. (총 12단어, if로 시작)`,
+    condition:`[조건] ① 보기의 단어를 모두 포함하여 총 12단어 ② 필요시 어형 변화 및 단어 추가 ③ if로 시작\n[보기] be / it / else / jobs / create / if / somewhere / same / money / invest`,
+    ans:`if the same money were invested, it would create jobs somewhere else`,
+    exp:`가정법 과거: invest → were invested (수동), 조동사 would + create. 총 12단어.`
+  },
+  {
+    id:"37-3", passageNo:37, topic:"소비 vs 투자 — 결론 문장 영작",
+    passage:`Thus, [대학 등록금은 투자이다; 스포츠카를 구입하는 것은 소비이다].`,
+    qtype:"영작",
+    question:`[ ] 안의 우리말을 [조건]에 맞게 영작하시오. (총 11단어)`,
+    condition:`[조건] ① 보기의 단어를 포함하여 총 11단어 ② 필요시 어형 변화 및 단어 추가\n[보기] college tuition / invest / buy / consume`,
+    ans:`college tuition is an investment; buying a sports car is consumption`,
+    exp:`invest → investment (명사), consume → consumption (명사), buy → buying (동명사 주어). 총 11단어.`
+  },
+  {
+    id:"37-4", passageNo:37, topic:"소비 vs 투자 — 빈칸 완성",
+    passage:`Buying a television is current consumption. It makes us happy today but does nothing to make us richer tomorrow. Yes, money spent on a television keeps workers employed at the television factory. But if the same money were invested, it would create jobs somewhere else. Think about college as an example. _____________. Using the same money to buy fancy sports cars for high school graduates would create jobs for auto workers.`,
+    qtype:"영작",
+    question:`빈칸에 들어갈 말을 [조건]에 맞게 완성하시오.`,
+    condition:`[조건] ① 보기의 단어만을 사용하여 빈칸 완성 ② 필요시 어형 변화\n[보기] create / students / college / send / professors / for / to / jobs`,
+    ans:`Sending students to college creates jobs for professors`,
+    exp:`send → Sending (동명사 주어), create → creates (3인칭 단수). '학생들을 대학에 보내는 것은 교수들을 위한 일자리를 창출한다.'`
+  },
+
+  // ── 39번 ──────────────────────────────────────────────
+  {
+    id:"39-1", passageNo:39, topic:"산업혁명과 자동화 — 현재완료 영작",
+    passage:`Two hundred years ago, 70 percent of American workers lived on the farm. [오늘날 자동화는 1%를 제외한 모든 일자리를 제거하였고, 그것들을 기계로 대체하였다]. But the displaced workers did not sit idle. Instead, automation created hundreds of millions of jobs in entirely new fields.`,
+    qtype:"영작",
+    question:`[ ] 안의 우리말을 [조건]에 맞게 영작하시오.`,
+    condition:`[조건] ① 보기의 단어를 모두 포함하여 영작 ② 필요시 어형 변화 및 단어 추가\n[보기] has / replace / of / them / but / jobs / with / eliminate / all / automation / today / 1 percent / their / machines`,
+    ans:`Today automation has eliminated all but 1 percent of their jobs, replacing them with machines`,
+    exp:`eliminate → has eliminated (현재완료), replace → replacing (분사구문). 'all but 1 percent' = 1%를 제외한 모두.`
+  },
+  {
+    id:"39-2", passageNo:39, topic:"산업혁명과 자동화 — 영영풀이 단어",
+    passage:`Imagine that seven out of ten working Americans got fired tomorrow. What would they all do? It's hard to believe you'd have an economy at all if you gave pink slips to more than half the labor force. But that is what the industrial revolution did to the workforce of the early 19th century. Two hundred years ago, 70 percent of American workers lived on the farm. Today automation has eliminated all but 1 percent of their jobs, replacing them with machines. But the displaced workers did not sit idle. Instead, automation created hundreds of millions of jobs in entirely new fields. Those who once farmed were now manning the factories that manufactured farm equipment, cars, and other industrial products. Since then, wave upon wave of new occupations have arrived — appliance repair person, food chemist, photographer, web designer — each building on previous automation. Today, the vast majority of us are doing jobs that no farmer from the 1800s could have imagined.`,
+    qtype:"단어찾기",
+    question:`주어진 영영풀이에 해당하는 단어를 글에서 찾아 쓰시오.\n① to be present in order to work or be in charge of a place or a machine\n② a notice of termination from employment`,
+    condition:`[조건] 위 글에서 찾아 각 1~2단어로 쓸 것 (①은 변형 없이 그대로, ②는 단수형으로)`,
+    ans:`① manning\n② pink slip`,
+    exp:`① man (동사): '일하거나 기계/장소를 관리하기 위해 배치되다' → manning (원형 그대로). ② pink slips → pink slip (단수형).`
+  },
+  {
+    id:"39-3", passageNo:39, topic:"산업혁명과 자동화 — 관계대명사 what 영작",
+    passage:`Those who once farmed were now manning the factories that manufactured farm equipment, cars, and other industrial products. After that, wave upon wave of new occupations have arrived. (A)[오늘날 사람들이 가지고 있는 대부분의 직업은 1800년대의 농부들이 상상할 수 있었던 것과는 매우 다르다].`,
+    qtype:"영작",
+    question:`(A)의 우리말을 [조건]에 맞게 영작하시오.`,
+    condition:`[조건] ① 보기의 단어를 모두 포함하여 영작 ② 1단어(what)를 추가\n[보기] farmers in the 1800s / the jobs / have today / could / most of / are very different / people / from / have imagined`,
+    ans:`Most of the jobs people have today are very different from what farmers in the 1800s could have imagined`,
+    exp:`추가 단어: what (선행사 포함 관계대명사). 'what farmers in the 1800s could have imagined' = 1800년대 농부들이 상상할 수 있었던 것.`
+  },
+
+  // ── 40번 ──────────────────────────────────────────────
+  {
+    id:"40-1", passageNo:40, topic:"부러움과 질투 — 밑줄 바꿔쓰기",
+    passage:`Paradoxically, with envy we direct resentments toward those who are most similar to us in age, career and residence.`,
+    qtype:"영작",
+    question:`밑줄 친 부분을 바꾸어 쓸 때 [조건]에 맞게 빈칸을 완성하시오.\n\n"It is _____ that when we are _____ we _____ those who have the most _____ to us in age, career and residence."`,
+    condition:`[조건] ① 보기 이외의 영단어는 밑줄 친 부분에서 사용된 것을 다시 사용 ② 필요시 어형 변화\n[보기] it / that`,
+    ans:`paradoxical / envious / resent / similarity`,
+    exp:`Paradoxically → It is paradoxical that ~, envy → envious (형용사), direct resentments → resent, similar → similarity (명사).`
+  },
+  {
+    id:"40-2", passageNo:40, topic:"부러움과 질투 — 빈칸 한 단어",
+    passage:`Many things spark envy: ownership, status, health, youth, talent, popularity, beauty. It is often confused with jealousy because the physical reactions are identical. The difference: the subject of envy is a thing (status, money, health etc.). The subject of jealousy is the behaviour of a third person. Envy needs two people. Jealousy, on the other hand, requires three: Peter is jealous of Sam because the beautiful girl next door rings him instead. Paradoxically, with envy we direct resentments toward those who are most similar to us in age, career and residence. We don't envy businesspeople from the century before last. We don't envy millionaires on the other side of the globe. As a writer, I don't envy musicians, managers or dentists, but other _____. As a CEO you envy other, bigger CEOs.`,
+    qtype:"단어찾기",
+    question:`문맥상 빈칸에 알맞은 한 단어를 글에서 찾아 알맞은 형태로 쓰시오.`,
+    condition:`[조건] 글에서 찾아 알맞은 형태로 변형`,
+    ans:`writers`,
+    exp:`'a writer'(단수)의 복수형 'writers'. 작가는 같은 작가들을 부러워한다 — Aristotle의 'Potters envy potters.'와 같은 원리.`
+  },
+
+  // ── 41~42번 ─────────────────────────────────────────
+  {
+    id:"41-1", passageNo:41, topic:"확증 편향 — 제목 완성",
+    passage:`We have biases that support our biases! If we're partial to one option — perhaps because it's more memorable, or framed to minimize loss, or seemingly consistent with a promising pattern — we tend to search for information that will justify choosing that option. On the one hand, it's sensible to make choices that we can defend with data and a list of reasons. On the other hand, if we're not careful, we're likely to conduct an imbalanced analysis, falling prey to a cluster of errors collectively known as "confirmation biases." For example, nearly all companies include classic "tell me about yourself" job interviews as part of the hiring process, and many rely on these interviews alone to evaluate applicants. But it turns out that traditional interviews are actually one of the least useful tools for predicting an employee's future success. This is because interviewers often subconsciously make up their minds about interviewees based on their first few moments of interaction and spend the rest of the interview cherry-picking evidence and phrasing their questions to confirm that initial impression. More structured approaches, like obtaining samples of a candidate's work or asking how he would respond to difficult hypothetical situations, are dramatically better at assessing future success, with a nearly threefold advantage over traditional interviews.`,
+    qtype:"영작",
+    question:`보기의 단어를 이용하여 글의 제목을 완성하시오.\n\n제목: "Confirmation Biases: _____________"`,
+    condition:`[조건] ① 보기의 단어를 모두 포함하여 영작\n[보기] have / for / decided / for / already / we / justifications / searching / what`,
+    ans:`Searching for Justifications for What We Have Already Decided`,
+    exp:`'우리가 이미 결정한 것에 대한 정당성을 찾는 것' — 확증 편향의 핵심. have → Have (완료 시제).`
+  },
+];
+
+// 지문 그루핑
+const PASSAGES=[], pMap={};
+QLISTS.forEach(q=>{
+  if(!pMap[q.passageNo]){
+    pMap[q.passageNo]={no:q.passageNo,topic:q.topic.split(' — ')[0].trim(),qs:[]};
+    PASSAGES.push(pMap[q.passageNo]);
+  }
+  pMap[q.passageNo].qs.push(q);
+});
+PASSAGES.sort((a,b)=>a.no-b.no);
+
+// 상태
+let selected=new Set(), doneSet=new Set();
+let qs=[], idx=0, cor=0, wrn=0, half=0, answered=false, t0=0, wrongQs=[];
+
+function goSel(){
+  document.getElementById('startScreen').classList.add('hidden');
+  renderGrid();
+  document.getElementById('passageScreen').classList.remove('hidden');
+}
+
+function renderGrid(){
+  const g=document.getElementById('passageGrid');g.innerHTML='';
+  PASSAGES.forEach(p=>{
+    const no=p.no,cnt=p.qs.length;
+    const d=document.createElement('div');
+    d.className='p-card'+(selected.has(no)?' sel':'')+(doneSet.has(no)?' done':'');
+    d.onclick=()=>{selected.has(no)?selected.delete(no):selected.add(no);d.classList.toggle('sel',selected.has(no));};
+    d.innerHTML=`<div class="p-no">${no}번</div><div class="p-topic">${p.topic}</div><div class="p-qcount">${cnt}문제</div>`
+      +(doneSet.has(no)?'<span class="p-badge" style="background:#e8f5e9;color:#2e7d32;">완료✓</span>':'')
+      +(selected.has(no)&&!doneSet.has(no)?'<span class="p-badge" style="background:#fff3e0;color:#e65100;">선택</span>':'');
+    g.appendChild(d);
+  });
+}
+
+function selAll(){
+  const all=PASSAGES.every(p=>selected.has(p.no));
+  PASSAGES.forEach(p=>{if(all)selected.delete(p.no);else selected.add(p.no);});
+  renderGrid();
+}
+
+function startQuiz(){
+  if(selected.size===0){alert('지문을 하나 이상 선택하세요!');return;}
+  qs=[];
+  PASSAGES.filter(p=>selected.has(p.no)).forEach(p=>p.qs.forEach(q=>qs.push(q)));
+  idx=0;cor=0;wrn=0;half=0;answered=false;t0=Date.now();wrongQs=[];
+  document.getElementById('passageScreen').classList.add('hidden');
+  document.getElementById('hdr').classList.remove('hidden');
+  document.getElementById('pw').classList.remove('hidden');
+  document.getElementById('quizArea').classList.remove('hidden');
+  document.getElementById('hs').textContent=selected.size+'개 지문 · '+qs.length+'문제';
+  showQ();
+}
+
+function showQ(){
+  if(idx>=qs.length){showResult();return;}
+  answered=false;
+  const q=qs[idx];
+  document.getElementById('pf').style.width=(idx/qs.length*100).toFixed(0)+'%';
+  document.getElementById('hb').textContent=(idx+1)+'/'+qs.length;
+  const area=document.getElementById('quizArea');
+
+  const qTypeBadge = q.qtype==='단어찾기'?'단어 찾기':q.qtype==='서술'?'우리말 서술':'영작';
+
+  area.innerHTML=`<div class="qc">
+    <div class="q-no-badge">
+      <span class="qno">${q.passageNo}번</span>
+      <span class="qtype-tag">${qTypeBadge}</span>
+    </div>
+    <div style="font-size:11px;font-weight:700;color:var(--pri);margin-bottom:8px;">📄 지문 (${q.topic})</div>
+    <div class="passage-box">${q.passage.replace(/\n/g,'<br>')}</div>
+    <div style="font-size:13px;font-weight:800;color:#1a1a2e;margin-bottom:10px;line-height:1.7;">${q.question.replace(/\n/g,'<br>')}</div>
+    <div class="condition-box">${q.condition.replace(/\n/g,'<br>')}</div>
+    <textarea class="answer-area" id="myAnswer" placeholder="여기에 답을 입력하세요..." rows="3"></textarea>
+    <button class="check-btn" id="checkBtn" onclick="checkAnswer()">✅ 정답 확인하기</button>
+    <div class="ans-reveal" id="ansReveal">
+      <div class="ans-label">📌 모범 정답</div>
+      <div class="ans-text" id="ansText"></div>
+      <div class="exp-text" id="expText"></div>
+      <div class="self-grade">
+        <button class="sg-btn sg-ok" id="sg-ok" onclick="grade('ok')">⭕ 맞았어요</button>
+        <button class="sg-btn sg-half" id="sg-half" onclick="grade('half')">△ 부분 정답</button>
+        <button class="sg-btn sg-ng" id="sg-ng" onclick="grade('ng')">❌ 틀렸어요</button>
+      </div>
+    </div>
+    <button class="next-btn" id="nextBtn" onclick="goNext()">다음 문제 →</button>
+  </div>`;
+}
+
+function checkAnswer(){
+  if(answered)return;
+  const q=qs[idx];
+  const ta=document.getElementById('myAnswer');
+  ta.classList.add('submitted');
+  ta.readOnly=true;
+  document.getElementById('checkBtn').disabled=true;
+  document.getElementById('ansText').innerHTML=q.ans.replace(/\n/g,'<br>');
+  document.getElementById('expText').textContent='💡 '+q.exp;
+  document.getElementById('ansReveal').classList.add('show');
+  answered=true;
+}
+
+function grade(result){
+  const q=qs[idx];
+  document.querySelectorAll('.sg-btn').forEach(b=>{b.disabled=true;b.classList.remove('active');});
+  document.getElementById('sg-'+result).classList.add('active');
+  if(result==='ok'){cor++;} 
+  else if(result==='half'){half++;}
+  else{wrn++;wrongQs.push(q);saveWrongsToLS([{...q,savedAt:new Date().toLocaleDateString('ko-KR')}]);}
+  document.getElementById('nextBtn').style.display='block';
+}
+
+function goNext(){idx++;showQ();}
+
+// ── localStorage ───────────────────────────────────────
+const LS_KEY='bomnal_writing_wrongs';
+function loadStoredWrongs(){try{return JSON.parse(localStorage.getItem(LS_KEY)||'[]');}catch(e){return[];}}
+function saveWrongsToLS(newWrongs){
+  const stored=loadStoredWrongs();
+  newWrongs.forEach(w=>{const i=stored.findIndex(s=>s.id===w.id);if(i>=0)stored[i]=w;else stored.push(w);});
+  localStorage.setItem(LS_KEY,JSON.stringify(stored));
+}
+function clearStoredWrongs(){localStorage.removeItem(LS_KEY);renderWrongNote();}
+
+// ── 결과 화면 ──────────────────────────────────────────
+function showResult(){
+  document.getElementById('pf').style.width='100%';
+  document.getElementById('quizArea').classList.add('hidden');
+  const total=cor+half+wrn, pct=total>0?Math.round((cor+half*0.5)/total*100):0;
+  const el=Math.round((Date.now()-t0)/60000);
+  selected.forEach(n=>doneSet.add(n));
+
+  const rs=document.getElementById('resultScreen');
+  rs.classList.remove('hidden');
+  rs.innerHTML=`<div class="rc">
+    <div style="font-size:12px;color:var(--muted);margin-bottom:4px;">고2 24년 6월 서술형 · ${selected.size}개 지문</div>
+    <div class="rs">${pct}점</div>
+    <div class="rsub">자기채점 결과</div>
+    <div class="sr">
+      <div class="si"><div class="sn" style="color:#2e7d32;">${cor}</div><div class="sl">정답</div></div>
+      <div class="si"><div class="sn" style="color:#f57f17;">${half}</div><div class="sl">부분</div></div>
+      <div class="si"><div class="sn" style="color:#c62828;">${wrn}</div><div class="sl">오답</div></div>
+      <div class="si"><div class="sn" style="color:#e65100;">${total}</div><div class="sl">총문제</div></div>
+      <div class="si"><div class="sn" style="color:#1565c0;">${el}분</div><div class="sl">소요</div></div>
+    </div>
+    <div class="rbtns">
+      ${wrongQs.length>0?`<button class="rbtn" style="background:linear-gradient(135deg,#c62828,#e91e63);color:#fff;" onclick="retryWrongs()">❌ 오답 다시풀기 (${wrongQs.length}개)</button>`:''}
+      <button class="rbtn" style="background:linear-gradient(135deg,#e65100,#bf360c);color:#fff;" onclick="showWrongNote()">📒 오답 노트 보기</button>
+      <button class="rbtn rbtn-p" onclick="goBack()">← 지문 다시 선택</button>
+      <button class="rbtn rbtn-s" onclick="location.reload()">처음부터 🔄</button>
+    </div>
+  </div>`;
+}
+
+function retryWrongs(){
+  if(wrongQs.length===0)return;
+  qs=[...wrongQs];
+  idx=0;cor=0;wrn=0;half=0;answered=false;t0=Date.now();wrongQs=[];
+  document.getElementById('resultScreen').classList.add('hidden');
+  document.getElementById('quizArea').classList.remove('hidden');
+  document.getElementById('hs').textContent='오답 다시풀기';
+  showQ();
+}
+
+function goBack(){
+  document.getElementById('resultScreen').classList.add('hidden');
+  document.getElementById('hdr').classList.add('hidden');
+  document.getElementById('pw').classList.add('hidden');
+  selected.clear();renderGrid();
+  document.getElementById('passageScreen').classList.remove('hidden');
+}
+
+// ── 오답 노트 ──────────────────────────────────────────
+function showWrongNote(){
+  document.getElementById('resultScreen').classList.add('hidden');
+  document.getElementById('wrongNoteScreen').classList.remove('hidden');
+  renderWrongNote();
+}
+
+function renderWrongNote(tab){
+  const stored=loadStoredWrongs(), activeTab=tab||'note';
+  const ws=document.getElementById('wrongNoteScreen');
+  let tabContent='';
+  if(activeTab==='note'){
+    tabContent=stored.length===0?`<div class="wn-empty">📭 저장된 오답이 없어요!</div>`
+      :stored.map(q=>`<div class="wn-card">
+        <div class="wn-header">
+          <span class="wn-title">${q.passageNo}번 · ${q.topic}</span>
+          <span class="wn-badge">${q.qtype} · ${q.savedAt||''}</span>
+        </div>
+        <div class="wn-body">
+          <div style="font-size:12px;font-weight:800;color:#e65100;margin-bottom:6px;">📝 문제</div>
+          <div style="font-size:13px;color:#333;margin-bottom:8px;line-height:1.7;">${q.question.replace(/\n/g,'<br>')}</div>
+          <div class="wn-cond">${q.condition.replace(/\n/g,'<br>')}</div>
+          <div class="ans-label" style="font-size:11px;font-weight:800;color:#e65100;margin-bottom:6px;">📌 모범 정답</div>
+          <div class="wn-ok">${q.ans.replace(/\n/g,'<br>')}</div>
+          <div class="wn-exp">💡 ${q.exp}</div>
+        </div>
+      </div>`).join('');
+  } else {
+    tabContent=stored.length===0?`<div class="wn-empty">📭 저장된 오답이 없어요!</div>`
+      :`<div style="text-align:center;padding:16px 0;">
+        <div style="font-size:14px;font-weight:800;color:var(--pri);margin-bottom:6px;">저장된 오답 ${stored.length}문제</div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:20px;">localStorage에 누적된 모든 오답입니다.</div>
+        <button class="rbtn" style="background:linear-gradient(135deg,#c62828,#e91e63);color:#fff;width:100%;padding:14px;" onclick="startStoredRetry()">❌ 오답 전체 다시풀기 (${stored.length}문제)</button>
+      </div>`;
+  }
+  ws.innerHTML=`<div style="padding:20px;max-width:700px;margin:0 auto;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+      <button onclick="closeWrongNote()" style="border:none;background:none;font-size:20px;cursor:pointer;">←</button>
+      <span style="font-family:'Black Han Sans',sans-serif;font-size:18px;color:var(--pri);">📒 오답 노트</span>
+      <span style="font-size:12px;color:var(--muted);margin-left:4px;">총 ${stored.length}문제 누적</span>
+    </div>
+    <div class="tab-bar">
+      <button class="tab-btn ${activeTab==='note'?'on':''}" onclick="renderWrongNote('note')">📖 오답 읽기</button>
+      <button class="tab-btn ${activeTab==='retry'?'on':''}" onclick="renderWrongNote('retry')">🔁 다시 풀기</button>
+    </div>
+    ${stored.length>0?`<button class="wn-clear-btn" onclick="if(confirm('오답 노트를 전부 초기화할까요?'))clearStoredWrongs()">🗑️ 오답 노트 초기화</button>`:''}
+    ${tabContent}
+  </div>`;
+}
+
+function startStoredRetry(){
+  const stored=loadStoredWrongs();
+  if(!stored.length)return;
+  qs=stored.map(q=>({...q}));
+  idx=0;cor=0;wrn=0;half=0;answered=false;t0=Date.now();wrongQs=[];
+  document.getElementById('wrongNoteScreen').classList.add('hidden');
+  document.getElementById('hdr').classList.remove('hidden');
+  document.getElementById('pw').classList.remove('hidden');
+  document.getElementById('quizArea').classList.remove('hidden');
+  document.getElementById('hs').textContent='오답 노트 다시풀기';
+  showQ();
+}
+
+function closeWrongNote(){
+  document.getElementById('wrongNoteScreen').classList.add('hidden');
+  document.getElementById('resultScreen').classList.remove('hidden');
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,1128 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>봄날 퀴즈 | 고2 24년 6월 어법·어휘</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&family=Black+Han+Sans&display=swap');
+:root{--pri:#2e7d32;--acc:#f57f17;--bg:#f0f0eb;--card:#fff;--muted:#888;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Nanum Gothic',sans-serif;background:var(--bg);min-height:100vh;color:#222;}
+.hidden{display:none!important;}
+#startScreen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
+.s-card{background:white;border-radius:20px;padding:36px 28px;text-align:center;max-width:480px;width:100%;box-shadow:0 4px 24px rgba(0,0,0,.08);}
+.s-card h1{font-family:'Black Han Sans',sans-serif;font-size:20px;color:var(--pri);margin-bottom:6px;}
+.s-sub{font-size:13px;color:var(--muted);margin-bottom:22px;}
+.ni{width:100%;padding:11px 14px;border:2px solid #ddd;border-radius:10px;font-size:14px;font-family:'Nanum Gothic',sans-serif;outline:none;margin-bottom:10px;background:white;}
+.ni:focus{border-color:var(--pri);}
+.start-btn{width:100%;padding:14px;border-radius:10px;border:none;background:#2e7d32;color:white;font-size:1rem;font-weight:800;cursor:pointer;font-family:inherit;}
+#passageScreen{padding:20px;max-width:720px;margin:0 auto;}
+.ps-header{background:#2e7d32;color:white;border-radius:14px;padding:16px 20px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;}
+.ps-title{font-family:'Black Han Sans',sans-serif;font-size:16px;}
+.ps-sub{font-size:11px;opacity:.75;margin-top:2px;}
+.user-info{background:rgba(255,255,255,.2);border-radius:8px;padding:5px 12px;font-size:12px;font-weight:700;}
+.filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+.fb{padding:7px 16px;border:2px solid #2e7d32;border-radius:20px;background:white;color:#2e7d32;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;}
+.fb.on{background:#2e7d32;color:white;}
+.passage-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin-bottom:16px;}
+.p-card{background:white;border-radius:12px;padding:14px 10px;text-align:center;cursor:pointer;border:2px solid #e0e0e0;transition:all .15s;position:relative;}
+.p-card:hover{border-color:#2e7d32;box-shadow:0 4px 12px rgba(46,125,50,.1);}
+.p-card.sel{border-color:#2e7d32;background:#f1f8f1;}
+.p-card.done{border-color:#66bb6a;background:#f1f8f1;}
+.p-no{font-family:'Black Han Sans',sans-serif;font-size:22px;color:#2e7d32;margin-bottom:3px;}
+.p-topic{font-size:10px;color:var(--muted);line-height:1.4;}
+.p-qcount{font-size:10px;color:#66bb6a;font-weight:700;margin-top:3px;}
+.p-badge{position:absolute;top:5px;right:5px;font-size:9px;padding:2px 5px;border-radius:6px;font-weight:700;background:#e8f5e9;color:#2e7d32;}
+.sel-all-btn{width:100%;padding:11px;border-radius:10px;border:2px solid #2e7d32;background:white;color:#2e7d32;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit;margin-bottom:8px;}
+.go-btn{width:100%;padding:13px;border-radius:10px;border:none;background:#2e7d32;color:white;font-size:1rem;font-weight:800;cursor:pointer;font-family:inherit;}
+.hdr{background:#2e7d32;color:white;padding:11px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.ht{font-family:'Black Han Sans',sans-serif;font-size:15px;}
+.hs{font-size:10px;opacity:.7;margin-top:1px;}
+.hb-wrap{display:flex;align-items:center;gap:10px;}
+.hb{background:rgba(255,255,255,.2);border-radius:14px;padding:3px 10px;font-size:12px;font-weight:700;}
+.submit-hdr-btn{background:#f57f17;border:none;color:white;border-radius:8px;padding:6px 14px;font-size:12px;font-weight:800;cursor:pointer;font-family:inherit;}
+.pw{height:3px;background:rgba(255,255,255,.2);position:sticky;top:44px;z-index:99;}
+.pf{height:100%;background:#f57f17;transition:width .3s;}
+#quizArea{max-width:720px;margin:0 auto;padding:20px;}
+.passage-section{margin-bottom:28px;}
+.passage-header{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.passage-num{font-family:'Black Han Sans',sans-serif;font-size:15px;background:#2e7d32;color:white;padding:4px 14px;border-radius:20px;}
+.passage-topic{font-size:13px;color:var(--muted);font-weight:700;}
+.passage-score{font-size:12px;color:#f57f17;font-weight:800;margin-left:auto;}
+.sent-card{background:white;border-radius:14px;padding:16px 18px;margin-bottom:10px;border:1.5px solid #e8e8e8;}
+.sent-card.all-done{border-color:#a5d6a7;background:#fafff8;}
+.sent-top{display:flex;align-items:flex-start;gap:10px;margin-bottom:8px;}
+.sent-num{min-width:26px;height:26px;border-radius:50%;background:#222;color:white;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0;margin-top:1px;}
+.sent-ko{font-size:12px;color:#666;line-height:1.5;}
+.sent-en{font-size:14px;line-height:2.2;color:#222;padding-left:2px;}
+.choice-group{display:inline-flex;align-items:center;border:1.5px solid #ccc;border-radius:8px;overflow:hidden;background:#fafafa;vertical-align:middle;margin:0 2px;}
+.choice-btn{padding:3px 10px;font-family:'Nanum Gothic',sans-serif;font-size:13px;font-weight:700;border:none;background:transparent;cursor:pointer;color:#444;transition:all .15s;white-space:nowrap;}
+.choice-btn:not(:last-child){border-right:1px solid #ddd;}
+.choice-btn:hover:not(:disabled){background:#f0f0f0;}
+.choice-btn.selected-correct{background:#e8f5e9;color:#1b5e20;border-color:#4caf50;}
+.choice-btn.selected-wrong{background:#ffebee;color:#b71c1c;}
+.choice-btn.reveal-correct{background:#e8f5e9;color:#1b5e20;}
+.choice-btn:disabled{cursor:default;}
+.choice-sep{color:#bbb;font-size:12px;padding:0 1px;pointer-events:none;}
+.choice-group.done-correct{border-color:#4caf50;}
+.choice-group.done-wrong{border-color:#ef9a9a;}
+.submit-wrap{text-align:center;padding:10px 0 30px;}
+.submit-btn{background:#2e7d32;color:white;border:none;border-radius:12px;padding:14px 48px;font-size:16px;font-weight:800;cursor:pointer;font-family:inherit;}
+#resultScreen{max-width:680px;margin:0 auto;padding:20px;}
+.rc{background:white;border-radius:20px;padding:28px 22px;box-shadow:0 4px 20px rgba(0,0,0,.07);text-align:center;}
+.rs{font-family:'Black Han Sans',sans-serif;font-size:56px;color:#2e7d32;line-height:1;}
+.rsub{font-size:13px;color:var(--muted);margin-top:4px;}
+.sr{display:flex;justify-content:center;gap:24px;margin-top:18px;flex-wrap:wrap;}
+.si{text-align:center;}.sn{font-family:'Black Han Sans',sans-serif;font-size:26px;}.sl{font-size:11px;color:var(--muted);margin-top:2px;}
+.wl{background:#fff5f5;border-radius:12px;padding:14px;text-align:left;margin-top:16px;max-height:320px;overflow-y:auto;}
+.wl h3{font-size:12px;font-weight:800;color:#c62828;margin-bottom:10px;}
+.wi{background:white;border-radius:8px;padding:9px 12px;margin-bottom:7px;font-size:12px;border-left:3px solid #ef9a9a;}
+.wie{font-weight:800;color:#2e7d32;margin-bottom:3px;}
+.wid{font-size:11px;color:#555;}
+.rbtns{display:flex;gap:10px;justify-content:center;margin-top:18px;flex-wrap:wrap;}
+.rbtn{padding:12px 22px;border-radius:10px;border:none;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;}
+.rbtn-p{background:#2e7d32;color:white;}
+.rbtn-s{background:#f5f5f5;color:#333;border:1.5px solid #ddd;}
+@media(max-width:480px){
+  .passage-grid{grid-template-columns:repeat(3,1fr);}
+  .sent-en{font-size:13px;}
+  .choice-btn{font-size:12px;padding:3px 7px;}
+}
+</style>
+</head>
+<body>
+
+<div id="startScreen">
+  <div class="s-card">
+    <h1>✏️ 고2 24년 6월 어법·어휘</h1>
+    <div class="s-sub">2024년 6월 부산광역시 교육청 학력평가 · 어법·어휘 고르기</div>
+    <input type="text" class="ni" id="ni" placeholder="이름 입력" maxlength="10">
+    <button class="start-btn" onclick="goPassageSelect()">다음 → 지문 선택</button>
+  </div>
+</div>
+
+<div id="passageScreen" class="hidden">
+  <div class="ps-header">
+    <div>
+      <div class="ps-title">✏️ 지문 선택</div>
+      <div class="ps-sub">풀고 싶은 지문을 선택하세요 (복수 선택 가능)</div>
+    </div>
+    <div class="user-info" id="userInfo"></div>
+  </div>
+  <div class="filter-bar">
+    <button class="fb on" onclick="filterPassage('all',this)">전체</button>
+    <button class="fb" onclick="filterPassage('18-26',this)">18~26번</button>
+    <button class="fb" onclick="filterPassage('29-40',this)">29~40번</button>
+    <button class="fb" onclick="filterPassage('41-45',this)">41~45번</button>
+  </div>
+  <div class="passage-grid" id="passageGrid"></div>
+  <button class="sel-all-btn" onclick="selectAll()">전체 선택 / 해제</button>
+  <button class="go-btn" onclick="startQuiz()">선택한 지문 풀기 🚀</button>
+</div>
+
+<div id="hdr" class="hdr hidden">
+  <div><div class="ht">✏️ 고2 24년 6월 어법·어휘</div><div class="hs" id="hs"></div></div>
+  <div class="hb-wrap">
+    <div class="hb" id="hb">0/0</div>
+    <button class="submit-hdr-btn" id="submitHdrBtn" onclick="doSubmit()" style="display:none;">채점 →</button>
+  </div>
+</div>
+<div id="pw" class="pw hidden"><div class="pf" id="pf" style="width:0%"></div></div>
+<div id="quizArea" class="hidden"></div>
+<div id="resultScreen" class="hidden"></div>
+
+<script>
+const PASSAGES = [
+  {
+    no:18, topic:"주민 공지 (정원 가꾸기의 날)",
+    qs:[
+      {ko:"제 이름은 Kari Patterson이고 저는 River View 아파트의 관리인입니다.",
+       en:"My name [is / to be] Kari Patterson, and I'm the manager of the River View Apartments.",
+       items:[{opts:["is","to be"],ans:"is"}]},
+      {ko:"화창한 날씨를 이용해 우리 커뮤니티를 더욱 아름답게 만들 때입니다.",
+       en:"It's time [take / to take] advantage of the [sunny / stormy] weather to [make / making] our community more beautiful.",
+       items:[{opts:["take","to take"],ans:"to take"},{opts:["sunny","stormy"],ans:"sunny"},{opts:["make","making"],ans:"make"}]},
+      {ko:"7월 13일 토요일 오전 9시에 주민들은 북쪽 주차장에서 만날 예정입니다.",
+       en:"On Saturday, July 13 at 9 a.m., residents will [meet / to meet] in the north parking lot.",
+       items:[{opts:["meet","to meet"],ans:"meet"}]},
+      {ko:"우리는 팀을 나누어 꽃과 작은 나무를 심고, 잡초를 뽑고, 잔디밭에 다채로운 장식을 할 것입니다.",
+       en:"We will divide into teams to [plant / planting] flowers and small trees, [pull / pulling] weeds, and [put / putting] colorful decorations on the lawn.",
+       items:[{opts:["plant","planting"],ans:"plant"},{opts:["pull","pulling"],ans:"pull"},{opts:["put","putting"],ans:"put"}]},
+      {ko:"올해 정원 가꾸기의 날에 함께해 주시고, 특별한 기술이나 도구는 필요하지 않다는 것을 기억하세요.",
+       en:"Please [join / joining] us for this year's Gardening Day, and [remember / remembering] no special skills or tools are [requiring / required].",
+       items:[{opts:["join","joining"],ans:"join"},{opts:["remember","remembering"],ans:"remember"},{opts:["requiring","required"],ans:"required"}]},
+      {ko:"작년에 우리는 함께 일하며 즐거운 시간을 보냈으니, 오셔서 올해 행사도 더 멋지게 만들어 주세요!",
+       en:"Last year, we had a great time [work / working] [separately / together], so come out and [make / made] this year's event even better!",
+       items:[{opts:["work","working"],ans:"working"},{opts:["separately","together"],ans:"together"},{opts:["make","made"],ans:"make"}]},
+    ]
+  },
+  {
+    no:19, topic:"계주 결승전 (Emma 이야기)",
+    qs:[
+      {ko:"결승전 경주였다.",
+       en:"It [was / being] the championship race.",
+       items:[{opts:["was","being"],ans:"was"}]},
+      {ko:"Emma는 그녀의 계주 팀의 마지막 주자였다.",
+       en:"Emma [was / to be] the final runner on her relay team.",
+       items:[{opts:["was","to be"],ans:"was"}]},
+      {ko:"그녀는 팀 동료가 바통을 건네주기를 초조하게 기다렸다.",
+       en:"She [excitingly / anxiously] waited in her spot for her teammate [pass / to pass] her the baton.",
+       items:[{opts:["excitingly","anxiously"],ans:"anxiously"},{opts:["pass","to pass"],ans:"to pass"}]},
+      {ko:"Emma는 실수를 하지 않고 자신의 역할을 수행할 수 있을지 확신하지 못했다.",
+       en:"Emma wasn't sure she could perform her role without [make / making] a mistake.",
+       items:[{opts:["make","making"],ans:"making"}]},
+      {ko:"그녀의 손이 떨렸다.",
+       en:"Her hands [shaking / shook] as she thought, \"What if I drop the baton?\"",
+       items:[{opts:["shaking","shook"],ans:"shook"}]},
+      {ko:"그녀는 팀 동료가 다가올수록 심박수가 증가하는 것을 느꼈다.",
+       en:"She felt her heart rate [increasing / increased] as her teammate approached.",
+       items:[{opts:["increasing","increased"],ans:"increasing"}]},
+      {ko:"하지만 달리기 시작했을 때, 그녀는 순조롭게 바통을 받았다.",
+       en:"But as she started running, she [received / was received] the baton smoothly.",
+       items:[{opts:["received","was received"],ans:"received"}]},
+      {ko:"마지막 10미터에서, 그녀는 두 명의 다른 주자를 제치고 1위로 결승선을 통과했다!",
+       en:"In the final 10 meters, she passed two other runners and [crosses / crossed] the finish line in first place!",
+       items:[{opts:["crosses","crossed"],ans:"crossed"}]},
+      {ko:"그녀는 두 손을 하늘로 치켜들고, 얼굴에 큰 미소를 지었다.",
+       en:"She raised her hands in the air, and a huge [smile / sadness] [coming / came] across her face.",
+       items:[{opts:["smile","sadness"],ans:"smile"},{opts:["coming","came"],ans:"came"}]},
+      {ko:"팀 동료들이 그녀를 안아주자, 그녀는 \"우리가 해냈어!\"라고 소리쳤다.",
+       en:"As her teammates [hugged / were hugged] her, she shouted, \"We did it!\"",
+       items:[{opts:["hugged","were hugged"],ans:"hugged"}]},
+      {ko:"그녀의 모든 힘든 훈련이 그럴만한 가치가 있었다.",
+       en:"All of her hard training had been [worth / worthless] it.",
+       items:[{opts:["worth","worthless"],ans:"worth"}]},
+    ]
+  },
+  {
+    no:20, topic:"진정한 자기 평가 (Goethe 격언)",
+    qs:[
+      {ko:"대부분의 사람들은 진정한 자기 평가에 대한 생각을 거부한다.",
+       en:"Most people [accept / resist] the idea of a true self-estimate, probably [because of / because] they fear it might mean [downgrade / downgrading] [some / some of] their beliefs about who [are they / they are] and what they're capable of.",
+       items:[{opts:["accept","resist"],ans:"resist"},{opts:["because of","because"],ans:"because"},{opts:["downgrade","downgrading"],ans:"downgrading"},{opts:["some","some of"],ans:"some of"},{opts:["are they","they are"],ans:"they are"}]},
+      {ko:"Goethe의 격언처럼, \"너 자신을 현재의 너의 모습 이상으로 보는 것\"은 큰 실수이다.",
+       en:"As Goethe's maxim goes, it is a great failing \"to [see / seeing] yourself as more than you are.\"",
+       items:[{opts:["see","seeing"],ans:"see"}]},
+      {ko:"네가 너의 단점을 생각해 보기를 거부한다면 어떻게 자기 인식이 있다고 여겨질 수 있을까?",
+       en:"How could you really [consider / be considered] self-aware if you refuse [considering / to consider] your [strength / weaknesses]?",
+       items:[{opts:["consider","be considered"],ans:"be considered"},{opts:["considering","to consider"],ans:"to consider"},{opts:["strength","weaknesses"],ans:"weaknesses"}]},
+      {ko:"자기를 평가하는 것을 두려워하지 마라.",
+       en:"Don't fear self-assessment [because of / because] you're worried you might have to admit some things about yourself.",
+       items:[{opts:["because of","because"],ans:"because"}]},
+      {ko:"Goethe 격언의 후반부도 역시 중요하다.",
+       en:"The second half of Goethe's maxim [is / are] important [too / either].",
+       items:[{opts:["is","are"],ans:"is"},{opts:["too","either"],ans:"too"}]},
+      {ko:"그는 \"너의 진정한 가치보다 너 자신을 낮게 평가하는 것\"도 똑같이 해롭다고 말한다.",
+       en:"He states [what / that] it is equally [beneficial / damaging] to \"[value / valuing] yourself at less than your true worth.\"",
+       items:[{opts:["what","that"],ans:"that"},{opts:["beneficial","damaging"],ans:"damaging"},{opts:["value","valuing"],ans:"value"}]},
+      {ko:"우리는 다른 능력들을 과대평가하는 것만큼 많이 우리의 능력을 과소평가한다.",
+       en:"We underestimate our capabilities just as much and just as dangerously as we overestimate [another / other] abilities.",
+       items:[{opts:["another","other"],ans:"other"}]},
+      {ko:"너 자신을 정확하게 그리고 정직하게 판단하는 능력을 길러라.",
+       en:"Cultivate the ability to [judge / judging] yourself accurately and honestly.",
+       items:[{opts:["judge","judging"],ans:"judge"}]},
+      {ko:"네가 할 수 있는 것과 너의 잠재력을 열기 위해 필요한 것을 파악하기 위해 내면을 들여다봐라.",
+       en:"Look inward to [discern / discerning] [that / what] you're capable of and [what / that] it will take to unlock that potential.",
+       items:[{opts:["discern","discerning"],ans:"discern"},{opts:["that","what"],ans:"what"},{opts:["what","that"],ans:"what"}]},
+    ]
+  },
+  {
+    no:21, topic:"성공의 대가 (Seneca 격언)",
+    qs:[
+      {ko:"세계에서 가장 힘있고 부유하며 유명한 사람들 중 몇몇을 살펴봐라.",
+       en:"[Take / Taking] a look at [some / some of] the most powerful, rich, and famous people in the world.",
+       items:[{opts:["Take","Taking"],ans:"Take"},{opts:["some","some of"],ans:"some of"}]},
+      {ko:"그들의 성공의 장식과 그들이 살 수 있는 것을 무시해라.",
+       en:"[Think / Ignore] the trappings of their success and [what / that] they're able to buy.",
+       items:[{opts:["Think","Ignore"],ans:"Ignore"},{opts:["what","that"],ans:"what"}]},
+      {ko:"대신 그들이 맞바꿔야 하는 것을 봐라 — 성공이 그들에게 치르게 한 것을 봐라.",
+       en:"[Look / To look] instead at what they're forced [trade / to trade] in return — look at [what / that] success has cost them.",
+       items:[{opts:["Look","To look"],ans:"Look"},{opts:["trade","to trade"],ans:"to trade"},{opts:["what","that"],ans:"what"}]},
+      {ko:"대부분은 자유이다. 그들의 업무는 그들이 정장을 입는 것을 요구한다.",
+       en:"Mostly? [Freedom / Restriction]. Their work [demands / is demanded] they wear a suit.",
+       items:[{opts:["Freedom","Restriction"],ans:"Freedom"},{opts:["demands","is demanded"],ans:"demands"}]},
+      {ko:"그들의 성공은 특정 파티에 참석하여, 그들이 좋아하지 않는 사람들에게 아첨하는 것에 달려 있다.",
+       en:"Their success depends on [attend / attending] certain parties, [kiss / kissing] up to people they don't like.",
+       items:[{opts:["attend","attending"],ans:"attending"},{opts:["kiss","kissing"],ans:"kissing"}]},
+      {ko:"그것은 필연적으로 그들이 실제로 생각하는 것을 말할 수 없다는 사실을 깨닫는 것을 요구할 것이다.",
+       en:"It will require — inevitably — realizing they are unable to say [what / that] they actually think.",
+       items:[{opts:["what","that"],ans:"what"}]},
+      {ko:"더 나쁜 것은, 그것은 그들이 다른 유형의 사람이 되거나 부당한 일을 하도록 요구한다는 것이다.",
+       en:"[Better / Worse], it demands [what / that] they become a different type of person or [do / does] bad things.",
+       items:[{opts:["Better","Worse"],ans:"Worse"},{opts:["what","that"],ans:"that"},{opts:["do","does"],ans:"do"}]},
+      {ko:"물론, 그것은 많은 이익이 될지도 모른다 — 그러나 그들은 그 거래를 제대로 고찰한 적이 없다.",
+       en:"Sure, it might pay well — but they haven't truly [examined / been examined] the transaction.",
+       items:[{opts:["examined","been examined"],ans:"examined"}]},
+      {ko:"Seneca가 말했듯이, \"대리석과 황금 아래에 노예 상태가 존재한다.\"",
+       en:"As Seneca put it, \"Slavery [resides / is resided] under marble and gold.\"",
+       items:[{opts:["resides","is resided"],ans:"resides"}]},
+      {ko:"너무 많은 성공한 사람들은 그들이 스스로 만든 감옥의 죄수들이다.",
+       en:"Too many successful people [are / to be] prisoners in jails of their own making.",
+       items:[{opts:["are","to be"],ans:"are"}]},
+      {ko:"그것이 당신이 원하는 것인가?",
+       en:"Is that [what / that] you want?",
+       items:[{opts:["what","that"],ans:"what"}]},
+      {ko:"그것이 당신이 목표로 하여 열심히 일하고 있는 것인가?",
+       en:"Is that [that / what] you're working hard toward?",
+       items:[{opts:["that","what"],ans:"what"}]},
+      {ko:"그렇지 않기를 바라자.",
+       en:"Let's [hope / to hope] not.",
+       items:[{opts:["hope","to hope"],ans:"hope"}]},
+    ]
+  },
+  {
+    no:22, topic:"도덕적 해이 (정부 구제와 은행)",
+    qs:[
+      {ko:"기업이 정부로부터 구제받으려면, 더 많은 돈을 받기 위해 정부에 로비하는 것에 집중하는 것이 더 쉬울지도 모른다.",
+       en:"If a firm is going to [save / be saved] by the government, it might be easier to concentrate on [lobby / lobbying] the government for more money rather than [take / taking] the harder decision of [restructure / restructuring] the company [be / to be] able to be profitable and viable in the long term.",
+       items:[{opts:["save","be saved"],ans:"be saved"},{opts:["lobby","lobbying"],ans:"lobbying"},{opts:["take","taking"],ans:"taking"},{opts:["restructure","restructuring"],ans:"restructuring"},{opts:["be","to be"],ans:"to be"}]},
+      {ko:"이것은 도덕적 해이라고 알려진 것의 한 예이다.",
+       en:"This is an example of something [known / is known] as moral hazard — when government support alters the decisions firms take.",
+       items:[{opts:["known","is known"],ans:"known"}]},
+      {ko:"예를 들어, 만약 정부가 어려움에 처한 은행을 구제한다면, 이것은 은행이 앞으로 더 큰 위험을 감수하도록 조장한다.",
+       en:"[However / For example], if governments rescue banks [who / what] [get / gets] into difficulty, as they [were / did] during the credit crisis of 2007-08, this could [encourage / forbid] banks to take greater risks in the future [because / because of] they know there [is / are] a possibility [that / what] governments will intervene if they lose money.",
+       items:[{opts:["However","For example"],ans:"For example"},{opts:["who","what"],ans:"who"},{opts:["get","gets"],ans:"get"},{opts:["were","did"],ans:"did"},{opts:["encourage","forbid"],ans:"encourage"},{opts:["because","because of"],ans:"because"},{opts:["is","are"],ans:"is"},{opts:["that","what"],ans:"that"}]},
+      {ko:"정부의 구제는 좋은 의도일지라도, 그것은 은행의 행동에 부정적으로 영향을 미쳐 위험하고 형편없는 의사 결정을 조장할 수 있다.",
+       en:"[Despite / Although] the government rescue may be well intended, it can [positively / negatively] affect the behavior of banks, [encourage / encouraging] risky and poor decision making.",
+       items:[{opts:["Despite","Although"],ans:"Although"},{opts:["positively","negatively"],ans:"negatively"},{opts:["encourage","encouraging"],ans:"encouraging"}]},
+    ]
+  },
+  {
+    no:23, topic:"과학의 다양성과 객관성",
+    qs:[
+      {ko:"만약 견해의 다양성이 거의 없거나 전혀 없다면, 그들은 하나의 공동체로서 그들이 주장하는 것만큼 객관적이지 않을 것이다.",
+       en:"If there [is / are] little or no diversity of views, and all scientists see, think, and question the world in a similar way, then they will not, as a community, [is / be] as [subjective / objective] as they maintain they are, or at least aspire to [be / being].",
+       items:[{opts:["is","are"],ans:"is"},{opts:["is","be"],ans:"be"},{opts:["subjective","objective"],ans:"objective"},{opts:["be","being"],ans:"be"}]},
+      {ko:"해결책은 과학의 실행에 있어 훨씬 더 많은 다양성이 있어야 한다는 것이다.",
+       en:"The solution is [what / that] there should be far greater [diversity / uniformity] in the practice of science: in gender, ethnicity, and social and cultural backgrounds.",
+       items:[{opts:["what","that"],ans:"that"},{opts:["diversity","uniformity"],ans:"diversity"}]},
+      {ko:"과학은 그것이 자연 세계에 대한 호기심을 추구하는 사람들에 의해 수행되기 때문에 작동한다.",
+       en:"Science works [because of / because] it is [carrying / carried] out by people [who / what] [pursue / pursues] their curiosity about the natural world and test their and each other's ideas from as many varied perspectives and angles as possible.",
+       items:[{opts:["because of","because"],ans:"because"},{opts:["carrying","carried"],ans:"carried"},{opts:["who","what"],ans:"who"},{opts:["pursue","pursues"],ans:"pursue"}]},
+      {ko:"과학이 다양한 집단의 사람들에 의해 행해질 때, 우리는 그것의 객관성과 진실성에 있어서 더 큰 자신감을 가질 수 있다.",
+       en:"When science is [doing / done] by a diverse group of people, and if [consensus / disagreement] builds up about a particular area of scientific knowledge, then we can have more confidence in its objectivity and truth.",
+       items:[{opts:["doing","done"],ans:"done"},{opts:["consensus","disagreement"],ans:"consensus"}]},
+    ]
+  },
+  {
+    no:24, topic:"마감일과 시간 인식",
+    qs:[
+      {ko:"마감일이 '뉴 - 나뉨'의 반대편에 있는 경우, 우리는 그것을 멀리 있는 것으로 여길 가능성이 더 많다.",
+       en:"We tend [breaking / to break] up time into units, such as weeks, months, and seasons; psychologists found [that / what] if a deadline is on the other side of a \"break\" — such as in the New Year — we're more likely [seeing / to see] it as remote, and be less ready [jump / to jump] into action.",
+       items:[{opts:["breaking","to break"],ans:"to break"},{opts:["that","what"],ans:"that"},{opts:["seeing","to see"],ans:"to see"},{opts:["jump","to jump"],ans:"to jump"}]},
+      {ko:"그러한 상황에서 당신이 해야 할 일은 그 시간 틀에 대해 생각하는 또 다른 방식을 찾는 것이다.",
+       en:"[That / What] you need [doing / to do] in that situation is find another way to [think / thinking] about the timeframe.",
+       items:[{opts:["That","What"],ans:"What"},{opts:["doing","to do"],ans:"to do"},{opts:["think","thinking"],ans:"think"}]},
+      {ko:"지금이 11월이고 마감일이 1월이라면, \"이번 겨울\"에 일을 끝내야 한다고 너 자신에게 말하는 것이 더 좋다.",
+       en:"[In contrast / For example], if it's November and the deadline is in January, it's better to tell yourself you have to get it [to do / done] \"this winter\" rather than \"next year.\"",
+       items:[{opts:["In contrast","For example"],ans:"For example"},{opts:["to do","done"],ans:"done"}]},
+      {ko:"최고의 접근법은 마감일을 임박한 기간 내에 맞춰야 하는 도전으로 여기는 것이다.",
+       en:"The best approach is [viewed / to view] deadlines as a challenge [that / what] you have to meet within a period [what's / that's] [remote / imminent].",
+       items:[{opts:["viewed","to view"],ans:"to view"},{opts:["that","what"],ans:"that"},{opts:["what's","that's"],ans:"that's"},{opts:["remote","imminent"],ans:"imminent"}]},
+      {ko:"그런 식으로 스트레스는 더 잘 관리될 수 있고, 적시에 작업을 시작 — 따라서 마무리 — 할 수 있는 가능성이 높아진다.",
+       en:"That way the stress is more manageable, and you have a better chance of [start / starting] — and therefore [finish / finishing] — in good time.",
+       items:[{opts:["start","starting"],ans:"starting"},{opts:["finish","finishing"],ans:"finishing"}]},
+    ]
+  },
+  {
+    no:26, topic:"Henry David Thoreau 전기",
+    qs:[
+      {ko:"Henry David Thoreau는 1817년 Massachusetts주 Concord에서 태어났다.",
+       en:"Henry David Thoreau [born / was born] in Concord, Massachusetts in 1817.",
+       items:[{opts:["born","was born"],ans:"was born"}]},
+      {ko:"그가 16세 때, 그는 Harvard 대학에 입학했다.",
+       en:"When he was 16, he [entered / was entered] Harvard College.",
+       items:[{opts:["entered","was entered"],ans:"entered"}]},
+      {ko:"졸업 후, Thoreau는 학교 교사로 일했지만 2주 후에 그만두었다.",
+       en:"After [graduate / graduating], Thoreau worked as a schoolteacher but he quit after two weeks.",
+       items:[{opts:["graduate","graduating"],ans:"graduating"}]},
+      {ko:"1838년 6월에 그는 그의 형제인 John과 함께 학교를 세웠다.",
+       en:"In June of 1838 he [set / was set] up a school with his brother John.",
+       items:[{opts:["set","was set"],ans:"set"}]},
+      {ko:"그러나 그는 자연 시인이 되기를 희망했다.",
+       en:"[Therefore / However], he had hopes of [become / becoming] a nature poet.",
+       items:[{opts:["Therefore","However"],ans:"However"},{opts:["become","becoming"],ans:"becoming"}]},
+      {ko:"1845년, 그는 Walden 연못 근처에 직접 지은 작은 집으로 이사했다.",
+       en:"In 1845, he [moved / was moved] into a small self-built house near Walden Pond.",
+       items:[{opts:["moved","was moved"],ans:"moved"}]},
+      {ko:"Walden에서는 Thoreau는 엄청난 양의 독서를 했다.",
+       en:"At Walden, Thoreau [did / was done] an incredible amount of reading.",
+       items:[{opts:["did","was done"],ans:"did"}]},
+      {ko:"그가 그곳에서 쓴 저널이 그의 가장 유명한 저서인 Walden의 원천이 되었다.",
+       en:"The journal he [wrote / was written] there became the source of his most famous book, Walden.",
+       items:[{opts:["wrote","was written"],ans:"wrote"}]},
+      {ko:"그의 인생 후반부에는, Thoreau는 Maine 숲으로, Cape Cod로, 그리고 캐나다로 여행을 떠났다.",
+       en:"In his later life, Thoreau [traveling / traveled] to the Maine woods, to Cape Cod, and to Canada.",
+       items:[{opts:["traveling","traveled"],ans:"traveled"}]},
+      {ko:"43세의 나이에, 그는 그의 여행을 마치고 Concord로 돌아왔다.",
+       en:"At the age of 43, he ended his travels and [returns / returned] to Concord.",
+       items:[{opts:["returns","returned"],ans:"returned"}]},
+      {ko:"비록 그의 작품이 그의 일생 동안 널리 읽히지 않았지만, 그는 집필을 멈추지 않았고 그의 작품은 20권에 달한다.",
+       en:"[Although / Despite] his works were not widely read during his lifetime, he never [kept / stopped] writing, and his works fill 20 volumes.",
+       items:[{opts:["Although","Despite"],ans:"Although"},{opts:["kept","stopped"],ans:"stopped"}]},
+    ]
+  },
+  {
+    no:29, topic:"미소 짓기의 선천적 능력",
+    qs:[
+      {ko:"미소 짓기에 대한 선천적인 능력은 선천적으로 청각장애와 시각장애가 있는 아기들도 약 2개월 즈음에 미소를 짓기 시작한다는 놀라운 관찰에 의해 증명된다.",
+       en:"The built-in capacity for smiling [is / are] proven by the remarkable observation [that / what] babies [who / what] [is / are] congenitally both deaf and blind, [what / who] [have / has] never seen a human face, also [start / starts] to smile at around 2 months.",
+       items:[{opts:["is","are"],ans:"is"},{opts:["that","what"],ans:"that"},{opts:["who","what"],ans:"who"},{opts:["is","are"],ans:"are"},{opts:["what","who"],ans:"who"},{opts:["have","has"],ans:"have"},{opts:["start","starts"],ans:"start"}]},
+      {ko:"그러나 시각장애를 가진 아기의 미소 짓기는 그것을 강화하기 위해 아무것도 행해지지 않으면 결국 사라진다.",
+       en:"However, smiling in blind babies eventually [appears / disappears] if nothing is [doing / done] to [reinforce / reinforcing] it.",
+       items:[{opts:["appears","disappears"],ans:"disappears"},{opts:["doing","done"],ans:"done"},{opts:["reinforce","reinforcing"],ans:"reinforce"}]},
+      {ko:"적절한 피드백이 없으면 미소 짓기는 사라진다.",
+       en:"Without the right feedback, smiling [dies / is died] out.",
+       items:[{opts:["dies","is died"],ans:"dies"}]},
+      {ko:"하지만 시각장애를 가진 아기들은 어른에 의해서 안기고 흔들리고 슬쩍 찔리고 간지럽혀지면 계속 미소를 지을 것이다.",
+       en:"But here's a fascinating fact: blind babies will continue to smile if they are [cuddling / cuddled], [bouncing / bounced], [nudging / nudged], and [tickle / tickled] by an adult — anything to [let / letting] them [know / to know] [that / what] they are not [lone / alone] and [what / that] someone cares about them.",
+       items:[{opts:["cuddling","cuddled"],ans:"cuddled"},{opts:["bouncing","bounced"],ans:"bounced"},{opts:["nudging","nudged"],ans:"nudged"},{opts:["tickle","tickled"],ans:"tickled"},{opts:["let","letting"],ans:"let"},{opts:["know","to know"],ans:"know"},{opts:["that","what"],ans:"that"},{opts:["lone","alone"],ans:"alone"},{opts:["what","that"],ans:"that"}]},
+      {ko:"이러한 사회적 피드백은 그 아기가 계속 미소를 지을 수 있도록 조장한다.",
+       en:"This social feedback [encourages / forbids] the baby to continue smiling.",
+       items:[{opts:["encourages","forbids"],ans:"encourages"}]},
+      {ko:"이런 방식으로, 초기 경험은 우리의 생리 작용과 함께 작용하여 사회적 행동을 형성한다.",
+       en:"In this way, early experience operates with our biology to [establish / establishing] social behaviors.",
+       items:[{opts:["establish","establishing"],ans:"establish"}]},
+      {ko:"사실, 당신은 이를 설명하기 위해 시각장애를 가진 아기의 사례들을 필요로 하지 않는다.",
+       en:"[In fact / In addition], you don't need the cases of blind babies to [make / making] the point.",
+       items:[{opts:["In fact","In addition"],ans:"In fact"},{opts:["make","making"],ans:"make"}]},
+      {ko:"시력이 있는 아기들은 당신이 그들을 바라볼 때나 더 나아가, 당신이 그들에게 미소를 지어줄 때 당신에게 더 많이 미소 짓는다.",
+       en:"Babies with sight smile more at you when you look at them or, better still, [smile / smiles] back at them.",
+       items:[{opts:["smile","smiles"],ans:"smile"}]},
+    ]
+  },
+  {
+    no:30, topic:"적응과 즐거움 (광고·초콜릿 칩)",
+    qs:[
+      {ko:"사람들은 적응하는 경향이 있기 때문에, 긍정적인 것을 부정적인 것으로 방해하는 것이 실제로는 즐거움을 향상시킬 수 있다.",
+       en:"[Because of / Because] people tend [adapting / to adapt], [interrupt / interrupting] positive things with negative ones can actually [increase / decrease] enjoyment.",
+       items:[{opts:["Because of","Because"],ans:"Because"},{opts:["adapting","to adapt"],ans:"to adapt"},{opts:["interrupt","interrupting"],ans:"interrupting"},{opts:["increase","decrease"],ans:"increase"}]},
+      {ko:"광고를 예로 들어 보자.",
+       en:"[Take / Taking] commercials.",
+       items:[{opts:["Take","Taking"],ans:"Take"}]},
+      {ko:"대부분의 사람들은 그것들을 싫어해서 그것들을 제거하는 것이 쇼나 다른 오락물을 더 즐겁게 만들 수 있다.",
+       en:"Most people hate them, so [remove / removing] them should make shows or [other / others] entertainment more [enjoyable / enjoyably].",
+       items:[{opts:["remove","removing"],ans:"removing"},{opts:["other","others"],ans:"other"},{opts:["enjoyable","enjoyably"],ans:"enjoyable"}]},
+      {ko:"하지만 그 반대가 사실이다.",
+       en:"But the opposite [is / to be] true.",
+       items:[{opts:["is","to be"],ans:"is"}]},
+      {ko:"쇼는 그것들이 성가신 광고들에 의해 중단될 때 실제로 더 즐거워진다.",
+       en:"Shows [are / being] actually more [enjoyable / unpleasant] when they're broken up by annoying commercials.",
+       items:[{opts:["are","being"],ans:"are"},{opts:["enjoyable","unpleasant"],ans:"enjoyable"}]},
+      {ko:"왜냐하면 이러한 덜 즐거운 순간들이 쇼의 긍정적인 경험에 대한 적응을 깨뜨리기 때문이다.",
+       en:"[Because of / Because] these less enjoyable moments break up adaptation to the positive experience of the show.",
+       items:[{opts:["Because of","Because"],ans:"Because"}]},
+      {ko:"초콜릿 칩을 먹는 것을 생각해 보라.",
+       en:"[Think / Thinking] about eating chocolate chips.",
+       items:[{opts:["Think","Thinking"],ans:"Think"}]},
+      {ko:"첫 번째 칩은 맛있다: 달콤하고 입안에서 살살 녹는 좋은 맛.",
+       en:"The first chip [is / to be] delicious: sweet, melt-in-your-mouth goodness.",
+       items:[{opts:["is","to be"],ans:"is"}]},
+      {ko:"두 번째 칩도 꽤 맛있다.",
+       en:"The second chip [is / being] also pretty good.",
+       items:[{opts:["is","being"],ans:"is"}]},
+      {ko:"하지만 네 번째, 다섯 번째 혹은 열 번째 칩을 연속으로 먹으면 그 좋은 맛은 더 이상 즐겁지 않다.",
+       en:"But by the fourth, fifth, or tenth chip in a row, the goodness [is / being] no longer as pleasurable.",
+       items:[{opts:["is","being"],ans:"is"}]},
+      {ko:"우리는 적응한다.",
+       en:"We [adapt / adapting].",
+       items:[{opts:["adapt","adapting"],ans:"adapt"}]},
+      {ko:"그러나, 긍정적인 경험들에 덜 긍정적인 경험들을 간격을 두고 배치하는 것은 적응을 늦출 수 있다.",
+       en:"Interspersing positive experiences with less positive ones, [however / therefore], can slow down adaptation.",
+       items:[{opts:["however","therefore"],ans:"however"}]},
+      {ko:"초콜릿 칩 사이에 방울양배추를 먹거나 TV 쇼의 파트 사이에 광고를 보는 것은 이 과정을 방해한다.",
+       en:"[Eat / Eating] a Brussels sprout between chocolate chips or [view / viewing] commercials between parts of TV shows [disrupt / disrupts] the process.",
+       items:[{opts:["Eat","Eating"],ans:"Eating"},{opts:["view","viewing"],ans:"viewing"},{opts:["disrupt","disrupts"],ans:"disrupts"}]},
+      {ko:"덜 긍정적인 순간은 뒤에 오는 긍정적인 순간을 다시 새롭게 만들어서 더 즐겁게 만든다.",
+       en:"The less positive moment makes the following positive one [new / newly] again and thus more [enjoyable / enjoyably].",
+       items:[{opts:["new","newly"],ans:"new"},{opts:["enjoyable","enjoyably"],ans:"enjoyable"}]},
+    ]
+  },
+  {
+    no:31, topic:"희소성과 리액턴스 (포스터 실험)",
+    qs:[
+      {ko:"우리는 그것들이 실용적인 목적을 수행하지 않더라도 우표, 동전, 빈티지 자동차들을 수집한다.",
+       en:"We [collect / are collected] stamps, coins, vintage cars even when they serve no practical purpose.",
+       items:[{opts:["collect","are collected"],ans:"collect"}]},
+      {ko:"우체국은 오래된 우표를 받지 않고, 은행은 오래된 동전을 받지 않으며, 그리고 빈티지 자동차는 더 이상 도로에서 허용되지 않는다.",
+       en:"The post office doesn't accept the old stamps, the banks don't take old coins, and the vintage cars are no longer [allowing / allowed] on the road.",
+       items:[{opts:["allowing","allowed"],ans:"allowed"}]},
+      {ko:"이런 것들은 모두 부수적인 문제이다; 매력은 그들이 부족한 공급에 있다는 것이다.",
+       en:"These are all side issues; the attraction is [what / that] they are in [abundant / short] supply.",
+       items:[{opts:["what","that"],ans:"that"},{opts:["abundant","short"],ans:"short"}]},
+      {ko:"한 연구에서, 학생들은 포스터 10장을 매력도의 순서대로 배열하도록 요청받았다.",
+       en:"In one study, students were [asking / asked] to arrange ten posters in order of attractiveness — with the agreement [that / what] afterward they could keep one poster as a reward for their participation.",
+       items:[{opts:["asking","asked"],ans:"asked"},{opts:["that","what"],ans:"that"}]},
+      {ko:"5분 후, 그들은 세 번째 높은 평가의 포스터가 더 이상 이용 가능하지 않다는 것을 들었다.",
+       en:"Five minutes later, they were told [what / that] the poster with the third highest rating [was / were] no longer available.",
+       items:[{opts:["what","that"],ans:"that"},{opts:["was","were"],ans:"was"}]},
+      {ko:"그런 다음 그들은 10개의 포스터를 모두 처음부터 평가하라고 요청을 받았다.",
+       en:"Then they were asked [judge / to judge] all ten from scratch.",
+       items:[{opts:["judge","to judge"],ans:"to judge"}]},
+      {ko:"더 이상 이용할 수 없는 포스터가 갑자기 가장 아름다운 것으로 분류되었다.",
+       en:"The poster [what / that] [was / were] no longer available was suddenly [classifying / classified] as the most beautiful.",
+       items:[{opts:["what","that"],ans:"that"},{opts:["was","were"],ans:"was"},{opts:["classifying","classified"],ans:"classified"}]},
+      {ko:"심리학에서, 이러한 현상은 리액턴스라고 불린다: 우리가 선택지를 빼앗겼을 때, 우리는 그것을 갑자기 더 매력적으로 여긴다.",
+       en:"In psychology, this phenomenon is [calling / called] reactance: when we are deprived of an option, we suddenly deem it more [attractive / unattractive].",
+       items:[{opts:["calling","called"],ans:"called"},{opts:["attractive","unattractive"],ans:"attractive"}]},
+    ]
+  },
+  {
+    no:32, topic:"매몰 비용 오류",
+    qs:[
+      {ko:"우리에게 보답해 주지 않는 것에 우리가 투자해 왔다면, 우리는 벗어나기가 매우 어렵다는 것을 안다.",
+       en:"If we've invested in something [that / what] [haven't / hasn't] repaid us — be it money in a failing venture, or time in an unhappy relationship — we find it very [difficult / difficultly] [walking / to walk] away.",
+       items:[{opts:["that","what"],ans:"that"},{opts:["haven't","hasn't"],ans:"hasn't"},{opts:["difficult","difficultly"],ans:"difficult"},{opts:["walking","to walk"],ans:"to walk"}]},
+      {ko:"이것은 매몰 비용 오류이다.",
+       en:"This [is / being] the sunk cost fallacy.",
+       items:[{opts:["is","being"],ans:"is"}]},
+      {ko:"우리의 본능은 결국에는 우리의 투자가 가치 있는 것으로 입증될 것이라고 희망하면서 돈이나 시간에 투자를 계속하는 것이다.",
+       en:"Our instinct is to [continue / cease] investing money or time as we hope [what / that] our investment will prove [be / to be] worthwhile in the end.",
+       items:[{opts:["continue","cease"],ans:"continue"},{opts:["what","that"],ans:"that"},{opts:["be","to be"],ans:"to be"}]},
+      {ko:"포기한다는 것은 우리가 돌이킬 수 없는 무언가를 낭비해왔다고 인정하는 것을 의미하고, 그런 생각은 너무 고통스럽다.",
+       en:"[Give / Giving] up would mean [acknowledging / denying] [what / that] we've wasted something we can't get back, and [what / that] thought is so painful [what / that] we prefer to [accept / avoid] it if we can.",
+       items:[{opts:["Give","Giving"],ans:"Giving"},{opts:["acknowledging","denying"],ans:"acknowledging"},{opts:["what","that"],ans:"that"},{opts:["what","that"],ans:"that"},{opts:["what","that"],ans:"that"},{opts:["accept","avoid"],ans:"avoid"}]},
+      {ko:"물론, 문제는 어떤 것이 정말 나쁜 투자라면 그것을 계속하는 것은 우리가 잃는 총액을 증가시킬 뿐이라는 것이다.",
+       en:"The problem, of course, is [that / what] if something really is a bad bet, then [stay / staying] with it simply [increases / decrease] the amount we lose.",
+       items:[{opts:["that","what"],ans:"that"},{opts:["stay","staying"],ans:"staying"},{opts:["increases","decrease"],ans:"increases"}]},
+      {ko:"예를 들어, 5년의 나쁜 관계에서 벗어나기보다는, 우리는 그것을 10년의 나쁜 관계로 바꾼다.",
+       en:"Rather than walk away from a bad five-year relationship, [however / for example], we turn it into a bad 10-year relationship; rather than accept [that / what] we've lost a thousand dollars, we lay down another thousand and lose that [too / either].",
+       items:[{opts:["however","for example"],ans:"for example"},{opts:["that","what"],ans:"that"},{opts:["too","either"],ans:"too"}]},
+      {ko:"결국, 우리의 문제를 인정하는 고통을 미룸으로써 우리는 그것에 보탤 뿐이다.",
+       en:"In the end, by [delay / delaying] the pain of [admit / admitting] our problem, we only add to it.",
+       items:[{opts:["delay","delaying"],ans:"delaying"},{opts:["admit","admitting"],ans:"admitting"}]},
+      {ko:"때때로 우리는 손실을 끊어야만 한다.",
+       en:"Sometimes we just have to [cut / be cut] our losses.",
+       items:[{opts:["cut","be cut"],ans:"cut"}]},
+    ]
+  },
+  {
+    no:33, topic:"빛의 속도와 우주의 과거",
+    qs:[
+      {ko:"우리의 작은 세상에서 실제로는, 빛은 순간적으로 이동한다.",
+       en:"On our little world, light [travels / traveling], for all practical purposes, instantaneously.",
+       items:[{opts:["travels","traveling"],ans:"travels"}]},
+      {ko:"전구가 켜져 있다면, 당연히 그것은 우리가 보는 그 자리에서 빛을 내고 있다.",
+       en:"If a lightbulb is glowing, then of course it's physically where we see it, [shining / shone] away.",
+       items:[{opts:["shining","shone"],ans:"shining"}]},
+      {ko:"우리는 손을 뻗어 그것을 만진다: 그것은 바로 거기에 있고, 불쾌할 정도로 뜨겁다.",
+       en:"We reach out our hand and [touch / touching] it: It's there all right, and unpleasantly hot.",
+       items:[{opts:["touch","touching"],ans:"touch"}]},
+      {ko:"필라멘트가 나가면, 그때 빛은 꺼진다.",
+       en:"If the filament fails, then the light [goes / is gone] out.",
+       items:[{opts:["goes","is gone"],ans:"goes"}]},
+      {ko:"전구가 망가져서 소켓에서 제거된 몇 년 후, 그 자리에 빛을 내고 방을 밝히고 있는 그것을 우리는 보지 못한다.",
+       en:"We don't see it in the same place, glowing, [illuminating / illuminated] the room years after the bulb breaks and it's [removing / removed] from its socket.",
+       items:[{opts:["illuminating","illuminated"],ans:"illuminating"},{opts:["removing","removed"],ans:"removed"}]},
+      {ko:"바로 그 개념은 말도 안 되는 것처럼 보인다.",
+       en:"The very notion seems [sensical / nonsensical].",
+       items:[{opts:["sensical","nonsensical"],ans:"nonsensical"}]},
+      {ko:"하지만 우리가 충분히 멀리 떨어져 있다면, 항성 전체는 꺼질 수 있지만 우리는 그것이 밝게 빛나는 것을 계속 볼 것이다.",
+       en:"But if we're far enough away, an entire sun can go out and we'll [continue / cease] to see it [shining / to shine] brightly; we won't learn of its death, it may be, for ages to come — in fact, for how long [it takes / does it take] light, [what / which] [travel / travels] fast but not infinitely fast, [crossing / to cross] the intervening vastness.",
+       items:[{opts:["continue","cease"],ans:"continue"},{opts:["shining","to shine"],ans:"shining"},{opts:["it takes","does it take"],ans:"it takes"},{opts:["what","which"],ans:"which"},{opts:["travel","travels"],ans:"travels"},{opts:["crossing","to cross"],ans:"to cross"}]},
+      {ko:"별과 은하까지의 엄청난 거리는 우리가 우주 공간의 모든 것을 과거의 모습으로 보고 있다는 것을 의미한다.",
+       en:"The immense distances to the stars and the galaxies mean [that / what] we see everything in space in the [present / past].",
+       items:[{opts:["that","what"],ans:"that"},{opts:["present","past"],ans:"past"}]},
+    ]
+  },
+  {
+    no:34, topic:"금융 시장과 소비 평활화",
+    qs:[
+      {ko:"금융 시장은 부자들로부터 자본을 받아 다른 모든 사람들에게 그것을 빌려주는 것 이상을 한다.",
+       en:"Financial markets do more than [take / takes] capital from the rich and lend it to [else everyone / everyone else].",
+       items:[{opts:["take","takes"],ans:"take"},{opts:["else everyone","everyone else"],ans:"everyone else"}]},
+      {ko:"그것들은 우리 각자가 평생에 걸쳐 소비를 원활하게 하도록 해주며, 이는 우리가 소득을 버는 동시에 소득을 소비할 필요가 없다는 것을 말하는 멋진 방식이다.",
+       en:"They enable [each / each of] us [smooth / to smooth] consumption over our lifetimes, [what / which] [is / are] a fancy way of [say / saying] [what / that] we don't have to spend income at the same time we earn it.",
+       items:[{opts:["each","each of"],ans:"each of"},{opts:["smooth","to smooth"],ans:"to smooth"},{opts:["what","which"],ans:"which"},{opts:["is","are"],ans:"is"},{opts:["say","saying"],ans:"saying"},{opts:["what","that"],ans:"that"}]},
+      {ko:"셰익스피어는 우리가 빌리는 사람도 빌려주는 사람도 되지 말라고 충고했을지도 모른다; 사실 우리 대부분은 어떤 때에는 둘 다 될 것이다.",
+       en:"Shakespeare may have admonished us [be / to be] neither borrowers nor lenders; the fact is [that / what] most of us will be [both / neither] at some point.",
+       items:[{opts:["be","to be"],ans:"to be"},{opts:["that","what"],ans:"that"},{opts:["both","neither"],ans:"both"}]},
+      {ko:"만약 우리가 농경 사회에 산다면, 우리는 우리의 농작물을 수확 직후에 합리적으로 먹거나 또는 그것들을 저장할 어떤 방법을 찾아야 할 것이다.",
+       en:"If we lived in an agrarian society, we would have to eat our crops reasonably soon after the harvest or [find / finding] some way to [store / storing] them.",
+       items:[{opts:["find","finding"],ans:"find"},{opts:["store","storing"],ans:"store"}]},
+      {ko:"금융 시장은 수확을 관리하는 더 정교한 방법이다.",
+       en:"Financial markets are a more sophisticated way of [manage / managing] the harvest.",
+       items:[{opts:["manage","managing"],ans:"managing"}]},
+      {ko:"우리는 우리가 아직 벌지 않은 소득을 지금 소비할 수도 있고, 혹은 우리는 지금 소득을 벌어서 나중에 그것을 소비할 수도 있다.",
+       en:"We can spend income now [what / that] we have not yet earned — as by [borrow / borrowing] for college or a home — or we can earn income now and [spend / spending] it later, as by [save / saving] for retirement.",
+       items:[{opts:["what","that"],ans:"that"},{opts:["borrow","borrowing"],ans:"borrowing"},{opts:["spend","spending"],ans:"spend"},{opts:["save","saving"],ans:"saving"}]},
+      {ko:"중요한 점은 소득을 버는 것이 그것을 소비하는 것과 분리되어 있다는 것이고, 이는 우리에게 삶에서 훨씬 더 많은 유연성을 허용해준다.",
+       en:"The important point is [what / that] earning income [have / has] been [connected to / divorced from] [spend / spending] it, [allow / allowing] us [very / much] more flexibility in life.",
+       items:[{opts:["what","that"],ans:"that"},{opts:["have","has"],ans:"has"},{opts:["connected to","divorced from"],ans:"divorced from"},{opts:["spend","spending"],ans:"spending"},{opts:["allow","allowing"],ans:"allowing"},{opts:["very","much"],ans:"much"}]},
+    ]
+  },
+  {
+    no:35, topic:"무료 소프트웨어와 DNA 정보",
+    qs:[
+      {ko:"다음과 같은 옛 농담처럼: \"소프트웨어 무료 사용자 매뉴얼, $10,000.\"",
+       en:"As the old joke [goes / is gone]: \"Software, free. User manual, $10,000.\"",
+       items:[{opts:["goes","is gone"],ans:"goes"}]},
+      {ko:"하지만 그것은 농담이 아니다.",
+       en:"But it's no [truth / joke].",
+       items:[{opts:["truth","joke"],ans:"joke"}]},
+      {ko:"세간의 이목을 끄는 몇몇 기업들은 무료 소프트웨어에 대한 지침과 유료 지원을 판매하면서 돈을 번다.",
+       en:"A couple of high-profile companies make their living [selling / sold] instruction and paid support for free software.",
+       items:[{opts:["selling","sold"],ans:"selling"}]},
+      {ko:"단지 몇 비트일 뿐인 코드 사본은 무료이다.",
+       en:"The copy of code, [is / being] mere bits, [is / are] free.",
+       items:[{opts:["is","being"],ans:"being"},{opts:["is","are"],ans:"is"}]},
+      {ko:"무료 코드의 배열은 지원과 안내를 통해서만 당신에게 가치 있게 된다.",
+       en:"The lines of free code become [valuable / valuably] to you only through support and guidance.",
+       items:[{opts:["valuable","valuably"],ans:"valuable"}]},
+      {ko:"다가올 수십 년 안에 많은 의료 및 유전 정보가 이 경로를 따르게 될 것이다.",
+       en:"A lot of medical and genetic information will [go / be gone] this route in the coming decades.",
+       items:[{opts:["go","be gone"],ans:"go"}]},
+      {ko:"지금은 당신의 모든 DNA 전체 사본을 얻는 것이 매우 비싸지만($10,000), 곧 그렇지 않게 될 것이다.",
+       en:"Right now [get / getting] a full copy of all your DNA [is / are] very expensive ($10,000), but soon it won't be.",
+       items:[{opts:["get","getting"],ans:"getting"},{opts:["is","are"],ans:"is"}]},
+      {ko:"가격이 너무 빨리 떨어지고 있어, 곧 $100가 될 것이고 그 다음 해에는 보험 회사가 무료로 당신의 유전자 배열 순서를 밝혀줄 것을 제안할 것이다.",
+       en:"The price is [increasing / dropping] so fast, it will be $100 soon, and then the next year insurance companies will offer [sequencing / to sequence] you for free.",
+       items:[{opts:["increasing","dropping"],ans:"dropping"},{opts:["sequencing","to sequence"],ans:"to sequence"}]},
+      {ko:"당신의 배열의 사본에 비용이 들지 않을 때, 그것이 의미하는 것과 그것을 사용하는 방법에 관한 설명 — 당신의 유전자 매뉴얼 — 은 비싸질 것이다.",
+       en:"When a copy of your sequence costs nothing, the interpretation of what it means, what you can do about it, and how [using / to use] it — the manual for your genes — will be [expensive / cheap].",
+       items:[{opts:["using","to use"],ans:"to use"},{opts:["expensive","cheap"],ans:"expensive"}]},
+    ]
+  },
+  {
+    no:36, topic:"뇌의 에너지 효율과 마술사",
+    qs:[
+      {ko:"에너지의 측면에서 뇌는 비용이 많이 든다.",
+       en:"Brains [are / being] expensive in terms of energy.",
+       items:[{opts:["are","being"],ans:"are"}]},
+      {ko:"우리가 소비하는 칼로리의 20%는 뇌에 동력을 공급하는 데 사용된다.",
+       en:"Twenty percent of the calories we consume [is / are] used to [power / powering] the brain.",
+       items:[{opts:["is","are"],ans:"are"},{opts:["power","powering"],ans:"power"}]},
+      {ko:"따라서 뇌는 가능한 한 가장 에너지 효율적인 방식으로 작동하려고 애쓰며, 그것은 우리가 세상을 항해하는 데 필요로 하는 최소한의 양의 정보만을 처리하는 것을 의미한다.",
+       en:"So brains try to operate in the most energy-efficient way possible, and that means processing only the [maximum / minimum] amount of information from our senses [what / that] we need [navigating / to navigate] the world.",
+       items:[{opts:["maximum","minimum"],ans:"minimum"},{opts:["what","that"],ans:"that"},{opts:["navigating","to navigate"],ans:"to navigate"}]},
+      {ko:"신경과학자들은 무언가에 당신의 시선을 고정하는 것이 그것을 본다는 보장이 없다는 사실을 발견한 최초가 아니었다.",
+       en:"Neuroscientists weren't the [first / last] [discovering / to discover] that [fix / fixing] your gaze on something [is / are] no guarantee of [see / seeing] it.",
+       items:[{opts:["first","last"],ans:"first"},{opts:["discovering","to discover"],ans:"to discover"},{opts:["fix","fixing"],ans:"fixing"},{opts:["is","are"],ans:"is"},{opts:["see","seeing"],ans:"seeing"}]},
+      {ko:"마술사들은 오래 전에 이것을 알아냈다.",
+       en:"Magicians [figured this out / figured out this] long ago.",
+       items:[{opts:["figured this out","figured out this"],ans:"figured this out"}]},
+      {ko:"당신의 주의를 끌어서, 그들은 다 보이는 데서 손으로 속임수를 행한다.",
+       en:"By [direct / directing] your attention, they perform tricks with their hands in full view.",
+       items:[{opts:["direct","directing"],ans:"directing"}]},
+      {ko:"그들의 행동은 그 속임수를 드러내겠지만, 그들은 당신의 뇌가 시각적 장면의 오직 작은 부분들만을 처리한다는 것을 확신한 채로 있을 수 있다.",
+       en:"Their actions should give away the game, but they can rest assured [that / what] your brain processes only small bits of the visual scene.",
+       items:[{opts:["that","what"],ans:"that"}]},
+      {ko:"이 모든 것은 운전자가 명백한 시야에 있는 보행자들을 치거나 바로 앞에 있는 차량들과 충돌하는 교통사고의 빈번함을 설명하는 데 도움이 된다.",
+       en:"This all helps [explaining / to explain] the prevalence of traffic accidents [which / in which] drivers hit pedestrians in plain view, or [collide / collides] with cars directly in front of them.",
+       items:[{opts:["explaining","to explain"],ans:"to explain"},{opts:["which","in which"],ans:"in which"},{opts:["collide","collides"],ans:"collide"}]},
+      {ko:"많은 이러한 경우에서, 눈은 올바른 방향을 향하고 있지만, 뇌는 실제로 거기에 있는 것을 보고 있지 않다.",
+       en:"In many of these cases, the eyes are [pointing / pointed] in the right direction, but the brain isn't [seeing / seen] what's really out there.",
+       items:[{opts:["pointing","pointed"],ans:"pointing"},{opts:["seeing","seen"],ans:"seeing"}]},
+    ]
+  },
+  {
+    no:37, topic:"소비 vs 투자 (TV·대학·스포츠카)",
+    qs:[
+      {ko:"텔레비전을 사는 것은 현재의 소비이다.",
+       en:"[Buy / Buying] a television [is / are] current [investment / consumption].",
+       items:[{opts:["Buy","Buying"],ans:"Buying"},{opts:["is","are"],ans:"is"},{opts:["investment","consumption"],ans:"consumption"}]},
+      {ko:"그것은 오늘 우리를 행복하게 하지만 내일 우리를 더 부유하게 만드는 데는 아무것도 하지 않는다.",
+       en:"It makes us [happy / happily] today but [do / does] nothing to [make / making] us richer tomorrow.",
+       items:[{opts:["happy","happily"],ans:"happy"},{opts:["do","does"],ans:"does"},{opts:["make","making"],ans:"make"}]},
+      {ko:"그렇다, 텔레비전에 소비되는 돈은 노동자들이 텔레비전 공장에 계속 고용되게 한다.",
+       en:"Yes, money spent on a television [keep / keeps] workers employed at the television factory.",
+       items:[{opts:["keep","keeps"],ans:"keeps"}]},
+      {ko:"하지만 같은 돈이 투자된다면, 그것은 어딘가 다른 곳의 일자리를 창출하면서 또한 장기적으로 우리를 더 부유하게 만들 것이다.",
+       en:"But if the same money were [investing / invested], it would create jobs [else somewhere / somewhere else], [say / saying] for scientists in a laboratory or workers on a construction site, while also [making / made] us [richer / poorer] in the long run.",
+       items:[{opts:["investing","invested"],ans:"invested"},{opts:["else somewhere","somewhere else"],ans:"somewhere else"},{opts:["say","saying"],ans:"say"},{opts:["making","made"],ans:"making"},{opts:["richer","poorer"],ans:"richer"}]},
+      {ko:"대학을 예로써 생각해 보자.",
+       en:"[Think / Thinking] about college as an example.",
+       items:[{opts:["Think","Thinking"],ans:"Think"}]},
+      {ko:"학생들을 대학에 보내는 것은 교수들을 위한 일자리를 창출한다.",
+       en:"[Send / Sending] students to college [create / creates] jobs for professors.",
+       items:[{opts:["Send","Sending"],ans:"Sending"},{opts:["create","creates"],ans:"creates"}]},
+      {ko:"같은 돈을 고등학교 졸업생에게 멋진 스포츠카를 사주는 데 쓰는 것은 자동차 노동자를 위한 일자리를 창출할 것이다.",
+       en:"[Use / Using] the same money to [buy / buying] fancy sports cars for high school graduates would create jobs for auto workers.",
+       items:[{opts:["Use","Using"],ans:"Using"},{opts:["buy","buying"],ans:"buy"}]},
+      {ko:"이러한 시나리오들의 중대한 차이점은 대학 교육은 젊은이들이 더 생산적이게 만들지만; 스포츠카는 그렇지 않다는 것이다.",
+       en:"The crucial difference between these scenarios [is / are] [that / what] a college education makes a young person more [productive / productively] for the rest of his or her life; a sports car [is / does] not.",
+       items:[{opts:["is","are"],ans:"is"},{opts:["that","what"],ans:"that"},{opts:["productive","productively"],ans:"productive"},{opts:["is","does"],ans:"does"}]},
+      {ko:"따라서, 대학 등록금은 투자이다; 스포츠카를 구입하는 것은 소비이다.",
+       en:"[Thus / However], college tuition is an investment; [buy / buying] a sports car [is / are] consumption.",
+       items:[{opts:["Thus","However"],ans:"Thus"},{opts:["buy","buying"],ans:"buying"},{opts:["is","are"],ans:"is"}]},
+    ]
+  },
+  {
+    no:38, topic:"인터넷의 양방향성",
+    qs:[
+      {ko:"인터넷은 그것이 대체하는 대부분의 대중 매체와 분명하고도 매우 중요한 방식으로 다르다: 그것은 두 방향으로 작용한다.",
+       en:"The Net differs from [most / most of] the mass media it replaces in an obvious and very important way: it's [unidirectional / bidirectional].",
+       items:[{opts:["most","most of"],ans:"most of"},{opts:["unidirectional","bidirectional"],ans:"bidirectional"}]},
+      {ko:"우리는 네트워크를 통해 메시지들을 받을 수 있을 뿐만 아니라 그것들을 보낼 수도 있는데, 이것은 그 시스템을 훨씬 더 유용하게 만들었다.",
+       en:"We can send messages through the network as well as [receive / receiving] them, [which / that] [have / has] made the system all the more [useful / useless].",
+       items:[{opts:["receive","receiving"],ans:"receive"},{opts:["which","that"],ans:"which"},{opts:["have","has"],ans:"has"},{opts:["useful","useless"],ans:"useful"}]},
+      {ko:"온라인에서 정보를 교환하고 다운로드할 뿐만 아니라 업로드하는 능력은 인터넷을 비즈니스와 상거래를 위한 통로로 만들었다.",
+       en:"The ability to [exchange / exchanging] information online, to [upload / uploading] as well as download, [have / has] turned the Net into a thoroughfare for business and commerce.",
+       items:[{opts:["exchange","exchanging"],ans:"exchange"},{opts:["upload","uploading"],ans:"upload"},{opts:["have","has"],ans:"has"}]},
+      {ko:"몇 번의 클릭으로, 사람들은 가상 카탈로그를 검색하고, 주문을 하고, 배송을 추적하고, 그리고 기업의 데이터베이스에 정보를 업데이트할 수 있다.",
+       en:"With [a few / a little] clicks, people can search virtual catalogues, [place / placing] orders, [track / tracking] shipments, and [update / updating] information in corporate databases.",
+       items:[{opts:["a few","a little"],ans:"a few"},{opts:["place","placing"],ans:"place"},{opts:["track","tracking"],ans:"track"},{opts:["update","updating"],ans:"update"}]},
+      {ko:"하지만 인터넷은 단지 우리를 기업과 연결하는 것만은 아니다; 그것은 우리를 서로서로 연결한다.",
+       en:"But the Net doesn't just connect us with businesses; it [connects / is connected] us with one another.",
+       items:[{opts:["connects","is connected"],ans:"connects"}]},
+      {ko:"그것은 상업용 매체일 뿐만 아니라 개인 방송 매체이다.",
+       en:"[It's / There's] a personal broadcasting medium as well as a commercial one.",
+       items:[{opts:["It's","There's"],ans:"It's"}]},
+      {ko:"수백만 명의 사람들이 자신의 디지털 창작물을 배포하기 위해서 뿐만 아니라, 다른 사람들의 창작물을 비평하고, 편집하고, 또는 그렇지 않으면 수정하기 위해서 그것을 사용한다.",
+       en:"Millions of people use it to [distribute / distributing] their own digital creations, in the form of blogs, videos, photos, songs, and podcasts, as well as to critique, edit, or otherwise [modify / modifying] the creations of others.",
+       items:[{opts:["distribute","distributing"],ans:"distribute"},{opts:["modify","modifying"],ans:"modify"}]},
+    ]
+  },
+  {
+    no:39, topic:"산업혁명과 자동화 (농업→공장)",
+    qs:[
+      {ko:"미국인 직장인 10명 중 7명이 내일 해고된다고 상상해 보라.",
+       en:"[Imagine / Imagining] [that / what] seven out of ten [working / worked] Americans got fired tomorrow.",
+       items:[{opts:["Imagine","Imagining"],ans:"Imagine"},{opts:["that","what"],ans:"that"},{opts:["working","worked"],ans:"working"}]},
+      {ko:"그들은 모두 무엇을 할까?",
+       en:"What would they [all do / are all done]?",
+       items:[{opts:["all do","are all done"],ans:"all do"}]},
+      {ko:"노동력의 절반 이상에게 해고 통지서를 보낸다면 경제가 유지될 것이라고 믿기 어려울 것이다.",
+       en:"It's [hard / easy] to [believe / believing] you'd have an economy at all if you gave pink slips to more than half the labor force.",
+       items:[{opts:["hard","easy"],ans:"hard"},{opts:["believe","believing"],ans:"believe"}]},
+      {ko:"하지만 그것은 19세기 초 노동력에 산업혁명이 했던 것이다.",
+       en:"But that is [that / what] the industrial revolution did to the workforce of the early 19th century.",
+       items:[{opts:["that","what"],ans:"what"}]},
+      {ko:"200년 전, 미국 노동자의 70%가 농장에서 살았다.",
+       en:"Two hundred years ago, 70 percent of American workers [living / lived] on the farm.",
+       items:[{opts:["living","lived"],ans:"lived"}]},
+      {ko:"오늘날 자동화는 1%를 제외한 모든 일자리를 제거하였고, 그것들을 기계로 대체하였다.",
+       en:"Today automation has [created / eliminated] all but 1 percent of their jobs, [replacing / replaced] them with machines.",
+       items:[{opts:["created","eliminated"],ans:"eliminated"},{opts:["replacing","replaced"],ans:"replacing"}]},
+      {ko:"하지만 일자리를 잃은 노동자들은 한가롭게 앉아 있지 않았다.",
+       en:"But the displaced workers [did / were] not [sit / sat] idle.",
+       items:[{opts:["did","were"],ans:"did"},{opts:["sit","sat"],ans:"sit"}]},
+      {ko:"그 대신, 자동화는 완전히 새로운 분야에서 수억 개의 일자리를 창출했다.",
+       en:"[Instead / Furthermore], automation created hundreds of millions of jobs in entirely new fields.",
+       items:[{opts:["Instead","Furthermore"],ans:"Instead"}]},
+      {ko:"한때 농사를 짓던 사람들은 이제 농기구, 자동차, 그리고 기타 산업 제품을 제조하는 공장에서 일하고 있다.",
+       en:"Those [what / who] once farmed [was / were] now manning the factories [what / that] manufactured farm equipment, cars, and other industrial products.",
+       items:[{opts:["what","who"],ans:"who"},{opts:["was","were"],ans:"were"},{opts:["what","that"],ans:"that"}]},
+      {ko:"그 이후로, 이전의 자동화를 기반으로 한 새로운 직업이 계속해서 등장했다.",
+       en:"Since then, wave upon wave of new occupations have [arrived / been arrived] — appliance repair person, food chemist, photographer, web designer — each [build / building] on previous automation.",
+       items:[{opts:["arrived","been arrived"],ans:"arrived"},{opts:["build","building"],ans:"building"}]},
+      {ko:"오늘날 우리 중 대다수는 1800년대의 농부들은 상상도 할 수 없었던 일을 하고 있다.",
+       en:"Today, the vast majority of us are [doing / done] jobs [what / that] no farmer from the 1800s could have imagined.",
+       items:[{opts:["doing","done"],ans:"doing"},{opts:["what","that"],ans:"that"}]},
+    ]
+  },
+  {
+    no:40, topic:"부러움과 질투의 차이",
+    qs:[
+      {ko:"많은 것들은 부러움을 불러일으킨다: 소유권, 지위, 건강, 젊음, 재능, 인기, 아름다움.",
+       en:"Many things [spark / sparking] envy: ownership, status, health, youth, talent, popularity, beauty.",
+       items:[{opts:["spark","sparking"],ans:"spark"}]},
+      {ko:"이것은 신체적 반응이 동일하기 때문에 종종 질투와 혼동된다.",
+       en:"It is often confused with jealousy [because / because of] the physical reactions are [different / identical].",
+       items:[{opts:["because","because of"],ans:"because"},{opts:["different","identical"],ans:"identical"}]},
+      {ko:"차이점: 부러움의 대상은 사물(지위, 돈, 건강 등)이다.",
+       en:"The [similarity / difference]: the subject of envy [is / are] a thing (status, money, health etc.).",
+       items:[{opts:["similarity","difference"],ans:"difference"},{opts:["is","are"],ans:"is"}]},
+      {ko:"질투의 대상은 제3자의 행동이다.",
+       en:"The subject of jealousy [is / to be] the behaviour of a third person.",
+       items:[{opts:["is","to be"],ans:"is"}]},
+      {ko:"부러움은 두 사람을 필요로 한다.",
+       en:"Envy [needs / is needed] two people.",
+       items:[{opts:["needs","is needed"],ans:"needs"}]},
+      {ko:"반면 질투는 세 사람을 요구한다: Peter는 옆집의 예쁜 여자가 자기가 아니라 Sam에게 전화를 걸기 때문에 그를 질투한다.",
+       en:"Jealousy, [in other words / on the other hand], [require / requires] three: Peter is jealous of Sam [because of / because] the beautiful girl next door rings him instead.",
+       items:[{opts:["in other words","on the other hand"],ans:"on the other hand"},{opts:["require","requires"],ans:"requires"},{opts:["because of","because"],ans:"because"}]},
+      {ko:"역설적이게도 부러움을 가질 때, 우리는 나이, 경력, 거주지에 있어서 우리와 가장 비슷한 사람들에게 불쾌감을 향하게 한다.",
+       en:"Paradoxically, with envy we direct resentments toward those [who / what] [is / are] most [similar / dissimilar] to us in age, career and residence.",
+       items:[{opts:["who","what"],ans:"who"},{opts:["is","are"],ans:"are"},{opts:["similar","dissimilar"],ans:"similar"}]},
+      {ko:"우리는 지지난 세기의 사업가들을 부러워하지 않는다.",
+       en:"We [aren't / don't] [envy / envied] businesspeople from the century before last.",
+       items:[{opts:["aren't","don't"],ans:"don't"},{opts:["envy","envied"],ans:"envy"}]},
+      {ko:"우리는 지구 반대편의 백만장자를 부러워하지 않는다.",
+       en:"We [aren't / don't] [envy / envied] millionaires on the other side of the globe.",
+       items:[{opts:["aren't","don't"],ans:"don't"},{opts:["envy","envied"],ans:"envy"}]},
+      {ko:"작가로서 나는 음악가, 매니저 또는 치과 의사가 부럽지 않지만, 다른 작가들을 부러워한다.",
+       en:"As a writer, I don't envy musicians, managers or dentists, but [another / other] writers.",
+       items:[{opts:["another","other"],ans:"other"}]},
+      {ko:"CEO로서, 당신은 다른 더 큰 CEO들을 부러워한다.",
+       en:"As a CEO you envy [other / others], bigger CEOs.",
+       items:[{opts:["other","others"],ans:"other"}]},
+      {ko:"슈퍼 모델로서 당신은 더 성공한 슈퍼 모델들을 부러워한다.",
+       en:"As a supermodel you [envy / to envy] more successful supermodels.",
+       items:[{opts:["envy","to envy"],ans:"envy"}]},
+      {ko:"아리스토텔레스는 이를 알고 있었다: '도공은 도공을 부러워한다.'",
+       en:"Aristotle [knowing / knew] this: 'Potters envy potters.'",
+       items:[{opts:["knowing","knew"],ans:"knew"}]},
+      {ko:"질투는 세 당사자를 포함하며 제3자의 행동에 초점을 맞추는 반면, 부러움은 개인적 상황이 가장 비슷한 두 사람을 포함하고 한 사람이 다른 사람을 불쾌하게 여기는 상태이다.",
+       en:"Jealousy involves three parties, [focusing / focused] on the actions of a third person, whereas envy involves two individuals [who / whose] personal circumstances are most alike, with one person [resenting / resented] the other.",
+       items:[{opts:["focusing","focused"],ans:"focusing"},{opts:["who","whose"],ans:"whose"},{opts:["resenting","resented"],ans:"resenting"}]},
+    ]
+  },
+  {
+    no:"41~42", topic:"확증 편향과 채용 면접",
+    qs:[
+      {ko:"우리는 우리의 편견을 뒷받침하는 편견을 가진다!",
+       en:"We have biases [what / that] [support / supports] our biases!",
+       items:[{opts:["what","that"],ans:"that"},{opts:["support","supports"],ans:"support"}]},
+      {ko:"만약 우리가 한 가지 옵션에 편향된다면, 우리는 그 옵션을 선택한 것을 정당화할 정보를 찾는 경향이 있다.",
+       en:"If we're partial to one option — perhaps [because / because of] it's more memorable, or framed to [minimize / minimizing] loss, or seemingly consistent with a promising pattern — we tend [searching / to search] for information that will justify [choosing / to choose] that option.",
+       items:[{opts:["because","because of"],ans:"because"},{opts:["minimize","minimizing"],ans:"minimize"},{opts:["searching","to search"],ans:"to search"},{opts:["choosing","to choose"],ans:"choosing"}]},
+      {ko:"한편으로는, 데이터와 이유들의 목록으로 방어할 수 있는 선택을 하는 것이 현명하다.",
+       en:"On the one hand, it's sensible to make choices [that / what] we can defend with data and a list of reasons.",
+       items:[{opts:["that","what"],ans:"that"}]},
+      {ko:"반면에, 만약 우리가 주의를 기울이지 않으면, 우리는 불균형한 분석을 수행할 가능성이 있어서 총체적으로 '확증 편향'으로 알려져 있는 오류 덩어리의 희생양이 된다.",
+       en:"On the other hand, if we're not careful, we're likely [conducting / to conduct] an imbalanced analysis, [fall / falling] prey to a cluster of errors collectively [known / are known] as \"confirmation biases.\"",
+       items:[{opts:["conducting","to conduct"],ans:"to conduct"},{opts:["fall","falling"],ans:"falling"},{opts:["known","are known"],ans:"known"}]},
+      {ko:"예를 들어, 거의 모든 기업이 채용 과정의 일부로 전통적인 자기 소개 취업 면접을 실시하며, 많은 기업이 지원자를 평가하기 위해서 이러한 면접에만 의존한다.",
+       en:"[For example / In addition], nearly all companies include classic \"tell me about yourself\" job interviews as part of the hiring process, and many rely on these interviews alone to [evaluate / evaluating] applicants.",
+       items:[{opts:["For example","In addition"],ans:"For example"},{opts:["evaluate","evaluating"],ans:"evaluate"}]},
+      {ko:"하지만 전통적인 면접은 실제로 직원의 미래 성공을 예측하는 데 가장 유용하지 않은 도구 중 하나라는 것으로 판명된다.",
+       en:"But it turns out [what / that] traditional interviews are actually one of the least useful tools for [predict / predicting] an employee's future success.",
+       items:[{opts:["what","that"],ans:"that"},{opts:["predict","predicting"],ans:"predicting"}]},
+      {ko:"이것은 면접관들이 종종 잠재의식적으로 처음 몇 순간의 상호작용을 바탕으로 면접 대상자에 대한 결정을 내리고 그 첫인상을 확인하기 위해 증거를 고르고 질문을 만드는 데 면접의 나머지 시간을 보내기 때문이다.",
+       en:"This is [because / because of] interviewers often subconsciously make up their minds about interviewees [based / are based] on their first few moments of interaction and [spend / spends] the rest of the interview cherry-picking evidence and [phrase / phrasing] their questions to confirm that initial impression.",
+       items:[{opts:["because","because of"],ans:"because"},{opts:["based","are based"],ans:"based"},{opts:["spend","spends"],ans:"spend"},{opts:["phrase","phrasing"],ans:"phrasing"}]},
+      {ko:"\"당신은 이전 직장에서 좋은 직책을 두고 나오신 게 보이네요. 틀림없이 야망이 꽤 크시겠어요, 그렇죠?\"",
+       en:"\"I see here you left a good position at your previous job. You must be pretty [ambitious / unambitious], right?\" versus \"You [must / should] not have been very committed, huh?\"",
+       items:[{opts:["ambitious","unambitious"],ans:"ambitious"},{opts:["must","should"],ans:"must"}]},
+      {ko:"이것은 면접관이 이 지원자가 실제로 채용하기에 가장 좋은 사람인지 여부를 명확하게 보여줄 수 있는 중요한 정보를 간과하기 쉽다는 것을 의미한다.",
+       en:"This means [that / what] interviewers can be prone to [noticing / overlooking] significant information [what / that] would clearly indicate whether this candidate was actually the best person [hiring / to hire].",
+       items:[{opts:["that","what"],ans:"that"},{opts:["noticing","overlooking"],ans:"overlooking"},{opts:["what","that"],ans:"that"},{opts:["hiring","to hire"],ans:"to hire"}]},
+      {ko:"지원자의 업무 샘플을 확보하거나 가정된 어려운 상황에 어떻게 그가 대응할지 묻는 것과 같은 보다 구조화된 접근 방식은 전통적인 면접보다 거의 세 배의 이점으로 미래의 성공을 평가하는 데 훨씬 더 낫다.",
+       en:"More structured approaches, [like / alike] obtaining samples of a candidate's work or [ask / asking] how [would he / he would] respond to difficult hypothetical situations, [is / are] dramatically better at [assess / assessing] future success, with a nearly threefold [advantage / disadvantage] over traditional interviews.",
+       items:[{opts:["like","alike"],ans:"like"},{opts:["ask","asking"],ans:"asking"},{opts:["would he","he would"],ans:"he would"},{opts:["is","are"],ans:"are"},{opts:["assess","assessing"],ans:"assessing"},{opts:["advantage","disadvantage"],ans:"advantage"}]},
+    ]
+  },
+  {
+    no:"43~45", topic:"Todd와 Greg 이야기 (휠체어·독립심)",
+    qs:[
+      {ko:"토요일 아침에 Todd와 그의 다섯 살짜리 딸 Ava는 그들이 방금 구입한 식료품을 가지고 가게에서 걸어 나왔다.",
+       en:"On Saturday morning, Todd and his 5-year-old daughter Ava walked out of the store with the groceries they had [just purchased / been just purchased].",
+       items:[{opts:["just purchased","been just purchased"],ans:"just purchased"}]},
+      {ko:"그들이 주차장에서 식료품 카트를 밀면서 갈 때, 그들은 빨간 차 한 대가 그들의 픽업 트럭 옆 공간으로 들어오는 것을 보았다.",
+       en:"As they pushed their grocery cart through the parking lot, they saw a red car [pulling / to pull] into the space next to their pick-up truck.",
+       items:[{opts:["pulling","to pull"],ans:"pulling"}]},
+      {ko:"Greg라는 이름의 한 젊은 남자가 운전을 하고 있었다.",
+       en:"A young man [named / was named] Greg was driving.",
+       items:[{opts:["named","was named"],ans:"named"}]},
+      {ko:"\"저것은 멋진 차네요\"라고 Ava가 그녀의 아빠에게 말했다.",
+       en:"\"That's a cool car,\" Ava said [her dad / to her dad].",
+       items:[{opts:["her dad","to her dad"],ans:"to her dad"}]},
+      {ko:"그는 동의했고 Greg를 보았는데, 그는 주차를 마치고 그의 문을 열었다.",
+       en:"He agreed and [looks / looked] at Greg, [what / who] finished parking and [opens / opened] his door.",
+       items:[{opts:["looks","looked"],ans:"looked"},{opts:["what","who"],ans:"who"},{opts:["opens","opened"],ans:"opened"}]},
+      {ko:"Todd가 그의 식료품을 싣는 것을 끝냈을 때, Greg의 문은 열린 채로 있었다.",
+       en:"As Todd finished [loading / to load] his groceries, Greg's door remained [open / close].",
+       items:[{opts:["loading","to load"],ans:"loading"},{opts:["open","close"],ans:"open"}]},
+      {ko:"Todd는 Greg가 그의 차에서 내리지 않은 것을 알아차렸다.",
+       en:"Todd [noticed / was noticed] Greg didn't get out of his car.",
+       items:[{opts:["noticed","was noticed"],ans:"noticed"}]},
+      {ko:"그러나 그는 그의 차에서 무엇인가를 꺼내고 있었다.",
+       en:"But he was [pulling / pulled] something from his car.",
+       items:[{opts:["pulling","pulled"],ans:"pulling"}]},
+      {ko:"그는 그의 문 옆 바닥에 금속 프레임을 두었다.",
+       en:"He [put / was put] a metal frame on the ground beside his door.",
+       items:[{opts:["put","was put"],ans:"put"}]},
+      {ko:"운전석에 머무른 채, 그는 무엇인가 다른 것을 잡기 위해 그의 차 안 뒤쪽으로 손을 뻗었다.",
+       en:"[Remaining / Remained] in the driver's seat, he then reached back into his car to [grab / grabbing] something else.",
+       items:[{opts:["Remaining","Remained"],ans:"Remaining"},{opts:["grab","grabbing"],ans:"grab"}]},
+      {ko:"Todd는 그가 무엇을 하고 있는지를 깨닫고, 그가 그를 도와야 할지를 생각했다.",
+       en:"Todd realized what he was doing and [considering / considered] whether he should try to help him.",
+       items:[{opts:["considering","considered"],ans:"considered"}]},
+      {ko:"잠시 후, 그는 Greg에게 다가가기로 결심했다.",
+       en:"After a moment, he decided [approaching / to approach] Greg.",
+       items:[{opts:["approaching","to approach"],ans:"to approach"}]},
+      {ko:"그때쯤, Greg는 이미 그의 차에서 얇은 바퀴 하나를 꺼내었고 그것을 프레임에 끼웠다.",
+       en:"By this time, Greg had already pulled one thin wheel out of his car and [attach / attached] it to the frame.",
+       items:[{opts:["attach","attached"],ans:"attached"}]},
+      {ko:"그가 고개를 들어 그의 근처에 서 있는 Todd를 보았을 때, 그는 이제 두 번째 바퀴를 꺼내는 중이었다.",
+       en:"He was now pulling a second wheel out when he looked up and [sees / saw] Todd [standing / to stand] near him.",
+       items:[{opts:["sees","saw"],ans:"saw"},{opts:["standing","to stand"],ans:"standing"}]},
+      {ko:"Todd는 \"안녕하세요! 주말 잘 보내세요!\"라고 말했다.",
+       en:"Todd said, \"Hi there! [Have / Having] a great weekend!\"",
+       items:[{opts:["Have","Having"],ans:"Have"}]},
+      {ko:"Greg는 약간 놀란 것처럼 보였지만, 그에게도 좋은 주말을 보내라고 답했다.",
+       en:"Greg seemed a bit surprised, but [replying / replied] by [wish / wishing] him a great weekend [too / either].",
+       items:[{opts:["replying","replied"],ans:"replied"},{opts:["wish","wishing"],ans:"wishing"},{opts:["too","either"],ans:"too"}]},
+      {ko:"그러자 Greg는 \"내가 독립성을 가질 수 있게 해줘서 고맙습니다\"라고 덧붙였다.",
+       en:"Then Greg added, \"Thanks for [let / letting] me have my [dependence / independence].\"",
+       items:[{opts:["let","letting"],ans:"letting"},{opts:["dependence","independence"],ans:"independence"}]},
+      {ko:"\"물론이죠.\"라고 Todd가 말했다.",
+       en:"\"Of course,\" Todd [said / was said].",
+       items:[{opts:["said","was said"],ans:"said"}]},
+      {ko:"Todd와 Ava가 그들의 트럭에 올라탄 후에, Ava는 호기심이 생겼다.",
+       en:"After Todd and Ava climbed into their truck, Ava became [curious / curiously].",
+       items:[{opts:["curious","curiously"],ans:"curious"}]},
+      {ko:"그래서 그녀는 왜 그가 그 남자에게 휠체어에 대해 도움을 제공하지 않았는지를 물었다.",
+       en:"So she asked why he didn't offer [helping / to help] the man with his wheelchair.",
+       items:[{opts:["helping","to help"],ans:"to help"}]},
+      {ko:"Todd는 \"왜 너는 내 도움 없이 너의 이를 닦으려고 고집하니?\"라고 말했다.",
+       en:"Todd said, \"Why do you insist on [brush / brushing] your teeth without my help?\"",
+       items:[{opts:["brush","brushing"],ans:"brushing"}]},
+      {ko:"그녀는 \"왜냐하면 제가 어떻게 하는지를 알기 때문이죠!\"라고 답했다.",
+       en:"She answered, \"[Because / Because of] I know how to!\"",
+       items:[{opts:["Because","Because of"],ans:"Because"}]},
+      {ko:"그는 \"그리고 그 남자는 그의 휠체어를 어떻게 조립하는지 알고 있어\"라고 말했다.",
+       en:"He said, \"And the man knows how [putting / to put] together his wheelchair.\"",
+       items:[{opts:["putting","to put"],ans:"to put"}]},
+      {ko:"Ava는 때때로 누군가를 돕는 가장 좋은 방법은 전혀 도와주지 않는 것임을 이해했다.",
+       en:"Ava understood [that / what] sometimes the best way to [help / helping] someone is to not [help / helping] at all.",
+       items:[{opts:["that","what"],ans:"that"},{opts:["help","helping"],ans:"help"},{opts:["help","helping"],ans:"help"}]},
+    ]
+  },
+];
+
+// ── STATE ──────────────────────────────────────────
+let userName='', selectedNos=new Set(), doneNos=new Set();
+let filterMode='all';
+let answers={}, totalItems=0, t0=0;
+
+// ── START ──────────────────────────────────────────
+function goPassageSelect(){
+  userName=document.getElementById('ni').value.trim();
+  if(!userName){alert('이름을 입력해주세요!');return;}
+  localStorage.setItem('bomnal_name',userName);
+  document.getElementById('startScreen').classList.add('hidden');
+  document.getElementById('userInfo').textContent=userName;
+  renderPassageGrid();
+  document.getElementById('passageScreen').classList.remove('hidden');
+}
+
+function renderPassageGrid(){
+  const grid=document.getElementById('passageGrid');
+  grid.innerHTML='';
+  PASSAGES.forEach(p=>{
+    const no=String(p.no);
+    if(filterMode==='18-26'&&!['18','19','20','21','22','23','24','26'].includes(no))return;
+    if(filterMode==='29-40'&&!['29','30','31','32','33','34','35','36','37','38','39','40'].includes(no))return;
+    if(filterMode==='41-45'&&!['41~42','43~45'].includes(no))return;
+    const totalQ=p.qs.reduce((s,q)=>s+q.items.length,0);
+    const d=document.createElement('div');
+    d.className='p-card'+(selectedNos.has(no)?' sel':'')+(doneNos.has(no)?' done':'');
+    d.onclick=()=>togglePassage(no,d);
+    d.innerHTML=`<div class="p-no">${p.no}번</div><div class="p-topic">${p.topic}</div><div class="p-qcount">${totalQ}문항</div>`
+      +(doneNos.has(no)?'<span class="p-badge">완료✓</span>':'')
+      +(selectedNos.has(no)&&!doneNos.has(no)?'<span class="p-badge" style="background:#e8f5e9;color:#2e7d32;">선택</span>':'');
+    grid.appendChild(d);
+  });
+}
+
+function togglePassage(no,el){
+  if(selectedNos.has(no)){selectedNos.delete(no);el.classList.remove('sel');}
+  else{selectedNos.add(no);el.classList.add('sel');}
+}
+
+function filterPassage(mode,btn){
+  filterMode=mode;
+  document.querySelectorAll('.filter-bar .fb').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  renderPassageGrid();
+}
+
+function selectAll(){
+  const visible=PASSAGES.filter(p=>{
+    const no=String(p.no);
+    if(filterMode==='18-26')return['18','19','20','21','22','23','24','26'].includes(no);
+    if(filterMode==='29-40')return['29','30','31','32','33','34','35','36','37','38','39','40'].includes(no);
+    if(filterMode==='41-45')return['41~42','43~45'].includes(no);
+    return true;
+  });
+  const allSel=visible.every(p=>selectedNos.has(String(p.no)));
+  visible.forEach(p=>{
+    const no=String(p.no);
+    if(allSel)selectedNos.delete(no);else selectedNos.add(no);
+  });
+  renderPassageGrid();
+}
+
+// ── QUIZ 시작 ──────────────────────────────────────────
+function startQuiz(){
+  if(selectedNos.size===0){alert('지문을 하나 이상 선택하세요!');return;}
+  answers={};totalItems=0;t0=Date.now();
+  document.getElementById('passageScreen').classList.add('hidden');
+  document.getElementById('hdr').classList.remove('hidden');
+  document.getElementById('pw').classList.remove('hidden');
+  document.getElementById('quizArea').classList.remove('hidden');
+  document.getElementById('hs').textContent=userName+' · '+selectedNos.size+'개 지문';
+  renderQuiz();
+}
+
+function renderQuiz(){
+  const area=document.getElementById('quizArea');
+  area.innerHTML='';
+  const sel=PASSAGES.filter(p=>selectedNos.has(String(p.no)));
+  sel.forEach(p=>{
+    const section=document.createElement('div');
+    section.className='passage-section';
+    section.id='section-'+p.no;
+    const totalQ=p.qs.reduce((s,q)=>s+q.items.length,0);
+    totalItems+=totalQ;
+    section.innerHTML=`<div class="passage-header">
+      <span class="passage-num">${p.no}번</span>
+      <span class="passage-topic">${p.topic}</span>
+      <span class="passage-score" id="score-${p.no}">0 / ${totalQ}</span>
+    </div>`;
+    p.qs.forEach((q,qi)=>{
+      const card=document.createElement('div');
+      card.className='sent-card';
+      card.id=`card-${p.no}-${qi}`;
+      let enHTML=q.en, itemIdx=0;
+      enHTML=enHTML.replace(/\[([^\]]+)\]/g,(match,inner)=>{
+        const parts=inner.split(' / ').map(s=>s.trim());
+        const ii=itemIdx++;
+        const key=`${p.no}_${qi}_${ii}`;
+        const ans=q.items[ii]?q.items[ii].ans:parts[0];
+        const btns=parts.map((opt,oi)=>
+          `<button class="choice-btn" id="btn-${key}-${oi}" onclick="selectChoice('${key}','${opt.replace(/'/g,"\\'")}','${ans.replace(/'/g,"\\'")}','${p.no}','${qi}')" data-opt="${opt.replace(/"/g,'&quot;')}">${opt}</button>`
+        ).join('<span class="choice-sep">/</span>');
+        return `<span class="choice-group" id="grp-${key}">${btns}</span>`;
+      });
+      card.innerHTML=`<div class="sent-top">
+        <div class="sent-num">${qi+1}</div>
+        <div class="sent-ko">${q.ko}</div>
+      </div>
+      <div class="sent-en">${enHTML}</div>`;
+      section.appendChild(card);
+    });
+    area.appendChild(section);
+  });
+  area.innerHTML+=`<div class="submit-wrap">
+    <button class="submit-btn" id="mainSubmitBtn" onclick="doSubmit()">📊 채점하기</button>
+  </div>`;
+  updateProgress();
+}
+
+function selectChoice(key,sel,ans,pno,qi){
+  if(answers[key])return;
+  const correct=(sel===ans);
+  answers[key]={sel,ans,correct,pno,qi};
+  const grp=document.getElementById('grp-'+key);
+  if(!grp)return;
+  grp.querySelectorAll('.choice-btn').forEach(btn=>{
+    btn.disabled=true;
+    const opt=btn.dataset.opt;
+    if(opt===sel&&correct)btn.classList.add('selected-correct');
+    else if(opt===sel&&!correct)btn.classList.add('selected-wrong');
+    else if(opt===ans&&!correct)btn.classList.add('reveal-correct');
+  });
+  grp.classList.add(correct?'done-correct':'done-wrong');
+  updatePassageScore(pno);
+  updateProgress();
+  checkAllDone(pno,qi);
+}
+
+function updatePassageScore(pno){
+  const p=PASSAGES.find(p=>String(p.no)===String(pno));
+  if(!p)return;
+  let cor=0,tot=0;
+  p.qs.forEach((q,qi)=>{
+    q.items.forEach((_,ii)=>{
+      tot++;
+      const key=`${pno}_${qi}_${ii}`;
+      if(answers[key]&&answers[key].correct)cor++;
+    });
+  });
+  const el=document.getElementById('score-'+pno);
+  if(el)el.textContent=cor+' / '+tot;
+}
+
+function checkAllDone(pno,qi){
+  const p=PASSAGES.find(p=>String(p.no)===String(pno));
+  if(!p)return;
+  const card=document.getElementById(`card-${pno}-${qi}`);
+  if(!card)return;
+  const allAnswered=p.qs[qi].items.every((_,ii)=>answers[`${pno}_${qi}_${ii}`]);
+  if(allAnswered)card.classList.add('all-done');
+}
+
+function updateProgress(){
+  const done=Object.keys(answers).length;
+  const pct=totalItems>0?Math.round(done/totalItems*100):0;
+  document.getElementById('pf').style.width=pct+'%';
+  document.getElementById('hb').textContent=done+'/'+totalItems;
+  const submitBtn=document.getElementById('mainSubmitBtn');
+  const submitHdrBtn=document.getElementById('submitHdrBtn');
+  if(done>=totalItems){
+    if(submitBtn)submitBtn.style.background='#f57f17';
+    if(submitHdrBtn)submitHdrBtn.style.display='block';
+  }
+}
+
+function doSubmit(){
+  const done=Object.keys(answers).length;
+  if(done<totalItems){
+    const remain=totalItems-done;
+    if(!confirm(`아직 ${remain}개의 문항이 남았어요. 그래도 채점할까요?`))return;
+  }
+  let cor=0,wrn=0;
+  const wrongs=[],allResults=[];
+  PASSAGES.filter(p=>selectedNos.has(String(p.no))).forEach(p=>{
+    p.qs.forEach((q,qi)=>{
+      q.items.forEach((item,ii)=>{
+        const key=`${p.no}_${qi}_${ii}`;
+        const a=answers[key];
+        if(a){
+          if(a.correct)cor++;
+          else{wrn++;wrongs.push({pno:p.no,ko:q.ko,my:a.sel,correct:item.ans});}
+          allResults.push({pno:p.no,type:'어법',correct:a.correct,my:a.sel,ans:item.ans});
+        }else{
+          wrn++;
+          wrongs.push({pno:p.no,ko:q.ko,my:'(미응답)',correct:item.ans});
+          allResults.push({pno:p.no,type:'어법',correct:false,my:'(미응답)',ans:item.ans});
+        }
+      });
+    });
+  });
+  const total=cor+wrn;
+  const pct=total>0?Math.round(cor/total*100):0;
+  const el=Math.round((Date.now()-t0)/60000);
+  selectedNos.forEach(n=>doneNos.add(n));
+  document.getElementById('quizArea').classList.add('hidden');
+  document.getElementById('resultScreen').classList.remove('hidden');
+  document.getElementById('submitHdrBtn').style.display='none';
+  const wHTML=wrongs.length>0
+    ?'<div class="wl"><h3>❌ 오답 ('+wrongs.length+'개)</h3>'
+      +wrongs.map(w=>`<div class="wi"><div class="wie">${w.pno}번 | ${w.ko.substring(0,36)}...</div><div class="wid">내 답: <b>${w.my}</b> → 정답: <b>${w.correct}</b></div></div>`).join('')
+      +'</div>'
+    :'<div style="color:#2e7d32;font-weight:800;padding:16px;text-align:center;font-size:15px;">🎉 전부 정답!</div>';
+  document.getElementById('resultScreen').innerHTML=`<div class="rc">
+    <div style="font-size:12px;color:var(--muted);margin-bottom:4px;">고2 24년 6월 어법·어휘 · ${selectedNos.size}개 지문</div>
+    <div class="rs">${pct}점</div>
+    <div class="rsub">${userName}의 결과</div>
+    <div class="sr">
+      <div class="si"><div class="sn" style="color:#2e7d32;">${cor}</div><div class="sl">정답</div></div>
+      <div class="si"><div class="sn" style="color:#c62828;">${wrn}</div><div class="sl">오답</div></div>
+      <div class="si"><div class="sn" style="color:#555;">${total}</div><div class="sl">총문제</div></div>
+      <div class="si"><div class="sn" style="color:#f57f17;">${el}분</div><div class="sl">소요</div></div>
+    </div>
+    ${wHTML}
+    <div class="rbtns">
+      <button class="rbtn rbtn-p" onclick="goBack()">← 지문 다시 선택</button>
+      <button class="rbtn rbtn-s" onclick="location.reload()">처음부터 🔄</button>
+    </div>
+  </div>`;
+}
+
+function goBack(){
+  document.getElementById('resultScreen').classList.add('hidden');
+  document.getElementById('hdr').classList.add('hidden');
+  document.getElementById('pw').classList.add('hidden');
+  selectedNos.clear();
+  renderPassageGrid();
+  document.getElementById('passageScreen').classList.remove('hidden');
+}
+
+window.addEventListener('DOMContentLoaded',()=>{
+  const n=localStorage.getItem('bn_name')||localStorage.getItem('bomnal_name');
+  if(n){
+    userName=n;
+    document.getElementById('startScreen').classList.add('hidden');
+    document.getElementById('userInfo').textContent=n;
+    renderPassageGrid();
+    document.getElementById('passageScreen').classList.remove('hidden');
+  }
+});
+</script>
+</body>
+</html>
