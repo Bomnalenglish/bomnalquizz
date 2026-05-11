@@ -88,7 +88,6 @@ tr:hover td{background:#f8f9ff;}
 .student-card{background:var(--card);border-radius:14px;padding:18px 20px;box-shadow:0 2px 10px rgba(26,35,126,.07);}
 .student-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px;}
 .student-name{font-family:'Black Han Sans',sans-serif;font-size:16px;color:var(--primary);}
-.student-meta{font-size:12px;color:var(--muted);}
 .student-summary{display:flex;gap:8px;flex-wrap:wrap;}
 .sum-pill{font-size:11px;font-weight:800;padding:3px 10px;border-radius:20px;}
 .sum-pill.done{background:#e8f5e9;color:var(--green);}
@@ -108,16 +107,17 @@ tr:hover td{background:#f8f9ff;}
 .sec-cell.not-done .sec-score{color:var(--muted);}
 .no-data-msg{text-align:center;padding:48px;color:var(--muted);}
 .quiz-type-label{font-size:10px;color:var(--muted);margin-bottom:6px;font-weight:700;letter-spacing:.5px;}
-.load-progress{background:var(--card);border-radius:12px;padding:20px 24px;text-align:center;margin-bottom:16px;box-shadow:0 2px 8px rgba(26,35,126,.06);}
-.load-progress .load-n{font-family:'Black Han Sans',sans-serif;font-size:28px;color:var(--primary);}
-.load-progress .load-l{font-size:12px;color:var(--muted);margin-top:4px;}
+.access-block{margin-top:12px;padding-top:10px;border-top:1px solid #f0f2f8;}
+.access-block-title{font-size:11px;font-weight:800;color:var(--muted);margin-bottom:8px;letter-spacing:.5px;}
+.access-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px;}
+.acc-chip-enter{background:#e3f2fd;color:#1565c0;border-radius:8px;padding:3px 9px;font-size:11px;font-weight:800;}
+.acc-chip-quiz{background:#f3e5f5;color:#6a1b9a;border-radius:8px;padding:3px 9px;font-size:11px;font-weight:800;}
+.acc-chip-time{font-weight:400;opacity:.7;margin-left:2px;}
 .hidden{display:none!important;}
 .del-btn{background:none;border:1px solid #ffcdd2;border-radius:5px;padding:2px 7px;font-size:10px;cursor:pointer;color:#e53935;}
 .del-btn:hover{background:#ffebee;border-color:#e53935;}
 .btn-delete-all{background:#ffebee;color:#c62828;border:none;padding:8px 16px;border-radius:8px;font-family:'Nanum Gothic',sans-serif;font-size:12px;font-weight:800;cursor:pointer;}
 .btn-delete-all:hover{background:#ffcdd2;}
-.del-confirm{background:white;border:2px solid #e53935;border-radius:12px;padding:16px 20px;margin-bottom:14px;font-size:13px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
-.del-confirm span{flex:1;color:#c62828;font-weight:700;}
 @media(max-width:640px){
   .chart-grid{grid-template-columns:1fr;}
   .summary-grid{grid-template-columns:repeat(2,1fr);}
@@ -128,7 +128,6 @@ tr:hover td{background:#f8f9ff;}
 </head>
 <body>
 
-<!-- 로그인 -->
 <div id="loginWrap" class="login-wrap">
   <div class="login-card">
     <h1>🌸 봄날 English</h1>
@@ -140,7 +139,6 @@ tr:hover td{background:#f8f9ff;}
   </div>
 </div>
 
-<!-- 대시보드 -->
 <div id="dashboard" class="app hidden">
   <div class="header">
     <div>
@@ -153,14 +151,12 @@ tr:hover td{background:#f8f9ff;}
     </div>
   </div>
   <div class="tab-bar">
-    <button class="tab-btn active" onclick="switchTab('quiz')" id="tab-quiz">📊 퀴즈 결과</button>
+    <button class="tab-btn active" onclick="switchTab('quiz')"    id="tab-quiz">📊 퀴즈 결과</button>
     <button class="tab-btn"        onclick="switchTab('section')" id="tab-section">📋 학생별 현황</button>
-    <button class="tab-btn"        onclick="switchTab('access')" id="tab-access">🔐 접속 기록</button>
-    <button class="tab-btn"        onclick="switchTab('vaca')" id="tab-vaca">📚 단어장 · 학생 관리</button>
+    <button class="tab-btn"        onclick="switchTab('access')"  id="tab-access">🔐 접속 기록</button>
+    <button class="tab-btn"        onclick="switchTab('vaca')"    id="tab-vaca">📚 단어장 · 학생 관리</button>
   </div>
   <div class="panels">
-
-    <!-- 퀴즈 결과 -->
     <div class="panel active" id="panel-quiz">
       <div class="quiz-inner">
         <div class="summary-grid">
@@ -178,42 +174,12 @@ tr:hover td{background:#f8f9ff;}
           <span class="ctrl-label">학교</span>
           <select class="ctrl-sel" id="fSchool" onchange="applyFilter()">
             <option value="">전체</option>
-            <optgroup label="종촌고">
-              <option value="종촌고">종촌고 전체</option>
-              <option value="종촌고1">종촌고1</option>
-              <option value="종촌고2">종촌고2</option>
-              <option value="종촌고3">종촌고3</option>
-            </optgroup>
-            <optgroup label="고운고">
-              <option value="고운고">고운고 전체</option>
-              <option value="고운고1">고운고1</option>
-              <option value="고운고2">고운고2</option>
-              <option value="고운고3">고운고3</option>
-            </optgroup>
-            <optgroup label="대성고">
-              <option value="대성고">대성고 전체</option>
-              <option value="대성고1">대성고1</option>
-              <option value="대성고2">대성고2</option>
-              <option value="대성고3">대성고3</option>
-            </optgroup>
-            <optgroup label="종촌중">
-              <option value="종촌중">종촌중 전체</option>
-              <option value="종촌중1">종촌중1</option>
-              <option value="종촌중2">종촌중2</option>
-              <option value="종촌중3">종촌중3</option>
-            </optgroup>
-            <optgroup label="어진중">
-              <option value="어진중">어진중 전체</option>
-              <option value="어진중1">어진중1</option>
-              <option value="어진중2">어진중2</option>
-              <option value="어진중3">어진중3</option>
-            </optgroup>
-            <optgroup label="고운중">
-              <option value="고운중">고운중 전체</option>
-              <option value="고운중1">고운중1</option>
-              <option value="고운중2">고운중2</option>
-              <option value="고운중3">고운중3</option>
-            </optgroup>
+            <optgroup label="종촌고"><option value="종촌고">종촌고 전체</option><option value="종촌고1">종촌고1</option><option value="종촌고2">종촌고2</option><option value="종촌고3">종촌고3</option></optgroup>
+            <optgroup label="고운고"><option value="고운고">고운고 전체</option><option value="고운고1">고운고1</option><option value="고운고2">고운고2</option><option value="고운고3">고운고3</option></optgroup>
+            <optgroup label="대성고"><option value="대성고">대성고 전체</option><option value="대성고1">대성고1</option><option value="대성고2">대성고2</option><option value="대성고3">대성고3</option></optgroup>
+            <optgroup label="종촌중"><option value="종촌중">종촌중 전체</option><option value="종촌중1">종촌중1</option><option value="종촌중2">종촌중2</option><option value="종촌중3">종촌중3</option></optgroup>
+            <optgroup label="어진중"><option value="어진중">어진중 전체</option><option value="어진중1">어진중1</option><option value="어진중2">어진중2</option><option value="어진중3">어진중3</option></optgroup>
+            <optgroup label="고운중"><option value="고운중">고운중 전체</option><option value="고운중1">고운중1</option><option value="고운중2">고운중2</option><option value="고운중3">고운중3</option></optgroup>
           </select>
           <span class="ctrl-label">이름</span>
           <input type="text" class="ctrl-inp" id="fName" placeholder="검색..." oninput="applyFilter()">
@@ -226,62 +192,28 @@ tr:hover td{background:#f8f9ff;}
           </select>
           <div class="spacer"></div>
           <button class="btn-delete-all" onclick="confirmDeleteAll()">🗑️ 선택 삭제</button>
-          <button class="btn-export"  onclick="exportCSV()">📥 CSV</button>
+          <button class="btn-export" onclick="exportCSV()">📥 CSV</button>
           <button class="btn-refresh" onclick="loadData()">🔄 새로고침</button>
         </div>
         <div class="tbl-wrap">
-          <div class="tbl-head">
-            <span class="tbl-title">응시 기록</span>
-            <span class="cnt-badge" id="cntBadge">0건</span>
-          </div>
+          <div class="tbl-head"><span class="tbl-title">응시 기록</span><span class="cnt-badge" id="cntBadge">0건</span></div>
           <div id="tblArea"><div class="loading-msg">데이터 불러오는 중...</div></div>
         </div>
       </div>
     </div>
 
-    <!-- 섹션 현황 -->
     <div class="panel" id="panel-section">
       <div class="section-dash">
         <div class="sec-controls">
           <span class="ctrl-label">학교</span>
           <select class="ctrl-sel" id="secSchool" onchange="renderSectionView()">
             <option value="">전체</option>
-            <optgroup label="종촌고">
-              <option value="종촌고">종촌고 전체</option>
-              <option value="종촌고1">종촌고1</option>
-              <option value="종촌고2">종촌고2</option>
-              <option value="종촌고3">종촌고3</option>
-            </optgroup>
-            <optgroup label="고운고">
-              <option value="고운고">고운고 전체</option>
-              <option value="고운고1">고운고1</option>
-              <option value="고운고2">고운고2</option>
-              <option value="고운고3">고운고3</option>
-            </optgroup>
-            <optgroup label="대성고">
-              <option value="대성고">대성고 전체</option>
-              <option value="대성고1">대성고1</option>
-              <option value="대성고2">대성고2</option>
-              <option value="대성고3">대성고3</option>
-            </optgroup>
-            <optgroup label="종촌중">
-              <option value="종촌중">종촌중 전체</option>
-              <option value="종촌중1">종촌중1</option>
-              <option value="종촌중2">종촌중2</option>
-              <option value="종촌중3">종촌중3</option>
-            </optgroup>
-            <optgroup label="어진중">
-              <option value="어진중">어진중 전체</option>
-              <option value="어진중1">어진중1</option>
-              <option value="어진중2">어진중2</option>
-              <option value="어진중3">어진중3</option>
-            </optgroup>
-            <optgroup label="고운중">
-              <option value="고운중">고운중 전체</option>
-              <option value="고운중1">고운중1</option>
-              <option value="고운중2">고운중2</option>
-              <option value="고운중3">고운중3</option>
-            </optgroup>
+            <optgroup label="종촌고"><option value="종촌고">종촌고 전체</option><option value="종촌고1">종촌고1</option><option value="종촌고2">종촌고2</option><option value="종촌고3">종촌고3</option></optgroup>
+            <optgroup label="고운고"><option value="고운고">고운고 전체</option><option value="고운고1">고운고1</option><option value="고운고2">고운고2</option><option value="고운고3">고운고3</option></optgroup>
+            <optgroup label="대성고"><option value="대성고">대성고 전체</option><option value="대성고1">대성고1</option><option value="대성고2">대성고2</option><option value="대성고3">대성고3</option></optgroup>
+            <optgroup label="종촌중"><option value="종촌중">종촌중 전체</option><option value="종촌중1">종촌중1</option><option value="종촌중2">종촌중2</option><option value="종촌중3">종촌중3</option></optgroup>
+            <optgroup label="어진중"><option value="어진중">어진중 전체</option><option value="어진중1">어진중1</option><option value="어진중2">어진중2</option><option value="어진중3">어진중3</option></optgroup>
+            <optgroup label="고운중"><option value="고운중">고운중 전체</option><option value="고운중1">고운중1</option><option value="고운중2">고운중2</option><option value="고운중3">고운중3</option></optgroup>
           </select>
           <span class="ctrl-label">이름</span>
           <input type="text" class="ctrl-inp" id="secName" placeholder="검색..." oninput="renderSectionView()">
@@ -292,7 +224,6 @@ tr:hover td{background:#f8f9ff;}
       </div>
     </div>
 
-    <!-- 접속 기록 -->
     <div class="panel" id="panel-access">
       <div class="quiz-inner">
         <div class="controls">
@@ -311,16 +242,12 @@ tr:hover td{background:#f8f9ff;}
         </div>
         <div class="summary-grid" id="acc-summary"></div>
         <div class="tbl-wrap">
-          <div class="tbl-head">
-            <span class="tbl-title">접속 기록</span>
-            <span class="cnt-badge" id="accBadge">0건</span>
-          </div>
+          <div class="tbl-head"><span class="tbl-title">접속 기록</span><span class="cnt-badge" id="accBadge">0건</span></div>
           <div id="accArea"><div class="loading-msg">새로고침을 눌러주세요</div></div>
         </div>
       </div>
     </div>
 
-    <!-- vaca iframe -->
     <div class="panel panel-iframe" id="panel-vaca">
       <iframe id="vacaFrame" src="" title="봄날 vaca 관리자" allowfullscreen></iframe>
     </div>
@@ -332,37 +259,31 @@ import{initializeApp}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-ap
 import{getFirestore,collection,getDocs,query,orderBy,deleteDoc,doc}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 const cfg={apiKey:"AIzaSyCxS524S8KAaF87DomPtl9sJdF-eqes404",authDomain:"bomnalvaca.firebaseapp.com",projectId:"bomnalvaca",storageBucket:"bomnalvaca.firebasestorage.app",messagingSenderId:"115868052300",appId:"1:115868052300:web:765c08867b6f1ce0987de9"};
 const app=initializeApp(cfg);const db=getFirestore(app);
-window._db=db;
-window._col=collection;
-window._getDocs=getDocs;
-window._query=query;
-window._orderBy=orderBy;
-window._fbReady=true;
-window._deleteDoc=deleteDoc;
-window._doc=doc;
+window._db=db;window._col=collection;window._getDocs=getDocs;
+window._query=query;window._orderBy=orderBy;window._fbReady=true;
+window._deleteDoc=deleteDoc;window._doc=doc;
 </script>
 
 <script>
 const ADMIN_PW = 'bomnalvaca2025';
-const VACA_URL  = 'https://bomnalenglish.github.io/bomnalvaca/admin.html';
+const VACA_URL = 'https://bomnalenglish.github.io/bomnalvaca/admin.html';
 
 function doLogin(){
   const pw = document.getElementById('pwInput').value;
-  if(pw === ADMIN_PW){
+  if(pw===ADMIN_PW){
     document.getElementById('loginWrap').classList.add('hidden');
     document.getElementById('dashboard').classList.remove('hidden');
     sessionStorage.setItem('bnadmin','1');
     loadData();
   } else {
-    const el = document.getElementById('pwInput');
-    el.classList.add('err'); el.value=''; el.placeholder='비밀번호가 틀렸습니다';
-    setTimeout(()=>{ el.classList.remove('err'); el.placeholder='비밀번호'; }, 1500);
+    const el=document.getElementById('pwInput');
+    el.classList.add('err');el.value='';el.placeholder='비밀번호가 틀렸습니다';
+    setTimeout(()=>{el.classList.remove('err');el.placeholder='비밀번호';},1500);
   }
 }
-function doLogout(){ sessionStorage.removeItem('bnadmin'); location.reload(); }
+function doLogout(){sessionStorage.removeItem('bnadmin');location.reload();}
 
-// 자동 로그인 — loadData 정의 후 window.onload 에서 실행
-window.addEventListener('load', function(){
+window.addEventListener('load',function(){
   if(sessionStorage.getItem('bnadmin')==='1'){
     document.getElementById('loginWrap').classList.add('hidden');
     document.getElementById('dashboard').classList.remove('hidden');
@@ -370,255 +291,195 @@ window.addEventListener('load', function(){
   }
 });
 
-let vacaLoaded = false;
+let vacaLoaded=false;
 function switchTab(tab){
   ['quiz','section','access','vaca'].forEach(t=>{
-    document.getElementById('tab-'+t).classList.toggle('active', t===tab);
-    document.getElementById('panel-'+t).classList.toggle('active', t===tab);
+    document.getElementById('tab-'+t).classList.toggle('active',t===tab);
+    document.getElementById('panel-'+t).classList.toggle('active',t===tab);
   });
-  if(tab==='vaca' && !vacaLoaded){
-    document.getElementById('vacaFrame').src = VACA_URL;
-    vacaLoaded = true;
-  }
+  if(tab==='vaca'&&!vacaLoaded){document.getElementById('vacaFrame').src=VACA_URL;vacaLoaded=true;}
   if(tab==='section') renderSectionView();
   if(tab==='access') loadAccess();
 }
 
 let allData = [];
+let allAccessData = [];  // ★ hub_access 데이터
 
 async function loadData(){
-  document.getElementById('tblArea').innerHTML = '<div class="loading-msg">⏳ 전체 데이터 불러오는 중...<br><small style="color:#999">데이터가 많으면 잠시 걸릴 수 있어요</small></div>';
+  document.getElementById('tblArea').innerHTML='<div class="loading-msg">⏳ 전체 데이터 불러오는 중...<br><small style="color:#999">데이터가 많으면 잠시 걸릴 수 있어요</small></div>';
   try{
     let w=0;
-    while(!window._fbReady && w<15000){ await new Promise(r=>setTimeout(r,200)); w+=200; }
-    if(!window._fbReady){ throw new Error('Firebase 로드 시간 초과 — 새로고침 해보세요'); }
+    while(!window._fbReady&&w<15000){await new Promise(r=>setTimeout(r,200));w+=200;}
+    if(!window._fbReady){throw new Error('Firebase 로드 시간 초과');}
 
-    const q = window._col(window._db, 'quiz_results');
-    const snap = await window._getDocs(q);
-
-    allData = [];
+    // quiz_results 로드
+    const snap=await window._getDocs(window._col(window._db,'quiz_results'));
+    allData=[];
     snap.forEach(doc=>{
-      const d = doc.data();
+      const d=doc.data();
       allData.push({
-        id: doc.id,
-        name: d.studentName||'(이름없음)',
-        school: d.school||'-',
-        score: d.score||0,
-        correct: d.correct||0,
-        wrong: d.wrongCount||d.wrong||0,
-        timedOut: d.timedOut||0,
-        total: d.total||0,
-        elapsed: d.elapsedMin||0,
-        wrongWords: d.wrongWords||[],
-        quizType: d.quizType||'-',
-        round: d.round||1,
-        part: d.part||0,
-        time: d.timestamp
-          ? (typeof d.timestamp.toDate==='function' ? d.timestamp.toDate() : new Date(d.timestamp))
-          : (d.submittedAt
-            ? (typeof d.submittedAt.toDate==='function' ? d.submittedAt.toDate() : new Date(d.submittedAt))
-            : null),
-        wrongWords: d.wrongWords||[],
-        wrongNumbers: d.wrongNumbers||'',
-        wrongSentences: d.wrongSentences||'',
-        tabSwitchCount: d.tabSwitchCount||0,
-        attemptCount: d.attemptCount||1,
+        id:doc.id,
+        name:d.studentName||'(이름없음)',
+        school:d.school||'-',
+        score:d.score||0,
+        correct:d.correct||0,
+        wrong:d.wrongCount||d.wrong||0,
+        timedOut:d.timedOut||0,
+        total:d.total||0,
+        elapsed:d.elapsedMin||0,
+        quizType:d.quizType||'-',
+        round:d.round||1,
+        part:d.part||0,
+        wrongWords:d.wrongWords||[],
+        wrongNumbers:d.wrongNumbers||'',
+        wrongSentences:d.wrongSentences||'',
+        tabSwitchCount:d.tabSwitchCount||0,
+        attemptCount:d.attemptCount||1,
+        time:d.timestamp
+          ?(typeof d.timestamp.toDate==='function'?d.timestamp.toDate():new Date(d.timestamp))
+          :(d.submittedAt?(typeof d.submittedAt.toDate==='function'?d.submittedAt.toDate():new Date(d.submittedAt)):null),
       });
     });
-
     allData.sort((a,b)=>(b.time||0)-(a.time||0));
 
-    document.getElementById('lastRefresh').textContent =
+    // ★ hub_access 동시 로드
+    try{
+      const accSnap=await window._getDocs(window._col(window._db,'hub_access'));
+      allAccessData=[];
+      accSnap.forEach(docA=>{
+        const d=docA.data();
+        allAccessData.push({
+          id:docA.id,
+          type:d.type||'-',
+          name:d.name||'',
+          school:d.school||'-',
+          targetSchool:d.targetSchool||'',
+          quiz:d.quiz||'',
+          file:d.file||'',
+          time:d.timestamp?(typeof d.timestamp.toDate==='function'?d.timestamp.toDate():new Date(d.timestamp)):null,
+        });
+      });
+      allAccessData.sort((a,b)=>(b.time||0)-(a.time||0));
+    }catch(e2){console.log('hub_access load fail',e2);}
+
+    document.getElementById('lastRefresh').textContent=
       '갱신: '+new Date().toLocaleTimeString('ko-KR')+' (총 '+allData.length+'건)';
-    renderSummary();
-    renderCharts();
-    applyFilter();
-    renderSectionView();
-  } catch(e){
-    document.getElementById('tblArea').innerHTML =
+    renderSummary();renderCharts();applyFilter();renderSectionView();
+  }catch(e){
+    document.getElementById('tblArea').innerHTML=
       `<div class="empty-msg">⚠️ 오류: ${e.message}<br><small>잠시 후 새로고침 해보세요</small></div>`;
   }
 }
 
 function renderSummary(){
-  const avg = arr => arr.length ? Math.round(arr.reduce((a,b)=>a+b,0)/arr.length) : 0;
-  const names = new Set(allData.map(d=>d.name+'|'+d.school));
-  document.getElementById('sTotal').textContent  = allData.length;
-  document.getElementById('sStud').textContent   = names.size;
-  document.getElementById('sScore').textContent  = avg(allData.map(d=>d.score))+'점';
-  document.getElementById('sWrong').textContent  = avg(allData.map(d=>d.wrong))+'개';
-  document.getElementById('sTimeout').textContent= avg(allData.map(d=>d.timedOut))+'개';
+  const avg=arr=>arr.length?Math.round(arr.reduce((a,b)=>a+b,0)/arr.length):0;
+  const names=new Set(allData.map(d=>d.name+'|'+d.school));
+  document.getElementById('sTotal').textContent=allData.length;
+  document.getElementById('sStud').textContent=names.size;
+  document.getElementById('sScore').textContent=avg(allData.map(d=>d.score))+'점';
+  document.getElementById('sWrong').textContent=avg(allData.map(d=>d.wrong))+'개';
+  document.getElementById('sTimeout').textContent=avg(allData.map(d=>d.timedOut))+'개';
 }
 
 function renderCharts(){
-  const bands=[
-    {l:'S(95↑)',min:95,max:101},
-    {l:'A(85↑)',min:85,max:95},
-    {l:'B(70↑)',min:70,max:85},
-    {l:'C(55↑)',min:55,max:70},
-    {l:'D(~54)',min:0,max:55}
-  ];
-  const maxB = Math.max(...bands.map(b=>allData.filter(d=>d.score>=b.min&&d.score<b.max).length),1);
-  document.getElementById('scoreDist').innerHTML = bands.map(b=>{
-    const cnt = allData.filter(d=>d.score>=b.min&&d.score<b.max).length;
+  const bands=[{l:'S(95↑)',min:95,max:101},{l:'A(85↑)',min:85,max:95},{l:'B(70↑)',min:70,max:85},{l:'C(55↑)',min:55,max:70},{l:'D(~54)',min:0,max:55}];
+  const maxB=Math.max(...bands.map(b=>allData.filter(d=>d.score>=b.min&&d.score<b.max).length),1);
+  document.getElementById('scoreDist').innerHTML=bands.map(b=>{
+    const cnt=allData.filter(d=>d.score>=b.min&&d.score<b.max).length;
     return `<div class="bar-row"><span class="bar-lbl">${b.l}</span><div class="bar-track"><div class="bar-fill" style="width:${Math.round(cnt/maxB*100)}%"></div></div><span class="bar-val">${cnt}명</span></div>`;
   }).join('');
-
-  const wmap = new Map();
-  allData.forEach(d=>d.wrongWords.forEach(w=>{
-    const key = typeof w === 'string' ? w : (w.eng||w);
-    if(key) wmap.set(key,(wmap.get(key)||0)+1);
-  }));
-  const top = [...wmap.entries()].sort((a,b)=>b[1]-a[1]).slice(0,10);
-  const maxW = top.length ? top[0][1] : 1;
-  document.getElementById('wrongWords').innerHTML = top.length
-    ? top.map(([eng,cnt])=>`<div class="bar-row"><span class="bar-lbl">${eng}</span><div class="bar-track"><div class="bar-fill" style="width:${Math.round(cnt/maxW*100)}%"></div></div><span class="bar-val">${cnt}회</span></div>`).join('')
-    : '<div style="color:var(--muted);font-size:12px;padding:8px">데이터 없음</div>';
+  const wmap=new Map();
+  allData.forEach(d=>d.wrongWords.forEach(w=>{const k=typeof w==='string'?w:(w.eng||w);if(k)wmap.set(k,(wmap.get(k)||0)+1);}));
+  const top=[...wmap.entries()].sort((a,b)=>b[1]-a[1]).slice(0,10);
+  const maxW=top.length?top[0][1]:1;
+  document.getElementById('wrongWords').innerHTML=top.length
+    ?top.map(([eng,cnt])=>`<div class="bar-row"><span class="bar-lbl">${eng}</span><div class="bar-track"><div class="bar-fill" style="width:${Math.round(cnt/maxW*100)}%"></div></div><span class="bar-val">${cnt}회</span></div>`).join('')
+    :'<div style="color:var(--muted);font-size:12px;padding:8px">데이터 없음</div>';
 }
 
 function applyFilter(){
-  const sq = document.getElementById('fSchool').value;
-  const nq = document.getElementById('fName').value.trim().toLowerCase();
-  const so = document.getElementById('fSort').value;
-  let data = [...allData];
-  if(sq) data = data.filter(d => d.school && d.school.startsWith(sq));
-  if(nq) data = data.filter(d=>d.name.toLowerCase().includes(nq));
-  if(so==='time_asc')        data.sort((a,b)=>(a.time||0)-(b.time||0));
+  const sq=document.getElementById('fSchool').value;
+  const nq=document.getElementById('fName').value.trim().toLowerCase();
+  const so=document.getElementById('fSort').value;
+  let data=[...allData];
+  if(sq) data=data.filter(d=>d.school&&d.school.startsWith(sq));
+  if(nq) data=data.filter(d=>d.name.toLowerCase().includes(nq));
+  if(so==='time_asc') data.sort((a,b)=>(a.time||0)-(b.time||0));
   else if(so==='score_desc') data.sort((a,b)=>b.score-a.score);
-  else if(so==='score_asc')  data.sort((a,b)=>a.score-b.score);
+  else if(so==='score_asc') data.sort((a,b)=>a.score-b.score);
   renderTable(data);
 }
 
-const gc = s => s>=95?'sS':s>=85?'sA':s>=70?'sB':s>=55?'sC':'sD';
-const gl = s => s>=95?'S':s>=85?'A':s>=70?'B':s>=55?'C':'D';
-const ft = t => t ? t.toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}) : '-';
+const gc=s=>s>=95?'sS':s>=85?'sA':s>=70?'sB':s>=55?'sC':'sD';
+const gl=s=>s>=95?'S':s>=85?'A':s>=70?'B':s>=55?'C':'D';
+const ft=t=>t?t.toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}):'-';
 
-// ===== 퀴즈 유형 라벨 =====
 function nonSecLabel(qt){
   if(!qt) return '-';
-
   if(qt.includes('동반의어')){
-    let lbl = '';
-    // 교과서 과
-    const lesson = qt.match(/교과서(\d+)과/);
-    if(lesson) lbl = `교과서 ${lesson[1]}과`;
-    // 모의고사
-    else if(qt.includes('모의고사')){
-      const yr = qt.match(/(\d{4})/);
-      lbl = yr ? `${yr[1]} 3월모고` : '3월모고';
-    }
-    // 올림포스
-    else if(qt.includes('올림포스')) lbl = '올림포스';
-    else lbl = '동반의어';
-    // 파트
-    const part = qt.match(/파트(\d)/);
-    if(part) lbl += ` P${part[1]}`;
-    // 모드 A/B
-    const mode = qt.includes('A모드')?'A':qt.includes('B모드')?'B':'';
-    if(mode) lbl += ` ${mode}`;
-    // 라운드 (1라운드는 생략)
-    const round = qt.match(/(\d+)라운드/);
-    if(round && parseInt(round[1])>1) lbl += ` R${round[1]}`;
+    let lbl='';
+    const lesson=qt.match(/교과서(\d+)과/);
+    if(lesson) lbl=`교과서 ${lesson[1]}과`;
+    else if(qt.includes('모의고사')){const yr=qt.match(/(\d{4})/);lbl=yr?`${yr[1]} 3월모고`:'3월모고';}
+    else if(qt.includes('올림포스')) lbl='올림포스';
+    else lbl='동반의어';
+    const part=qt.match(/파트(\d)/);if(part) lbl+=` P${part[1]}`;
+    const mode=qt.includes('A모드')?'A':qt.includes('B모드')?'B':'';if(mode) lbl+=` ${mode}`;
+    const round=qt.match(/(\d+)라운드/);if(round&&parseInt(round[1])>1) lbl+=` R${round[1]}`;
     return lbl;
   }
-  if(qt.includes('빈칸시험')||qt.includes('챕터')){
-    const ch = qt.match(/(\d+)챕터/);
-    return (ch ? ch[1]+'챕터' : '챕터') + ' 빈칸시험';
-  }
+  if(qt.includes('빈칸시험')||qt.includes('챕터')){const ch=qt.match(/(\d+)챕터/);return (ch?ch[1]+'챕터':'챕터')+' 빈칸시험';}
   if(qt.includes('함축의미')) return '함축의미';
-  if(qt.includes('빈칸추론')){
-    const kang = qt.match(/([\dT]+강|전체)/);
-    return '빈칸추론'+(kang?' '+kang[1]:'');
-  }
-  if(qt.includes('어휘퀴즈')) {
-    const complete = qt.includes('오답완료');
-    const label = qt.replace('_어휘퀴즈_오답완료','').replace('_어휘퀴즈','').replace(/_/g,' ');
-    return label + (complete?' ✅':'');
-  }
+  if(qt.includes('빈칸추론')){const kang=qt.match(/([\dT]+강|전체)/);return '빈칸추론'+(kang?' '+kang[1]:'');}
+  if(qt.includes('어휘퀴즈')){const complete=qt.includes('오답완료');const label=qt.replace('_어휘퀴즈_오답완료','').replace('_어휘퀴즈','').replace(/_/g,' ');return label+(complete?' ✅':'');}
   return qt.slice(0,16);
 }
 
-function secLabel(qt){
-  if(!qt) return '-';
-  const m = qt.match(/(\d+)섹션/);
-  if(m) return m[1]+'섹션';
-  if(qt.includes('전체')) return '전체';
-  if(qt.includes('오답완료')) return '오답완료';
-  if(qt.includes('오답')) return '오답재시';
-  if(qt.includes('동반의어')){
-    return nonSecLabel(qt);
-  }
-  if(qt.includes('함축의미')) return '함축의미';
-  if(qt.includes('빈칸추론')) return '빈칸추론';
-  if(qt.includes('어휘퀴즈')) return '어휘퀴즈';
-  return '-';
-}
-
 function renderTable(data){
-  document.getElementById('cntBadge').textContent = data.length+'건';
-  if(!data.length){
-    document.getElementById('tblArea').innerHTML='<div class="empty-msg">📭 기록 없음</div>';
-    return;
-  }
-  const rows = data.map((d,i)=>{
-    const chips = d.wrongWords.slice(0,20).map(w=>{
-      const eng = typeof w === 'string' ? w : (w.eng||w);
-      const kor = typeof w === 'object' ? (w.kor||w.correct||'') : '';
-      return `<span class="wt-chip">${eng}${kor?`<span class="wa">→${kor}</span>`:''}</span>`;
-    }).join('');
-    const sl = nonSecLabel(d.quizType);
-    const isSynanm = d.quizType && d.quizType.includes('동반의어');
-    const slStyle = isSynanm ? 'background:#e8f5e9;color:#2e7d32'
-                  : sl==='전체'?'background:#e3f2fd;color:#1565c0'
-                  : sl==='오답재시'?'background:#fff3e0;color:#e65100'
-                  : sl==='오답완료'?'background:#e8f5e9;color:#2e7d32'
-                  : sl==='어휘퀴즈'?'background:#f3e5f5;color:#6a1b9a'
-                  : sl==='-'?'color:var(--muted);font-size:11px'
-                  : 'background:#e8eaf6;color:#3949ab';
-    const slHtml = sl!=='-'
-      ? `<span style="display:inline-block;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:800;${slStyle}">${sl}</span>`
-      : `<span style="color:var(--muted);font-size:11px">-</span>`;
-    const roundBadge = d.round > 1
-      ? `<span style="font-size:10px;color:#e65100;margin-left:4px">${d.round}라운드</span>` : '';
-    return `<tbody>
-      <tr>
-        <td><input type="checkbox" class="row-chk" data-id="${d.id}" style="cursor:pointer"></td>
-        <td style="color:var(--muted)">${i+1}</td>
-        <td><strong>${d.name}</strong></td>
-        <td>${d.school}</td>
-        <td style="text-align:center">${slHtml}${roundBadge}</td>
-        <td><span class="sp ${gc(d.score)}">${d.score}점 (${gl(d.score)})</span></td>
-        <td style="color:var(--green);font-weight:800">${d.correct||'-'}</td>
-        <td style="color:${d.wrong>0?'var(--red)':'var(--green)'};font-weight:800">${d.wrong}</td>
-        <td style="color:${d.timedOut>0?'#e65100':'var(--green)'};font-weight:800">${d.timedOut}</td>
-        <td>${d.total}</td>
-        <td>${d.elapsed?d.elapsed+'분':'-'}</td>
-        <td style="font-size:11px">${ft(d.time)}</td>
-        <td>${(d.wrongWords&&d.wrongWords.length>0)?`<button class="wt-btn" onclick="toggleW(this)">오답 ${d.wrongWords.length}개 ▼</button>`:d.wrongNumbers?`<span style="font-size:11px;color:var(--red)">${d.wrongNumbers}</span>`:'<span style="color:var(--green)">✅ 없음</span>'}</td>
-        <td><button class="del-btn" onclick="deleteSingle('${d.id}')">🗑️</button></td>
-      </tr>
-      ${(d.wrongWords&&d.wrongWords.length>0)?`<tr><td colspan="14" style="padding:0"><div class="wt-detail"><div style="font-size:11px;font-weight:800;color:var(--red);margin-bottom:4px">오답:</div><div class="wt-chips">${chips}</div></div></td></tr>`:(d.wrongSentences?`<tr><td colspan="14" style="padding:0"><div class="wt-detail"><div style="font-size:11px;font-weight:800;color:var(--red);margin-bottom:4px">오답 문장:</div><div style="font-size:11px;color:var(--red);line-height:1.7">${d.wrongSentences.split(' / ').join('<br>')}</div></div></td></tr>`:'')}
+  document.getElementById('cntBadge').textContent=data.length+'건';
+  if(!data.length){document.getElementById('tblArea').innerHTML='<div class="empty-msg">📭 기록 없음</div>';return;}
+  const rows=data.map((d,i)=>{
+    const chips=d.wrongWords.slice(0,20).map(w=>{const eng=typeof w==='string'?w:(w.eng||w);const kor=typeof w==='object'?(w.kor||w.correct||''):'';return `<span class="wt-chip">${eng}${kor?`<span class="wa">→${kor}</span>`:''}</span>`;}).join('');
+    const sl=nonSecLabel(d.quizType);
+    const isSynanm=d.quizType&&d.quizType.includes('동반의어');
+    const slStyle=isSynanm?'background:#e8f5e9;color:#2e7d32':sl==='전체'?'background:#e3f2fd;color:#1565c0':sl==='오답재시'?'background:#fff3e0;color:#e65100':sl==='오답완료'?'background:#e8f5e9;color:#2e7d32':sl==='어휘퀴즈'?'background:#f3e5f5;color:#6a1b9a':sl==='-'?'color:var(--muted);font-size:11px':'background:#e8eaf6;color:#3949ab';
+    const slHtml=sl!=='-'?`<span style="display:inline-block;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:800;${slStyle}">${sl}</span>`:`<span style="color:var(--muted);font-size:11px">-</span>`;
+    const roundBadge=d.round>1?`<span style="font-size:10px;color:#e65100;margin-left:4px">${d.round}라운드</span>`:'';
+    return `<tbody><tr>
+      <td><input type="checkbox" class="row-chk" data-id="${d.id}" style="cursor:pointer"></td>
+      <td style="color:var(--muted)">${i+1}</td>
+      <td><strong>${d.name}</strong></td>
+      <td>${d.school}</td>
+      <td style="text-align:center">${slHtml}${roundBadge}</td>
+      <td><span class="sp ${gc(d.score)}">${d.score}점 (${gl(d.score)})</span></td>
+      <td style="color:var(--green);font-weight:800">${d.correct||'-'}</td>
+      <td style="color:${d.wrong>0?'var(--red)':'var(--green)'};font-weight:800">${d.wrong}</td>
+      <td style="color:${d.timedOut>0?'#e65100':'var(--green)'};font-weight:800">${d.timedOut}</td>
+      <td>${d.total}</td>
+      <td>${d.elapsed?d.elapsed+'분':'-'}</td>
+      <td style="font-size:11px">${ft(d.time)}</td>
+      <td>${(d.wrongWords&&d.wrongWords.length>0)?`<button class="wt-btn" onclick="toggleW(this)">오답 ${d.wrongWords.length}개 ▼</button>`:d.wrongNumbers?`<span style="font-size:11px;color:var(--red)">${d.wrongNumbers}</span>`:'<span style="color:var(--green)">✅ 없음</span>'}</td>
+      <td><button class="del-btn" onclick="deleteSingle('${d.id}')">🗑️</button></td>
+    </tr>
+    ${(d.wrongWords&&d.wrongWords.length>0)?`<tr><td colspan="14" style="padding:0"><div class="wt-detail"><div style="font-size:11px;font-weight:800;color:var(--red);margin-bottom:4px">오답:</div><div class="wt-chips">${chips}</div></div></td></tr>`:(d.wrongSentences?`<tr><td colspan="14" style="padding:0"><div class="wt-detail"><div style="font-size:11px;font-weight:800;color:var(--red);margin-bottom:4px">오답 문장:</div><div style="font-size:11px;color:var(--red);line-height:1.7">${d.wrongSentences.split(' / ').join('<br>')}</div></div></td></tr>`:'')}
     </tbody>`;
   }).join('');
-  document.getElementById('tblArea').innerHTML = `<div class="tbl-scroll"><table>
+  document.getElementById('tblArea').innerHTML=`<div class="tbl-scroll"><table>
     <thead><tr><th><input type="checkbox" id="chkAll" onchange="toggleAllCheck(this)" style="cursor:pointer"></th><th>#</th><th>이름</th><th>학교</th><th style="text-align:center">유형</th><th>점수</th><th>정답</th><th>오답</th><th>시간초과</th><th>총문제</th><th>소요</th><th>제출시간</th><th>오답보기</th><th>삭제</th></tr></thead>
     ${rows}</table></div>`;
 }
 
 function toggleW(btn){
-  const row = btn.closest('tr').nextElementSibling;
-  if(!row) return;
-  const d = row.querySelector('.wt-detail');
-  if(!d) return;
+  const row=btn.closest('tr').nextElementSibling;if(!row) return;
+  const d=row.querySelector('.wt-detail');if(!d) return;
   d.classList.toggle('open');
-  const n = btn.textContent.replace(/[^0-9]/g,'');
-  btn.textContent = d.classList.contains('open') ? `오답 ${n}개 ▲` : `오답 ${n}개 ▼`;
+  const n=btn.textContent.replace(/[^0-9]/g,'');
+  btn.textContent=d.classList.contains('open')?`오답 ${n}개 ▲`:`오답 ${n}개 ▼`;
 }
 
-function parseSection(quizType){
-  const m = quizType.match(/(\d+)섹션/);
-  return m ? parseInt(m[1]) : 0;
-}
+function nameMatch(a,b){return a.trim()===b.trim()||a.replace(/\s/g,'')===b.replace(/\s/g,'');}
+
+function parseSection(qt){const m=qt.match(/(\d+)섹션/);return m?parseInt(m[1]):0;}
 
 function categorize(qt){
   if(!qt) return 'other';
@@ -627,239 +488,140 @@ function categorize(qt){
   if(qt.includes('함축의미')) return 'implication';
   if(qt.includes('빈칸추론')) return 'blank';
   if(qt.includes('어휘퀴즈')) return 'vocab';
-  if(qt.includes('빈칸시험') || qt.includes('챕터')) return 'chapter';
+  if(qt.includes('빈칸시험')||qt.includes('챕터')) return 'chapter';
   if(qt.includes('총정리')) return 'review';
   return 'other';
 }
 
 function renderSectionView(){
-  const sq = document.getElementById('secSchool')?.value || '';
-  const nq = (document.getElementById('secName')?.value || '').trim().toLowerCase();
-  const area = document.getElementById('sectionArea');
+  const sq=document.getElementById('secSchool')?.value||'';
+  const nq=(document.getElementById('secName')?.value||'').trim().toLowerCase();
+  const area=document.getElementById('sectionArea');
   if(!area) return;
+  let data=[...allData];
+  if(sq) data=data.filter(d=>d.school&&d.school.startsWith(sq));
+  if(nq) data=data.filter(d=>d.name.toLowerCase().includes(nq));
+  if(!data.length){area.innerHTML='<div class="no-data-msg">📭 기록이 없습니다<br><small>학생들이 퀴즈를 풀면 여기 나타나요</small></div>';return;}
 
-  let data = [...allData];
-  if(sq) data = data.filter(d => d.school && d.school.startsWith(sq));
-  if(nq) data = data.filter(d => d.name.toLowerCase().includes(nq));
-
-  if(!data.length){
-    area.innerHTML = '<div class="no-data-msg">📭 기록이 없습니다<br><small>학생들이 퀴즈를 풀면 여기 나타나요</small></div>';
-    return;
-  }
-
-  const students = {};
-  data.forEach(d => {
-    const key = `${d.name}||${d.school}`;
-    if(!students[key]) students[key] = { name: d.name, school: d.school, records: [] };
+  const students={};
+  data.forEach(d=>{
+    const key=`${d.name}||${d.school}`;
+    if(!students[key]) students[key]={name:d.name,school:d.school,records:[]};
     students[key].records.push(d);
   });
 
-  // 학교별 섹션 최대값 (어휘퀴즈용)
-  const KNOWN_MAX = {
-    '종촌고1':7,'종촌고2':16,
-    '고운고1':11,'고운고2':11,
-    '종촌고3':0,'종촌중2':0,'어진중2':0,'고운중2':0,
-    '대성고1':0  // 대성고1은 섹션 없음 (동반의어만)
-  };
+  const KNOWN_MAX={'종촌고1':7,'종촌고2':16,'고운고1':11,'고운고2':11,'종촌고3':0,'종촌중2':0,'어진중2':0,'고운중2':0,'대성고1':0};
 
-  const html = Object.values(students).map(st => {
-    const secGroups = {};
-    const nonSecRecords = [];
-
-    st.records.forEach(d => {
-      const cat = categorize(d.quizType);
-      if(cat === 'section'){
-        const base = d.quizType.replace(/_\d+섹션.*/, '').replace(/_어휘$/, '');
-        if(!secGroups[base]) secGroups[base] = {};
-        const sn = parseSection(d.quizType);
-        if(sn > 0){
-          if(!secGroups[base][sn] || (d.time && secGroups[base][sn].time && d.time > secGroups[base][sn].time)){
-            secGroups[base][sn] = d;
-          }
-        }
-      } else if(cat !== 'other'){
-        nonSecRecords.push(d);
-      }
+  const html=Object.values(students).map(st=>{
+    const secGroups={};const nonSecRecords=[];
+    st.records.forEach(d=>{
+      const cat=categorize(d.quizType);
+      if(cat==='section'){
+        const base=d.quizType.replace(/_\d+섹션.*/,'').replace(/_어휘$/,'');
+        if(!secGroups[base]) secGroups[base]={};
+        const sn=parseSection(d.quizType);
+        if(sn>0){if(!secGroups[base][sn]||(d.time&&secGroups[base][sn].time&&d.time>secGroups[base][sn].time)){secGroups[base][sn]=d;}}
+      } else if(cat!=='other'){nonSecRecords.push(d);}
     });
 
-    const secBlocksHtml = Object.entries(secGroups).map(([base, secMap]) => {
-      const knownMax = KNOWN_MAX[st.school] || Math.max(...Object.keys(secMap).map(Number), 1);
-      const doneCount = Object.keys(secMap).length;
-      const perfectCount = Object.values(secMap).filter(s=>s.wrong===0&&s.timedOut===0).length;
-      const warnCount = doneCount - perfectCount;
-      const cells = Array.from({length: knownMax}, (_, i) => {
-        const sn = i + 1;
-        const s = secMap[sn];
+    const secBlocksHtml=Object.entries(secGroups).map(([base,secMap])=>{
+      const knownMax=KNOWN_MAX[st.school]||Math.max(...Object.keys(secMap).map(Number),1);
+      const doneCount=Object.keys(secMap).length;
+      const perfectCount=Object.values(secMap).filter(s=>s.wrong===0&&s.timedOut===0).length;
+      const warnCount=doneCount-perfectCount;
+      const cells=Array.from({length:knownMax},(_,i)=>{
+        const sn=i+1;const s=secMap[sn];
         if(!s) return `<div class="sec-cell not-done"><div class="sec-num">${sn}섹션</div><div class="sec-score" style="font-size:11px">미완료</div></div>`;
-        const isPerfect = s.wrong === 0 && s.timedOut === 0;
-        const wrongTxt = s.wrong + s.timedOut > 0 ? `<div class="sec-wrong">오답 ${s.wrong+s.timedOut}개</div>` : '';
-        const timeStr = s.time ? s.time.toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}) : '';
-        return `<div class="sec-cell ${isPerfect?'perfect':'has-wrong'}">
-          <div class="sec-num">${sn}섹션</div>
-          <div class="sec-score">${s.score}점</div>
-          ${wrongTxt}<div class="sec-time">${timeStr}</div>
-        </div>`;
+        const isPerfect=s.wrong===0&&s.timedOut===0;
+        const wrongTxt=s.wrong+s.timedOut>0?`<div class="sec-wrong">오답 ${s.wrong+s.timedOut}개</div>`:'';
+        const timeStr=s.time?s.time.toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}):'';
+        return `<div class="sec-cell ${isPerfect?'perfect':'has-wrong'}"><div class="sec-num">${sn}섹션</div><div class="sec-score">${s.score}점</div>${wrongTxt}<div class="sec-time">${timeStr}</div></div>`;
       }).join('');
-      return `
-        <div style="margin-bottom:14px;">
-          <div style="font-size:11px;font-weight:800;color:var(--muted);margin-bottom:8px;letter-spacing:.5px;">
-            📚 어휘퀴즈 &nbsp;·&nbsp; 완료 ${doneCount}/${knownMax}
-            ${warnCount>0?`<span style="color:#e65100;margin-left:8px;">⚠️ 재도전 ${warnCount}개</span>`:''}
-            ${doneCount===knownMax&&perfectCount===knownMax?'<span style="color:var(--green);margin-left:8px;">🏆 전 섹션 클리어!</span>':''}
-          </div>
-          <div class="sec-grid">${cells}</div>
-        </div>`;
+      return `<div style="margin-bottom:14px;"><div style="font-size:11px;font-weight:800;color:var(--muted);margin-bottom:8px;letter-spacing:.5px;">📚 어휘퀴즈 &nbsp;·&nbsp; 완료 ${doneCount}/${knownMax}${warnCount>0?`<span style="color:#e65100;margin-left:8px;">⚠️ 재도전 ${warnCount}개</span>`:''}${doneCount===knownMax&&perfectCount===knownMax?'<span style="color:var(--green);margin-left:8px;">🏆 전 섹션 클리어!</span>':''}</div><div class="sec-grid">${cells}</div></div>`;
     }).join('');
 
-    // 동반의어 퀴즈: 파트별로 묶어서 표시
-    const synanmRecords = nonSecRecords.filter(d => d.quizType && d.quizType.includes('동반의어'));
-    const otherRecords  = nonSecRecords.filter(d => !d.quizType || !d.quizType.includes('동반의어'));
-
-    // 동반의어: 파트별 최고 라운드 기록만 표시
-    const synanmMap = {};
-    synanmRecords.forEach(d => {
-      // key: 교과서1과_A모드 / 2026년3월모의고사_파트1_A모드 등
-      const partMatch = d.quizType.match(/파트(\d)/);
-      const modeMatch = d.quizType.includes('A모드')?'A':d.quizType.includes('B모드')?'B':'';
-      const lessonMatch = d.quizType.match(/교과서(\d+)과/);
-      const isOlym = d.quizType.includes('올림포스');
-      const isMarch = d.quizType.includes('모의고사');
-      let groupKey = '';
-      if(lessonMatch) groupKey = `lesson${lessonMatch[1]}`;
-      else if(isOlym) groupKey = 'olympos';
-      else if(isMarch) groupKey = 'march';
-      else groupKey = 'other';
-      const partKey = partMatch ? `p${partMatch[1]}` : 'p0';
-      const key = `${groupKey}_${partKey}_${modeMatch}`;
-      if(!synanmMap[key] || (d.round||1) > (synanmMap[key].round||1)){
-        synanmMap[key] = d;
-      }
+    // 동반의어
+    const synanmRecords=nonSecRecords.filter(d=>d.quizType&&d.quizType.includes('동반의어'));
+    const otherRecords=nonSecRecords.filter(d=>!d.quizType||!d.quizType.includes('동반의어'));
+    const synanmMap={};
+    synanmRecords.forEach(d=>{
+      const partMatch=d.quizType.match(/파트(\d)/);
+      const modeMatch=d.quizType.includes('A모드')?'A':d.quizType.includes('B모드')?'B':'';
+      const lessonMatch=d.quizType.match(/교과서(\d+)과/);
+      const isOlym=d.quizType.includes('올림포스');const isMarch=d.quizType.includes('모의고사');
+      let groupKey=lessonMatch?`lesson${lessonMatch[1]}`:isOlym?'olympos':isMarch?'march':'other';
+      const partKey=partMatch?`p${partMatch[1]}`:'p0';
+      const key=`${groupKey}_${partKey}_${modeMatch}`;
+      if(!synanmMap[key]||(d.round||1)>(synanmMap[key].round||1)) synanmMap[key]=d;
     });
-
-    // 동반의어 그룹별 블록
-    const synanmGroups = {};
-    Object.values(synanmMap).forEach(d => {
-      const lessonMatch = d.quizType.match(/교과서(\d+)과/);
-      const isOlym = d.quizType.includes('올림포스');
-      const isMarch = d.quizType.includes('모의고사');
-      let gname = '';
-      if(lessonMatch) gname = `📖 교과서 ${lessonMatch[1]}과 동반의어`;
-      else if(isOlym) gname = '📚 올림포스 동반의어';
-      else if(isMarch){
-        const yr = d.quizType.match(/(\d{4})/);
-        gname = `📝 ${yr?yr[1]+'년 ':''}3월 모의고사 동반의어`;
-      } else gname = '🔤 동반의어';
-      if(!synanmGroups[gname]) synanmGroups[gname] = [];
-      synanmGroups[gname].push(d);
+    const synanmGroups={};
+    Object.values(synanmMap).forEach(d=>{
+      const lessonMatch=d.quizType.match(/교과서(\d+)과/);const isOlym=d.quizType.includes('올림포스');const isMarch=d.quizType.includes('모의고사');
+      let gname=lessonMatch?`📖 교과서 ${lessonMatch[1]}과 동반의어`:isOlym?'📚 올림포스 동반의어':isMarch?`📝 ${(d.quizType.match(/(\d{4})/)||['',''])[1]}년 3월 모의고사 동반의어`:'🔤 동반의어';
+      if(!synanmGroups[gname]) synanmGroups[gname]=[];synanmGroups[gname].push(d);
     });
-
-    const synanmHtml = Object.entries(synanmGroups).map(([gname, records]) => {
-      const cells = records.sort((a,b) => {
-        const pa = (a.quizType.match(/파트(\d)/)||[,'0'])[1];
-        const pb = (b.quizType.match(/파트(\d)/)||[,'0'])[1];
-        return pa.localeCompare(pb) || (a.quizType.includes('A모드')?-1:1);
-      }).map(d => {
-        const isPerfect = d.wrong === 0 && (d.round||1) > 1;
-        const cellClass = isPerfect ? 'perfect' : d.wrong > 0 ? 'has-wrong' : 'perfect';
-        const partMatch = d.quizType.match(/파트(\d)/);
-        const modeMatch = d.quizType.includes('A모드')?'A':d.quizType.includes('B모드')?'B':'';
-        const partLabel = partMatch ? `파트${partMatch[1]}` : '';
-        const timeStr = d.time ? d.time.toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}) : '';
-        const roundStr = (d.round||1) > 1 ? `<div style="font-size:10px;color:#e65100">${d.round}라운드</div>` : '';
-        const perfectBadge = d.wrong === 0 && (d.round||1) > 1
-          ? '<div style="font-size:10px;color:#2e7d32;font-weight:900">🏆 완료!</div>' : '';
-        return `<div class="sec-cell ${cellClass}" style="min-width:110px;text-align:left;">
-          <div style="font-size:10px;font-weight:800;color:var(--muted);margin-bottom:3px;">${partLabel}${modeMatch?' '+modeMatch+'모드':''}</div>
-          <div class="sec-score">${d.score}점</div>
-          ${d.wrong>0?`<div class="sec-wrong">오답 ${d.wrong}개</div>`:''}
-          ${roundStr}${perfectBadge}
-          <div class="sec-time">${timeStr}</div>
-        </div>`;
+    const synanmHtml=Object.entries(synanmGroups).map(([gname,records])=>{
+      const cells=records.sort((a,b)=>{const pa=(a.quizType.match(/파트(\d)/)||[,'0'])[1];const pb=(b.quizType.match(/파트(\d)/)||[,'0'])[1];return pa.localeCompare(pb)||(a.quizType.includes('A모드')?-1:1);}).map(d=>{
+        const isPerfect=d.wrong===0&&(d.round||1)>1;const cellClass=isPerfect?'perfect':d.wrong>0?'has-wrong':'perfect';
+        const partMatch=d.quizType.match(/파트(\d)/);const modeMatch=d.quizType.includes('A모드')?'A':d.quizType.includes('B모드')?'B':'';
+        const partLabel=partMatch?`파트${partMatch[1]}`:'';
+        const timeStr=d.time?d.time.toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}):'';
+        const roundStr=(d.round||1)>1?`<div style="font-size:10px;color:#e65100">${d.round}라운드</div>`:'';
+        const perfectBadge=d.wrong===0&&(d.round||1)>1?'<div style="font-size:10px;color:#2e7d32;font-weight:900">🏆 완료!</div>':'';
+        return `<div class="sec-cell ${cellClass}" style="min-width:110px;text-align:left;"><div style="font-size:10px;font-weight:800;color:var(--muted);margin-bottom:3px;">${partLabel}${modeMatch?' '+modeMatch+'모드':''}</div><div class="sec-score">${d.score}점</div>${d.wrong>0?`<div class="sec-wrong">오답 ${d.wrong}개</div>`:''}${roundStr}${perfectBadge}<div class="sec-time">${timeStr}</div></div>`;
       }).join('');
-      const allPerfect = records.every(d => d.wrong === 0);
-      return `<div style="margin-bottom:14px;">
-        <div style="font-size:11px;font-weight:800;color:var(--muted);margin-bottom:8px;letter-spacing:.5px;">
-          ${gname}
-          ${allPerfect?'<span style="color:var(--green);margin-left:8px;">🏆 전 파트 완료!</span>':''}
-        </div>
-        <div style="display:flex;flex-wrap:wrap;gap:8px;">${cells}</div>
-      </div>`;
+      const allPerfect=records.every(d=>d.wrong===0);
+      return `<div style="margin-bottom:14px;"><div style="font-size:11px;font-weight:800;color:var(--muted);margin-bottom:8px;letter-spacing:.5px;">${gname}${allPerfect?'<span style="color:var(--green);margin-left:8px;">🏆 전 파트 완료!</span>':''}</div><div style="display:flex;flex-wrap:wrap;gap:8px;">${cells}</div></div>`;
     }).join('');
 
-    // 기타 기록 (함축의미, 빈칸추론 등)
-    const nonSecMap = {};
-    otherRecords.forEach(d => {
-      const baseKey = d.quizType ? d.quizType.replace('_오답완료','') : d.quizType;
-      if(!nonSecMap[baseKey] || (d.quizType && d.quizType.includes('오답완료'))){
-        nonSecMap[baseKey] = d;
-      } else if(d.time && nonSecMap[baseKey].time && d.time > nonSecMap[baseKey].time && !nonSecMap[baseKey].quizType?.includes('오답완료')){
-        nonSecMap[baseKey] = d;
-      }
+    // 기타
+    const nonSecMap={};
+    otherRecords.forEach(d=>{
+      const baseKey=d.quizType?d.quizType.replace('_오답완료',''):d.quizType;
+      if(!nonSecMap[baseKey]||(d.quizType&&d.quizType.includes('오답완료'))){nonSecMap[baseKey]=d;}
+      else if(d.time&&nonSecMap[baseKey].time&&d.time>nonSecMap[baseKey].time&&!nonSecMap[baseKey].quizType?.includes('오답완료')){nonSecMap[baseKey]=d;}
     });
+    const nonSecHtml=Object.values(nonSecMap).length>0?`<div style="margin-bottom:10px;"><div style="font-size:11px;font-weight:800;color:var(--muted);margin-bottom:8px;letter-spacing:.5px;">🔤 기타 퀴즈</div><div style="display:flex;flex-wrap:wrap;gap:8px;">${Object.values(nonSecMap).sort((a,b)=>(b.time||0)-(a.time||0)).map(d=>{const isPerfect=d.wrong===0;const isVocabComplete=d.quizType&&d.quizType.includes('오답완료');const timeStr=d.time?d.time.toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}):'';const cellClass=isVocabComplete?'perfect':isPerfect?'perfect':'has-wrong';const badge=isVocabComplete?'<div style="font-size:10px;color:#2e7d32;font-weight:900;margin-top:2px">🏆 오답 0개 완료!</div>':'';return `<div class="sec-cell ${cellClass}" style="min-width:130px;text-align:left;"><div style="font-size:10px;font-weight:800;color:var(--muted);margin-bottom:4px;">${nonSecLabel(d.quizType)}</div><div class="sec-score">${d.score}점</div>${d.wrong>0?`<div class="sec-wrong">오답 ${d.wrong}개</div>`:''}${badge}<div class="sec-time">${timeStr}</div></div>`;}).join('')}</div></div>`:'';
 
-    const nonSecHtml = Object.values(nonSecMap).length > 0 ? `
-      <div style="margin-bottom:10px;">
-        <div style="font-size:11px;font-weight:800;color:var(--muted);margin-bottom:8px;letter-spacing:.5px;">🔤 기타 퀴즈</div>
-        <div style="display:flex;flex-wrap:wrap;gap:8px;">
-          ${Object.values(nonSecMap).sort((a,b)=>(b.time||0)-(a.time||0)).map(d => {
-            const isPerfect = d.wrong === 0;
-            const isVocabComplete = d.quizType && d.quizType.includes('오답완료');
-            const timeStr = d.time ? d.time.toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}) : '';
-            const cellClass = isVocabComplete ? 'perfect' : isPerfect ? 'perfect' : 'has-wrong';
-            const badge = isVocabComplete ? '<div style="font-size:10px;color:#2e7d32;font-weight:900;margin-top:2px">🏆 오답 0개 완료!</div>' : '';
-            return `<div class="sec-cell ${cellClass}" style="min-width:130px;text-align:left;">
-              <div style="font-size:10px;font-weight:800;color:var(--muted);margin-bottom:4px;">${nonSecLabel(d.quizType)}</div>
-              <div class="sec-score">${d.score}점</div>
-              ${d.wrong>0?`<div class="sec-wrong">오답 ${d.wrong}개</div>`:''}
-              ${badge}
-              <div class="sec-time">${timeStr}</div>
-            </div>`;
-          }).join('')}
-        </div>
-      </div>` : '';
+    // 총정리
+    const reviewRecords=st.records.filter(d=>d.quizType&&d.quizType.includes('총정리'));
+    const reviewTabOrder=['빈칸','OX퀴즈','문법','단어퀴즈','지각동사','SinceTho'];
+    const reviewTabLabel={'빈칸':'✏️ 빈칸','OX퀴즈':'⭕ OX퀴즈','문법':'📐 문법','단어퀴즈':'🔤 단어','지각동사':'👁 지각동사','SinceTho':'🔗 Since/Though'};
+    const reviewMap={};
+    reviewRecords.forEach(d=>{const m=d.quizType.match(/총정리_([^_]+)/);const tab=m?m[1]:'기타';const isDone=d.quizType.includes('오답완료');if(!reviewMap[tab]||isDone||(d.time&&reviewMap[tab].time&&d.time>reviewMap[tab].time&&!reviewMap[tab].quizType?.includes('오답완료'))){reviewMap[tab]=d;}});
+    const reviewHtml=Object.keys(reviewMap).length>0?(()=>{
+      const cells=reviewTabOrder.filter(tab=>reviewMap[tab]).map(tab=>{const d=reviewMap[tab];const isDone=d.quizType&&d.quizType.includes('오답완료');const isPerfect=d.wrong===0;const cellClass=(isDone||isPerfect)?'perfect':'has-wrong';const timeStr=d.time?d.time.toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}):'';const roundStr=(d.round||1)>1?`<div style="font-size:10px;color:#e65100">${d.round}라운드</div>`:'';const perfectBadge=(isDone||isPerfect)?'<div style="font-size:10px;color:#2e7d32;font-weight:900">🏆 클리어!</div>':'';return `<div class="sec-cell ${cellClass}" style="min-width:100px;text-align:left;"><div style="font-size:10px;font-weight:800;color:var(--muted);margin-bottom:3px;">${reviewTabLabel[tab]||tab}</div><div class="sec-score">${d.score}점</div>${d.wrong>0?`<div class="sec-wrong">오답 ${d.wrong}개</div>`:''}${roundStr}${perfectBadge}<div class="sec-time">${timeStr}</div></div>`;}).join('');
+      const allClear=reviewTabOrder.filter(t=>reviewMap[t]).every(t=>reviewMap[t].wrong===0||reviewMap[t].quizType?.includes('오답완료'));
+      return `<div style="margin-bottom:14px;"><div style="font-size:11px;font-weight:800;color:var(--muted);margin-bottom:8px;letter-spacing:.5px;">📋 어진중3 1학기 총정리${allClear?'<span style="color:var(--green);margin-left:8px;">🏆 전 탭 클리어!</span>':''}</div><div style="display:flex;flex-wrap:wrap;gap:8px;">${cells}</div></div>`;
+    })():'';
 
-    // ── 총정리 블록 ──
-    const reviewRecords = st.records.filter(d => d.quizType && d.quizType.includes('총정리'));
-    const reviewTabOrder = ['빈칸','OX퀴즈','문법','단어퀴즈','지각동사','SinceTho'];
-    const reviewTabLabel = {'빈칸':'✏️ 빈칸','OX퀴즈':'⭕ OX퀴즈','문법':'📐 문법','단어퀴즈':'🔤 단어','지각동사':'👁 지각동사','SinceTho':'🔗 Since/Though'};
-    const reviewMap = {};
-    reviewRecords.forEach(d => {
-      const m = d.quizType.match(/총정리_([^_]+)/);
-      const tab = m ? m[1] : '기타';
-      const isDone = d.quizType.includes('오답완료');
-      if(!reviewMap[tab] || isDone || (d.time && reviewMap[tab].time && d.time > reviewMap[tab].time && !reviewMap[tab].quizType?.includes('오답완료'))){
-        reviewMap[tab] = d;
-      }
-    });
-    const reviewHtml = Object.keys(reviewMap).length > 0 ? (() => {
-      const cells = reviewTabOrder.filter(tab => reviewMap[tab]).map(tab => {
-        const d = reviewMap[tab];
-        const isDone = d.quizType && d.quizType.includes('오답완료');
-        const isPerfect = d.wrong === 0;
-        const cellClass = (isDone || isPerfect) ? 'perfect' : 'has-wrong';
-        const timeStr = d.time ? d.time.toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}) : '';
-        const roundStr = (d.round||1) > 1 ? `<div style="font-size:10px;color:#e65100">${d.round}라운드</div>` : '';
-        const perfectBadge = (isDone || isPerfect) ? '<div style="font-size:10px;color:#2e7d32;font-weight:900">🏆 클리어!</div>' : '';
-        return `<div class="sec-cell ${cellClass}" style="min-width:100px;text-align:left;">
-          <div style="font-size:10px;font-weight:800;color:var(--muted);margin-bottom:3px;">${reviewTabLabel[tab]||tab}</div>
-          <div class="sec-score">${d.score}점</div>
-          ${d.wrong>0?`<div class="sec-wrong">오답 ${d.wrong}개</div>`:''}
-          ${roundStr}${perfectBadge}
-          <div class="sec-time">${timeStr}</div>
-        </div>`;
-      }).join('');
-      const allClear = reviewTabOrder.filter(t=>reviewMap[t]).every(t => reviewMap[t].wrong===0 || reviewMap[t].quizType?.includes('오답완료'));
-      return `<div style="margin-bottom:14px;">
-        <div style="font-size:11px;font-weight:800;color:var(--muted);margin-bottom:8px;letter-spacing:.5px;">
-          📋 어진중3 1학기 총정리
-          ${allClear?'<span style="color:var(--green);margin-left:8px;">🏆 전 탭 클리어!</span>':''}
-        </div>
-        <div style="display:flex;flex-wrap:wrap;gap:8px;">${cells}</div>
+    const totalDone=st.records.filter(d=>categorize(d.quizType)!=='other').length;
+    const avgScore=totalDone>0?Math.round(st.records.reduce((a,b)=>a+b.score,0)/st.records.length):0;
+
+    // ★★★ 핵심 추가: hub_access에서 이 학생 접속·학습 기록 ★★★
+    const schoolBase=st.school.replace(/[123]$/,'');
+    const myAccess=allAccessData.filter(a=>
+      a.name && nameMatch(a.name, st.name) &&
+      a.school && a.school.startsWith(schoolBase)
+    );
+    const schoolEnters=myAccess.filter(a=>a.type==='school_enter');
+    const quizClicks=myAccess.filter(a=>a.type==='quiz_click');
+
+    let accessHtml='';
+    if(myAccess.length>0){
+      const enterChips=schoolEnters.slice(0,3).map(a=>
+        `<span class="acc-chip-enter">🏫 ${a.targetSchool||a.school} <span class="acc-chip-time">${ft(a.time)}</span></span>`
+      ).join('');
+      const clickChips=quizClicks.slice(0,6).map(a=>
+        `<span class="acc-chip-quiz">📝 ${a.quiz||a.file||'-'} <span class="acc-chip-time">${ft(a.time)}</span></span>`
+      ).join('');
+      const moreClick=quizClicks.length>6?`<span style="font-size:11px;color:var(--muted)">+${quizClicks.length-6}건 더</span>`:'';
+      accessHtml=`<div class="access-block">
+        <div class="access-block-title">🔐 접속·학습 기록 (총 ${myAccess.length}건 · 학교입장 ${schoolEnters.length} · 퀴즈클릭 ${quizClicks.length})</div>
+        ${enterChips?`<div class="access-chips">${enterChips}</div>`:''}
+        ${clickChips||moreClick?`<div class="access-chips">${clickChips}${moreClick}</div>`:''}
       </div>`;
-    })() : '';
-
-    const totalDone = st.records.filter(d=>categorize(d.quizType)!=='other').length;
-    const avgScore = totalDone > 0 ? Math.round(st.records.reduce((a,b)=>a+b.score,0)/st.records.length) : 0;
+    }
 
     return `<div class="student-card">
       <div class="student-card-header">
@@ -870,154 +632,92 @@ function renderSectionView(){
         <div class="student-summary">
           <span class="sum-pill done">📝 총 ${st.records.length}회 응시</span>
           <span class="sum-pill ${avgScore>=85?'done':'warn'}">평균 ${avgScore}점</span>
+          ${myAccess.length>0?`<span class="sum-pill" style="background:#e3f2fd;color:#1565c0;">🔐 접속 ${myAccess.length}건</span>`:''}
         </div>
       </div>
       ${secBlocksHtml}
       ${reviewHtml}
       ${synanmHtml}
       ${nonSecHtml}
+      ${accessHtml}
     </div>`;
   }).join('');
 
-  area.innerHTML = `<div class="student-cards">${html}</div>`;
+  area.innerHTML=`<div class="student-cards">${html}</div>`;
 }
 
-
-let accessData = [];
-
+let accessData=[];
 async function loadAccess(){
-  document.getElementById('accArea').innerHTML = '<div class="loading-msg">⏳ 접속 기록 불러오는 중...</div>';
+  document.getElementById('accArea').innerHTML='<div class="loading-msg">⏳ 접속 기록 불러오는 중...</div>';
   try{
     let w=0;
-    while(!window._fbReady && w<15000){ await new Promise(r=>setTimeout(r,200)); w+=200; }
-    if(!window._fbReady){ throw new Error('Firebase 로드 시간 초과'); }
-    const snap = await window._getDocs(window._col(window._db, 'hub_access'));
-    accessData = [];
+    while(!window._fbReady&&w<15000){await new Promise(r=>setTimeout(r,200));w+=200;}
+    if(!window._fbReady){throw new Error('Firebase 로드 시간 초과');}
+    const snap=await window._getDocs(window._col(window._db,'hub_access'));
+    accessData=[];
     snap.forEach(doc=>{
-      const d = doc.data();
-      accessData.push({
-        id: doc.id,
-        type: d.type||'-',
-        name: d.name||'(이름없음)',
-        school: d.school||'-',
-        targetSchool: d.targetSchool||'',
-        quiz: d.quiz||'',
-        file: d.file||'',
-        attempt: d.attempt||'',
-        time: d.timestamp ? (typeof d.timestamp.toDate==='function' ? d.timestamp.toDate() : new Date(d.timestamp)) : null,
-      });
+      const d=doc.data();
+      accessData.push({id:doc.id,type:d.type||'-',name:d.name||'(이름없음)',school:d.school||'-',targetSchool:d.targetSchool||'',quiz:d.quiz||'',file:d.file||'',attempt:d.attempt||'',
+        time:d.timestamp?(typeof d.timestamp.toDate==='function'?d.timestamp.toDate():new Date(d.timestamp)):null,});
     });
     accessData.sort((a,b)=>(b.time||0)-(a.time||0));
+    // allAccessData도 갱신
+    allAccessData=[...accessData];
     renderAccess();
-  }catch(e){
-    document.getElementById('accArea').innerHTML = `<div class="empty-msg">⚠️ 오류: ${e.message}</div>`;
-  }
+  }catch(e){document.getElementById('accArea').innerHTML=`<div class="empty-msg">⚠️ 오류: ${e.message}</div>`;}
 }
 
 function renderAccess(){
-  const tq = document.getElementById('accType').value;
-  const nq = document.getElementById('accName').value.trim().toLowerCase();
-  let data = [...accessData];
-  if(tq) data = data.filter(d=>d.type===tq);
-  if(nq) data = data.filter(d=>d.name.toLowerCase().includes(nq));
-
-  // 요약
-  const logins = accessData.filter(d=>d.type==='login').length;
-  const fails  = accessData.filter(d=>d.type==='code_fail').length;
-  const clicks = accessData.filter(d=>d.type==='quiz_click').length;
-  const uniq   = new Set(accessData.filter(d=>d.type==='login').map(d=>d.name+'|'+d.school)).size;
-  document.getElementById('acc-summary').innerHTML = `
+  const tq=document.getElementById('accType').value;
+  const nq=document.getElementById('accName').value.trim().toLowerCase();
+  let data=[...accessData];
+  if(tq) data=data.filter(d=>d.type===tq);
+  if(nq) data=data.filter(d=>d.name.toLowerCase().includes(nq));
+  const logins=accessData.filter(d=>d.type==='login').length;
+  const fails=accessData.filter(d=>d.type==='code_fail').length;
+  const clicks=accessData.filter(d=>d.type==='quiz_click').length;
+  const uniq=new Set(accessData.filter(d=>d.type==='login').map(d=>d.name+'|'+d.school)).size;
+  document.getElementById('acc-summary').innerHTML=`
     <div class="sum-card"><div class="sum-n">${logins}</div><div class="sum-l">✅ 로그인 성공</div></div>
     <div class="sum-card g"><div class="sum-n">${uniq}</div><div class="sum-l">학생 수 (유니크)</div></div>
     <div class="sum-card r"><div class="sum-n">${fails}</div><div class="sum-l">❌ 코드 실패</div></div>
-    <div class="sum-card o"><div class="sum-n">${clicks}</div><div class="sum-l">📝 퀴즈 클릭</div></div>
-  `;
-
-  document.getElementById('accBadge').textContent = data.length+'건';
-  if(!data.length){
-    document.getElementById('accArea').innerHTML='<div class="empty-msg">📭 기록 없음</div>';
-    return;
-  }
-
-  const typeLabel = t => t==='login'?'<span style="background:#e8f5e9;color:#2e7d32;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:800">✅ 로그인</span>'
-    :t==='code_fail'?'<span style="background:#ffebee;color:#c62828;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:800">❌ 코드실패</span>'
-    :t==='school_enter'?'<span style="background:#e3f2fd;color:#1565c0;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:800">🏫 학교입장</span>'
-    :t==='quiz_click'?'<span style="background:#f3e5f5;color:#6a1b9a;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:800">📝 퀴즈클릭</span>'
-    :`<span style="color:var(--muted)">${t}</span>`;
-
-  const rows = data.map((d,i)=>`<tr>
-    <td style="color:var(--muted)">${i+1}</td>
-    <td><strong>${d.name}</strong></td>
-    <td>${d.school}</td>
-    <td>${typeLabel(d.type)}</td>
-    <td style="font-size:11px;color:var(--muted)">${d.targetSchool||d.quiz||d.attempt||'-'}</td>
-    <td style="font-size:11px">${d.time ? d.time.toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}) : '-'}</td>
-  </tr>`).join('');
-
-  document.getElementById('accArea').innerHTML = `<div class="tbl-scroll"><table>
-    <thead><tr><th>#</th><th>이름</th><th>학교</th><th>유형</th><th>상세</th><th>시간</th></tr></thead>
-    <tbody>${rows}</tbody>
-  </table></div>`;
+    <div class="sum-card o"><div class="sum-n">${clicks}</div><div class="sum-l">📝 퀴즈 클릭</div></div>`;
+  document.getElementById('accBadge').textContent=data.length+'건';
+  if(!data.length){document.getElementById('accArea').innerHTML='<div class="empty-msg">📭 기록 없음</div>';return;}
+  const typeLabel=t=>t==='login'?'<span style="background:#e8f5e9;color:#2e7d32;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:800">✅ 로그인</span>':t==='code_fail'?'<span style="background:#ffebee;color:#c62828;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:800">❌ 코드실패</span>':t==='school_enter'?'<span style="background:#e3f2fd;color:#1565c0;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:800">🏫 학교입장</span>':t==='quiz_click'?'<span style="background:#f3e5f5;color:#6a1b9a;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:800">📝 퀴즈클릭</span>':`<span style="color:var(--muted)">${t}</span>`;
+  const rows=data.map((d,i)=>`<tr><td style="color:var(--muted)">${i+1}</td><td><strong>${d.name}</strong></td><td>${d.school}</td><td>${typeLabel(d.type)}</td><td style="font-size:11px;color:var(--muted)">${d.targetSchool||d.quiz||d.attempt||'-'}</td><td style="font-size:11px">${d.time?d.time.toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}):'-'}</td></tr>`).join('');
+  document.getElementById('accArea').innerHTML=`<div class="tbl-scroll"><table><thead><tr><th>#</th><th>이름</th><th>학교</th><th>유형</th><th>상세</th><th>시간</th></tr></thead><tbody>${rows}</tbody></table></div>`;
 }
 
-
-// ─── 삭제 기능 ───
-function toggleAllCheck(chk){
-  document.querySelectorAll('.row-chk').forEach(c => c.checked = chk.checked);
-}
+function toggleAllCheck(chk){document.querySelectorAll('.row-chk').forEach(c=>c.checked=chk.checked);}
 
 async function deleteSingle(id){
   if(!confirm('이 기록을 삭제할까요?')) return;
   try{
-    let w=0;
-    while(!window._fbReady && w<15000){ await new Promise(r=>setTimeout(r,200)); w+=200; }
+    let w=0;while(!window._fbReady&&w<15000){await new Promise(r=>setTimeout(r,200));w+=200;}
     await window._deleteDoc(window._doc(window._db,'quiz_results',id));
-    allData = allData.filter(d=>d.id!==id);
-    applyFilter();
-    renderSectionView();
-    document.getElementById('lastRefresh').textContent = '✅ 삭제 완료 · '+new Date().toLocaleTimeString('ko-KR');
-  }catch(e){
-    alert('삭제 실패: '+e.message);
-  }
+    allData=allData.filter(d=>d.id!==id);applyFilter();renderSectionView();
+    document.getElementById('lastRefresh').textContent='✅ 삭제 완료 · '+new Date().toLocaleTimeString('ko-KR');
+  }catch(e){alert('삭제 실패: '+e.message);}
 }
 
 async function confirmDeleteAll(){
-  const checked = [...document.querySelectorAll('.row-chk:checked')];
-  if(!checked.length){
-    alert('삭제할 항목을 체크해주세요!');
-    return;
-  }
-  if(!confirm(`체크한 ${checked.length}개 기록을 삭제할까요?\n이 작업은 되돌릴 수 없습니다.`)) return;
-  let w=0;
-  while(!window._fbReady && w<15000){ await new Promise(r=>setTimeout(r,200)); w+=200; }
-  const ids = checked.map(c=>c.dataset.id);
-  let done=0, fail=0;
-  for(const id of ids){
-    try{
-      await window._deleteDoc(window._doc(window._db,'quiz_results',id));
-      done++;
-    }catch(e){ fail++; }
-  }
-  allData = allData.filter(d=>!ids.includes(d.id));
-  applyFilter();
-  renderSectionView();
-  document.getElementById('lastRefresh').textContent = `✅ ${done}건 삭제 완료${fail>0?' ('+fail+'건 실패)':''} · `+new Date().toLocaleTimeString('ko-KR');
+  const checked=[...document.querySelectorAll('.row-chk:checked')];
+  if(!checked.length){alert('삭제할 항목을 체크해주세요!');return;}
+  if(!confirm(`체크한 ${checked.length}개 기록을 삭제할까요?
+이 작업은 되돌릴 수 없습니다.`)) return;
+  let w=0;while(!window._fbReady&&w<15000){await new Promise(r=>setTimeout(r,200));w+=200;}
+  const ids=checked.map(c=>c.dataset.id);let done=0,fail=0;
+  for(const id of ids){try{await window._deleteDoc(window._doc(window._db,'quiz_results',id));done++;}catch(e){fail++;}}
+  allData=allData.filter(d=>!ids.includes(d.id));applyFilter();renderSectionView();
+  document.getElementById('lastRefresh').textContent=`✅ ${done}건 삭제 완료${fail>0?' ('+fail+'건 실패)':''} · `+new Date().toLocaleTimeString('ko-KR');
 }
 
-
 function exportCSV(){
-  const hdr = ['이름','학교','퀴즈유형','점수','정답','오답','시간초과','총문제','라운드','제출시간','오답단어'];
-  const rows = allData.map(d=>[
-    d.name, d.school, d.quizType, d.score, d.correct, d.wrong, d.timedOut,
-    d.total, d.round||1,
-    d.time ? d.time.toLocaleString('ko-KR') : '-',
-    d.wrongWords.map(w=>typeof w==='string'?w:(w.eng||w)).join('|')
-  ]);
-  const csv = [hdr,...rows].map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'}));
-  a.download = `봄날퀴즈_결과_${new Date().toISOString().slice(0,10)}.csv`;
-  a.click();
+  const hdr=['이름','학교','퀴즈유형','점수','정답','오답','시간초과','총문제','라운드','제출시간','오답단어'];
+  const rows=allData.map(d=>[d.name,d.school,d.quizType,d.score,d.correct,d.wrong,d.timedOut,d.total,d.round||1,d.time?d.time.toLocaleString('ko-KR'):'-',d.wrongWords.map(w=>typeof w==='string'?w:(w.eng||w)).join('|')]);
+  const csv=[hdr,...rows].map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8;'}));a.download=`봄날퀴즈_결과_${new Date().toISOString().slice(0,10)}.csv`;a.click();
 }
 </script>
 </body>
