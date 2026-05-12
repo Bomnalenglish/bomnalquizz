@@ -66,6 +66,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Noto Sans KR', s
 .s3-opts { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
 .s3-opt { padding: 12px 16px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface2); font-size: 13px; cursor: pointer; transition: all .2s; color: var(--text); line-height: 1.6; }
 .s3-opt:hover { border-color: var(--accent3); color: var(--accent3); }
+.s3-opt.s3-active { border-color: var(--accent); background: rgba(74,124,240,.1); color: var(--accent); box-shadow: 0 0 0 2px rgba(74,124,240,.3); }
 .s3-opt.used { opacity: .3; pointer-events: none; }
 .s3-main { font-size: 13px; font-weight: 500; }
 .s3-easy { font-size: 12px; color: var(--text-muted); margin-top: 4px; line-height: 1.6; padding-left: 8px; border-left: 2px solid var(--border); }
@@ -282,45 +283,45 @@ body { background: var(--bg); color: var(--text); font-family: 'Noto Sans KR', s
   <div class="stage-panel" id="p0-s3">
     <span class="section-label sec1">Section 1 · Stage 3</span>
     <div class="stage-heading">🧩 요약 문장 배치</div>
-    <div class="stage-desc">보기에서 알맞은 요약 문장을 골라 서론·본론·예시·결론 자리에 배치해보세요.</div>
+    <div class="stage-desc">보기 카드를 클릭해 선택(파란색)한 후, 아래 슬롯을 클릭해 배치하세요. 다시 클릭하면 선택 해제됩니다.</div>
 
     <div class="s3-opts-label">[ 보기 ]</div>
     <div class="s3-opts" id="p0-s3-pool">
-      <div class="s3-opt" onclick="placeS3('intro',this,'A')">
+      <div class="s3-opt" onclick=\"selectS3Card(this,'A')\">
         <div class="s3-main">A. 기술 과잉 확장에 대한 비판은 비인간화 우려에서 시작되며, McLuhan은 기술 낙관론자이면서도 과도한 확장을 경고했다.</div>
         <div class="s3-easy">💬 기술이 너무 많이 퍼지면 사람답지 않게 된다는 걱정이 있고, McLuhan도 기술을 좋아하면서 동시에 "너무 많이 쓰지 마"라고 경고했어.</div>
       </div>
-      <div class="s3-opt" onclick="placeS3('body',this,'B')">
+      <div class="s3-opt" onclick=\"selectS3Card(this,'B')\">
         <div class="s3-main">B. McLuhan은 모든 미디어 확장은 인간 능력의 절단이라고 주장했다 — 기술이 편리함을 주는 대신 자연 능력을 대체한다.</div>
         <div class="s3-easy">💬 새 기능이 생길수록 원래 우리가 갖고 있던 능력이 잘려나간다는 거야 — 마치 팔을 잘라내는 것처럼.</div>
       </div>
-      <div class="s3-opt" onclick="placeS3('example',this,'C')">
+      <div class="s3-opt" onclick=\"selectS3Card(this,'C')\">
         <div class="s3-main">C. 차는 걷기를, 하드드라이브는 기억력을, GPS는 길 찾기 능력을 대체했고, 화면 의존은 독서 능력을 약화시킨다.</div>
         <div class="s3-easy">💬 차 생기면 걷기 싫어지고, 스마트폰 생기면 외울 필요 없어지고, GPS 생기면 길 못 찾게 되는 것처럼 기술이 우리 능력을 가져가버려.</div>
       </div>
-      <div class="s3-opt" onclick="placeS3('conclusion',this,'D')">
+      <div class="s3-opt" onclick=\"selectS3Card(this,'D')\">
         <div class="s3-main">D. 기술·생체 향상을 통한 인간 능력 확장은 결국 고등 인간 능력의 자연적 진화를 저해할 수 있다.</div>
         <div class="s3-easy">💬 기술이 더 발전할수록 우리가 스스로 발전해야 할 고등 능력들이 자라지 못하고 멈춰버릴 수 있어.</div>
       </div>
     </div>
 
     <div class="s3-structure">
-      <div class="s3-slot" id="p0-slot-intro" data-correct="A">
+      <div class="s3-slot" id="p0-slot-intro" onclick="placeToSlot(\'intro\')" style="cursor:pointer;" data-correct="A">
         <div class="s3-slot-label">서론</div>
         <div class="s3-slot-text"><span class="s3-slot-placeholder">보기를 클릭해 배치하세요</span></div>
         <button class="s3-remove" style="display:none" onclick="removeS3('intro')">✕ 제거</button>
       </div>
-      <div class="s3-slot" id="p0-slot-body" data-correct="B">
+      <div class="s3-slot" id="p0-slot-body" onclick="placeToSlot(\'body\')" style="cursor:pointer;" data-correct="B">
         <div class="s3-slot-label">본론</div>
         <div class="s3-slot-text"><span class="s3-slot-placeholder">보기를 클릭해 배치하세요</span></div>
         <button class="s3-remove" style="display:none" onclick="removeS3('body')">✕ 제거</button>
       </div>
-      <div class="s3-slot" id="p0-slot-example" data-correct="C">
+      <div class="s3-slot" id="p0-slot-example" onclick="placeToSlot(\'example\')" style="cursor:pointer;" data-correct="C">
         <div class="s3-slot-label">예시</div>
         <div class="s3-slot-text"><span class="s3-slot-placeholder">보기를 클릭해 배치하세요</span></div>
         <button class="s3-remove" style="display:none" onclick="removeS3('example')">✕ 제거</button>
       </div>
-      <div class="s3-slot" id="p0-slot-conclusion" data-correct="D">
+      <div class="s3-slot" id="p0-slot-conclusion" onclick="placeToSlot(\'conclusion\')" style="cursor:pointer;" data-correct="D">
         <div class="s3-slot-label">결론</div>
         <div class="s3-slot-text"><span class="s3-slot-placeholder">보기를 클릭해 배치하세요</span></div>
         <button class="s3-remove" style="display:none" onclick="removeS3('conclusion')">✕ 제거</button>
@@ -555,24 +556,34 @@ function gradeAllS2(count, resultId, navId) {
   if(pass) document.getElementById(navId).classList.add('done');
 }
 const s3Data = {};
-function placeS3(slot, optEl, label) {
+let s3Selected = null;
+function selectS3Card(optEl, label) {
   if(optEl.classList.contains('used')) return;
-  const slotEl=document.getElementById(`p0-slot-${slot}`);
-  const old=document.querySelector(`#p0-s3-pool [data-placed="${slot}"]`);
-  if(old) { old.classList.remove('used'); old.removeAttribute('data-placed'); }
-  s3Data[slot]=label; optEl.classList.add('used'); optEl.setAttribute('data-placed',slot);
+  document.querySelectorAll('.s3-opt').forEach(o=>o.classList.remove('s3-active'));
+  if(s3Selected && s3Selected.el === optEl){s3Selected=null;return;}
+  optEl.classList.add('s3-active');
+  s3Selected={el:optEl,label};
+}
+function placeToSlot(slot) {
+  if(!s3Selected) return;
+  const optEl=s3Selected.el; const label=s3Selected.label;
+  const slotEl=document.getElementById('p0-slot-'+slot);
+  const old=document.querySelector('.s3-opt[data-placed="'+slot+'"]');
+  if(old){old.classList.remove('used','s3-active');old.removeAttribute('data-placed');}
+  const prevSlot=optEl.getAttribute('data-placed');
+  if(prevSlot){
+    const prevSlotEl=document.getElementById('p0-slot-'+prevSlot);
+    delete s3Data[prevSlot];
+    prevSlotEl.classList.remove('filled','slot-correct','slot-wrong');
+    prevSlotEl.querySelector('.s3-slot-text').innerHTML='<span class="s3-slot-placeholder">보기를 클릭해 배치하세요</span>';
+    prevSlotEl.querySelector('.s3-remove').style.display='none';
+  }
+  s3Data[slot]=label; optEl.classList.add('used'); optEl.classList.remove('s3-active');
+  optEl.setAttribute('data-placed',slot);
   slotEl.classList.add('filled'); slotEl.classList.remove('slot-correct','slot-wrong');
   slotEl.querySelector('.s3-slot-text').innerHTML=optEl.innerHTML;
   slotEl.querySelector('.s3-remove').style.display='inline-block';
-}
-function removeS3(slot) {
-  const slotEl=document.getElementById(`p0-slot-${slot}`);
-  const opt=document.querySelector(`#p0-s3-pool [data-placed="${slot}"]`);
-  if(opt){opt.classList.remove('used');opt.removeAttribute('data-placed');}
-  delete s3Data[slot];
-  slotEl.classList.remove('filled','slot-correct','slot-wrong');
-  slotEl.querySelector('.s3-slot-text').innerHTML='<span class="s3-slot-placeholder">보기를 클릭해 배치하세요</span>';
-  slotEl.querySelector('.s3-remove').style.display='none';
+  s3Selected=null;
 }
 function gradeS3(resultId, navId) {
   let correct=0;
@@ -615,7 +626,14 @@ function gradeVariant(resultId, navId) {
   banner.textContent=pass?'🎉 변형 완벽 통과!':`${correct}/${total} 정답`;
   if(pass) document.getElementById(navId).classList.add('done');
 }
-window.addEventListener('DOMContentLoaded',()=>{Object.keys(US_DATA).forEach(id=>initUS(id));});
+window.addEventListener('DOMContentLoaded',()=>{Object.keys(US_DATA).forEach(id=>initUS(id));
+  // 변형 select option 셔플 (첫번째 빈 option 제외)
+  document.querySelectorAll('.b-wrap select').forEach(sel => {
+    const opts = Array.from(sel.options).slice(1);
+    for(let i=opts.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[opts[i],opts[j]]=[opts[j],opts[i]];}
+    while(sel.options.length > 1) sel.remove(1);
+    opts.forEach(o => sel.appendChild(o));
+  });});
 </script>
 </body>
 </html>

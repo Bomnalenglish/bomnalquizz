@@ -66,6 +66,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Noto Sans KR', s
 .s3-opts { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
 .s3-opt { padding: 12px 16px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface2); font-size: 13px; cursor: pointer; transition: all .2s; color: var(--text); line-height: 1.6; }
 .s3-opt:hover { border-color: var(--accent3); color: var(--accent3); }
+.s3-opt.s3-active { border-color: var(--accent); background: rgba(74,124,240,.1); color: var(--accent); box-shadow: 0 0 0 2px rgba(74,124,240,.3); }
 .s3-opt.used { opacity: .3; pointer-events: none; }
 .s3-main { font-size: 13px; font-weight: 500; }
 .s3-easy { font-size: 12px; color: var(--text-muted); margin-top: 4px; line-height: 1.6; padding-left: 8px; border-left: 2px solid var(--border); }
@@ -223,43 +224,43 @@ body { background: var(--bg); color: var(--text); font-family: 'Noto Sans KR', s
   <div class="stage-panel" id="s3">
     <span class="section-label sec1">Section 1 · Stage 3</span>
     <div class="stage-heading">🧩 요약 문장 배치</div>
-    <div class="stage-desc">보기에서 알맞은 요약 문장을 골라 서론·본론·예시·결론 자리에 배치해보세요.</div>
+    <div class="stage-desc">보기 카드를 클릭해 선택(파란색)한 후, 아래 슬롯을 클릭해 배치하세요. 다시 클릭하면 선택 해제됩니다.</div>
     <div class="s3-opts-label">[ 보기 ]</div>
     <div class="s3-opts" id="s3-pool">
-      <div class="s3-opt" onclick="placeS3('intro',this,'A')">
+      <div class="s3-opt" onclick=\"selectS3Card(this,'A')\">
         <div class="s3-main">A. AI는 다작의 아이디어 생성자이며, 인간도 질보다 양에 집중할 때 더 좋은 아이디어가 나온다.</div>
         <div class="s3-easy">💬 AI처럼 인간도 아이디어를 일단 많이 만들어야 해 — 질 따지기 전에 양이 먼저야.</div>
       </div>
-      <div class="s3-opt" onclick="placeS3('body',this,'B')">
+      <div class="s3-opt" onclick=\"selectS3Card(this,'B')\">
         <div class="s3-main">B. "동등 확률 법칙": 창의적 성공은 총 작품 수와 상관관계이며, 스탠퍼드 연구는 성공에 2,000개 이상 아이디어가 필요하다는 것을 보여준다.</div>
         <div class="s3-easy">💬 많이 만들수록 좋은 것 나올 확률이 높아 — 스탠퍼드 연구도 성공한 제품엔 2,000개 이상 아이디어가 있었어.</div>
       </div>
-      <div class="s3-opt" onclick="placeS3('example',this,'C')">
+      <div class="s3-opt" onclick=\"selectS3Card(this,'C')\">
         <div class="s3-main">C. 디자인 씽킹과 혁신이 집중하는 "아이디어 흐름" 과정: 판단 없이 가능성을 만드는 것이다.</div>
         <div class="s3-easy">💬 디자인 씽킹의 핵심은 처음엔 좋은지 나쁜지 따지지 않고 일단 가능성을 쭉쭉 만들어내는 거야.</div>
       </div>
-      <div class="s3-opt" onclick="placeS3('conclusion',this,'D')">
+      <div class="s3-opt" onclick=\"selectS3Card(this,'D')\">
         <div class="s3-main">D. 결론: 창의적 혁신의 핵심은 판단을 배제하고 최대한 많은 가능성을 만드는 과정이다.</div>
         <div class="s3-easy">💬 좋은 아이디어는 많은 아이디어에서 나온다 — 판단하지 말고 먼저 쏟아내는 게 혁신의 비결이야.</div>
       </div>
     </div>
     <div class="s3-structure">
-      <div class="s3-slot" id="slot-intro" data-correct="A">
+      <div class="s3-slot" id="slot-intro" onclick="placeToSlot(\'intro\')" style="cursor:pointer;" data-correct="A">
         <div class="s3-slot-label">서론</div>
         <div class="s3-slot-text"><span class="s3-slot-placeholder">보기를 클릭해 배치하세요</span></div>
         <button class="s3-remove" style="display:none" onclick="removeS3('intro')">✕ 제거</button>
       </div>
-      <div class="s3-slot" id="slot-body" data-correct="B">
+      <div class="s3-slot" id="slot-body" onclick="placeToSlot(\'body\')" style="cursor:pointer;" data-correct="B">
         <div class="s3-slot-label">본론</div>
         <div class="s3-slot-text"><span class="s3-slot-placeholder">보기를 클릭해 배치하세요</span></div>
         <button class="s3-remove" style="display:none" onclick="removeS3('body')">✕ 제거</button>
       </div>
-      <div class="s3-slot" id="slot-example" data-correct="C">
+      <div class="s3-slot" id="slot-example" onclick="placeToSlot(\'example\')" style="cursor:pointer;" data-correct="C">
         <div class="s3-slot-label">예시</div>
         <div class="s3-slot-text"><span class="s3-slot-placeholder">보기를 클릭해 배치하세요</span></div>
         <button class="s3-remove" style="display:none" onclick="removeS3('example')">✕ 제거</button>
       </div>
-      <div class="s3-slot" id="slot-conclusion" data-correct="D">
+      <div class="s3-slot" id="slot-conclusion" onclick="placeToSlot(\'conclusion\')" style="cursor:pointer;" data-correct="D">
         <div class="s3-slot-label">결론</div>
         <div class="s3-slot-text"><span class="s3-slot-placeholder">보기를 클릭해 배치하세요</span></div>
         <button class="s3-remove" style="display:none" onclick="removeS3('conclusion')">✕ 제거</button>
@@ -305,7 +306,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Noto Sans KR', s
         <div class="s4-opt" onclick="pickS4(this,'s4q3',false)">⑤ judging creativity during brainstorming</div>
       </div>
     </div>
-    <button class="check-btn" onclick="gradeS4(["s4q1", "s4q2", "s4q3"],'s4-result','nav4')">✓ 채점하기</button>
+    <button class="check-btn" onclick="gradeS4(['s4q1','s4q2','s4q3'],'s4-result','nav4')">✓ 채점하기</button>
     <div class="result-banner" id="s4-result"></div>
   </div>
 
@@ -480,20 +481,39 @@ function gradeAllS2(count, resultId, navId) {
   if(pass) document.getElementById(navId).classList.add('done');
 }
 const s3Data = {};
-function placeS3(slot, optEl, label) {
+let s3Selected = null;
+function selectS3Card(optEl, label) {
   if(optEl.classList.contains('used')) return;
+  document.querySelectorAll('#s3-pool .s3-opt').forEach(o=>o.classList.remove('s3-active'));
+  if(s3Selected && s3Selected.el === optEl){s3Selected=null;return;}
+  optEl.classList.add('s3-active');
+  s3Selected={el:optEl,label};
+}
+function placeToSlot(slot) {
+  if(!s3Selected) return;
+  const optEl=s3Selected.el; const label=s3Selected.label;
   const slotEl=document.getElementById('slot-'+slot);
   const old=document.querySelector('#s3-pool [data-placed="'+slot+'"]');
-  if(old){old.classList.remove('used');old.removeAttribute('data-placed');}
-  s3Data[slot]=label; optEl.classList.add('used'); optEl.setAttribute('data-placed',slot);
+  if(old){old.classList.remove('used','s3-active');old.removeAttribute('data-placed');}
+  const prevSlot=optEl.getAttribute('data-placed');
+  if(prevSlot){
+    const prevSlotEl=document.getElementById('slot-'+prevSlot);
+    delete s3Data[prevSlot];
+    prevSlotEl.classList.remove('filled','slot-correct','slot-wrong');
+    prevSlotEl.querySelector('.s3-slot-text').innerHTML='<span class="s3-slot-placeholder">보기를 클릭해 배치하세요</span>';
+    prevSlotEl.querySelector('.s3-remove').style.display='none';
+  }
+  s3Data[slot]=label; optEl.classList.add('used'); optEl.classList.remove('s3-active');
+  optEl.setAttribute('data-placed',slot);
   slotEl.classList.add('filled'); slotEl.classList.remove('slot-correct','slot-wrong');
   slotEl.querySelector('.s3-slot-text').innerHTML=optEl.innerHTML;
   slotEl.querySelector('.s3-remove').style.display='inline-block';
+  s3Selected=null;
 }
 function removeS3(slot) {
   const slotEl=document.getElementById('slot-'+slot);
   const opt=document.querySelector('#s3-pool [data-placed="'+slot+'"]');
-  if(opt){opt.classList.remove('used');opt.removeAttribute('data-placed');}
+  if(opt){opt.classList.remove('used','s3-active');opt.removeAttribute('data-placed');}
   delete s3Data[slot];
   slotEl.classList.remove('filled','slot-correct','slot-wrong');
   slotEl.querySelector('.s3-slot-text').innerHTML='<span class="s3-slot-placeholder">보기를 클릭해 배치하세요</span>';
@@ -540,7 +560,14 @@ function gradeVariant(resultId, navId) {
   banner.textContent=pass?'🎉 변형 완벽 통과!':correct+'/'+total+' 정답';
   if(pass) document.getElementById(navId).classList.add('done');
 }
-window.addEventListener('DOMContentLoaded',()=>{Object.keys(US_DATA).forEach(id=>initUS(id));});
+window.addEventListener('DOMContentLoaded',()=>{Object.keys(US_DATA).forEach(id=>initUS(id));
+  // 변형 select option 셔플 (첫번째 빈 option 제외)
+  document.querySelectorAll('.b-wrap select').forEach(sel => {
+    const opts = Array.from(sel.options).slice(1);
+    for(let i=opts.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[opts[i],opts[j]]=[opts[j],opts[i]];}
+    while(sel.options.length > 1) sel.remove(1);
+    opts.forEach(o => sel.appendChild(o));
+  });});
 
 </script>
 </body>

@@ -66,6 +66,7 @@ body { background: var(--bg); color: var(--text); font-family: 'Noto Sans KR', s
 .s3-opts { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
 .s3-opt { padding: 12px 16px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface2); font-size: 13px; cursor: pointer; transition: all .2s; color: var(--text); line-height: 1.6; }
 .s3-opt:hover { border-color: var(--accent3); color: var(--accent3); }
+.s3-opt.s3-active { border-color: var(--accent); background: rgba(74,124,240,.1); color: var(--accent); box-shadow: 0 0 0 2px rgba(74,124,240,.3); }
 .s3-opt:hover .s3-easy { color: var(--accent3); opacity:.8; }
 .s3-opt.used { opacity: .3; pointer-events: none; }
 .s3-main { font-size: 13px; font-weight: 500; }
@@ -311,45 +312,45 @@ body { background: var(--bg); color: var(--text); font-family: 'Noto Sans KR', s
   <div class="stage-panel" id="p0-s3">
     <span class="section-label sec1">Section 1 · Stage 3</span>
     <div class="stage-heading">🧩 요약 문장 배치</div>
-    <div class="stage-desc">보기에서 알맞은 요약 문장을 골라 서론·본론·예시·결론 자리에 배치해보세요.</div>
+    <div class="stage-desc">보기 카드를 클릭해 선택(파란색)한 후, 아래 슬롯을 클릭해 배치하세요. 다시 클릭하면 선택 해제됩니다.</div>
 
     <div class="s3-opts-label">[ 보기 ]</div>
     <div class="s3-opts" id="p0-s3-pool">
-      <div class="s3-opt" onclick="placeS3('intro',this,'A')">
+      <div class="s3-opt" onclick=\"selectS3Card(this,'A')\">
         <div class="s3-main">A. 내부 감각 인식은 자신의 감정 조절뿐 아니라, 타인의 감정을 이해하는 데도 핵심적 역할을 한다.</div>
         <div class="s3-easy">💬 내 몸의 감각을 잘 느끼면 내 감정도 조절되고, 상대방의 감정도 더 잘 느낄 수 있어.</div>
       </div>
-      <div class="s3-opt" onclick="placeS3('body',this,'B')">
+      <div class="s3-opt" onclick=\"selectS3Card(this,'B')\">
         <div class="s3-main">B. 뇌는 단독으로는 타인의 감정에 직접 접근할 수 없어 추상적 파악에 그치지만, 몸이 본능적 정보를 전달하는 통로가 된다.</div>
         <div class="s3-easy">💬 뇌만으론 상대 감정을 제대로 못 느끼는데, 몸이 그 부족한 정보를 채워주는 역할을 해.</div>
       </div>
-      <div class="s3-opt" onclick="placeS3('example',this,'C')">
+      <div class="s3-opt" onclick=\"selectS3Card(this,'C')\">
         <div class="s3-main">C. 우리는 타인과 상호작용 시 무의식적으로 표정·자세·목소리를 모방하고, 그것을 내부 감각으로 인식해 상대의 감정을 느낀다.</div>
         <div class="s3-easy">💬 친구가 웃으면 나도 모르게 따라 웃고, 그 느낌을 통해 친구가 어떤 감정인지 알게 되는 거야.</div>
       </div>
-      <div class="s3-opt" onclick="placeS3('conclusion',this,'D')">
+      <div class="s3-opt" onclick=\"selectS3Card(this,'D')\">
         <div class="s3-main">D. 몸은 타인의 감정을 직접 체험하는 다리이며, 우리는 상대의 감정을 샘플링(경험)하는 존재다.</div>
         <div class="s3-easy">💬 결국 우리 몸이 상대 감정의 다리가 되어서, 마치 상대 음식을 한 입 먹어보듯 감정을 직접 느끼는 거야.</div>
       </div>
     </div>
 
     <div class="s3-structure">
-      <div class="s3-slot" id="p0-slot-intro" data-correct="A">
+      <div class="s3-slot" id="p0-slot-intro" onclick="placeToSlot(\'intro\')" style="cursor:pointer;" data-correct="A">
         <div class="s3-slot-label">서론</div>
         <div class="s3-slot-text"><span class="s3-slot-placeholder">보기를 클릭해 배치하세요</span></div>
         <button class="s3-remove" style="display:none" onclick="removeS3('intro')">✕ 제거</button>
       </div>
-      <div class="s3-slot" id="p0-slot-body" data-correct="B">
+      <div class="s3-slot" id="p0-slot-body" onclick="placeToSlot(\'body\')" style="cursor:pointer;" data-correct="B">
         <div class="s3-slot-label">본론</div>
         <div class="s3-slot-text"><span class="s3-slot-placeholder">보기를 클릭해 배치하세요</span></div>
         <button class="s3-remove" style="display:none" onclick="removeS3('body')">✕ 제거</button>
       </div>
-      <div class="s3-slot" id="p0-slot-example" data-correct="C">
+      <div class="s3-slot" id="p0-slot-example" onclick="placeToSlot(\'example\')" style="cursor:pointer;" data-correct="C">
         <div class="s3-slot-label">예시</div>
         <div class="s3-slot-text"><span class="s3-slot-placeholder">보기를 클릭해 배치하세요</span></div>
         <button class="s3-remove" style="display:none" onclick="removeS3('example')">✕ 제거</button>
       </div>
-      <div class="s3-slot" id="p0-slot-conclusion" data-correct="D">
+      <div class="s3-slot" id="p0-slot-conclusion" onclick="placeToSlot(\'conclusion\')" style="cursor:pointer;" data-correct="D">
         <div class="s3-slot-label">결론</div>
         <div class="s3-slot-text"><span class="s3-slot-placeholder">보기를 클릭해 배치하세요</span></div>
         <button class="s3-remove" style="display:none" onclick="removeS3('conclusion')">✕ 제거</button>
@@ -608,28 +609,34 @@ function gradeAllS2(count, resultId, navId) {
 
 // Stage 3
 const s3Data = {};
-function placeS3(slot, optEl, label) {
+let s3Selected = null;
+function selectS3Card(optEl, label) {
   if(optEl.classList.contains('used')) return;
-  const slotEl = document.getElementById(`p0-slot-${slot}`);
-  const oldLabel = s3Data[slot];
-  if(oldLabel) {
-    const old = document.querySelector(`#p0-s3-pool [data-placed="${slot}"]`);
-    if(old) { old.classList.remove('used'); old.removeAttribute('data-placed'); }
-  }
-  s3Data[slot] = label;
-  optEl.classList.add('used'); optEl.setAttribute('data-placed', slot);
-  slotEl.classList.add('filled'); slotEl.classList.remove('slot-correct','slot-wrong');
-  slotEl.querySelector('.s3-slot-text').innerHTML = optEl.innerHTML;
-  slotEl.querySelector('.s3-remove').style.display = 'inline-block';
+  document.querySelectorAll('.s3-opt').forEach(o=>o.classList.remove('s3-active'));
+  if(s3Selected && s3Selected.el === optEl){s3Selected=null;return;}
+  optEl.classList.add('s3-active');
+  s3Selected={el:optEl,label};
 }
-function removeS3(slot) {
-  const slotEl = document.getElementById(`p0-slot-${slot}`);
-  const opt = document.querySelector(`#p0-s3-pool [data-placed="${slot}"]`);
-  if(opt) { opt.classList.remove('used'); opt.removeAttribute('data-placed'); }
-  delete s3Data[slot];
-  slotEl.classList.remove('filled','slot-correct','slot-wrong');
-  slotEl.querySelector('.s3-slot-text').innerHTML = '<span class="s3-slot-placeholder">보기를 클릭해 배치하세요</span>';
-  slotEl.querySelector('.s3-remove').style.display = 'none';
+function placeToSlot(slot) {
+  if(!s3Selected) return;
+  const optEl=s3Selected.el; const label=s3Selected.label;
+  const slotEl=document.getElementById('p0-slot-'+slot);
+  const old=document.querySelector('.s3-opt[data-placed="'+slot+'"]');
+  if(old){old.classList.remove('used','s3-active');old.removeAttribute('data-placed');}
+  const prevSlot=optEl.getAttribute('data-placed');
+  if(prevSlot){
+    const prevSlotEl=document.getElementById('p0-slot-'+prevSlot);
+    delete s3Data[prevSlot];
+    prevSlotEl.classList.remove('filled','slot-correct','slot-wrong');
+    prevSlotEl.querySelector('.s3-slot-text').innerHTML='<span class="s3-slot-placeholder">보기를 클릭해 배치하세요</span>';
+    prevSlotEl.querySelector('.s3-remove').style.display='none';
+  }
+  s3Data[slot]=label; optEl.classList.add('used'); optEl.classList.remove('s3-active');
+  optEl.setAttribute('data-placed',slot);
+  slotEl.classList.add('filled'); slotEl.classList.remove('slot-correct','slot-wrong');
+  slotEl.querySelector('.s3-slot-text').innerHTML=optEl.innerHTML;
+  slotEl.querySelector('.s3-remove').style.display='inline-block';
+  s3Selected=null;
 }
 function gradeS3(resultId, navId) {
   let correct=0;
