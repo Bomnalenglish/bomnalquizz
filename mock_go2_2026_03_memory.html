@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>봄날 퀴즈 | 고2 26년 3월 본문 암기</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&family=Black+Han+Sans&display=swap');
+:root{--pri:#1565c0;--acc:#f57f17;--bg:#e3f2fd;--card:#fff;--bdr:#90caf9;--muted:#757575;--green:#2e7d32;--red:#c62828;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Nanum Gothic',sans-serif;background:var(--bg);min-height:100vh;color:#1a1a2e;}
+.hidden{display:none!important;}
+
+/* START */
+#startScreen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
+.s-card{background:var(--card);border-radius:24px;padding:36px 28px;text-align:center;max-width:520px;width:100%;box-shadow:0 8px 32px rgba(21,101,192,.15);}
+.s-card h1{font-family:'Black Han Sans',sans-serif;font-size:20px;color:var(--pri);margin-bottom:6px;}
+.s-sub{font-size:13px;color:var(--muted);margin-bottom:20px;}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:18px;}
+.info-item{background:var(--bg);border-radius:10px;padding:10px;text-align:center;font-size:12px;color:var(--pri);font-weight:700;}
+.ni{width:100%;padding:11px 14px;border:2px solid var(--bdr);border-radius:12px;font-size:14px;font-family:'Nanum Gothic',sans-serif;outline:none;margin-bottom:10px;}
+.ni:focus{border-color:var(--pri);}
+.start-btn{width:100%;padding:14px;border-radius:12px;border:none;background:linear-gradient(135deg,#1565c0,#f57f17);color:white;font-size:1rem;font-weight:800;cursor:pointer;font-family:inherit;}
+
+/* PASSAGE SELECT */
+#passageScreen{padding:20px;max-width:680px;margin:0 auto;}
+.ps-header{background:linear-gradient(135deg,#1565c0,#1976d2);color:white;border-radius:16px;padding:18px 22px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;}
+.ps-title{font-family:'Black Han Sans',sans-serif;font-size:16px;}
+.ps-sub{font-size:11px;opacity:.8;margin-top:3px;}
+.user-info{background:rgba(255,255,255,.2);border-radius:10px;padding:6px 14px;font-size:12px;font-weight:700;}
+.filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
+.fb{padding:7px 16px;border:2px solid var(--pri);border-radius:20px;background:white;color:var(--pri);font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s;}
+.fb.on{background:var(--pri);color:white;}
+.passage-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-bottom:20px;}
+.p-card{background:white;border-radius:14px;padding:16px 12px;text-align:center;cursor:pointer;border:2.5px solid #e0e0e0;transition:all .18s;position:relative;}
+.p-card:hover{border-color:var(--pri);transform:translateY(-2px);box-shadow:0 6px 18px rgba(21,101,192,.12);}
+.p-card.sel{border-color:var(--pri);background:#e3f2fd;}
+.p-card.done{border-color:#4caf50;background:#e8f5e9;}
+.p-no{font-family:'Black Han Sans',sans-serif;font-size:22px;color:var(--pri);margin-bottom:4px;}
+.p-topic{font-size:10px;color:var(--muted);line-height:1.4;}
+.p-badge{position:absolute;top:6px;right:6px;font-size:9px;padding:2px 6px;border-radius:8px;font-weight:700;}
+.done-badge{background:#e8f5e9;color:#2e7d32;}
+.sel-all-btn{width:100%;padding:12px;border-radius:12px;border:2px solid var(--pri);background:white;color:var(--pri);font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;margin-bottom:10px;}
+.go-btn{width:100%;padding:14px;border-radius:12px;border:none;background:linear-gradient(135deg,#1565c0,#f57f17);color:white;font-size:1rem;font-weight:800;cursor:pointer;font-family:inherit;}
+
+/* QUIZ HEADER */
+.hdr{background:#1565c0;color:white;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.ht{font-family:'Black Han Sans',sans-serif;font-size:15px;}
+.hs{font-size:10px;opacity:.7;margin-top:2px;}
+.hb{background:rgba(255,255,255,.2);border-radius:16px;padding:4px 12px;font-size:12px;font-weight:700;}
+.pw{height:4px;background:#bbdefb;}.pf{height:100%;background:linear-gradient(90deg,#1565c0,#f57f17);transition:width .4s;}
+
+/* QUIZ AREA */
+#quizArea{padding:20px;max-width:680px;margin:0 auto;}
+.qc{background:white;border-radius:18px;padding:22px 20px;margin-bottom:16px;box-shadow:0 3px 16px rgba(21,101,192,.08);}
+.q-no-badge{display:inline-flex;align-items:center;gap:6px;margin-bottom:10px;}
+.qno{font-family:'Black Han Sans',sans-serif;font-size:13px;color:white;background:var(--pri);padding:3px 12px;border-radius:12px;}
+.qtype{font-size:11px;font-weight:700;padding:3px 10px;border-radius:10px;}
+.qtype.blank{background:#fff3e0;color:#e65100;}
+.qtype.tf{background:#f3e5f5;color:#6a1b9a;}
+.passage-box{background:#f8faff;border-left:4px solid var(--pri);border-radius:0 10px 10px 0;padding:14px 16px;font-size:14px;line-height:1.9;margin-bottom:14px;color:#1a237e;}
+.blank{display:inline-block;min-width:80px;border-bottom:2.5px solid var(--acc);color:transparent;background:#fff3e0;border-radius:4px;padding:0 4px;font-weight:800;vertical-align:middle;}
+.q-prompt{font-size:13px;font-weight:700;color:#1565c0;margin-bottom:10px;}
+.choices{display:grid;gap:8px;}
+.cb{background:#f5f5f5;border:2px solid #e0e0e0;border-radius:11px;padding:12px 15px;font-family:'Nanum Gothic',sans-serif;font-size:13px;font-weight:700;cursor:pointer;text-align:left;transition:all .15s;display:flex;align-items:center;gap:10px;}
+.cb:hover:not(:disabled){border-color:var(--pri);background:#e3f2fd;}
+.cb.correct{background:#e8f5e9;border-color:#2e7d32;color:#1b5e20;}
+.cb.wrong{background:#ffebee;border-color:#c62828;color:#b71c1c;}
+.cb.reveal{background:#e8f5e9;border-color:#2e7d32;}
+.cn{width:22px;height:22px;border-radius:50%;background:#90caf9;color:white;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;flex-shrink:0;}
+.tf-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.tfb{padding:16px;border:2px solid #e0e0e0;border-radius:12px;background:#f5f5f5;font-family:'Nanum Gothic',sans-serif;font-size:15px;font-weight:800;cursor:pointer;transition:all .15s;}
+.tfb:hover:not(:disabled){transform:translateY(-2px);}
+.tfb.ob{border-color:#4caf50;color:#2e7d32;}.tfb.xb{border-color:#e91e63;color:#880e4f;}
+.tfb.correct{background:#e8f5e9;}.tfb.wrong{background:#ffebee;}
+.fb-msg{padding:10px 14px;border-radius:10px;font-size:13px;font-weight:800;margin-top:10px;display:none;}
+.fb-msg.ok{background:#e8f5e9;color:#1b5e20;display:block;}
+.fb-msg.no{background:#ffebee;color:#b71c1c;display:block;}
+
+/* RESULT */
+#resultScreen{padding:20px;max-width:600px;margin:0 auto;}
+.rc{background:white;border-radius:24px;padding:30px 22px;box-shadow:0 8px 32px rgba(21,101,192,.1);text-align:center;}
+.rs{font-family:'Black Han Sans',sans-serif;font-size:52px;color:var(--pri);line-height:1;}
+.rsub{font-size:13px;color:var(--muted);margin-top:4px;}
+.sr{display:flex;justify-content:center;gap:20px;margin-top:16px;flex-wrap:wrap;}
+.si{text-align:center;}.sn{font-family:'Black Han Sans',sans-serif;font-size:24px;}.sl{font-size:11px;color:var(--muted);margin-top:2px;}
+.wl{background:var(--bg);border-radius:14px;padding:14px;text-align:left;margin-top:14px;max-height:300px;overflow-y:auto;}
+.wl h3{font-size:12px;font-weight:800;color:var(--red);margin-bottom:8px;}
+.wi{background:white;border-radius:8px;padding:8px 12px;margin-bottom:6px;font-size:11px;border-left:3px solid #e91e63;}
+.wie{font-weight:800;color:var(--pri);}.wid{font-size:10px;color:var(--muted);margin-top:2px;}
+.rbtns{display:flex;gap:10px;justify-content:center;margin-top:18px;flex-wrap:wrap;}
+.rbtn{padding:12px 24px;border-radius:12px;border:none;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;}
+.rbtn-p{background:linear-gradient(135deg,#1565c0,#f57f17);color:white;}
+.rbtn-s{background:#f5f5f5;color:#1565c0;border:2px solid #90caf9;}
+
+@media(max-width:480px){.passage-grid{grid-template-columns:repeat(3,1fr)}.tf-btns{grid-template-columns:1fr 1fr}}
+</style>
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getFirestore,collection,addDoc,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+const cfg={apiKey:"AIzaSyCxS524S8KAaF87DomPtl9sJdF-eqes404",authDomain:"bomnalvaca.firebaseapp.com",projectId:"bomnalvaca",storageBucket:"bomnalvaca.firebasestorage.app",messagingSenderId:"115868052300",appId:"1:115868052300:web:765c08867b6f1ce0987de9"};
+const app=initializeApp(cfg);
+const db=getFirestore(app);
+window._fbSave=async function(data){
+  try{await addDoc(collection(db,'quiz_results'),{...data,timestamp:serverTimestamp()});}
+  catch(e){console.warn('FB 저장 오류:',e);}
+};
+</script>
+</head>
+<body>
+
+<!-- START -->
+<div id="startScreen">
+  <div class="s-card">
+    <h1>📖 고2 26년 3월 본문 암기</h1>
+    <div class="s-sub">2026년 3월 고2 모의고사 · 빈칸추론 + 내용일치 T/F</div>
+    <div class="info-grid">
+      <div class="info-item">📝 21~24 · 29~40번 (16지문)</div>
+      <div class="info-item">🎯 지문별 선택 가능</div>
+      <div class="info-item">🔲 빈칸 추론</div>
+      <div class="info-item">✅ 내용일치 T/F</div>
+    </div>
+    <select class="ni" id="si" style="background:white;color:#1565c0;font-weight:700;cursor:pointer;">
+      <option value="">학교 선택</option>
+      <option value="종촌고">종촌고</option>
+      <option value="고운고">고운고</option>
+      <option value="대성고">대성고</option>
+      <option value="기타">기타</option>
+    </select>
+    <input type="text" class="ni" id="ni" placeholder="이름 입력" maxlength="10">
+    <button class="start-btn" onclick="goPassageSelect()">다음 → 지문 선택</button>
+  </div>
+</div>
+
+<!-- PASSAGE SELECT -->
+<div id="passageScreen" class="hidden">
+  <div class="ps-header">
+    <div>
+      <div class="ps-title">📖 지문 선택</div>
+      <div class="ps-sub">풀고 싶은 지문을 선택하세요 (복수 선택 가능)</div>
+    </div>
+    <div class="user-info" id="userInfo"></div>
+  </div>
+  <div class="filter-bar">
+    <button class="fb on" onclick="filterPassage('all',this)">전체</button>
+    <button class="fb" onclick="filterPassage('21-24',this)">21~24번</button>
+    <button class="fb" onclick="filterPassage('29-40',this)">29~40번</button>
+  </div>
+  <div class="passage-grid" id="passageGrid"></div>
+  <button class="sel-all-btn" onclick="selectAll()">전체 선택 / 해제</button>
+  <button class="go-btn" onclick="startQuiz()">선택한 지문 풀기 🚀</button>
+</div>
+
+<!-- QUIZ HEADER (sticky) -->
+<div id="hdr" class="hdr hidden">
+  <div><div class="ht">📖 고2 26년 3월 본문 암기</div><div class="hs" id="hs"></div></div>
+  <div class="hb" id="hb">0/0</div>
+</div>
+<div id="pw" class="pw hidden"><div class="pf" id="pf" style="width:0%"></div></div>
+<div id="quizArea" class="hidden"></div>
+<div id="resultScreen" class="hidden"></div>
+
+<script>
+// ── DATA ──────────────────────────────────────────
+// 각 지문: blanks = 진짜 영어 빈칸 추론, topic_q = 주제/요지 선택
+const PASSAGES = [
+  {no:21,topic:`지문 21번`,text:`A first step toward establishing a [respectful] classroom learning community is [acceptance] of all ideas and answers — [regardless of] any [obvious] errors. Rich [mathematical] discussions cannot occur if this expectation is not in place. We must remember that wrong answers are often rooted in misconceptions, and unless these ideas are allowed to be brought to the forefront, we cannot help students confront their thinking. Students who are in safe learning environments are willing to risk sharing an incorrect answer with their peers in order to grow mathematically. It is important to model and expect the acceptance of all ideas without derogatory comments. As educators we can model this by recording all answers to be considered without giving any verbal or physical expressions that indicate agreement or disagreement with any answer. The teacher may need to practice having a “blank face.” Students look to teachers as the source of correct answers. Part of building a safe learning community is 3 to shift this source of knowledge to the students by equipping them to defend the thinking behind their solutions.`,blanks:[{sentence:`_____ (존중하는)`,opts:[`respectful`,`establish`,`acceptance`,`regardless of`],ans:`respectful`},{sentence:`_____ (수용)`,opts:[`acceptance`,`establish`,`regardless of`,`obvious`],ans:`acceptance`},{sentence:`_____ (~과 상관없이)`,opts:[`regardless of`,`establish`,`obvious`,`mathematical`],ans:`regardless of`},{sentence:`_____ (명백한)`,opts:[`obvious`,`establish`,`mathematical`,`be in place`],ans:`obvious`},{sentence:`_____ (수학적인)`,opts:[`mathematical`,`establish`,`be in place`,`misconception`],ans:`mathematical`}],topic_q:{q:`이 글의 주제으로 가장 적절한 것은?`,opts:[`impacts of peer evaluation on student academic achievement`,`importance of providing immediate feedback on student errors`,`effective ways to manage disruptive behavior in math classrooms`,`roles of teachers as the ultimate source of mathematical knowledge`,`necessity of accepting all answers to build a safe learning community`],ans:`necessity of accepting all answers to build a safe learning community`},tf:[{stmt:`Respectful learning communities are founded on the premise of embracing all student contributions, regardless of their accuracy.`,ans:true,exp:`본문 내용과 일치`},{stmt:`Allowing students to expose their flawed thinking is a prerequisite for helping them overcome mathematical misconceptions.`,ans:true,exp:`본문 내용과 일치`},{stmt:`In a secure learning environment, students are hesitant to share incorrect answers due to the fear of being judged by their peers.`,ans:false,exp:`본문과 다름`},{stmt:`Educators are encouraged to maintain a neutral demeanor to avoid influencing students’ perceptions of their own answers.`,ans:true,exp:`본문 내용과 일치`},{stmt:`Building a safe community involves fostering students' ability to provide evidence and reasoning for their proposed solutions. ①`,ans:true,exp:`본문 내용과 일치`}]},
+  {no:22,topic:`지문 22번`,text:`The usual [intercity] traveler moves slowly through the station area. The passenger may not [be familiar with] the [routine], have [baggage] to [handle] and check or retrieve, have a long wait for connections or delayed trains, and may require information, food, and a comfortable place to sit. Commuters, on the other hand, are familiar with the route through the station, have little or no luggage, and are usually in a hurry. They want direct access to or from local streets and transport. These two types of traffic should be kept separate to avoid conflict and confusion. In some large stations such as Grand Central Terminal in New York City, commuter and intercity trains arrive and depart 26년3월 고2 모의고사 on different levels. In smaller stations, separate platforms should be used and traffic routed so that the two lines of movement do not cross. In some instances, separate stations are in use. Clear and concise direction and routing signs and other means of channelization are desirable. [from Transportation Planning by ITE (Institute of Transportation Engineers)]`,blanks:[{sentence:`_____ (도시 사이의)`,opts:[`intercity`,`be familiar with`,`routine`,`baggage`],ans:`intercity`},{sentence:`_____ (~에 익숙하다)`,opts:[`be familiar with`,`routine`,`baggage`,`handle`],ans:`be familiar with`},{sentence:`_____ (절차, 관례)`,opts:[`routine`,`baggage`,`handle`,`connection`],ans:`routine`},{sentence:`_____ (짐, 수하물)`,opts:[`baggage`,`handle`,`connection`,`commuter`],ans:`baggage`},{sentence:`_____ (처리하다, 다루다)`,opts:[`handle`,`connection`,`commuter`,`route`],ans:`handle`}],topic_q:{q:`이 글의 주제으로 가장 적절한 것은?`,opts:[`the economic benefits of large-scale railway systems`,`the role of signage in improving passenger convenience`,`the reasons why intercity travelers prefer taking trains`,`the operational challenges of managing modern railway stations`,`the necessity of separating different passenger flows in stations`],ans:`the necessity of separating different passenger flows in stations`},tf:[{stmt:`Intercity travelers may require various services and facilities within stations.`,ans:true,exp:`본문 내용과 일치`},{stmt:`Commuters typically carry little or no luggage and move with urgency.`,ans:true,exp:`본문 내용과 일치`},{stmt:`Passenger flows should be separated to minimize confusion and conflict.`,ans:true,exp:`본문 내용과 일치`},{stmt:`Smaller stations are unable to divide passenger movement due to structural constraints.`,ans:false,exp:`본문과 다름`},{stmt:`Directional signs and channeling methods contribute to guiding passenger movement.`,ans:true,exp:`본문 내용과 일치`}]},
+  {no:23,topic:`지문 23번`,text:`Most performance lighting is made up of a number of different looks which we have called lighting states. Each lighting [cue] triggers a change to a new [state]. Like actors, lighting cues usually need a [motivation]. This might be something very [obvious] such as a cue required to [brighten] a room setting when an actor turns on a light switch or the rapid increase in intensity at the end of a dance number in a traditional musical (known as a button cue). At other times we will need a cue to provide a subtle change in atmosphere over a number of minutes, motivated perhaps by the mention of a sunset or the intention to slowly change the feel of the performance from normal to threatening. The question, ‘What will lighting do for this production?’ needs to be asked for each moment of the production, each dramatic unit or scene, and each transition.`,blanks:[{sentence:`_____ (상태)`,opts:[`state`,`be made up of`,`cue`,`trigger`],ans:`state`},{sentence:`_____ (신호, 큐)`,opts:[`cue`,`be made up of`,`trigger`,`motivation`],ans:`cue`},{sentence:`_____ (계기, 동기)`,opts:[`motivation`,`be made up of`,`trigger`,`obvious`],ans:`motivation`},{sentence:`_____ (명백한, 분명한)`,opts:[`obvious`,`be made up of`,`trigger`,`brighten`],ans:`obvious`},{sentence:`_____ (밝히다, 밝아지다)`,opts:[`brighten`,`be made up of`,`trigger`,`rapid`],ans:`brighten`}],topic_q:{q:`이 글의 제목으로 가장 적절한 것은?`,opts:[`Lighting States Consist of Various Visual Elements`,`Why Does Every Lighting Cue Require a Specific Reason?`,`Actors and Lighting Designers Must Communicate Frequently`,`Performance Lighting Should Be Used to Transform Each Scene`,`How Can Lighting Effectively Contribute to the Entire Production?`],ans:`How Can Lighting Effectively Contribute to the Entire Production?`},tf:[{stmt:`Performance lighting consists of diverse visual looks known as lighting states.`,ans:true,exp:`본문 내용과 일치`},{stmt:`Each lighting cue triggers a transition to a new lighting state.`,ans:true,exp:`본문 내용과 일치`},{stmt:`Unlike actors, lighting cues can function effectively without any specific motivation.`,ans:false,exp:`본문과 다름`},{stmt:`Cues can subtly or significantly transform the atmosphere of the performance.`,ans:true,exp:`본문 내용과 일치`},{stmt:`Lighting must serve a specific purpose within every dramatic context. - APEX`,ans:true,exp:`본문 내용과 일치`}]},
+  {no:24,topic:`지문 24번`,text:`Rooms have their own “sound” because they impose their own [characteristics] on audio signals contained within them. It’s actually kind of [remarkable]. Sound such as music coming from headphones will sound the same everywhere. No matter what acoustical environment we are in, the headphones sound the same. That’s because the room is not part of that [playback] signal [path]. But sound such as music from a loudspeaker will sound different in every acoustical environment. Every room where you set up the loudspeaker will cause the sound you hear to be different—sometimes [dramatically] different; that is because the room is now part of the signal path. Also, in the same room, the loudspeaker will sound different when it is placed in different locations in the room and 6 it will sound different as you move around the room. Similarly, when you are recording a musical instrument, the sound you receive at the microphone will be different in every room and the recorded sound will sound different as the instrument or the microphone is moved. [from Handbook of Sound Studio Construction: Rooms for Recording and Listening by Ken C. Pohlmann]`,blanks:[{sentence:`_____ (특성)`,opts:[`characteristics`,`impose ~ on …`,`remarkable`,`playback`],ans:`characteristics`},{sentence:`_____ (놀라운)`,opts:[`remarkable`,`impose ~ on …`,`playback`,`path`],ans:`remarkable`},{sentence:`_____ (재생)`,opts:[`playback`,`impose ~ on …`,`path`,`dramatically`],ans:`playback`},{sentence:`_____ (경로)`,opts:[`path`,`impose ~ on …`,`dramatically`,`musical instrument`],ans:`path`},{sentence:`_____ (극적으로)`,opts:[`dramatically`,`impose ~ on …`,`musical instrument`,`acoustical`],ans:`dramatically`}],topic_q:{q:`이 글의 주제으로 가장 적절한 것은?`,opts:[`the importance of using high-quality headphones for recording`,`the process of converting electrical signals into audible sound waves`,`the influence of physical space and placement on sound characteristics`,`reasons why loudspeakers are preferred over headphones in studios`,`technical difficulties in eliminating background noise during recording`],ans:`the influence of physical space and placement on sound characteristics`},tf:[{stmt:`Rooms provide their own unique sound characteristics to audio signals.`,ans:true,exp:`본문 내용과 일치`},{stmt:`Music from headphones maintains the same sound regardless of the environment.`,ans:true,exp:`본문 내용과 일치`},{stmt:`The room becomes part of the signal path when music is played through headphones.`,ans:false,exp:`본문과 다름`},{stmt:`Loudspeaker sound changes depending on its specific location within a single room.`,ans:true,exp:`본문 내용과 일치`},{stmt:`Moving a microphone during recording results in changes to the captured sound.`,ans:true,exp:`본문 내용과 일치`}]},
+  {no:29,topic:`지문 29번`,text:`The [Industrial Revolution] did more than just [invent] new materials or machines. It invented a new process for [manufacturing]: the modern factory. [prior to] around 1850, most piano shops used an apprentice system in which a master builder taught younger workers the skills of the [trade], usually over the course of many years. The larger piano shops did have specialists — for example, one person who specialized in soundboards, another who made hammers, and so on. But even the largest piano makers of that time produced no more than 5-10 pianos per year per worker, as pianos were still made essentially one at a time. The development of a true piano factory occurred first in the United States, led by Jonas Chickering in Boston and later the Steinway family in New York City. These factories led to improvements in both efficiency 7 and quality. For example, one of the factories of the time had its own iron casting facility where it made its 26년3월 고2 모의고사 metal plates, which were thought to be the best available.`,blanks:[{sentence:`_____ (산업 혁명)`,opts:[`Industrial Revolution`,`invent`,`manufacturing`,`prior to`],ans:`Industrial Revolution`},{sentence:`_____ (만들어 내다, 발명하다)`,opts:[`invent`,`manufacturing`,`prior to`,`trade`],ans:`invent`},{sentence:`_____ (제조)`,opts:[`manufacturing`,`prior to`,`trade`,`specialist`],ans:`manufacturing`},{sentence:`_____ (~ 이전에)`,opts:[`prior to`,`trade`,`specialist`,`specialize in`],ans:`prior to`},{sentence:`_____ (업계)`,opts:[`trade`,`specialist`,`specialize in`,`hammer`],ans:`trade`}],topic_q:{q:`이 글의 주제으로 가장 적절한 것은?`,opts:[`the technical role of master builders in workshops`,`the specific process of iron casting in piano factories`,`the historical limits of the traditional apprentice system`,`the broad impact of the industrial revolution on piano design`,`the shift from manual craftsmanship to modern factory production`],ans:`the shift from manual craftsmanship to modern factory production`},tf:[{stmt:`Piano shops mainly used an apprentice system before the mid-19th century.`,ans:true,exp:`본문 내용과 일치`},{stmt:`Large piano workshops employed specialists for specific parts like hammers.`,ans:true,exp:`본문 내용과 일치`},{stmt:`Early piano makers produced more than fifteen pianos per worker each year.`,ans:false,exp:`본문과 다름`},{stmt:`The first modern piano factories were established by families in the United States.`,ans:true,exp:`본문 내용과 일치`},{stmt:`Modern factory systems achieved higher quality by using their own casting facilities.`,ans:true,exp:`본문 내용과 일치`}]},
+  {no:30,topic:`지문 30번`,text:`In a thesis-based doctoral programme, students [typically] spend a [significant] amount of time and effort researching a specific topic. While this deep dive into a particular area allows for [thorough] [exploration] and understanding, it can also [result in] narrowing the focus. As students become deeply absorbed in their research, they may spend less time exploring related fields or acquiring skills outside their immediate area of study. Consequently, this singular focus may limit the breadth of knowledge and skills developed during the programme, potentially hindering students’ ability to adapt to diverse career paths or address interdisciplinary challenges. Some universities in Europe have recognised the limitations of traditional thesis-based doctoral programmes and have started to implement more structured approaches. These structured programmes often combine research with coursework and training in transferable skills. By incorporating coursework, seminars, workshops and internships into the curriculum, they aim to provide students with a broader skill set and better prepare them for a variety of career paths beyond academia. [from Social Implications of Research in Higher Education by Andile Alfred Mdikana]`,blanks:[{sentence:`_____ (일반적으로, 보통)`,opts:[`typically`,`significant`,`deep dive (into)`,`thorough`],ans:`typically`},{sentence:`_____ (상당한)`,opts:[`significant`,`deep dive (into)`,`thorough`,`exploration`],ans:`significant`},{sentence:`_____ (철저한)`,opts:[`thorough`,`deep dive (into)`,`exploration`,`result in`],ans:`thorough`},{sentence:`_____ (탐구)`,opts:[`exploration`,`deep dive (into)`,`result in`,`narrow`],ans:`exploration`},{sentence:`_____ (~의 결과를 가져오다)`,opts:[`result in`,`deep dive (into)`,`narrow`,`absorb in`],ans:`result in`}],topic_q:{q:`이 글의 제목으로 가장 적절한 것은?`,opts:[`Why Doctoral Students Struggle to Finish Their Theses on Time`,`The Advantage of Traditional Research-Focused Education in Europe`,`Comparing Academic and Industry Career Paths for Doctoral Graduates`,`The Role of Supervisors in Shaping Doctoral Students' Research Topics`,`Beyond the Thesis: Expanding Knowledge and Career Readiness in Doctoral Training ①`],ans:`Beyond the Thesis: Expanding Knowledge and Career Readiness in Doctoral Training ①`},tf:[{stmt:`Doctoral students in thesis-based programmes invest much effort into a specific topic.`,ans:true,exp:`본문 내용과 일치`},{stmt:`Intensive research on a single area can potentially lead to a narrowing of academic focus.`,ans:true,exp:`본문 내용과 일치`},{stmt:`Focusing on one topic enhances a student's ability to adapt to diverse career paths.`,ans:false,exp:`본문과 다름`},{stmt:`Some European universities are adopting structured models to overcome PhD limitations.`,ans:true,exp:`본문 내용과 일치`},{stmt:`Structured programmes combine research with training in various transferable skills.`,ans:true,exp:`본문 내용과 일치`}]},
+  {no:31,topic:`지문 31번`,text:`Research shows that, by age three, children understand that [imaginary] objects do not [come to life]. This is especially clear [with respect to] everyday objects —children know that even though they imagine a pencil in an empty box, the box will remain empty. However, emotion can sometimes [disrupt] this understanding, or at least its expression. [that is], even though a child knows that monsters are not real, the thought of a monster under a bed might be enough to make a child refuse to go into his room at night. Indeed, research shows that children have a more difficult time displaying their understanding of the 26년3월 고2 모의고사 causal relations between imagination and reality when they are asked to pretend or imagine scary things, like monsters. In one study, preschool children were shown an empty box and were asked to imagine a monster inside. All children agreed that the box was empty. However, when they were left alone with the box they exhibited fear and avoidance of it. [from Encyclopedia of Infant and Early Childhood Development by Janette B. Benson]`,blanks:[{sentence:`_____ (상상의)`,opts:[`imaginary`,`come to life`,`with respect to`,`disrupt`],ans:`imaginary`},{sentence:`_____ (살아 움직이다)`,opts:[`come to life`,`with respect to`,`disrupt`,`that is`],ans:`come to life`},{sentence:`_____ (~에 관해)`,opts:[`with respect to`,`disrupt`,`that is`,`display`],ans:`with respect to`},{sentence:`_____ (방해하다)`,opts:[`disrupt`,`that is`,`display`,`causal relation`],ans:`disrupt`},{sentence:`_____ (즉, 말하자면)`,opts:[`that is`,`display`,`causal relation`,`pretend`],ans:`that is`}],topic_q:{q:`이 글의 주제으로 가장 적절한 것은?`,opts:[`reality of imaginary objects`,`children’s cognitive development`,`limits of children’s logical reasoning`,`impact of emotion on children’s reality check`,`children’s ability to distinguish fantasy from reality`],ans:`impact of emotion on children’s reality check`},tf:[{stmt:`By the age of three, children know that imaginary things do not become real.`,ans:true,exp:`본문 내용과 일치`},{stmt:`Thinking of a monster can make a child avoid entering their room at night.`,ans:true,exp:`본문 내용과 일치`},{stmt:`Children can easily demonstrate their logic even when imagining scary things.`,ans:false,exp:`본문과 다름`},{stmt:`In a research study, all children agreed that the box they were shown was empty.`,ans:true,exp:`본문 내용과 일치`},{stmt:`Fear and avoidance were observed when children were left alone with the box.`,ans:true,exp:`본문 내용과 일치`}]},
+  {no:32,topic:`지문 32번`,text:`[perhaps] the best-known development to [emerge] from the [liberation] and [expansion] of [aesthetic] experience is the aesthetics of everyday life. Although there is presently a flowering of work on everyday aesthetics, the possibility of aesthetic gratification in ordinary objects and events has long been recognized, even if degraded and dismissed by prevalent philosophical theory. Widely valued by poets, especially Romantic poets and those in Asian traditions, the aesthetic in everyday situations has also been recognized by novelists. It may be most convenient, though, to locate its contemporary intellectual origins in John Dewey’s Art as Experience. In that book Dewey argued against the separation of art from life by basing aesthetic experience on the biological and cultural conditions of human life. He located the aesthetic, not in an internalized awareness of sensation and feeling but in “a complete interpenetration of self and the world of objects and events.” Further, Dewey maintained that “the aesthetic is the clarified and intensified development of traits that belong to every normally complete experience.” [from The Social Aesthetics of Human Environments by Arnold Berleant]`,blanks:[{sentence:`_____ (아마도)`,opts:[`perhaps`,`emerge`,`liberation`,`expansion`],ans:`perhaps`},{sentence:`_____ (나타나다, 출현하다)`,opts:[`emerge`,`liberation`,`expansion`,`aesthetic`],ans:`emerge`},{sentence:`_____ (해방)`,opts:[`liberation`,`expansion`,`aesthetic`,`presently`],ans:`liberation`},{sentence:`_____ (확장)`,opts:[`expansion`,`aesthetic`,`presently`,`a flowering of`],ans:`expansion`},{sentence:`_____ (미적인)`,opts:[`aesthetic`,`presently`,`a flowering of`,`possibility`],ans:`aesthetic`}],topic_q:{q:`이 글의 주제으로 가장 적절한 것은?`,opts:[`historical roots of high art`,`biological basis of artistic talent`,`limitations of modern aesthetic theory`,`the aesthetic value of everyday experience`,`importance of Asian traditions in romantic poetry`],ans:`the aesthetic value of everyday experience`},tf:[{stmt:`Work on the topic of everyday aesthetics is currently flourishing in the academic world.`,ans:true,exp:`본문 내용과 일치`},{stmt:`Poets and novelists recognized aesthetic gratification in ordinary events long ago.`,ans:true,exp:`본문 내용과 일치`},{stmt:`Prevalent philosophical theories once dismissed the aesthetic value of everyday life.`,ans:true,exp:`본문 내용과 일치`},{stmt:`John Dewey’s Art as Experience is a key source for contemporary everyday aesthetics. - APEX`,ans:true,exp:`본문 내용과 일치`},{stmt:`Dewey argued that art should be separated from the biological conditions of human life.`,ans:false,exp:`본문과 다름`}]},
+  {no:33,topic:`지문 33번`,text:`One cannot [validly] argue that humans are [morally] [superior] beings [on the ground that] they [possess], while others lack, the capacities of a moral agent. The reason is that, as far as moral standards are concerned, only beings that have the capacities of a moral agent can meaningfully be said to be either morally good or morally bad. Only moral agents can be judged to be morally better or worse than others, and the others in question must be moral agents themselves. Judgments of moral superiority are based on the comparative merits or deficiencies of the entities being judged, and these merits and deficiencies are all moral ones, that is, ones determined by moral standards. One entity is correctly judged morally superior to another if it is the case that, when valid moral standards are applied to both entities, the first fulfills them to a greater degree than the second. Both entities, therefore, must fall within the range of application of moral standards. This would not be the case, however, if humans were being judged superior to animals and plants, since the latter are not 1 moral agents.`,blanks:[{sentence:`_____ (타당하게)`,opts:[`validly`,`morally`,`superior`,`on the ground that`],ans:`validly`},{sentence:`_____ (도덕적으로)`,opts:[`morally`,`superior`,`on the ground that`,`possess`],ans:`morally`},{sentence:`_____ (우월한)`,opts:[`superior`,`on the ground that`,`possess`,`lack`],ans:`superior`},{sentence:`_____ (~이라는 근거로)`,opts:[`on the ground that`,`possess`,`lack`,`agent`],ans:`on the ground that`},{sentence:`_____ (지니다)`,opts:[`possess`,`lack`,`agent`,`standard`],ans:`possess`}],topic_q:{q:`이 글의 주제으로 가장 적절한 것은?`,opts:[`inherent limitations in defining the exact scope of moral agency`,`necessity of sharing common moral ground for comparing moral superiority`,`ethical problems of assigning moral values to non- human entities like plants`,`fundamental reasons why humans are considered as the only true moral agents`,`potential conflicts between different moral standards applied to various living beings`],ans:`necessity of sharing common moral ground for comparing moral superiority`},tf:[{stmt:`Humans are not necessarily superior to other beings just because they are moral agents.`,ans:true,exp:`본문 내용과 일치`},{stmt:`Moral standards can only be applied to entities that have the capacity for moral agency.`,ans:true,exp:`본문 내용과 일치`},{stmt:`Comparing the morality of two beings requires that both fall under the same moral rules.`,ans:true,exp:`본문 내용과 일치`},{stmt:`Moral superiority is determined by how well an entity meets valid moral requirements.`,ans:true,exp:`본문 내용과 일치`},{stmt:`Animals and plants can be judged morally inferior to humans if they fail moral tests.`,ans:false,exp:`본문과 다름`}]},
+  {no:34,topic:`지문 34번`,text:`Such [artificial] ‘pause fillers’ as machine-generated supplements for silence may help to produce a more [natural-sounding] cadence in machine-generated speech patterns and so help to [convince] the AI’s human interlocutors that they are engaging with another human. AI’s ‘[humanity]’ of silence emerges in these contexts not least because a short period of silence is likely to be interpreted as a ‘pause for thought’, therefore reinforcing the illusion that the machine is ‘thinking’ before responding, just as a human might. However, the technical issues flagged in AI’s poor handling of higher duration and frequency silences, no less than the machine inference that silence can be filled with relevant sounds in some conversational situations, are both significant. In this 26년3월 고2 모의고사 [context] at least, the AI may be starting to recognise silence not as an absence but as meaningful data. Yet the AI’s confusion when presented with substantial silences, and its understanding that short break tags are equivalent to vocal markers such as ‘uh’s’ and ‘ah’s’ indicate the AI’s continuing preferences for sound over silence, for presence over absence. [from The Routledge Handbook of AI and Literature by Genevieve Liveley, Will Slocombe]`,blanks:[{sentence:`_____ (인공적인)`,opts:[`artificial`,`supplement`,`natural-sounding`,`convince`],ans:`artificial`},{sentence:`_____ (자연스럽게 들리는)`,opts:[`natural-sounding`,`supplement`,`convince`,`engage with`],ans:`natural-sounding`},{sentence:`_____ (확신시키다)`,opts:[`convince`,`supplement`,`engage with`,`humanity`],ans:`convince`},{sentence:`_____ (인간다움)`,opts:[`humanity`,`supplement`,`engage with`,`emerge`],ans:`humanity`},{sentence:`_____ (맥락, 문맥)`,opts:[`context`,`supplement`,`engage with`,`emerge`],ans:`context`}],topic_q:{q:`이 글의 주제으로 가장 적절한 것은?`,opts:[`the significance of long silences in deep machine learning processes`,`how human interlocutors perceive machine-generated sounds as emotions`,`the technical difficulties in generating natural human speech patterns`,`the role of artificial pause fillers in improving human-AI interactions`,`AI's limited interpretation of silence and its inherent preference for sound`],ans:`AI's limited interpretation of silence and its inherent preference for sound`},tf:[{stmt:`Synthetic vocal fillers assist in persuading human listeners that they are conversing with an actual person.`,ans:true,exp:`본문 내용과 일치`},{stmt:`Brief moments of quietude strengthen the misconception that the artificial intelligence is contemplating its answer.`,ans:true,exp:`본문 내용과 일치`},{stmt:`The AI demonstrates flawless proficiency in managing extended and recurrent periods of silence during conversations.`,ans:false,exp:`본문과 다름`},{stmt:`There is a possibility that the machine is beginning to perceive silence as significant information rather than a mere void.`,ans:true,exp:`본문 내용과 일치`},{stmt:`The system's equation of brief pauses with verbal utterances illustrates its underlying bias toward sonic presence.`,ans:true,exp:`본문 내용과 일치`}]},
+  {no:35,topic:`지문 35번`,text:`[standardization] of information was an effect of printing; since it allowed [exact] [reproduction] of information in a way that manuscript copying did not. This is [evident] in the [contrast] between the travel logs of Marco Polo and those of Christopher Columbus. After his return from China in 1295, a century and a half before printing, Polo’s narrative was copied in about 150 different manuscripts, with so many differences that we’re not sure which version is authentic. In contrast, there is only one version of Christopher Columbus’s letters about the exploration of the Caribbean in the 1490s, since they were fixed in printed form and widely distributed at the time they were written. So the certainty of accuracy was a way that printing was an improvement over the old oral manuscript culture.`,blanks:[{sentence:`_____ (표준화)`,opts:[`standardization`,`exact`,`reproduction`,`evident`],ans:`standardization`},{sentence:`_____ (정확한)`,opts:[`exact`,`reproduction`,`evident`,`contrast`],ans:`exact`},{sentence:`_____ (복제)`,opts:[`reproduction`,`evident`,`contrast`,`log`],ans:`reproduction`},{sentence:`_____ (분명한)`,opts:[`evident`,`contrast`,`log`,`narrative`],ans:`evident`},{sentence:`_____ (대조)`,opts:[`contrast`,`log`,`narrative`,`authentic`],ans:`contrast`}],topic_q:{q:`이 글의 주제으로 가장 적절한 것은?`,opts:[`the history of traveling logs before the 15th century`,`differences in writing styles between Polo and Columbus`,`the importance of exact reproduction in the printing era`,`factors contributing to the decline of manuscript copying`,`changes in the perception of history driven by printing technology`],ans:`the importance of exact reproduction in the printing era`},tf:[{stmt:`Printing enabled information to be duplicated precisely, unlike hand-copying.`,ans:true,exp:`본문 내용과 일치`},{stmt:`There were numerous variations among the 150 manuscripts of Marco Polo’s travels.`,ans:true,exp:`본문 내용과 일치`},{stmt:`It remains challenging to identify the original and genuine version of Polo’s logs.`,ans:true,exp:`본문 내용과 일치`},{stmt:`Columbus’s letters exist in multiple versions due to the lack of printing technology.`,ans:false,exp:`본문과 다름`},{stmt:`The stationary nature of printed text contributed to a higher level of reliability. - APEX`,ans:true,exp:`본문 내용과 일치`}]},
+  {no:36,topic:`지문 36번`,text:`Archaeological evidence suggests that various crops were being cultivated as early as 9500 BC in the Levant. Over the [millennia], [continuous] innovations have boosted agricultural [productivity] while reducing [manual] [labor]. However, the growing global population will always demand more food. It is projected that by 2050, the world’s population will increase to 9.7 billion, which will require global food production to rise by at least 70% to meet demand. Despite this need, only a small portion of the Earth’s surface is suitable for farming due to limitations such as climate, topography, soil quality, and technology. Political and economic factors, including land ownership patterns, environmental laws, and population density, also influence agricultural land use. In fact, the amount of land used for agriculture has been declining. In 2013, around 18.6 million square miles was used for food production, compared to 19.5 million square miles in 1 1991. [from Smart Farming, Smarter Solutions by Gourav Dhar Bhowmick, Manojit Chowdhury, Nand Lal Kushwaha]`,blanks:[{sentence:`_____ (수천 년)`,opts:[`millennia`,`cultivate`,`continuous`,`boost`],ans:`millennia`},{sentence:`_____ (지속적인)`,opts:[`continuous`,`cultivate`,`boost`,`productivity`],ans:`continuous`},{sentence:`_____ (생산성)`,opts:[`productivity`,`cultivate`,`boost`,`manual`],ans:`productivity`},{sentence:`_____ (육체노동의, 손으로 하는)`,opts:[`manual`,`cultivate`,`boost`,`labor`],ans:`manual`},{sentence:`_____ (노동)`,opts:[`labor`,`cultivate`,`boost`,`population`],ans:`labor`}],topic_q:{q:`이 글의 주제으로 가장 적절한 것은?`,opts:[`the development of agricultural technology`,`the advantages of using less land for farming`,`the decline in agricultural productivity in recent years`,`the effects of political and economic factors on agriculture`,`the widening gap between soaring food demand and shrinking farmland`],ans:`the widening gap between soaring food demand and shrinking farmland`},tf:[{stmt:`Continuous technological innovations in agriculture have successfully enhanced production efficiency while minimizing physical effort.`,ans:true,exp:`본문 내용과 일치`},{stmt:`To accommodate the projected global population of 2050, a substantial surge in food production is required compared to current levels.`,ans:true,exp:`본문 내용과 일치`},{stmt:`The expansion of farming areas is strictly confined by various natural obstacles such as geographical features and soil conditions.`,ans:true,exp:`본문 내용과 일치`},{stmt:`Socio-political elements, including legislation regarding the environment and land ownership, play a role in determining how land is utilized for farming.`,ans:true,exp:`본문 내용과 일치`},{stmt:`The total surface area dedicated to global food cultivation has shown a steady increase since the early 1990s due to rising demand.`,ans:false,exp:`본문과 다름`}]},
+  {no:37,topic:`지문 37번`,text:`If you are going to [compare] languages, it helps to start with something that you are [confident] you can find in all languages. Take for example signs or words for mother and father. If we add other family relationships to this category — son, grandmother, aunt, [brother-in-law], cousin — we are defining the category of kinship [terminology]. Comparative typological studies of kinship terminology have discovered that languages have labels for some but not all family relationships. And the probability that a specific kin relationship has a [label] is predictable based on the other kinship terms in the language. For example, all languages have a core set of kinship terms —like mother and father. By contrast, terms for less central category members are often built up from the core terms—like mother-in-law and stepfather. If 26년3월 고2 모의고사 we compare languages across the world, we can ask what kinship relationships are typically expressed with core terminology, and what relationships are expressed by modifying the core terminology. [from Understanding Signed Languages Erin Wilkinson, Jill P. Morford]`,blanks:[{sentence:`_____ (비교하다)`,opts:[`compare`,`confident`,`brother-in-law`,`define`],ans:`compare`},{sentence:`_____ (확신하는)`,opts:[`confident`,`brother-in-law`,`define`,`terminology`],ans:`confident`},{sentence:`_____ (형부, 처남, 시동생)`,opts:[`brother-in-law`,`define`,`terminology`,`label`],ans:`brother-in-law`},{sentence:`_____ (어휘 체계)`,opts:[`terminology`,`define`,`label`,`probability`],ans:`terminology`},{sentence:`_____ (명칭, 표, 라벨)`,opts:[`label`,`define`,`probability`,`predictable`],ans:`label`}],topic_q:{q:`이 글의 주제으로 가장 적절한 것은?`,opts:[`the diverse types of kinship myths found in comparative studies`,`the distinction between core terminology and modified variations`,`the predictable nature of kinship terms across different languages`,`the universal presence of primary kinship dynamics in most cultures`,`the correlation between family size and the number of kinship labels - APEX`],ans:`the predictable nature of kinship terms across different languages`},tf:[{stmt:`Comparing languages is easier when starting with terms found in every language.`,ans:true,exp:`본문 내용과 일치`},{stmt:`Kinship terminology is a category that includes various labels for family relationships.`,ans:true,exp:`본문 내용과 일치`},{stmt:`The existence of a certain kin label can be predicted by other terms in that language.`,ans:true,exp:`본문 내용과 일치`},{stmt:`Every language possesses a primary group of kinship terms, such as mother and father.`,ans:true,exp:`본문 내용과 일치`},{stmt:`Terms for distant relatives are frequently established by creating new core terms.`,ans:false,exp:`본문과 다름`}]},
+  {no:38,topic:`지문 38번`,text:`There are several ways that participants in a make- believe can communicate things about the [fictional] world to other participants. Sometimes these messages are emitted naturally as a result of full participation in the fictional world — i.e., something said or done by a player while in character communicates some things that are fictional of that world. For example, a child pretending to be Peter Pan might gasp and [draw] a plastic knife. This might be [sufficient] to communicate that fictionally one of Peter’s enemies, such as Captain Hook, is approaching. These [in-character] behaviors can be [insufficient], however, to maintain the necessary amount of common ground about what is fictional in the world of the make-believe. At these times participants often come at least partly out of character to give other participants the information they need. For example, it would be important to avoid confusion about who is playing which character: “No, you’re Captain Hook, and I’m Peter Pan!” [from Culturally Sustainable Social Robotics by Johanna Seibt, Marco Norskov, Oliver Santiago Quick]`,blanks:[{sentence:`_____ (가상의, 허구의)`,opts:[`fictional`,`emit`,`in-character`,`pretend to`],ans:`fictional`},{sentence:`_____ (역할에 충실한)`,opts:[`in-character`,`emit`,`pretend to`,`draw`],ans:`in-character`},{sentence:`_____ (뽑다, 끄집어내다)`,opts:[`draw`,`emit`,`pretend to`,`sufficient`],ans:`draw`},{sentence:`_____ (충분한)`,opts:[`sufficient`,`emit`,`pretend to`,`approach`],ans:`sufficient`},{sentence:`_____ (불충분한)`,opts:[`insufficient`,`emit`,`pretend to`,`approach`],ans:`insufficient`}],topic_q:{q:`이 글의 요지으로 가장 적절한 것은?`,opts:[`The fictional world in make-believe must remain consistent among all participants.`,`The fictional world is sustained by participants’ ability to create new imaginings.`,`Before a make-believe play begins, participants must communicate clearly to keep the game going.`,`In make-believe play, participants share common values to maintain a consistent fictional world.`,`In make-believe play, participants use role-immersed actions to convey the story, but sometimes must step aside from their roles to make it clear.`],ans:`In make-believe play, participants use role-immersed actions to convey the story, but sometimes must step aside from their roles to make it clear.`},tf:[{stmt:`Participants in a make-believe can share information about the fictional world in several ways.`,ans:true,exp:`본문 내용과 일치`},{stmt:`Sometimes, by fully participating in the fictional world, what a player says or does in character naturally conveys information about that world.`,ans:true,exp:`본문 내용과 일치`},{stmt:`A child pretending to be Peter Pan might use a plastic knife to show that Captain Hook is approaching, communicating this in character.`,ans:true,exp:`본문 내용과 일치`},{stmt:`Natural in-character behaviors are always sufficient to maintain the necessary common ground about the fictional world.`,ans:false,exp:`본문과 다름`},{stmt:`When there is confusion about characters, participants may briefly step out of character to clarify roles and maintain common ground. - APEX`,ans:true,exp:`본문 내용과 일치`}]},
+  {no:39,topic:`지문 39번`,text:`Our intuition about states of matter comes from our experience on Earth’s surface, where the [pressure] is [uniformly] low and variations in temperature cause changes in the state of matter from [solid] to liquid to gas. Therefore, when we think of melting or boiling or the creation of plasma, we [intuitively] [assume] it reflects an increase in temperature. This bias comes from the fact that we live in a very constant pressure environment. Even small changes in pressure, such as those we experience when under water or on high mountaintops, can have very large effects on our metabolism. But the pressure changes we experience are trivial compared to the pressure range of the overall planetary environment. Since pressure is controlled by the weight of overlying material, pressures increase rapidly with depth. Imagine the pressures generated by the weight of rock a mile thick! For this reason a planet’s pressure ranges are enormous — from essentially zero pressure in space to 1 pressures of millions of atmospheres in planetary interiors. [from How to Build a Habitable Planet by Charles H. Langmuir, Wallace Broecker, Wally Broecker]`,blanks:[{sentence:`_____ (압력)`,opts:[`pressure`,`come from`,`uniformly`,`variation`],ans:`pressure`},{sentence:`_____ (균일하게)`,opts:[`uniformly`,`come from`,`variation`,`solid`],ans:`uniformly`},{sentence:`_____ (고체)`,opts:[`solid`,`come from`,`variation`,`intuitively`],ans:`solid`},{sentence:`_____ (직관적으로)`,opts:[`intuitively`,`come from`,`variation`,`assume`],ans:`intuitively`},{sentence:`_____ (추측하다)`,opts:[`assume`,`come from`,`variation`,`reflect`],ans:`assume`}],topic_q:{q:`이 글의 주제으로 가장 적절한 것은?`,opts:[`how to calculate the exact weight of overlying rocks on Earth`,`the chemical processes involved in the creation of plasma in space`,`the negative impacts of high-altitude pressure on human metabolism`,`the necessity of temperature control for deep planetary exploration`,`human misconceptions about phase changes due to Earth's constant pressure`],ans:`human misconceptions about phase changes due to Earth's constant pressure`},tf:[{stmt:`Human intuition regarding states of matter is heavily influenced by Earth's surface conditions.`,ans:true,exp:`본문 내용과 일치`},{stmt:`People generally associate the process of boiling strictly with an increase in pressure rather than temperature.`,ans:false,exp:`본문과 다름`},{stmt:`Minor fluctuations in pressure can cause substantial effects on human metabolic functions.`,ans:true,exp:`본문 내용과 일치`},{stmt:`Pressure increases rapidly depending on the depth because it is controlled by the weight of overlying material.`,ans:true,exp:`본문 내용과 일치`},{stmt:`The pressure ranges of a planet are vast, ranging from zero in space to millions of atmospheres inside.`,ans:true,exp:`본문 내용과 일치`}]},
+  {no:40,topic:`지문 40번`,text:`When [self-experimentation] and [conventional] experiments are both possible, the difference between them often resembles the difference between learning and showing: Self-experiments are better for discovery but worse for convincing others that the solution is helpful or the answer is correct. Of course, most scientists want to do both — discover something and [convince] others of their discovery. Thus, psychologists should consider doing both self-experiments and conventional ones. The best use of resources may often be self-experiments followed by conventional ones. The researcher begins with self-experiments that, if all goes well, find large effects and / or generate and [eliminate] many hypotheses. This [exploratory] and theory-building phase lasts until a convenient solution or large effect is found. Then the researcher uses self-experiments to find the procedural parameters (e.g., duration, time of day, intensity) that optimize the solution or maximize the effect. Only then would the researcher begin conventional experiments, using the optimized parameters. [from Handbook of Research Methods in Human Operant Behavior by Kennon A. Lattal, Michael Perone]`,blanks:[{sentence:`_____ (자가 실험)`,opts:[`self-experimentation`,`conventional`,`resemble`,`convince`],ans:`self-experimentation`},{sentence:`_____ (전통적인)`,opts:[`conventional`,`resemble`,`convince`,`psychologist`],ans:`conventional`},{sentence:`_____ (납득시키다)`,opts:[`convince`,`resemble`,`psychologist`,`resource`],ans:`convince`},{sentence:`_____ (제거하다)`,opts:[`eliminate`,`resemble`,`psychologist`,`resource`],ans:`eliminate`},{sentence:`_____ (탐색적인)`,opts:[`exploratory`,`resemble`,`psychologist`,`resource`],ans:`exploratory`}],topic_q:{q:`이 글의 주제으로 가장 적절한 것은?`,opts:[`the process of generating hypotheses in psychological studies`,`the limitations of conventional experiments in scientific research`,`the advantages of self-experimentation over traditional methods`,`the role of conventional experiments in verifying research findings`,`the complementary roles of self-experiments and conventional experiments`],ans:`the complementary roles of self-experiments and conventional experiments`},tf:[{stmt:`Self-experiments are more effective for discovering new ideas.`,ans:true,exp:`본문 내용과 일치`},{stmt:`Conventional experiments are better at persuading others.`,ans:true,exp:`본문 내용과 일치`},{stmt:`Researchers usually begin with conventional experiments before self-experiments.`,ans:false,exp:`본문과 다름`},{stmt:`Self-experiments are mainly used to determine optimal procedural parameters.`,ans:true,exp:`본문 내용과 일치`},{stmt:`Optimized parameters are used in later conventional experiments. - APEX`,ans:true,exp:`본문 내용과 일치`}]}
+];
+
+// ── STATE ──────────────────────────────────────────
+let userName='', userSchool='', selectedNos=new Set(), doneNos=new Set();
+let qs=[], idx=0, cor=0, wrn=0, wrongs=[], allResults=[], answered=false, t0=0;
+let filterMode='all';
+
+// ── START ──────────────────────────────────────────
+function goPassageSelect(){
+  userSchool = document.getElementById('si').value;
+  userName = document.getElementById('ni').value.trim();
+  if(!userSchool){alert('학교를 선택해주세요!');return;}
+  if(!userName){alert('이름을 입력해주세요!');return;}
+  document.getElementById('startScreen').classList.add('hidden');
+  document.getElementById('userInfo').textContent = userName + ' · ' + userSchool;
+  renderPassageGrid();
+  document.getElementById('passageScreen').classList.remove('hidden');
+}
+
+function renderPassageGrid(){
+  const grid = document.getElementById('passageGrid');
+  grid.innerHTML='';
+  PASSAGES.forEach(p=>{
+    if(filterMode==='21-24' && (p.no<21||p.no>24)) return;
+    if(filterMode==='29-40' && (p.no<29||p.no>40)) return;
+    const d = document.createElement('div');
+    d.className='p-card'+(selectedNos.has(p.no)?' sel':'')+(doneNos.has(p.no)?' done':'');
+    d.onclick=()=>togglePassage(p.no, d);
+    d.innerHTML=`<div class="p-no">${p.no}번</div><div class="p-topic">${p.topic}</div>`
+      +(doneNos.has(p.no)?'<span class="p-badge done-badge">완료✓</span>':'')
+      +(selectedNos.has(p.no)&&!doneNos.has(p.no)?'<span class="p-badge" style="background:#e3f2fd;color:#1565c0;">선택</span>':'');
+    grid.appendChild(d);
+  });
+}
+
+function togglePassage(no, el){
+  if(selectedNos.has(no)){selectedNos.delete(no);el.classList.remove('sel');}
+  else{selectedNos.add(no);el.classList.add('sel');}
+}
+
+function filterPassage(mode, btn){
+  filterMode=mode;
+  document.querySelectorAll('.filter-bar .fb').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  renderPassageGrid();
+}
+
+function selectAll(){
+  const visible = PASSAGES.filter(p=>{
+    if(filterMode==='21-24') return p.no>=21&&p.no<=24;
+    if(filterMode==='29-40') return p.no>=29&&p.no<=40;
+    return true;
+  });
+  const allSel = visible.every(p=>selectedNos.has(p.no));
+  visible.forEach(p=>{ if(allSel) selectedNos.delete(p.no); else selectedNos.add(p.no); });
+  renderPassageGrid();
+}
+
+function startQuiz(){
+  if(selectedNos.size===0){alert('지문을 하나 이상 선택하세요!');return;}
+  // build question list
+  qs=[];
+  PASSAGES.filter(p=>selectedNos.has(p.no)).forEach(p=>{
+    // blanks
+    p.blanks.forEach((b,i)=>qs.push({pno:p.no,topic:p.topic,type:'blank',data:b,passageText:p.text,pid:p.no+'_b'+i}));
+    // topic_q
+    qs.push({pno:p.no,topic:p.topic,type:'topic',data:p.topic_q,passageText:p.text,pid:p.no+'_tq'});
+    // tf
+    p.tf.forEach((t,i)=>qs.push({pno:p.no,topic:p.topic,type:'tf',data:t,passageText:p.text,pid:p.no+'_t'+i}));
+  });
+  // shuffle within each passage group is already ordered; shuffle all
+  idx=0; cor=0; wrn=0; wrongs=[]; allResults=[]; answered=false; t0=Date.now();
+  document.getElementById('passageScreen').classList.add('hidden');
+  document.getElementById('hdr').classList.remove('hidden');
+  document.getElementById('pw').classList.remove('hidden');
+  document.getElementById('quizArea').classList.remove('hidden');
+  document.getElementById('hs').textContent=userName+' · '+selectedNos.size+'개 지문';
+  showQ();
+}
+
+// ── QUIZ ──────────────────────────────────────────
+function showQ(){
+  if(idx>=qs.length){showResult();return;}
+  answered=false;
+  const q=qs[idx];
+  document.getElementById('pf').style.width=(idx/qs.length*100).toFixed(0)+'%';
+  document.getElementById('hb').textContent=(idx+1)+'/'+qs.length;
+  const area=document.getElementById('quizArea');
+
+  if(q.type==='blank'){
+    const d=q.data;
+    const shuf=arr=>{const b=[...arr];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;};
+    const opts=shuf(d.opts);
+
+    // 지문에서 현재 문제의 정답만 블록 처리, 나머지 [ ]는 일반 텍스트로
+    let passageDisplay = q.passageText;
+    passageDisplay = passageDisplay.replace(/\[([^\]]+)\]/g,(match, inner)=>{
+      if(inner === d.ans || d.ans.includes(inner) || inner.includes(d.ans)){
+        return `<span style="display:inline-block;min-width:80px;background:#1565c0;color:#1565c0;border-radius:5px;padding:1px 6px;font-weight:800;letter-spacing:2px;user-select:none;">░░░░░░░</span>`;
+      }
+      // 나머지는 그냥 일반 텍스트로
+      return inner;
+    });
+
+    // 빈칸 문장 표시 (_____ → 파란 빈칸)
+    const blankSentence = d.sentence.replace('_____',
+      `<span style="display:inline-block;min-width:120px;border-bottom:3px solid #1565c0;background:#bbdefb;border-radius:4px;padding:2px 10px;font-weight:800;color:#1565c0;">_____</span>`);
+
+    area.innerHTML=`
+      <div class="qc">
+        <div class="q-no-badge"><span class="qno">${q.pno}번</span><span class="qtype blank">빈칸 추론</span></div>
+        <div style="font-size:11px;font-weight:700;color:#1565c0;margin-bottom:6px;">📄 지문 — 파란 빈칸에 들어갈 말을 고르세요 (${q.topic})</div>
+        <div class="passage-box" style="font-size:13px;margin-bottom:14px;line-height:2;">${passageDisplay}</div>
+        <div style="background:#e3f2fd;border:2px solid #1565c0;border-radius:10px;padding:12px 14px;font-size:13px;font-weight:700;color:#1a237e;margin-bottom:12px;line-height:1.9;">${blankSentence}</div>
+        <div class="choices" id="qChoices"></div>
+        <div class="fb-msg" id="fb"></div>
+      </div>`;
+    const cc=document.getElementById('qChoices');
+    opts.forEach((o,i)=>{
+      const b=document.createElement('button');
+      b.className='cb';
+      b.innerHTML=`<span class="cn">${i+1}</span>${o}`;
+      b.addEventListener('click',()=>selBlank(b,o,d.ans));
+      cc.appendChild(b);
+    });
+  } else if(q.type==='topic'){
+    const d=q.data;
+    const shuf=arr=>{const b=[...arr];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;};
+    const opts=shuf(d.opts);
+    const cleanText = q.passageText.replace(/\[([^\]]+)\]/g,'<span style="background:#fff3e0;border-bottom:2.5px solid #f57f17;font-weight:800;padding:0 3px;border-radius:3px;">$1</span>');
+    area.innerHTML=`
+      <div class="qc">
+        <div class="q-no-badge"><span class="qno">${q.pno}번</span><span class="qtype" style="background:#e8f5e9;color:#2e7d32;">주제/요지</span></div>
+        <div style="font-size:11px;font-weight:700;color:#1565c0;margin-bottom:6px;">📄 지문 (${q.topic})</div>
+        <div class="passage-box" style="font-size:13px;margin-bottom:14px;">${cleanText}</div>
+        <div class="q-prompt">🎯 ${d.q}</div>
+        <div class="choices" id="qChoices"></div>
+        <div class="fb-msg" id="fb"></div>
+      </div>`;
+    const cc=document.getElementById('qChoices');
+    opts.forEach((o,i)=>{
+      const b=document.createElement('button');
+      b.className='cb';
+      b.innerHTML=`<span class="cn">${i+1}</span>${o}`;
+      b.addEventListener('click',()=>selBlank(b,o,d.ans));
+      cc.appendChild(b);
+    });
+  } else {
+    const d=q.data;
+    // 지문 원문에서 [ ] 제거해서 보여주기
+    const cleanText = q.passageText.replace(/\[([^\]]+)\]/g,'$1');
+    area.innerHTML=`
+      <div class="qc">
+        <div class="q-no-badge"><span class="qno">${q.pno}번</span><span class="qtype tf">내용 일치 T/F</span></div>
+        <div style="font-size:11px;font-weight:700;color:#1565c0;margin-bottom:6px;">📄 지문 (${q.topic})</div>
+        <div class="passage-box" style="font-size:13px;margin-bottom:14px;">${cleanText}</div>
+        <div class="q-prompt">✅ 다음 문장이 본문 내용과 일치하면 O, 아니면 X를 선택하세요.</div>
+        <div style="background:#fff8e1;border:2px solid #f57f17;border-radius:10px;padding:12px 14px;font-size:14px;font-weight:700;color:#333;margin:10px 0 14px;">${d.stmt}</div>
+        <div class="tf-btns">
+          <button class="tfb ob" id="btnO" onclick="selTF(this,true,${d.ans})">⭕ 일치</button>
+          <button class="tfb xb" id="btnX" onclick="selTF(this,false,${d.ans})">❌ 불일치</button>
+        </div>
+        <div class="fb-msg" id="fb"></div>
+      </div>`;
+  }
+}
+
+function selBlank(btn,sel,ans){
+  if(answered)return;
+  answered=true;
+  document.querySelectorAll('.cb').forEach(b=>b.disabled=true);
+  const fb=document.getElementById('fb');
+  const q=qs[idx];
+  const typeLabel = q.type==='topic' ? '주제' : '빈칸';
+  if(sel===ans){
+    btn.classList.add('correct');
+    fb.className='fb-msg ok';fb.textContent='✅ 정답!';
+    cor++;
+    allResults.push({pno:q.pno, type:typeLabel, correct:true, my:sel, ans:ans});
+  } else {
+    btn.classList.add('wrong');
+    document.querySelectorAll('.cb').forEach(b=>{if(b.textContent.trim()===ans)b.classList.add('reveal');});
+    fb.className='fb-msg no';fb.textContent='❌ 오답! 정답: '+ans;
+    wrn++;
+    wrongs.push({pid:q.pid, label:q.pno+'번 '+typeLabel, my:sel, correct:ans, exp:''});
+    allResults.push({pno:q.pno, type:typeLabel, correct:false, my:sel, ans:ans});
+  }
+  setTimeout(()=>{idx++;showQ();},sel===ans?700:1800);
+}
+
+function selTF(btn,sel,ans){
+  if(answered)return;
+  answered=true;
+  document.querySelectorAll('.tfb').forEach(b=>b.disabled=true);
+  const fb=document.getElementById('fb');
+  const correct=(sel===ans);
+  btn.classList.add(correct?'correct':'wrong');
+  if(!correct){
+    const other=document.getElementById(sel?'btnX':'btnO');
+    other.classList.add('reveal');
+  }
+  const q=qs[idx];
+  const d=q.data;
+  if(correct){
+    fb.className='fb-msg ok';fb.textContent='✅ 정답! '+d.exp;
+    cor++;
+    allResults.push({pno:q.pno, type:'T/F', correct:true, my:sel?'O':'X', ans:ans?'O':'X', stmt:d.stmt});
+  } else {
+    fb.className='fb-msg no';fb.textContent='❌ 오답! '+d.exp;
+    wrn++;
+    wrongs.push({pid:q.pid, label:q.pno+'번 T/F', my:sel?'O':'X', correct:ans?'O':'X', exp:d.exp});
+    allResults.push({pno:q.pno, type:'T/F', correct:false, my:sel?'O':'X', ans:ans?'O':'X', stmt:d.stmt});
+  }
+  setTimeout(()=>{idx++;showQ();},correct?700:1800);
+}
+
+// ── RESULT ──────────────────────────────────────────
+let wrongQs = []; // 오답 문제 저장용
+
+function showResult(){
+  document.getElementById('pf').style.width='100%';
+  document.getElementById('quizArea').classList.add('hidden');
+  const total=idx, pct=total>0?Math.round(cor/total*100):0;
+  const el=Math.round((Date.now()-t0)/60000);
+  selectedNos.forEach(n=>doneNos.add(n));
+  // 오답 문제 저장 (다시풀기용)
+  wrongQs = qs.filter((q,i)=>{
+    // wrongs 배열의 pid와 매칭
+    return wrongs.some(w=>w.pid===q.pid);
+  });
+
+  const wHTML=wrongs.length>0
+    ?'<div class="wl"><h3>❌ 오답 ('+wrongs.length+'개)</h3>'+wrongs.map(w=>'<div class="wi"><div class="wie">'+w.label+'</div><div class="wid">내 답: '+w.my+' → 정답: '+w.correct+(w.exp?' | '+w.exp:'')+'</div></div>').join('')+'</div>'
+    :'<div style="color:#2e7d32;font-weight:800;padding:14px;text-align:center;">🎉 전부 정답!</div>';
+
+  const retryBtn = wrongs.length>0
+    ? `<button class="rbtn" style="background:linear-gradient(135deg,#c62828,#e91e63);color:white;" onclick="retryWrongs()">❌ 오답 다시풀기 (${wrongs.length}개)</button>`
+    : '';
+
+  const rs=document.getElementById('resultScreen');
+  rs.classList.remove('hidden');
+  rs.innerHTML=`<div class="rc">
+    <div style="font-size:12px;color:var(--muted);margin-bottom:4px;">고2 26년 3월 본문 암기 · ${selectedNos.size}개 지문</div>
+    <div class="rs">${pct}점</div>
+    <div class="rsub">${userName}의 결과</div>
+    <div class="sr">
+      <div class="si"><div class="sn" style="color:#2e7d32;">${cor}</div><div class="sl">정답</div></div>
+      <div class="si"><div class="sn" style="color:#c62828;">${wrn}</div><div class="sl">오답</div></div>
+      <div class="si"><div class="sn" style="color:#1565c0;">${total}</div><div class="sl">총문제</div></div>
+      <div class="si"><div class="sn" style="color:#f57f17;">${el}분</div><div class="sl">소요</div></div>
+    </div>
+    ${wHTML}
+    <div class="rbtns">
+      ${retryBtn}
+      <button class="rbtn rbtn-p" onclick="goBack()">← 지문 다시 선택</button>
+      <button class="rbtn rbtn-s" onclick="location.reload()">처음부터 🔄</button>
+    </div>
+  </div>`;
+
+  if(window._fbSave) window._fbSave({
+    submittedAt: new Date().toISOString(),
+    studentName: userName,
+    school: userSchool,
+    score: pct,
+    correct: cor,
+    wrong: wrn,
+    total: total,
+    elapsedMin: el,
+    quizType: '고2_26년3월_본문암기',
+    passages: [...selectedNos].sort((a,b)=>a-b),
+    // 문제별 상세 결과: 몇 번 지문, 유형(빈칸/주제/T·F), 맞음/틀림, 내 답, 정답
+    details: allResults.map(r=>({
+      지문: r.pno+'번',
+      유형: r.type,
+      결과: r.correct ? '✅정답' : '❌오답',
+      내답: r.my,
+      정답: r.ans,
+      ...(r.stmt ? {문장: r.stmt} : {})
+    })),
+    wrongWords: wrongs.map(w=>({label:w.label, my:w.my, correct:w.correct}))
+  });
+}
+
+function retryWrongs(){
+  if(wrongQs.length===0) return;
+  qs=[...wrongQs];
+  idx=0; cor=0; wrn=0; wrongs=[]; allResults=[]; answered=false; t0=Date.now();
+  document.getElementById('resultScreen').classList.add('hidden');
+  document.getElementById('quizArea').classList.remove('hidden');
+  document.getElementById('hdr').classList.remove('hidden');
+  document.getElementById('pw').classList.remove('hidden');
+  document.getElementById('hs').textContent=userName+' · 오답 다시풀기';
+  showQ();
+}
+
+function goBack(){
+  document.getElementById('resultScreen').classList.add('hidden');
+  document.getElementById('hdr').classList.add('hidden');
+  document.getElementById('pw').classList.add('hidden');
+  selectedNos.clear();
+  renderPassageGrid();
+  document.getElementById('passageScreen').classList.remove('hidden');
+}
+
+// localStorage 자동입력
+window.addEventListener('DOMContentLoaded',()=>{
+  const n=localStorage.getItem('bomnal_name');
+  const s=localStorage.getItem('bomnal_school');
+  if(n) document.getElementById('ni').value=n;
+  if(s){
+    const sel=document.getElementById('si');
+    for(let i=0;i<sel.options.length;i++){
+      if(sel.options[i].value&&s.includes(sel.options[i].value)){sel.value=sel.options[i].value;break;}
+    }
+  }
+});
+</script>
+</body>
+</html>
