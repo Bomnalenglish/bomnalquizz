@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>봄날 퀴즈 | 고2 26년 3월 단어</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&family=Black+Han+Sans&display=swap');
+:root{--pri:#1565c0;--acc:#f57f17;--bg:#e3f2fd;--card:#fff;--bdr:#90caf9;--muted:#757575;--green:#2e7d32;--red:#c62828;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Nanum Gothic',sans-serif;background:var(--bg);min-height:100vh;color:#1a1a2e;}
+.hidden{display:none!important;}
+
+#startScreen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
+.s-card{background:var(--card);border-radius:24px;padding:36px 28px;text-align:center;max-width:520px;width:100%;box-shadow:0 8px 32px rgba(21,101,192,.15);}
+.s-card h1{font-family:'Black Han Sans',sans-serif;font-size:20px;color:var(--pri);margin-bottom:6px;}
+.s-sub{font-size:13px;color:var(--muted);margin-bottom:20px;}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:18px;}
+.info-item{background:var(--bg);border-radius:10px;padding:10px;text-align:center;font-size:12px;color:var(--pri);font-weight:700;}
+.ni{width:100%;padding:11px 14px;border:2px solid var(--bdr);border-radius:12px;font-size:14px;font-family:'Nanum Gothic',sans-serif;outline:none;margin-bottom:10px;}
+.ni:focus{border-color:var(--pri);}
+.start-btn{width:100%;padding:14px;border-radius:12px;border:none;background:linear-gradient(135deg,#1565c0,#f57f17);color:white;font-size:1rem;font-weight:800;cursor:pointer;font-family:inherit;}
+
+#passageScreen{padding:20px;max-width:680px;margin:0 auto;}
+.ps-header{background:linear-gradient(135deg,#1565c0,#1976d2);color:white;border-radius:16px;padding:18px 22px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;}
+.ps-title{font-family:'Black Han Sans',sans-serif;font-size:16px;}
+.ps-sub{font-size:11px;opacity:.8;margin-top:3px;}
+.user-info{background:rgba(255,255,255,.2);border-radius:10px;padding:6px 14px;font-size:12px;font-weight:700;}
+.filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
+.fb{padding:7px 16px;border:2px solid var(--pri);border-radius:20px;background:white;color:var(--pri);font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s;}
+.fb.on{background:var(--pri);color:white;}
+.mode-bar{display:flex;gap:8px;margin-bottom:14px;background:white;padding:8px;border-radius:14px;border:2px solid #e0e0e0;}
+.mb{flex:1;padding:10px;border:none;border-radius:10px;background:transparent;color:var(--muted);font-size:13px;font-weight:800;cursor:pointer;font-family:inherit;transition:all .15s;}
+.mb.on{background:var(--pri);color:white;}
+.passage-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px;margin-bottom:20px;}
+.p-card{background:white;border-radius:14px;padding:14px 8px;text-align:center;cursor:pointer;border:2.5px solid #e0e0e0;transition:all .18s;position:relative;}
+.p-card:hover{border-color:var(--pri);transform:translateY(-2px);box-shadow:0 6px 18px rgba(21,101,192,.12);}
+.p-card.sel{border-color:var(--pri);background:#e3f2fd;}
+.p-card.done{border-color:#4caf50;background:#e8f5e9;}
+.p-no{font-family:'Black Han Sans',sans-serif;font-size:18px;color:var(--pri);margin-bottom:2px;}
+.p-count{font-size:10px;color:var(--muted);}
+.p-badge{position:absolute;top:6px;right:6px;font-size:9px;padding:2px 6px;border-radius:8px;font-weight:700;}
+.done-badge{background:#e8f5e9;color:#2e7d32;}
+.sel-all-btn{width:100%;padding:12px;border-radius:12px;border:2px solid var(--pri);background:white;color:var(--pri);font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;margin-bottom:10px;}
+.go-btn{width:100%;padding:14px;border-radius:12px;border:none;background:linear-gradient(135deg,#1565c0,#f57f17);color:white;font-size:1rem;font-weight:800;cursor:pointer;font-family:inherit;}
+
+.hdr{background:#1565c0;color:white;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.ht{font-family:'Black Han Sans',sans-serif;font-size:15px;}
+.hs{font-size:10px;opacity:.7;margin-top:2px;}
+.hb{background:rgba(255,255,255,.2);border-radius:16px;padding:4px 12px;font-size:12px;font-weight:700;}
+.pw{height:4px;background:#bbdefb;}.pf{height:100%;background:linear-gradient(90deg,#1565c0,#f57f17);transition:width .4s;}
+
+#quizArea{padding:20px;max-width:680px;margin:0 auto;}
+.qc{background:white;border-radius:18px;padding:26px 22px;margin-bottom:16px;box-shadow:0 3px 16px rgba(21,101,192,.08);}
+.q-no-badge{display:flex;align-items:center;gap:6px;margin-bottom:14px;flex-wrap:wrap;}
+.qno{font-family:'Black Han Sans',sans-serif;font-size:13px;color:white;background:var(--pri);padding:3px 12px;border-radius:12px;}
+.qtype{font-size:11px;font-weight:700;padding:3px 10px;border-radius:10px;background:#fff3e0;color:#e65100;}
+.word-box{background:linear-gradient(135deg,#e3f2fd,#bbdefb);border-radius:14px;padding:30px 20px;text-align:center;margin-bottom:18px;}
+.word-en{font-family:'Black Han Sans',sans-serif;font-size:32px;color:var(--pri);line-height:1.3;word-break:break-word;}
+.word-ko{font-family:'Black Han Sans',sans-serif;font-size:24px;color:var(--pri);line-height:1.3;}
+.q-prompt{font-size:13px;font-weight:700;color:#1565c0;margin-bottom:12px;text-align:center;}
+.choices{display:grid;gap:10px;}
+.cb{background:#f5f5f5;border:2px solid #e0e0e0;border-radius:11px;padding:14px 16px;font-family:'Nanum Gothic',sans-serif;font-size:14px;font-weight:700;cursor:pointer;text-align:left;transition:all .15s;display:flex;align-items:center;gap:12px;line-height:1.5;}
+.cb:hover:not(:disabled){border-color:var(--pri);background:#e3f2fd;}
+.cb.correct{background:#e8f5e9;border-color:#2e7d32;color:#1b5e20;}
+.cb.wrong{background:#ffebee;border-color:#c62828;color:#b71c1c;}
+.cb.reveal{background:#e8f5e9;border-color:#2e7d32;}
+.cn{width:24px;height:24px;border-radius:50%;background:#90caf9;color:white;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0;}
+.fb-msg{padding:10px 14px;border-radius:10px;font-size:13px;font-weight:800;margin-top:12px;display:none;}
+.fb-msg.ok{background:#e8f5e9;color:#1b5e20;display:block;}
+.fb-msg.no{background:#ffebee;color:#b71c1c;display:block;}
+
+#resultScreen{padding:20px;max-width:600px;margin:0 auto;}
+.rc{background:white;border-radius:24px;padding:30px 22px;box-shadow:0 8px 32px rgba(21,101,192,.1);text-align:center;}
+.rs{font-family:'Black Han Sans',sans-serif;font-size:52px;color:var(--pri);line-height:1;}
+.rsub{font-size:13px;color:var(--muted);margin-top:4px;}
+.sr{display:flex;justify-content:center;gap:20px;margin-top:16px;flex-wrap:wrap;}
+.si{text-align:center;}.sn{font-family:'Black Han Sans',sans-serif;font-size:24px;}.sl{font-size:11px;color:var(--muted);margin-top:2px;}
+.wl{background:var(--bg);border-radius:14px;padding:14px;text-align:left;margin-top:14px;max-height:300px;overflow-y:auto;}
+.wl h3{font-size:12px;font-weight:800;color:var(--red);margin-bottom:8px;}
+.wi{background:white;border-radius:8px;padding:8px 12px;margin-bottom:6px;font-size:11px;border-left:3px solid #e91e63;}
+.wie{font-weight:800;color:var(--pri);}.wid{font-size:10px;color:var(--muted);margin-top:2px;}
+.rbtns{display:flex;gap:10px;justify-content:center;margin-top:18px;flex-wrap:wrap;}
+.rbtn{padding:12px 24px;border-radius:12px;border:none;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;}
+.rbtn-p{background:linear-gradient(135deg,#1565c0,#f57f17);color:white;}
+.rbtn-s{background:#f5f5f5;color:#1565c0;border:2px solid #90caf9;}
+
+@media(max-width:480px){.passage-grid{grid-template-columns:repeat(3,1fr)}.word-en{font-size:26px;}}
+</style>
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getFirestore,collection,addDoc,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+const cfg={apiKey:"AIzaSyCxS524S8KAaF87DomPtl9sJdF-eqes404",authDomain:"bomnalvaca.firebaseapp.com",projectId:"bomnalvaca",storageBucket:"bomnalvaca.firebasestorage.app",messagingSenderId:"115868052300",appId:"1:115868052300:web:765c08867b6f1ce0987de9"};
+const app=initializeApp(cfg);const db=getFirestore(app);
+window._fbSave=async function(data){
+  try{await addDoc(collection(db,'quiz_results'),{...data,timestamp:serverTimestamp()});}
+  catch(e){console.warn('FB 저장 오류:',e);}
+};
+</script>
+</head>
+<body>
+
+<div id="startScreen">
+  <div class="s-card">
+    <h1>📖 고2 26년 3월 단어</h1>
+    <div class="s-sub">2026년 3월 고2 모의고사 · 영어→한국어 / 한국어→영어 자동채점</div>
+    <div class="info-grid">
+      <div class="info-item">📝 18~45번 (총 398단어)</div>
+      <div class="info-item">🎯 지문별 선택 가능</div>
+      <div class="info-item">🔁 영↔한 양방향 출제</div>
+      <div class="info-item">📊 자동채점 + 오답노트</div>
+    </div>
+    <select class="ni" id="si" style="background:white;color:#1565c0;font-weight:700;cursor:pointer;">
+      <option value="">학교 선택</option>
+      <option value="종촌고">종촌고</option>
+      <option value="고운고">고운고</option>
+      <option value="대성고">대성고</option>
+      <option value="기타">기타</option>
+    </select>
+    <input type="text" class="ni" id="ni" placeholder="이름 입력" maxlength="10">
+    <button class="start-btn" onclick="goPassageSelect()">다음 → 지문 선택</button>
+  </div>
+</div>
+
+<div id="passageScreen" class="hidden">
+  <div class="ps-header">
+    <div>
+      <div class="ps-title">📖 지문 선택</div>
+      <div class="ps-sub">풀고 싶은 지문 번호를 선택하세요 (복수 선택 가능)</div>
+    </div>
+    <div class="user-info" id="userInfo"></div>
+  </div>
+  <div class="mode-bar">
+    <button class="mb on" id="mb-en" onclick="setMode('en')">🇺🇸 영→한</button>
+    <button class="mb" id="mb-ko" onclick="setMode('ko')">🇰🇷 한→영</button>
+    <button class="mb" id="mb-mix" onclick="setMode('mix')">🔀 섞기</button>
+  </div>
+  <div class="filter-bar">
+    <button class="fb on" onclick="filterPassage('all',this)">전체</button>
+    <button class="fb" onclick="filterPassage('18-24',this)">18~24번</button>
+    <button class="fb" onclick="filterPassage('25-30',this)">25~30번</button>
+    <button class="fb" onclick="filterPassage('31-40',this)">31~40번</button>
+    <button class="fb" onclick="filterPassage('long',this)">장문 41~45번</button>
+  </div>
+  <div class="passage-grid" id="passageGrid"></div>
+  <button class="sel-all-btn" onclick="selectAll()">전체 선택 / 해제</button>
+  <button class="go-btn" onclick="startQuiz()">선택한 지문 풀기 🚀</button>
+</div>
+
+<div id="hdr" class="hdr hidden">
+  <div><div class="ht">📖 고2 26년 3월 단어</div><div class="hs" id="hs"></div></div>
+  <div class="hb" id="hb">0/0</div>
+</div>
+<div id="pw" class="pw hidden"><div class="pf" id="pf" style="width:0%"></div></div>
+<div id="quizArea" class="hidden"></div>
+<div id="resultScreen" class="hidden"></div>
+
+<script>
+const VOCA = {
+  '18':[{en:`appreciate`,ko:`감사하다`},{en:`previously`,ko:`사전에, 미리`},{en:`conduct`,ko:`시행하다`},{en:`essential`,ko:`필수적인`},{en:`maintenance`,ko:`보수 (공사)`},{en:`facility`,ko:`시설`},{en:`temporary`,ko:`임시의`},{en:`main entrance`,ko:`정문`},{en:`be committed to`,ko:`~에 전념하다`},{en:`apologize`,ko:`사과하다`},{en:`inconvenience`,ko:`불편`},{en:`patience`,ko:`인내(심)`},{en:`cooperation`,ko:`협조`}],
+  '19':[{en:`grip`,ko:`꽉 쥐다`},{en:`weight`,ko:`부담, 책임`},{en:`anxious`,ko:`불안한`},{en:`sigh`,ko:`한숨`},{en:`make it through`,ko:`(어려움, 위기 등을) 잘 헤쳐나가다`},{en:`by the way`,ko:`그런데`},{en:`invisible`,ko:`보이지 않는`},{en:`melt away`,ko:`녹아 사라지다`},{en:`at ease`,ko:`긴장이 풀리는, 편안한`}],
+  '20':[{en:`master`,ko:`숙지하다`},{en:`end`,ko:`목적`},{en:`distract`,ko:`주의를 분산시키다`},{en:`unidimensional`,ko:`일차원적인`},{en:`remedy`,ko:`치료제`},{en:`inevitably`,ko:`불가피하게`},{en:`bombard`,ko:`(폭탄처럼) 쏟아붓다`},{en:`transition`,ko:`전환기, 과도기`},{en:`counterbalance`,ko:`상쇄하다, 균형을 맞추다`},{en:`jumping-off point`,ko:`발판`},{en:`shape`,ko:`구상하다, 형성하다`}],
+  '21':[{en:`establish`,ko:`구축하다`},{en:`respectful`,ko:`존중하는`},{en:`acceptance`,ko:`수용`},{en:`regardless of`,ko:`~과 상관없이`},{en:`obvious`,ko:`명백한`},{en:`mathematical`,ko:`수학적인`},{en:`be in place`,ko:`자리 잡다, 제자리에 있다`},{en:`misconception`,ko:`오개념`},{en:`forefront`,ko:`전면, 선두`},{en:`confront`,ko:`마주하다`},{en:`be willing to do`,ko:`기꺼이 ~하려 하다`},{en:`risk`,ko:`위험을 감수하다`},{en:`model`,ko:`본보기를 보이다`},{en:`comment`,ko:`의견, 논평`},{en:`verbal`,ko:`언어적인`},{en:`indicate`,ko:`나타내다, 보여 주다`},{en:`agreement`,ko:`동의`},{en:`blank face`,ko:`무표정(한 얼굴)`},{en:`equip`,ko:`(필요한 것을 갖추어) 준비 시키다`},{en:`defend`,ko:`방어하다`},{en:`derogatory`,ko:`비하하는`}],
+  '22':[{en:`intercity`,ko:`도시 사이의`},{en:`be familiar with`,ko:`~에 익숙하다`},{en:`routine`,ko:`절차, 관례`},{en:`baggage`,ko:`짐, 수하물`},{en:`handle`,ko:`처리하다, 다루다`},{en:`connection`,ko:`환승`},{en:`commuter`,ko:`통근객`},{en:`route`,ko:`경로; (흐름 등을) 유도하다`},{en:`separate`,ko:`분리된, 별도의`},{en:`conflict`,ko:`충돌, 갈등`},{en:`confusion`,ko:`혼란`},{en:`means`,ko:`수단, 방법`},{en:`desirable`,ko:`바람직한`},{en:`retrieve`,ko:`되찾다`},{en:`concise`,ko:`간결한`}],
+  '23':[{en:`be made up of`,ko:`~로 구성되다`},{en:`state`,ko:`상태`},{en:`cue`,ko:`신호, 큐`},{en:`trigger`,ko:`이끌어내다`},{en:`motivation`,ko:`계기, 동기`},{en:`obvious`,ko:`명백한, 분명한`},{en:`brighten`,ko:`밝히다, 밝아지다`},{en:`rapid`,ko:`빠른`},{en:`intensity`,ko:`강도`},{en:`subtle`,ko:`미묘한`},{en:`atmosphere`,ko:`분위기`},{en:`intention`,ko:`의도`},{en:`threatening`,ko:`위협적인`},{en:`dramatic`,ko:`극적인`},{en:`transition`,ko:`전환, 변화`}],
+  '24':[{en:`impose ~ on …`,ko:`~을 …에게 부여하다`},{en:`characteristics`,ko:`특성`},{en:`remarkable`,ko:`놀라운`},{en:`playback`,ko:`재생`},{en:`path`,ko:`경로`},{en:`dramatically`,ko:`극적으로`},{en:`musical instrument`,ko:`악기`},{en:`acoustical`,ko:`음향의`}],
+  '25':[{en:`consumer`,ko:`소비자`},{en:`except for`,ko:`~을 제외하고는`},{en:`in person`,ko:`대면하여, 직접`}],
+  '26':[{en:`physics`,ko:`물리학`},{en:`take over`,ko:`~을 물려받다`},{en:`family business`,ko:`가업`},{en:`pursue`,ko:`추구하다`},{en:`academic`,ko:`학업의, 학문의`},{en:`doctoral degree`,ko:`박사 학위`},{en:`career`,ko:`경력`},{en:`steady-state theory`,ko:`정상(定常) 우주론`},{en:`evidence`,ko:`증거`},{en:`award`,ko:`수여하다`},{en:`outstanding`,ko:`탁월한, 눈에 띄는`},{en:`contribution`,ko:`기여`},{en:`academic circles`,ko:`학계(學界)`}],
+  '27':[{en:`run`,ko:`운영하다`},{en:`temperature`,ko:`온도, 기온`},{en:`journal`,ko:`일지, 일기`},{en:`track`,ko:`추적하다`},{en:`submit`,ko:`제출하다`},{en:`benefit`,ko:`혜택`},{en:`agricultural`,ko:`농업의`},{en:`institute`,ko:`기관`},{en:`registration`,ko:`등록`},{en:`free of charge`,ko:`무료의`}],
+  '28':[{en:`borrow`,ko:`빌리다`},{en:`community center`,ko:`주민 센터, 지역 문화센터`},{en:`reserve`,ko:`예약하다`},{en:`household`,ko:`가정용의`},{en:`gear`,ko:`장비`},{en:`up to`,ko:`최대 ~까지`},{en:`extension`,ko:`연장`},{en:`late fee`,ko:`연체료`},{en:`charge`,ko:`부과하다`}],
+  '29':[{en:`Industrial Revolution`,ko:`산업 혁명`},{en:`invent`,ko:`만들어 내다, 발명하다`},{en:`manufacturing`,ko:`제조`},{en:`prior to`,ko:`~ 이전에`},{en:`trade`,ko:`업계`},{en:`specialist`,ko:`전문가`},{en:`specialize in`,ko:`~을 전문으로 하다`},{en:`hammer`,ko:`(피아노의) 해머`},{en:`essentially`,ko:`기본적으로`},{en:`improvement`,ko:`향상, 개선`},{en:`efficiency`,ko:`효율성`},{en:`casting`,ko:`주조 (틀에서 찍어 물건을 만드는 방식)`},{en:`plate`,ko:`(금속 따위의) 판`},{en:`apprentice`,ko:`견습생`}],
+  '30':[{en:`typically`,ko:`일반적으로, 보통`},{en:`significant`,ko:`상당한`},{en:`deep dive (into)`,ko:`(~로의) 깊은 몰두`},{en:`thorough`,ko:`철저한`},{en:`exploration`,ko:`탐구`},{en:`result in`,ko:`~의 결과를 가져오다`},{en:`narrow`,ko:`좁히다`},{en:`absorb in`,ko:`~에 몰두한`},{en:`acquire`,ko:`습득하다`},{en:`immediate`,ko:`직접적인`},{en:`consequently`,ko:`결과적으로`},{en:`singular`,ko:`단일의, 단독의`},{en:`breadth`,ko:`폭, 너비`},{en:`potentially`,ko:`잠재적으로`},{en:`adapt to`,ko:`~에 적응하다`},{en:`diverse`,ko:`다양한`},{en:`address`,ko:`처리하다`},{en:`interdisciplinary`,ko:`학제 간`},{en:`implement`,ko:`시행하다`},{en:`transferable`,ko:`전이 가능한`},{en:`incorporate`,ko:`통합하다`},{en:`curriculum`,ko:`교육과정`},{en:`aim to`,ko:`~하는 것을 목표로 하 다`},{en:`academia`,ko:`학계`},{en:`thesis-based`,ko:`논문 기반의`}],
+  '31':[{en:`imaginary`,ko:`상상의`},{en:`come to life`,ko:`살아 움직이다`},{en:`with respect to`,ko:`~에 관해`},{en:`disrupt`,ko:`방해하다`},{en:`that is`,ko:`즉, 말하자면`},{en:`display`,ko:`드러내다`},{en:`causal relation`,ko:`인과 관계`},{en:`pretend`,ko:`가장하다`},{en:`exhibit`,ko:`보여 주다`},{en:`avoidance`,ko:`회피`},{en:`meaningfully`,ko:`유의미하게`},{en:`in question`,ko:`대상이 되는, 해당의`},{en:`judgment`,ko:`판단, 비판`},{en:`comparative`,ko:`상대적인`},{en:`merit`,ko:`장점`},{en:`deficiency`,ko:`결함`},{en:`determine`,ko:`결정하다`},{en:`apply`,ko:`적용하다`},{en:`fulfill`,ko:`충족하다`},{en:`fall within`,ko:`~에 속하다`},{en:`the latter`,ko:`후자`},{en:`entity`,ko:`존재`}],
+  '32':[{en:`perhaps`,ko:`아마도`},{en:`emerge`,ko:`나타나다, 출현하다`},{en:`liberation`,ko:`해방`},{en:`expansion`,ko:`확장`},{en:`aesthetic`,ko:`미적인`},{en:`presently`,ko:`현재`},{en:`a flowering of`,ko:`활발한`},{en:`possibility`,ko:`가능성`},{en:`degrade`,ko:`격하시키다`},{en:`dismiss`,ko:`무시하다`},{en:`prevalent`,ko:`지배적인`},{en:`philosophical`,ko:`철학의`},{en:`poet`,ko:`시인`},{en:`novelist`,ko:`소설가`},{en:`convenient`,ko:`적절한, 편리한`},{en:`contemporary`,ko:`현대의`},{en:`intellectual`,ko:`지적인`},{en:`origin`,ko:`기원, 근원`},{en:`separation`,ko:`분리, 구분`},{en:`biological`,ko:`생물학적인`},{en:`internalized`,ko:`내면화된`},{en:`awareness`,ko:`인식`},{en:`sensation`,ko:`감각`},{en:`maintain`,ko:`(입장을) 유지하다, 주장 하다, 지속하다`},{en:`clarify`,ko:`명확히 하다`},{en:`intensify`,ko:`강화하다`},{en:`trait`,ko:`특성`},{en:`belong to`,ko:`~에 속하다`},{en:`gratification`,ko:`만족감`},{en:`interpenetration`,ko:`상호 침투`}],
+  '33':[{en:`validly`,ko:`타당하게`},{en:`morally`,ko:`도덕적으로`},{en:`superior`,ko:`우월한`},{en:`on the ground that`,ko:`~이라는 근거로`},{en:`possess`,ko:`지니다`},{en:`lack`,ko:`부족하다`},{en:`agent`,ko:`행위자`},{en:`standard`,ko:`기준`}],
+  '34':[{en:`artificial`,ko:`인공적인`},{en:`supplement`,ko:`보완 (요소)`},{en:`natural-sounding`,ko:`자연스럽게 들리는`},{en:`convince`,ko:`확신시키다`},{en:`engage with`,ko:`(대화 따위를) 함께하다`},{en:`humanity`,ko:`인간다움`},{en:`emerge`,ko:`나타나다`},{en:`context`,ko:`맥락, 문맥`},{en:`interpret`,ko:`해석하다`},{en:`reinforce`,ko:`강화하다`},{en:`illusion`,ko:`환상`},{en:`flag`,ko:`두드러지다`},{en:`duration`,ko:`(지속) 기간`},{en:`frequency`,ko:`빈번함`},{en:`inference`,ko:`추론`},{en:`relevant`,ko:`적절한, 관련이 있는`},{en:`confusion`,ko:`혼란`},{en:`substantial`,ko:`(상당히) 긴`},{en:`tag`,ko:`표식`},{en:`marker`,ko:`표지`},{en:`indicate`,ko:`보여 주다`},{en:`preference`,ko:`선호`},{en:`presence`,ko:`존재`},{en:`cadence`,ko:`억양`},{en:`interlocutor`,ko:`대화 상대`},{en:`equivalent`,ko:`상응하는`}],
+  '35':[{en:`standardization`,ko:`표준화`},{en:`exact`,ko:`정확한`},{en:`reproduction`,ko:`복제`},{en:`evident`,ko:`분명한`},{en:`contrast`,ko:`대조`},{en:`log`,ko:`일지`},{en:`narrative`,ko:`이야기`},{en:`authentic`,ko:`진짜의`},{en:`exploration`,ko:`탐험, 탐사`},{en:`distribute`,ko:`배포하다`},{en:`suggestive`,ko:`생각해 볼 만한, 암시하는`},{en:`reflection`,ko:`고찰, 심사숙고`},{en:`novelty`,ko:`독창성, 새로움`},{en:`accuracy`,ko:`정확성`},{en:`improvement`,ko:`나아진 점, 개선`},{en:`manuscript`,ko:`필사본`}],
+  '36':[{en:`cultivate`,ko:`경작하다, 재배하다`},{en:`millennia`,ko:`수천 년`},{en:`continuous`,ko:`지속적인`},{en:`boost`,ko:`증가시키다, 증진시키다`},{en:`productivity`,ko:`생산성`},{en:`manual`,ko:`육체노동의, 손으로 하는`},{en:`labor`,ko:`노동`},{en:`population`,ko:`인구, 주민`},{en:`project`,ko:`예상하다, 추정하다`},{en:`meet`,ko:`충족시키다`},{en:`portion`,ko:`일부, 부분`},{en:`suitable`,ko:`적합한`},{en:`density`,ko:`밀도`},{en:`decline`,ko:`감소하다`},{en:`square mile`,ko:`평방 마일`},{en:`compared to`,ko:`~와 비교하여`},{en:`archaeological`,ko:`고고학적인`},{en:`topography`,ko:`지형`}],
+  '37':[{en:`compare`,ko:`비교하다`},{en:`confident`,ko:`확신하는`},{en:`brother-in-law`,ko:`형부, 처남, 시동생`},{en:`define`,ko:`정의하다`},{en:`terminology`,ko:`어휘 체계`},{en:`label`,ko:`명칭, 표, 라벨`},{en:`probability`,ko:`확률`},{en:`predictable`,ko:`예측가능한`},{en:`term`,ko:`용어`},{en:`core`,ko:`핵심의`},{en:`central`,ko:`중심적인`},{en:`mother-in-law`,ko:`시어머니, 장모님`},{en:`step-father`,ko:`의붓아버지`},{en:`modify`,ko:`변형하다, 수정하다`},{en:`kinship`,ko:`친족`},{en:`typological`,ko:`유형학의`}],
+  '38':[{en:`fictional`,ko:`가상의, 허구의`},{en:`emit`,ko:`발산하다`},{en:`in-character`,ko:`역할에 충실한`},{en:`pretend to`,ko:`~을 연기하다, ~하는 척하다`},{en:`draw`,ko:`뽑다, 끄집어내다`},{en:`sufficient`,ko:`충분한`},{en:`approach`,ko:`접근하다`},{en:`insufficient`,ko:`불충분한`},{en:`common ground`,ko:`공통된 이해`},{en:`make-believe`,ko:`가상 역할 놀이`},{en:`gasp`,ko:`숨을 헐떡이다`}],
+  '39':[{en:`come from`,ko:`~에서 비롯되다`},{en:`pressure`,ko:`압력`},{en:`uniformly`,ko:`균일하게`},{en:`variation`,ko:`변화`},{en:`solid`,ko:`고체`},{en:`intuitively`,ko:`직관적으로`},{en:`assume`,ko:`추측하다`},{en:`reflect`,ko:`반영하다, 나타내다`},{en:`bias`,ko:`편향`},{en:`constant`,ko:`일정한`},{en:`trivial`,ko:`미미한`},{en:`planetary`,ko:`지구의, 행성의`},{en:`rapidly`,ko:`급격히, 빠르게`},{en:`generate`,ko:`만들어 내다`},{en:`enormous`,ko:`거대한, 막대한`},{en:`essentially`,ko:`사실상, 본질적으로`},{en:`interior`,ko:`내부`},{en:`intuition`,ko:`직관`},{en:`metabolism`,ko:`신진대사`}],
+  '40':[{en:`self-experimentation`,ko:`자가 실험`},{en:`conventional`,ko:`전통적인`},{en:`resemble`,ko:`비슷하다`},{en:`convince`,ko:`납득시키다`},{en:`psychologist`,ko:`심리학자`},{en:`resource`,ko:`자원`},{en:`eliminate`,ko:`제거하다`},{en:`hypothesis`,ko:`가설 (pl. hypotheses)`},{en:`exploratory`,ko:`탐색적인`},{en:`theory-building`,ko:`이론을 구축하는`},{en:`phase`,ko:`단계`},{en:`procedural`,ko:`절차적인`},{en:`duration`,ko:`지속 시간`},{en:`intensity`,ko:`강도, 세기`},{en:`maximize`,ko:`극대화하다`},{en:`be suited to`,ko:`~에 적합하다`},{en:`validation`,ko:`타당성`},{en:`precede`,ko:`~에 선행하다, 앞서다`},{en:`parameter`,ko:`매개 변수`},{en:`optimize`,ko:`최적화하다`}],
+  '41-42':[{en:`emergence`,ko:`출현`},{en:`visualize`,ko:`시각화하다`},{en:`numerical`,ko:`수치의`},{en:`employ`,ko:`활용하다`},{en:`statistics`,ko:`통계`},{en:`forefront`,ko:`선두, 맨 앞`},{en:`at that`,ko:`그것도(정보를 덧붙일 때)`},{en:`visual`,ko:`시각적인`},{en:`convention`,ko:`(관습적인) 표현 방법`},{en:`ordinary`,ko:`평범한`},{en:`analysis`,ko:`분석`},{en:`sophisticated`,ko:`정교한`},{en:`argument`,ko:`논증`},{en:`interpretation`,ko:`해석, 이해`},{en:`demonstrate`,ko:`입증하다`},{en:`notable`,ko:`주목할 만한`},{en:`incidence`,ko:`사건`},{en:`outbreak`,ko:`발병`},{en:`plot`,ko:`(지도에) 표시하다`},{en:`serve as`,ko:`~의 기능을 하다`},{en:`narrative`,ko:`서사, 서술`},{en:`convey`,ko:`전달하다`},{en:`thereby`,ko:`그 결과`},{en:`dimension`,ko:`차원`},{en:`sparing`,ko:`절제된`},{en:`lag`,ko:`뒤처지다`}],
+  '43-45':[{en:`aspiring`,ko:`의욕적인`},{en:`legendary`,ko:`전설적인`},{en:`capture`,ko:`담아내다, 포착하다`},{en:`cottage`,ko:`오두막`},{en:`pound`,ko:`두근거리다`},{en:`eagerly`,ko:`간절한 마음으로`},{en:`landscape`,ko:`풍경(화)`},{en:`praise`,ko:`칭찬`},{en:`plain`,ko:`평범한`},{en:`fancy`,ko:`화려한`},{en:`mock`,ko:`조롱하다`},{en:`dull`,ko:`칙칙한`},{en:`reluctantly`,ko:`마지못해`},{en:`frustrate`,ko:`좌절시키다`},{en:`rough`,ko:`거친, 고르지 않은`},{en:`lump`,ko:`덩어리`},{en:`patch`,ko:`자국`},{en:`fascinated`,ko:`매료된, 매혹된`},{en:`quartz`,ko:`석영`},{en:`moss`,ko:`이끼`}],
+};
+
+const PASSAGE_ORDER = Object.keys(VOCA).sort((a,b)=>parseInt(a.split('-')[0])-parseInt(b.split('-')[0]));
+
+let userName='', userSchool='', selectedRefs=new Set(), doneRefs=new Set();
+let qs=[], idx=0, cor=0, wrn=0, wrongs=[], allResults=[], answered=false, t0=0;
+let filterMode='all', quizMode='en';
+
+function goPassageSelect(){
+  userSchool = document.getElementById('si').value;
+  userName = document.getElementById('ni').value.trim();
+  if(!userSchool){alert('학교를 선택해주세요!');return;}
+  if(!userName){alert('이름을 입력해주세요!');return;}
+  try{localStorage.setItem('bomnal_name',userName);localStorage.setItem('bomnal_school',userSchool);}catch(e){}
+  document.getElementById('startScreen').classList.add('hidden');
+  document.getElementById('userInfo').textContent = userName + ' · ' + userSchool;
+  renderPassageGrid();
+  document.getElementById('passageScreen').classList.remove('hidden');
+}
+
+function setMode(m){
+  quizMode=m;
+  document.querySelectorAll('.mode-bar .mb').forEach(b=>b.classList.remove('on'));
+  document.getElementById('mb-'+m).classList.add('on');
+}
+
+function refInRange(ref, mode){
+  if(mode==='all') return true;
+  if(mode==='long') return ref.includes('-');
+  const n = parseInt(ref);
+  if(mode==='18-24') return n>=18&&n<=24;
+  if(mode==='25-30') return n>=25&&n<=30;
+  if(mode==='31-40') return n>=31&&n<=40;
+  return true;
+}
+
+function renderPassageGrid(){
+  const grid = document.getElementById('passageGrid');
+  grid.innerHTML='';
+  PASSAGE_ORDER.forEach(ref=>{
+    if(!refInRange(ref, filterMode)) return;
+    const count = VOCA[ref].length;
+    const d = document.createElement('div');
+    d.className='p-card'+(selectedRefs.has(ref)?' sel':'')+(doneRefs.has(ref)?' done':'');
+    d.onclick=()=>togglePassage(ref);
+    d.innerHTML=`<div class="p-no">${ref}번</div><div class="p-count">${count}단어</div>`
+      +(doneRefs.has(ref)?'<span class="p-badge done-badge">완료✓</span>':'')
+      +(selectedRefs.has(ref)&&!doneRefs.has(ref)?'<span class="p-badge" style="background:#e3f2fd;color:#1565c0;">선택</span>':'');
+    grid.appendChild(d);
+  });
+}
+
+function togglePassage(ref){
+  if(selectedRefs.has(ref))selectedRefs.delete(ref);
+  else selectedRefs.add(ref);
+  renderPassageGrid();
+}
+
+function filterPassage(mode, btn){
+  filterMode=mode;
+  document.querySelectorAll('.filter-bar .fb').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  renderPassageGrid();
+}
+
+function selectAll(){
+  const visible = PASSAGE_ORDER.filter(r=>refInRange(r, filterMode));
+  const allSel = visible.every(r=>selectedRefs.has(r));
+  visible.forEach(r=>{ if(allSel) selectedRefs.delete(r); else selectedRefs.add(r); });
+  renderPassageGrid();
+}
+
+function shuffle(arr){const b=[...arr];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+
+function startQuiz(){
+  if(selectedRefs.size===0){alert('지문을 하나 이상 선택하세요!');return;}
+  // Collect all selected words
+  const selWords = [];
+  PASSAGE_ORDER.forEach(ref=>{
+    if(selectedRefs.has(ref)) VOCA[ref].forEach(w=>selWords.push({...w, pref:ref}));
+  });
+  // Build full distractor pool (all words from entire VOCA)
+  const allWords = [];
+  PASSAGE_ORDER.forEach(ref=>VOCA[ref].forEach(w=>allWords.push(w)));
+  // Build questions
+  qs = shuffle(selWords).map(w=>{
+    const mode = quizMode==='mix' ? (Math.random()<0.5?'en':'ko') : quizMode;
+    // Distractors: pick 3 random words whose answer differs
+    const ansField = mode==='en'?'ko':'en';
+    const showField = mode==='en'?'en':'ko';
+    const distractors = [];
+    const seen = new Set([w[ansField]]);
+    const pool = shuffle(allWords);
+    for(const cand of pool){
+      if(distractors.length>=3) break;
+      if(!seen.has(cand[ansField])){
+        distractors.push(cand[ansField]);
+        seen.add(cand[ansField]);
+      }
+    }
+    const options = shuffle([w[ansField], ...distractors]);
+    return {
+      pref: w.pref,
+      mode: mode,
+      show: w[showField],
+      ans: w[ansField],
+      options: options,
+      en: w.en, ko: w.ko
+    };
+  });
+  idx=0;cor=0;wrn=0;wrongs=[];allResults=[];answered=false;t0=Date.now();
+  document.getElementById('passageScreen').classList.add('hidden');
+  document.getElementById('hdr').classList.remove('hidden');
+  document.getElementById('pw').classList.remove('hidden');
+  document.getElementById('quizArea').classList.remove('hidden');
+  document.getElementById('hs').textContent=userName+' · '+selectedRefs.size+'개 지문 · '+qs.length+'단어';
+  showQ();
+}
+
+function escHTML(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+function showQ(){
+  if(idx>=qs.length){showResult();return;}
+  answered=false;
+  const q=qs[idx];
+  document.getElementById('pf').style.width=(idx/qs.length*100).toFixed(0)+'%';
+  document.getElementById('hb').textContent=(idx+1)+'/'+qs.length;
+  const area=document.getElementById('quizArea');
+  const wordClass = q.mode==='en' ? 'word-en' : 'word-ko';
+  const prompt = q.mode==='en' ? '다음 영어 단어의 뜻으로 알맞은 것은?' : '다음 한국어 뜻에 해당하는 영어 단어는?';
+  const choiceHTML = q.options.map((opt,i)=>`<button class="cb" data-idx="${i}"><span class="cn">${i+1}</span><span>${escHTML(opt)}</span></button>`).join('');
+  area.innerHTML=`
+    <div class="qc">
+      <div class="q-no-badge">
+        <span class="qno">지문 ${q.pref}번</span>
+        <span class="qtype">${q.mode==='en'?'영→한':'한→영'}</span>
+      </div>
+      <div class="word-box"><div class="${wordClass}">${escHTML(q.show)}</div></div>
+      <div class="q-prompt">${prompt}</div>
+      <div class="choices" id="qChoices">${choiceHTML}</div>
+      <div class="fb-msg" id="fb"></div>
+    </div>`;
+  document.querySelectorAll('#qChoices .cb').forEach(b=>{
+    b.addEventListener('click',()=>selChoice(b, q.options[parseInt(b.dataset.idx)], q.ans));
+  });
+}
+
+function selChoice(btn, sel, ans){
+  if(answered)return;
+  answered=true;
+  document.querySelectorAll('.cb').forEach(b=>b.disabled=true);
+  const fb=document.getElementById('fb');
+  const q=qs[idx];
+  if(sel===ans){
+    btn.classList.add('correct');
+    fb.className='fb-msg ok';fb.textContent='✅ 정답!';
+    cor++;
+    allResults.push({pref:q.pref, mode:q.mode, correct:true, my:sel, ans:ans, en:q.en, ko:q.ko});
+  } else {
+    btn.classList.add('wrong');
+    document.querySelectorAll('.cb').forEach(b=>{const i=parseInt(b.dataset.idx);if(q.options[i]===ans)b.classList.add('reveal');});
+    fb.className='fb-msg no';fb.textContent='❌ 오답! 정답: '+ans+'  ('+q.en+' = '+q.ko+')';
+    wrn++;
+    wrongs.push({label:q.en+' / '+q.ko, my:sel, correct:ans, pref:q.pref});
+    allResults.push({pref:q.pref, mode:q.mode, correct:false, my:sel, ans:ans, en:q.en, ko:q.ko});
+  }
+  setTimeout(()=>{idx++;showQ();},sel===ans?700:1800);
+}
+
+let wrongQs = [];
+
+function showResult(){
+  document.getElementById('pf').style.width='100%';
+  document.getElementById('quizArea').classList.add('hidden');
+  const total=idx, pct=total>0?Math.round(cor/total*100):0;
+  const el=Math.round((Date.now()-t0)/60000);
+  selectedRefs.forEach(r=>doneRefs.add(r));
+  const wrongKeys = new Set(wrongs.map(w=>w.label));
+  wrongQs = qs.filter(q=>wrongKeys.has(q.en+' / '+q.ko));
+
+  const wHTML=wrongs.length>0
+    ?'<div class="wl"><h3>❌ 오답 ('+wrongs.length+'개)</h3>'+wrongs.map(w=>'<div class="wi"><div class="wie">'+w.label+' [지문 '+w.pref+'번]</div><div class="wid">내 답: '+w.my+' → 정답: '+w.correct+'</div></div>').join('')+'</div>'
+    :'<div style="color:#2e7d32;font-weight:800;padding:14px;text-align:center;">🎉 전부 정답!</div>';
+
+  const retryBtn = wrongs.length>0
+    ? `<button class="rbtn" style="background:linear-gradient(135deg,#c62828,#e91e63);color:white;" onclick="retryWrongs()">❌ 오답 다시풀기 (${wrongs.length}개)</button>`
+    : '';
+
+  const rs=document.getElementById('resultScreen');
+  rs.classList.remove('hidden');
+  rs.innerHTML=`<div class="rc">
+    <div style="font-size:12px;color:var(--muted);margin-bottom:4px;">고2 26년 3월 단어 · ${selectedRefs.size}개 지문 · ${total}단어</div>
+    <div class="rs">${pct}점</div>
+    <div class="rsub">${userName}의 결과</div>
+    <div class="sr">
+      <div class="si"><div class="sn" style="color:#2e7d32;">${cor}</div><div class="sl">정답</div></div>
+      <div class="si"><div class="sn" style="color:#c62828;">${wrn}</div><div class="sl">오답</div></div>
+      <div class="si"><div class="sn" style="color:#1565c0;">${total}</div><div class="sl">총단어</div></div>
+      <div class="si"><div class="sn" style="color:#f57f17;">${el}분</div><div class="sl">소요</div></div>
+    </div>
+    ${wHTML}
+    <div class="rbtns">
+      ${retryBtn}
+      <button class="rbtn rbtn-p" onclick="goBack()">← 지문 다시 선택</button>
+      <button class="rbtn rbtn-s" onclick="location.reload()">처음부터 🔄</button>
+    </div>
+  </div>`;
+
+  if(window._fbSave) window._fbSave({
+    submittedAt: new Date().toISOString(),
+    studentName: userName,
+    school: userSchool,
+    score: pct,
+    correct: cor,
+    wrong: wrn,
+    total: total,
+    elapsedMin: el,
+    quizType: '고2_26년3월_단어',
+    passages: [...selectedRefs].sort(),
+    details: allResults.map(r=>({
+      지문: r.pref+'번',
+      유형: r.mode==='en'?'영→한':'한→영',
+      결과: r.correct?'✅정답':'❌오답',
+      영어: r.en,
+      한국어: r.ko,
+      내답: r.my,
+      정답: r.ans
+    })),
+    wrongWords: wrongs.map(w=>({eng:w.label.split(' / ')[0], kor:w.label.split(' / ')[1], my:w.my, correct:w.correct}))
+  });
+}
+
+function retryWrongs(){
+  if(wrongQs.length===0) return;
+  qs=[...wrongQs];
+  idx=0;cor=0;wrn=0;wrongs=[];allResults=[];answered=false;t0=Date.now();
+  document.getElementById('resultScreen').classList.add('hidden');
+  document.getElementById('quizArea').classList.remove('hidden');
+  document.getElementById('hdr').classList.remove('hidden');
+  document.getElementById('pw').classList.remove('hidden');
+  document.getElementById('hs').textContent=userName+' · 오답 다시풀기';
+  showQ();
+}
+
+function goBack(){
+  document.getElementById('resultScreen').classList.add('hidden');
+  document.getElementById('hdr').classList.add('hidden');
+  document.getElementById('pw').classList.add('hidden');
+  selectedRefs.clear();
+  renderPassageGrid();
+  document.getElementById('passageScreen').classList.remove('hidden');
+}
+
+window.addEventListener('DOMContentLoaded',()=>{
+  const n=localStorage.getItem('bomnal_name');
+  const s=localStorage.getItem('bomnal_school');
+  if(n) document.getElementById('ni').value=n;
+  if(s){
+    const sel=document.getElementById('si');
+    for(let i=0;i<sel.options.length;i++){
+      if(sel.options[i].value&&s.includes(sel.options[i].value)){sel.value=sel.options[i].value;break;}
+    }
+  }
+});
+</script>
+</body>
+</html>
