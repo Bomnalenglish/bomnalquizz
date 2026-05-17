@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>봄날 퀴즈 | 고2 24년 6월 단어 (1차 뜻 · 2차 유의·반의어)</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&family=Black+Han+Sans&display=swap');
+:root{--pri:#1565c0;--acc:#f57f17;--bg:#e3f2fd;--card:#fff;--bdr:#90caf9;--muted:#757575;--green:#2e7d32;--red:#c62828;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Nanum Gothic',sans-serif;background:var(--bg);min-height:100vh;color:#1a1a2e;}
+.hidden{display:none!important;}
+
+#startScreen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
+.s-card{background:var(--card);border-radius:24px;padding:36px 28px;text-align:center;max-width:520px;width:100%;box-shadow:0 8px 32px rgba(21,101,192,.15);}
+.s-card h1{font-family:'Black Han Sans',sans-serif;font-size:18px;color:var(--pri);margin-bottom:6px;line-height:1.3;}
+.s-sub{font-size:13px;color:var(--muted);margin-bottom:20px;}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:18px;}
+.info-item{background:var(--bg);border-radius:10px;padding:10px;text-align:center;font-size:12px;color:var(--pri);font-weight:700;}
+.ni{width:100%;padding:11px 14px;border:2px solid var(--bdr);border-radius:12px;font-size:14px;font-family:'Nanum Gothic',sans-serif;outline:none;margin-bottom:10px;}
+.ni:focus{border-color:var(--pri);}
+.start-btn{width:100%;padding:14px;border-radius:12px;border:none;background:linear-gradient(135deg,#1565c0,#f57f17);color:white;font-size:1rem;font-weight:800;cursor:pointer;font-family:inherit;}
+
+#modeScreen{padding:20px;max-width:680px;margin:0 auto;}
+.mode-header{background:linear-gradient(135deg,#1565c0,#1976d2);color:white;border-radius:16px;padding:18px 22px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;}
+.mode-title{font-family:'Black Han Sans',sans-serif;font-size:16px;}
+.user-info{background:rgba(255,255,255,.2);border-radius:10px;padding:6px 14px;font-size:12px;font-weight:700;}
+.round-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:20px;}
+.round-card{background:white;border-radius:16px;padding:24px 18px;text-align:center;cursor:pointer;border:3px solid #e0e0e0;transition:all .2s;}
+.round-card:hover{border-color:var(--pri);transform:translateY(-3px);box-shadow:0 8px 24px rgba(21,101,192,.15);}
+.round-card.sel{border-color:var(--pri);background:#e3f2fd;}
+.round-icon{font-size:34px;margin-bottom:8px;}
+.round-name{font-family:'Black Han Sans',sans-serif;font-size:18px;color:var(--pri);margin-bottom:4px;}
+.round-desc{font-size:11px;color:var(--muted);line-height:1.5;}
+
+#passageScreen{padding:20px;max-width:680px;margin:0 auto;}
+.ps-header{background:linear-gradient(135deg,#1565c0,#1976d2);color:white;border-radius:16px;padding:18px 22px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;}
+.ps-title{font-family:'Black Han Sans',sans-serif;font-size:16px;}
+.ps-sub{font-size:11px;opacity:.8;margin-top:3px;}
+.filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
+.fb{padding:7px 16px;border:2px solid var(--pri);border-radius:20px;background:white;color:var(--pri);font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s;}
+.fb.on{background:var(--pri);color:white;}
+.dir-bar{display:flex;gap:6px;margin-bottom:14px;background:white;padding:6px;border-radius:14px;border:2px solid #e0e0e0;}
+.dbb{flex:1;padding:8px;border:none;border-radius:10px;background:transparent;color:var(--muted);font-size:12px;font-weight:800;cursor:pointer;font-family:inherit;transition:all .15s;}
+.dbb.on{background:var(--pri);color:white;}
+.passage-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px;margin-bottom:20px;}
+.p-card{background:white;border-radius:14px;padding:14px 8px;text-align:center;cursor:pointer;border:2.5px solid #e0e0e0;transition:all .18s;position:relative;}
+.p-card:hover{border-color:var(--pri);transform:translateY(-2px);box-shadow:0 6px 18px rgba(21,101,192,.12);}
+.p-card.sel{border-color:var(--pri);background:#e3f2fd;}
+.p-card.done{border-color:#4caf50;background:#e8f5e9;}
+.p-no{font-family:'Black Han Sans',sans-serif;font-size:18px;color:var(--pri);margin-bottom:2px;}
+.p-count{font-size:10px;color:var(--muted);}
+.p-badge{position:absolute;top:6px;right:6px;font-size:9px;padding:2px 6px;border-radius:8px;font-weight:700;}
+.done-badge{background:#e8f5e9;color:#2e7d32;}
+.sel-all-btn{width:100%;padding:12px;border-radius:12px;border:2px solid var(--pri);background:white;color:var(--pri);font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;margin-bottom:10px;}
+.go-btn{width:100%;padding:14px;border-radius:12px;border:none;background:linear-gradient(135deg,#1565c0,#f57f17);color:white;font-size:1rem;font-weight:800;cursor:pointer;font-family:inherit;}
+.back-btn{padding:10px 18px;border-radius:10px;border:2px solid #90caf9;background:white;color:var(--pri);font-size:13px;font-weight:800;cursor:pointer;font-family:inherit;margin-bottom:12px;}
+
+.hdr{background:#1565c0;color:white;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.ht{font-family:'Black Han Sans',sans-serif;font-size:15px;}
+.hs{font-size:10px;opacity:.7;margin-top:2px;}
+.hb{background:rgba(255,255,255,.2);border-radius:16px;padding:4px 12px;font-size:12px;font-weight:700;}
+.pw{height:4px;background:#bbdefb;}.pf{height:100%;background:linear-gradient(90deg,#1565c0,#f57f17);transition:width .4s;}
+
+#quizArea{padding:20px;max-width:680px;margin:0 auto;}
+.qc{background:white;border-radius:18px;padding:26px 22px;margin-bottom:16px;box-shadow:0 3px 16px rgba(21,101,192,.08);}
+.q-no-badge{display:flex;align-items:center;gap:6px;margin-bottom:14px;flex-wrap:wrap;}
+.qno{font-family:'Black Han Sans',sans-serif;font-size:13px;color:white;background:var(--pri);padding:3px 12px;border-radius:12px;}
+.qtype{font-size:11px;font-weight:700;padding:3px 10px;border-radius:10px;background:#fff3e0;color:#e65100;}
+.word-box{background:linear-gradient(135deg,#e3f2fd,#bbdefb);border-radius:14px;padding:30px 20px;text-align:center;margin-bottom:18px;}
+.word-en{font-family:'Black Han Sans',sans-serif;font-size:28px;color:var(--pri);line-height:1.3;word-break:break-word;}
+.word-ko{font-family:'Black Han Sans',sans-serif;font-size:22px;color:var(--pri);line-height:1.3;}
+.q-prompt{font-size:13px;font-weight:700;color:#1565c0;margin-bottom:12px;text-align:center;}
+.choices{display:grid;gap:10px;}
+.cb{background:#f5f5f5;border:2px solid #e0e0e0;border-radius:11px;padding:14px 16px;font-family:'Nanum Gothic',sans-serif;font-size:14px;font-weight:700;cursor:pointer;text-align:left;transition:all .15s;display:flex;align-items:center;gap:12px;line-height:1.5;}
+.cb:hover:not(:disabled){border-color:var(--pri);background:#e3f2fd;}
+.cb.correct{background:#e8f5e9;border-color:#2e7d32;color:#1b5e20;}
+.cb.wrong{background:#ffebee;border-color:#c62828;color:#b71c1c;}
+.cb.reveal{background:#e8f5e9;border-color:#2e7d32;}
+.cn{width:24px;height:24px;border-radius:50%;background:#90caf9;color:white;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0;}
+.fb-msg{padding:10px 14px;border-radius:10px;font-size:13px;font-weight:800;margin-top:12px;display:none;}
+.fb-msg.ok{background:#e8f5e9;color:#1b5e20;display:block;}
+.fb-msg.no{background:#ffebee;color:#b71c1c;display:block;}
+
+#resultScreen{padding:20px;max-width:600px;margin:0 auto;}
+.rc{background:white;border-radius:24px;padding:30px 22px;box-shadow:0 8px 32px rgba(21,101,192,.1);text-align:center;}
+.rs{font-family:'Black Han Sans',sans-serif;font-size:52px;color:var(--pri);line-height:1;}
+.rsub{font-size:13px;color:var(--muted);margin-top:4px;}
+.sr{display:flex;justify-content:center;gap:20px;margin-top:16px;flex-wrap:wrap;}
+.si{text-align:center;}.sn{font-family:'Black Han Sans',sans-serif;font-size:24px;}.sl{font-size:11px;color:var(--muted);margin-top:2px;}
+.wl{background:var(--bg);border-radius:14px;padding:14px;text-align:left;margin-top:14px;max-height:300px;overflow-y:auto;}
+.wl h3{font-size:12px;font-weight:800;color:var(--red);margin-bottom:8px;}
+.wi{background:white;border-radius:8px;padding:8px 12px;margin-bottom:6px;font-size:11px;border-left:3px solid #e91e63;}
+.wie{font-weight:800;color:var(--pri);}.wid{font-size:10px;color:var(--muted);margin-top:2px;}
+.rbtns{display:flex;gap:10px;justify-content:center;margin-top:18px;flex-wrap:wrap;}
+.rbtn{padding:12px 24px;border-radius:12px;border:none;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;}
+.rbtn-p{background:linear-gradient(135deg,#1565c0,#f57f17);color:white;}
+.rbtn-s{background:#f5f5f5;color:#1565c0;border:2px solid #90caf9;}
+
+@media(max-width:480px){.passage-grid{grid-template-columns:repeat(3,1fr)}.word-en{font-size:24px;}}
+</style>
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getFirestore,collection,addDoc,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+const cfg={apiKey:"AIzaSyCxS524S8KAaF87DomPtl9sJdF-eqes404",authDomain:"bomnalvaca.firebaseapp.com",projectId:"bomnalvaca",storageBucket:"bomnalvaca.firebasestorage.app",messagingSenderId:"115868052300",appId:"1:115868052300:web:765c08867b6f1ce0987de9"};
+const app=initializeApp(cfg);const db=getFirestore(app);
+window._fbSave=async function(data){
+  try{await addDoc(collection(db,'quiz_results'),{...data,timestamp:serverTimestamp()});}
+  catch(e){console.warn('FB 저장 오류:',e);}
+};
+</script>
+</head>
+<body>
+
+<div id="startScreen">
+  <div class="s-card">
+    <h1>📖 고2 24년 6월 단어 (1차 뜻 · 2차 유의·반의어)</h1>
+    <div class="s-sub">2024년 6월 고2 모의고사 · 비밀노트 상세어휘 자동채점</div>
+    <div class="info-grid">
+      <div class="info-item">📝 18~43번 (총 509단어)</div>
+      <div class="info-item">🎯 지문별 선택 가능</div>
+      <div class="info-item">📊 자동채점 + 오답노트</div>
+      <div class="info-item">🔁 영↔한 양방향</div>
+    </div>
+    <select class="ni" id="si" style="background:white;color:#1565c0;font-weight:700;cursor:pointer;">
+      <option value="">학교 선택</option>
+      <option value="종촌고">종촌고</option>
+      <option value="고운고">고운고</option>
+      <option value="대성고">대성고</option>
+      <option value="기타">기타</option>
+    </select>
+    <input type="text" class="ni" id="ni" placeholder="이름 입력" maxlength="10">
+    <button class="start-btn" onclick="goModeSelect()">다음 → 시험 차수 선택</button>
+  </div>
+</div>
+
+<div id="modeScreen" class="hidden">
+  <div class="mode-header">
+    <div>
+      <div class="mode-title">📖 시험 차수 선택</div>
+      <div style="font-size:11px;opacity:.8;margin-top:3px;">1차 또는 2차를 선택하세요</div>
+    </div>
+    <div class="user-info" id="userInfo1"></div>
+  </div>
+  <div class="round-grid">
+    <div class="round-card" onclick="selectRound('1')">
+      <div class="round-icon">🥇</div>
+      <div class="round-name">1차: 뜻 묻기</div>
+      <div class="round-desc">영어 단어 → 한국어 뜻<br>전체 509단어</div>
+    </div>
+    <div class="round-card" onclick="selectRound('2')">
+      <div class="round-icon">🥈</div>
+      <div class="round-name">2차: 유의·반의어</div>
+      <div class="round-desc">단어 → 유의어/반의어<br>500+ 문항</div>
+    </div>
+  </div>
+</div>
+
+<div id="passageScreen" class="hidden">
+  <div class="ps-header">
+    <div>
+      <div class="ps-title">📖 지문 선택 · <span id="roundLabel"></span></div>
+      <div class="ps-sub">풀고 싶은 지문 번호를 선택하세요 (복수 선택 가능)</div>
+    </div>
+    <div class="user-info" id="userInfo2"></div>
+  </div>
+  <button class="back-btn" onclick="backToMode()">← 차수 다시 선택</button>
+  <div class="dir-bar" id="dirBar">
+    <button class="dbb on" id="dir-en" onclick="setDir('en')">🇺🇸 영→한</button>
+    <button class="dbb" id="dir-ko" onclick="setDir('ko')">🇰🇷 한→영</button>
+    <button class="dbb" id="dir-mix" onclick="setDir('mix')">🔀 섞기</button>
+  </div>
+  <div class="filter-bar">
+    <button class="fb on" onclick="filterPassage('all',this)">전체</button>
+    <button class="fb" onclick="filterPassage('18-24',this)">18~24번</button>
+    <button class="fb" onclick="filterPassage('25-30',this)">25~30번</button>
+    <button class="fb" onclick="filterPassage('31-40',this)">31~40번</button>
+    <button class="fb" onclick="filterPassage('long',this)">장문 41,43</button>
+  </div>
+  <div class="passage-grid" id="passageGrid"></div>
+  <button class="sel-all-btn" onclick="selectAll()">전체 선택 / 해제</button>
+  <button class="go-btn" onclick="startQuiz()">선택한 지문 풀기 🚀</button>
+</div>
+
+<div id="hdr" class="hdr hidden">
+  <div><div class="ht">📖 고2 24년 6월 단어 · <span id="roundLabel2"></span></div><div class="hs" id="hs"></div></div>
+  <div class="hb" id="hb">0/0</div>
+</div>
+<div id="pw" class="pw hidden"><div class="pf" id="pf" style="width:0%"></div></div>
+<div id="quizArea" class="hidden"></div>
+<div id="resultScreen" class="hidden"></div>
+
+<script>
+const VOCA = {
+  '18':[{en:`resident`,ko:`주민`,syn:`inhabitant, dweller`,ant:``},{en:`take advantage of X`,ko:`~을 이용하다`,syn:`utilize, exploit`,ant:`ignore, overlook`},{en:`parking lot`,ko:`주차장`,syn:``,ant:``},{en:`divide`,ko:`나누다`,syn:`separate, split`,ant:`unite, combine`},{en:`plant (v)`,ko:`심다`,syn:`sow, embed`,ant:`uproot, remove`},{en:`pull`,ko:`뽑다, 당기다`,syn:``,ant:`push, release`},{en:`weed`,ko:`잡초`,syn:``,ant:``},{en:`gardening`,ko:`정원가꾸기`,syn:``,ant:``},{en:`require`,ko:`요구하다`,syn:`demand, necessitate`,ant:`exempt, release`},{en:`even better`,ko:`훨씬 더 좋은`,syn:``,ant:``}],
+  '19':[{en:`relay`,ko:`계주`,syn:``,ant:``},{en:`anxiously`,ko:`초조하게`,syn:`nervously, uneasily`,ant:`calmly, confidently`},{en:`spot`,ko:`자리, 장소`,syn:`location, site`,ant:``},{en:`perform`,ko:`수행하다`,syn:`execute, accomplish`,ant:`neglect, fail`},{en:`shake`,ko:`떨리다, 흔들다`,syn:`tremble, shiver`,ant:`steady, stabilize`},{en:`what if`,ko:`~라면 어쩌지`,syn:``,ant:``},{en:`heart rate`,ko:`심박수`,syn:``,ant:``},{en:`approach`,ko:`접근하다, 다가오다`,syn:`reach, near`,ant:`withdraw, retreat`},{en:`smoothly`,ko:`순조롭게, 부드럽게`,syn:`seamlessly, effortlessly`,ant:`roughly, harshly`},{en:`worth`,ko:`~의 가치가 있는`,syn:`valuable, worthy`,ant:`worthless, valueless`}],
+  '20':[{en:`resist`,ko:`저항하다`,syn:`withstand, oppose`,ant:`yield, surrender`},{en:`self-estimate`,ko:`자기 평가`,syn:``,ant:``},{en:`downgrade`,ko:`낮추다`,syn:`demote, degrade`,ant:`promote, elevate`},{en:`be capable of`,ko:`~할 수 있다`,syn:``,ant:``},{en:`maxim`,ko:`격언`,syn:`proverb, saying`,ant:``},{en:`self-aware`,ko:`자기 인식하는`,syn:``,ant:``},{en:`aware`,ko:`인식하는, 아는`,syn:`conscious, cognizant`,ant:`oblivious, ignorant`},{en:`refuse`,ko:`거부하다, 거절하다`,syn:`reject, decline`,ant:`accept, approve`},{en:`weakness`,ko:`약점`,syn:`flaw, defect`,ant:`strength, advantage`},{en:`assessment`,ko:`평가`,syn:`evaluation, appraisal`,ant:``},{en:`admit`,ko:`인정하다`,syn:`acknowledge, confess`,ant:`deny, reject`},{en:`state (v)`,ko:`진술하다`,syn:`declare, assert`,ant:`withhold, suppress`},{en:`damaging`,ko:`해로운`,syn:`harmful, detrimental`,ant:`beneficial, advantageous`},{en:`value (v)`,ko:`평가하다`,syn:`appraise, estimate`,ant:`devalue, underrate`},{en:`worth`,ko:`가치, 가치 있는`,syn:``,ant:``},{en:`underestimate`,ko:`과소평가하다`,syn:`underrate, belittle`,ant:`overestimate, exaggerate`},{en:`capability`,ko:`능력`,syn:``,ant:``},{en:`overestimate`,ko:`과대평가하다`,syn:`exaggerate, overrate`,ant:`underestimate, belittle`},{en:`cultivate`,ko:`기르다, 경작하다`,syn:`nurture, develop`,ant:`neglect, destroy`},{en:`accurately`,ko:`정확히`,syn:`precisely, exactly`,ant:`inaccurately, imprecisely`},{en:`inward`,ko:`내면으로, 안으로`,syn:`internally, inside`,ant:`outward, externally`},{en:`discern`,ko:`파악하다, 식별하다`,syn:`detect, perceive`,ant:`overlook, miss`},{en:`take`,ko:`필요하다, 걸리다`,syn:``,ant:``},{en:`unlock`,ko:`열다`,syn:``,ant:``},{en:`potential`,ko:`잠재력`,syn:``,ant:``}],
+  '21':[{en:`take a look at`,ko:`~을 살펴보다`,syn:`examine, inspect`,ant:`ignore, neglect`},{en:`ignore`,ko:`무시하다`,syn:`overlook, disregard`,ant:``},{en:`trappings`,ko:`장식들, 과시적인 것들`,syn:`decorations, adornments`,ant:``},{en:`be forced to+ V`,ko:`~하게 되다`,syn:``,ant:``},{en:`trade (v)`,ko:`맞바꾸다`,syn:`exchange, swap`,ant:`keep, retain`},{en:`in return`,ko:`대가로, 보답으로`,syn:`as compensation, in exchange`,ant:``},{en:`cost (v)`,ko:`대가를 치르게 하다`,syn:``,ant:``},{en:`demand`,ko:`요구하다`,syn:`request, insist`,ant:`offer, give`},{en:`a suit`,ko:`정장`,syn:``,ant:``},{en:`depend on`,ko:`~에 달려있다, 의존하다`,syn:`rely on, count on`,ant:`disregard, mistrust`},{en:`attend`,ko:`~에 참석하다`,syn:`be present, participate`,ant:`avoid, miss`},{en:`certain`,ko:`특정한`,syn:`specific, particular`,ant:`uncertain, indefinite`},{en:`kiss up to X`,ko:`~에 아첨하다, 애교를 떨다`,syn:`flatter`,ant:`criticize, offend`},{en:`require`,ko:`요구하다`,syn:`ask, demand`,ant:``},{en:`inevitably`,ko:`필연적으로, 불가피하게`,syn:`necessarily, unavoidably`,ant:`avoidably, optionally`},{en:`worse`,ko:`더 나쁜`,syn:`inferior, poorer`,ant:`better, superior`},{en:`pay (vi)`,ko:`이익이 되다`,syn:`benefit, profit`,ant:`cost, lose`},{en:`examine`,ko:`조사하다, 알아보다`,syn:`inspect, investigate`,ant:`overlook, ignore`},{en:`transaction`,ko:`거래`,syn:`deal, exchange`,ant:``},{en:`put`,ko:`말하다`,syn:``,ant:``},{en:`slavery`,ko:`노예 상태`,syn:`servitude, bondage`,ant:`freedom, liberty`},{en:`reside`,ko:`존재하다, ~에서 살다`,syn:`dwell, inhabit`,ant:`leave, vacate`},{en:`marble`,ko:`대리석`,syn:``,ant:``},{en:`prisoner`,ko:`죄수`,syn:``,ant:``},{en:`jail`,ko:`감옥`,syn:``,ant:``},{en:`toward`,ko:`~을 향해서`,syn:``,ant:``}],
+  '22':[{en:`firm`,ko:`기업`,syn:``,ant:``},{en:`save`,ko:`구제하다, 구하다`,syn:`rescue, salvage`,ant:`endanger, harm`},{en:`government`,ko:`정부`,syn:``,ant:``},{en:`concentrate on X`,ko:`~에 집중하다`,syn:`focus on, pay attention to`,ant:`ignore, neglect`},{en:`A rather than B`,ko:`B라기 보다는 A`,syn:``,ant:``},{en:`restructure`,ko:`구조조정하다`,syn:`reorganize, reform`,ant:`preserve, maintain`},{en:`profitable`,ko:`수익성이 있는`,syn:`lucrative, gainful`,ant:`unprofitable, costly`},{en:`viable`,ko:`성장 가능한`,syn:`feasible, workable`,ant:`impractical, unfeasible`},{en:`term`,ko:`기간`,syn:`period, duration`,ant:``},{en:`moral hazard`,ko:`도덕적 해이`,syn:``,ant:``},{en:`alter`,ko:`바꾸다`,syn:`change, modify`,ant:`maintain, preserve`},{en:`credit`,ko:`신용`,syn:``,ant:``},{en:`crisis`,ko:`위기`,syn:`emergency, disaster`,ant:`stability, calm`},{en:`take a risk`,ko:`위험을 감수하다`,syn:``,ant:``},{en:`intervene`,ko:`개입하다`,syn:`intercede, mediate`,ant:`ignore, avoid`},{en:`although`,ko:`~에도 불구하고`,syn:`despite, even though`,ant:``},{en:`intend`,ko:`의도하다`,syn:`neglect, ignore`,ant:``},{en:`risky`,ko:`위험한, 위험성 있는`,syn:`safe, secure`,ant:``}],
+  '23':[{en:`diversity`,ko:`다양성`,syn:`variety, multiplicity`,ant:`uniformity, similarity`},{en:`view`,ko:`관점`,syn:`perspective, outlook`,ant:``},{en:`question (v)`,ko:`의문을 제기하다`,syn:`challenge, doubt`,ant:`accept, believe`},{en:`similar`,ko:`비슷한`,syn:`alike, comparable`,ant:`different, distinct`},{en:`objective (a)`,ko:`객관적인`,syn:`impartial, unbiased`,ant:`subjective, biased`},{en:`maintain`,ko:`주장하다, 유지하다`,syn:`assert, preserve`,ant:`abandon, neglect`},{en:`at least`,ko:`적어도, 최소한`,syn:`minimum, at the very least`,ant:`maximum, at most`},{en:`aspire`,ko:`열망하다, 염원하다`,syn:`strive, yearn`,ant:`dismiss, disregard`},{en:`far greater`,ko:`훨신 더 큰`,syn:`significantly larger, much greater`,ant:`slightly more, marginally larger`},{en:`practice (n)`,ko:`실행`,syn:`exercise, implementation`,ant:`theory, idea`},{en:`gender`,ko:`성, 성별`,syn:`sex, sexual identity`,ant:``},{en:`ethnicity`,ko:`민족, 인종`,syn:`race, cultural identity`,ant:``},{en:`carry (X) out (X)`,ko:`수행하다`,syn:`execute, perform`,ant:`neglect, abandon`},{en:`pursue`,ko:`추구하다`,syn:`chase, seek`,ant:`avoid, ignore`},{en:`curiosity`,ko:`호기심`,syn:`inquisitiveness, interest`,ant:`indifference, apathy`},{en:`each other`,ko:`서로`,syn:`one another, mutually`,ant:``},{en:`varied`,ko:`다양한`,syn:`diverse, assorted`,ant:`homogeneous, uniform`},{en:`perspective`,ko:`관점`,syn:`viewpoint, stance`,ant:``},{en:`angle`,ko:`각도`,syn:`viewpoint, slant`,ant:``},{en:`diverse`,ko:`다양한`,syn:`varied, multiple`,ant:`homogeneous, uniform`},{en:`consensus`,ko:`의견 일치, 합의`,syn:`agreement, accord`,ant:`disagreement, discord`},{en:`build up`,ko:`구축되다, 이루어지다`,syn:`develop, accumulate`,ant:`dismantle, reduce`},{en:`particular`,ko:`특정한`,syn:`specific, distinct`,ant:`general, vague`},{en:`confidence`,ko:`자신감`,syn:`self-assurance, certainty`,ant:`doubt, insecurity`},{en:`objectivity`,ko:`객관성`,syn:`impartiality, neutrality`,ant:`subjectivity, bias`}],
+  '24':[{en:`unit`,ko:`단위`,syn:`segment, component`,ant:`whole, entirety`},{en:`deadline`,ko:`마감`,syn:`due date, cutoff`,ant:`extension, delay`},{en:`a break`,ko:`나뉨`,syn:`pause, interruption`,ant:`continuation, flow`},{en:`be likely to+V`,ko:`~하기 쉽다`,syn:`prone to, apt to`,ant:`unlikely to, immune to`},{en:`remote`,ko:`멀리 있는, 먼`,syn:`distant, far`,ant:`near, close`},{en:`as a result`,ko:`그 결과로`,syn:`consequently, therefore`,ant:`cause, reason`},{en:`timeframe`,ko:`시간 틀`,syn:`schedule, period`,ant:``},{en:`get to+V`,ko:`하게 하다`,syn:`manage to, be able to`,ant:``},{en:`rather than`,ko:`~라기 보다는`,syn:`instead of, as opposed to`,ant:``},{en:`approach (n)`,ko:`접근법`,syn:`method, strategy`,ant:`avoidance, retreat`},{en:`view`,ko:`보다`,syn:`observe, see`,ant:`ignore, overlook`},{en:`meet`,ko:`맞추다, 충족시키다`,syn:`fulfill, satisfy`,ant:`neglect, miss`},{en:`within`,ko:`~이내에`,syn:`beyond, outside`,ant:``},{en:`period`,ko:`기간`,syn:`duration, span`,ant:``},{en:`imminent`,ko:`임박한`,syn:`impending, forthcoming`,ant:`distant, remote`},{en:`therefore`,ko:`그러므로, 따라서`,syn:`thus, consequently`,ant:`however, nonetheless`}],
+  '25':[{en:`emission`,ko:`배출`,syn:`release, discharge`,ant:`absorption, intake`},{en:`surpass`,ko:`능가하다`,syn:`exceed, outdo`,ant:`fall behind, lag`},{en:`across`,ko:`전반에 걸쳐`,syn:`throughout, over`,ant:``},{en:`opposite`,ko:`반대의`,syn:`contrary, reverse`,ant:`same, identical`},{en:`per`,ko:`~당`,syn:`for each, for every`,ant:``},{en:`except`,ko:`제외하고`,syn:`excluding, aside from`,ant:`including, embracing`}],
+  '26':[{en:`graduate`,ko:`졸업하다`,syn:`complete, finish`,ant:`drop out, leave`},{en:`quit`,ko:`그만두다`,syn:`resign, stop`,ant:`continue, persist`},{en:`poet`,ko:`시인`,syn:`bard, versifier`,ant:``},{en:`near`,ko:`~근처에`,syn:`close to, adjacent to`,ant:`far, distant`},{en:`incredible`,ko:`엄청난, 놀랄만한`,syn:`unbelievable, astonishing`,ant:`ordinary, mundane`},{en:`source`,ko:`원천`,syn:`origin, root`,ant:`result, outcome`},{en:`although`,ko:`~에도 불구하고`,syn:`despite, even though`,ant:``},{en:`stop~ing`,ko:`~하던 것을 멈추다`,syn:`cease, halt`,ant:`continue, proceed`},{en:`volume`,ko:`권(수)`,syn:`book, tome`,ant:``}],
+  '27':[{en:`engineer`,ko:`엔지니어, 기술자`,syn:`technician, mechanic`,ant:``},{en:`creator`,ko:`창작자, 창조자`,syn:`inventor, originator`,ant:`destroyer, eliminator`},{en:`explore`,ko:`탐험하다, 조사하다`,syn:`investigate, examine`,ant:`ignore, neglect`},{en:`wonder`,ko:`경이로움, 놀라움`,syn:`amazement, awe`,ant:`indifference, apathy`},{en:`exciting`,ko:`흥미진진한`,syn:`thrilling, stimulating`,ant:`boring, dull`},{en:`activity`,ko:`활동`,syn:`task, action`,ant:`inactivity, idleness`},{en:`participation`,ko:`참가, 참여`,syn:`involvement, engagement`,ant:`exclusion, withdrawal`},{en:`fee`,ko:`요금, 수수료`,syn:`charge, cost`,ant:``},{en:`robotics`,ko:`로봇 공학`,syn:`automation, AI engineering`,ant:``},{en:`coding`,ko:`코딩`,syn:`programming, scripting`,ant:``},{en:`skill`,ko:`기술, 능력`,syn:`expertise, proficiency`,ant:`incompetence, ineptitude`},{en:`challenge (n)`,ko:`도전`,syn:`test, trial`,ant:`certainty, assurance`},{en:`note`,ko:`공지사항`,syn:`announcement, memo`,ant:``},{en:`include`,ko:`포함하다`,syn:`encompass, comprise`,ant:`exclude, omit`},{en:`tool`,ko:`도구`,syn:`instrument, implement`,ant:``},{en:`material`,ko:`재료`,syn:`substance, matter`,ant:``},{en:`provide`,ko:`제공하다`,syn:`supply, furnish`,ant:`withhold, deny`},{en:`recruit`,ko:`모집하다`,syn:`enlist, hire`,ant:`dismiss, fire`}],
+  '28':[{en:`experience`,ko:`경험하다`,syn:`undergo, encounter`,ant:`ignore, overlook`},{en:`diverse`,ko:`다양한`,syn:`varied, assorted`,ant:`homogeneous, uniform`},{en:`delicious`,ko:`맛있는`,syn:`tasty, delectable`,ant:`unpalatable, tasteless`},{en:`discover`,ko:`발견하다`,syn:`find, uncover`,ant:`lose, overlook`},{en:`highlight`,ko:`주요사항, 강조하다`,syn:`emphasize, spotlight`,ant:`downplay, ignore`},{en:`provide`,ko:`제공하다`,syn:`supply, furnish`,ant:`withhold, deny`},{en:`performance`,ko:`공연, 성과`,syn:`presentation, achievement`,ant:`failure, inefficiency`},{en:`entry`,ko:`입장, 입구`,syn:`admission, entrance`,ant:`exit, egress`},{en:`prereservation`,ko:`사전 예약`,syn:`advance booking, prebooking`,ant:`walk-in, spontaneous visit`},{en:`treat`,ko:`대접하다, 간식`,syn:`refreshment, snack`,ant:``},{en:`local`,ko:`지역의`,syn:`regional, neighborhood`,ant:`global, international`},{en:`various`,ko:`다양한`,syn:`numerous, assorted`,ant:`single, uniform`},{en:`reservation`,ko:`예약`,syn:`booking, appointment`,ant:``}],
+  '29':[{en:`built-in`,ko:`선천적인, 장착된`,syn:`inherent, innate`,ant:`acquired, extrinsic`},{en:`capacity`,ko:`능력`,syn:`capability, competence`,ant:`incapacity, incompetence`},{en:`prove`,ko:`입증하다`,syn:`demonstrate, verify`,ant:`disprove, refute`},{en:`remarkable`,ko:`놀라운`,syn:`extraordinary, noteworthy`,ant:`unremarkable, ordinary`},{en:`congenitally`,ko:`선천적으로`,syn:`inherently, genetically`,ant:`acquired, adventitiously`},{en:`deaf`,ko:`청각장애가 있는`,syn:`hearing-impaired, unhearing`,ant:`hearing, sound`},{en:`blind`,ko:`시각장애가 있는`,syn:`sightless, vision-impaired`,ant:`sighted, seeing`},{en:`around+숫자`,ko:`약~정도`,syn:`approximately, nearly`,ant:`exactly, precisely`},{en:`reinforce`,ko:`강화하다`,syn:`strengthen, fortify`,ant:`weaken, undermine`},{en:`fascinating`,ko:`흥미로운, 매력적인`,syn:`captivating, enchanting`,ant:`boring, uninteresting`},{en:`cuddle`,ko:`안다`,syn:`hug, embrace`,ant:`repel, push away`},{en:`bounce`,ko:`흔들다, 튕기다`,syn:`jolt, rebound`,ant:`settle, sink`},{en:`nudge`,ko:`슬쩍 찌르다`,syn:`poke, prod`,ant:`ignore, neglect`},{en:`tickle`,ko:`간지럽히다`,syn:`tease, touch lightly`,ant:``},{en:`care`,ko:`관심을 갖다, 신경쓰다`,syn:`concern, mind`,ant:`disregard, neglect`},{en:`operate`,ko:`작동하다`,syn:`run, function`,ant:`malfunction, break`},{en:`biology`,ko:`생물학적 측면`,syn:``,ant:``},{en:`establish`,ko:`확립하다, 설립하다`,syn:`found, set up`,ant:`dismantle, abolish`},{en:`make the point`,ko:`설명하다`,syn:`clarify, expound`,ant:`confuse, obfuscate`},{en:`with sight`,ko:`시력이 있는`,syn:`seeing, sighted`,ant:`blind, visionless`},{en:`better still`,ko:`더욱 더 좋은, 더 나아가,`,syn:`even better, preferably`,ant:`worse, less desirable`}],
+  '30':[{en:`adapt`,ko:`적응하다`,syn:`adjust, acclimate`,ant:`resist, oppose`},{en:`interrupt`,ko:`방해하다`,syn:`disturb, disrupt`,ant:`continue, maintain`},{en:`enjoyment`,ko:`즐거움`,syn:`pleasure, delight`,ant:`displeasure, dissatisfaction`},{en:`a commercial`,ko:`상업 광고`,syn:`advertisement, ad`,ant:``},{en:`remove`,ko:`없애다, 제거하다`,syn:`eliminate, delete`,ant:`add, include`},{en:`entertainment`,ko:`오락`,syn:`amusement, pastime`,ant:`boredom, tedium`},{en:`enjoyable`,ko:`즐거운`,syn:`pleasant, delightful`,ant:`unpleasant, disagreeable`},{en:`opposite`,ko:`반대`,syn:`contrary, reverse`,ant:`same, identical`},{en:`annoying`,ko:`성가신`,syn:`irritating, bothersome`,ant:`soothing, pleasant`},{en:`adaptation`,ko:`적응`,syn:`adjustment, modification`,ant:`maladaptation, rigidity`},{en:`melt`,ko:`녹은`,syn:`thaw, dissolve`,ant:`freeze, solidify`},{en:`pretty`,ko:`상당히, 꽤`,syn:`quite, fairly`,ant:`barely, scarcely`},{en:`in a row`,ko:`연속으로`,syn:`consecutively, successively`,ant:`intermittently, sporadically`},{en:`pleasurable`,ko:`즐거운`,syn:`enjoyable, satisfying`,ant:`unpleasant, disagreeable`},{en:`intersperse`,ko:`배치하다`,syn:`scatter, distribute`,ant:`collect, gather`},{en:`decelerate`,ko:`늦추다, 속도를 줄이다`,syn:`slow down, retard`,ant:`accelerate, speed up`},{en:`view`,ko:`보다`,syn:`observe, see`,ant:`ignore, overlook`},{en:`disrupt`,ko:`방해하다`,syn:`disturb, interfere`,ant:`facilitate, assist`},{en:`following`,ko:`뒤에 오는, 뒤따르는`,syn:`next, subsequent`,ant:`preceding, prior`}],
+  '31':[{en:`stamp`,ko:`우표`,syn:`postage, seal`,ant:``},{en:`serve`,ko:`수행하다, 제공하다`,syn:`assist, cater`,ant:`neglect, ignore`},{en:`practical`,ko:`실용적인, 실질적인`,syn:`functional, pragmatic`,ant:`impractical, theoretical`},{en:`purpose`,ko:`목적`,syn:`goal, aim`,ant:`randomness, chance`},{en:`accept`,ko:`받아들이다`,syn:`receive, acknowledge`,ant:`reject, refuse`},{en:`side issue`,ko:`부수적인 문제`,syn:`secondary issue`,ant:`main issue, priority`},{en:`attraction`,ko:`매력`,syn:`appeal, charm`,ant:`repulsion, aversion`},{en:`be asked to +V`,ko:`~하라고 요청받다`,syn:`be requested to, be required to`,ant:``},{en:`arrange`,ko:`배열하다`,syn:`organize, set up`,ant:`disarrange, scatter`},{en:`attractiveness`,ko:`매력도`,syn:`appeal, charm`,ant:`unattractiveness, repulsion`},{en:`afterward`,ko:`나중에, 후에`,syn:`later, subsequently`,ant:`before, previously`},{en:`reward`,ko:`보상, 보상하다`,syn:`prize, compensate`,ant:`penalty, punish`},{en:`participation`,ko:`참여`,syn:`involvement, engagement`,ant:`exclusion, withdrawal`},{en:`rating`,ko:`평가`,syn:`assessment, evaluation`,ant:`disapproval, criticism`},{en:`available`,ko:`이용 가능한`,syn:`accessible, obtainable`,ant:`unavailable, inaccessible`},{en:`from scratch`,ko:`맨 처음부터`,syn:`from the beginning, anew`,ant:`halfway, incomplete`},{en:`classify`,ko:`분류하다`,syn:`categorize, sort`,ant:`mix, jumble`},{en:`phenomenon`,ko:`현상`,syn:`occurrence, event`,ant:``},{en:`reactance`,ko:`리액턴스, 유도 저항`,syn:`impedance, resistance`,ant:`conductance, allowance`},{en:`be deprived of X`,ko:`~을 빼앗기다, 박탈당하다`,syn:`be stripped of, be robbed of`,ant:`be endowed with, be given`},{en:`deem`,ko:`여기다`,syn:`consider, regard`,ant:`disregard, ignore`},{en:`attractive`,ko:`매력적인`,syn:`appealing, charming`,ant:`unattractive, repellent`}],
+  '32':[{en:`invest`,ko:`투자하다`,syn:`finance, fund`,ant:`divest, withdraw`},{en:`repay`,ko:`보답하다`,syn:`recompense, reimburse`,ant:`owe, incur`},{en:`sunk cost`,ko:`매몰 비용`,syn:`irrecoverable cost, past expenditure`,ant:``},{en:`fallacy`,ko:`오류`,syn:`misconception, error`,ant:`truth, accuracy`},{en:`instinct`,ko:`본능`,syn:`intuition, impulse`,ant:`learned behavior, training`},{en:`prove to`,ko:`~라고 입증되다`,syn:`demonstrate, confirm`,ant:`disprove, refute`},{en:`worthwhile`,ko:`가치 있는`,syn:`valuable, beneficial`,ant:`worthless, useless`},{en:`in the end`,ko:`결국`,syn:`finally, ultimately`,ant:`at the beginning, initially`},{en:`give up`,ko:`포기하다`,syn:`surrender, relinquish`,ant:`persist, continue`},{en:`acknowledge`,ko:`인정하다`,syn:`admit, recognize`,ant:`deny, reject`},{en:`painful`,ko:`고통스러운`,syn:`agonizing, distressing`,ant:`pleasurable, comfortable`},{en:`prefer`,ko:`선호하다`,syn:`favor, choose`,ant:`dislike, reject`},{en:`bet`,ko:`투자, 내기`,syn:`gamble`,ant:``},{en:`lose`,ko:`잃다`,syn:`misplace, forfeit`,ant:`find, gain`},{en:`A rather than B`,ko:`B라기 보다는 A`,syn:``,ant:``},{en:`turn A into B`,ko:`A를 B로 바꾸다`,syn:`transform, convert`,ant:``},{en:`accept`,ko:`받아들이다`,syn:`receive, acknowledge`,ant:`reject, refuse`},{en:`delay`,ko:`미루다`,syn:`postpone, defer`,ant:`hasten, expedite`},{en:`pain`,ko:`고통`,syn:`suffering, agony`,ant:`pleasure, comfort`},{en:`admit`,ko:`인정하다`,syn:`acknowledge, confess`,ant:`deny, reject`},{en:`add to X`,ko:`~에 보태다`,syn:`increase, augment`,ant:`diminish, reduce`},{en:`loss`,ko:`손실, 상실`,syn:`deprivation, forfeiture`,ant:`gain, acquisition`}],
+  '33':[{en:`travel`,ko:`이동하다`,syn:`move, journey`,ant:`stay, remain`},{en:`practical`,ko:`실제적인, 실질적인`,syn:`pragmatic, realistic`,ant:`impractical, theoretical`},{en:`for a practical purpose`,ko:`실제로`,syn:``,ant:``},{en:`instantaneously`,ko:`순간적으로`,syn:`immediately, instantly`,ant:`gradually, slowly`},{en:`lightbulb`,ko:`전구`,syn:``,ant:``},{en:`glow`,ko:`빛나다`,syn:`shine, radiate`,ant:`dim, darken`},{en:`physically`,ko:`물리적으로`,syn:`bodily, materially`,ant:`mentally, abstractly`},{en:`reach`,ko:`뻗다`,syn:`extend, stretch`,ant:`retract, withdraw`},{en:`unpleasantly`,ko:`불쾌할 정도로`,syn:`disagreeably, offensively`,ant:`pleasantly, agreeably`},{en:`illuminate`,ko:`밝히다`,syn:`light up, clarify`,ant:`darken, obscure`},{en:`remove`,ko:`없애다, 제거하다`,syn:`eliminate, delete`,ant:`add, include`},{en:`the very`,ko:`바로 그`,syn:`exact, precise`,ant:`general, vague`},{en:`notion`,ko:`개념, 관념`,syn:`idea, concept`,ant:``},{en:`nonsensical`,ko:`말도 안 되는`,syn:`absurd, ridiculous`,ant:`sensible, rational`},{en:`entire`,ko:`전체의`,syn:`whole, complete`,ant:`partial, incomplete`},{en:`take`,ko:`걸리다, 필요하다`,syn:`require, necessitate`,ant:`forego, avoid`},{en:`infinitely`,ko:`무한히`,syn:`endlessly, limitlessly`,ant:`finitely, limitedly`},{en:`cross`,ko:`가로지르다, 건너다`,syn:`traverse, pass over`,ant:`remain, stay`},{en:`intervene`,ko:`끼어들다, 개입하다`,syn:`intercede, mediate`,ant:`ignore, neglect`},{en:`vastness`,ko:`광대함`,syn:`immensity, enormity`,ant:`smallness, minuteness`},{en:`immense`,ko:`엄청난`,syn:`huge, massive`,ant:`tiny, minute`},{en:`galaxy`,ko:`은하`,syn:``,ant:``}],
+  '34':[{en:`financial`,ko:`금융의, 재정적인`,syn:`monetary, fiscal`,ant:`nonfinancial, noneconomic`},{en:`capital`,ko:`자본`,syn:`funds, assets`,ant:`liabilities, debts`},{en:`the rich`,ko:`부자들, 부유한 사람들`,syn:`wealthy, affluent`,ant:`the poor, impoverished`},{en:`lend`,ko:`빌려주다`,syn:`loan, advance`,ant:`borrow, take`},{en:`smooth (v)`,ko:`원활하게 하다`,syn:`ease, facilitate`,ant:`hinder, obstruct`},{en:`lifetime`,ko:`평생, 일생`,syn:`lifespan, existence`,ant:`moment, instant`},{en:`fancy`,ko:`멋진`,syn:`elaborate, luxurious`,ant:`plain, simple`},{en:`don't have to`,ko:`~할 필요가 없다`,syn:``,ant:``},{en:`income`,ko:`수입, 소득`,syn:`earnings, revenue`,ant:`expense, expenditure`},{en:`earn`,ko:`벌다`,syn:`gain, acquire`,ant:`lose, spend`},{en:`may have pp`,ko:`~했을지도 모른다`,syn:``,ant:``},{en:`admonish`,ko:`충고하다, 주의를 주다`,syn:`advise, warn`,ant:`praise, commend`},{en:`neither A nor B`,ko:`A도 아니고 B도 아닌`,syn:``,ant:``},{en:`borrow`,ko:`빌리다`,syn:``,ant:`lend, give`},{en:`agrarian`,ko:`농업의, 농경의`,syn:`agricultural, rural`,ant:`urban, industrial`},{en:`crop`,ko:`작물`,syn:`harvest, produce`,ant:``},{en:`reasonably`,ko:`합리적으로`,syn:`sensibly, fairly`,ant:`irrationally, unfairly`},{en:`soon after`,ko:`직후에`,syn:`shortly after, immediately following`,ant:`long after, much later`},{en:`harvest`,ko:`수확하다, 수확, 수확물`,syn:`gather, reap`,ant:`plant, sow`},{en:`store (v)`,ko:`저장하다`,syn:`keep, save`,ant:`use, deplete`},{en:`sophisticated`,ko:`정교한`,syn:`refined, complex`,ant:`simple, crude`},{en:`retirement`,ko:`은퇴`,syn:`withdrawal, retreat`,ant:`employment, work`},{en:`divorce`,ko:`분리하다, 이혼하다`,syn:`separate, split`,ant:`marry, unite`},{en:`flexibility`,ko:`유연성, 융통성`,syn:`adaptability, suppleness`,ant:`rigidity, inflexibility`}],
+  '35':[{en:`manual`,ko:`매뉴얼, 설명서`,syn:`guide, handbook`,ant:``},{en:`a couple of`,ko:`몇몇의`,syn:`several, a few`,ant:``},{en:`high-profile`,ko:`세간의 이목을 끄는`,syn:`prominent, well-known`,ant:`low-profile, obscure`},{en:`make one's living~ing`,ko:`~해서 돈을 벌다, 생계를 유지하다`,syn:`earn a living`,ant:``},{en:`instruction`,ko:`지침`,syn:`direction, guideline`,ant:``},{en:`paid support`,ko:`유료 지원`,syn:`paid assistance, paid help`,ant:`free support, voluntary support`},{en:`mere`,ko:`단순한`,syn:`simple, pure`,ant:`complex, intricate`},{en:`guidance`,ko:`안내`,syn:`direction, leadership`,ant:`misguidance, misinformation`},{en:`genetic`,ko:`유전적인`,syn:`hereditary, inborn`,ant:`acquired, learned`},{en:`insurance`,ko:`보험`,syn:`coverage, protection`,ant:``},{en:`offer`,ko:`제공하다`,syn:`provide, propose`,ant:`withhold, refuse`},{en:`sequence`,ko:`배열 순서, 순서`,syn:`order, arrangement`,ant:`disorder, chaos`},{en:`cost`,ko:`~의 비용이 들다`,syn:`charge, expense`,ant:``},{en:`interpretation`,ko:`설명, 해석`,syn:`explanation, clarification`,ant:`misunderstanding, confusion`}],
+  '36':[{en:`expensive`,ko:`비용이 많이 드는, 비싼`,syn:`costly, pricey`,ant:`cheap, inexpensive`},{en:`in terms of X`,ko:`~라는 점에서`,syn:`regarding, concerning`,ant:``},{en:`power (v)`,ko:`~에 동력을 공급하다`,syn:`energize, activate`,ant:`drain, deactivate`},{en:`operate`,ko:`작동하다`,syn:`function, run`,ant:`malfunction, fail`},{en:`efficient`,ko:`효율적인`,syn:`effective, proficient`,ant:`inefficient, wasteful`},{en:`process`,ko:`처리하다`,syn:`handle, manage`,ant:`neglect, ignore`},{en:`minimum`,ko:`최소의`,syn:``,ant:`maximum, most`},{en:`navigate`,ko:`항해하다`,syn:`steer, guide`,ant:`get lost, drift`},{en:`fix`,ko:`고정하다`,syn:`attach, secure`,ant:`loosen, release`},{en:`gaze (n)`,ko:`시선, 응시`,syn:`stare, look`,ant:`glance, peek`},{en:`guarantee`,ko:`보장`,syn:`assurance, warranty`,ant:`uncertainty, doubt`},{en:`figure out X`,ko:`알아내다`,syn:`understand, solve`,ant:`misunderstand, overlook`},{en:`direct`,ko:`끌다, 이끌다`,syn:`guide, lead`,ant:`mislead, divert`},{en:`attention`,ko:`주의`,syn:`focus, concentration`,ant:`distraction, inattention`},{en:`trick`,ko:`속임수`,syn:`deceit, ruse`,ant:`honesty, integrity`},{en:`give away`,ko:`드러내다`,syn:`reveal, disclose`,ant:`hide, conceal`},{en:`the game`,ko:`속임수`,syn:`deception, trickery`,ant:`honesty, transparency`},{en:`rest +형용사`,ko:`~한 채로 있다`,syn:`remain, stay`,ant:`move, change`},{en:`assured`,ko:`확신하는, 확신된`,syn:`confident, certain`,ant:`unsure, doubtful`},{en:`scene`,ko:`장면`,syn:``,ant:``},{en:`prevalence`,ko:`빈번함, 성행`,syn:`frequency, commonness`,ant:`rarity, infrequency`},{en:`pedestrian`,ko:`보행자`,syn:``,ant:``},{en:`plain`,ko:`명백한`,syn:`clear, obvious`,ant:`obscure, unclear`},{en:`collide`,ko:`충돌하다`,syn:`crash, bump`,ant:`avoid, miss`},{en:`pointed`,ko:`향해진`,syn:`aimed, directed`,ant:`aimless, random`}],
+  '37':[{en:`current`,ko:`현재의`,syn:`present, existing`,ant:`past, future`},{en:`employ`,ko:`고용하다, 채택하다`,syn:`hire, engage`,ant:`fire, dismiss`},{en:`invest`,ko:`투자하다`,syn:``,ant:``},{en:`laboratory`,ko:`실험실`,syn:``,ant:``},{en:`construction site`,ko:`건설 현장`,syn:``,ant:``},{en:`in the long run`,ko:`장기적으로`,syn:``,ant:``},{en:`fancy (a)`,ko:`멋진`,syn:`elaborate, stylish`,ant:`plain, simple`},{en:`graduates`,ko:`졸업생`,syn:``,ant:``},{en:`auto worker`,ko:`자동차 노동자`,syn:``,ant:``},{en:`crucial`,ko:`중대한`,syn:`critical, essential`,ant:`trivial, insignificant`},{en:`productive`,ko:`생산적인`,syn:`efficient, fruitful`,ant:`unproductive, idle`},{en:`the rest`,ko:`나머지`,syn:`remainder, balance`,ant:``},{en:`thus`,ko:`따라서, 그러므로`,syn:`therefore, consequently`,ant:``},{en:`tuition`,ko:`수업료, 등록금`,syn:`fees, education cost`,ant:``}],
+  '38':[{en:`the Net`,ko:`인터넷`,syn:`the Internet, web`,ant:``},{en:`differ from X`,ko:`~와 다르다`,syn:`vary from, be unlike`,ant:`resemble, match`},{en:`replace`,ko:`대체하다`,syn:`substitute, supersede`,ant:`retain, keep`},{en:`obvious`,ko:`분명한`,syn:`evident, clear`,ant:`hidden, obscure`},{en:`bidirectional`,ko:`두 방향의`,syn:``,ant:``},{en:`as well as`,ko:`~뿐만 아니라`,syn:`in addition to, besides`,ant:``},{en:`exchange`,ko:`교환하다`,syn:`trade, swap`,ant:`keep, retain`},{en:`turn A into B`,ko:`A를 B로 바꾸다`,syn:`transform, convert`,ant:``},{en:`thoroughfare`,ko:`주요 도로, 주요한 통로`,syn:`main road, highway`,ant:`alley, side street`},{en:`commerce`,ko:`상거래, 상업`,syn:``,ant:``},{en:`virtual`,ko:`가상의`,syn:``,ant:`real, physical`},{en:`place an order`,ko:`주문을 하다`,syn:`order, request`,ant:``},{en:`track`,ko:`추적하다`,syn:`follow, trace`,ant:`lose, miss`},{en:`shipment`,ko:`배송`,syn:``,ant:``},{en:`corporate`,ko:`기업의`,syn:``,ant:``},{en:`medium`,ko:`매체`,syn:`means, channel`,ant:``},{en:`commercial`,ko:`상업적인, 상업의`,syn:``,ant:``},{en:`millions of`,ko:`수백만의`,syn:`countless, numerous`,ant:`few, scarce`},{en:`distribute`,ko:`배포하다, 분배하다`,syn:`allocate, hand out`,ant:`collect, gather`},{en:`critique`,ko:`비평하다`,syn:`review, evaluate`,ant:`praise, approve`},{en:`edit`,ko:`편집하다`,syn:`revise, alter`,ant:``},{en:`otherwise`,ko:`그렇지 않으면`,syn:``,ant:``},{en:`modify`,ko:`수정하다`,syn:`change, adjust`,ant:`maintain, preserve`}],
+  '39':[{en:`fire`,ko:`해고하다`,syn:`dismiss, sack`,ant:`hire, employ`},{en:`pink slip`,ko:`해고 통지서`,syn:`termination notice, layoff notice`,ant:``},{en:`labor force`,ko:`노동력`,syn:`workforce, manpower`,ant:``},{en:`industrial`,ko:`산업의`,syn:`manufacturing, commercial`,ant:`agricultural, rural`},{en:`revolution`,ko:`혁명`,syn:`upheaval, transformation`,ant:`stability, status quo`},{en:`workforce`,ko:`노동력`,syn:``,ant:``},{en:`eliminate`,ko:`없애다, 제거하다`,syn:`remove, eradicate`,ant:`retain, include`},{en:`replace`,ko:`대체하다`,syn:`substitute, supplant`,ant:`keep, preserve`},{en:`displace`,ko:`쫓아 내다`,syn:`eject`,ant:`welcome, keep`},{en:`idle`,ko:`한가한, 나태한`,syn:`inactive, lazy`,ant:`busy, industrious`},{en:`entirely`,ko:`완전히`,syn:`completely, wholly`,ant:`partially, incompletely`},{en:`farm`,ko:`농사짓다`,syn:`cultivate, till`,ant:``},{en:`man`,ko:`~에서 일하다`,syn:`operate, staff`,ant:`vacate, abandon`},{en:`manufacture`,ko:`제조하다`,syn:`produce, fabricate`,ant:`consume, destroy`},{en:`equipment`,ko:`장비`,syn:`gear, apparatus`,ant:``},{en:`wave upon wave of`,ko:`계속적인, 연속적인`,syn:`successive, continuous`,ant:``},{en:`occupation`,ko:`직업`,syn:`profession, job`,ant:`unemployment, leisure`},{en:`appliance`,ko:`가전제품`,syn:`device, gadget`,ant:``},{en:`repair person`,ko:`수리공`,syn:`technician, fixer`,ant:``},{en:`chemist`,ko:`화학자`,syn:`scientist, pharmacist`,ant:``},{en:`building on X`,ko:`~을 기반으로 하는`,syn:`based on, leveraging`,ant:``},{en:`previous`,ko:`이전의`,syn:`former, prior`,ant:`current, subsequent`},{en:`vast majority`,ko:`대다수`,syn:``,ant:`minority, few`}],
+  '40':[{en:`spark`,ko:`불러 일으키다, 촉발하다`,syn:`ignite, trigger`,ant:`extinguish, suppress`},{en:`envy`,ko:`부러움`,syn:`jealousy, covetousness`,ant:`contentment, satisfaction`},{en:`ownership`,ko:`소유권`,syn:`possession, proprietorship`,ant:`nonownership`},{en:`status`,ko:`지위`,syn:``,ant:``},{en:`popularity`,ko:`인기`,syn:`fame, prominence`,ant:`obscurity, unpopularity`},{en:`be confused with X`,ko:`~와 혼동되다`,syn:`be mistaken for, be puzzled with`,ant:``},{en:`jealousy`,ko:`질투`,syn:`envy, resentment`,ant:`contentment, trust`},{en:`physical`,ko:`신체적인`,syn:`bodily, corporal`,ant:`mental, emotional`},{en:`reaction`,ko:`반응`,syn:`response, reply`,ant:``},{en:`identical`,ko:`동일한`,syn:`same, duplicate`,ant:`different, unique`},{en:`subject`,ko:`대상`,syn:`participant, object`,ant:``},{en:`on the other hand`,ko:`반면에`,syn:``,ant:``},{en:`jealous`,ko:`질투하는`,syn:`envious, covetous`,ant:`trusting, content`},{en:`ring (v)`,ko:`전화하다`,syn:``,ant:``},{en:`paradoxically`,ko:`역설적이게도`,syn:`ironically, contradictorily`,ant:`logically, coherently`},{en:`direct (v)`,ko:`향하게 하다`,syn:`guide, steer`,ant:`mislead, distract`},{en:`resentment`,ko:`불쾌감, 분개`,syn:`bitterness, indignation`,ant:`contentment, happiness`},{en:`toward`,ko:`~을 향해서`,syn:``,ant:``},{en:`be similar to X`,ko:`~와 비슷하다`,syn:`resemble, be like`,ant:`differ from, be unlike`},{en:`residence`,ko:`주거, 거주`,syn:``,ant:``},{en:`before last`,ko:`지지난`,syn:``,ant:``},{en:`millionaire`,ko:`백만장자`,syn:``,ant:``},{en:`globe`,ko:`지구`,syn:``,ant:``},{en:`dentist`,ko:`치과의사`,syn:`dental surgeon, orthodontist`,ant:``},{en:`not A but B`,ko:`A가 아니라 B`,syn:``,ant:``},{en:`potter`,ko:`도공`,syn:``,ant:``},{en:`involve`,ko:`포함하다`,syn:`include, entail`,ant:`exclude, omit`},{en:`party`,ko:`당사자`,syn:``,ant:``},{en:`whereas`,ko:`~한 반면에`,syn:`while, although`,ant:``},{en:`circumstance`,ko:`상황`,syn:`condition, situation`,ant:``},{en:`alike`,ko:`비슷한`,syn:`similar, comparable`,ant:`different, dissimilar`},{en:`resent`,ko:`~를 불쾌하게 하다`,syn:`begrudge, dislike`,ant:`like, appreciate`}],
+  '41':[{en:`partial`,ko:`편향된`,syn:`biased, prejudiced`,ant:`impartial, neutral`},{en:`framed`,ko:`짜맞춰진`,syn:`structured, constructed`,ant:`disorganized, chaotic`},{en:`minimize`,ko:`최소화하다`,syn:`reduce, lessen`,ant:`maximize, amplify`},{en:`loss`,ko:`손실, 상실`,syn:`deprivation, deficit`,ant:`gain, profit`},{en:`seemingly`,ko:`겉보기에`,syn:`apparently, outwardly`,ant:`actually, genuinely`},{en:`consistent with`,ko:`~와 일치하는`,syn:`in agreement with, compatible with`,ant:`contradictory to, inconsistent with`},{en:`promising`,ko:`유망한`,syn:`hopeful, prospective`,ant:`unpromising, bleak`},{en:`justify`,ko:`정당화 하다`,syn:`defend, vindicate`,ant:`condemn, disapprove`},{en:`on the one hand`,ko:`한편으로는`,syn:``,ant:``},{en:`sensible`,ko:`현명한, 분별있는`,syn:`wise, prudent`,ant:`foolish, imprudent`},{en:`defend`,ko:`방어하다`,syn:`protect, guard`,ant:`attack, surrender`},{en:`on the other hand`,ko:`반면에`,syn:`carry out, perform`,ant:`neglect, ignore`},{en:`be likely to`,ko:`~하기 쉽다`,syn:``,ant:``},{en:`conduct`,ko:`수행하다`,syn:``,ant:``},{en:`imbalanced`,ko:`불균형한`,syn:`uneven, unequal`,ant:`balanced, equal`},{en:`analysis`,ko:`분석`,syn:`examination, evaluation`,ant:``},{en:`fall prey to X`,ko:`~의 희생양이 되다`,syn:`become a victim of, succumb to`,ant:`overcome, resist`},{en:`cluster`,ko:`덩어리`,syn:``,ant:``},{en:`confirmation bias`,ko:`확증편향`,syn:`preconceived notion, selective thinking`,ant:`open-mindedness, objectivity`},{en:`nearly`,ko:`거의`,syn:`almost, approximately`,ant:`exactly, completely`},{en:`hire`,ko:`고용하다`,syn:`employ, recruit`,ant:`fire, dismiss`},{en:`rely on X`,ko:`~에 의존하다`,syn:`depend on, trust in`,ant:`distrust, doubt`},{en:`evaluate`,ko:`평가하다`,syn:`assess, appraise`,ant:`ignore, neglect`},{en:`applicant`,ko:`지원자, 신청자`,syn:`candidate, petitioner`,ant:``},{en:`it turns out that~`,ko:`~라고 드러나다`,syn:``,ant:``},{en:`least`,ko:`최소의`,syn:`minimal, slightest`,ant:`most, maximum`},{en:`predict`,ko:`예측하다`,syn:`foresee, anticipate`,ant:`doubt, question`},{en:`subconsciously`,ko:`잠재의식적으로`,syn:`involuntarily, unconsciously`,ant:`consciously, deliberately`},{en:`make up one's mind`,ko:`결정을 내리다`,syn:`decide, determine`,ant:`waver, hesitate`},{en:`interaction`,ko:`상호작용`,syn:`interplay`,ant:`isolation, separation`},{en:`the rest`,ko:`나머지`,syn:`remainder, residue`,ant:`entirety, whole`},{en:`cherry-pick`,ko:`선별하다`,syn:`select, choose`,ant:`ignore, neglect`},{en:`evidence`,ko:`증거`,syn:`proof, testimony`,ant:`disproof, refutation`},{en:`phrase`,ko:`표현하다, 문구`,syn:`express, articulate`,ant:``},{en:`confirm`,ko:`확인하다`,syn:`verify, affirm`,ant:`deny, refute`},{en:`initial`,ko:`처음의`,syn:`beginning, first`,ant:`final, last`},{en:`impression`,ko:`인상`,syn:`perception, feeling`,ant:`reality, fact`},{en:`previous`,ko:`이전의`,syn:``,ant:``},{en:`pretty`,ko:`상당히, 꽤`,syn:`fairly, quite`,ant:`slightly, minimally`},{en:`ambitious`,ko:`야망이 있는`,syn:`aspiring, determined`,ant:`unambitious, lazy`},{en:`versus`,ko:`~대~`,syn:``,ant:``},{en:`must have pp`,ko:`~했음에 틀림없다`,syn:``,ant:``},{en:`committed`,ko:`헌신적인`,syn:`dedicated, devoted`,ant:`indifferent, apathetic`},{en:`be prone to~ing`,ko:`~하기 쉽다`,syn:``,ant:``},{en:`ignore`,ko:`무시하다, 간과하다`,syn:`disregard, overlook`,ant:`notice, acknowledge`},{en:`significant`,ko:`중요한, 상당한`,syn:`important, substantial`,ant:`trivial, minor`},{en:`indicate`,ko:`가리키다, 나타내다`,syn:``,ant:``},{en:`candidate`,ko:`후보자, 지원자`,syn:`applicant, nominee`,ant:``},{en:`structured approach`,ko:`구조화된 접근법`,syn:`systematic method, organized approach`,ant:`random approach`},{en:`obtain`,ko:`얻다`,syn:``,ant:``},{en:`respond`,ko:`반응하다, 대응하다`,syn:`reply, react`,ant:`ignore, overlook`},{en:`hypothetical`,ko:`가정의, 가설적인`,syn:`assumed, supposed`,ant:`actual, real`},{en:`assess`,ko:`평가하다`,syn:`evaluate, appraise`,ant:`neglect, ignore`},{en:`threefold`,ko:`세 배의`,syn:`tripled`,ant:``}],
+  '43':[{en:`grocery`,ko:`식료품`,syn:`provisions, food`,ant:``},{en:`purchase`,ko:`구매하다`,syn:`buy, acquire`,ant:`sell, dispose`},{en:`cart`,ko:`수레, 카트`,syn:``,ant:``},{en:`pull into`,ko:`~안으로 차를 대다`,syn:`drive into, move into`,ant:`pull out, drive out`},{en:`load`,ko:`싣다`,syn:`pack, fill`,ant:`unload, empty`},{en:`notice`,ko:`알아차리다, 보다`,syn:`observe, perceive`,ant:`ignore, overlook`},{en:`pull`,ko:`꺼내다, 당기다`,syn:``,ant:`push`},{en:`frame`,ko:`틀`,syn:``,ant:``},{en:`reach`,ko:`손을 뻗다`,syn:`stretch, extend`,ant:`withdraw, retract`},{en:`grab`,ko:`붙잡다`,syn:`seize, snatch`,ant:`release, let go`},{en:`thin`,ko:`얇은`,syn:`slim, slender`,ant:`thick, bulky`},{en:`attach`,ko:`부착하다, 붙이다`,syn:`affix, fasten`,ant:`detach, remove`},{en:`add`,ko:`덧붙이다`,syn:`include, supplement`,ant:`subtract, remove`},{en:`independence`,ko:`독립심, 독립성, 독립`,syn:`autonomy, self-sufficiency`,ant:`dependence, reliance`},{en:`curious`,ko:`호기심이 있는, 궁금해하는`,syn:`inquisitive, interested`,ant:`indifferent, uninterested`},{en:`offer`,ko:`제공하다, 제안하다`,syn:`present`,ant:`withdraw, refuse`},{en:`insist on`,ko:`~하기를 고집하다`,syn:`persist in`,ant:`abandon, relinquish`},{en:`put together`,ko:`조립하다, 합하다`,syn:`assemble, compile`,ant:`dismantle, separate`}],
+};
+
+const PASSAGE_ORDER = Object.keys(VOCA).sort((a,b)=>parseInt(a.split('-')[0])-parseInt(b.split('-')[0]));
+
+let userName='', userSchool='', selectedRefs=new Set(), doneRefs=new Set();
+let qs=[], idx=0, cor=0, wrn=0, wrongs=[], allResults=[], answered=false, t0=0;
+let filterMode='all', quizDir='en', round='1';
+
+function goModeSelect(){
+  userSchool = document.getElementById('si').value;
+  userName = document.getElementById('ni').value.trim();
+  if(!userSchool){alert('학교를 선택해주세요!');return;}
+  if(!userName){alert('이름을 입력해주세요!');return;}
+  try{localStorage.setItem('bomnal_name',userName);localStorage.setItem('bomnal_school',userSchool);}catch(e){}
+  document.getElementById('startScreen').classList.add('hidden');
+  document.getElementById('userInfo1').textContent = userName + ' · ' + userSchool;
+  document.getElementById('userInfo2').textContent = userName + ' · ' + userSchool;
+  document.getElementById('modeScreen').classList.remove('hidden');
+}
+
+function selectRound(r){
+  round = r;
+  const lbl = r==='1' ? '🥇 1차 뜻 묻기' : '🥈 2차 유의·반의어';
+  document.getElementById('roundLabel').textContent = lbl;
+  document.getElementById('roundLabel2').textContent = lbl;
+  // For 2차, hide direction bar (always 단어 → syn/ant)
+  document.getElementById('dirBar').style.display = (r==='2') ? 'none' : 'flex';
+  document.getElementById('modeScreen').classList.add('hidden');
+  selectedRefs.clear();
+  renderPassageGrid();
+  document.getElementById('passageScreen').classList.remove('hidden');
+}
+
+function backToMode(){
+  document.getElementById('passageScreen').classList.add('hidden');
+  document.getElementById('modeScreen').classList.remove('hidden');
+}
+
+function setDir(d){
+  quizDir = d;
+  document.querySelectorAll('.dir-bar .dbb').forEach(b=>b.classList.remove('on'));
+  document.getElementById('dir-'+d).classList.add('on');
+}
+
+function refInRange(ref, mode){
+  if(mode==='all') return true;
+  if(mode==='long') return parseInt(ref)>=41;
+  const n = parseInt(ref);
+  if(mode==='18-24') return n>=18&&n<=24;
+  if(mode==='25-30') return n>=25&&n<=30;
+  if(mode==='31-40') return n>=31&&n<=40;
+  return true;
+}
+
+function countWordsForRound(ref){
+  const words = VOCA[ref] || [];
+  if(round==='1') return words.length;
+  // round 2: count words with syn or ant
+  return words.filter(w=>w.syn || w.ant).length;
+}
+
+function renderPassageGrid(){
+  const grid = document.getElementById('passageGrid');
+  grid.innerHTML='';
+  PASSAGE_ORDER.forEach(ref=>{
+    if(!refInRange(ref, filterMode)) return;
+    const count = countWordsForRound(ref);
+    if(count===0) return;
+    const d = document.createElement('div');
+    d.className='p-card'+(selectedRefs.has(ref)?' sel':'')+(doneRefs.has(ref+'_'+round)?' done':'');
+    d.onclick=()=>togglePassage(ref);
+    const unit = round==='1' ? '단어' : '문항';
+    d.innerHTML=`<div class="p-no">${ref}번</div><div class="p-count">${count}${unit}</div>`
+      +(doneRefs.has(ref+'_'+round)?'<span class="p-badge done-badge">완료✓</span>':'')
+      +(selectedRefs.has(ref)&&!doneRefs.has(ref+'_'+round)?'<span class="p-badge" style="background:#e3f2fd;color:#1565c0;">선택</span>':'');
+    grid.appendChild(d);
+  });
+}
+
+function togglePassage(ref){
+  if(selectedRefs.has(ref))selectedRefs.delete(ref);
+  else selectedRefs.add(ref);
+  renderPassageGrid();
+}
+
+function filterPassage(mode, btn){
+  filterMode=mode;
+  document.querySelectorAll('.filter-bar .fb').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  renderPassageGrid();
+}
+
+function selectAll(){
+  const visible = PASSAGE_ORDER.filter(r=>refInRange(r, filterMode) && countWordsForRound(r)>0);
+  const allSel = visible.every(r=>selectedRefs.has(r));
+  visible.forEach(r=>{ if(allSel) selectedRefs.delete(r); else selectedRefs.add(r); });
+  renderPassageGrid();
+}
+
+function shuffle(arr){const b=[...arr];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+
+function splitTerms(s){
+  // Splits "demand, necessitate, push, release" into individual terms
+  if(!s) return [];
+  return s.split(/[,;]/).map(t=>t.trim()).filter(t=>t && !t.startsWith('('));
+}
+
+function startQuiz(){
+  if(selectedRefs.size===0){alert('지문을 하나 이상 선택하세요!');return;}
+  // Collect words
+  const selWords = [];
+  PASSAGE_ORDER.forEach(ref=>{
+    if(selectedRefs.has(ref)){
+      (VOCA[ref]||[]).forEach(w=>selWords.push({...w, pref:ref}));
+    }
+  });
+  // All words pool for distractor generation
+  const allWords = [];
+  PASSAGE_ORDER.forEach(ref=>(VOCA[ref]||[]).forEach(w=>allWords.push(w)));
+
+  qs = [];
+  if(round==='1'){
+    // 1차: 뜻 묻기 - one question per word
+    shuffle(selWords).forEach(w=>{
+      const mode = quizDir==='mix' ? (Math.random()<0.5?'en':'ko') : quizDir;
+      const ansField = mode==='en' ? 'ko' : 'en';
+      const showField = mode==='en' ? 'en' : 'ko';
+      const distractors = [];
+      const seen = new Set([w[ansField]]);
+      for(const cand of shuffle(allWords)){
+        if(distractors.length>=3) break;
+        if(!cand[ansField] || seen.has(cand[ansField])) continue;
+        distractors.push(cand[ansField]);
+        seen.add(cand[ansField]);
+      }
+      if(distractors.length<3) return;
+      qs.push({
+        pref:w.pref, mode:'1-'+mode, show:w[showField], ans:w[ansField],
+        options:shuffle([w[ansField], ...distractors]),
+        en:w.en, ko:w.ko, hint:''
+      });
+    });
+  } else {
+    // 2차: 유의어 또는 반의어 묻기
+    shuffle(selWords).forEach(w=>{
+      const synTerms = splitTerms(w.syn);
+      const antTerms = splitTerms(w.ant);
+      // Build syn question if available
+      if(synTerms.length > 0){
+        const correctSyn = synTerms[0]; // primary synonym
+        // Distractors: from other words' antonyms / non-matching syns
+        const distractors = [];
+        const seen = new Set(synTerms.map(t=>t.toLowerCase()));
+        seen.add(w.en.toLowerCase());
+        for(const cand of shuffle(allWords)){
+          if(distractors.length>=3) break;
+          const candSyns = splitTerms(cand.syn);
+          const candAnts = splitTerms(cand.ant);
+          const candidates = [...candSyns, ...candAnts];
+          for(const c of shuffle(candidates)){
+            if(!c || seen.has(c.toLowerCase())) continue;
+            distractors.push(c);
+            seen.add(c.toLowerCase());
+            break;
+          }
+        }
+        if(distractors.length===3){
+          qs.push({
+            pref:w.pref, mode:'2-syn', show:w.en, ans:correctSyn,
+            options:shuffle([correctSyn, ...distractors]),
+            en:w.en, ko:w.ko, hint:'('+w.ko+')',
+            allValid:synTerms.map(t=>t.toLowerCase())  // multiple valid answers
+          });
+        }
+      }
+      // Build ant question if available
+      if(antTerms.length > 0){
+        const correctAnt = antTerms[0];
+        const distractors = [];
+        const seen = new Set(antTerms.map(t=>t.toLowerCase()));
+        seen.add(w.en.toLowerCase());
+        // For antonym distractors, include synonyms of same word (they're INCORRECT for antonym)
+        splitTerms(w.syn).forEach(s=>distractors.length<3 && !seen.has(s.toLowerCase()) && (distractors.push(s), seen.add(s.toLowerCase())));
+        for(const cand of shuffle(allWords)){
+          if(distractors.length>=3) break;
+          const candidates = [...splitTerms(cand.syn), ...splitTerms(cand.ant)];
+          for(const c of shuffle(candidates)){
+            if(!c || seen.has(c.toLowerCase())) continue;
+            distractors.push(c);
+            seen.add(c.toLowerCase());
+            break;
+          }
+        }
+        if(distractors.length===3){
+          qs.push({
+            pref:w.pref, mode:'2-ant', show:w.en, ans:correctAnt,
+            options:shuffle([correctAnt, ...distractors]),
+            en:w.en, ko:w.ko, hint:'('+w.ko+')',
+            allValid:antTerms.map(t=>t.toLowerCase())
+          });
+        }
+      }
+    });
+  }
+
+  qs = shuffle(qs);
+  idx=0;cor=0;wrn=0;wrongs=[];allResults=[];answered=false;t0=Date.now();
+  document.getElementById('passageScreen').classList.add('hidden');
+  document.getElementById('hdr').classList.remove('hidden');
+  document.getElementById('pw').classList.remove('hidden');
+  document.getElementById('quizArea').classList.remove('hidden');
+  document.getElementById('hs').textContent=userName+' · '+selectedRefs.size+'개 지문 · '+qs.length+'문항';
+  showQ();
+}
+
+function escHTML(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+function showQ(){
+  if(idx>=qs.length){showResult();return;}
+  answered=false;
+  const q=qs[idx];
+  document.getElementById('pf').style.width=(idx/qs.length*100).toFixed(0)+'%';
+  document.getElementById('hb').textContent=(idx+1)+'/'+qs.length;
+  const area=document.getElementById('quizArea');
+
+  let typeBadge, prompt, wordClass;
+  if(q.mode==='1-en'){
+    typeBadge='1차 영→한'; prompt='다음 영어 단어의 뜻으로 알맞은 것은?'; wordClass='word-en';
+  } else if(q.mode==='1-ko'){
+    typeBadge='1차 한→영'; prompt='다음 한국어 뜻에 해당하는 영어 단어는?'; wordClass='word-ko';
+  } else if(q.mode==='2-syn'){
+    typeBadge='2차 유의어'; prompt='다음 단어와 의미가 가장 가까운 것은?'; wordClass='word-en';
+  } else {
+    typeBadge='2차 반의어'; prompt='다음 단어와 의미가 가장 반대되는 것은?'; wordClass='word-en';
+  }
+
+  const hintHtml = q.hint ? `<div style="font-size:14px;color:#5d4037;margin-top:6px;">${escHTML(q.hint)}</div>` : '';
+  const choiceHTML = q.options.map((opt,i)=>`<button class="cb" data-idx="${i}"><span class="cn">${i+1}</span><span>${escHTML(opt)}</span></button>`).join('');
+  area.innerHTML=`
+    <div class="qc">
+      <div class="q-no-badge">
+        <span class="qno">지문 ${q.pref}번</span>
+        <span class="qtype">${typeBadge}</span>
+      </div>
+      <div class="word-box"><div class="${wordClass}">${escHTML(q.show)}</div>${hintHtml}</div>
+      <div class="q-prompt">${prompt}</div>
+      <div class="choices" id="qChoices">${choiceHTML}</div>
+      <div class="fb-msg" id="fb"></div>
+    </div>`;
+  document.querySelectorAll('#qChoices .cb').forEach(b=>{
+    b.addEventListener('click',()=>selChoice(b, q.options[parseInt(b.dataset.idx)], q.ans, q.allValid));
+  });
+}
+
+function selChoice(btn, sel, ans, allValid){
+  if(answered)return;
+  answered=true;
+  document.querySelectorAll('.cb').forEach(b=>b.disabled=true);
+  const fb=document.getElementById('fb');
+  const q=qs[idx];
+  const selLower = sel.toLowerCase();
+  const isValid = allValid ? allValid.includes(selLower) : (sel===ans);
+  if(isValid){
+    btn.classList.add('correct');
+    fb.className='fb-msg ok';fb.textContent='✅ 정답!';
+    cor++;
+    allResults.push({pref:q.pref, mode:q.mode, correct:true, my:sel, ans:ans, en:q.en, ko:q.ko});
+  } else {
+    btn.classList.add('wrong');
+    document.querySelectorAll('.cb').forEach(b=>{const i=parseInt(b.dataset.idx);if(q.options[i]===ans)b.classList.add('reveal');});
+    fb.className='fb-msg no';fb.textContent='❌ 오답! 정답: '+ans+'  ('+q.en+' = '+q.ko+')';
+    wrn++;
+    wrongs.push({label:q.en+' / '+q.ko, my:sel, correct:ans, pref:q.pref, mode:q.mode});
+    allResults.push({pref:q.pref, mode:q.mode, correct:false, my:sel, ans:ans, en:q.en, ko:q.ko});
+  }
+  setTimeout(()=>{idx++;showQ();},isValid?700:1800);
+}
+
+let wrongQs = [];
+
+function showResult(){
+  document.getElementById('pf').style.width='100%';
+  document.getElementById('quizArea').classList.add('hidden');
+  const total=idx, pct=total>0?Math.round(cor/total*100):0;
+  const el=Math.round((Date.now()-t0)/60000);
+  selectedRefs.forEach(r=>doneRefs.add(r+'_'+round));
+  const wrongKeys = new Set(wrongs.map(w=>w.en+'_'+w.mode));
+  wrongQs = qs.filter(q=>wrongKeys.has(q.en+'_'+q.mode));
+
+  const wHTML=wrongs.length>0
+    ?'<div class="wl"><h3>❌ 오답 ('+wrongs.length+'개)</h3>'+wrongs.map(w=>'<div class="wi"><div class="wie">'+w.label+' [지문 '+w.pref+'번]</div><div class="wid">내 답: '+w.my+' → 정답: '+w.correct+'</div></div>').join('')+'</div>'
+    :'<div style="color:#2e7d32;font-weight:800;padding:14px;text-align:center;">🎉 전부 정답!</div>';
+
+  const retryBtn = wrongs.length>0
+    ? `<button class="rbtn" style="background:linear-gradient(135deg,#c62828,#e91e63);color:white;" onclick="retryWrongs()">❌ 오답 다시풀기 (${wrongs.length}개)</button>`
+    : '';
+
+  const roundLbl = round==='1' ? '1차 뜻' : '2차 유의·반의어';
+  const rs=document.getElementById('resultScreen');
+  rs.classList.remove('hidden');
+  rs.innerHTML=`<div class="rc">
+    <div style="font-size:12px;color:var(--muted);margin-bottom:4px;">고2 24년 6월 단어 ${roundLbl} · ${selectedRefs.size}개 지문 · ${total}문항</div>
+    <div class="rs">${pct}점</div>
+    <div class="rsub">${userName}의 결과</div>
+    <div class="sr">
+      <div class="si"><div class="sn" style="color:#2e7d32;">${cor}</div><div class="sl">정답</div></div>
+      <div class="si"><div class="sn" style="color:#c62828;">${wrn}</div><div class="sl">오답</div></div>
+      <div class="si"><div class="sn" style="color:#1565c0;">${total}</div><div class="sl">총문항</div></div>
+      <div class="si"><div class="sn" style="color:#f57f17;">${el}분</div><div class="sl">소요</div></div>
+    </div>
+    ${wHTML}
+    <div class="rbtns">
+      ${retryBtn}
+      <button class="rbtn rbtn-p" onclick="goBack()">← 지문 다시 선택</button>
+      <button class="rbtn rbtn-s" onclick="location.reload()">처음부터 🔄</button>
+    </div>
+  </div>`;
+
+  if(window._fbSave) window._fbSave({
+    submittedAt: new Date().toISOString(),
+    studentName: userName,
+    school: userSchool,
+    score: pct,
+    correct: cor,
+    wrong: wrn,
+    total: total,
+    elapsedMin: el,
+    quizType: '고2_24년6월_단어_'+roundLbl.replace(/\s/g,''),
+    passages: [...selectedRefs].sort(),
+    details: allResults.map(r=>({
+      지문: r.pref+'번',
+      유형: r.mode,
+      결과: r.correct?'✅정답':'❌오답',
+      영어: r.en,
+      한국어: r.ko,
+      내답: r.my,
+      정답: r.ans
+    })),
+    wrongWords: wrongs.map(w=>({eng:w.en, kor:w.ko, my:w.my, correct:w.correct, mode:w.mode}))
+  });
+}
+
+function retryWrongs(){
+  if(wrongQs.length===0) return;
+  qs=[...wrongQs];
+  idx=0;cor=0;wrn=0;wrongs=[];allResults=[];answered=false;t0=Date.now();
+  document.getElementById('resultScreen').classList.add('hidden');
+  document.getElementById('quizArea').classList.remove('hidden');
+  document.getElementById('hdr').classList.remove('hidden');
+  document.getElementById('pw').classList.remove('hidden');
+  document.getElementById('hs').textContent=userName+' · 오답 다시풀기';
+  showQ();
+}
+
+function goBack(){
+  document.getElementById('resultScreen').classList.add('hidden');
+  document.getElementById('hdr').classList.add('hidden');
+  document.getElementById('pw').classList.add('hidden');
+  selectedRefs.clear();
+  document.getElementById('passageScreen').classList.remove('hidden');
+  renderPassageGrid();
+}
+
+window.addEventListener('DOMContentLoaded',()=>{
+  const n=localStorage.getItem('bomnal_name');
+  const s=localStorage.getItem('bomnal_school');
+  if(n) document.getElementById('ni').value=n;
+  if(s){
+    const sel=document.getElementById('si');
+    for(let i=0;i<sel.options.length;i++){
+      if(sel.options[i].value&&s.includes(sel.options[i].value)){sel.value=sel.options[i].value;break;}
+    }
+  }
+});
+</script>
+</body>
+</html>
