@@ -434,6 +434,12 @@ function nonSecLabel(qt){
   if(qt.includes('함축의미')) return '함축의미';
   if(qt.includes('빈칸추론')){const kang=qt.match(/([\dT]+강|전체)/);return '빈칸추론'+(kang?' '+kang[1]:'');}
   if(qt.includes('어휘퀴즈')){const complete=qt.includes('오답완료');const label=qt.replace('_어휘퀴즈_오답완료','').replace('_어휘퀴즈','').replace(/_/g,' ');return label+(complete?' ✅':'');}
+  // 모의고사 시리즈: "고2_24년6월_단어_1차뜻" → "고2 24-6 단어 1차"
+  const mockM=qt.match(/^(고[123])_(\d{2})년(\d{1,2})월_(.+)$/);
+  if(mockM){
+    const grade=mockM[1], yr=mockM[2], mon=mockM[3], sub=mockM[4].replace(/_/g,' ');
+    return `${grade} ${yr}-${mon} ${sub}`;
+  }
   return qt.slice(0,16);
 }
 
@@ -495,6 +501,18 @@ function categorize(qt){
   return 'other';
 }
 
+window.toggleStudentDetail = function(id, btn){
+  const el = document.getElementById(id);
+  if(!el) return;
+  if(el.style.display==='none'){
+    el.style.display='block';
+    btn.textContent='📋 접기';
+  } else {
+    el.style.display='none';
+    btn.textContent='📋 상세보기';
+  }
+};
+
 function renderSectionView(){
   const sq=document.getElementById('secSchool')?.value||'';
   const nq=(document.getElementById('secName')?.value||'').trim().toLowerCase();
@@ -523,7 +541,7 @@ function renderSectionView(){
         if(!secGroups[base]) secGroups[base]={};
         const sn=parseSection(d.quizType);
         if(sn>0){if(!secGroups[base][sn]||(d.time&&secGroups[base][sn].time&&d.time>secGroups[base][sn].time)){secGroups[base][sn]=d;}}
-      } else if(cat!=='other'){nonSecRecords.push(d);}
+      } else {nonSecRecords.push(d);}
     });
 
     const secBlocksHtml=Object.entries(secGroups).map(([base,secMap])=>{
@@ -625,6 +643,49 @@ function renderSectionView(){
       </div>`;
     }
 
+    // 상세보기: 모든 응시 기록을 시간순(최신 우선) 테이블로
+    const detailId = 'detail_'+st.name.replace(/[^가-힣a-zA-Z0-9]/g,'_')+'_'+st.school.replace(/[^가-힣a-zA-Z0-9]/g,'_');
+    const allRecordsHtml = st.records.length > 0 ? `
+      <div id="${detailId}" class="student-detail" style="display:none;margin-top:14px;border-top:2px dashed #bbdefb;padding-top:14px;">
+        <div style="font-size:11px;font-weight:800;color:var(--muted);margin-bottom:8px;letter-spacing:.5px;">📋 전체 응시 기록 (${st.records.length}건)</div>
+        <div style="overflow-x:auto;">
+        <table style="width:100%;border-collapse:collapse;font-size:11px;">
+          <thead>
+            <tr style="background:#e3f2fd;color:#1565c0;font-weight:800;">
+              <th style="padding:6px 8px;text-align:left;">시간</th>
+              <th style="padding:6px 8px;text-align:left;">퀴즈 유형</th>
+              <th style="padding:6px 8px;text-align:center;">점수</th>
+              <th style="padding:6px 8px;text-align:center;">정답/총</th>
+              <th style="padding:6px 8px;text-align:center;">오답</th>
+              <th style="padding:6px 8px;text-align:center;">소요</th>
+              <th style="padding:6px 8px;text-align:left;">오답 항목 (앞 5개)</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${st.records.slice().sort((a,b)=>(b.time||0)-(a.time||0)).map(d=>{
+              const wrongPreview = (d.wrongWords||[]).slice(0,5).map(w=>{
+                if(typeof w==='string') return w;
+                if(w.label) return w.label;
+                if(w.eng) return w.eng+(w.kor?'('+w.kor+')':'');
+                return JSON.stringify(w).slice(0,30);
+              }).join(', ');
+              const scoreCol = d.score>=85?'#2e7d32':d.score>=70?'#1565c0':d.score>=50?'#e65100':'#c62828';
+              const timeStr = d.time?d.time.toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}):'-';
+              return `<tr style="border-bottom:1px solid #f0f4ff;">
+                <td style="padding:6px 8px;color:var(--muted);white-space:nowrap;">${timeStr}</td>
+                <td style="padding:6px 8px;font-weight:700;">${d.quizType||'-'}</td>
+                <td style="padding:6px 8px;text-align:center;font-weight:800;color:${scoreCol};">${d.score}점</td>
+                <td style="padding:6px 8px;text-align:center;">${d.correct||0}/${d.total||0}</td>
+                <td style="padding:6px 8px;text-align:center;color:${d.wrong>0?'#c62828':'#2e7d32'};">${d.wrong||0}</td>
+                <td style="padding:6px 8px;text-align:center;color:var(--muted);">${d.elapsed||0}분</td>
+                <td style="padding:6px 8px;color:#c62828;font-size:10px;">${wrongPreview || '-'}</td>
+              </tr>`;
+            }).join('')}
+          </tbody>
+        </table>
+        </div>
+      </div>` : '';
+
     return `<div class="student-card">
       <div class="student-card-header">
         <div>
@@ -635,12 +696,14 @@ function renderSectionView(){
           <span class="sum-pill done">📝 총 ${st.records.length}회 응시</span>
           <span class="sum-pill ${avgScore>=85?'done':'warn'}">평균 ${avgScore}점</span>
           ${myAccess.length>0?`<span class="sum-pill" style="background:#e3f2fd;color:#1565c0;">🔐 접속 ${myAccess.length}건</span>`:''}
+          <button onclick="toggleStudentDetail('${detailId}',this)" style="padding:4px 12px;border-radius:14px;border:none;background:#1565c0;color:white;font-size:11px;font-weight:800;cursor:pointer;font-family:inherit;">📋 상세보기</button>
         </div>
       </div>
       ${secBlocksHtml}
       ${reviewHtml}
       ${synanmHtml}
       ${nonSecHtml}
+      ${allRecordsHtml}
       ${accessHtml}
     </div>`;
   }).join('');
