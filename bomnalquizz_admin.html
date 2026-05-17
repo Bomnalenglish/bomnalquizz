@@ -317,6 +317,8 @@ async function loadData(){
     allData=[];
     snap.forEach(doc=>{
       const d=doc.data();
+      // per-문제 이벤트 레코드 숨김 (q 필드가 있거나, result가 ok/fail인 한 문제 단위 로그)
+      if(d.q!==undefined || d.result==='ok' || d.result==='fail') return;
       allData.push({
         id:doc.id,
         name:d.studentName||d.name||'(이름없음)',
