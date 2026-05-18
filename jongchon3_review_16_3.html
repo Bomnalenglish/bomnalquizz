@@ -561,28 +561,50 @@ window.addEventListener('DOMContentLoaded',()=>{Object.keys(US_DATA).forEach(id=
 
 </script>
 <script>
-// === Auto-save to Firebase (added by script) ===
+// === Auto-save to Firebase (v2: diagnostic, no-prompt) ===
 (function(){
   const KANG_NUM = '16';
   const SECTION = '3지문';
+  // Show toast feedback
+  function toast(msg, ok){
+    let t = document.getElementById('_save_toast');
+    if(!t){
+      t = document.createElement('div');
+      t.id = '_save_toast';
+      t.style.cssText = 'position:fixed;bottom:24px;right:24px;padding:12px 18px;border-radius:8px;font-size:13px;font-weight:700;font-family:sans-serif;z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,.25);transition:opacity .3s;';
+      document.body.appendChild(t);
+    }
+    t.style.background = ok ? '#2a9d6f' : '#d95f5f';
+    t.style.color = '#fff';
+    t.textContent = msg;
+    t.style.opacity = '1';
+    setTimeout(()=>{ t.style.opacity = '0'; }, 3500);
+  }
   function getUserInfo(){
     let name = sessionStorage.getItem('bn_name')||localStorage.getItem('bn_name')||localStorage.getItem('bomnal_name')||'';
     let school = sessionStorage.getItem('bn_school')||localStorage.getItem('bn_school')||localStorage.getItem('bomnal_school')||'';
-    if(!name){
-      name = prompt('이름을 입력해주세요:') || '익명';
-      try{ localStorage.setItem('bn_name', name); }catch(e){}
-    }
-    if(!school){
-      school = prompt('학교를 입력해주세요 (예: 종촌고):') || '종촌고';
-      try{ localStorage.setItem('bn_school', school); }catch(e){}
-    }
+    if(!name){ name = '익명'; }
+    if(!school){ school = '종촌고'; }
     return {name, school};
   }
-  function saveStage(stageName, scoreCorrect, scoreTotal){
+  async function waitForFbSave(maxMs){
+    const start = Date.now();
+    while(!window._fbSave && (Date.now()-start) < maxMs){
+      await new Promise(r=>setTimeout(r, 100));
+    }
+    return !!window._fbSave;
+  }
+  async function saveStage(stageName, scoreCorrect, scoreTotal){
     const info = getUserInfo();
     const pct = scoreTotal>0 ? Math.round(scoreCorrect/scoreTotal*100) : 0;
-    if(window._fbSave){
-      window._fbSave({
+    const ready = await waitForFbSave(5000);
+    if(!ready){
+      console.warn('[saveStage] _fbSave not ready');
+      toast('⚠ 저장 실패: Firebase 로드 중', false);
+      return;
+    }
+    try{
+      await window._fbSave({
         submittedAt: new Date().toISOString(),
         studentName: info.name,
         school: info.school,
@@ -593,75 +615,95 @@ window.addEventListener('DOMContentLoaded',()=>{Object.keys(US_DATA).forEach(id=
         elapsedMin: 0,
         quizType: '종촌고3_RL_'+KANG_NUM+'강_'+SECTION+'_'+stageName
       });
+      console.log('[saveStage] saved', stageName, pct);
+      toast('✓ '+stageName+' 저장됨 ('+pct+'점)', true);
+    } catch(e){
+      console.error('[saveStage] error', e);
+      toast('✗ 저장 오류: '+(e.message||e), false);
     }
   }
   window._saveStage = saveStage;
-  // === Wrap existing grading functions ===
-  const origCheckStage1 = window.checkStage1;
-  window.checkStage1 = function(){
-    if(origCheckStage1) origCheckStage1.apply(this, arguments);
-    const selects = document.querySelectorAll('#s1 select');
-    let total=0, correct=0;
-    selects.forEach(sel=>{total++; if(sel.className==='correct') correct++;});
-    saveStage('Stage1', correct, total);
-  };
-  const origGradeAllS2 = window.gradeAllS2;
-  window.gradeAllS2 = function(count, resultId, navId){
-    if(origGradeAllS2) origGradeAllS2.apply(this, arguments);
-    let total=count, correct=0;
-    for(let i=1;i<=count;i++){
-      const block=document.getElementById('q'+i);
-      if(block && block.classList.contains('graded-correct')) correct++;
+  // === Wrap existing grading functions (will retry if not yet defined) ===
+  function wrap(){
+    if(typeof window.checkStage1 === 'function' && !window.checkStage1._wrapped){
+      const orig = window.checkStage1;
+      window.checkStage1 = function(){
+        orig.apply(this, arguments);
+        const selects = document.querySelectorAll('#s1 select');
+        let total=0, correct=0;
+        selects.forEach(sel=>{total++; if(sel.className==='correct') correct++;});
+        saveStage('Stage1', correct, total);
+      };
+      window.checkStage1._wrapped = true;
     }
-    saveStage('Stage2', correct, total);
-  };
-  const origGradeS3 = window.gradeS3;
-  window.gradeS3 = function(resultId, navId){
-    if(origGradeS3) origGradeS3.apply(this, arguments);
-    let correct=0, total=4;
-    ['intro','body','example','conclusion'].forEach(slot=>{
-      const slotEl=document.getElementById('slot-'+slot);
-      if(slotEl && slotEl.classList.contains('slot-correct')) correct++;
-    });
-    saveStage('Stage3', correct, total);
-  };
-  const origGradeS4 = window.gradeS4;
-  window.gradeS4 = function(groupIds, resultId, navId){
-    if(origGradeS4) origGradeS4.apply(this, arguments);
-    let total=groupIds.length, correct=0;
-    groupIds.forEach(gid=>{
-      const block=document.getElementById(gid);
-      if(block){
-        const sel=block.querySelector('.reveal-correct.selected, .selected.reveal-correct');
-        // After grading, .selected is removed but reveal-correct is added on chosen el
-        // Better: count via banner text or s4Picks
-      }
-    });
-    // Fallback: read result banner like "3/4 정답"
-    const banner = document.getElementById(resultId);
-    if(banner){
-      const m = banner.textContent.match(/(\d+)\/(\d+)/);
-      if(m){ correct=parseInt(m[1]); total=parseInt(m[2]); }
-      else if(banner.textContent.includes('완벽') || banner.textContent.includes('전부')){ correct=total; }
+    if(typeof window.gradeAllS2 === 'function' && !window.gradeAllS2._wrapped){
+      const orig = window.gradeAllS2;
+      window.gradeAllS2 = function(count, resultId, navId){
+        orig.apply(this, arguments);
+        let total=count, correct=0;
+        for(let i=1;i<=count;i++){
+          const block=document.getElementById('q'+i);
+          if(block && block.classList.contains('graded-correct')) correct++;
+        }
+        saveStage('Stage2', correct, total);
+      };
+      window.gradeAllS2._wrapped = true;
     }
-    saveStage('Stage4', correct, total);
-  };
-  const origGradeVariant = window.gradeVariant;
-  window.gradeVariant = function(resultId, navId){
-    if(origGradeVariant) origGradeVariant.apply(this, arguments);
-    const banner = document.getElementById(resultId);
-    let correct=0, total=0;
-    if(banner){
-      const m = banner.textContent.match(/(\d+)\/(\d+)/);
-      if(m){ correct=parseInt(m[1]); total=parseInt(m[2]); }
-      else if(banner.textContent.includes('완벽') || banner.textContent.includes('통과')){
-        const selects = document.querySelectorAll('#s5 select');
-        total = selects.length + 1;
-        correct = total;
-      }
+    if(typeof window.gradeS3 === 'function' && !window.gradeS3._wrapped){
+      const orig = window.gradeS3;
+      window.gradeS3 = function(resultId, navId){
+        orig.apply(this, arguments);
+        let correct=0;
+        ['intro','body','example','conclusion'].forEach(slot=>{
+          const slotEl=document.getElementById('slot-'+slot);
+          if(slotEl && slotEl.classList.contains('slot-correct')) correct++;
+        });
+        saveStage('Stage3', correct, 4);
+      };
+      window.gradeS3._wrapped = true;
     }
-    saveStage('변형', correct, total);
-  };
+    if(typeof window.gradeS4 === 'function' && !window.gradeS4._wrapped){
+      const orig = window.gradeS4;
+      window.gradeS4 = function(groupIds, resultId, navId){
+        orig.apply(this, arguments);
+        const banner = document.getElementById(resultId);
+        let correct=0, total=groupIds.length;
+        if(banner){
+          const m = banner.textContent.match(/(\d+)\/(\d+)/);
+          if(m){ correct=parseInt(m[1]); total=parseInt(m[2]); }
+          else if(banner.textContent.includes('완벽') || banner.textContent.includes('전부')){ correct=total; }
+        }
+        saveStage('Stage4', correct, total);
+      };
+      window.gradeS4._wrapped = true;
+    }
+    if(typeof window.gradeVariant === 'function' && !window.gradeVariant._wrapped){
+      const orig = window.gradeVariant;
+      window.gradeVariant = function(resultId, navId){
+        orig.apply(this, arguments);
+        const banner = document.getElementById(resultId);
+        let correct=0, total=1;
+        if(banner){
+          const m = banner.textContent.match(/(\d+)\/(\d+)/);
+          if(m){ correct=parseInt(m[1]); total=parseInt(m[2]); }
+          else if(banner.textContent.includes('완벽') || banner.textContent.includes('통과')){
+            const selects = document.querySelectorAll('#s5 select');
+            total = selects.length + 1;
+            correct = total;
+          }
+        }
+        saveStage('변형', correct, total);
+      };
+      window.gradeVariant._wrapped = true;
+    }
+  }
+  // Try wrap immediately, then retry on DOMContentLoaded
+  wrap();
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', wrap);
+  } else {
+    setTimeout(wrap, 100);
+  }
 })();
 </script>
 </body>
