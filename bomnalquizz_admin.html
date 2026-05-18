@@ -563,10 +563,60 @@ function renderSectionView(){
       return `<div style="margin-bottom:14px;"><div style="font-size:11px;font-weight:800;color:var(--muted);margin-bottom:8px;letter-spacing:.5px;">📚 어휘퀴즈 &nbsp;·&nbsp; 완료 ${doneCount}/${knownMax}${warnCount>0?`<span style="color:#e65100;margin-left:8px;">⚠️ 재도전 ${warnCount}개</span>`:''}${doneCount===knownMax&&perfectCount===knownMax?'<span style="color:var(--green);margin-left:8px;">🏆 전 섹션 클리어!</span>':''}</div><div class="sec-grid">${cells}</div></div>`;
     }).join('');
 
-    // 동반의어 (포함: 동반의어 OR 유의어·반의어 OR N강 패턴)
-    const isSynanmType = qt => qt && (qt.includes('동반의어') || qt.includes('유의어·반의어') || /\d+강/.test(qt) || qt.includes('TEST'));
+    // Reading Lab (종촌고3 jongchon3_review) — 강별 / 지문별 / Stage별
+    const isReadingLab = qt => qt && qt.includes('종촌고3_RL_');
+    const readingLabRecords = nonSecRecords.filter(d=>isReadingLab(d.quizType));
+
+    // 동반의어 (포함: 동반의어 OR 유의어·반의어, Reading Lab 제외)
+    const isSynanmType = qt => qt && !isReadingLab(qt) && (qt.includes('동반의어') || qt.includes('유의어·반의어') || qt.includes('TEST'));
     const synanmRecords=nonSecRecords.filter(d=>isSynanmType(d.quizType));
-    const otherRecords=nonSecRecords.filter(d=>!isSynanmType(d.quizType));
+    const otherRecords=nonSecRecords.filter(d=>!isSynanmType(d.quizType) && !isReadingLab(d.quizType));
+
+    // Reading Lab 렌더링
+    const rlMap = {}; // key = kang_section_stage
+    readingLabRecords.forEach(d=>{
+      const m = d.quizType.match(/종촌고3_RL_(\d+)강_([^_]+)_(.+)/);
+      if(!m) return;
+      const key = m[1]+'_'+m[2]+'_'+m[3];
+      if(!rlMap[key] || (d.time && (rlMap[key].time||0) < d.time)) rlMap[key] = {...d, _kang:m[1], _section:m[2], _stage:m[3]};
+    });
+    const rlByKang = {};
+    Object.values(rlMap).forEach(r=>{
+      if(!rlByKang[r._kang]) rlByKang[r._kang] = {};
+      if(!rlByKang[r._kang][r._section]) rlByKang[r._kang][r._section] = [];
+      rlByKang[r._kang][r._section].push(r);
+    });
+    const sectionOrder = (s)=>{
+      if(s==='Gateway') return 0;
+      const m = s.match(/(\d+)/);
+      return m ? parseInt(m[1]) : 99;
+    };
+    const stageOrder = (s)=>{
+      const order = {'Stage1':1,'Stage2':2,'Stage3':3,'Stage4':4,'변형':5,'서술형':6};
+      return order[s] || 99;
+    };
+    const readingLabHtml = Object.keys(rlByKang).length>0 ? Object.keys(rlByKang).sort((a,b)=>parseInt(a)-parseInt(b)).map(kang=>{
+      const sections = rlByKang[kang];
+      const sectionsHtml = Object.keys(sections).sort((a,b)=>sectionOrder(a)-sectionOrder(b)).map(sec=>{
+        const stages = sections[sec].sort((a,b)=>stageOrder(a._stage)-stageOrder(b._stage));
+        const cells = stages.map(d=>{
+          const isPerfect = d.wrong===0;
+          const cellClass = isPerfect ? 'perfect' : 'has-wrong';
+          const timeStr = d.time ? d.time.toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}) : '';
+          return `<div class="sec-cell ${cellClass}" style="min-width:88px;text-align:left;">
+            <div style="font-size:10px;font-weight:800;color:var(--muted);margin-bottom:3px;">${d._stage}</div>
+            <div class="sec-score">${d.score}점</div>
+            ${d.wrong>0?`<div class="sec-wrong">오답 ${d.wrong}개</div>`:''}
+            <div class="sec-time">${timeStr}</div>
+          </div>`;
+        }).join('');
+        return `<div style="margin-bottom:8px;"><div style="font-size:10px;font-weight:700;color:#6a5550;margin-bottom:4px;">📖 ${sec}</div><div style="display:flex;flex-wrap:wrap;gap:6px;">${cells}</div></div>`;
+      }).join('');
+      return `<div style="margin-bottom:14px;padding:10px 12px;background:#fdf8ef;border-radius:10px;border:1px solid #e8d8b4;">
+        <div style="font-size:11px;font-weight:800;color:#7a5a30;margin-bottom:8px;">🔬 종촌고3 Reading Lab · ${kang}강</div>
+        ${sectionsHtml}
+      </div>`;
+    }).join('') : '';
     const synanmMap={};
     synanmRecords.forEach(d=>{
       const partMatch=d.quizType.match(/파트(\d)/);
@@ -749,6 +799,7 @@ function renderSectionView(){
       </div>
       ${secBlocksHtml}
       ${reviewHtml}
+      ${readingLabHtml}
       ${synanmHtml}
       ${nonSecHtml}
       ${allRecordsHtml}

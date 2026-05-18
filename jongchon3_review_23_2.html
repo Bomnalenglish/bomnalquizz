@@ -116,6 +116,16 @@ body { background: var(--bg); color: var(--text); font-family: 'Noto Sans KR', s
 .us-result.fail { background: rgba(217,95,95,.1); color: var(--wrong); border: 1px solid rgba(217,95,95,.3); }
 @media (max-width: 600px) { .s2-opts { grid-template-columns: 1fr; } .stage-btn { padding: 5px 9px; font-size: 11px; } }
 </style>
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getFirestore,collection,addDoc,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+const cfg={apiKey:"AIzaSyCxS524S8KAaF87DomPtl9sJdF-eqes404",authDomain:"bomnalvaca.firebaseapp.com",projectId:"bomnalvaca",storageBucket:"bomnalvaca.firebasestorage.app",messagingSenderId:"115868052300",appId:"1:115868052300:web:765c08867b6f1ce0987de9"};
+const app=initializeApp(cfg);const db=getFirestore(app);
+window._fbSave=async function(data){
+  try{await addDoc(collection(db,'quiz_results'),{...data,timestamp:serverTimestamp()});}
+  catch(e){console.warn('FB 저장 오류:',e);}
+};
+</script>
 </head>
 <body>
 <header class="site-header">
@@ -549,6 +559,110 @@ function gradeVariant(resultId, navId) {
 }
 window.addEventListener('DOMContentLoaded',()=>{Object.keys(US_DATA).forEach(id=>initUS(id));});
 
+</script>
+<script>
+// === Auto-save to Firebase (added by script) ===
+(function(){
+  const KANG_NUM = '23';
+  const SECTION = '2지문';
+  function getUserInfo(){
+    let name = sessionStorage.getItem('bn_name')||localStorage.getItem('bn_name')||localStorage.getItem('bomnal_name')||'';
+    let school = sessionStorage.getItem('bn_school')||localStorage.getItem('bn_school')||localStorage.getItem('bomnal_school')||'';
+    if(!name){
+      name = prompt('이름을 입력해주세요:') || '익명';
+      try{ localStorage.setItem('bn_name', name); }catch(e){}
+    }
+    if(!school){
+      school = prompt('학교를 입력해주세요 (예: 종촌고):') || '종촌고';
+      try{ localStorage.setItem('bn_school', school); }catch(e){}
+    }
+    return {name, school};
+  }
+  function saveStage(stageName, scoreCorrect, scoreTotal){
+    const info = getUserInfo();
+    const pct = scoreTotal>0 ? Math.round(scoreCorrect/scoreTotal*100) : 0;
+    if(window._fbSave){
+      window._fbSave({
+        submittedAt: new Date().toISOString(),
+        studentName: info.name,
+        school: info.school,
+        score: pct,
+        correct: scoreCorrect,
+        wrong: scoreTotal - scoreCorrect,
+        total: scoreTotal,
+        elapsedMin: 0,
+        quizType: '종촌고3_RL_'+KANG_NUM+'강_'+SECTION+'_'+stageName
+      });
+    }
+  }
+  window._saveStage = saveStage;
+  // === Wrap existing grading functions ===
+  const origCheckStage1 = window.checkStage1;
+  window.checkStage1 = function(){
+    if(origCheckStage1) origCheckStage1.apply(this, arguments);
+    const selects = document.querySelectorAll('#s1 select');
+    let total=0, correct=0;
+    selects.forEach(sel=>{total++; if(sel.className==='correct') correct++;});
+    saveStage('Stage1', correct, total);
+  };
+  const origGradeAllS2 = window.gradeAllS2;
+  window.gradeAllS2 = function(count, resultId, navId){
+    if(origGradeAllS2) origGradeAllS2.apply(this, arguments);
+    let total=count, correct=0;
+    for(let i=1;i<=count;i++){
+      const block=document.getElementById('q'+i);
+      if(block && block.classList.contains('graded-correct')) correct++;
+    }
+    saveStage('Stage2', correct, total);
+  };
+  const origGradeS3 = window.gradeS3;
+  window.gradeS3 = function(resultId, navId){
+    if(origGradeS3) origGradeS3.apply(this, arguments);
+    let correct=0, total=4;
+    ['intro','body','example','conclusion'].forEach(slot=>{
+      const slotEl=document.getElementById('slot-'+slot);
+      if(slotEl && slotEl.classList.contains('slot-correct')) correct++;
+    });
+    saveStage('Stage3', correct, total);
+  };
+  const origGradeS4 = window.gradeS4;
+  window.gradeS4 = function(groupIds, resultId, navId){
+    if(origGradeS4) origGradeS4.apply(this, arguments);
+    let total=groupIds.length, correct=0;
+    groupIds.forEach(gid=>{
+      const block=document.getElementById(gid);
+      if(block){
+        const sel=block.querySelector('.reveal-correct.selected, .selected.reveal-correct');
+        // After grading, .selected is removed but reveal-correct is added on chosen el
+        // Better: count via banner text or s4Picks
+      }
+    });
+    // Fallback: read result banner like "3/4 정답"
+    const banner = document.getElementById(resultId);
+    if(banner){
+      const m = banner.textContent.match(/(\d+)\/(\d+)/);
+      if(m){ correct=parseInt(m[1]); total=parseInt(m[2]); }
+      else if(banner.textContent.includes('완벽') || banner.textContent.includes('전부')){ correct=total; }
+    }
+    saveStage('Stage4', correct, total);
+  };
+  const origGradeVariant = window.gradeVariant;
+  window.gradeVariant = function(resultId, navId){
+    if(origGradeVariant) origGradeVariant.apply(this, arguments);
+    const banner = document.getElementById(resultId);
+    let correct=0, total=0;
+    if(banner){
+      const m = banner.textContent.match(/(\d+)\/(\d+)/);
+      if(m){ correct=parseInt(m[1]); total=parseInt(m[2]); }
+      else if(banner.textContent.includes('완벽') || banner.textContent.includes('통과')){
+        const selects = document.querySelectorAll('#s5 select');
+        total = selects.length + 1;
+        correct = total;
+      }
+    }
+    saveStage('변형', correct, total);
+  };
+})();
 </script>
 </body>
 </html>
