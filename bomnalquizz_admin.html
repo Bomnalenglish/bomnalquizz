@@ -495,7 +495,7 @@ function parseSection(qt){const m=qt.match(/(\d+)섹션/);return m?parseInt(m[1]
 function categorize(qt){
   if(!qt) return 'other';
   if(qt.includes('섹션')) return 'section';
-  if(qt.includes('동반의어')) return 'synanm';
+  if(qt.includes('동반의어')||qt.includes('유의어·반의어')||/\d+강/.test(qt)) return 'synanm';
   if(qt.includes('함축의미')) return 'implication';
   if(qt.includes('빈칸추론')) return 'blank';
   if(qt.includes('어휘퀴즈')) return 'vocab';
@@ -563,38 +563,62 @@ function renderSectionView(){
       return `<div style="margin-bottom:14px;"><div style="font-size:11px;font-weight:800;color:var(--muted);margin-bottom:8px;letter-spacing:.5px;">📚 어휘퀴즈 &nbsp;·&nbsp; 완료 ${doneCount}/${knownMax}${warnCount>0?`<span style="color:#e65100;margin-left:8px;">⚠️ 재도전 ${warnCount}개</span>`:''}${doneCount===knownMax&&perfectCount===knownMax?'<span style="color:var(--green);margin-left:8px;">🏆 전 섹션 클리어!</span>':''}</div><div class="sec-grid">${cells}</div></div>`;
     }).join('');
 
-    // 동반의어
-    const synanmRecords=nonSecRecords.filter(d=>d.quizType&&d.quizType.includes('동반의어'));
-    const otherRecords=nonSecRecords.filter(d=>!d.quizType||!d.quizType.includes('동반의어'));
+    // 동반의어 (포함: 동반의어 OR 유의어·반의어 OR N강 패턴)
+    const isSynanmType = qt => qt && (qt.includes('동반의어') || qt.includes('유의어·반의어') || /\d+강/.test(qt) || qt.includes('TEST'));
+    const synanmRecords=nonSecRecords.filter(d=>isSynanmType(d.quizType));
+    const otherRecords=nonSecRecords.filter(d=>!isSynanmType(d.quizType));
     const synanmMap={};
     synanmRecords.forEach(d=>{
       const partMatch=d.quizType.match(/파트(\d)/);
       const modeMatch=d.quizType.includes('A모드')?'A':d.quizType.includes('B모드')?'B':'';
+      const kangMatch=d.quizType.match(/(\d+)강/);
+      const testMatch=d.quizType.match(/TEST\s*(\d+)/i);
       const lessonMatch=d.quizType.match(/교과서(\d+)과/);
       const isOlym=d.quizType.includes('올림포스');const isMarch=d.quizType.includes('모의고사');
-      let groupKey=lessonMatch?`lesson${lessonMatch[1]}`:isOlym?'olympos':isMarch?'march':'other';
-      const partKey=partMatch?`p${partMatch[1]}`:'p0';
-      const key=`${groupKey}_${partKey}_${modeMatch}`;
+      let groupKey, itemKey;
+      if(kangMatch){ groupKey='kang'; itemKey=`k${kangMatch[1]}_${modeMatch}`; }
+      else if(testMatch){ groupKey='test'; itemKey=`t${testMatch[1]}_${modeMatch}`; }
+      else if(lessonMatch){ groupKey=`lesson${lessonMatch[1]}`; const partKey=partMatch?`p${partMatch[1]}`:'p0'; itemKey=`${partKey}_${modeMatch}`; }
+      else if(isOlym){ groupKey='olympos'; const partKey=partMatch?`p${partMatch[1]}`:'p0'; itemKey=`${partKey}_${modeMatch}`; }
+      else if(isMarch){ groupKey='march'; const partKey=partMatch?`p${partMatch[1]}`:'p0'; itemKey=`${partKey}_${modeMatch}`; }
+      else { groupKey='other'; itemKey=d.quizType; }
+      const key=`${groupKey}_${itemKey}`;
       if(!synanmMap[key]||(d.round||1)>(synanmMap[key].round||1)) synanmMap[key]=d;
     });
     const synanmGroups={};
     Object.values(synanmMap).forEach(d=>{
       const lessonMatch=d.quizType.match(/교과서(\d+)과/);const isOlym=d.quizType.includes('올림포스');const isMarch=d.quizType.includes('모의고사');
-      let gname=lessonMatch?`📖 교과서 ${lessonMatch[1]}과 동반의어`:isOlym?'📚 올림포스 동반의어':isMarch?`📝 ${(d.quizType.match(/(\d{4})/)||['',''])[1]}년 3월 모의고사 동반의어`:'🔤 동반의어';
+      const kangMatch=d.quizType.match(/(\d+)강/);
+      const testMatch=d.quizType.match(/TEST\s*(\d+)/i);
+      let gname;
+      if(kangMatch) gname='📚 수능 동반의어 (강별)';
+      else if(testMatch) gname='📝 수능 동반의어 (실전 TEST)';
+      else if(lessonMatch) gname=`📖 교과서 ${lessonMatch[1]}과 동반의어`;
+      else if(isOlym) gname='📚 올림포스 동반의어';
+      else if(isMarch) gname=`📝 ${(d.quizType.match(/(\d{4})/)||['',''])[1]}년 3월 모의고사 동반의어`;
+      else gname='🔤 동반의어';
       if(!synanmGroups[gname]) synanmGroups[gname]=[];synanmGroups[gname].push(d);
     });
     const synanmHtml=Object.entries(synanmGroups).map(([gname,records])=>{
-      const cells=records.sort((a,b)=>{const pa=(a.quizType.match(/파트(\d)/)||[,'0'])[1];const pb=(b.quizType.match(/파트(\d)/)||[,'0'])[1];return pa.localeCompare(pb)||(a.quizType.includes('A모드')?-1:1);}).map(d=>{
+      const cells=records.sort((a,b)=>{
+        const ka=(a.quizType.match(/(\d+)강/)||[,'0'])[1];
+        const kb=(b.quizType.match(/(\d+)강/)||[,'0'])[1];
+        if(ka!==kb) return parseInt(ka)-parseInt(kb);
+        const pa=(a.quizType.match(/파트(\d)/)||[,'0'])[1];const pb=(b.quizType.match(/파트(\d)/)||[,'0'])[1];
+        return pa.localeCompare(pb)||(a.quizType.includes('A모드')?-1:1);
+      }).map(d=>{
         const isPerfect=d.wrong===0&&(d.round||1)>1;const cellClass=isPerfect?'perfect':d.wrong>0?'has-wrong':'perfect';
         const partMatch=d.quizType.match(/파트(\d)/);const modeMatch=d.quizType.includes('A모드')?'A':d.quizType.includes('B모드')?'B':'';
-        const partLabel=partMatch?`파트${partMatch[1]}`:'';
+        const kangMatch=d.quizType.match(/(\d+)강/);
+        const testMatch=d.quizType.match(/TEST\s*(\d+)/i);
+        const itemLabel = kangMatch ? `${kangMatch[1]}강` : (testMatch ? `TEST ${testMatch[1]}` : (partMatch?`파트${partMatch[1]}`:''));
         const timeStr=d.time?d.time.toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}):'';
         const roundStr=(d.round||1)>1?`<div style="font-size:10px;color:#e65100">${d.round}라운드</div>`:'';
         const perfectBadge=d.wrong===0&&(d.round||1)>1?'<div style="font-size:10px;color:#2e7d32;font-weight:900">🏆 완료!</div>':'';
-        return `<div class="sec-cell ${cellClass}" style="min-width:110px;text-align:left;"><div style="font-size:10px;font-weight:800;color:var(--muted);margin-bottom:3px;">${partLabel}${modeMatch?' '+modeMatch+'모드':''}</div><div class="sec-score">${d.score}점</div>${d.wrong>0?`<div class="sec-wrong">오답 ${d.wrong}개</div>`:''}${roundStr}${perfectBadge}<div class="sec-time">${timeStr}</div></div>`;
+        return `<div class="sec-cell ${cellClass}" style="min-width:110px;text-align:left;"><div style="font-size:10px;font-weight:800;color:var(--muted);margin-bottom:3px;">${itemLabel}${modeMatch?' '+modeMatch+'모드':''}</div><div class="sec-score">${d.score}점</div>${d.wrong>0?`<div class="sec-wrong">오답 ${d.wrong}개</div>`:''}${roundStr}${perfectBadge}<div class="sec-time">${timeStr}</div></div>`;
       }).join('');
       const allPerfect=records.every(d=>d.wrong===0);
-      return `<div style="margin-bottom:14px;"><div style="font-size:11px;font-weight:800;color:var(--muted);margin-bottom:8px;letter-spacing:.5px;">${gname}${allPerfect?'<span style="color:var(--green);margin-left:8px;">🏆 전 파트 완료!</span>':''}</div><div style="display:flex;flex-wrap:wrap;gap:8px;">${cells}</div></div>`;
+      return `<div style="margin-bottom:14px;"><div style="font-size:11px;font-weight:800;color:var(--muted);margin-bottom:8px;letter-spacing:.5px;">${gname}${allPerfect?'<span style="color:var(--green);margin-left:8px;">🏆 전부 완료!</span>':''}</div><div style="display:flex;flex-wrap:wrap;gap:8px;">${cells}</div></div>`;
     }).join('');
 
     // 기타
