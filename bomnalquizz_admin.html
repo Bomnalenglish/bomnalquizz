@@ -337,6 +337,9 @@ async function loadData(){
         wrongSentences:d.wrongSentences||'',
         tabSwitchCount:d.tabSwitchCount||0,
         attemptCount:d.attemptCount||1,
+        passages:d.passages||[],
+        details:d.details||[],
+        submittedAt:d.submittedAt||null,
         time:d.timestamp
           ?(typeof d.timestamp.toDate==='function'?d.timestamp.toDate():new Date(d.timestamp))
           :(d.submittedAt?(typeof d.submittedAt.toDate==='function'?d.submittedAt.toDate():new Date(d.submittedAt)):null),
@@ -652,12 +655,13 @@ function renderSectionView(){
         <table style="width:100%;border-collapse:collapse;font-size:11px;">
           <thead>
             <tr style="background:#e3f2fd;color:#1565c0;font-weight:800;">
-              <th style="padding:6px 8px;text-align:left;">시간</th>
+              <th style="padding:6px 8px;text-align:left;">시작/종료 시각</th>
               <th style="padding:6px 8px;text-align:left;">퀴즈 유형</th>
+              <th style="padding:6px 8px;text-align:left;">선택 지문</th>
               <th style="padding:6px 8px;text-align:center;">점수</th>
               <th style="padding:6px 8px;text-align:center;">정답/총</th>
               <th style="padding:6px 8px;text-align:center;">오답</th>
-              <th style="padding:6px 8px;text-align:center;">소요</th>
+              <th style="padding:6px 8px;text-align:center;">소요 시간</th>
               <th style="padding:6px 8px;text-align:left;">오답 항목 (앞 5개)</th>
             </tr>
           </thead>
@@ -670,14 +674,34 @@ function renderSectionView(){
                 return JSON.stringify(w).slice(0,30);
               }).join(', ');
               const scoreCol = d.score>=85?'#2e7d32':d.score>=70?'#1565c0':d.score>=50?'#e65100':'#c62828';
-              const timeStr = d.time?d.time.toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}):'-';
+              // 종료 시각: d.time (Firestore serverTimestamp) — 학생이 제출 완료 시점
+              const endTime = d.time?d.time.toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}):'-';
+              // 시작 시각 = 종료 - 소요(분)
+              let startTime = '-';
+              if(d.time && d.elapsed>=0){
+                const startDate = new Date(d.time.getTime() - d.elapsed*60000);
+                startTime = startDate.toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
+              }
+              // 선택 지문 표시
+              const passages = (d.passages||[]).map(p=>String(p)).sort((a,b)=>parseInt(a.split('-')[0])-parseInt(b.split('-')[0]));
+              const passageStr = passages.length>0 ? passages.map(p=>p+'번').join(', ') : '-';
+              // 소요시간 더 자세히
+              let elapsedStr = '-';
+              if(d.elapsed && d.elapsed>0){
+                if(d.elapsed < 1) elapsedStr = '<1분';
+                else elapsedStr = d.elapsed+'분';
+              } else if(d.elapsed===0){ elapsedStr = '<1분'; }
               return `<tr style="border-bottom:1px solid #f0f4ff;">
-                <td style="padding:6px 8px;color:var(--muted);white-space:nowrap;">${timeStr}</td>
-                <td style="padding:6px 8px;font-weight:700;">${d.quizType||'-'}</td>
+                <td style="padding:6px 8px;color:var(--muted);white-space:nowrap;font-size:10px;">
+                  <div>🏁 ${endTime}</div>
+                  <div style="color:#aaa;">▶ ${startTime}</div>
+                </td>
+                <td style="padding:6px 8px;font-weight:700;max-width:200px;">${d.quizType||'-'}</td>
+                <td style="padding:6px 8px;color:#1565c0;font-weight:700;max-width:160px;word-break:keep-all;">${passageStr}</td>
                 <td style="padding:6px 8px;text-align:center;font-weight:800;color:${scoreCol};">${d.score}점</td>
                 <td style="padding:6px 8px;text-align:center;">${d.correct||0}/${d.total||0}</td>
                 <td style="padding:6px 8px;text-align:center;color:${d.wrong>0?'#c62828':'#2e7d32'};">${d.wrong||0}</td>
-                <td style="padding:6px 8px;text-align:center;color:var(--muted);">${d.elapsed||0}분</td>
+                <td style="padding:6px 8px;text-align:center;color:var(--muted);font-weight:700;">${elapsedStr}</td>
                 <td style="padding:6px 8px;color:#c62828;font-size:10px;">${wrongPreview || '-'}</td>
               </tr>`;
             }).join('')}
