@@ -465,8 +465,8 @@ function renderTable(data){
     return `<tbody><tr>
       <td><input type="checkbox" class="row-chk" data-id="${d.id}" style="cursor:pointer"></td>
       <td style="color:var(--muted)">${i+1}</td>
-      <td><strong>${d.name}</strong></td>
-      <td>${d.school}</td>
+      <td style="white-space:nowrap"><strong>${d.name}</strong></td>
+      <td style="white-space:nowrap">${d.school}</td>
       <td style="text-align:center;white-space:nowrap">${slHtml}${passageBadge}${roundBadge}</td>
       <td><span class="sp ${gc(d.score)}">${d.score}점 (${gl(d.score)})</span></td>
       <td style="color:var(--green);font-weight:800">${d.correct||'-'}</td>
@@ -794,9 +794,8 @@ function renderSectionView(){
 
     return `<div class="student-card">
       <div class="student-card-header">
-        <div style="display:flex;align-items:center;gap:8px;flex-wrap:nowrap;white-space:nowrap;">
-          <span class="quiz-type-label" style="margin:0;">${st.school}</span>
-          <span class="student-name">👤 ${st.name}</span>
+        <div style="white-space:nowrap;font-family:'Black Han Sans',sans-serif;font-size:16px;color:var(--primary);line-height:1.2;">
+          👤 <span style="font-size:11px;color:var(--muted);font-weight:700;">${st.school}</span> ${st.name}
         </div>
         <div class="student-summary">
           <span class="sum-pill done">📝 총 ${st.records.length}회 응시</span>
@@ -857,7 +856,7 @@ function renderAccess(){
   document.getElementById('accBadge').textContent=data.length+'건';
   if(!data.length){document.getElementById('accArea').innerHTML='<div class="empty-msg">📭 기록 없음</div>';return;}
   const typeLabel=t=>t==='login'?'<span style="background:#e8f5e9;color:#2e7d32;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:800">✅ 로그인</span>':t==='code_fail'?'<span style="background:#ffebee;color:#c62828;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:800">❌ 코드실패</span>':t==='school_enter'?'<span style="background:#e3f2fd;color:#1565c0;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:800">🏫 학교입장</span>':t==='quiz_click'?'<span style="background:#f3e5f5;color:#6a1b9a;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:800">📝 퀴즈클릭</span>':`<span style="color:var(--muted)">${t}</span>`;
-  const rows=data.map((d,i)=>`<tr><td style="color:var(--muted)">${i+1}</td><td><strong>${d.name}</strong></td><td>${d.school}</td><td>${typeLabel(d.type)}</td><td style="font-size:11px;color:var(--muted)">${d.targetSchool||d.quiz||d.attempt||'-'}</td><td style="font-size:11px">${d.time?d.time.toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}):'-'}</td></tr>`).join('');
+  const rows=data.map((d,i)=>`<tr><td style="color:var(--muted)">${i+1}</td><td style="white-space:nowrap"><strong>${d.name}</strong></td><td style="white-space:nowrap">${d.school}</td><td>${typeLabel(d.type)}</td><td style="font-size:11px;color:var(--muted)">${d.targetSchool||d.quiz||d.attempt||'-'}</td><td style="font-size:11px">${d.time?d.time.toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}):'-'}</td></tr>`).join('');
   document.getElementById('accArea').innerHTML=`<div class="tbl-scroll"><table><thead><tr><th>#</th><th>이름</th><th>학교</th><th>유형</th><th>상세</th><th>시간</th></tr></thead><tbody>${rows}</tbody></table></div>`;
 }
 
