@@ -419,11 +419,12 @@ const gc=s=>s>=95?'sS':s>=85?'sA':s>=70?'sB':s>=55?'sC':'sD';
 const gl=s=>s>=95?'S':s>=85?'A':s>=70?'B':s>=55?'C':'D';
 const ft=t=>t?t.toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}):'-';
 
+function passagesStr(d){
+  if(!d || !d.passages || d.passages.length===0) return '';
+  return [...d.passages].sort((a,b)=>parseInt(a)-parseInt(b)).join(',')+'번';
+}
 function nonSecLabel(qt, d){
   if(!qt) return '-';
-  const passageSuffix = (d && d.passages && d.passages.length>0)
-    ? ' ['+[...d.passages].sort((a,b)=>parseInt(a)-parseInt(b)).join(',')+'번]'
-    : '';
   if(qt.includes('동반의어')){
     let lbl='';
     const lesson=qt.match(/교과서(\d+)과/);
@@ -444,9 +445,9 @@ function nonSecLabel(qt, d){
   const mockM=qt.match(/^(고[123])_(\d{2})년(\d{1,2})월_(.+)$/);
   if(mockM){
     const grade=mockM[1], yr=mockM[2], mon=mockM[3], sub=mockM[4].replace(/_/g,' ');
-    return `${grade} ${yr}-${mon} ${sub}`+passageSuffix;
+    return `${grade} ${yr}-${mon} ${sub}`;
   }
-  return qt.slice(0,16)+passageSuffix;
+  return qt.slice(0,16);
 }
 
 function renderTable(data){
@@ -457,14 +458,16 @@ function renderTable(data){
     const sl=nonSecLabel(d.quizType,d);
     const isSynanm=d.quizType&&d.quizType.includes('동반의어');
     const slStyle=isSynanm?'background:#e8f5e9;color:#2e7d32':sl==='전체'?'background:#e3f2fd;color:#1565c0':sl==='오답재시'?'background:#fff3e0;color:#e65100':sl==='오답완료'?'background:#e8f5e9;color:#2e7d32':sl==='어휘퀴즈'?'background:#f3e5f5;color:#6a1b9a':sl==='-'?'color:var(--muted);font-size:11px':'background:#e8eaf6;color:#3949ab';
-    const slHtml=sl!=='-'?`<span style="display:inline-block;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:800;${slStyle}">${sl}</span>`:`<span style="color:var(--muted);font-size:11px">-</span>`;
+    const slHtml=sl!=='-'?`<span style="display:inline-block;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:800;white-space:nowrap;${slStyle}">${sl}</span>`:`<span style="color:var(--muted);font-size:11px">-</span>`;
     const roundBadge=d.round>1?`<span style="font-size:10px;color:#e65100;margin-left:4px">${d.round}라운드</span>`:'';
+    const ps=passagesStr(d);
+    const passageBadge=ps?`<span style="display:inline-block;padding:1px 6px;border-radius:10px;font-size:10px;font-weight:700;background:#fff3e0;color:#e65100;margin-left:4px;white-space:nowrap;">${ps}</span>`:'';
     return `<tbody><tr>
       <td><input type="checkbox" class="row-chk" data-id="${d.id}" style="cursor:pointer"></td>
       <td style="color:var(--muted)">${i+1}</td>
       <td><strong>${d.name}</strong></td>
       <td>${d.school}</td>
-      <td style="text-align:center">${slHtml}${roundBadge}</td>
+      <td style="text-align:center;white-space:nowrap">${slHtml}${passageBadge}${roundBadge}</td>
       <td><span class="sp ${gc(d.score)}">${d.score}점 (${gl(d.score)})</span></td>
       <td style="color:var(--green);font-weight:800">${d.correct||'-'}</td>
       <td style="color:${d.wrong>0?'var(--red)':'var(--green)'};font-weight:800">${d.wrong}</td>
@@ -683,7 +686,7 @@ function renderSectionView(){
       if(!nonSecMap[baseKey]||(d.quizType&&d.quizType.includes('오답완료'))){nonSecMap[baseKey]=d;}
       else if(d.time&&nonSecMap[baseKey].time&&d.time>nonSecMap[baseKey].time&&!nonSecMap[baseKey].quizType?.includes('오답완료')){nonSecMap[baseKey]=d;}
     });
-    const nonSecHtml=Object.values(nonSecMap).length>0?`<div style="margin-bottom:10px;"><div style="font-size:11px;font-weight:800;color:var(--muted);margin-bottom:8px;letter-spacing:.5px;">🔤 기타 퀴즈</div><div style="display:flex;flex-wrap:wrap;gap:8px;">${Object.values(nonSecMap).sort((a,b)=>(b.time||0)-(a.time||0)).map(d=>{const isPerfect=d.wrong===0;const isVocabComplete=d.quizType&&d.quizType.includes('오답완료');const timeStr=d.time?d.time.toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}):'';const cellClass=isVocabComplete?'perfect':isPerfect?'perfect':'has-wrong';const badge=isVocabComplete?'<div style="font-size:10px;color:#2e7d32;font-weight:900;margin-top:2px">🏆 오답 0개 완료!</div>':'';return `<div class="sec-cell ${cellClass}" style="min-width:130px;text-align:left;"><div style="font-size:10px;font-weight:800;color:var(--muted);margin-bottom:4px;">${nonSecLabel(d.quizType,d)}</div><div class="sec-score">${d.score}점</div>${d.wrong>0?`<div class="sec-wrong">오답 ${d.wrong}개</div>`:''}${badge}<div class="sec-time">${timeStr}</div></div>`;}).join('')}</div></div>`:'';
+    const nonSecHtml=Object.values(nonSecMap).length>0?`<div style="margin-bottom:10px;"><div style="font-size:11px;font-weight:800;color:var(--muted);margin-bottom:8px;letter-spacing:.5px;">🔤 기타 퀴즈</div><div style="display:flex;flex-wrap:wrap;gap:8px;">${Object.values(nonSecMap).sort((a,b)=>(b.time||0)-(a.time||0)).map(d=>{const isPerfect=d.wrong===0;const isVocabComplete=d.quizType&&d.quizType.includes('오답완료');const timeStr=d.time?d.time.toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}):'';const cellClass=isVocabComplete?'perfect':isPerfect?'perfect':'has-wrong';const badge=isVocabComplete?'<div style="font-size:10px;color:#2e7d32;font-weight:900;margin-top:2px">🏆 오답 0개 완료!</div>':'';const ps=passagesStr(d);const pBadge=ps?`<div style="font-size:9px;color:#e65100;font-weight:800;margin-top:2px;background:#fff3e0;padding:1px 4px;border-radius:6px;display:inline-block;">📄 ${ps}</div>`:'';return `<div class="sec-cell ${cellClass}" style="min-width:130px;text-align:left;"><div style="font-size:10px;font-weight:800;color:var(--muted);margin-bottom:4px;">${nonSecLabel(d.quizType,d)}</div>${pBadge}<div class="sec-score">${d.score}점</div>${d.wrong>0?`<div class="sec-wrong">오답 ${d.wrong}개</div>`:''}${badge}<div class="sec-time">${timeStr}</div></div>`;}).join('')}</div></div>`:'';
 
     // 총정리
     const reviewRecords=st.records.filter(d=>d.quizType&&d.quizType.includes('총정리'));
