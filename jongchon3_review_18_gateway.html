@@ -661,9 +661,15 @@ window.addEventListener('DOMContentLoaded', () => { Object.keys(US_DATA).forEach
       const orig = window.checkStage1;
       window.checkStage1 = function(){
         orig.apply(this, arguments);
-        const selects = document.querySelectorAll('#s1 select');
+        let panel = document.getElementById('s1');
+        if(!panel) panel = document.querySelector('.stage-panel[id$="-s1"]');
         let total=0, correct=0;
-        selects.forEach(sel=>{total++; if(sel.className==='correct') correct++;});
+        if(panel){
+          panel.querySelectorAll('.opt-group').forEach(grp=>{
+            total++;
+            if((grp.dataset.picked||'') === grp.dataset.ans) correct++;
+          });
+        }
         saveStage('Stage1', correct, total);
       };
       window.checkStage1._wrapped = true;
