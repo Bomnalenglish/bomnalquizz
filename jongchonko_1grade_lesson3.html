@@ -81,6 +81,16 @@ main{max-width:860px;margin:0 auto;padding:20px 14px 80px}
     <div class="prog-text" id="prog-txt">0 / 0 완료</div>
   </div>
 
+    <!-- 시험 범위 선택 -->
+  <div id="mode-selector" style="background:linear-gradient(135deg,#f7efe4,#f0e6d8);border:2px solid #d0c8bc;border-radius:14px;padding:14px 18px;margin-bottom:16px;text-align:center;">
+    <div style="font-size:.82rem;color:#5c3d1e;font-weight:700;margin-bottom:10px;letter-spacing:.4px;">📋 시험 범위 선택 — 클릭하여 변경</div>
+    <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">
+      <button class="mode-btn active" data-mode="본문" onclick="switchMode('본문')" style="padding:8px 16px;border-radius:10px;border:2px solid #5c3d1e;background:#5c3d1e;color:#fff;font-size:.85rem;font-weight:700;cursor:pointer;font-family:inherit;">📘 본문만</button>
+      <button class="mode-btn" data-mode="본문외" onclick="switchMode('본문외')" style="padding:8px 16px;border-radius:10px;border:2px solid #5c3d1e;background:#fff;color:#5c3d1e;font-size:.85rem;font-weight:700;cursor:pointer;font-family:inherit;">📙 본문외만</button>
+      <button class="mode-btn" data-mode="전체" onclick="switchMode('전체')" style="padding:8px 16px;border-radius:10px;border:2px solid #5c3d1e;background:#fff;color:#5c3d1e;font-size:.85rem;font-weight:700;cursor:pointer;font-family:inherit;">📚 전체</button>
+    </div>
+    <div style="font-size:.7rem;color:#7a7570;margin-top:8px;">기록은 선택한 범위로 따로 저장됩니다</div>
+  </div>
   <div class="sec-header">📘 교과서 본문</div>
 
   <!-- 1 -->
@@ -485,29 +495,93 @@ const NAME=sessionStorage.getItem("bn_name")||localStorage.getItem("bn_name")||"
 const _lesson_t0 = Date.now();
 function _elapsedMin(){ return Math.round((Date.now()-_lesson_t0)/60000); }
 let _saved = false;
+let _currentMode = '본문';  // 시험 범위 모드
+const _BONMUN_END = 38;  // 본문 cards: c0 ~ c37
+function _modeRange(){
+  if(_currentMode==='본문')   return {start:0, end:_BONMUN_END};
+  if(_currentMode==='본문외') return {start:_BONMUN_END, end:TOTAL_CARDS};
+  return {start:0, end:TOTAL_CARDS};  // 전체
+}
+function _effectiveTotal(){ const r=_modeRange(); return r.end-r.start; }
+function _inMode(ci){ const r=_modeRange(); return ci>=r.start && ci<r.end; }
 function _wrongList(){
   const list = [];
-  Object.keys(cardDone).forEach(ci => {
-    if(cardWrong[ci] && cardWrong[ci] > 0) list.push((parseInt(ci)+1)+'번');
+  Object.keys(cardWrong).forEach(ci => {
+    const i = parseInt(ci);
+    if(_inMode(i) && cardWrong[ci]>0) list.push((i+1)+'번');
   });
   return list.join(', ');
+}
+function _modeEarned(){
+  let c = 0;
+  Object.keys(cardDone).forEach(ci => {
+    const i = parseInt(ci);
+    if(_inMode(i) && cardCorrect[i]) c++;
+  });
+  return c;
+}
+function _modeDone(){
+  let c = 0;
+  Object.keys(cardDone).forEach(ci => {
+    if(_inMode(parseInt(ci))) c++;
+  });
+  return c;
 }
 function _saveProgress(){
   if(_saved) return;
   _saved = true;
-  const _done = Object.keys(cardDone).length;
-  if(_done === 0) return; // 한 문제도 안 풀었으면 저장 안 함
-  const _pct = _done>0 ? Math.round(earned/_done*100) : 0;
+  const _done = _modeDone();
+  if(_done === 0) return;
+  const _correct = _modeEarned();
+  const _total = _effectiveTotal();
+  const _pct = _done>0 ? Math.round(_correct/_done*100) : 0;
   if(window._log) window._log({
     studentName: NAME, school: SCHOOL,
-    score: _pct, correct: earned, wrong: _done-earned, total: _done,
+    score: _pct, correct: _correct, wrong: _done-_correct, total: _done,
     elapsedMin: _elapsedMin(),
-    quizType: '종촌고1 Lesson3 어법',
-    completed: _done >= TOTAL_CARDS,
-    wrongNumbers: _wrongList()
+    quizType: '종촌고1 Lesson3 어법 ('+_currentMode+')',
+    completed: _done >= _total,
+    wrongNumbers: _wrongList(),
+    scopeRange: '['+_modeRange().start+'-'+_modeRange().end+')'
   });
 }
+function switchMode(newMode){
+  if(newMode === _currentMode) return;
+  _currentMode = newMode;
+  // 모드 변경 시 상태 초기화 (학생이 다시 시작하도록)
+  if(Object.keys(cardDone).length > 0){
+    if(!confirm('현재 모드의 풀이가 진행 중입니다. 모드를 바꾸면 처음부터 다시 풀어야 합니다. 변경하시겠습니까?')){
+      return;
+    }
+    location.reload();
+    return;
+  }
+  // 버튼 active 토글
+  document.querySelectorAll('.mode-btn').forEach(b => {
+    const isActive = b.dataset.mode === newMode;
+    b.style.background = isActive ? '#5c3d1e' : '#fff';
+    b.style.color = isActive ? '#fff' : '#5c3d1e';
+    b.classList.toggle('active', isActive);
+  });
+  // 카드 가시성 조절
+  for(let i=0; i<TOTAL_CARDS; i++){
+    const card = document.getElementById('c'+i);
+    if(card) card.style.display = _inMode(i) ? '' : 'none';
+  }
+  // sec-header 가시성 (선택 모드에 따라)
+  const headers = document.querySelectorAll('.sec-header');
+  if(headers.length >= 2){
+    headers[0].style.display = (newMode==='본문' || newMode==='전체') ? '' : 'none';
+    headers[1].style.display = (newMode==='본문외' || newMode==='전체') ? '' : 'none';
+  }
+  // UI 업데이트
+  document.getElementById('score-max').textContent = _effectiveTotal();
+  document.getElementById('prog').style.width = '0%';
+  document.getElementById('prog-txt').textContent = '0 / '+_effectiveTotal()+' 완료';
+}
 window.addEventListener('beforeunload', _saveProgress);
+// 초기 모드 적용
+window.addEventListener('DOMContentLoaded', () => switchMode('본문'));
 const SCHOOL=sessionStorage.getItem("bn_school")||localStorage.getItem("bn_school")||"종촌고등학교";
 
 // 카드당 선택지 개수 (q인덱스 → 카드 인덱스 매핑은 자동)
@@ -552,23 +626,28 @@ function pick(btn,qi,idx){
     fb.className='q-feedback '+(isOk?'ok':'fail')+' show';
     fb.innerHTML=isOk?'✅ 정답!':'❌ 틀렸어요. 초록색이 정답입니다.';
     updateUI();
-    if(Object.keys(cardDone).length>=TOTAL_CARDS) showResult();
+    if(_modeDone() >= _effectiveTotal()) showResult();
     // per-card: 진행 상황만 추적 (저장은 종료 시 한 번에)
   }
 }
 
 function updateUI(){
   const done=Object.keys(cardDone).length;
-  document.getElementById('score-val').textContent=earned;
-  document.getElementById('score-max').textContent=TOTAL_CARDS;
-  document.getElementById('prog').style.width=(done/TOTAL_CARDS*100)+'%';
-  document.getElementById('prog-txt').textContent=done+' / '+TOTAL_CARDS+' 완료';
+  const _modeTotal = (typeof _effectiveTotal === 'function') ? _effectiveTotal() : TOTAL_CARDS;
+  const _modeCorrect = (typeof _modeEarned === 'function') ? _modeEarned() : earned;
+  const _modeDoneN = (typeof _modeDone === 'function') ? _modeDone() : done;
+  document.getElementById('score-val').textContent = _modeCorrect;
+  document.getElementById('score-max').textContent = _modeTotal;
+  document.getElementById('prog').style.width=(_modeDoneN/_modeTotal*100)+'%';
+  document.getElementById('prog-txt').textContent=_modeDoneN+' / '+_modeTotal+' 완료';
 }
 
 function showResult(){
-  const pct=Math.round(earned/TOTAL_CARDS*100);
+  const _mc = _modeEarned();
+  const _mt = _effectiveTotal();
+  const pct=_mt>0 ? Math.round(_mc/_mt*100) : 0;
   _saveProgress();
-  document.getElementById('r-score').textContent=earned+' / '+TOTAL_CARDS+'점 ('+pct+'%)';
+  document.getElementById('r-score').textContent=_mc+' / '+_mt+'점 ('+pct+'%) - '+_currentMode;
   document.getElementById('r-msg').textContent=
     pct>=90?'완벽합니다! 어법 완전 정복! 🌟':
     pct>=70?'잘했어요! 틀린 문제 다시 확인해봐요. 💪':
