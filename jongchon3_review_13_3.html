@@ -47,6 +47,14 @@ body { background: var(--bg); color: var(--text); font-family: 'Noto Sans KR', s
 .b-wrap::after { content:'▾'; position:absolute; right:8px; top:50%; transform:translateY(-50%); color:var(--accent); pointer-events:none; font-size:11px; }
 .b-wrap select.correct { border-color:var(--correct); color:var(--correct); background:rgba(42,157,111,.1); }
 .b-wrap select.wrong   { border-color:var(--wrong);   color:var(--wrong);   background:rgba(217,95,95,.1); }
+.opt-group { display: inline-flex; flex-wrap: wrap; gap: 4px; margin: 3px 4px; vertical-align: middle; }
+.opt-card { padding: 4px 11px; border-radius: 6px; border: 1.5px solid var(--accent); background: var(--surface2); color: var(--accent); font-size: 13px; font-family: 'Noto Sans KR', sans-serif; cursor: pointer; transition: all .15s; line-height: 1.4; }
+.opt-card:hover { filter: brightness(1.08); }
+.opt-card.picked { background: rgba(0,122,204,.12); }
+.opt-card.correct { background: rgba(42,157,111,.18); border-color: var(--correct); color: var(--correct); font-weight: 700; }
+.opt-card.wrong { background: rgba(217,95,95,.18); border-color: var(--wrong); color: var(--wrong); font-weight: 700; }
+.opt-card.show-ans { outline: 2px dashed var(--correct); outline-offset: 1px; }
+
 .full-passage-box { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px 22px; margin-bottom: 24px; }
 .fp-title { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--text-dim); letter-spacing: 1px; margin-bottom: 10px; }
 .fp-sentence { font-family: 'Noto Serif KR', serif; font-size: 14px; line-height: 1.9; color: var(--text); margin-bottom: 4px; }
@@ -167,9 +175,9 @@ window._fbSave=async function(data){
       <div class="chunk-meta">S1 · 주어 + 동사 + 목적어</div>
       <div class="chunk-en">
         Becoming aware of our internal sensations /
-        <span class="b-wrap"><select onchange="markBlank(this,'can help')"><option value="">▾</option><option>might block</option><option>can help</option><option>tends to hide</option><option>fails to change</option></select></span>
+        <span class="opt-group" data-ans="can help"><button type="button" class="opt-card" onclick="pickOpt(this)">might block</button><button type="button" class="opt-card" onclick="pickOpt(this)">can help</button><button type="button" class="opt-card" onclick="pickOpt(this)">tends to hide</button><button type="button" class="opt-card" onclick="pickOpt(this)">fails to change</button></span>
         us / handle our own
-        <span class="b-wrap"><select onchange="markBlank(this,'emotions')"><option value="">▾</option><option>memories</option><option>emotions</option><option>decisions</option><option>habits</option></select></span>
+        <span class="opt-group" data-ans="emotions"><button type="button" class="opt-card" onclick="pickOpt(this)">memories</button><button type="button" class="opt-card" onclick="pickOpt(this)">emotions</button><button type="button" class="opt-card" onclick="pickOpt(this)">decisions</button><button type="button" class="opt-card" onclick="pickOpt(this)">habits</button></span>
       </div>
       <div class="chunk-kr">우리 내부 감각을 인식하게 되면 / 우리가 / 우리 자신의 감정을 다루는 데 도움이 될 수 있다</div>
     </div>
@@ -178,9 +186,9 @@ window._fbSave=async function(data){
       <div class="chunk-meta">S2 · 주어 + 부정 보어</div>
       <div class="chunk-en">
         That's because the brain, on its own, / has no direct
-        <span class="b-wrap"><select onchange="markBlank(this,'access')"><option value="">▾</option><option>response</option><option>access</option><option>barrier</option><option>connection</option></select></span>
+        <span class="opt-group" data-ans="access"><button type="button" class="opt-card" onclick="pickOpt(this)">response</button><button type="button" class="opt-card" onclick="pickOpt(this)">access</button><button type="button" class="opt-card" onclick="pickOpt(this)">barrier</button><button type="button" class="opt-card" onclick="pickOpt(this)">connection</button></span>
         to the contents of other people's minds, / no way to
-        <span class="b-wrap"><select onchange="markBlank(this,'feel')"><option value="">▾</option><option>ignore</option><option>create</option><option>feel</option><option>avoid</option></select></span>
+        <span class="opt-group" data-ans="feel"><button type="button" class="opt-card" onclick="pickOpt(this)">ignore</button><button type="button" class="opt-card" onclick="pickOpt(this)">create</button><button type="button" class="opt-card" onclick="pickOpt(this)">feel</button><button type="button" class="opt-card" onclick="pickOpt(this)">avoid</button></span>
         what others are feeling
       </div>
       <div class="chunk-kr">뇌는 단독으로는 / 타인의 마음 내용에 직접적인 접근이 없고 / 타인이 느끼는 것을 느낄 방법이 없다</div>
@@ -190,9 +198,9 @@ window._fbSave=async function(data){
       <div class="chunk-meta">S3 · 주어 + 동사 + 보어</div>
       <div class="chunk-en">
         Interpreting others' spoken words and facial expressions /
-        <span class="b-wrap"><select onchange="markBlank(this,'may yield')"><option value="">▾</option><option>always provides</option><option>may yield</option><option>completely avoids</option><option>strongly denies</option></select></span>
+        <span class="opt-group" data-ans="may yield"><button type="button" class="opt-card" onclick="pickOpt(this)">always provides</button><button type="button" class="opt-card" onclick="pickOpt(this)">may yield</button><button type="button" class="opt-card" onclick="pickOpt(this)">completely avoids</button><button type="button" class="opt-card" onclick="pickOpt(this)">strongly denies</button></span>
         only a coolly
-        <span class="b-wrap"><select onchange="markBlank(this,'abstract')"><option value="">▾</option><option>concrete</option><option>emotional</option><option>abstract</option><option>physical</option></select></span>
+        <span class="opt-group" data-ans="abstract"><button type="button" class="opt-card" onclick="pickOpt(this)">concrete</button><button type="button" class="opt-card" onclick="pickOpt(this)">emotional</button><button type="button" class="opt-card" onclick="pickOpt(this)">abstract</button><button type="button" class="opt-card" onclick="pickOpt(this)">physical</button></span>
         sense of the emotions that stir within
       </div>
       <div class="chunk-kr">타인의 말과 표정을 해석하는 것은 / 내면에서 일렁이는 감정의 냉정하게 추상적인 감각만을 / 줄 수 있을 뿐이다</div>
@@ -202,11 +210,11 @@ window._fbSave=async function(data){
       <div class="chunk-meta">S4 · 주어 + 동사 + 보어 (역할)</div>
       <div class="chunk-en">
         The body
-        <span class="b-wrap"><select onchange="markBlank(this,'acts as')"><option value="">▾</option><option>breaks away from</option><option>acts as</option><option>separates from</option><option>depends on</option></select></span>
+        <span class="opt-group" data-ans="acts as"><button type="button" class="opt-card" onclick="pickOpt(this)">breaks away from</button><button type="button" class="opt-card" onclick="pickOpt(this)">acts as</button><button type="button" class="opt-card" onclick="pickOpt(this)">separates from</button><button type="button" class="opt-card" onclick="pickOpt(this)">depends on</button></span>
         a critical
-        <span class="b-wrap"><select onchange="markBlank(this,'conduit')"><option value="">▾</option><option>barrier</option><option>conduit</option><option>filter</option><option>opponent</option></select></span>
+        <span class="opt-group" data-ans="conduit"><button type="button" class="opt-card" onclick="pickOpt(this)">barrier</button><button type="button" class="opt-card" onclick="pickOpt(this)">conduit</button><button type="button" class="opt-card" onclick="pickOpt(this)">filter</button><button type="button" class="opt-card" onclick="pickOpt(this)">opponent</button></span>
         , / supplying the brain with the
-        <span class="b-wrap"><select onchange="markBlank(this,'visceral')"><option value="">▾</option><option>logical</option><option>verbal</option><option>visceral</option><option>visual</option></select></span>
+        <span class="opt-group" data-ans="visceral"><button type="button" class="opt-card" onclick="pickOpt(this)">logical</button><button type="button" class="opt-card" onclick="pickOpt(this)">verbal</button><button type="button" class="opt-card" onclick="pickOpt(this)">visceral</button><button type="button" class="opt-card" onclick="pickOpt(this)">visual</button></span>
         information it lacks
       </div>
       <div class="chunk-kr">몸은 핵심적인 전달자 역할을 하며 / 뇌가 부족한 본능적 정보를 공급한다</div>
@@ -216,8 +224,8 @@ window._fbSave=async function(data){
       <div class="chunk-meta">S5 · 시간절 + 주어 + 동사</div>
       <div class="chunk-en">
         When interacting with other people, / we subtly and
-        <span class="b-wrap"><select onchange="markBlank(this,'unconsciously')"><option value="">▾</option><option>deliberately</option><option>unconsciously</option><option>rationally</option><option>visually</option></select></span>
-        <span class="b-wrap"><select onchange="markBlank(this,'mimic')"><option value="">▾</option><option>ignore</option><option>mimic</option><option>reject</option><option>analyze</option></select></span>
+        <span class="opt-group" data-ans="unconsciously"><button type="button" class="opt-card" onclick="pickOpt(this)">deliberately</button><button type="button" class="opt-card" onclick="pickOpt(this)">unconsciously</button><button type="button" class="opt-card" onclick="pickOpt(this)">rationally</button><button type="button" class="opt-card" onclick="pickOpt(this)">visually</button></span>
+        <span class="opt-group" data-ans="mimic"><button type="button" class="opt-card" onclick="pickOpt(this)">ignore</button><button type="button" class="opt-card" onclick="pickOpt(this)">mimic</button><button type="button" class="opt-card" onclick="pickOpt(this)">reject</button><button type="button" class="opt-card" onclick="pickOpt(this)">analyze</button></span>
         their facial expressions, gestures, posture, and vocal pitch
       </div>
       <div class="chunk-kr">타인과 상호작용할 때 / 우리는 미묘하고 무의식적으로 / 그들의 표정, 몸짓, 자세, 목소리 음높이를 모방한다</div>
@@ -227,9 +235,9 @@ window._fbSave=async function(data){
       <div class="chunk-meta">S6 · 결과 + 방법절</div>
       <div class="chunk-en">
         Then, via the
-        <span class="b-wrap"><select onchange="markBlank(this,'interoception')"><option value="">▾</option><option>observation</option><option>imagination</option><option>interoception</option><option>projection</option></select></span>
+        <span class="opt-group" data-ans="interoception"><button type="button" class="opt-card" onclick="pickOpt(this)">observation</button><button type="button" class="opt-card" onclick="pickOpt(this)">imagination</button><button type="button" class="opt-card" onclick="pickOpt(this)">interoception</button><button type="button" class="opt-card" onclick="pickOpt(this)">projection</button></span>
         of our own bodies' signals, / we
-        <span class="b-wrap"><select onchange="markBlank(this,'perceive')"><option value="">▾</option><option>deny</option><option>perceive</option><option>ignore</option><option>create</option></select></span>
+        <span class="opt-group" data-ans="perceive"><button type="button" class="opt-card" onclick="pickOpt(this)">deny</button><button type="button" class="opt-card" onclick="pickOpt(this)">perceive</button><button type="button" class="opt-card" onclick="pickOpt(this)">ignore</button><button type="button" class="opt-card" onclick="pickOpt(this)">create</button></span>
         what the other person is feeling / because we feel it in ourselves
       </div>
       <div class="chunk-kr">그런 다음 우리 몸의 신호에 대한 내부 감각 수용을 통해 / 우리는 상대방이 느끼는 것을 인식한다 / 우리 자신 안에서 느끼기 때문에</div>
@@ -239,11 +247,11 @@ window._fbSave=async function(data){
       <div class="chunk-meta">S7 · 결론 + 비유</div>
       <div class="chunk-en">
         We
-        <span class="b-wrap"><select onchange="markBlank(this,'bring')"><option value="">▾</option><option>block</option><option>bring</option><option>remove</option><option>deny</option></select></span>
+        <span class="opt-group" data-ans="bring"><button type="button" class="opt-card" onclick="pickOpt(this)">block</button><button type="button" class="opt-card" onclick="pickOpt(this)">bring</button><button type="button" class="opt-card" onclick="pickOpt(this)">remove</button><button type="button" class="opt-card" onclick="pickOpt(this)">deny</button></span>
         other people's feelings onboard, / and the body is the
-        <span class="b-wrap"><select onchange="markBlank(this,'bridge')"><option value="">▾</option><option>barrier</option><option>bridge</option><option>filter</option><option>wall</option></select></span>
+        <span class="opt-group" data-ans="bridge"><button type="button" class="opt-card" onclick="pickOpt(this)">barrier</button><button type="button" class="opt-card" onclick="pickOpt(this)">bridge</button><button type="button" class="opt-card" onclick="pickOpt(this)">filter</button><button type="button" class="opt-card" onclick="pickOpt(this)">wall</button></span>
         / — we are
-        <span class="b-wrap"><select onchange="markBlank(this,'sampling')"><option value="">▾</option><option>avoiding</option><option>analyzing</option><option>sampling</option><option>distancing</option></select></span>
+        <span class="opt-group" data-ans="sampling"><button type="button" class="opt-card" onclick="pickOpt(this)">avoiding</button><button type="button" class="opt-card" onclick="pickOpt(this)">analyzing</button><button type="button" class="opt-card" onclick="pickOpt(this)">sampling</button><button type="button" class="opt-card" onclick="pickOpt(this)">distancing</button></span>
         their emotions
       </div>
       <div class="chunk-kr">우리는 타인의 감정을 내면에 가져오고 / 몸이 그 다리이다 / 우리는 그들의 감정을 sampling(경험)하는 것이다</div>
@@ -413,11 +421,11 @@ window._fbSave=async function(data){
       <div class="chunk-meta">V1 · 몸의 역할</div>
       <div class="chunk-en">
         The body
-        <span class="b-wrap"><select onchange="markBlank(this,'serves as')"><option value="">▾</option><option>breaks away from</option><option>serves as</option><option>conflicts with</option><option>separates from</option></select></span>
+        <span class="opt-group" data-ans="serves as"><button type="button" class="opt-card" onclick="pickOpt(this)">breaks away from</button><button type="button" class="opt-card" onclick="pickOpt(this)">serves as</button><button type="button" class="opt-card" onclick="pickOpt(this)">conflicts with</button><button type="button" class="opt-card" onclick="pickOpt(this)">separates from</button></span>
         a vital
-        <span class="b-wrap"><select onchange="markBlank(this,'intermediary')"><option value="">▾</option><option>obstacle</option><option>intermediary</option><option>competitor</option><option>distraction</option></select></span>
+        <span class="opt-group" data-ans="intermediary"><button type="button" class="opt-card" onclick="pickOpt(this)">obstacle</button><button type="button" class="opt-card" onclick="pickOpt(this)">intermediary</button><button type="button" class="opt-card" onclick="pickOpt(this)">competitor</button><button type="button" class="opt-card" onclick="pickOpt(this)">distraction</button></span>
         , / providing the brain with
-        <span class="b-wrap"><select onchange="markBlank(this,'instinctive')"><option value="">▾</option><option>rational</option><option>verbal</option><option>instinctive</option><option>logical</option></select></span>
+        <span class="opt-group" data-ans="instinctive"><button type="button" class="opt-card" onclick="pickOpt(this)">rational</button><button type="button" class="opt-card" onclick="pickOpt(this)">verbal</button><button type="button" class="opt-card" onclick="pickOpt(this)">instinctive</button><button type="button" class="opt-card" onclick="pickOpt(this)">logical</button></span>
         data it cannot obtain on its own
       </div>
       <div class="chunk-kr">몸은 핵심 중개자 역할을 하며 / 뇌가 스스로 얻을 수 없는 본능적 데이터를 제공한다</div>
@@ -427,12 +435,12 @@ window._fbSave=async function(data){
       <div class="chunk-meta">V2 · 모방과 인식</div>
       <div class="chunk-en">
         We
-        <span class="b-wrap"><select onchange="markBlank(this,'involuntarily')"><option value="">▾</option><option>deliberately</option><option>involuntarily</option><option>consciously</option><option>carefully</option></select></span>
-        <span class="b-wrap"><select onchange="markBlank(this,'replicate')"><option value="">▾</option><option>avoid</option><option>replicate</option><option>reject</option><option>analyze</option></select></span>
+        <span class="opt-group" data-ans="involuntarily"><button type="button" class="opt-card" onclick="pickOpt(this)">deliberately</button><button type="button" class="opt-card" onclick="pickOpt(this)">involuntarily</button><button type="button" class="opt-card" onclick="pickOpt(this)">consciously</button><button type="button" class="opt-card" onclick="pickOpt(this)">carefully</button></span>
+        <span class="opt-group" data-ans="replicate"><button type="button" class="opt-card" onclick="pickOpt(this)">avoid</button><button type="button" class="opt-card" onclick="pickOpt(this)">replicate</button><button type="button" class="opt-card" onclick="pickOpt(this)">reject</button><button type="button" class="opt-card" onclick="pickOpt(this)">analyze</button></span>
         their body language / and through our body's
-        <span class="b-wrap"><select onchange="markBlank(this,'inner signals')"><option value="">▾</option><option>outer appearance</option><option>logical reasoning</option><option>inner signals</option><option>verbal responses</option></select></span>
+        <span class="opt-group" data-ans="inner signals"><button type="button" class="opt-card" onclick="pickOpt(this)">outer appearance</button><button type="button" class="opt-card" onclick="pickOpt(this)">logical reasoning</button><button type="button" class="opt-card" onclick="pickOpt(this)">inner signals</button><button type="button" class="opt-card" onclick="pickOpt(this)">verbal responses</button></span>
         , / we
-        <span class="b-wrap"><select onchange="markBlank(this,'experience')"><option value="">▾</option><option>block</option><option>ignore</option><option>experience</option><option>deny</option></select></span>
+        <span class="opt-group" data-ans="experience"><button type="button" class="opt-card" onclick="pickOpt(this)">block</button><button type="button" class="opt-card" onclick="pickOpt(this)">ignore</button><button type="button" class="opt-card" onclick="pickOpt(this)">experience</button><button type="button" class="opt-card" onclick="pickOpt(this)">deny</button></span>
         their feelings firsthand
       </div>
       <div class="chunk-kr">우리는 무의식적으로 그들의 바디랭귀지를 복제하고 / 몸의 내부 신호를 통해 / 그들의 감정을 직접 경험한다</div>
@@ -569,19 +577,35 @@ function switchStage(n) {
 }
 
 // Stage 1
-function markBlank(sel, correct) {
-  if (!sel.value) { sel.className=''; return; }
-  sel.className = sel.value === correct ? 'correct' : 'wrong';
+function markBlank(sel, correct) { /* legacy no-op */ }
+function pickOpt(btn) {
+  const grp = btn.closest('.opt-group'); if(!grp) return;
+  const ans = grp.dataset.ans;
+  grp.querySelectorAll('.opt-card').forEach(b => b.classList.remove('correct','wrong','picked','show-ans'));
+  const txt = btn.textContent.trim();
+  grp.dataset.picked = txt;
+  btn.classList.add(txt === ans ? 'correct' : 'wrong');
 }
 function checkStage1() {
-  const selects = document.querySelectorAll('#p0-s1 select');
+  const groups = document.querySelectorAll('#s1 .opt-group');
   let total=0, correct=0;
-  selects.forEach(sel => { total++; if(sel.className==='correct') correct++; else if(!sel.className && sel.value) sel.className='wrong'; });
-  const banner = document.getElementById('p0-s1-result');
+  groups.forEach(grp => {
+    total++;
+    const ans = grp.dataset.ans;
+    const picked = grp.dataset.picked || '';
+    grp.querySelectorAll('.opt-card').forEach(b => {
+      const t = b.textContent.trim();
+      b.classList.remove('correct','wrong','show-ans');
+      if(t === picked) b.classList.add(picked === ans ? 'correct' : 'wrong');
+      if(t === ans && picked && picked !== ans) b.classList.add('show-ans');
+    });
+    if(picked === ans) correct++;
+  });
+  const banner = document.getElementById('s1-result');
   const pass = correct===total;
-  banner.className = `result-banner show ${pass?'pass':'fail'}`;
-  banner.textContent = pass ? `🎉 완벽! (${correct}/${total})` : `${correct}/${total} 정답 — 빨간 항목을 다시 확인하세요.`;
-  if(pass) document.getElementById('p0-nav1').classList.add('done');
+  banner.className = 'result-banner show ' + (pass?'pass':'fail');
+  banner.textContent = pass ? '🎉 완벽! ('+correct+'/'+total+')' : correct+'/'+total+' 정답 — 빨간 항목을 다시 확인하세요.';
+  if(pass) document.getElementById('nav1').classList.add('done');
 }
 
 // Stage 2

@@ -47,6 +47,14 @@ body { background: var(--bg); color: var(--text); font-family: 'Noto Sans KR', s
 .b-wrap::after { content:'▾'; position:absolute; right:8px; top:50%; transform:translateY(-50%); color:var(--accent); pointer-events:none; font-size:11px; }
 .b-wrap select.correct { border-color:var(--correct); color:var(--correct); background:rgba(42,157,111,.1); }
 .b-wrap select.wrong   { border-color:var(--wrong);   color:var(--wrong);   background:rgba(217,95,95,.1); }
+.opt-group { display: inline-flex; flex-wrap: wrap; gap: 4px; margin: 3px 4px; vertical-align: middle; }
+.opt-card { padding: 4px 11px; border-radius: 6px; border: 1.5px solid var(--accent); background: var(--surface2); color: var(--accent); font-size: 13px; font-family: 'Noto Sans KR', sans-serif; cursor: pointer; transition: all .15s; line-height: 1.4; }
+.opt-card:hover { filter: brightness(1.08); }
+.opt-card.picked { background: rgba(0,122,204,.12); }
+.opt-card.correct { background: rgba(42,157,111,.18); border-color: var(--correct); color: var(--correct); font-weight: 700; }
+.opt-card.wrong { background: rgba(217,95,95,.18); border-color: var(--wrong); color: var(--wrong); font-weight: 700; }
+.opt-card.show-ans { outline: 2px dashed var(--correct); outline-offset: 1px; }
+
 .full-passage-box { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px 22px; margin-bottom: 24px; }
 .fp-title { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--text-dim); letter-spacing: 1px; margin-bottom: 10px; }
 .fp-sentence { font-family: 'Noto Serif KR', serif; font-size: 14px; line-height: 1.9; color: var(--text); margin-bottom: 4px; }
@@ -165,11 +173,11 @@ window._fbSave=async function(data){
       <div class="chunk-meta">S1 · 주어 + 동사 + 목적어</div>
       <div class="chunk-en">
         The strongest criticisms of the
-        <span class="b-wrap"><select onchange="markBlank(this,'overextension')"><option value="">▾</option><option>development</option><option>overextension</option><option>reduction</option><option>promotion</option></select></span>
+        <span class="opt-group" data-ans="overextension"><button type="button" class="opt-card" onclick="pickOpt(this)">development</button><button type="button" class="opt-card" onclick="pickOpt(this)">overextension</button><button type="button" class="opt-card" onclick="pickOpt(this)">reduction</button><button type="button" class="opt-card" onclick="pickOpt(this)">promotion</button></span>
         of technology /
-        <span class="b-wrap"><select onchange="markBlank(this,'involve')"><option value="">▾</option><option>avoid</option><option>involve</option><option>reject</option><option>ignore</option></select></span>
+        <span class="opt-group" data-ans="involve"><button type="button" class="opt-card" onclick="pickOpt(this)">avoid</button><button type="button" class="opt-card" onclick="pickOpt(this)">involve</button><button type="button" class="opt-card" onclick="pickOpt(this)">reject</button><button type="button" class="opt-card" onclick="pickOpt(this)">ignore</button></span>
         claims of
-        <span class="b-wrap"><select onchange="markBlank(this,'dehumanization')"><option value="">▾</option><option>civilization</option><option>dehumanization</option><option>modernization</option><option>rationalization</option></select></span>
+        <span class="opt-group" data-ans="dehumanization"><button type="button" class="opt-card" onclick="pickOpt(this)">civilization</button><button type="button" class="opt-card" onclick="pickOpt(this)">dehumanization</button><button type="button" class="opt-card" onclick="pickOpt(this)">modernization</button><button type="button" class="opt-card" onclick="pickOpt(this)">rationalization</button></span>
       </div>
       <div class="chunk-kr">기술의 과잉 확장에 대한 가장 강력한 비판은 / 비인간화 주장을 포함한다</div>
     </div>
@@ -178,9 +186,9 @@ window._fbSave=async function(data){
       <div class="chunk-meta">S2 · 주어 + 역접 + 준동사</div>
       <div class="chunk-en">
         McLuhan was primarily a techno-utopian, / but he also
-        <span class="b-wrap"><select onchange="markBlank(this,'cautioned')"><option value="">▾</option><option>celebrated</option><option>cautioned</option><option>ignored</option><option>promoted</option></select></span>
+        <span class="opt-group" data-ans="cautioned"><button type="button" class="opt-card" onclick="pickOpt(this)">celebrated</button><button type="button" class="opt-card" onclick="pickOpt(this)">cautioned</button><button type="button" class="opt-card" onclick="pickOpt(this)">ignored</button><button type="button" class="opt-card" onclick="pickOpt(this)">promoted</button></span>
         decades ago / against too much human
-        <span class="b-wrap"><select onchange="markBlank(this,'extension')"><option value="">▾</option><option>withdrawal</option><option>extension</option><option>rejection</option><option>isolation</option></select></span>
+        <span class="opt-group" data-ans="extension"><button type="button" class="opt-card" onclick="pickOpt(this)">withdrawal</button><button type="button" class="opt-card" onclick="pickOpt(this)">extension</button><button type="button" class="opt-card" onclick="pickOpt(this)">rejection</button><button type="button" class="opt-card" onclick="pickOpt(this)">isolation</button></span>
         into technology
       </div>
       <div class="chunk-kr">McLuhan은 주로 기술 낙관론자였지만 / 수십 년 전에 경고했다 / 기술로의 과도한 인간 확장을 반대하며</div>
@@ -190,9 +198,9 @@ window._fbSave=async function(data){
       <div class="chunk-meta">S3 · 주어 + 동사 + 명사절</div>
       <div class="chunk-en">
         McLuhan famously
-        <span class="b-wrap"><select onchange="markBlank(this,'claimed')"><option value="">▾</option><option>denied</option><option>claimed</option><option>avoided</option><option>ignored</option></select></span>
+        <span class="opt-group" data-ans="claimed"><button type="button" class="opt-card" onclick="pickOpt(this)">denied</button><button type="button" class="opt-card" onclick="pickOpt(this)">claimed</button><button type="button" class="opt-card" onclick="pickOpt(this)">avoided</button><button type="button" class="opt-card" onclick="pickOpt(this)">ignored</button></span>
         / that every media extension of man is an
-        <span class="b-wrap"><select onchange="markBlank(this,'amputation')"><option value="">▾</option><option>addition</option><option>improvement</option><option>amputation</option><option>enhancement</option></select></span>
+        <span class="opt-group" data-ans="amputation"><button type="button" class="opt-card" onclick="pickOpt(this)">addition</button><button type="button" class="opt-card" onclick="pickOpt(this)">improvement</button><button type="button" class="opt-card" onclick="pickOpt(this)">amputation</button><button type="button" class="opt-card" onclick="pickOpt(this)">enhancement</button></span>
       </div>
       <div class="chunk-kr">McLuhan은 유명하게 주장했다 / 인간의 모든 미디어 확장은 절단이라고</div>
     </div>
@@ -201,9 +209,9 @@ window._fbSave=async function(data){
       <div class="chunk-meta">S4 · 예시 병렬구조</div>
       <div class="chunk-en">
         Once we have a car, / we don't
-        <span class="b-wrap"><select onchange="markBlank(this,'walk')"><option value="">▾</option><option>drive</option><option>walk</option><option>run</option><option>cycle</option></select></span>
+        <span class="opt-group" data-ans="walk"><button type="button" class="opt-card" onclick="pickOpt(this)">drive</button><button type="button" class="opt-card" onclick="pickOpt(this)">walk</button><button type="button" class="opt-card" onclick="pickOpt(this)">run</button><button type="button" class="opt-card" onclick="pickOpt(this)">cycle</button></span>
         to the shops / ; once we have a computer hard-drive, / we don't have to
-        <span class="b-wrap"><select onchange="markBlank(this,'remember')"><option value="">▾</option><option>forget</option><option>create</option><option>remember</option><option>calculate</option></select></span>
+        <span class="opt-group" data-ans="remember"><button type="button" class="opt-card" onclick="pickOpt(this)">forget</button><button type="button" class="opt-card" onclick="pickOpt(this)">create</button><button type="button" class="opt-card" onclick="pickOpt(this)">remember</button><button type="button" class="opt-card" onclick="pickOpt(this)">calculate</button></span>
         things
       </div>
       <div class="chunk-kr">차가 생기면 걸어서 가게에 가지 않고 / 컴퓨터 하드드라이브가 생기면 직접 기억할 필요가 없다</div>
@@ -213,9 +221,9 @@ window._fbSave=async function(data){
       <div class="chunk-meta">S5 · 주어 + 동사 + 이유절</div>
       <div class="chunk-en">
         Based on McLuhan's philosophy, / we are becoming
-        <span class="b-wrap"><select onchange="markBlank(this,'post-literate')"><option value="">▾</option><option>highly literate</option><option>post-literate</option><option>fully educated</option><option>deeply analytical</option></select></span>
+        <span class="opt-group" data-ans="post-literate"><button type="button" class="opt-card" onclick="pickOpt(this)">highly literate</button><button type="button" class="opt-card" onclick="pickOpt(this)">post-literate</button><button type="button" class="opt-card" onclick="pickOpt(this)">fully educated</button><button type="button" class="opt-card" onclick="pickOpt(this)">deeply analytical</button></span>
         / because we
-        <span class="b-wrap"><select onchange="markBlank(this,'rely on')"><option value="">▾</option><option>reject</option><option>rely on</option><option>avoid</option><option>create</option></select></span>
+        <span class="opt-group" data-ans="rely on"><button type="button" class="opt-card" onclick="pickOpt(this)">reject</button><button type="button" class="opt-card" onclick="pickOpt(this)">rely on</button><button type="button" class="opt-card" onclick="pickOpt(this)">avoid</button><button type="button" class="opt-card" onclick="pickOpt(this)">create</button></span>
         screens full of pictures, / rather than print media
       </div>
       <div class="chunk-kr">McLuhan의 철학에 따르면 / 우리는 탈문해화되고 있다 / 책 같은 인쇄 매체보다 그림 가득한 화면에 의존하기 때문에</div>
@@ -225,8 +233,8 @@ window._fbSave=async function(data){
       <div class="chunk-meta">S6 · 결론 + 빈칸 추론</div>
       <div class="chunk-en">
         It is thus possible that extensions of human faculties, / through techno- and bio-enhancement, / will
-        <span class="b-wrap"><select onchange="markBlank(this,'bring about')"><option value="">▾</option><option>prevent</option><option>bring about</option><option>eliminate</option><option>celebrate</option></select></span>
-        <span class="b-wrap"><select onchange="markBlank(this,'arrested development')"><option value="">▾</option><option>rapid growth</option><option>arrested development</option><option>renewed emphasis</option><option>accelerated progression</option></select></span>
+        <span class="opt-group" data-ans="bring about"><button type="button" class="opt-card" onclick="pickOpt(this)">prevent</button><button type="button" class="opt-card" onclick="pickOpt(this)">bring about</button><button type="button" class="opt-card" onclick="pickOpt(this)">eliminate</button><button type="button" class="opt-card" onclick="pickOpt(this)">celebrate</button></span>
+        <span class="opt-group" data-ans="arrested development"><button type="button" class="opt-card" onclick="pickOpt(this)">rapid growth</button><button type="button" class="opt-card" onclick="pickOpt(this)">arrested development</button><button type="button" class="opt-card" onclick="pickOpt(this)">renewed emphasis</button><button type="button" class="opt-card" onclick="pickOpt(this)">accelerated progression</button></span>
         in the natural evolution of higher human faculties
       </div>
       <div class="chunk-kr">따라서 기술·생체 향상을 통한 인간 능력의 확장은 / 고등 인간 능력의 자연적 진화에서 / 발달 저해를 야기할 수 있다</div>
@@ -384,11 +392,11 @@ window._fbSave=async function(data){
       <div class="chunk-meta">V1 · McLuhan의 주장</div>
       <div class="chunk-en">
         McLuhan
-        <span class="b-wrap"><select onchange="markBlank(this,'warned')"><option value="">▾</option><option>celebrated</option><option>warned</option><option>ignored</option><option>promoted</option></select></span>
+        <span class="opt-group" data-ans="warned"><button type="button" class="opt-card" onclick="pickOpt(this)">celebrated</button><button type="button" class="opt-card" onclick="pickOpt(this)">warned</button><button type="button" class="opt-card" onclick="pickOpt(this)">ignored</button><button type="button" class="opt-card" onclick="pickOpt(this)">promoted</button></span>
         that each
-        <span class="b-wrap"><select onchange="markBlank(this,'technological enhancement')"><option value="">▾</option><option>human improvement</option><option>technological enhancement</option><option>cultural tradition</option><option>social agreement</option></select></span>
+        <span class="opt-group" data-ans="technological enhancement"><button type="button" class="opt-card" onclick="pickOpt(this)">human improvement</button><button type="button" class="opt-card" onclick="pickOpt(this)">technological enhancement</button><button type="button" class="opt-card" onclick="pickOpt(this)">cultural tradition</button><button type="button" class="opt-card" onclick="pickOpt(this)">social agreement</button></span>
         of human ability / simultaneously
-        <span class="b-wrap"><select onchange="markBlank(this,'diminishes')"><option value="">▾</option><option>strengthens</option><option>preserves</option><option>diminishes</option><option>expands</option></select></span>
+        <span class="opt-group" data-ans="diminishes"><button type="button" class="opt-card" onclick="pickOpt(this)">strengthens</button><button type="button" class="opt-card" onclick="pickOpt(this)">preserves</button><button type="button" class="opt-card" onclick="pickOpt(this)">diminishes</button><button type="button" class="opt-card" onclick="pickOpt(this)">expands</button></span>
         a natural capacity
       </div>
       <div class="chunk-kr">McLuhan은 경고했다 / 인간 능력의 각 기술적 향상이 / 동시에 자연적 역량을 약화시킨다고</div>
@@ -398,11 +406,11 @@ window._fbSave=async function(data){
       <div class="chunk-meta">V2 · 결론</div>
       <div class="chunk-en">
         It is therefore likely that tech-driven
-        <span class="b-wrap"><select onchange="markBlank(this,'augmentation')"><option value="">▾</option><option>rejection</option><option>isolation</option><option>augmentation</option><option>limitation</option></select></span>
+        <span class="opt-group" data-ans="augmentation"><button type="button" class="opt-card" onclick="pickOpt(this)">rejection</button><button type="button" class="opt-card" onclick="pickOpt(this)">isolation</button><button type="button" class="opt-card" onclick="pickOpt(this)">augmentation</button><button type="button" class="opt-card" onclick="pickOpt(this)">limitation</button></span>
         of human abilities / may
-        <span class="b-wrap"><select onchange="markBlank(this,'hinder')"><option value="">▾</option><option>accelerate</option><option>hinder</option><option>celebrate</option><option>guarantee</option></select></span>
+        <span class="opt-group" data-ans="hinder"><button type="button" class="opt-card" onclick="pickOpt(this)">accelerate</button><button type="button" class="opt-card" onclick="pickOpt(this)">hinder</button><button type="button" class="opt-card" onclick="pickOpt(this)">celebrate</button><button type="button" class="opt-card" onclick="pickOpt(this)">guarantee</button></span>
         the
-        <span class="b-wrap"><select onchange="markBlank(this,'organic')"><option value="">▾</option><option>artificial</option><option>rapid</option><option>organic</option><option>logical</option></select></span>
+        <span class="opt-group" data-ans="organic"><button type="button" class="opt-card" onclick="pickOpt(this)">artificial</button><button type="button" class="opt-card" onclick="pickOpt(this)">rapid</button><button type="button" class="opt-card" onclick="pickOpt(this)">organic</button><button type="button" class="opt-card" onclick="pickOpt(this)">logical</button></span>
         growth of superior human faculties
       </div>
       <div class="chunk-kr">따라서 기술 주도의 인간 능력 증강은 / 우월한 인간 능력의 유기적 성장을 방해할 수 있다</div>
@@ -530,19 +538,35 @@ function switchStage(n) {
   document.getElementById(`p0-s${n}`).classList.add('active');
   document.querySelectorAll('.stage-btn').forEach((b,i) => b.classList.toggle('active', i===n-1));
 }
-function markBlank(sel, correct) {
-  if (!sel.value) { sel.className=''; return; }
-  sel.className = sel.value === correct ? 'correct' : 'wrong';
+function markBlank(sel, correct) { /* legacy no-op */ }
+function pickOpt(btn) {
+  const grp = btn.closest('.opt-group'); if(!grp) return;
+  const ans = grp.dataset.ans;
+  grp.querySelectorAll('.opt-card').forEach(b => b.classList.remove('correct','wrong','picked','show-ans'));
+  const txt = btn.textContent.trim();
+  grp.dataset.picked = txt;
+  btn.classList.add(txt === ans ? 'correct' : 'wrong');
 }
 function checkStage1() {
-  const selects = document.querySelectorAll('#p0-s1 select');
+  const groups = document.querySelectorAll('#s1 .opt-group');
   let total=0, correct=0;
-  selects.forEach(sel => { total++; if(sel.className==='correct') correct++; else if(!sel.className&&sel.value) sel.className='wrong'; });
-  const banner = document.getElementById('p0-s1-result');
+  groups.forEach(grp => {
+    total++;
+    const ans = grp.dataset.ans;
+    const picked = grp.dataset.picked || '';
+    grp.querySelectorAll('.opt-card').forEach(b => {
+      const t = b.textContent.trim();
+      b.classList.remove('correct','wrong','show-ans');
+      if(t === picked) b.classList.add(picked === ans ? 'correct' : 'wrong');
+      if(t === ans && picked && picked !== ans) b.classList.add('show-ans');
+    });
+    if(picked === ans) correct++;
+  });
+  const banner = document.getElementById('s1-result');
   const pass = correct===total;
-  banner.className = `result-banner show ${pass?'pass':'fail'}`;
-  banner.textContent = pass ? `🎉 완벽! (${correct}/${total})` : `${correct}/${total} 정답 — 빨간 항목을 다시 확인하세요.`;
-  if(pass) document.getElementById('p0-nav1').classList.add('done');
+  banner.className = 'result-banner show ' + (pass?'pass':'fail');
+  banner.textContent = pass ? '🎉 완벽! ('+correct+'/'+total+')' : correct+'/'+total+' 정답 — 빨간 항목을 다시 확인하세요.';
+  if(pass) document.getElementById('nav1').classList.add('done');
 }
 const s2Picks = {};
 function pickS2(el, blockId, isCorrect) {
@@ -638,7 +662,7 @@ function gradeVariant(resultId, navId) {
 }
 window.addEventListener('DOMContentLoaded',()=>{Object.keys(US_DATA).forEach(id=>initUS(id));
   // 변형 select option 셔플 (첫번째 빈 option 제외)
-  document.querySelectorAll('.b-wrap select').forEach(sel => {
+  document.querySelectorAll('.opt-group .opt-card').forEach(sel => {
     const opts = Array.from(sel.options).slice(1);
     for(let i=opts.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[opts[i],opts[j]]=[opts[j],opts[i]];}
     while(sel.options.length > 1) sel.remove(1);

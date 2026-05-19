@@ -46,6 +46,14 @@ body { background: var(--bg); color: var(--text); font-family: 'Noto Sans KR', s
 .b-wrap::after { content:'▾'; position:absolute; right:8px; top:50%; transform:translateY(-50%); color:var(--accent); pointer-events:none; font-size:11px; }
 .b-wrap select.correct { border-color:var(--correct); color:var(--correct); background:rgba(42,157,111,.1); }
 .b-wrap select.wrong   { border-color:var(--wrong);   color:var(--wrong);   background:rgba(217,95,95,.1); }
+.opt-group { display: inline-flex; flex-wrap: wrap; gap: 4px; margin: 3px 4px; vertical-align: middle; }
+.opt-card { padding: 4px 11px; border-radius: 6px; border: 1.5px solid var(--accent); background: var(--surface2); color: var(--accent); font-size: 13px; font-family: 'Noto Sans KR', sans-serif; cursor: pointer; transition: all .15s; line-height: 1.4; }
+.opt-card:hover { filter: brightness(1.08); }
+.opt-card.picked { background: rgba(0,122,204,.12); }
+.opt-card.correct { background: rgba(42,157,111,.18); border-color: var(--correct); color: var(--correct); font-weight: 700; }
+.opt-card.wrong { background: rgba(217,95,95,.18); border-color: var(--wrong); color: var(--wrong); font-weight: 700; }
+.opt-card.show-ans { outline: 2px dashed var(--correct); outline-offset: 1px; }
+
 .full-passage-box { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px 22px; margin-bottom: 24px; }
 .fp-title { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--text-dim); letter-spacing: 1px; margin-bottom: 10px; }
 .fp-sentence { font-family: 'Noto Serif KR', serif; font-size: 14px; line-height: 1.9; color: var(--text); margin-bottom: 4px; }
@@ -165,9 +173,9 @@ window._fbSave=async function(data){
       <div class="chunk-meta">S1 · 주어 + 동사 + 부정사구</div>
       <div class="chunk-en">
         There are few of us / who don't at least
-        <span class="b-wrap"><select onchange="markBlank(this,'want to make')"><option value="">▾</option><option>refuse to make</option><option>want to make</option><option>fail to find</option><option>choose to skip</option></select></span>
+        <span class="opt-group" data-ans="want to make"><button type="button" class="opt-card" onclick="pickOpt(this)">refuse to make</button><button type="button" class="opt-card" onclick="pickOpt(this)">want to make</button><button type="button" class="opt-card" onclick="pickOpt(this)">fail to find</button><button type="button" class="opt-card" onclick="pickOpt(this)">choose to skip</button></span>
         time / for
-        <span class="b-wrap"><select onchange="markBlank(this,'self-care')"><option value="">▾</option><option>work-related</option><option>self-care</option><option>competitive</option><option>deadline-driven</option></select></span>
+        <span class="opt-group" data-ans="self-care"><button type="button" class="opt-card" onclick="pickOpt(this)">work-related</button><button type="button" class="opt-card" onclick="pickOpt(this)">self-care</button><button type="button" class="opt-card" onclick="pickOpt(this)">competitive</button><button type="button" class="opt-card" onclick="pickOpt(this)">deadline-driven</button></span>
         activities / such as exercise, hobbies, or relaxation
       </div>
       <div class="chunk-kr">우리 중 적어도 자기돌봄 활동을 위한 시간을 / 만들고 싶지 않은 사람은 거의 없다 / 운동, 취미, 휴식 같은</div>
@@ -177,11 +185,11 @@ window._fbSave=async function(data){
       <div class="chunk-meta">S2 · 역접 + 수동태</div>
       <div class="chunk-en">
         We start each day with the best of
-        <span class="b-wrap"><select onchange="markBlank(this,'intentions')"><option value="">▾</option><option>excuses</option><option>intentions</option><option>mistakes</option><option>failures</option></select></span>
+        <span class="opt-group" data-ans="intentions"><button type="button" class="opt-card" onclick="pickOpt(this)">excuses</button><button type="button" class="opt-card" onclick="pickOpt(this)">intentions</button><button type="button" class="opt-card" onclick="pickOpt(this)">mistakes</button><button type="button" class="opt-card" onclick="pickOpt(this)">failures</button></span>
         / but then
-        <span class="b-wrap"><select onchange="markBlank(this,'get stuck')"><option value="">▾</option><option>get inspired</option><option>get stuck</option><option>stay focused</option><option>move forward</option></select></span>
+        <span class="opt-group" data-ans="get stuck"><button type="button" class="opt-card" onclick="pickOpt(this)">get inspired</button><button type="button" class="opt-card" onclick="pickOpt(this)">get stuck</button><button type="button" class="opt-card" onclick="pickOpt(this)">stay focused</button><button type="button" class="opt-card" onclick="pickOpt(this)">move forward</button></span>
         by the flood of email messages / or
-        <span class="b-wrap"><select onchange="markBlank(this,'pulled into')"><option value="">▾</option><option>kept away from</option><option>pulled into</option><option>released from</option><option>invited to skip</option></select></span>
+        <span class="opt-group" data-ans="pulled into"><button type="button" class="opt-card" onclick="pickOpt(this)">kept away from</button><button type="button" class="opt-card" onclick="pickOpt(this)">pulled into</button><button type="button" class="opt-card" onclick="pickOpt(this)">released from</button><button type="button" class="opt-card" onclick="pickOpt(this)">invited to skip</button></span>
         an unexpected meeting
       </div>
       <div class="chunk-kr">우리는 매일 최선의 의도로 시작하지만 / 쏟아지는 이메일에 갇히거나 / 예상치 못한 회의로 끌려들어간다</div>
@@ -191,11 +199,11 @@ window._fbSave=async function(data){
       <div class="chunk-meta">S3 ① · 부사절 + 주어</div>
       <div class="chunk-en">
         As we struggle to
-        <span class="b-wrap"><select onchange="markBlank(this,'reprioritize')"><option value="">▾</option><option>ignore priorities</option><option>reprioritize</option><option>abandon tasks</option><option>complete nothing</option></select></span>
+        <span class="opt-group" data-ans="reprioritize"><button type="button" class="opt-card" onclick="pickOpt(this)">ignore priorities</button><button type="button" class="opt-card" onclick="pickOpt(this)">reprioritize</button><button type="button" class="opt-card" onclick="pickOpt(this)">abandon tasks</button><button type="button" class="opt-card" onclick="pickOpt(this)">complete nothing</button></span>
         so we can get everything done / before our
-        <span class="b-wrap"><select onchange="markBlank(this,'deadlines')"><option value="">▾</option><option>meetings</option><option>deadlines</option><option>vacations</option><option>promotions</option></select></span>
+        <span class="opt-group" data-ans="deadlines"><button type="button" class="opt-card" onclick="pickOpt(this)">meetings</button><button type="button" class="opt-card" onclick="pickOpt(this)">deadlines</button><button type="button" class="opt-card" onclick="pickOpt(this)">vacations</button><button type="button" class="opt-card" onclick="pickOpt(this)">promotions</button></span>
         , / often our self-care activities are the first thing to be
-        <span class="b-wrap"><select onchange="markBlank(this,'given up')"><option value="">▾</option><option>prioritized</option><option>given up</option><option>completed</option><option>scheduled</option></select></span>
+        <span class="opt-group" data-ans="given up"><button type="button" class="opt-card" onclick="pickOpt(this)">prioritized</button><button type="button" class="opt-card" onclick="pickOpt(this)">given up</button><button type="button" class="opt-card" onclick="pickOpt(this)">completed</button><button type="button" class="opt-card" onclick="pickOpt(this)">scheduled</button></span>
       </div>
       <div class="chunk-kr">마감 전에 모든 것을 끝내기 위해 우선순위를 다시 정하려 애쓰면서 / 종종 자기돌봄 활동이 가장 먼저 포기된다</div>
     </div>
@@ -204,9 +212,9 @@ window._fbSave=async function(data){
       <div class="chunk-meta">S4 ② · 양보절</div>
       <div class="chunk-en">
         No matter how much we
-        <span class="b-wrap"><select onchange="markBlank(this,'plan')"><option value="">▾</option><option>rest</option><option>plan</option><option>worry</option><option>argue</option></select></span>
+        <span class="opt-group" data-ans="plan"><button type="button" class="opt-card" onclick="pickOpt(this)">rest</button><button type="button" class="opt-card" onclick="pickOpt(this)">plan</button><button type="button" class="opt-card" onclick="pickOpt(this)">worry</button><button type="button" class="opt-card" onclick="pickOpt(this)">argue</button></span>
         , / we all
-        <span class="b-wrap"><select onchange="markBlank(this,'occasionally')"><option value="">▾</option><option>never</option><option>occasionally</option><option>constantly</option><option>rarely</option></select></span>
+        <span class="opt-group" data-ans="occasionally"><button type="button" class="opt-card" onclick="pickOpt(this)">never</button><button type="button" class="opt-card" onclick="pickOpt(this)">occasionally</button><button type="button" class="opt-card" onclick="pickOpt(this)">constantly</button><button type="button" class="opt-card" onclick="pickOpt(this)">rarely</button></span>
         have days when that happens
       </div>
       <div class="chunk-kr">아무리 많이 계획해도 / 우리 모두는 때때로 그런 일이 일어나는 날이 있다</div>
@@ -216,9 +224,9 @@ window._fbSave=async function(data){
       <div class="chunk-meta">S5 ③ · 비교 구조</div>
       <div class="chunk-en">
         In the short term, / the
-        <span class="b-wrap"><select onchange="markBlank(this,'impact')"><option value="">▾</option><option>pleasure</option><option>impact</option><option>memory</option><option>cost</option></select></span>
+        <span class="opt-group" data-ans="impact"><button type="button" class="opt-card" onclick="pickOpt(this)">pleasure</button><button type="button" class="opt-card" onclick="pickOpt(this)">impact</button><button type="button" class="opt-card" onclick="pickOpt(this)">memory</button><button type="button" class="opt-card" onclick="pickOpt(this)">cost</button></span>
         of missing that
-        <span class="b-wrap"><select onchange="markBlank(this,'grant deadline')"><option value="">▾</option><option>woodworking class</option><option>grant deadline</option><option>design class</option><option>exercise session</option></select></span>
+        <span class="opt-group" data-ans="grant deadline"><button type="button" class="opt-card" onclick="pickOpt(this)">woodworking class</button><button type="button" class="opt-card" onclick="pickOpt(this)">grant deadline</button><button type="button" class="opt-card" onclick="pickOpt(this)">design class</button><button type="button" class="opt-card" onclick="pickOpt(this)">exercise session</button></span>
         / may be greater than / the impact of missing a woodworking class
       </div>
       <div class="chunk-kr">단기적으로 / 그 보조금 마감을 놓친 영향이 / 목공 수업을 놓친 영향보다 더 클 수 있다</div>
@@ -228,11 +236,11 @@ window._fbSave=async function(data){
       <div class="chunk-meta">S6 ⑤ · 역접 + 중요성 강조</div>
       <div class="chunk-en">
         But it's important to
-        <span class="b-wrap"><select onchange="markBlank(this,'recognize')"><option value="">▾</option><option>ignore</option><option>recognize</option><option>deny</option><option>celebrate</option></select></span>
+        <span class="opt-group" data-ans="recognize"><button type="button" class="opt-card" onclick="pickOpt(this)">ignore</button><button type="button" class="opt-card" onclick="pickOpt(this)">recognize</button><button type="button" class="opt-card" onclick="pickOpt(this)">deny</button><button type="button" class="opt-card" onclick="pickOpt(this)">celebrate</button></span>
         the
-        <span class="b-wrap"><select onchange="markBlank(this,'cumulative')"><option value="">▾</option><option>temporary</option><option>cumulative</option><option>minimal</option><option>immediate</option></select></span>
+        <span class="opt-group" data-ans="cumulative"><button type="button" class="opt-card" onclick="pickOpt(this)">temporary</button><button type="button" class="opt-card" onclick="pickOpt(this)">cumulative</button><button type="button" class="opt-card" onclick="pickOpt(this)">minimal</button><button type="button" class="opt-card" onclick="pickOpt(this)">immediate</button></span>
         impact of not prioritizing self-care / and to make sure that in the long term, / this is the
-        <span class="b-wrap"><select onchange="markBlank(this,'exception')"><option value="">▾</option><option>norm</option><option>exception</option><option>standard</option><option>routine</option></select></span>
+        <span class="opt-group" data-ans="exception"><button type="button" class="opt-card" onclick="pickOpt(this)">norm</button><button type="button" class="opt-card" onclick="pickOpt(this)">exception</button><button type="button" class="opt-card" onclick="pickOpt(this)">standard</button><button type="button" class="opt-card" onclick="pickOpt(this)">routine</button></span>
         rather than the norm
       </div>
       <div class="chunk-kr">하지만 자기돌봄을 우선시하지 않는 것의 누적된 영향을 인식하고 / 장기적으로 이것이 표준이 아닌 예외임을 확인하는 것이 중요하다</div>
@@ -412,11 +420,11 @@ window._fbSave=async function(data){
       <div class="chunk-meta">V1 · 도입 — 자기돌봄 활동 원하는 마음</div>
       <div class="chunk-en">
         Hardly anyone among us
-        <span class="b-wrap"><select onchange="markBlank(this,'fails to desire')"><option value="">▾</option><option>refuses to schedule</option><option>fails to desire</option><option>succeeds in avoiding</option><option>tends to overdo</option></select></span>
+        <span class="opt-group" data-ans="fails to desire"><button type="button" class="opt-card" onclick="pickOpt(this)">refuses to schedule</button><button type="button" class="opt-card" onclick="pickOpt(this)">fails to desire</button><button type="button" class="opt-card" onclick="pickOpt(this)">succeeds in avoiding</button><button type="button" class="opt-card" onclick="pickOpt(this)">tends to overdo</button></span>
         time for
-        <span class="b-wrap"><select onchange="markBlank(this,'personal wellness routines')"><option value="">▾</option><option>urgent deadlines</option><option>personal wellness routines</option><option>competitive tasks</option><option>professional obligations</option></select></span>
+        <span class="opt-group" data-ans="personal wellness routines"><button type="button" class="opt-card" onclick="pickOpt(this)">urgent deadlines</button><button type="button" class="opt-card" onclick="pickOpt(this)">personal wellness routines</button><button type="button" class="opt-card" onclick="pickOpt(this)">competitive tasks</button><button type="button" class="opt-card" onclick="pickOpt(this)">professional obligations</button></span>
         / like physical activity,
-        <span class="b-wrap"><select onchange="markBlank(this,'leisure pursuits')"><option value="">▾</option><option>work assignments</option><option>mandatory meetings</option><option>leisure pursuits</option><option>financial planning</option></select></span>
+        <span class="opt-group" data-ans="leisure pursuits"><button type="button" class="opt-card" onclick="pickOpt(this)">work assignments</button><button type="button" class="opt-card" onclick="pickOpt(this)">mandatory meetings</button><button type="button" class="opt-card" onclick="pickOpt(this)">leisure pursuits</button><button type="button" class="opt-card" onclick="pickOpt(this)">financial planning</button></span>
         , or rest
       </div>
       <div class="chunk-kr">우리 중 운동, 여가 활동, 휴식 같은 개인 웰빙 루틴을 위한 시간을 원하지 않는 사람은 거의 없다</div>
@@ -426,15 +434,15 @@ window._fbSave=async function(data){
       <div class="chunk-meta">V2 · 좋은 의도 → 방해</div>
       <div class="chunk-en">
         We
-        <span class="b-wrap"><select onchange="markBlank(this,'begin each day')"><option value="">▾</option><option>end each week</option><option>begin each day</option><option>start each month</option><option>finish each task</option></select></span>
+        <span class="opt-group" data-ans="begin each day"><button type="button" class="opt-card" onclick="pickOpt(this)">end each week</button><button type="button" class="opt-card" onclick="pickOpt(this)">begin each day</button><button type="button" class="opt-card" onclick="pickOpt(this)">start each month</button><button type="button" class="opt-card" onclick="pickOpt(this)">finish each task</button></span>
         with
-        <span class="b-wrap"><select onchange="markBlank(this,'the finest of motives')"><option value="">▾</option><option>a clear schedule</option><option>the finest of motives</option><option>a list of failures</option><option>a set of excuses</option></select></span>
+        <span class="opt-group" data-ans="the finest of motives"><button type="button" class="opt-card" onclick="pickOpt(this)">a clear schedule</button><button type="button" class="opt-card" onclick="pickOpt(this)">the finest of motives</button><button type="button" class="opt-card" onclick="pickOpt(this)">a list of failures</button><button type="button" class="opt-card" onclick="pickOpt(this)">a set of excuses</button></span>
         / but are then
-        <span class="b-wrap"><select onchange="markBlank(this,'overwhelmed')"><option value="">▾</option><option>inspired</option><option>motivated</option><option>overwhelmed</option><option>organized</option></select></span>
+        <span class="opt-group" data-ans="overwhelmed"><button type="button" class="opt-card" onclick="pickOpt(this)">inspired</button><button type="button" class="opt-card" onclick="pickOpt(this)">motivated</button><button type="button" class="opt-card" onclick="pickOpt(this)">overwhelmed</button><button type="button" class="opt-card" onclick="pickOpt(this)">organized</button></span>
         by
-        <span class="b-wrap"><select onchange="markBlank(this,'an avalanche of emails')"><option value="">▾</option><option>a shortage of tasks</option><option>an avalanche of emails</option><option>a surplus of free time</option><option>a wave of motivation</option></select></span>
+        <span class="opt-group" data-ans="an avalanche of emails"><button type="button" class="opt-card" onclick="pickOpt(this)">a shortage of tasks</button><button type="button" class="opt-card" onclick="pickOpt(this)">an avalanche of emails</button><button type="button" class="opt-card" onclick="pickOpt(this)">a surplus of free time</button><button type="button" class="opt-card" onclick="pickOpt(this)">a wave of motivation</button></span>
         or
-        <span class="b-wrap"><select onchange="markBlank(this,'dragged into unplanned meetings')"><option value="">▾</option><option>excused from all meetings</option><option>dragged into unplanned meetings</option><option>given extra break time</option><option>freed from urgent tasks</option></select></span>
+        <span class="opt-group" data-ans="dragged into unplanned meetings"><button type="button" class="opt-card" onclick="pickOpt(this)">excused from all meetings</button><button type="button" class="opt-card" onclick="pickOpt(this)">dragged into unplanned meetings</button><button type="button" class="opt-card" onclick="pickOpt(this)">given extra break time</button><button type="button" class="opt-card" onclick="pickOpt(this)">freed from urgent tasks</button></span>
       </div>
       <div class="chunk-kr">우리는 매일 최선의 동기로 시작하지만 / 이메일의 쇄도에 압도되거나 / 계획에 없던 회의로 끌려 들어간다</div>
     </div>
@@ -443,13 +451,13 @@ window._fbSave=async function(data){
       <div class="chunk-meta">V3 ① · 자기돌봄이 가장 먼저 희생</div>
       <div class="chunk-en">
         As we
-        <span class="b-wrap"><select onchange="markBlank(this,'struggle to reorder our tasks')"><option value="">▾</option><option>choose to ignore our tasks</option><option>struggle to reorder our tasks</option><option>succeed in completing everything</option><option>refuse to change our schedule</option></select></span>
+        <span class="opt-group" data-ans="struggle to reorder our tasks"><button type="button" class="opt-card" onclick="pickOpt(this)">choose to ignore our tasks</button><button type="button" class="opt-card" onclick="pickOpt(this)">struggle to reorder our tasks</button><button type="button" class="opt-card" onclick="pickOpt(this)">succeed in completing everything</button><button type="button" class="opt-card" onclick="pickOpt(this)">refuse to change our schedule</button></span>
         to meet
-        <span class="b-wrap"><select onchange="markBlank(this,'pressing work obligations')"><option value="">▾</option><option>personal goals</option><option>pressing work obligations</option><option>leisure activities</option><option>social commitments</option></select></span>
+        <span class="opt-group" data-ans="pressing work obligations"><button type="button" class="opt-card" onclick="pickOpt(this)">personal goals</button><button type="button" class="opt-card" onclick="pickOpt(this)">pressing work obligations</button><button type="button" class="opt-card" onclick="pickOpt(this)">leisure activities</button><button type="button" class="opt-card" onclick="pickOpt(this)">social commitments</button></span>
         / before
-        <span class="b-wrap"><select onchange="markBlank(this,'due dates')"><option value="">▾</option><option>vacations</option><option>promotions</option><option>due dates</option><option>pay raises</option></select></span>
+        <span class="opt-group" data-ans="due dates"><button type="button" class="opt-card" onclick="pickOpt(this)">vacations</button><button type="button" class="opt-card" onclick="pickOpt(this)">promotions</button><button type="button" class="opt-card" onclick="pickOpt(this)">due dates</button><button type="button" class="opt-card" onclick="pickOpt(this)">pay raises</button></span>
         , / personal well-being activities are
-        <span class="b-wrap"><select onchange="markBlank(this,'first to be abandoned')"><option value="">▾</option><option>last to be considered</option><option>first to be abandoned</option><option>always maintained</option><option>never sacrificed</option></select></span>
+        <span class="opt-group" data-ans="first to be abandoned"><button type="button" class="opt-card" onclick="pickOpt(this)">last to be considered</button><button type="button" class="opt-card" onclick="pickOpt(this)">first to be abandoned</button><button type="button" class="opt-card" onclick="pickOpt(this)">always maintained</button><button type="button" class="opt-card" onclick="pickOpt(this)">never sacrificed</button></span>
       </div>
       <div class="chunk-kr">마감일 전에 긴박한 업무 의무를 맞추기 위해 과제를 재정렬하려 애쓰다보면 / 개인 웰빙 활동이 가장 먼저 포기된다</div>
     </div>
@@ -457,13 +465,13 @@ window._fbSave=async function(data){
     <div class="chunk-row">
       <div class="chunk-meta">V4 ② · 누구나 가끔 그런 날이 있음</div>
       <div class="chunk-en">
-        <span class="b-wrap"><select onchange="markBlank(this,'Regardless of')"><option value="">▾</option><option>Because of</option><option>Regardless of</option><option>Thanks to</option><option>In addition to</option></select></span>
+        <span class="opt-group" data-ans="Regardless of"><button type="button" class="opt-card" onclick="pickOpt(this)">Because of</button><button type="button" class="opt-card" onclick="pickOpt(this)">Regardless of</button><button type="button" class="opt-card" onclick="pickOpt(this)">Thanks to</button><button type="button" class="opt-card" onclick="pickOpt(this)">In addition to</button></span>
         how thoroughly we
-        <span class="b-wrap"><select onchange="markBlank(this,'organize in advance')"><option value="">▾</option><option>ignore in advance</option><option>organize in advance</option><option>rush at the last minute</option><option>give up planning</option></select></span>
+        <span class="opt-group" data-ans="organize in advance"><button type="button" class="opt-card" onclick="pickOpt(this)">ignore in advance</button><button type="button" class="opt-card" onclick="pickOpt(this)">organize in advance</button><button type="button" class="opt-card" onclick="pickOpt(this)">rush at the last minute</button><button type="button" class="opt-card" onclick="pickOpt(this)">give up planning</button></span>
         , / all of us
-        <span class="b-wrap"><select onchange="markBlank(this,'from time to time')"><option value="">▾</option><option>without exception</option><option>from time to time</option><option>always and consistently</option><option>almost never</option></select></span>
+        <span class="opt-group" data-ans="from time to time"><button type="button" class="opt-card" onclick="pickOpt(this)">without exception</button><button type="button" class="opt-card" onclick="pickOpt(this)">from time to time</button><button type="button" class="opt-card" onclick="pickOpt(this)">always and consistently</button><button type="button" class="opt-card" onclick="pickOpt(this)">almost never</button></span>
         encounter days when
-        <span class="b-wrap"><select onchange="markBlank(this,'self-care gets skipped')"><option value="">▾</option><option>productivity peaks</option><option>self-care gets skipped</option><option>everything goes perfectly</option><option>deadlines are met easily</option></select></span>
+        <span class="opt-group" data-ans="self-care gets skipped"><button type="button" class="opt-card" onclick="pickOpt(this)">productivity peaks</button><button type="button" class="opt-card" onclick="pickOpt(this)">self-care gets skipped</button><button type="button" class="opt-card" onclick="pickOpt(this)">everything goes perfectly</button><button type="button" class="opt-card" onclick="pickOpt(this)">deadlines are met easily</button></span>
       </div>
       <div class="chunk-kr">아무리 철저히 미리 계획해도 / 우리 모두는 때때로 자기돌봄이 생략되는 날을 맞이한다</div>
     </div>
@@ -472,13 +480,13 @@ window._fbSave=async function(data){
       <div class="chunk-meta">V5 ③ · 단기적으로는 업무 마감이 더 큰 영향</div>
       <div class="chunk-en">
         In the
-        <span class="b-wrap"><select onchange="markBlank(this,'near term')"><option value="">▾</option><option>distant future</option><option>near term</option><option>long run</option><option>overall picture</option></select></span>
+        <span class="opt-group" data-ans="near term"><button type="button" class="opt-card" onclick="pickOpt(this)">distant future</button><button type="button" class="opt-card" onclick="pickOpt(this)">near term</button><button type="button" class="opt-card" onclick="pickOpt(this)">long run</button><button type="button" class="opt-card" onclick="pickOpt(this)">overall picture</button></span>
         , / the
-        <span class="b-wrap"><select onchange="markBlank(this,'consequences')"><option value="">▾</option><option>benefits</option><option>consequences</option><option>rewards</option><option>causes</option></select></span>
+        <span class="opt-group" data-ans="consequences"><button type="button" class="opt-card" onclick="pickOpt(this)">benefits</button><button type="button" class="opt-card" onclick="pickOpt(this)">consequences</button><button type="button" class="opt-card" onclick="pickOpt(this)">rewards</button><button type="button" class="opt-card" onclick="pickOpt(this)">causes</button></span>
         of
-        <span class="b-wrap"><select onchange="markBlank(this,'overlooking a funding deadline')"><option value="">▾</option><option>attending a woodworking class</option><option>overlooking a funding deadline</option><option>skipping a design course</option><option>missing a team meeting</option></select></span>
+        <span class="opt-group" data-ans="overlooking a funding deadline"><button type="button" class="opt-card" onclick="pickOpt(this)">attending a woodworking class</button><button type="button" class="opt-card" onclick="pickOpt(this)">overlooking a funding deadline</button><button type="button" class="opt-card" onclick="pickOpt(this)">skipping a design course</button><button type="button" class="opt-card" onclick="pickOpt(this)">missing a team meeting</button></span>
         / may
-        <span class="b-wrap"><select onchange="markBlank(this,'outweigh')"><option value="">▾</option><option>equal</option><option>outweigh</option><option>fall below</option><option>match</option></select></span>
+        <span class="opt-group" data-ans="outweigh"><button type="button" class="opt-card" onclick="pickOpt(this)">equal</button><button type="button" class="opt-card" onclick="pickOpt(this)">outweigh</button><button type="button" class="opt-card" onclick="pickOpt(this)">fall below</button><button type="button" class="opt-card" onclick="pickOpt(this)">match</button></span>
         those of missing a craft workshop
       </div>
       <div class="chunk-kr">단기적으로는 / 자금 마감을 놓친 결과가 / 공예 워크숍을 빠진 것보다 더 클 수 있다</div>
@@ -488,17 +496,17 @@ window._fbSave=async function(data){
       <div class="chunk-meta">V6 ⑤ · 누적 영향 인식 + 예외로 만들기</div>
       <div class="chunk-en">
         It is
-        <span class="b-wrap"><select onchange="markBlank(this,'vital')"><option value="">▾</option><option>pointless</option><option>optional</option><option>vital</option><option>impossible</option></select></span>
+        <span class="opt-group" data-ans="vital"><button type="button" class="opt-card" onclick="pickOpt(this)">pointless</button><button type="button" class="opt-card" onclick="pickOpt(this)">optional</button><button type="button" class="opt-card" onclick="pickOpt(this)">vital</button><button type="button" class="opt-card" onclick="pickOpt(this)">impossible</button></span>
         to
-        <span class="b-wrap"><select onchange="markBlank(this,'acknowledge')"><option value="">▾</option><option>ignore</option><option>celebrate</option><option>acknowledge</option><option>deny</option></select></span>
+        <span class="opt-group" data-ans="acknowledge"><button type="button" class="opt-card" onclick="pickOpt(this)">ignore</button><button type="button" class="opt-card" onclick="pickOpt(this)">celebrate</button><button type="button" class="opt-card" onclick="pickOpt(this)">acknowledge</button><button type="button" class="opt-card" onclick="pickOpt(this)">deny</button></span>
         the
-        <span class="b-wrap"><select onchange="markBlank(this,'compounding')"><option value="">▾</option><option>temporary</option><option>immediate</option><option>compounding</option><option>minimal</option></select></span>
+        <span class="opt-group" data-ans="compounding"><button type="button" class="opt-card" onclick="pickOpt(this)">temporary</button><button type="button" class="opt-card" onclick="pickOpt(this)">immediate</button><button type="button" class="opt-card" onclick="pickOpt(this)">compounding</button><button type="button" class="opt-card" onclick="pickOpt(this)">minimal</button></span>
         effect of
-        <span class="b-wrap"><select onchange="markBlank(this,'neglecting personal wellness')"><option value="">▾</option><option>prioritizing self-care</option><option>neglecting personal wellness</option><option>completing all deadlines</option><option>enrolling in hobbies</option></select></span>
+        <span class="opt-group" data-ans="neglecting personal wellness"><button type="button" class="opt-card" onclick="pickOpt(this)">prioritizing self-care</button><button type="button" class="opt-card" onclick="pickOpt(this)">neglecting personal wellness</button><button type="button" class="opt-card" onclick="pickOpt(this)">completing all deadlines</button><button type="button" class="opt-card" onclick="pickOpt(this)">enrolling in hobbies</button></span>
         / and ensure that over time, this
-        <span class="b-wrap"><select onchange="markBlank(this,'remains an anomaly')"><option value="">▾</option><option>becomes the standard</option><option>remains an anomaly</option><option>defines our lifestyle</option><option>is encouraged daily</option></select></span>
+        <span class="opt-group" data-ans="remains an anomaly"><button type="button" class="opt-card" onclick="pickOpt(this)">becomes the standard</button><button type="button" class="opt-card" onclick="pickOpt(this)">remains an anomaly</button><button type="button" class="opt-card" onclick="pickOpt(this)">defines our lifestyle</button><button type="button" class="opt-card" onclick="pickOpt(this)">is encouraged daily</button></span>
         rather than the
-        <span class="b-wrap"><select onchange="markBlank(this,'default')"><option value="">▾</option><option>exception</option><option>surprise</option><option>default</option><option>achievement</option></select></span>
+        <span class="opt-group" data-ans="default"><button type="button" class="opt-card" onclick="pickOpt(this)">exception</button><button type="button" class="opt-card" onclick="pickOpt(this)">surprise</button><button type="button" class="opt-card" onclick="pickOpt(this)">default</button><button type="button" class="opt-card" onclick="pickOpt(this)">achievement</button></span>
       </div>
       <div class="chunk-kr">개인 웰빙을 소홀히 하는 것의 복리 효과를 인정하는 것이 중요하며 / 시간이 지나도 그것이 기본값이 아닌 변칙으로 남도록 해야 한다</div>
     </div>
@@ -622,18 +630,34 @@ function switchStage(n) {
   document.getElementById(`s${n}`).classList.add('active');
   document.querySelectorAll('.stage-btn').forEach((b,i) => b.classList.toggle('active', i===n-1));
 }
-function markBlank(sel, correct) {
-  if (!sel.value) { sel.className=''; return; }
-  sel.className = sel.value === correct ? 'correct' : 'wrong';
+function markBlank(sel, correct) { /* legacy no-op */ }
+function pickOpt(btn) {
+  const grp = btn.closest('.opt-group'); if(!grp) return;
+  const ans = grp.dataset.ans;
+  grp.querySelectorAll('.opt-card').forEach(b => b.classList.remove('correct','wrong','picked','show-ans'));
+  const txt = btn.textContent.trim();
+  grp.dataset.picked = txt;
+  btn.classList.add(txt === ans ? 'correct' : 'wrong');
 }
 function checkStage1() {
-  const selects = document.querySelectorAll('#s1 select');
+  const groups = document.querySelectorAll('#s1 .opt-group');
   let total=0, correct=0;
-  selects.forEach(sel => { total++; if(sel.className==='correct') correct++; else if(!sel.className&&sel.value) sel.className='wrong'; });
+  groups.forEach(grp => {
+    total++;
+    const ans = grp.dataset.ans;
+    const picked = grp.dataset.picked || '';
+    grp.querySelectorAll('.opt-card').forEach(b => {
+      const t = b.textContent.trim();
+      b.classList.remove('correct','wrong','show-ans');
+      if(t === picked) b.classList.add(picked === ans ? 'correct' : 'wrong');
+      if(t === ans && picked && picked !== ans) b.classList.add('show-ans');
+    });
+    if(picked === ans) correct++;
+  });
   const banner = document.getElementById('s1-result');
   const pass = correct===total;
-  banner.className = `result-banner show ${pass?'pass':'fail'}`;
-  banner.textContent = pass ? `🎉 완벽! (${correct}/${total})` : `${correct}/${total} 정답 — 빨간 항목을 다시 확인하세요.`;
+  banner.className = 'result-banner show ' + (pass?'pass':'fail');
+  banner.textContent = pass ? '🎉 완벽! ('+correct+'/'+total+')' : correct+'/'+total+' 정답 — 빨간 항목을 다시 확인하세요.';
   if(pass) document.getElementById('nav1').classList.add('done');
 }
 const s2Picks = {};

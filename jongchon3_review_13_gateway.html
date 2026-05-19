@@ -48,6 +48,14 @@ body { background: var(--bg); color: var(--text); font-family: 'Noto Sans KR', s
 .b-wrap::after { content:'▾'; position:absolute; right:8px; top:50%; transform:translateY(-50%); color:var(--accent); pointer-events:none; font-size:11px; }
 .b-wrap select.correct { border-color:var(--correct); color:var(--correct); background:rgba(42,157,111,.1); }
 .b-wrap select.wrong   { border-color:var(--wrong);   color:var(--wrong);   background:rgba(217,95,95,.1); }
+.opt-group { display: inline-flex; flex-wrap: wrap; gap: 4px; margin: 3px 4px; vertical-align: middle; }
+.opt-card { padding: 4px 11px; border-radius: 6px; border: 1.5px solid var(--accent); background: var(--surface2); color: var(--accent); font-size: 13px; font-family: 'Noto Sans KR', sans-serif; cursor: pointer; transition: all .15s; line-height: 1.4; }
+.opt-card:hover { filter: brightness(1.08); }
+.opt-card.picked { background: rgba(0,122,204,.12); }
+.opt-card.correct { background: rgba(42,157,111,.18); border-color: var(--correct); color: var(--correct); font-weight: 700; }
+.opt-card.wrong { background: rgba(217,95,95,.18); border-color: var(--wrong); color: var(--wrong); font-weight: 700; }
+.opt-card.show-ans { outline: 2px dashed var(--correct); outline-offset: 1px; }
+
 
 /* FULL PASSAGE */
 .full-passage-box { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px 22px; margin-bottom: 24px; }
@@ -183,9 +191,9 @@ window._fbSave=async function(data){
       <div class="chunk-meta">S1 · 주어 + 동사 + 목적어</div>
       <div class="chunk-en">
         The early grain trade firms /
-        <span class="b-wrap"><select onchange="markBlank(this,'were active')"><option value="">▾</option><option>were passive</option><option>were active</option><option>stayed absent</option><option>remained neutral</option></select></span>
+        <span class="opt-group" data-ans="were active"><button type="button" class="opt-card" onclick="pickOpt(this)">were passive</button><button type="button" class="opt-card" onclick="pickOpt(this)">were active</button><button type="button" class="opt-card" onclick="pickOpt(this)">stayed absent</button><button type="button" class="opt-card" onclick="pickOpt(this)">remained neutral</button></span>
         in both
-        <span class="b-wrap"><select onchange="markBlank(this,'surplus-producing')"><option value="">▾</option><option>deficit-producing</option><option>surplus-producing</option><option>trade-producing</option><option>risk-producing</option></select></span>
+        <span class="opt-group" data-ans="surplus-producing"><button type="button" class="opt-card" onclick="pickOpt(this)">deficit-producing</button><button type="button" class="opt-card" onclick="pickOpt(this)">surplus-producing</button><button type="button" class="opt-card" onclick="pickOpt(this)">trade-producing</button><button type="button" class="opt-card" onclick="pickOpt(this)">risk-producing</button></span>
         and food deficit regions
       </div>
       <div class="chunk-kr">초기 곡물 무역 회사들은 / 잉여 생산 지역과 식량 부족 지역 모두에서 / 활발하게 활동했다</div>
@@ -195,11 +203,11 @@ window._fbSave=async function(data){
       <div class="chunk-meta">S2 · 이유절 + 주어 + 동사</div>
       <div class="chunk-en">
         Because this information was the key to their
-        <span class="b-wrap"><select onchange="markBlank(this,'profitability')"><option value="">▾</option><option>morality</option><option>reputation</option><option>profitability</option><option>unification</option></select></span>
+        <span class="opt-group" data-ans="profitability"><button type="button" class="opt-card" onclick="pickOpt(this)">morality</button><button type="button" class="opt-card" onclick="pickOpt(this)">reputation</button><button type="button" class="opt-card" onclick="pickOpt(this)">profitability</button><button type="button" class="opt-card" onclick="pickOpt(this)">unification</button></span>
         , / these firms
-        <span class="b-wrap"><select onchange="markBlank(this,'worked')"><option value="">▾</option><option>failed</option><option>worked</option><option>refused</option><option>competed</option></select></span>
+        <span class="opt-group" data-ans="worked"><button type="button" class="opt-card" onclick="pickOpt(this)">failed</button><button type="button" class="opt-card" onclick="pickOpt(this)">worked</button><button type="button" class="opt-card" onclick="pickOpt(this)">refused</button><button type="button" class="opt-card" onclick="pickOpt(this)">competed</button></span>
         in relative
-        <span class="b-wrap"><select onchange="markBlank(this,'secrecy')"><option value="">▾</option><option>publicity</option><option>secrecy</option><option>danger</option><option>clarity</option></select></span>
+        <span class="opt-group" data-ans="secrecy"><button type="button" class="opt-card" onclick="pickOpt(this)">publicity</button><button type="button" class="opt-card" onclick="pickOpt(this)">secrecy</button><button type="button" class="opt-card" onclick="pickOpt(this)">danger</button><button type="button" class="opt-card" onclick="pickOpt(this)">clarity</button></span>
       </div>
       <div class="chunk-kr">이 정보가 수익성의 열쇠였기 때문에 / 이 회사들은 상대적인 비밀 속에서 운영했다</div>
     </div>
@@ -208,11 +216,11 @@ window._fbSave=async function(data){
       <div class="chunk-meta">S3 · 주어 + 동사 + 부사절</div>
       <div class="chunk-en">
         These firms
-        <span class="b-wrap"><select onchange="markBlank(this,'were able to benefit')"><option value="">▾</option><option>were unable to profit</option><option>were able to benefit</option><option>were forced to avoid</option><option>were required to reject</option></select></span>
+        <span class="opt-group" data-ans="were able to benefit"><button type="button" class="opt-card" onclick="pickOpt(this)">were unable to profit</button><button type="button" class="opt-card" onclick="pickOpt(this)">were able to benefit</button><button type="button" class="opt-card" onclick="pickOpt(this)">were forced to avoid</button><button type="button" class="opt-card" onclick="pickOpt(this)">were required to reject</button></span>
         from the rise of
-        <span class="b-wrap"><select onchange="markBlank(this,'commodity exchanges')"><option value="">▾</option><option>stock markets</option><option>commodity exchanges</option><option>grain storages</option><option>trade barriers</option></select></span>
+        <span class="opt-group" data-ans="commodity exchanges"><button type="button" class="opt-card" onclick="pickOpt(this)">stock markets</button><button type="button" class="opt-card" onclick="pickOpt(this)">commodity exchanges</button><button type="button" class="opt-card" onclick="pickOpt(this)">grain storages</button><button type="button" class="opt-card" onclick="pickOpt(this)">trade barriers</button></span>
         and commodities futures markets / that
-        <span class="b-wrap"><select onchange="markBlank(this,'emerged')"><option value="">▾</option><option>disappeared</option><option>emerged</option><option>collapsed</option><option>declined</option></select></span>
+        <span class="opt-group" data-ans="emerged"><button type="button" class="opt-card" onclick="pickOpt(this)">disappeared</button><button type="button" class="opt-card" onclick="pickOpt(this)">emerged</button><button type="button" class="opt-card" onclick="pickOpt(this)">collapsed</button><button type="button" class="opt-card" onclick="pickOpt(this)">declined</button></span>
         in the mid-1800s
       </div>
       <div class="chunk-kr">이 회사들은 / 1800년대 중반에 생겨난 / 상품 거래소와 상품 선물 시장의 성장으로부터 이익을 얻을 수 있었다</div>
@@ -222,9 +230,9 @@ window._fbSave=async function(data){
       <div class="chunk-meta">S4 · 주어 + 동사 + 이유절</div>
       <div class="chunk-en">
         Agricultural markets are naturally
-        <span class="b-wrap"><select onchange="markBlank(this,'unstable')"><option value="">▾</option><option>stable</option><option>unstable</option><option>predictable</option><option>reliable</option></select></span>
+        <span class="opt-group" data-ans="unstable"><button type="button" class="opt-card" onclick="pickOpt(this)">stable</button><button type="button" class="opt-card" onclick="pickOpt(this)">unstable</button><button type="button" class="opt-card" onclick="pickOpt(this)">predictable</button><button type="button" class="opt-card" onclick="pickOpt(this)">reliable</button></span>
         , / due to changes in harvest size / that result from
-        <span class="b-wrap"><select onchange="markBlank(this,'variable')"><option value="">▾</option><option>constant</option><option>variable</option><option>fixed</option><option>predictable</option></select></span>
+        <span class="opt-group" data-ans="variable"><button type="button" class="opt-card" onclick="pickOpt(this)">constant</button><button type="button" class="opt-card" onclick="pickOpt(this)">variable</button><button type="button" class="opt-card" onclick="pickOpt(this)">fixed</button><button type="button" class="opt-card" onclick="pickOpt(this)">predictable</button></span>
         weather patterns and other factors
       </div>
       <div class="chunk-kr">농업 시장은 본래 불안정한데 / 수확량의 변화 때문이며 / 이는 변동하는 날씨 패턴과 기타 요인들에서 비롯된다</div>
@@ -234,11 +242,11 @@ window._fbSave=async function(data){
       <div class="chunk-meta">S5 · 주어 + 동사 + 목적어</div>
       <div class="chunk-en">
         Locking-in prices / by buying and selling grain for
-        <span class="b-wrap"><select onchange="markBlank(this,'future delivery')"><option value="">▾</option><option>immediate sale</option><option>future delivery</option><option>current demand</option><option>past supply</option></select></span>
+        <span class="opt-group" data-ans="future delivery"><button type="button" class="opt-card" onclick="pickOpt(this)">immediate sale</button><button type="button" class="opt-card" onclick="pickOpt(this)">future delivery</button><button type="button" class="opt-card" onclick="pickOpt(this)">current demand</button><button type="button" class="opt-card" onclick="pickOpt(this)">past supply</button></span>
         /
-        <span class="b-wrap"><select onchange="markBlank(this,'helped')"><option value="">▾</option><option>prevented</option><option>helped</option><option>blocked</option><option>forced</option></select></span>
+        <span class="opt-group" data-ans="helped"><button type="button" class="opt-card" onclick="pickOpt(this)">prevented</button><button type="button" class="opt-card" onclick="pickOpt(this)">helped</button><button type="button" class="opt-card" onclick="pickOpt(this)">blocked</button><button type="button" class="opt-card" onclick="pickOpt(this)">forced</button></span>
         these firms to
-        <span class="b-wrap"><select onchange="markBlank(this,'minimize')"><option value="">▾</option><option>maximize</option><option>ignore</option><option>minimize</option><option>create</option></select></span>
+        <span class="opt-group" data-ans="minimize"><button type="button" class="opt-card" onclick="pickOpt(this)">maximize</button><button type="button" class="opt-card" onclick="pickOpt(this)">ignore</button><button type="button" class="opt-card" onclick="pickOpt(this)">minimize</button><button type="button" class="opt-card" onclick="pickOpt(this)">create</button></span>
         such risks
       </div>
       <div class="chunk-kr">미래 인도를 위해 곡물을 사고팔며 가격을 고정하는 것은 / 이 회사들이 그런 위험을 최소화하는 데 도움이 됐다</div>
@@ -248,9 +256,9 @@ window._fbSave=async function(data){
       <div class="chunk-meta">S6 · 주어 + 동사 + 비교절</div>
       <div class="chunk-en">
         It made sense / for the grain trading companies to
-        <span class="b-wrap"><select onchange="markBlank(this,'manage')"><option value="">▾</option><option>avoid</option><option>manage</option><option>ignore</option><option>deny</option></select></span>
+        <span class="opt-group" data-ans="manage"><button type="button" class="opt-card" onclick="pickOpt(this)">avoid</button><button type="button" class="opt-card" onclick="pickOpt(this)">manage</button><button type="button" class="opt-card" onclick="pickOpt(this)">ignore</button><button type="button" class="opt-card" onclick="pickOpt(this)">deny</button></span>
         their risks / within a single firm / operating in more than one country, / rather than
-        <span class="b-wrap"><select onchange="markBlank(this,'operating as')"><option value="">▾</option><option>competing as</option><option>operating as</option><option>merging with</option><option>separating from</option></select></span>
+        <span class="opt-group" data-ans="operating as"><button type="button" class="opt-card" onclick="pickOpt(this)">competing as</button><button type="button" class="opt-card" onclick="pickOpt(this)">operating as</button><button type="button" class="opt-card" onclick="pickOpt(this)">merging with</button><button type="button" class="opt-card" onclick="pickOpt(this)">separating from</button></span>
         independent national companies
       </div>
       <div class="chunk-kr">곡물 무역 회사들이 위험을 관리하는 것이 합리적이었다 / 두 나라 이상에서 운영되는 단일 회사 내에서 / 서로 거래하는 독립적인 국내 회사들로 운영되는 것보다</div>
@@ -260,11 +268,11 @@ window._fbSave=async function(data){
       <div class="chunk-meta">S7 · 주어 + 동사 + 결과</div>
       <div class="chunk-en">
         Their
-        <span class="b-wrap"><select onchange="markBlank(this,'access to')"><option value="">▾</option><option>rejection of</option><option>access to</option><option>ignorance of</option><option>distance from</option></select></span>
+        <span class="opt-group" data-ans="access to"><button type="button" class="opt-card" onclick="pickOpt(this)">rejection of</button><button type="button" class="opt-card" onclick="pickOpt(this)">access to</button><button type="button" class="opt-card" onclick="pickOpt(this)">ignorance of</button><button type="button" class="opt-card" onclick="pickOpt(this)">distance from</button></span>
         information in multiple markets /
-        <span class="b-wrap"><select onchange="markBlank(this,'enabled')"><option value="">▾</option><option>prevented</option><option>enabled</option><option>blocked</option><option>limited</option></select></span>
+        <span class="opt-group" data-ans="enabled"><button type="button" class="opt-card" onclick="pickOpt(this)">prevented</button><button type="button" class="opt-card" onclick="pickOpt(this)">enabled</button><button type="button" class="opt-card" onclick="pickOpt(this)">blocked</button><button type="button" class="opt-card" onclick="pickOpt(this)">limited</button></span>
         them to easily
-        <span class="b-wrap"><select onchange="markBlank(this,'cover')"><option value="">▾</option><option>create</option><option>avoid</option><option>cover</option><option>ignore</option></select></span>
+        <span class="opt-group" data-ans="cover"><button type="button" class="opt-card" onclick="pickOpt(this)">create</button><button type="button" class="opt-card" onclick="pickOpt(this)">avoid</button><button type="button" class="opt-card" onclick="pickOpt(this)">cover</button><button type="button" class="opt-card" onclick="pickOpt(this)">ignore</button></span>
         the risks associated with agricultural commodity trade
       </div>
       <div class="chunk-kr">다수 시장의 정보에 대한 접근이 / 그들이 농업 상품 거래와 관련된 위험을 쉽게 감당할 수 있게 해줬다</div>
@@ -434,11 +442,11 @@ window._fbSave=async function(data){
       <div class="chunk-meta">V1 · 정보와 비밀 운영</div>
       <div class="chunk-en">
         Since this knowledge was
-        <span class="b-wrap"><select onchange="markBlank(this,'crucial to')"><option value="">▾</option><option>irrelevant to</option><option>crucial to</option><option>separate from</option><option>harmful to</option></select></span>
+        <span class="opt-group" data-ans="crucial to"><button type="button" class="opt-card" onclick="pickOpt(this)">irrelevant to</button><button type="button" class="opt-card" onclick="pickOpt(this)">crucial to</button><button type="button" class="opt-card" onclick="pickOpt(this)">separate from</button><button type="button" class="opt-card" onclick="pickOpt(this)">harmful to</button></span>
         their
-        <span class="b-wrap"><select onchange="markBlank(this,'financial success')"><option value="">▾</option><option>moral standing</option><option>financial success</option><option>public image</option><option>political power</option></select></span>
+        <span class="opt-group" data-ans="financial success"><button type="button" class="opt-card" onclick="pickOpt(this)">moral standing</button><button type="button" class="opt-card" onclick="pickOpt(this)">financial success</button><button type="button" class="opt-card" onclick="pickOpt(this)">public image</button><button type="button" class="opt-card" onclick="pickOpt(this)">political power</button></span>
         , / these firms
-        <span class="b-wrap"><select onchange="markBlank(this,'operated confidentially')"><option value="">▾</option><option>operated publicly</option><option>competed openly</option><option>operated confidentially</option><option>expanded rapidly</option></select></span>
+        <span class="opt-group" data-ans="operated confidentially"><button type="button" class="opt-card" onclick="pickOpt(this)">operated publicly</button><button type="button" class="opt-card" onclick="pickOpt(this)">competed openly</button><button type="button" class="opt-card" onclick="pickOpt(this)">operated confidentially</button><button type="button" class="opt-card" onclick="pickOpt(this)">expanded rapidly</button></span>
       </div>
       <div class="chunk-kr">이 지식이 재정적 성공에 결정적이었기 때문에 / 이 회사들은 비밀스럽게 운영했다</div>
     </div>
@@ -446,11 +454,11 @@ window._fbSave=async function(data){
     <div class="chunk-row">
       <div class="chunk-meta">V2 · 위험 관리 전략</div>
       <div class="chunk-en">
-        <span class="b-wrap"><select onchange="markBlank(this,'Fixing prices')"><option value="">▾</option><option>Ignoring prices</option><option>Fixing prices</option><option>Raising prices</option><option>Hiding prices</option></select></span>
+        <span class="opt-group" data-ans="Fixing prices"><button type="button" class="opt-card" onclick="pickOpt(this)">Ignoring prices</button><button type="button" class="opt-card" onclick="pickOpt(this)">Fixing prices</button><button type="button" class="opt-card" onclick="pickOpt(this)">Raising prices</button><button type="button" class="opt-card" onclick="pickOpt(this)">Hiding prices</button></span>
         through forward grain contracts /
-        <span class="b-wrap"><select onchange="markBlank(this,'allowed')"><option value="">▾</option><option>prevented</option><option>allowed</option><option>blocked</option><option>denied</option></select></span>
+        <span class="opt-group" data-ans="allowed"><button type="button" class="opt-card" onclick="pickOpt(this)">prevented</button><button type="button" class="opt-card" onclick="pickOpt(this)">allowed</button><button type="button" class="opt-card" onclick="pickOpt(this)">blocked</button><button type="button" class="opt-card" onclick="pickOpt(this)">denied</button></span>
         these firms to
-        <span class="b-wrap"><select onchange="markBlank(this,'reduce')"><option value="">▾</option><option>increase</option><option>create</option><option>reduce</option><option>ignore</option></select></span>
+        <span class="opt-group" data-ans="reduce"><button type="button" class="opt-card" onclick="pickOpt(this)">increase</button><button type="button" class="opt-card" onclick="pickOpt(this)">create</button><button type="button" class="opt-card" onclick="pickOpt(this)">reduce</button><button type="button" class="opt-card" onclick="pickOpt(this)">ignore</button></span>
         market uncertainties
       </div>
       <div class="chunk-kr">선도 곡물 계약을 통한 가격 고정이 / 이 회사들이 시장 불확실성을 줄이도록 해줬다</div>
@@ -460,11 +468,11 @@ window._fbSave=async function(data){
       <div class="chunk-meta">V3 · 다수 시장 정보</div>
       <div class="chunk-en">
         Their
-        <span class="b-wrap"><select onchange="markBlank(this,'availability of data')"><option value="">▾</option><option>lack of knowledge</option><option>availability of data</option><option>rejection of facts</option><option>ignorance of trends</option></select></span>
+        <span class="opt-group" data-ans="availability of data"><button type="button" class="opt-card" onclick="pickOpt(this)">lack of knowledge</button><button type="button" class="opt-card" onclick="pickOpt(this)">availability of data</button><button type="button" class="opt-card" onclick="pickOpt(this)">rejection of facts</button><button type="button" class="opt-card" onclick="pickOpt(this)">ignorance of trends</button></span>
         across various markets /
-        <span class="b-wrap"><select onchange="markBlank(this,'empowered')"><option value="">▾</option><option>prevented</option><option>empowered</option><option>limited</option><option>discouraged</option></select></span>
+        <span class="opt-group" data-ans="empowered"><button type="button" class="opt-card" onclick="pickOpt(this)">prevented</button><button type="button" class="opt-card" onclick="pickOpt(this)">empowered</button><button type="button" class="opt-card" onclick="pickOpt(this)">limited</button><button type="button" class="opt-card" onclick="pickOpt(this)">discouraged</button></span>
         them to
-        <span class="b-wrap"><select onchange="markBlank(this,'handle')"><option value="">▾</option><option>ignore</option><option>create</option><option>handle</option><option>avoid</option></select></span>
+        <span class="opt-group" data-ans="handle"><button type="button" class="opt-card" onclick="pickOpt(this)">ignore</button><button type="button" class="opt-card" onclick="pickOpt(this)">create</button><button type="button" class="opt-card" onclick="pickOpt(this)">handle</button><button type="button" class="opt-card" onclick="pickOpt(this)">avoid</button></span>
         trade risks with ease
       </div>
       <div class="chunk-kr">다양한 시장에 걸친 데이터 가용성이 / 그들이 무역 위험을 쉽게 감당하도록 힘을 줬다</div>
@@ -590,18 +598,34 @@ function switchStage(n) {
   document.getElementById(`s${n}`).classList.add('active');
   document.querySelectorAll('.stage-btn').forEach((b,i) => b.classList.toggle('active', i===n-1));
 }
-function markBlank(sel, correct) {
-  if (!sel.value) { sel.className=''; return; }
-  sel.className = sel.value === correct ? 'correct' : 'wrong';
+function markBlank(sel, correct) { /* legacy no-op */ }
+function pickOpt(btn) {
+  const grp = btn.closest('.opt-group'); if(!grp) return;
+  const ans = grp.dataset.ans;
+  grp.querySelectorAll('.opt-card').forEach(b => b.classList.remove('correct','wrong','picked','show-ans'));
+  const txt = btn.textContent.trim();
+  grp.dataset.picked = txt;
+  btn.classList.add(txt === ans ? 'correct' : 'wrong');
 }
 function checkStage1() {
-  const selects = document.querySelectorAll('#s1 select');
+  const groups = document.querySelectorAll('#s1 .opt-group');
   let total=0, correct=0;
-  selects.forEach(sel => { total++; if(sel.className==='correct') correct++; else if(!sel.className&&sel.value) sel.className='wrong'; });
+  groups.forEach(grp => {
+    total++;
+    const ans = grp.dataset.ans;
+    const picked = grp.dataset.picked || '';
+    grp.querySelectorAll('.opt-card').forEach(b => {
+      const t = b.textContent.trim();
+      b.classList.remove('correct','wrong','show-ans');
+      if(t === picked) b.classList.add(picked === ans ? 'correct' : 'wrong');
+      if(t === ans && picked && picked !== ans) b.classList.add('show-ans');
+    });
+    if(picked === ans) correct++;
+  });
   const banner = document.getElementById('s1-result');
   const pass = correct===total;
-  banner.className = `result-banner show ${pass?'pass':'fail'}`;
-  banner.textContent = pass ? `🎉 완벽! (${correct}/${total})` : `${correct}/${total} 정답 — 빨간 항목을 다시 확인하세요.`;
+  banner.className = 'result-banner show ' + (pass?'pass':'fail');
+  banner.textContent = pass ? '🎉 완벽! ('+correct+'/'+total+')' : correct+'/'+total+' 정답 — 빨간 항목을 다시 확인하세요.';
   if(pass) document.getElementById('nav1').classList.add('done');
 }
 const s2Picks = {};
