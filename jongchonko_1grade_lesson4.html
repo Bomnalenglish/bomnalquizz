@@ -383,6 +383,8 @@ window._log=async(d)=>{try{await addDoc(collection(db,"quiz_results"),{...d,time
 </script>
 <script>
 const NAME=sessionStorage.getItem("bn_name")||localStorage.getItem("bn_name")||"학생";
+const _lesson_t0 = Date.now();
+function _elapsedMin(){ return Math.round((Date.now()-_lesson_t0)/60000); }
 const SCHOOL=sessionStorage.getItem("bn_school")||localStorage.getItem("bn_school")||"종촌고등학교";
 
 // qi → card index 매핑
@@ -458,7 +460,11 @@ function pick(btn,qi,idx){
     fb.innerHTML=isOk?'✅ 정답!':'❌ 틀렸어요. 초록색이 정답입니다.';
     updateUI();
     if(Object.keys(cardDone).length>=TOTAL_CARDS) showResult();
-    if(window._log)window._log({name:NAME,school:SCHOOL,q:'c'+ci,result:isOk?'ok':'fail',earned:isOk?1:0,total:1});
+    if(window._log){
+      const _done = Object.keys(cardDone).length;
+      const _pct = _done>0 ? Math.round(earned/_done*100) : 0;
+      window._log({studentName:NAME,school:SCHOOL,score:_pct,correct:earned,wrong:_done-earned,total:_done,elapsedMin:_elapsedMin(),quizType:'종촌고1 Lesson4 어법',partial:!(_done>=TOTAL_CARDS),completed:_done>=TOTAL_CARDS});
+    }
   }
 }
 
@@ -472,7 +478,7 @@ function updateUI(){
 
 function showResult(){
   const pct=Math.round(earned/TOTAL_CARDS*100);
-  if(window._log)window._log({studentName:NAME,school:SCHOOL,score:pct,correct:earned,wrong:TOTAL_CARDS-earned,total:TOTAL_CARDS,quizType:'종촌고1 Lesson4 어법',completed:true});
+  if(window._log)window._log({studentName:NAME,school:SCHOOL,score:pct,correct:earned,wrong:TOTAL_CARDS-earned,total:TOTAL_CARDS,elapsedMin:_elapsedMin(),quizType:'종촌고1 Lesson4 어법',completed:true});
   document.getElementById('r-score').textContent=earned+' / '+TOTAL_CARDS+'점 ('+pct+'%)';
   document.getElementById('r-msg').textContent=
     pct>=90?'완벽합니다! 어법 완전 정복! 🌟':
