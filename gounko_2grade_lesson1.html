@@ -65,15 +65,30 @@ main{max-width:820px;margin:0 auto;padding:36px 20px 80px;}
 .btn-retry{display:inline-block;background:var(--accent);color:#fff;border:none;border-radius:8px;padding:11px 32px;font-family:'Black Han Sans',sans-serif;font-size:1rem;cursor:pointer;letter-spacing:1px;transition:opacity 0.2s;}
 .btn-retry:hover{opacity:0.85;}
 .capture-note{margin-top:14px;text-align:center;font-size:0.84rem;color:var(--soft);font-family:'Noto Serif KR',serif;}
+.mode-selector{background:linear-gradient(135deg,#f0e8d8,#e8ddc4);border:2px solid #c4a78a;border-radius:14px;padding:14px 18px;margin:14px 20px 4px;text-align:center;max-width:760px;margin-left:auto;margin-right:auto;}
+.mode-selector .mode-title{font-family:'Black Han Sans',sans-serif;font-size:.92rem;color:#5c3d1e;margin-bottom:10px;letter-spacing:.4px;}
+.mode-btn{padding:8px 16px;border-radius:10px;border:2px solid #5c3d1e;background:#fff;color:#5c3d1e;font-size:.85rem;font-weight:700;cursor:pointer;font-family:inherit;margin:0 3px;}
+.mode-btn.active{background:#5c3d1e;color:#fff;}
+.back-nav{display:inline-flex;align-items:center;gap:6px;background:white;border:1.5px solid #d0c8bc;border-radius:10px;padding:7px 14px;font-family:inherit;font-size:.85rem;color:#5c3d1e;cursor:pointer;margin:14px 20px 4px;transition:border-color .15s;text-decoration:none}
+.back-nav:hover{border-color:#5c3d1e;color:#5c3d1e}
 </style>
 
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getFirestore,collection,addDoc,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+const cfg={apiKey:"AIzaSyCxS524S8KAaF87DomPtl9sJdF-eqes404",authDomain:"bomnalvaca.firebaseapp.com",projectId:"bomnalvaca",storageBucket:"bomnalvaca.firebasestorage.app",messagingSenderId:"115868052300",appId:"1:115868052300:web:765c08867b6f1ce0987de9"};
+const app=initializeApp(cfg);const db=getFirestore(app);
+window._fbSave=async function(data){
+  try{await addDoc(collection(db,'quiz_results'),{...data,timestamp:serverTimestamp()});}
+  catch(e){console.warn('FB 저장 오류:',e);}
+};
+</script>
 <script>
 // 봄날 허브에서 전달된 학생 이름 자동 적용
 (function(){
   var saved = sessionStorage.getItem('bn_name') || localStorage.getItem('bn_name');
   if(saved){
     window._hubStudentName = saved;
-    // 이름 입력란이 있으면 자동 입력
     window.addEventListener('DOMContentLoaded', function(){
       var inputs = document.querySelectorAll('input#student-name, input#nameInput, .name-input');
       inputs.forEach(function(el){ if(!el.value) el.value = saved; });
@@ -83,11 +98,19 @@ main{max-width:820px;margin:0 auto;padding:36px 20px 80px;}
 </script>
 </head>
 <body>
+<a class="back-nav" href="index.html">← 고운고등학교 허브로 돌아가기</a>
 <header>
   <div class="header-tag">고운고 2학년 · YBM 박준언 영어I</div>
   <h1>Lesson 1 <span>어법 선택형</span></h1>
   <p class="header-sub">교과서 본문 1~41번 + 본문 외 지문 1~12번</p>
 </header>
+<div class="mode-selector">
+  <div class="mode-title">📋 시험 범위 선택</div>
+  <button class="mode-btn active" data-mode="본문" onclick="switchMode('본문')">📘 본문만</button>
+  <button class="mode-btn" data-mode="본문외" onclick="switchMode('본문외')">📙 본문외만</button>
+  <button class="mode-btn" data-mode="전체" onclick="switchMode('전체')">📚 전체</button>
+  <div style="font-size:.72rem;color:#7a7570;margin-top:8px;">기록은 선택한 범위로 따로 저장됩니다</div>
+</div>
 <div class="progress-wrap">
   <div class="progress-bar-outer"><div class="progress-bar-inner" id="progressBar"></div></div>
   <div class="progress-text" id="progressText">0 / 0</div>
@@ -276,12 +299,75 @@ const SECTIONS = [
 // ============================================================
 let totalItems = 0, answeredCount = 0, correctCount = 0;
 const allItems = [];
-SECTIONS.forEach(sec => sec.qs.forEach(q => {
+const itemSection = []; // each item's section index (0=본문, 1=본문외)
+SECTIONS.forEach((sec, si) => sec.qs.forEach(q => {
   q.items = [];
   q.parts.forEach(p => { if(Array.isArray(p)) { q.items.push({opts:p, ans:q.ans[q.items.length]}); totalItems++; } });
+  q._sec = si;
   allItems.push(q);
 }));
 const state = allItems.map(q => q.items.map(() => null));
+const _t0 = Date.now();
+let _currentMode = '본문';
+let _saved = false;
+function _inMode(secIdx){
+  if(_currentMode==='본문') return secIdx===0;
+  if(_currentMode==='본문외') return secIdx===1;
+  return true;
+}
+function _modeStats(){
+  let total=0, done=0, correct=0, wrongNos=[];
+  allItems.forEach((q, qi) => {
+    if(!_inMode(q._sec)) return;
+    q.items.forEach((it, ii) => {
+      total++;
+      const s = state[qi][ii];
+      if(s !== null) done++;
+      if(s === 'correct') correct++;
+    });
+    // record wrong question numbers
+    const qWrongs = state[qi].filter(x => x === 'wrong').length;
+    if(qWrongs > 0) wrongNos.push(q.no + '번');
+  });
+  return {total, done, correct, wrong: done - correct, wrongNos: wrongNos.join(', ')};
+}
+async function _saveProgress(){
+  if(_saved) return;
+  const st = _modeStats();
+  if(st.done === 0) return;
+  _saved = true;
+  const pct = st.done > 0 ? Math.round(st.correct/st.done*100) : 0;
+  const NAME = sessionStorage.getItem('bn_name') || localStorage.getItem('bn_name') || '익명';
+  const SCHOOL = sessionStorage.getItem('bn_school') || localStorage.getItem('bn_school') || '고운고';
+  const elapsedMin = Math.round((Date.now()-_t0)/60000);
+  if(window._fbSave) await window._fbSave({
+    submittedAt: new Date().toISOString(),
+    studentName: NAME, school: SCHOOL,
+    score: pct, correct: st.correct, wrong: st.done - st.correct, total: st.done,
+    elapsedMin: elapsedMin,
+    quizType: '고운고2 Lesson1 어법 ('+_currentMode+')',
+    completed: st.done >= st.total,
+    wrongNumbers: st.wrongNos
+  });
+}
+window.addEventListener('beforeunload', _saveProgress);
+function switchMode(newMode){
+  if(newMode === _currentMode) return;
+  if(answeredCount > 0){
+    if(!confirm('현재 모드의 풀이가 진행 중입니다. 모드를 바꾸면 처음부터 다시 풀어야 합니다. 변경하시겠습니까?')) return;
+    // Save current progress before switching
+    _saveProgress();
+    location.reload();
+    return;
+  }
+  _currentMode = newMode;
+  document.querySelectorAll('.mode-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === newMode));
+  // Re-render with new mode filter
+  document.getElementById('main').innerHTML = '';
+  totalItems = 0;
+  allItems.forEach(q => { if(_inMode(q._sec)) q.items.forEach(() => totalItems++); });
+  render();
+}
 
 // ============================================================
 // RENDER
@@ -308,7 +394,9 @@ function buildPassage(q, qIdx) {
 function render() {
   const main = document.getElementById('main');
   let qIdx = 0;
+  let sectionShown = {};
   SECTIONS.forEach((sec, si) => {
+    if(!_inMode(si)){ qIdx += sec.qs.length; return; }
     main.insertAdjacentHTML('beforeend', `<div class="section-label">${sec.label}</div>`);
     sec.qs.forEach(q => {
       const card = document.createElement('div');
@@ -345,7 +433,8 @@ function pick(qIdx, iIdx, oIdx) {
 
   updateQStatus(qIdx);
   updateProgress();
-  if(answeredCount === totalItems) showSummary();
+  const st = _modeStats();
+  if(st.done === st.total) showSummary();
 }
 
 function updateQStatus(qIdx) {
@@ -362,18 +451,21 @@ function updateQStatus(qIdx) {
 }
 
 function updateProgress() {
-  const pct = totalItems > 0 ? Math.round(answeredCount/totalItems*100) : 0;
+  const st = _modeStats();
+  const pct = st.total > 0 ? Math.round(st.done/st.total*100) : 0;
   document.getElementById('progressBar').style.width = pct+'%';
-  document.getElementById('progressText').textContent = `${answeredCount} / ${totalItems}`;
-  document.getElementById('scoreBadge').textContent = `✓ ${correctCount}`;
+  document.getElementById('progressText').textContent = `${st.done} / ${st.total}`;
+  document.getElementById('scoreBadge').textContent = `✓ ${st.correct}`;
 }
 
 function showSummary() {
-  const pct = Math.round(correctCount/totalItems*100);
+  _saveProgress();
+  const st = _modeStats();
+  const pct = st.total > 0 ? Math.round(st.correct/st.total*100) : 0;
   const msg = pct===100?'🎉 완벽합니다!':pct>=80?'👍 훌륭해요!':pct>=60?'📖 틀린 것을 다시 확인해 보세요.':'💪 다시 도전해 보세요!';
   const s = document.createElement('div'); s.className='summary show';
-  s.innerHTML=`<div class="summary-title">결과 <span>확인</span></div>
-    <div class="summary-score">${correctCount}<span style="font-size:1.5rem;color:rgba(255,255,255,0.4)"> / ${totalItems}</span></div>
+  s.innerHTML=`<div class="summary-title">결과 <span>확인</span> (${_currentMode})</div>
+    <div class="summary-score">${st.correct}<span style="font-size:1.5rem;color:rgba(255,255,255,0.4)"> / ${st.total}</span></div>
     <div class="summary-sub">정답률 ${pct}%</div>
     <div class="summary-msg">${msg}</div>
     <button class="btn-retry" onclick="location.reload()">🔄 다시 풀기</button>`;
