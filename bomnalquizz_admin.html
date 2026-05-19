@@ -66,6 +66,7 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--bg);color:#1a1a2e;mi
 table{width:100%;border-collapse:collapse;}
 th{background:var(--primary);color:white;padding:10px 12px;text-align:left;font-size:11px;font-weight:700;white-space:nowrap;}
 td{padding:9px 12px;border-bottom:1px solid #f0f2f8;font-size:12px;vertical-align:middle;}
+td.nw{white-space:nowrap;}
 tr:last-child td{border-bottom:none;}
 tr:hover td{background:#f8f9ff;}
 .sp{display:inline-block;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:800;}
@@ -465,16 +466,16 @@ function renderTable(data){
     return `<tbody><tr>
       <td><input type="checkbox" class="row-chk" data-id="${d.id}" style="cursor:pointer"></td>
       <td style="color:var(--muted)">${i+1}</td>
-      <td style="white-space:nowrap"><strong>${d.name}</strong></td>
-      <td style="white-space:nowrap">${d.school}</td>
-      <td style="text-align:center;white-space:nowrap">${slHtml}${passageBadge}${roundBadge}</td>
-      <td><span class="sp ${gc(d.score)}">${d.score}점 (${gl(d.score)})</span></td>
-      <td style="color:var(--green);font-weight:800">${d.correct||'-'}</td>
-      <td style="color:${d.wrong>0?'var(--red)':'var(--green)'};font-weight:800">${d.wrong}</td>
-      <td style="color:${d.timedOut>0?'#e65100':'var(--green)'};font-weight:800">${d.timedOut}</td>
-      <td>${d.total}</td>
-      <td>${d.elapsed?d.elapsed+'분':'-'}</td>
-      <td style="font-size:11px">${ft(d.time)}</td>
+      <td class="nw"><strong>${d.name}</strong></td>
+      <td class="nw">${d.school}</td>
+      <td class="nw" style="text-align:center">${slHtml}${passageBadge}${roundBadge}</td>
+      <td class="nw"><span class="sp ${gc(d.score)}">${d.score}점 (${gl(d.score)})</span></td>
+      <td class="nw" style="color:var(--green);font-weight:800">${d.correct||'-'}</td>
+      <td class="nw" style="color:${d.wrong>0?'var(--red)':'var(--green)'};font-weight:800">${d.wrong}</td>
+      <td class="nw" style="color:${d.timedOut>0?'#e65100':'var(--green)'};font-weight:800">${d.timedOut}</td>
+      <td class="nw">${d.total}</td>
+      <td class="nw">${d.elapsed?d.elapsed+'분':'-'}</td>
+      <td class="nw" style="font-size:11px">${ft(d.time)}</td>
       <td>${(d.wrongWords&&d.wrongWords.length>0)?`<button class="wt-btn" onclick="toggleW(this)">오답 ${d.wrongWords.length}개 ▼</button>`:d.wrongNumbers?`<button class="wt-btn" onclick="toggleW(this)">오답 ${(d.wrongNumbers.match(/번/g)||[]).length}개 ▼</button>`:'<span style="color:var(--green)">✅ 없음</span>'}</td>
       <td><button class="del-btn" onclick="deleteSingle('${d.id}')">🗑️</button></td>
     </tr>
@@ -856,7 +857,7 @@ function renderAccess(){
   document.getElementById('accBadge').textContent=data.length+'건';
   if(!data.length){document.getElementById('accArea').innerHTML='<div class="empty-msg">📭 기록 없음</div>';return;}
   const typeLabel=t=>t==='login'?'<span style="background:#e8f5e9;color:#2e7d32;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:800">✅ 로그인</span>':t==='code_fail'?'<span style="background:#ffebee;color:#c62828;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:800">❌ 코드실패</span>':t==='school_enter'?'<span style="background:#e3f2fd;color:#1565c0;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:800">🏫 학교입장</span>':t==='quiz_click'?'<span style="background:#f3e5f5;color:#6a1b9a;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:800">📝 퀴즈클릭</span>':`<span style="color:var(--muted)">${t}</span>`;
-  const rows=data.map((d,i)=>`<tr><td style="color:var(--muted)">${i+1}</td><td style="white-space:nowrap"><strong>${d.name}</strong></td><td style="white-space:nowrap">${d.school}</td><td>${typeLabel(d.type)}</td><td style="font-size:11px;color:var(--muted)">${d.targetSchool||d.quiz||d.attempt||'-'}</td><td style="font-size:11px">${d.time?d.time.toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}):'-'}</td></tr>`).join('');
+  const rows=data.map((d,i)=>`<tr><td class="nw" style="color:var(--muted)">${i+1}</td><td class="nw"><strong>${d.name}</strong></td><td class="nw">${d.school}</td><td class="nw">${typeLabel(d.type)}</td><td class="nw" style="font-size:11px;color:var(--muted)">${d.targetSchool||d.quiz||d.attempt||'-'}</td><td class="nw" style="font-size:11px">${d.time?d.time.toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}):'-'}</td></tr>`).join('');
   document.getElementById('accArea').innerHTML=`<div class="tbl-scroll"><table><thead><tr><th>#</th><th>이름</th><th>학교</th><th>유형</th><th>상세</th><th>시간</th></tr></thead><tbody>${rows}</tbody></table></div>`;
 }
 
