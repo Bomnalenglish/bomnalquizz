@@ -51,6 +51,14 @@ main{max-width:860px;margin:0 auto;padding:20px 14px 80px}
 .result-btns button{padding:10px 20px;border-radius:12px;font-family:inherit;font-size:.82rem;font-weight:700;cursor:pointer;border:2px solid #3d3d3d}
 .btn-retry{background:#3d3d3d;color:#fff}
 .btn-back{background:transparent;color:#3d3d3d}
+.mode-selector{background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:13px 16px;margin-bottom:18px}
+.mode-title{font-family:"Black Han Sans",sans-serif;font-size:.85rem;color:var(--accent);margin-bottom:9px}
+.mode-btns{display:flex;gap:8px;flex-wrap:wrap}
+.mode-btn{padding:8px 15px;border-radius:10px;border:1.5px solid #c0b4a4;background:#fff;color:#5a5a5a;font-family:inherit;font-size:.82rem;font-weight:700;cursor:pointer;transition:all .15s}
+.mode-btn:hover{background:#f0ebe3}
+.mode-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.mode-note{font-family:"Gowun Dodum",serif;font-size:.72rem;color:var(--soft);margin-top:8px}
+.q-card.hidden,.sec-header.hidden{display:none!important}
 </style>
 </head>
 <body>
@@ -63,7 +71,16 @@ main{max-width:860px;margin:0 auto;padding:20px 14px 80px}
   <div class="score-display">현재 점수: <span id="score-val">0</span> / <span id="score-max">0</span>점</div>
 </header>
 <main>
-  <a class="back-nav" href="javascript:history.back()">← 허브로 돌아가기</a>
+  <a class="back-nav" href="index.html">← 고운고등학교 허브로 돌아가기</a>
+  <div class="mode-selector">
+    <div class="mode-title">📋 시험 범위 선택</div>
+    <div class="mode-btns">
+      <button class="mode-btn active" data-mode="본문" onclick="switchMode('본문')">📘 본문만 (41문항)</button>
+      <button class="mode-btn" data-mode="본문외" onclick="switchMode('본문외')">📙 본문외만 (11문항)</button>
+      <button class="mode-btn" data-mode="전체" onclick="switchMode('전체')">📚 전체 (52문항)</button>
+    </div>
+    <div class="mode-note">기록은 선택한 범위로 따로 저장됩니다. 도중 변경하면 진행이 초기화됩니다.</div>
+  </div>
   <div class="prog-bg"><div class="prog-fill" id="prog" style="width:0%"></div></div>
   <div class="prog-text" id="prog-txt">0 / 0 완료</div>
 <div class="sec-header">📘 교과서 본문 — King Jeongjo's Royal Procession</div>
@@ -127,7 +144,7 @@ main{max-width:860px;margin:0 auto;padding:20px 14px 80px}
     <div class="result-msg" id="r-msg"></div>
     <div class="result-btns">
       <button class="btn-retry" onclick="location.reload()">🔄 다시 풀기</button>
-      <button class="btn-back" onclick="location.href='https://bomnalenglish.github.io/bomnalquizz/'">← 허브로</button>
+      <button class="btn-back" onclick="location.href='index.html'">← 고운고등학교 허브로</button>
     </div>
   </div>
 </main>
@@ -143,14 +160,75 @@ const NAME=sessionStorage.getItem("bn_name")||localStorage.getItem("bn_name")||"
 const SCHOOL=sessionStorage.getItem("bn_school")||localStorage.getItem("bn_school")||"학교";
 const QI2CARD=[0, 0, 1, 1, 1, 2, 2, 2, 3, 4, 4, 5, 6, 7, 7, 8, 8, 9, 9, 10, 11, 12, 12, 12, 13, 14, 14, 15, 15, 15, 16, 16, 16, 17, 17, 17, 18, 18, 19, 20, 20, 21, 22, 23, 24, 24, 25, 26, 26, 26, 27, 28, 28, 29, 30, 31, 32, 33, 34, 34, 34, 34, 35, 35, 36, 36, 37, 38, 39, 40, 41, 42, 43, 44, 44, 45, 46, 47, 48, 49, 50, 51, 51];
 const TOTAL_CARDS=52;
+const BONMUN_END=40; // c0~c40 = 본문 (41 cards), c41~c51 = 본문외 (11 cards)
 let cardDone={};let cardWrong={};let earned=0;
+let _currentMode='본문';
+let _t0=Date.now();
+let _saved=false;
+
+function _inMode(ci){
+  if(_currentMode==='전체') return true;
+  if(_currentMode==='본문') return ci<=BONMUN_END;
+  return ci>BONMUN_END;
+}
+function _modeCards(){const a=[];for(let i=0;i<TOTAL_CARDS;i++) if(_inMode(i)) a.push(i);return a;}
+function _modeTotal(){return _modeCards().length;}
+function _modeDone(){return _modeCards().filter(ci=>cardDone[ci]).length;}
+function _modeWrongNumbers(){
+  return _modeCards()
+    .filter(ci=>cardDone[ci] && cardWrong[ci]>0)
+    .map(ci=>{const el=document.querySelector('#c'+ci+' .q-num');return el?el.textContent.trim():(ci+1)+'번';})
+    .join(', ');
+}
+function _applyModeVisibility(){
+  for(let i=0;i<TOTAL_CARDS;i++){
+    const c=document.getElementById('c'+i);
+    if(c) c.classList.toggle('hidden', !_inMode(i));
+  }
+  const hdrs=document.querySelectorAll('.sec-header');
+  if(hdrs[0]) hdrs[0].classList.toggle('hidden', _currentMode==='본문외');
+  if(hdrs[1]) hdrs[1].classList.toggle('hidden', _currentMode==='본문');
+}
+function switchMode(mode){
+  if(mode===_currentMode) return;
+  if(Object.keys(cardDone).length>0 && !confirm('진행 내용이 초기화됩니다. 모드를 변경하시겠습니까?')) return;
+  _currentMode=mode; cardDone={}; cardWrong={}; earned=0; _saved=false; _t0=Date.now();
+  document.querySelectorAll('.q-card').forEach(c=>c.classList.remove('ok','fail'));
+  document.querySelectorAll('.sel-group').forEach(g=>{delete g.dataset.checked;});
+  document.querySelectorAll('.sel-btn').forEach(b=>{b.disabled=false;b.classList.remove('correct','wrong');});
+  document.querySelectorAll('.q-feedback').forEach(f=>{f.className='q-feedback';f.innerHTML='';});
+  const r=document.getElementById('result'); if(r) r.classList.remove('show');
+  document.querySelectorAll('.mode-btn').forEach(b=>b.classList.toggle('active', b.dataset.mode===mode));
+  _applyModeVisibility();
+  updateUI();
+}
+function _saveProgress(completed){
+  if(_saved) return;
+  _saved=true;
+  const total=_modeTotal(); const done=_modeDone();
+  if(done===0) return;
+  const correctN=earned; const wrongN=done-correctN;
+  const pct=Math.round(correctN/total*100);
+  const elapsedMin=Math.max(0,Math.round((Date.now()-_t0)/60000));
+  if(window._log) window._log({
+    studentName:NAME, school:SCHOOL,
+    score:pct, correct:correctN, wrong:wrongN, total:total,
+    elapsedMin:elapsedMin,
+    quizType:'고운고2 Lesson4 어법 ('+_currentMode+')',
+    wrongNumbers:_modeWrongNumbers(),
+    completed:!!completed
+  });
+}
+window.addEventListener('beforeunload',()=>_saveProgress(false));
+
 function pick(btn,qi,idx){
   const grp=btn.closest('.sel-group');if(grp.dataset.checked)return;
+  const ci=QI2CARD[qi];
+  if(!_inMode(ci)) return;
   grp.dataset.checked='1';
   const ans=parseInt(grp.dataset.ans);
   const btns=grp.querySelectorAll('.sel-btn');btns.forEach(b=>b.disabled=true);
   const ok=idx===ans;btn.classList.add(ok?'correct':'wrong');if(!ok)btns[ans].classList.add('correct');
-  const ci=QI2CARD[qi];
   if(!(ci in cardWrong))cardWrong[ci]=0;
   if(!ok)cardWrong[ci]++;
   const card=document.getElementById('c'+ci);
@@ -162,25 +240,27 @@ function pick(btn,qi,idx){
     const fb=document.getElementById('fb'+ci);
     fb.className='q-feedback '+(isOk?'ok':'fail')+' show';
     fb.innerHTML=isOk?'✅ 정답!':'❌ 틀렸어요. 초록색이 정답입니다.';
-    updateUI();if(Object.keys(cardDone).length>=TOTAL_CARDS)showResult();
-    if(window._log)window._log({name:NAME,school:SCHOOL,q:'c'+ci,result:isOk?'ok':'fail',earned:isOk?1:0,total:1});
+    updateUI();
+    if(_modeDone()>=_modeTotal()) showResult();
   }
 }
 function updateUI(){
-  const done=Object.keys(cardDone).length;
+  const done=_modeDone(); const total=_modeTotal();
   document.getElementById('score-val').textContent=earned;
-  document.getElementById('score-max').textContent=TOTAL_CARDS;
-  document.getElementById('prog').style.width=(done/TOTAL_CARDS*100)+'%';
-  document.getElementById('prog-txt').textContent=done+' / '+TOTAL_CARDS+' 완료';
+  document.getElementById('score-max').textContent=total;
+  document.getElementById('prog').style.width=(total?done/total*100:0)+'%';
+  document.getElementById('prog-txt').textContent=done+' / '+total+' 완료';
 }
 function showResult(){
-  const pct=Math.round(earned/TOTAL_CARDS*100);
-  if(window._log)window._log({studentName:NAME,school:SCHOOL,score:pct,correct:earned,wrong:TOTAL_CARDS-earned,total:TOTAL_CARDS,quizType:'능률(이) Lesson4 어법',completed:true});
-  document.getElementById('r-score').textContent=earned+' / '+TOTAL_CARDS+'점 ('+pct+'%)';
+  const total=_modeTotal();
+  const pct=Math.round(earned/total*100);
+  _saveProgress(true);
+  document.getElementById('r-score').textContent=earned+' / '+total+'점 ('+pct+'%)';
   document.getElementById('r-msg').textContent=pct>=90?'완벽합니다! 어법 완전 정복! 🌟':pct>=70?'잘했어요! 💪':pct>=50?'절반 이상! 📖':'기초부터 차근차근! 🔄';
   document.getElementById('result').classList.add('show');
   setTimeout(()=>window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'}),200);
 }
+_applyModeVisibility();
 updateUI();
 </script>
 </body>
