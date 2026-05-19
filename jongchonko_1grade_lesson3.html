@@ -75,7 +75,7 @@ main{max-width:860px;margin:0 auto;padding:20px 14px 80px}
   <div class="score-display">현재 점수: <span id="score-val">0</span> / <span id="score-max">0</span>점</div>
 </header>
 <main>
-  <a class="back-nav" href="javascript:history.back()">← 허브로 돌아가기</a>
+  <a class="back-nav" href="index.html">← 종촌고1 허브로 돌아가기</a>
   <div class="prog-wrap">
     <div class="prog-bg"><div class="prog-fill" id="prog" style="width:0%"></div></div>
     <div class="prog-text" id="prog-txt">0 / 0 완료</div>
@@ -484,6 +484,30 @@ window._log=async(d)=>{try{await addDoc(collection(db,"quiz_results"),{...d,time
 const NAME=sessionStorage.getItem("bn_name")||localStorage.getItem("bn_name")||"학생";
 const _lesson_t0 = Date.now();
 function _elapsedMin(){ return Math.round((Date.now()-_lesson_t0)/60000); }
+let _saved = false;
+function _wrongList(){
+  const list = [];
+  Object.keys(cardDone).forEach(ci => {
+    if(cardWrong[ci] && cardWrong[ci] > 0) list.push((parseInt(ci)+1)+'번');
+  });
+  return list.join(', ');
+}
+function _saveProgress(){
+  if(_saved) return;
+  _saved = true;
+  const _done = Object.keys(cardDone).length;
+  if(_done === 0) return; // 한 문제도 안 풀었으면 저장 안 함
+  const _pct = _done>0 ? Math.round(earned/_done*100) : 0;
+  if(window._log) window._log({
+    studentName: NAME, school: SCHOOL,
+    score: _pct, correct: earned, wrong: _done-earned, total: _done,
+    elapsedMin: _elapsedMin(),
+    quizType: '종촌고1 Lesson3 어법',
+    completed: _done >= TOTAL_CARDS,
+    wrongNumbers: _wrongList()
+  });
+}
+window.addEventListener('beforeunload', _saveProgress);
 const SCHOOL=sessionStorage.getItem("bn_school")||localStorage.getItem("bn_school")||"종촌고등학교";
 
 // 카드당 선택지 개수 (q인덱스 → 카드 인덱스 매핑은 자동)
@@ -529,11 +553,7 @@ function pick(btn,qi,idx){
     fb.innerHTML=isOk?'✅ 정답!':'❌ 틀렸어요. 초록색이 정답입니다.';
     updateUI();
     if(Object.keys(cardDone).length>=TOTAL_CARDS) showResult();
-    if(window._log){
-      const _done = Object.keys(cardDone).length;
-      const _pct = _done>0 ? Math.round(earned/_done*100) : 0;
-      window._log({studentName:NAME,school:SCHOOL,score:_pct,correct:earned,wrong:_done-earned,total:_done,elapsedMin:_elapsedMin(),quizType:'종촌고1 Lesson3 어법',partial:!(_done>=TOTAL_CARDS),completed:_done>=TOTAL_CARDS});
-    }
+    // per-card: 진행 상황만 추적 (저장은 종료 시 한 번에)
   }
 }
 
@@ -547,7 +567,7 @@ function updateUI(){
 
 function showResult(){
   const pct=Math.round(earned/TOTAL_CARDS*100);
-  if(window._log)window._log({studentName:NAME,school:SCHOOL,score:pct,correct:earned,wrong:TOTAL_CARDS-earned,total:TOTAL_CARDS,elapsedMin:_elapsedMin(),quizType:'종촌고1 Lesson3 어법',completed:true});
+  _saveProgress();
   document.getElementById('r-score').textContent=earned+' / '+TOTAL_CARDS+'점 ('+pct+'%)';
   document.getElementById('r-msg').textContent=
     pct>=90?'완벽합니다! 어법 완전 정복! 🌟':

@@ -525,6 +525,7 @@ function submitSchool() {
   sessionStorage.setItem("bn_auth", "1");
   localStorage.setItem("bn_name", studentName);
   localStorage.setItem("bn_school", studentSchool);
+  localStorage.setItem("bn_auth", "1");
   if (window._logAccess) window._logAccess({ type:"login", name:studentName, school:studentSchool });
   openHub();
 }
@@ -757,9 +758,21 @@ function doLogout() {
 }
 
 window.addEventListener("load", () => {
-  const auth = sessionStorage.getItem("bn_auth");
-  const name = sessionStorage.getItem("bn_name");
-  const school = sessionStorage.getItem("bn_school");
+  // sessionStorage 우선, 없으면 localStorage 폴백 (새 탭/뒤로가기 대응)
+  let auth = sessionStorage.getItem("bn_auth");
+  let name = sessionStorage.getItem("bn_name");
+  let school = sessionStorage.getItem("bn_school");
+  if (!auth || !name) {
+    auth = localStorage.getItem("bn_auth");
+    name = localStorage.getItem("bn_name");
+    school = localStorage.getItem("bn_school");
+    // localStorage에서 복원 시 sessionStorage에도 동기화
+    if (auth === "1" && name) {
+      sessionStorage.setItem("bn_auth", "1");
+      sessionStorage.setItem("bn_name", name);
+      if (school) sessionStorage.setItem("bn_school", school);
+    }
+  }
   if (auth === "1" && name) { studentName = name; studentSchool = school || ""; openHub(); }
 });
 </script>
