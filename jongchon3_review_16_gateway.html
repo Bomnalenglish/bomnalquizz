@@ -49,10 +49,12 @@ body { background: var(--bg); color: var(--text); font-family: 'Noto Sans KR', s
 .opt-group { display: inline-flex; flex-wrap: wrap; gap: 4px; margin: 3px 4px; vertical-align: middle; }
 .opt-card { padding: 4px 11px; border-radius: 6px; border: 1.5px solid var(--accent); background: var(--surface2); color: var(--accent); font-size: 13px; font-family: 'Noto Sans KR', sans-serif; cursor: pointer; transition: all .15s; line-height: 1.4; }
 .opt-card:hover { filter: brightness(1.08); }
-.opt-card.picked { background: rgba(0,122,204,.12); }
+.opt-card.picked { background: rgba(0,122,204,.18); border-color: #007acc; color: #007acc; font-weight: 700; }
 .opt-card.correct { background: rgba(42,157,111,.18); border-color: var(--correct); color: var(--correct); font-weight: 700; }
 .opt-card.wrong { background: rgba(217,95,95,.18); border-color: var(--wrong); color: var(--wrong); font-weight: 700; }
 .opt-card.show-ans { outline: 2px dashed var(--correct); outline-offset: 1px; }
+.opt-hint { background: rgba(255,193,7,.12); border-left: 3px solid #ffc107; padding: 11px 14px; border-radius: 6px; margin-bottom: 18px; font-size: 13.5px; color: var(--text); line-height: 1.65; }
+.opt-hint b { color: #c77700; }
 
 .full-passage-box { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px 22px; margin-bottom: 24px; }
 .fp-title { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--text-dim); letter-spacing: 1px; margin-bottom: 10px; }
@@ -159,7 +161,8 @@ window._fbSave=async function(data){
     <div class="stage-heading">📌 청크 해석 + 핵심어휘 빈칸</div>
     <div class="stage-desc">주어진 글 + (A)(B)(C) 전체 청크의 동사·준동사·핵심 어휘를 영어 보기에서 골라 채우세요.</div>
     
-    <div class="chunk-row">
+    <div class="opt-hint">💡 <b>각 빈칸은 4개 보기 중 정답 1개를 고르는 문제</b>입니다. 카드를 클릭해 답을 고르고 (선택한 카드는 파란색으로 표시됩니다), 모두 선택한 뒤 아래 <b>✓ 전체 채점</b> 버튼을 누르면 결과가 표시됩니다. 채점 후 빨간 카드는 오답, 점선 표시는 정답입니다.</div>
+        <div class="chunk-row">
       <div class="chunk-meta">주어진 글 · 주어 + 보어</div>
       <div class="chunk-en">We usually think of a clock as a <span class="opt-group" data-ans="physical"><button type="button" class="opt-card" onclick="pickOpt(this)">abstract</button><button type="button" class="opt-card" onclick="pickOpt(this)">physical</button><button type="button" class="opt-card" onclick="pickOpt(this)">digital</button><button type="button" class="opt-card" onclick="pickOpt(this)">complex</button></span> thing / But a clock is really a <span class="opt-group" data-ans="process"><button type="button" class="opt-card" onclick="pickOpt(this)">machine</button><button type="button" class="opt-card" onclick="pickOpt(this)">process</button><button type="button" class="opt-card" onclick="pickOpt(this)">device</button><button type="button" class="opt-card" onclick="pickOpt(this)">tool</button></span> <span class="opt-group" data-ans="embodied"><button type="button" class="opt-card" onclick="pickOpt(this)">ignored</button><button type="button" class="opt-card" onclick="pickOpt(this)">embodied</button><button type="button" class="opt-card" onclick="pickOpt(this)">hidden</button><button type="button" class="opt-card" onclick="pickOpt(this)">rejected</button></span> in a machine, / and the nature of that process is <span class="opt-group" data-ans="repetitive"><button type="button" class="opt-card" onclick="pickOpt(this)">random</button><button type="button" class="opt-card" onclick="pickOpt(this)">repetitive</button><button type="button" class="opt-card" onclick="pickOpt(this)">linear</button><button type="button" class="opt-card" onclick="pickOpt(this)">unique</button></span>.</div>
       <div class="chunk-kr">우리는 시계를 보통 물리적인 것으로 생각한다 / 하지만 시계는 실제로 기계 안에 구현된 과정이며 / 그 과정의 본질은 반복적이다</div>
@@ -472,14 +475,16 @@ function switchStage(n) {
 function markBlank(sel, correct) { /* legacy no-op */ }
 function pickOpt(btn) {
   const grp = btn.closest('.opt-group'); if(!grp) return;
-  const ans = grp.dataset.ans;
   grp.querySelectorAll('.opt-card').forEach(b => b.classList.remove('correct','wrong','picked','show-ans'));
   const txt = btn.textContent.trim();
   grp.dataset.picked = txt;
-  btn.classList.add(txt === ans ? 'correct' : 'wrong');
+  btn.classList.add('picked');
 }
 function checkStage1() {
-  const groups = document.querySelectorAll('#s1 .opt-group');
+  let panel = document.getElementById('s1');
+  if(!panel) panel = document.querySelector('.stage-panel[id$="-s1"]');
+  if(!panel) return;
+  const groups = panel.querySelectorAll('.opt-group');
   let total=0, correct=0;
   groups.forEach(grp => {
     total++;
@@ -493,11 +498,14 @@ function checkStage1() {
     });
     if(picked === ans) correct++;
   });
-  const banner = document.getElementById('s1-result');
-  const pass = correct===total;
-  banner.className = 'result-banner show ' + (pass?'pass':'fail');
-  banner.textContent = pass ? '🎉 완벽! ('+correct+'/'+total+')' : correct+'/'+total+' 정답 — 빨간 항목을 다시 확인하세요.';
-  if(pass) document.getElementById('nav1').classList.add('done');
+  const banner = document.getElementById(panel.id + '-result');
+  if(banner){
+    const pass = correct===total;
+    banner.className = 'result-banner show ' + (pass?'pass':'fail');
+    banner.textContent = pass ? '🎉 완벽! ('+correct+'/'+total+')' : correct+'/'+total+' 정답 — 빨간 항목을 다시 확인하세요. (점선은 정답)';
+  }
+  const nav = document.getElementById('nav1');
+  if(nav && correct===total) nav.classList.add('done');
 }
 const s2Picks = {};
 function pickS2(el, blockId, isCorrect) {

@@ -47,10 +47,12 @@ body { background: var(--bg); color: var(--text); font-family: 'Noto Sans KR', s
 .opt-group { display: inline-flex; flex-wrap: wrap; gap: 4px; margin: 3px 4px; vertical-align: middle; }
 .opt-card { padding: 4px 11px; border-radius: 6px; border: 1.5px solid var(--accent); background: var(--surface2); color: var(--accent); font-size: 13px; font-family: 'Noto Sans KR', sans-serif; cursor: pointer; transition: all .15s; line-height: 1.4; }
 .opt-card:hover { filter: brightness(1.08); }
-.opt-card.picked { background: rgba(0,122,204,.12); }
+.opt-card.picked { background: rgba(0,122,204,.18); border-color: #007acc; color: #007acc; font-weight: 700; }
 .opt-card.correct { background: rgba(42,157,111,.18); border-color: var(--correct); color: var(--correct); font-weight: 700; }
 .opt-card.wrong { background: rgba(217,95,95,.18); border-color: var(--wrong); color: var(--wrong); font-weight: 700; }
 .opt-card.show-ans { outline: 2px dashed var(--correct); outline-offset: 1px; }
+.opt-hint { background: rgba(255,193,7,.12); border-left: 3px solid #ffc107; padding: 11px 14px; border-radius: 6px; margin-bottom: 18px; font-size: 13.5px; color: var(--text); line-height: 1.65; }
+.opt-hint b { color: #c77700; }
 
 .full-passage-box { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px 22px; margin-bottom: 24px; }
 .fp-title { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--text-dim); letter-spacing: 1px; margin-bottom: 10px; }
@@ -142,7 +144,8 @@ window._fbSave=async function(data){
     <span class="section-label sec1">Section 1 · Stage 1</span>
     <div class="stage-heading">📌 청크 해석 + 핵심 어휘 빈칸</div>
     <div class="stage-desc">본문 청크의 핵심 어휘를 영어 보기에서 골라 채우세요.</div>
-    <div class="chunk-row">
+    <div class="opt-hint">💡 <b>각 빈칸은 4개 보기 중 정답 1개를 고르는 문제</b>입니다. 카드를 클릭해 답을 고르고 (선택한 카드는 파란색으로 표시됩니다), 모두 선택한 뒤 아래 <b>✓ 전체 채점</b> 버튼을 누르면 결과가 표시됩니다. 채점 후 빨간 카드는 오답, 점선 표시는 정답입니다.</div>
+        <div class="chunk-row">
       <div class="chunk-meta">❶~❷ · 아일랜드 농장 풍경</div>
       <div class="chunk-en">There are estimated to be more than 160,000 farms <span class="opt-group" data-ans="spread"><button type="button" class="opt-card" onclick="pickOpt(this)">spread</button><button type="button" class="opt-card" onclick="pickOpt(this)">concentrated</button><button type="button" class="opt-card" onclick="pickOpt(this)">gathered</button><button type="button" class="opt-card" onclick="pickOpt(this)">hidden</button></span> across Northern Ireland and the Republic of Ireland combined. On all of those farms, you will find barns, and in some of those barns, you might be fortunate enough to <span class="opt-group" data-ans="stumble across"><button type="button" class="opt-card" onclick="pickOpt(this)">reject</button><button type="button" class="opt-card" onclick="pickOpt(this)">avoid</button><button type="button" class="opt-card" onclick="pickOpt(this)">stumble across</button><button type="button" class="opt-card" onclick="pickOpt(this)">design</button></span> a <span class="opt-group" data-ans="classic"><button type="button" class="opt-card" onclick="pickOpt(this)">mass-produced</button><button type="button" class="opt-card" onclick="pickOpt(this)">modern</button><button type="button" class="opt-card" onclick="pickOpt(this)">classic</button><button type="button" class="opt-card" onclick="pickOpt(this)">futuristic</button></span> tractor like the Massey Ferguson 35.</div>
       <div class="chunk-kr">북아일랜드와 아일랜드 공화국 전역에 / 16만 개 이상의 농장이 흩어져 있다 / 모든 농장에서 헛간을 발견하고 / 일부 헛간에서 운 좋게 / Massey Ferguson 35 같은 클래식 트랙터를 우연히 만날 수도 있다</div>
@@ -351,14 +354,16 @@ function switchStage(n) {
 function markBlank(sel, correct) { /* legacy no-op */ }
 function pickOpt(btn) {
   const grp = btn.closest('.opt-group'); if(!grp) return;
-  const ans = grp.dataset.ans;
   grp.querySelectorAll('.opt-card').forEach(b => b.classList.remove('correct','wrong','picked','show-ans'));
   const txt = btn.textContent.trim();
   grp.dataset.picked = txt;
-  btn.classList.add(txt === ans ? 'correct' : 'wrong');
+  btn.classList.add('picked');
 }
 function checkStage1() {
-  const groups = document.querySelectorAll('#s1 .opt-group');
+  let panel = document.getElementById('s1');
+  if(!panel) panel = document.querySelector('.stage-panel[id$="-s1"]');
+  if(!panel) return;
+  const groups = panel.querySelectorAll('.opt-group');
   let total=0, correct=0;
   groups.forEach(grp => {
     total++;
@@ -372,11 +377,14 @@ function checkStage1() {
     });
     if(picked === ans) correct++;
   });
-  const banner = document.getElementById('s1-result');
-  const pass = correct===total;
-  banner.className = 'result-banner show ' + (pass?'pass':'fail');
-  banner.textContent = pass ? '🎉 완벽! ('+correct+'/'+total+')' : correct+'/'+total+' 정답 — 빨간 항목을 다시 확인하세요.';
-  if(pass) document.getElementById('nav1').classList.add('done');
+  const banner = document.getElementById(panel.id + '-result');
+  if(banner){
+    const pass = correct===total;
+    banner.className = 'result-banner show ' + (pass?'pass':'fail');
+    banner.textContent = pass ? '🎉 완벽! ('+correct+'/'+total+')' : correct+'/'+total+' 정답 — 빨간 항목을 다시 확인하세요. (점선은 정답)';
+  }
+  const nav = document.getElementById('nav1');
+  if(nav && correct===total) nav.classList.add('done');
 }
 const s2Picks = {};
 function pickS2(el, blockId, isCorrect) {
