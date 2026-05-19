@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>18강 1지문 | The Massey Ferguson 35 Survivor</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700&family=Space+Mono:wght@400;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root { --bg: #f5f0e8; --surface: #fdfaf4; --surface2: #ede8dc; --border: #d8d0bc;
+  --accent: #4a7cf0; --accent2: #d95f5f; --accent3: #b87a0a; --accent4: #2a9d6f;
+  --text: #2d2a22; --text-muted: #7a7060; --text-dim: #b0a890;
+  --correct: #2a9d6f; --wrong: #d95f5f; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: 'Noto Sans KR', sans-serif; min-height: 100vh; overflow-x: hidden; }
+.site-header { border-bottom: 1px solid var(--border); padding: 16px 28px; display: flex; align-items: center; gap: 14px; background: var(--surface); position: sticky; top: 0; z-index: 100; }
+.logo { font-family: 'Space Mono', monospace; font-size: 13px; color: var(--accent); letter-spacing: 2px; }
+.subtitle { font-size: 11px; color: var(--text-muted); }
+.back-link { margin-left: auto; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-family: 'Space Mono', monospace; border: 1px solid var(--border); background: transparent; color: var(--text-muted); text-decoration: none; transition: all .2s; }
+.back-link:hover { border-color: var(--accent); color: var(--accent); }
+.main-wrap { max-width: 960px; margin: 0 auto; padding: 36px 24px 80px; }
+.passage-title { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--accent); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 6px; }
+.passage-headline { font-family: 'Noto Serif KR', serif; font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+.passage-desc { font-size: 13px; color: var(--text-muted); margin-bottom: 28px; }
+.stage-nav { display: flex; gap: 4px; margin-bottom: 28px; flex-wrap: wrap; }
+.stage-btn { padding: 7px 14px; border-radius: 6px; font-size: 12px; font-family: 'Space Mono', monospace; cursor: pointer; border: 1px solid var(--border); background: transparent; color: var(--text-muted); transition: all .2s; }
+.stage-btn:hover { border-color: var(--accent); color: var(--accent); }
+.stage-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+.stage-btn .dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--accent4); margin-left: 5px; vertical-align: middle; opacity: 0; }
+.stage-btn.done .dot { opacity: 1; }
+.section-label { display: inline-block; padding: 3px 10px; border-radius: 4px; font-size: 10px; font-family: 'Space Mono', monospace; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px; }
+.section-label.sec1 { background: rgba(74,124,240,.1); color: var(--accent); border: 1px solid rgba(74,124,240,.25); }
+.section-label.sec2 { background: rgba(184,122,10,.1); color: var(--accent3); border: 1px solid rgba(184,122,10,.25); }
+.stage-panel { display: none; }
+.stage-panel.active { display: block; animation: fadeUp .3s ease; }
+@keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+.stage-heading { font-size: 17px; font-weight: 700; margin-bottom: 6px; }
+.stage-desc { font-size: 13px; color: var(--text-muted); margin-bottom: 22px; line-height: 1.7; }
+.chunk-row { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; margin-bottom: 14px; }
+.chunk-meta { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--text-dim); letter-spacing: .5px; margin-bottom: 8px; }
+.chunk-en { font-family: 'Noto Serif KR', serif; font-size: 15px; color: var(--text); line-height: 2.1; }
+.chunk-kr { font-size: 12.5px; color: var(--text-muted); line-height: 1.8; margin-top: 8px; padding-left: 10px; border-left: 2px solid var(--border); }
+.b-wrap { display: inline-block; position: relative; margin: 0 3px; vertical-align: middle; }
+.b-wrap select { appearance: none; -webkit-appearance: none; background: var(--surface2); border: 1px solid var(--accent); border-radius: 6px; color: var(--accent); font-size: 13px; padding: 3px 26px 3px 10px; cursor: pointer; font-family: 'Noto Sans KR', sans-serif; transition: all .2s; min-width: 120px; }
+.b-wrap::after { content:'▾'; position:absolute; right:8px; top:50%; transform:translateY(-50%); color:var(--accent); pointer-events:none; font-size:11px; }
+.b-wrap select.correct { border-color:var(--correct); color:var(--correct); background:rgba(42,157,111,.1); }
+.b-wrap select.wrong   { border-color:var(--wrong);   color:var(--wrong);   background:rgba(217,95,95,.1); }
+.full-passage-box { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px 22px; margin-bottom: 24px; }
+.fp-title { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--text-dim); letter-spacing: 1px; margin-bottom: 10px; }
+.fp-sentence { font-family: 'Noto Serif KR', serif; font-size: 14px; line-height: 1.9; color: var(--text); margin-bottom: 6px; }
+.s2-qblock { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; margin-bottom: 14px; transition: border-color .2s; }
+.s2-qblock.graded-correct { border-color: var(--correct); }
+.s2-qblock.graded-wrong   { border-color: var(--wrong); }
+.s2-qnum { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--accent3); letter-spacing: 1px; margin-bottom: 6px; }
+.s2-question { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 14px; line-height: 1.7; }
+.s2-opts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.s2-opt { padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface2); font-size: 13px; cursor: pointer; transition: all .2s; color: var(--text); line-height: 1.5; }
+.s2-opt:hover { border-color: var(--accent); color: var(--accent); }
+.s2-opt.selected { border-color: var(--accent); background: rgba(74,124,240,.1); color: var(--accent); }
+.s2-opt.reveal-correct { border-color: var(--correct); background: rgba(42,157,111,.1); color: var(--correct); }
+.s2-opt.reveal-wrong   { border-color: var(--wrong);   background: rgba(217,95,95,.1); color: var(--wrong); }
+.check-btn { display: inline-flex; align-items: center; gap: 8px; padding: 11px 26px; border-radius: 8px; font-size: 13px; font-family: 'Space Mono', monospace; cursor: pointer; border: none; background: var(--accent); color: #fff; font-weight: 700; transition: all .2s; margin-top: 14px; letter-spacing: 1px; }
+.check-btn:hover { background: #6e9af5; transform: translateY(-1px); }
+.result-banner { display: none; margin-top: 14px; padding: 12px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; align-items: center; gap: 8px; }
+.result-banner.show { display: flex; }
+.result-banner.pass { background: rgba(42,157,111,.1); border: 1px solid var(--correct); color: var(--correct); }
+.result-banner.fail { background: rgba(217,95,95,.1); border: 1px solid var(--wrong); color: var(--wrong); }
+.placeholder-box { background: rgba(184,122,10,.06); border: 2px dashed rgba(184,122,10,.4); border-radius: 12px; padding: 32px 28px; text-align: center; }
+.placeholder-icon { font-size: 36px; margin-bottom: 12px; }
+.placeholder-title { font-size: 17px; font-weight: 700; color: var(--accent3); margin-bottom: 8px; }
+.placeholder-desc { font-size: 13px; color: var(--text-muted); line-height: 1.7; }
+@media (max-width: 600px) { .s2-opts { grid-template-columns: 1fr; } .stage-btn { padding: 5px 9px; font-size: 11px; } }
+</style>
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getFirestore,collection,addDoc,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+const cfg={apiKey:"AIzaSyCxS524S8KAaF87DomPtl9sJdF-eqes404",authDomain:"bomnalvaca.firebaseapp.com",projectId:"bomnalvaca",storageBucket:"bomnalvaca.firebasestorage.app",messagingSenderId:"115868052300",appId:"1:115868052300:web:765c08867b6f1ce0987de9"};
+const app=initializeApp(cfg);const db=getFirestore(app);
+window._fbSave=async function(data){
+  try{await addDoc(collection(db,'quiz_results'),{...data,timestamp:serverTimestamp()});}
+  catch(e){console.warn('FB 저장 오류:',e);}
+};
+</script>
+</head>
+<body>
+<header class="site-header">
+  <div><div class="logo">Reading Lab</div><div class="subtitle">2027 EBS 수능특강 영어 · 18강 1지문</div></div>
+  <a class="back-link" href="jongchon3_review_18.html">← 목록으로</a>
+</header>
+<div class="main-wrap">
+  <div class="passage-title">Passage 01</div>
+  <div class="passage-headline">The Massey Ferguson 35 Survivor</div>
+  <div class="passage-desc">Massey Ferguson 35 트랙터 — 생존자 편향</div>
+  <div class="stage-nav">
+    <button class="stage-btn active" onclick="switchStage(1)" id="nav1">STAGE 1<span class="dot">●</span></button>
+    <button class="stage-btn" onclick="switchStage(2)" id="nav2">STAGE 2<span class="dot">●</span></button>
+    <button class="stage-btn" onclick="switchStage(3)" id="nav3">STAGE 3<span class="dot">●</span></button>
+    <button class="stage-btn" onclick="switchStage(4)" id="nav4">STAGE 4<span class="dot">●</span></button>
+    <button class="stage-btn" onclick="switchStage(5)" id="nav5">§2 변형<span class="dot">●</span></button>
+    <button class="stage-btn" onclick="switchStage(6)" id="nav6">✍ 서술형</button>
+  </div>
+  <div class="stage-panel active" id="s1">
+    <span class="section-label sec1">Section 1 · Stage 1</span>
+    <div class="stage-heading">📌 청크 해석 + 핵심 어휘 빈칸</div>
+    <div class="stage-desc">본문 청크의 핵심 어휘를 영어 보기에서 골라 채우세요.</div>
+    <div class="chunk-row">
+      <div class="chunk-meta">❶~❷ · 아일랜드 농장의 풍경</div>
+      <div class="chunk-en">There are estimated to be more than 160,000 farms <span class="b-wrap"><select onchange="markBlank(this,&quot;spread&quot;)"><option value="">▾</option><option>gathered</option><option>spread</option><option>hidden</option><option>concentrated</option></select></span> across Northern Ireland and the Republic of Ireland combined. On all of those farms, you will find barns, and in some of those barns, you might be fortunate enough to <span class="b-wrap"><select onchange="markBlank(this,&quot;stumble across&quot;)"><option value="">▾</option><option>reject</option><option>stumble across</option><option>avoid</option><option>design</option></select></span> a <span class="b-wrap"><select onchange="markBlank(this,&quot;classic&quot;)"><option value="">▾</option><option>classic</option><option>futuristic</option><option>modern</option><option>mass-produced</option></select></span> tractor like the Massey Ferguson 35.</div>
+      <div class="chunk-kr">북아일랜드와 아일랜드 공화국 전역에 / 16만 개 이상의 농장이 흩어져 있다 / 모든 농장에서 헛간을 발견하고 / 일부 헛간에서 운 좋게 / Massey Ferguson 35 같은 클래식 트랙터를 우연히 만날 수도 있다</div>
+    </div>
+    <div class="chunk-row">
+      <div class="chunk-meta">❸~❹ · 생산 중단과 농부의 향수</div>
+      <div class="chunk-en">Production of the Massey Ferguson 35 in the UK and the USA <span class="b-wrap"><select onchange="markBlank(this,&quot;stopped&quot;)"><option value="">▾</option><option>stopped</option><option>started</option><option>continued</option><option>expanded</option></select></span> in 1964. If you were to strike up a conversation with a farmer who still owns one, she might well give the chassis of her Massey Ferguson 35 an <span class="b-wrap"><select onchange="markBlank(this,&quot;affectionate&quot;)"><option value="">▾</option><option>affectionate</option><option>cold</option><option>hostile</option><option>angry</option></select></span> tap and <span class="b-wrap"><select onchange="markBlank(this,&quot;nostalgically&quot;)"><option value="">▾</option><option>nostalgically</option><option>indifferently</option><option>practically</option><option>hatefully</option></select></span> remark, "They don't make 'em like that anymore."</div>
+      <div class="chunk-kr">영국과 미국에서의 Massey Ferguson 35 생산은 1964년에 중단됐다 / 아직 그것을 소유한 농부와 대화를 나누면 / 그녀는 트랙터의 새시를 애정 어린 손길로 두드리며 / 향수에 젖어 말할 것이다 / "요즘은 이렇게 만들지 않아"</div>
+    </div>
+    <div class="chunk-row">
+      <div class="chunk-meta">❺ · 생존이 곧 품질의 증거?</div>
+      <div class="chunk-en">The fact that the tractor has <span class="b-wrap"><select onchange="markBlank(this,&quot;survived&quot;)"><option value="">▾</option><option>survived</option><option>failed</option><option>broken</option><option>disappeared</option></select></span> at least fifty-eight years seems to provide <span class="b-wrap"><select onchange="markBlank(this,&quot;evidence&quot;)"><option value="">▾</option><option>doubt</option><option>denial</option><option>evidence</option><option>rejection</option></select></span> of its <span class="b-wrap"><select onchange="markBlank(this,&quot;superior&quot;)"><option value="">▾</option><option>average</option><option>poor</option><option>superior</option><option>inferior</option></select></span> build quality.</div>
+      <div class="chunk-kr">트랙터가 적어도 58년을 생존했다는 사실은 / 우수한 제조 품질의 증거를 제공하는 것처럼 보인다</div>
+    </div>
+    <div class="chunk-row">
+      <div class="chunk-meta">❻ · 잠깐 — 폐차된 388,381대</div>
+      <div class="chunk-en">But wait — how long did the other 388,381 Massey Ferguson 35 tractors <span class="b-wrap"><select onchange="markBlank(this,&quot;produced&quot;)"><option value="">▾</option><option>destroyed</option><option>produced</option><option>forgotten</option><option>rejected</option></select></span> between 1956 and 1964 <span class="b-wrap"><select onchange="markBlank(this,&quot;last&quot;)"><option value="">▾</option><option>break</option><option>collapse</option><option>fail</option><option>last</option></select></span> before they went for <span class="b-wrap"><select onchange="markBlank(this,&quot;scrap&quot;)"><option value="">▾</option><option>storage</option><option>museum</option><option>scrap</option><option>showroom</option></select></span>?</div>
+      <div class="chunk-kr">하지만 잠깐 — 1956년부터 1964년까지 생산된 / 나머지 388,381대의 Massey Ferguson 35 트랙터들은 / 폐기되기 전까지 얼마나 지속됐을까?</div>
+    </div>
+    <div class="chunk-row">
+      <div class="chunk-meta">❼ · 진짜 원인 — 애착과 관리</div>
+      <div class="chunk-en">Rather than <span class="b-wrap"><select onchange="markBlank(this,&quot;build quality&quot;)"><option value="">▾</option><option>build quality</option><option>poor design</option><option>low cost</option><option>mass production</option></select></span>, it might well be the <span class="b-wrap"><select onchange="markBlank(this,&quot;fondness&quot;)"><option value="">▾</option><option>rejection</option><option>indifference</option><option>fondness</option><option>hatred</option></select></span> that people in Ireland have for the little red tractor / that has led farmers there to <span class="b-wrap"><select onchange="markBlank(this,&quot;hold on to&quot;)"><option value="">▾</option><option>hold on to</option><option>discard</option><option>abandon</option><option>sell</option></select></span> their Massey Fergusons and take care of them as well as they have.</div>
+      <div class="chunk-kr">제조 품질보다는 / 아일랜드 사람들이 그 작은 빨간 트랙터에 가진 애정이 / 그곳 농부들이 Massey Ferguson을 계속 간직하고 / 잘 관리하게 만든 것일 수도 있다</div>
+    </div>
+    <button class="check-btn" onclick="checkStage1()">✓ 전체 채점</button>
+    <div class="result-banner" id="s1-result"></div>
+  </div>
+  <div class="stage-panel" id="s2">
+    <span class="section-label sec1">Section 1 · Stage 2</span>
+    <div class="stage-heading">📋 내용 파악 4지선다</div>
+    <div class="stage-desc">본문을 읽고 각 청크의 핵심 내용을 파악하세요.</div>
+    <div class="full-passage-box">
+      <div class="fp-title">FULL PASSAGE</div>
+      <div class="fp-sentence">There are estimated to be more than 160,000 farms spread across Northern Ireland and the Republic of Ireland combined.</div>
+<div class="fp-sentence">On all of those farms, you will find barns, and in some of those barns, you might be fortunate enough to stumble across a classic tractor like the Massey Ferguson 35.</div>
+<div class="fp-sentence">Production of the Massey Ferguson 35 in the UK and the USA stopped in 1964.</div>
+<div class="fp-sentence">If you were to strike up a conversation with a farmer who still owns one, she might well give the chassis of her Massey Ferguson 35 an affectionate tap and nostalgically remark, &#x27;They don&#x27;t make &#x27;em like that anymore.&#x27;</div>
+<div class="fp-sentence">The fact that the tractor has survived at least fifty-eight years seems to provide evidence of its superior build quality.</div>
+<div class="fp-sentence">But wait — how long did the other 388,381 Massey Ferguson 35 tractors produced between 1956 and 1964 last before they went for scrap?</div>
+<div class="fp-sentence">Rather than build quality, it might well be the fondness that people in Ireland have for the little red tractor that has led farmers there to hold on to their Massey Fergusons and take care of them as well as they have.</div>
+    </div>
+    <div class="s2-qblock" id="q1">
+      <div class="s2-qnum">Q1 · ❶~❷</div>
+      <div class="s2-question">글의 도입 상황은?</div>
+      <div class="s2-opts">
+        <div class="s2-opt" onclick="pickS2(this,&quot;q1&quot;,false)">① 아일랜드 모든 농장은 신제품 트랙터만 사용한다</div>
+        <div class="s2-opt" onclick="pickS2(this,&quot;q1&quot;,true)">② 아일랜드 농장에서는 Massey Ferguson 35 같은 클래식 트랙터를 가끔 발견할 수 있다</div>
+        <div class="s2-opt" onclick="pickS2(this,&quot;q1&quot;,false)">③ 트랙터는 박물관에서만 볼 수 있다</div>
+        <div class="s2-opt" onclick="pickS2(this,&quot;q1&quot;,false)">④ 농장에 헛간이 없다</div>
+      </div>
+    </div>
+    <div class="s2-qblock" id="q2">
+      <div class="s2-qnum">Q2 · ❸~❹</div>
+      <div class="s2-question">농부가 Massey Ferguson 35에 대해 가지는 태도는?</div>
+      <div class="s2-opts">
+        <div class="s2-opt" onclick="pickS2(this,&quot;q2&quot;,false)">① 빨리 폐기하고 싶어한다</div>
+        <div class="s2-opt" onclick="pickS2(this,&quot;q2&quot;,false)">② 무관심하다</div>
+        <div class="s2-opt" onclick="pickS2(this,&quot;q2&quot;,true)">③ 애정·향수를 가지고 &quot;요즘은 이렇게 만들지 않아&quot;라고 말한다</div>
+        <div class="s2-opt" onclick="pickS2(this,&quot;q2&quot;,false)">④ 처음 보는 트랙터이다</div>
+      </div>
+    </div>
+    <div class="s2-qblock" id="q3">
+      <div class="s2-qnum">Q3 · ❺~❻</div>
+      <div class="s2-question">필자가 제기하는 핵심 질문은?</div>
+      <div class="s2-opts">
+        <div class="s2-opt" onclick="pickS2(this,&quot;q3&quot;,true)">① 트랙터가 58년 생존한 것은 우수한 품질의 증거인가?</div>
+        <div class="s2-opt" onclick="pickS2(this,&quot;q3&quot;,false)">② Massey Ferguson은 어디서 판매하는가?</div>
+        <div class="s2-opt" onclick="pickS2(this,&quot;q3&quot;,false)">③ 새 트랙터의 가격은 얼마인가?</div>
+        <div class="s2-opt" onclick="pickS2(this,&quot;q3&quot;,false)">④ 어떤 색상이 가장 좋은가?</div>
+      </div>
+    </div>
+    <div class="s2-qblock" id="q4">
+      <div class="s2-qnum">Q4 · ❼</div>
+      <div class="s2-question">필자가 제시하는 진짜 이유는?</div>
+      <div class="s2-opts">
+        <div class="s2-opt" onclick="pickS2(this,&quot;q4&quot;,false)">① 우수한 제조 품질이 유일한 이유다</div>
+        <div class="s2-opt" onclick="pickS2(this,&quot;q4&quot;,true)">② 아일랜드 사람들의 애정·관리가 생존의 진짜 이유일 수 있다</div>
+        <div class="s2-opt" onclick="pickS2(this,&quot;q4&quot;,false)">③ 트랙터는 자동으로 영원히 작동한다</div>
+        <div class="s2-opt" onclick="pickS2(this,&quot;q4&quot;,false)">④ 정부가 의무적으로 보존시킨다</div>
+      </div>
+    </div>
+    <button class="check-btn" onclick="gradeAllS2(4,'s2-result','nav2')">✓ 채점하기</button>
+    <div class="result-banner" id="s2-result"></div>
+  </div>
+  <div class="stage-panel" id="s3">
+    <span class="section-label sec1">Section 1 · Stage 3</span>
+    <div class="stage-heading">🧩 요약 문장 배치</div>
+    <div class="stage-desc">서론·본론·예시·결론 자리에 알맞은 요약 문장을 배치하는 단계입니다.</div>
+    <div class="placeholder-box">
+      <div class="placeholder-icon">🚧</div>
+      <div class="placeholder-title">콘텐츠 입력 필요</div>
+      <div class="placeholder-desc">이 단계는 추후 콘텐츠가 추가될 예정입니다.<br>현재는 본문을 읽고 스스로 정리해보세요.</div>
+    </div>
+  </div>
+  <div class="stage-panel" id="s4">
+    <span class="section-label sec1">Section 1 · Stage 4</span>
+    <div class="stage-heading">🏷 글의 주제 / 제목</div>
+    <div class="stage-desc">본문의 핵심 주제와 제목을 4지선다로 고르는 단계입니다.</div>
+    <div class="placeholder-box">
+      <div class="placeholder-icon">🚧</div>
+      <div class="placeholder-title">콘텐츠 입력 필요</div>
+      <div class="placeholder-desc">이 단계는 추후 콘텐츠가 추가될 예정입니다.<br>현재는 본문을 읽고 스스로 정리해보세요.</div>
+    </div>
+  </div>
+  <div class="stage-panel" id="s5">
+    <span class="section-label sec2">Section 2 · Stage 5</span>
+    <div class="stage-heading">🔁 §2 변형 — 유의어 복습</div>
+    <div class="stage-desc">유의어로 바꾼 변형 지문을 다시 한 번 풀어봅니다.</div>
+    <div class="placeholder-box">
+      <div class="placeholder-icon">🚧</div>
+      <div class="placeholder-title">콘텐츠 입력 필요</div>
+      <div class="placeholder-desc">이 단계는 추후 콘텐츠가 추가될 예정입니다.<br>현재는 본문을 읽고 스스로 정리해보세요.</div>
+    </div>
+  </div>
+  <div class="stage-panel" id="s6">
+    <span class="section-label sec2">Section 2 · Stage 6</span>
+    <div class="stage-heading">✍ 핵심 문장 단어 배열</div>
+    <div class="stage-desc">한국어 해석을 보고 단어 조각을 올바른 순서로 배열합니다.</div>
+    <div class="placeholder-box">
+      <div class="placeholder-icon">🚧</div>
+      <div class="placeholder-title">콘텐츠 입력 필요</div>
+      <div class="placeholder-desc">이 단계는 추후 콘텐츠가 추가될 예정입니다.<br>현재는 본문을 읽고 스스로 정리해보세요.</div>
+    </div>
+  </div>
+</div>
+<script>
+function switchStage(n) {
+  document.querySelectorAll('.stage-panel').forEach(p => p.classList.remove('active'));
+  const target = document.getElementById('s'+String(n));
+  if(target) target.classList.add('active');
+  document.querySelectorAll('.stage-btn').forEach((b,i) => b.classList.toggle('active', i===n-1));
+}
+function markBlank(sel, correct) {
+  if (!sel.value) { sel.className=''; return; }
+  sel.className = sel.value === correct ? 'correct' : 'wrong';
+}
+function checkStage1() {
+  const selects = document.querySelectorAll('#s1 select');
+  let total=0, correct=0;
+  selects.forEach(sel => { total++; if(sel.className==='correct') correct++; else if(!sel.className && sel.value) sel.className='wrong'; });
+  const banner = document.getElementById('s1-result');
+  const pass = correct===total;
+  banner.className = 'result-banner show ' + (pass?'pass':'fail');
+  banner.textContent = pass ? `🎉 완벽! (${correct}/${total})` : `${correct}/${total} 정답 — 빨간 항목을 다시 확인하세요.`;
+  if(pass) document.getElementById('nav1').classList.add('done');
+}
+const s2Picks = {};
+function pickS2(el, blockId, isCorrect) {
+  if(s2Picks[blockId] && s2Picks[blockId].locked) return;
+  document.querySelectorAll('#'+blockId+' .s2-opt').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  s2Picks[blockId] = { el, isCorrect };
+}
+function gradeAllS2(count, resultId, navId) {
+  let total=0, correct=0;
+  for(let i=1; i<=count; i++) {
+    const id='q'+i; const block=document.getElementById(id); const pick=s2Picks[id]; total++;
+    const opts=block.querySelectorAll('.s2-opt');
+    if(pick && pick.el) {
+      pick.el.classList.remove('selected');
+      pick.el.classList.add(pick.isCorrect?'reveal-correct':'reveal-wrong');
+      if(pick.isCorrect) correct++;
+      block.classList.add(pick.isCorrect?'graded-correct':'graded-wrong');
+    }
+    // reveal correct option
+    opts.forEach(o => {
+      const onclickAttr = o.getAttribute('onclick')||'';
+      if(onclickAttr.includes(',true)')) o.classList.add('reveal-correct');
+    });
+    if(s2Picks[id]) s2Picks[id].locked=true;
+  }
+  const banner=document.getElementById(resultId);
+  const pass=correct===total;
+  banner.className='result-banner show '+(pass?'pass':'fail');
+  banner.textContent=pass?`🎉 전부 정답! (${correct}/${total})`:`${correct}/${total} 정답`;
+  if(pass) document.getElementById(navId).classList.add('done');
+}
+</script>
+<script>
+// === Auto-save to Firebase (v2) ===
+(function(){
+  const KANG_NUM = '18';
+  const SECTION = '1지문';
+  function toast(msg, ok){
+    let t = document.getElementById('_save_toast');
+    if(!t){
+      t = document.createElement('div');
+      t.id = '_save_toast';
+      t.style.cssText = 'position:fixed;bottom:24px;right:24px;padding:12px 18px;border-radius:8px;font-size:13px;font-weight:700;font-family:sans-serif;z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,.25);transition:opacity .3s;';
+      document.body.appendChild(t);
+    }
+    t.style.background = ok ? '#2a9d6f' : '#d95f5f';
+    t.style.color = '#fff';
+    t.textContent = msg;
+    t.style.opacity = '1';
+    setTimeout(()=>{ t.style.opacity = '0'; }, 3500);
+  }
+  function getUserInfo(){
+    let name = sessionStorage.getItem('bn_name')||localStorage.getItem('bn_name')||localStorage.getItem('bomnal_name')||'익명';
+    let school = sessionStorage.getItem('bn_school')||localStorage.getItem('bn_school')||localStorage.getItem('bomnal_school')||'종촌고';
+    return {name, school};
+  }
+  async function waitForFbSave(maxMs){
+    const start = Date.now();
+    while(!window._fbSave && (Date.now()-start) < maxMs){
+      await new Promise(r=>setTimeout(r, 100));
+    }
+    return !!window._fbSave;
+  }
+  async function saveStage(stageName, scoreCorrect, scoreTotal){
+    const info = getUserInfo();
+    const pct = scoreTotal>0 ? Math.round(scoreCorrect/scoreTotal*100) : 0;
+    const ready = await waitForFbSave(5000);
+    if(!ready){ toast('⚠ 저장 실패: Firebase 로드 중', false); return; }
+    try{
+      await window._fbSave({
+        submittedAt: new Date().toISOString(),
+        studentName: info.name, school: info.school,
+        score: pct, correct: scoreCorrect,
+        wrong: scoreTotal - scoreCorrect, total: scoreTotal,
+        elapsedMin: 0,
+        quizType: '종촌고3_RL_'+KANG_NUM+'강_'+SECTION+'_'+stageName
+      });
+      toast('✓ '+stageName+' 저장됨 ('+pct+'점)', true);
+    } catch(e){ toast('✗ 저장 오류', false); }
+  }
+  window._saveStage = saveStage;
+  function wrap(){
+    if(typeof window.checkStage1 === 'function' && !window.checkStage1._wrapped){
+      const orig = window.checkStage1;
+      window.checkStage1 = function(){
+        orig.apply(this, arguments);
+        const selects = document.querySelectorAll('#s1 select');
+        let total=0, correct=0;
+        selects.forEach(sel=>{total++; if(sel.className==='correct') correct++;});
+        saveStage('Stage1', correct, total);
+      };
+      window.checkStage1._wrapped = true;
+    }
+    if(typeof window.gradeAllS2 === 'function' && !window.gradeAllS2._wrapped){
+      const orig = window.gradeAllS2;
+      window.gradeAllS2 = function(count, resultId, navId){
+        orig.apply(this, arguments);
+        let total=count, correct=0;
+        for(let i=1;i<=count;i++){
+          const block=document.getElementById('q'+i);
+          if(block && block.classList.contains('graded-correct')) correct++;
+        }
+        saveStage('Stage2', correct, total);
+      };
+      window.gradeAllS2._wrapped = true;
+    }
+  }
+  wrap();
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', wrap);
+  } else {
+    setTimeout(wrap, 100);
+  }
+})();
+</script>
+</body>
+</html>

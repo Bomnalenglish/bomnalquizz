@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>18강 4지문 | The Invisible Present</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700&family=Space+Mono:wght@400;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root { --bg: #f5f0e8; --surface: #fdfaf4; --surface2: #ede8dc; --border: #d8d0bc;
+  --accent: #4a7cf0; --accent2: #d95f5f; --accent3: #b87a0a; --accent4: #2a9d6f;
+  --text: #2d2a22; --text-muted: #7a7060; --text-dim: #b0a890;
+  --correct: #2a9d6f; --wrong: #d95f5f; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: 'Noto Sans KR', sans-serif; min-height: 100vh; overflow-x: hidden; }
+.site-header { border-bottom: 1px solid var(--border); padding: 16px 28px; display: flex; align-items: center; gap: 14px; background: var(--surface); position: sticky; top: 0; z-index: 100; }
+.logo { font-family: 'Space Mono', monospace; font-size: 13px; color: var(--accent); letter-spacing: 2px; }
+.subtitle { font-size: 11px; color: var(--text-muted); }
+.back-link { margin-left: auto; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-family: 'Space Mono', monospace; border: 1px solid var(--border); background: transparent; color: var(--text-muted); text-decoration: none; transition: all .2s; }
+.back-link:hover { border-color: var(--accent); color: var(--accent); }
+.main-wrap { max-width: 960px; margin: 0 auto; padding: 36px 24px 80px; }
+.passage-title { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--accent); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 6px; }
+.passage-headline { font-family: 'Noto Serif KR', serif; font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+.passage-desc { font-size: 13px; color: var(--text-muted); margin-bottom: 28px; }
+.stage-nav { display: flex; gap: 4px; margin-bottom: 28px; flex-wrap: wrap; }
+.stage-btn { padding: 7px 14px; border-radius: 6px; font-size: 12px; font-family: 'Space Mono', monospace; cursor: pointer; border: 1px solid var(--border); background: transparent; color: var(--text-muted); transition: all .2s; }
+.stage-btn:hover { border-color: var(--accent); color: var(--accent); }
+.stage-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+.stage-btn .dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--accent4); margin-left: 5px; vertical-align: middle; opacity: 0; }
+.stage-btn.done .dot { opacity: 1; }
+.section-label { display: inline-block; padding: 3px 10px; border-radius: 4px; font-size: 10px; font-family: 'Space Mono', monospace; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px; }
+.section-label.sec1 { background: rgba(74,124,240,.1); color: var(--accent); border: 1px solid rgba(74,124,240,.25); }
+.section-label.sec2 { background: rgba(184,122,10,.1); color: var(--accent3); border: 1px solid rgba(184,122,10,.25); }
+.stage-panel { display: none; }
+.stage-panel.active { display: block; animation: fadeUp .3s ease; }
+@keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+.stage-heading { font-size: 17px; font-weight: 700; margin-bottom: 6px; }
+.stage-desc { font-size: 13px; color: var(--text-muted); margin-bottom: 22px; line-height: 1.7; }
+.chunk-row { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; margin-bottom: 14px; }
+.chunk-meta { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--text-dim); letter-spacing: .5px; margin-bottom: 8px; }
+.chunk-en { font-family: 'Noto Serif KR', serif; font-size: 15px; color: var(--text); line-height: 2.1; }
+.chunk-kr { font-size: 12.5px; color: var(--text-muted); line-height: 1.8; margin-top: 8px; padding-left: 10px; border-left: 2px solid var(--border); }
+.b-wrap { display: inline-block; position: relative; margin: 0 3px; vertical-align: middle; }
+.b-wrap select { appearance: none; -webkit-appearance: none; background: var(--surface2); border: 1px solid var(--accent); border-radius: 6px; color: var(--accent); font-size: 13px; padding: 3px 26px 3px 10px; cursor: pointer; font-family: 'Noto Sans KR', sans-serif; transition: all .2s; min-width: 120px; }
+.b-wrap::after { content:'▾'; position:absolute; right:8px; top:50%; transform:translateY(-50%); color:var(--accent); pointer-events:none; font-size:11px; }
+.b-wrap select.correct { border-color:var(--correct); color:var(--correct); background:rgba(42,157,111,.1); }
+.b-wrap select.wrong   { border-color:var(--wrong);   color:var(--wrong);   background:rgba(217,95,95,.1); }
+.full-passage-box { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px 22px; margin-bottom: 24px; }
+.fp-title { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--text-dim); letter-spacing: 1px; margin-bottom: 10px; }
+.fp-sentence { font-family: 'Noto Serif KR', serif; font-size: 14px; line-height: 1.9; color: var(--text); margin-bottom: 6px; }
+.s2-qblock { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; margin-bottom: 14px; transition: border-color .2s; }
+.s2-qblock.graded-correct { border-color: var(--correct); }
+.s2-qblock.graded-wrong   { border-color: var(--wrong); }
+.s2-qnum { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--accent3); letter-spacing: 1px; margin-bottom: 6px; }
+.s2-question { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 14px; line-height: 1.7; }
+.s2-opts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.s2-opt { padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface2); font-size: 13px; cursor: pointer; transition: all .2s; color: var(--text); line-height: 1.5; }
+.s2-opt:hover { border-color: var(--accent); color: var(--accent); }
+.s2-opt.selected { border-color: var(--accent); background: rgba(74,124,240,.1); color: var(--accent); }
+.s2-opt.reveal-correct { border-color: var(--correct); background: rgba(42,157,111,.1); color: var(--correct); }
+.s2-opt.reveal-wrong   { border-color: var(--wrong);   background: rgba(217,95,95,.1); color: var(--wrong); }
+.check-btn { display: inline-flex; align-items: center; gap: 8px; padding: 11px 26px; border-radius: 8px; font-size: 13px; font-family: 'Space Mono', monospace; cursor: pointer; border: none; background: var(--accent); color: #fff; font-weight: 700; transition: all .2s; margin-top: 14px; letter-spacing: 1px; }
+.check-btn:hover { background: #6e9af5; transform: translateY(-1px); }
+.result-banner { display: none; margin-top: 14px; padding: 12px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; align-items: center; gap: 8px; }
+.result-banner.show { display: flex; }
+.result-banner.pass { background: rgba(42,157,111,.1); border: 1px solid var(--correct); color: var(--correct); }
+.result-banner.fail { background: rgba(217,95,95,.1); border: 1px solid var(--wrong); color: var(--wrong); }
+.placeholder-box { background: rgba(184,122,10,.06); border: 2px dashed rgba(184,122,10,.4); border-radius: 12px; padding: 32px 28px; text-align: center; }
+.placeholder-icon { font-size: 36px; margin-bottom: 12px; }
+.placeholder-title { font-size: 17px; font-weight: 700; color: var(--accent3); margin-bottom: 8px; }
+.placeholder-desc { font-size: 13px; color: var(--text-muted); line-height: 1.7; }
+@media (max-width: 600px) { .s2-opts { grid-template-columns: 1fr; } .stage-btn { padding: 5px 9px; font-size: 11px; } }
+</style>
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getFirestore,collection,addDoc,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+const cfg={apiKey:"AIzaSyCxS524S8KAaF87DomPtl9sJdF-eqes404",authDomain:"bomnalvaca.firebaseapp.com",projectId:"bomnalvaca",storageBucket:"bomnalvaca.firebasestorage.app",messagingSenderId:"115868052300",appId:"1:115868052300:web:765c08867b6f1ce0987de9"};
+const app=initializeApp(cfg);const db=getFirestore(app);
+window._fbSave=async function(data){
+  try{await addDoc(collection(db,'quiz_results'),{...data,timestamp:serverTimestamp()});}
+  catch(e){console.warn('FB 저장 오류:',e);}
+};
+</script>
+</head>
+<body>
+<header class="site-header">
+  <div><div class="logo">Reading Lab</div><div class="subtitle">2027 EBS 수능특강 영어 · 18강 4지문</div></div>
+  <a class="back-link" href="jongchon3_review_18.html">← 목록으로</a>
+</header>
+<div class="main-wrap">
+  <div class="passage-title">Passage 04</div>
+  <div class="passage-headline">The Invisible Present</div>
+  <div class="passage-desc">보이지 않는 현재 — 영화 속 시대 배경</div>
+  <div class="stage-nav">
+    <button class="stage-btn active" onclick="switchStage(1)" id="nav1">STAGE 1<span class="dot">●</span></button>
+    <button class="stage-btn" onclick="switchStage(2)" id="nav2">STAGE 2<span class="dot">●</span></button>
+    <button class="stage-btn" onclick="switchStage(3)" id="nav3">STAGE 3<span class="dot">●</span></button>
+    <button class="stage-btn" onclick="switchStage(4)" id="nav4">STAGE 4<span class="dot">●</span></button>
+    <button class="stage-btn" onclick="switchStage(5)" id="nav5">§2 변형<span class="dot">●</span></button>
+    <button class="stage-btn" onclick="switchStage(6)" id="nav6">✍ 서술형</button>
+  </div>
+  <div class="stage-panel active" id="s1">
+    <span class="section-label sec1">Section 1 · Stage 1</span>
+    <div class="stage-heading">📌 청크 해석 + 핵심 어휘 빈칸</div>
+    <div class="stage-desc">본문 청크의 핵심 어휘를 영어 보기에서 골라 채우세요.</div>
+    <div class="chunk-row">
+      <div class="chunk-meta">❶ · 현재의 비가시성</div>
+      <div class="chunk-en">As the set of cultural <span class="b-wrap"><select onchange="markBlank(this,&quot;norms&quot;)"><option value="">▾</option><option>exceptions</option><option>rebellions</option><option>norms</option><option>oddities</option></select></span> and categories taken for granted at any particular time, the present is normally more or less <span class="b-wrap"><select onchange="markBlank(this,&quot;invisible&quot;)"><option value="">▾</option><option>obvious</option><option>visible</option><option>invisible</option><option>apparent</option></select></span> to those who <span class="b-wrap"><select onchange="markBlank(this,&quot;participate&quot;)"><option value="">▾</option><option>reject</option><option>observe</option><option>participate</option><option>leave</option></select></span> in it.</div>
+      <div class="chunk-kr">특정 시기에 당연하게 여겨지는 / 문화적 규범과 범주의 집합으로서 / 현재는 보통 거의 보이지 않는다 / 그것에 참여하는 사람들에게</div>
+    </div>
+    <div class="chunk-row">
+      <div class="chunk-meta">❷ · 비유 — 물고기에게 물, 비둘기에게 공기</div>
+      <div class="chunk-en">It is the <span class="b-wrap"><select onchange="markBlank(this,&quot;unthought&quot;)"><option value="">▾</option><option>examined</option><option>analyzed</option><option>unthought</option><option>conscious</option></select></span> background of their thought and action, like <span class="b-wrap"><select onchange="markBlank(this,&quot;water&quot;)"><option value="">▾</option><option>water</option><option>fire</option><option>sand</option><option>stone</option></select></span> to a fish, or <span class="b-wrap"><select onchange="markBlank(this,&quot;air&quot;)"><option value="">▾</option><option>soil</option><option>earth</option><option>water</option><option>air</option></select></span> to a dove.</div>
+      <div class="chunk-kr">그것은 그들의 사고와 행동의 / 무의식적 배경이다 / 물고기에게 물, 비둘기에게 공기처럼</div>
+    </div>
+    <div class="chunk-row">
+      <div class="chunk-meta">❸ · 영화 속에서 가시화됨</div>
+      <div class="chunk-en">In films, this background can sometimes become <span class="b-wrap"><select onchange="markBlank(this,&quot;visible&quot;)"><option value="">▾</option><option>erased</option><option>visible</option><option>invisible</option><option>hidden</option></select></span> as a <span class="b-wrap"><select onchange="markBlank(this,&quot;bygone&quot;)"><option value="">▾</option><option>eternal</option><option>bygone</option><option>current</option><option>future</option></select></span> present in a film that is not just historically but <span class="b-wrap"><select onchange="markBlank(this,&quot;culturally dated&quot;)"><option value="">▾</option><option>culturally current</option><option>newly made</option><option>culturally dated</option><option>recently released</option></select></span>.</div>
+      <div class="chunk-kr">영화에서 이 배경은 가끔 / 가시화될 수 있다 / 지나간 현재로서 / 역사적뿐 아니라 문화적으로도 시대에 뒤떨어진 영화 안에서</div>
+    </div>
+    <div class="chunk-row">
+      <div class="chunk-meta">❹ · 시대 뒤떨어진 영화의 태도</div>
+      <div class="chunk-en">In the culturally dated film, attitudes and ways of behaving that have <span class="b-wrap"><select onchange="markBlank(this,&quot;altered&quot;)"><option value="">▾</option><option>preserved</option><option>stayed</option><option>altered</option><option>frozen</option></select></span> over time / and which now appear as <span class="b-wrap"><select onchange="markBlank(this,&quot;quaint&quot;)"><option value="">▾</option><option>modern</option><option>quaint</option><option>normal</option><option>current</option></select></span>, strange, "incorrect" or problematic, are taken for <span class="b-wrap"><select onchange="markBlank(this,&quot;granted&quot;)"><option value="">▾</option><option>denied</option><option>granted</option><option>rejected</option><option>questioned</option></select></span> by the characters / and go unquestioned or are even happily <span class="b-wrap"><select onchange="markBlank(this,&quot;endorsed&quot;)"><option value="">▾</option><option>criticized</option><option>endorsed</option><option>rejected</option><option>attacked</option></select></span> in the film's narrative.</div>
+      <div class="chunk-kr">문화적으로 시대 뒤떨어진 영화에서는 / 시간이 지나며 바뀐 태도와 행동 방식이 / 그리고 지금은 기이하거나·이상하거나·"부정확"하거나·문제 있어 보이는 것이 / 영화 속 인물들에게는 당연하게 여겨지고 / 의심받지 않거나 영화 서사 속에서 기꺼이 옹호되기도 한다</div>
+    </div>
+    <div class="chunk-row">
+      <div class="chunk-meta">❺~❻ · 현대 역사극의 시대착오</div>
+      <div class="chunk-en">The present is also visible in contemporary historical dramas that "read the past in terms of the present", <span class="b-wrap"><select onchange="markBlank(this,&quot;anachronistically&quot;)"><option value="">▾</option><option>historically</option><option>anachronistically</option><option>precisely</option><option>accurately</option></select></span> importing modern attitudes into the past they portray. This is doubly evident in dated historical films where the <span class="b-wrap"><select onchange="markBlank(this,&quot;anachronisms&quot;)"><option value="">▾</option><option>precisions</option><option>truths</option><option>accuracies</option><option>anachronisms</option></select></span> are themselves <span class="b-wrap"><select onchange="markBlank(this,&quot;reflective&quot;)"><option value="">▾</option><option>reflective</option><option>opposite</option><option>unrelated</option><option>independent</option></select></span> of a bygone present.</div>
+      <div class="chunk-kr">현재는 또한 / 현대 역사극에서도 보인다 / "현재의 관점으로 과거를 읽는" / 시대착오적으로 / 묘사하는 과거에 현대적 태도를 들여오는 / 이는 시대에 뒤떨어진 역사 영화에서 두 배로 분명해진다 / 시대착오 자체가 지나간 현재를 반영하는 곳에서</div>
+    </div>
+    <button class="check-btn" onclick="checkStage1()">✓ 전체 채점</button>
+    <div class="result-banner" id="s1-result"></div>
+  </div>
+  <div class="stage-panel" id="s2">
+    <span class="section-label sec1">Section 1 · Stage 2</span>
+    <div class="stage-heading">📋 내용 파악 4지선다</div>
+    <div class="stage-desc">본문을 읽고 각 청크의 핵심 내용을 파악하세요.</div>
+    <div class="full-passage-box">
+      <div class="fp-title">FULL PASSAGE</div>
+      <div class="fp-sentence">As the set of cultural norms and categories taken for granted at any particular time, the present is normally more or less invisible to those who participate in it.</div>
+<div class="fp-sentence">It is the unthought background of their thought and action, like water to a fish, or air to a dove.</div>
+<div class="fp-sentence">In films, this background can sometimes become visible as a bygone present in a film that is not just historically but culturally dated.</div>
+<div class="fp-sentence">In the culturally dated film, attitudes and ways of behaving that have altered over time and which now appear as quaint, strange, &#x27;incorrect&#x27; or problematic, are taken for granted by the characters in the film, and go unquestioned or are even happily endorsed in the film&#x27;s narrative.</div>
+<div class="fp-sentence">The present is also visible in contemporary historical dramas that &#x27;read the past in terms of the present&#x27;, anachronistically importing modern attitudes into the past they portray.</div>
+<div class="fp-sentence">This is something that is doubly evident in dated historical films that read the past in terms of their present, where the anachronisms are themselves reflective of a bygone present.</div>
+    </div>
+    <div class="s2-qblock" id="q1">
+      <div class="s2-qnum">Q1 · ❶~❷</div>
+      <div class="s2-question">&quot;현재(the present)&quot;의 특성은?</div>
+      <div class="s2-opts">
+        <div class="s2-opt" onclick="pickS2(this,&quot;q1&quot;,false)">① 항상 분명하게 보이고 의식된다</div>
+        <div class="s2-opt" onclick="pickS2(this,&quot;q1&quot;,true)">② 참여자들에게는 보통 보이지 않으며, 물고기에게 물처럼 무의식적 배경이다</div>
+        <div class="s2-opt" onclick="pickS2(this,&quot;q1&quot;,false)">③ 의도적으로 만들어진 인위적 구성이다</div>
+        <div class="s2-opt" onclick="pickS2(this,&quot;q1&quot;,false)">④ 영화 속에서만 존재한다</div>
+      </div>
+    </div>
+    <div class="s2-qblock" id="q2">
+      <div class="s2-qnum">Q2 · ❸</div>
+      <div class="s2-question">영화에서 현재가 어떻게 가시화되는가?</div>
+      <div class="s2-opts">
+        <div class="s2-opt" onclick="pickS2(this,&quot;q2&quot;,false)">① 새로 제작된 최신 영화에서 명확히 표현됨</div>
+        <div class="s2-opt" onclick="pickS2(this,&quot;q2&quot;,true)">② 문화적·역사적으로 시대 뒤떨어진 영화에서 &quot;지나간 현재&quot;로 드러남</div>
+        <div class="s2-opt" onclick="pickS2(this,&quot;q2&quot;,false)">③ 다큐멘터리에서만 보인다</div>
+        <div class="s2-opt" onclick="pickS2(this,&quot;q2&quot;,false)">④ 미래를 배경으로 한 영화에서만 보인다</div>
+      </div>
+    </div>
+    <div class="s2-qblock" id="q3">
+      <div class="s2-qnum">Q3 · ❹</div>
+      <div class="s2-question">시대에 뒤떨어진 영화 속 인물들의 태도는?</div>
+      <div class="s2-opts">
+        <div class="s2-opt" onclick="pickS2(this,&quot;q3&quot;,false)">① 시대 뒤떨어진 관습을 비판한다</div>
+        <div class="s2-opt" onclick="pickS2(this,&quot;q3&quot;,false)">② 새로 출현한 가치관을 처음으로 도입한다</div>
+        <div class="s2-opt" onclick="pickS2(this,&quot;q3&quot;,true)">③ 지금은 기이·이상하게 보이는 태도를 당연하게 여기며 의심 없이 받아들이거나 옹호한다</div>
+        <div class="s2-opt" onclick="pickS2(this,&quot;q3&quot;,false)">④ 미래에서 온 듯한 모습으로 행동한다</div>
+      </div>
+    </div>
+    <div class="s2-qblock" id="q4">
+      <div class="s2-qnum">Q4 · ❺~❻</div>
+      <div class="s2-question">현대 역사극에서 &quot;현재&quot;가 보이는 방식은?</div>
+      <div class="s2-opts">
+        <div class="s2-opt" onclick="pickS2(this,&quot;q4&quot;,false)">① 과거를 정확하게 재현한다</div>
+        <div class="s2-opt" onclick="pickS2(this,&quot;q4&quot;,true)">② &quot;현재의 관점으로 과거를 읽음&quot;이라는 시대착오로 현대적 태도를 과거에 들여온다</div>
+        <div class="s2-opt" onclick="pickS2(this,&quot;q4&quot;,false)">③ 과거의 가치관을 그대로 보존한다</div>
+        <div class="s2-opt" onclick="pickS2(this,&quot;q4&quot;,false)">④ 미래의 가치관만 다룬다</div>
+      </div>
+    </div>
+    <button class="check-btn" onclick="gradeAllS2(4,'s2-result','nav2')">✓ 채점하기</button>
+    <div class="result-banner" id="s2-result"></div>
+  </div>
+  <div class="stage-panel" id="s3">
+    <span class="section-label sec1">Section 1 · Stage 3</span>
+    <div class="stage-heading">🧩 요약 문장 배치</div>
+    <div class="stage-desc">서론·본론·예시·결론 자리에 알맞은 요약 문장을 배치하는 단계입니다.</div>
+    <div class="placeholder-box">
+      <div class="placeholder-icon">🚧</div>
+      <div class="placeholder-title">콘텐츠 입력 필요</div>
+      <div class="placeholder-desc">이 단계는 추후 콘텐츠가 추가될 예정입니다.<br>현재는 본문을 읽고 스스로 정리해보세요.</div>
+    </div>
+  </div>
+  <div class="stage-panel" id="s4">
+    <span class="section-label sec1">Section 1 · Stage 4</span>
+    <div class="stage-heading">🏷 글의 주제 / 제목</div>
+    <div class="stage-desc">본문의 핵심 주제와 제목을 4지선다로 고르는 단계입니다.</div>
+    <div class="placeholder-box">
+      <div class="placeholder-icon">🚧</div>
+      <div class="placeholder-title">콘텐츠 입력 필요</div>
+      <div class="placeholder-desc">이 단계는 추후 콘텐츠가 추가될 예정입니다.<br>현재는 본문을 읽고 스스로 정리해보세요.</div>
+    </div>
+  </div>
+  <div class="stage-panel" id="s5">
+    <span class="section-label sec2">Section 2 · Stage 5</span>
+    <div class="stage-heading">🔁 §2 변형 — 유의어 복습</div>
+    <div class="stage-desc">유의어로 바꾼 변형 지문을 다시 한 번 풀어봅니다.</div>
+    <div class="placeholder-box">
+      <div class="placeholder-icon">🚧</div>
+      <div class="placeholder-title">콘텐츠 입력 필요</div>
+      <div class="placeholder-desc">이 단계는 추후 콘텐츠가 추가될 예정입니다.<br>현재는 본문을 읽고 스스로 정리해보세요.</div>
+    </div>
+  </div>
+  <div class="stage-panel" id="s6">
+    <span class="section-label sec2">Section 2 · Stage 6</span>
+    <div class="stage-heading">✍ 핵심 문장 단어 배열</div>
+    <div class="stage-desc">한국어 해석을 보고 단어 조각을 올바른 순서로 배열합니다.</div>
+    <div class="placeholder-box">
+      <div class="placeholder-icon">🚧</div>
+      <div class="placeholder-title">콘텐츠 입력 필요</div>
+      <div class="placeholder-desc">이 단계는 추후 콘텐츠가 추가될 예정입니다.<br>현재는 본문을 읽고 스스로 정리해보세요.</div>
+    </div>
+  </div>
+</div>
+<script>
+function switchStage(n) {
+  document.querySelectorAll('.stage-panel').forEach(p => p.classList.remove('active'));
+  const target = document.getElementById('s'+String(n));
+  if(target) target.classList.add('active');
+  document.querySelectorAll('.stage-btn').forEach((b,i) => b.classList.toggle('active', i===n-1));
+}
+function markBlank(sel, correct) {
+  if (!sel.value) { sel.className=''; return; }
+  sel.className = sel.value === correct ? 'correct' : 'wrong';
+}
+function checkStage1() {
+  const selects = document.querySelectorAll('#s1 select');
+  let total=0, correct=0;
+  selects.forEach(sel => { total++; if(sel.className==='correct') correct++; else if(!sel.className && sel.value) sel.className='wrong'; });
+  const banner = document.getElementById('s1-result');
+  const pass = correct===total;
+  banner.className = 'result-banner show ' + (pass?'pass':'fail');
+  banner.textContent = pass ? `🎉 완벽! (${correct}/${total})` : `${correct}/${total} 정답 — 빨간 항목을 다시 확인하세요.`;
+  if(pass) document.getElementById('nav1').classList.add('done');
+}
+const s2Picks = {};
+function pickS2(el, blockId, isCorrect) {
+  if(s2Picks[blockId] && s2Picks[blockId].locked) return;
+  document.querySelectorAll('#'+blockId+' .s2-opt').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  s2Picks[blockId] = { el, isCorrect };
+}
+function gradeAllS2(count, resultId, navId) {
+  let total=0, correct=0;
+  for(let i=1; i<=count; i++) {
+    const id='q'+i; const block=document.getElementById(id); const pick=s2Picks[id]; total++;
+    const opts=block.querySelectorAll('.s2-opt');
+    if(pick && pick.el) {
+      pick.el.classList.remove('selected');
+      pick.el.classList.add(pick.isCorrect?'reveal-correct':'reveal-wrong');
+      if(pick.isCorrect) correct++;
+      block.classList.add(pick.isCorrect?'graded-correct':'graded-wrong');
+    }
+    // reveal correct option
+    opts.forEach(o => {
+      const onclickAttr = o.getAttribute('onclick')||'';
+      if(onclickAttr.includes(',true)')) o.classList.add('reveal-correct');
+    });
+    if(s2Picks[id]) s2Picks[id].locked=true;
+  }
+  const banner=document.getElementById(resultId);
+  const pass=correct===total;
+  banner.className='result-banner show '+(pass?'pass':'fail');
+  banner.textContent=pass?`🎉 전부 정답! (${correct}/${total})`:`${correct}/${total} 정답`;
+  if(pass) document.getElementById(navId).classList.add('done');
+}
+</script>
+<script>
+// === Auto-save to Firebase (v2) ===
+(function(){
+  const KANG_NUM = '18';
+  const SECTION = '4지문';
+  function toast(msg, ok){
+    let t = document.getElementById('_save_toast');
+    if(!t){
+      t = document.createElement('div');
+      t.id = '_save_toast';
+      t.style.cssText = 'position:fixed;bottom:24px;right:24px;padding:12px 18px;border-radius:8px;font-size:13px;font-weight:700;font-family:sans-serif;z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,.25);transition:opacity .3s;';
+      document.body.appendChild(t);
+    }
+    t.style.background = ok ? '#2a9d6f' : '#d95f5f';
+    t.style.color = '#fff';
+    t.textContent = msg;
+    t.style.opacity = '1';
+    setTimeout(()=>{ t.style.opacity = '0'; }, 3500);
+  }
+  function getUserInfo(){
+    let name = sessionStorage.getItem('bn_name')||localStorage.getItem('bn_name')||localStorage.getItem('bomnal_name')||'익명';
+    let school = sessionStorage.getItem('bn_school')||localStorage.getItem('bn_school')||localStorage.getItem('bomnal_school')||'종촌고';
+    return {name, school};
+  }
+  async function waitForFbSave(maxMs){
+    const start = Date.now();
+    while(!window._fbSave && (Date.now()-start) < maxMs){
+      await new Promise(r=>setTimeout(r, 100));
+    }
+    return !!window._fbSave;
+  }
+  async function saveStage(stageName, scoreCorrect, scoreTotal){
+    const info = getUserInfo();
+    const pct = scoreTotal>0 ? Math.round(scoreCorrect/scoreTotal*100) : 0;
+    const ready = await waitForFbSave(5000);
+    if(!ready){ toast('⚠ 저장 실패: Firebase 로드 중', false); return; }
+    try{
+      await window._fbSave({
+        submittedAt: new Date().toISOString(),
+        studentName: info.name, school: info.school,
+        score: pct, correct: scoreCorrect,
+        wrong: scoreTotal - scoreCorrect, total: scoreTotal,
+        elapsedMin: 0,
+        quizType: '종촌고3_RL_'+KANG_NUM+'강_'+SECTION+'_'+stageName
+      });
+      toast('✓ '+stageName+' 저장됨 ('+pct+'점)', true);
+    } catch(e){ toast('✗ 저장 오류', false); }
+  }
+  window._saveStage = saveStage;
+  function wrap(){
+    if(typeof window.checkStage1 === 'function' && !window.checkStage1._wrapped){
+      const orig = window.checkStage1;
+      window.checkStage1 = function(){
+        orig.apply(this, arguments);
+        const selects = document.querySelectorAll('#s1 select');
+        let total=0, correct=0;
+        selects.forEach(sel=>{total++; if(sel.className==='correct') correct++;});
+        saveStage('Stage1', correct, total);
+      };
+      window.checkStage1._wrapped = true;
+    }
+    if(typeof window.gradeAllS2 === 'function' && !window.gradeAllS2._wrapped){
+      const orig = window.gradeAllS2;
+      window.gradeAllS2 = function(count, resultId, navId){
+        orig.apply(this, arguments);
+        let total=count, correct=0;
+        for(let i=1;i<=count;i++){
+          const block=document.getElementById('q'+i);
+          if(block && block.classList.contains('graded-correct')) correct++;
+        }
+        saveStage('Stage2', correct, total);
+      };
+      window.gradeAllS2._wrapped = true;
+    }
+  }
+  wrap();
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', wrap);
+  } else {
+    setTimeout(wrap, 100);
+  }
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>18강 2지문 | Crisis Media Choice</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700&family=Space+Mono:wght@400;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root { --bg: #f5f0e8; --surface: #fdfaf4; --surface2: #ede8dc; --border: #d8d0bc;
+  --accent: #4a7cf0; --accent2: #d95f5f; --accent3: #b87a0a; --accent4: #2a9d6f;
+  --text: #2d2a22; --text-muted: #7a7060; --text-dim: #b0a890;
+  --correct: #2a9d6f; --wrong: #d95f5f; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: 'Noto Sans KR', sans-serif; min-height: 100vh; overflow-x: hidden; }
+.site-header { border-bottom: 1px solid var(--border); padding: 16px 28px; display: flex; align-items: center; gap: 14px; background: var(--surface); position: sticky; top: 0; z-index: 100; }
+.logo { font-family: 'Space Mono', monospace; font-size: 13px; color: var(--accent); letter-spacing: 2px; }
+.subtitle { font-size: 11px; color: var(--text-muted); }
+.back-link { margin-left: auto; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-family: 'Space Mono', monospace; border: 1px solid var(--border); background: transparent; color: var(--text-muted); text-decoration: none; transition: all .2s; }
+.back-link:hover { border-color: var(--accent); color: var(--accent); }
+.main-wrap { max-width: 960px; margin: 0 auto; padding: 36px 24px 80px; }
+.passage-title { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--accent); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 6px; }
+.passage-headline { font-family: 'Noto Serif KR', serif; font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+.passage-desc { font-size: 13px; color: var(--text-muted); margin-bottom: 28px; }
+.stage-nav { display: flex; gap: 4px; margin-bottom: 28px; flex-wrap: wrap; }
+.stage-btn { padding: 7px 14px; border-radius: 6px; font-size: 12px; font-family: 'Space Mono', monospace; cursor: pointer; border: 1px solid var(--border); background: transparent; color: var(--text-muted); transition: all .2s; }
+.stage-btn:hover { border-color: var(--accent); color: var(--accent); }
+.stage-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+.stage-btn .dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--accent4); margin-left: 5px; vertical-align: middle; opacity: 0; }
+.stage-btn.done .dot { opacity: 1; }
+.section-label { display: inline-block; padding: 3px 10px; border-radius: 4px; font-size: 10px; font-family: 'Space Mono', monospace; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px; }
+.section-label.sec1 { background: rgba(74,124,240,.1); color: var(--accent); border: 1px solid rgba(74,124,240,.25); }
+.section-label.sec2 { background: rgba(184,122,10,.1); color: var(--accent3); border: 1px solid rgba(184,122,10,.25); }
+.stage-panel { display: none; }
+.stage-panel.active { display: block; animation: fadeUp .3s ease; }
+@keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+.stage-heading { font-size: 17px; font-weight: 700; margin-bottom: 6px; }
+.stage-desc { font-size: 13px; color: var(--text-muted); margin-bottom: 22px; line-height: 1.7; }
+.chunk-row { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; margin-bottom: 14px; }
+.chunk-meta { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--text-dim); letter-spacing: .5px; margin-bottom: 8px; }
+.chunk-en { font-family: 'Noto Serif KR', serif; font-size: 15px; color: var(--text); line-height: 2.1; }
+.chunk-kr { font-size: 12.5px; color: var(--text-muted); line-height: 1.8; margin-top: 8px; padding-left: 10px; border-left: 2px solid var(--border); }
+.b-wrap { display: inline-block; position: relative; margin: 0 3px; vertical-align: middle; }
+.b-wrap select { appearance: none; -webkit-appearance: none; background: var(--surface2); border: 1px solid var(--accent); border-radius: 6px; color: var(--accent); font-size: 13px; padding: 3px 26px 3px 10px; cursor: pointer; font-family: 'Noto Sans KR', sans-serif; transition: all .2s; min-width: 120px; }
+.b-wrap::after { content:'▾'; position:absolute; right:8px; top:50%; transform:translateY(-50%); color:var(--accent); pointer-events:none; font-size:11px; }
+.b-wrap select.correct { border-color:var(--correct); color:var(--correct); background:rgba(42,157,111,.1); }
+.b-wrap select.wrong   { border-color:var(--wrong);   color:var(--wrong);   background:rgba(217,95,95,.1); }
+.full-passage-box { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px 22px; margin-bottom: 24px; }
+.fp-title { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--text-dim); letter-spacing: 1px; margin-bottom: 10px; }
+.fp-sentence { font-family: 'Noto Serif KR', serif; font-size: 14px; line-height: 1.9; color: var(--text); margin-bottom: 6px; }
+.s2-qblock { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; margin-bottom: 14px; transition: border-color .2s; }
+.s2-qblock.graded-correct { border-color: var(--correct); }
+.s2-qblock.graded-wrong   { border-color: var(--wrong); }
+.s2-qnum { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--accent3); letter-spacing: 1px; margin-bottom: 6px; }
+.s2-question { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 14px; line-height: 1.7; }
+.s2-opts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.s2-opt { padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface2); font-size: 13px; cursor: pointer; transition: all .2s; color: var(--text); line-height: 1.5; }
+.s2-opt:hover { border-color: var(--accent); color: var(--accent); }
+.s2-opt.selected { border-color: var(--accent); background: rgba(74,124,240,.1); color: var(--accent); }
+.s2-opt.reveal-correct { border-color: var(--correct); background: rgba(42,157,111,.1); color: var(--correct); }
+.s2-opt.reveal-wrong   { border-color: var(--wrong);   background: rgba(217,95,95,.1); color: var(--wrong); }
+.check-btn { display: inline-flex; align-items: center; gap: 8px; padding: 11px 26px; border-radius: 8px; font-size: 13px; font-family: 'Space Mono', monospace; cursor: pointer; border: none; background: var(--accent); color: #fff; font-weight: 700; transition: all .2s; margin-top: 14px; letter-spacing: 1px; }
+.check-btn:hover { background: #6e9af5; transform: translateY(-1px); }
+.result-banner { display: none; margin-top: 14px; padding: 12px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; align-items: center; gap: 8px; }
+.result-banner.show { display: flex; }
+.result-banner.pass { background: rgba(42,157,111,.1); border: 1px solid var(--correct); color: var(--correct); }
+.result-banner.fail { background: rgba(217,95,95,.1); border: 1px solid var(--wrong); color: var(--wrong); }
+.placeholder-box { background: rgba(184,122,10,.06); border: 2px dashed rgba(184,122,10,.4); border-radius: 12px; padding: 32px 28px; text-align: center; }
+.placeholder-icon { font-size: 36px; margin-bottom: 12px; }
+.placeholder-title { font-size: 17px; font-weight: 700; color: var(--accent3); margin-bottom: 8px; }
+.placeholder-desc { font-size: 13px; color: var(--text-muted); line-height: 1.7; }
+@media (max-width: 600px) { .s2-opts { grid-template-columns: 1fr; } .stage-btn { padding: 5px 9px; font-size: 11px; } }
+</style>
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getFirestore,collection,addDoc,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+const cfg={apiKey:"AIzaSyCxS524S8KAaF87DomPtl9sJdF-eqes404",authDomain:"bomnalvaca.firebaseapp.com",projectId:"bomnalvaca",storageBucket:"bomnalvaca.firebasestorage.app",messagingSenderId:"115868052300",appId:"1:115868052300:web:765c08867b6f1ce0987de9"};
+const app=initializeApp(cfg);const db=getFirestore(app);
+window._fbSave=async function(data){
+  try{await addDoc(collection(db,'quiz_results'),{...data,timestamp:serverTimestamp()});}
+  catch(e){console.warn('FB 저장 오류:',e);}
+};
+</script>
+</head>
+<body>
+<header class="site-header">
+  <div><div class="logo">Reading Lab</div><div class="subtitle">2027 EBS 수능특강 영어 · 18강 2지문</div></div>
+  <a class="back-link" href="jongchon3_review_18.html">← 목록으로</a>
+</header>
+<div class="main-wrap">
+  <div class="passage-title">Passage 02</div>
+  <div class="passage-headline">Crisis Media Choice</div>
+  <div class="passage-desc">위기 상황과 매체 선택 — 전통매체 vs 소셜미디어</div>
+  <div class="stage-nav">
+    <button class="stage-btn active" onclick="switchStage(1)" id="nav1">STAGE 1<span class="dot">●</span></button>
+    <button class="stage-btn" onclick="switchStage(2)" id="nav2">STAGE 2<span class="dot">●</span></button>
+    <button class="stage-btn" onclick="switchStage(3)" id="nav3">STAGE 3<span class="dot">●</span></button>
+    <button class="stage-btn" onclick="switchStage(4)" id="nav4">STAGE 4<span class="dot">●</span></button>
+    <button class="stage-btn" onclick="switchStage(5)" id="nav5">§2 변형<span class="dot">●</span></button>
+    <button class="stage-btn" onclick="switchStage(6)" id="nav6">✍ 서술형</button>
+  </div>
+  <div class="stage-panel active" id="s1">
+    <span class="section-label sec1">Section 1 · Stage 1</span>
+    <div class="stage-heading">📌 청크 해석 + 핵심 어휘 빈칸</div>
+    <div class="stage-desc">본문 청크의 핵심 어휘를 영어 보기에서 골라 채우세요.</div>
+    <div class="chunk-row">
+      <div class="chunk-meta">❶ · 즉각적 위험 시 전통매체</div>
+      <div class="chunk-en">During crises that present <span class="b-wrap"><select onchange="markBlank(this,&quot;immediate&quot;)"><option value="">▾</option><option>distant</option><option>delayed</option><option>immediate</option><option>forgotten</option></select></span> danger (e.g., natural disasters, acts of violence or terrorism, transportation crises), people seek <span class="b-wrap"><select onchange="markBlank(this,&quot;trusted&quot;)"><option value="">▾</option><option>unknown</option><option>suspicious</option><option>trusted</option><option>unreliable</option></select></span> and <span class="b-wrap"><select onchange="markBlank(this,&quot;verified&quot;)"><option value="">▾</option><option>rumored</option><option>fake</option><option>verified</option><option>unconfirmed</option></select></span> sources to ease their immediate concerns, thus turning to traditional sources such as television and radio.</div>
+      <div class="chunk-kr">즉각적 위험을 제시하는 위기 중에는 / (자연재해·폭력·테러·교통 위기 등) / 사람들은 즉각적 우려를 해소하기 위해 / 신뢰할 수 있고 검증된 정보원을 찾는다 / 따라서 TV와 라디오 같은 전통적 정보원으로 향한다</div>
+    </div>
+    <div class="chunk-row">
+      <div class="chunk-meta">❷ · 공중보건·정치 위기 시 소셜미디어</div>
+      <div class="chunk-en">For other crisis types, such as public health and political crises, however, people are more likely to turn to <span class="b-wrap"><select onchange="markBlank(this,&quot;social media&quot;)"><option value="">▾</option><option>traditional television</option><option>social media</option><option>radio broadcasts</option><option>printed newspapers</option></select></span> where they can seek <span class="b-wrap"><select onchange="markBlank(this,&quot;multiple voices&quot;)"><option value="">▾</option><option>one expert</option><option>silence</option><option>a single voice</option><option>multiple voices</option></select></span> and a variety of expert opinions, as public health and political crises may be more <span class="b-wrap"><select onchange="markBlank(this,&quot;subjective&quot;)"><option value="">▾</option><option>objective</option><option>absolute</option><option>physical</option><option>subjective</option></select></span> and less straightforward.</div>
+      <div class="chunk-kr">그러나 공중보건·정치 위기 같은 다른 유형의 위기에서는 / 사람들이 소셜미디어로 향할 가능성이 더 높다 / 다양한 목소리와 다양한 전문가 의견을 찾을 수 있는 / 공중보건·정치 위기는 / 더 주관적이고 덜 명확할 수 있기 때문이다</div>
+    </div>
+    <div class="chunk-row">
+      <div class="chunk-meta">❸ · Liu 학자의 주장</div>
+      <div class="chunk-en">In addition to the type of crisis at hand, Liu and colleagues argued that traditional and social media have <span class="b-wrap"><select onchange="markBlank(this,&quot;different effects&quot;)"><option value="">▾</option><option>identical effects</option><option>no effects</option><option>different effects</option><option>reverse effects</option></select></span> on different audiences regarding the <span class="b-wrap"><select onchange="markBlank(this,&quot;motivation&quot;)"><option value="">▾</option><option>motivation</option><option>boredom</option><option>indifference</option><option>avoidance</option></select></span> to follow instructions and recommended <span class="b-wrap"><select onchange="markBlank(this,&quot;behaviors&quot;)"><option value="">▾</option><option>fantasies</option><option>feelings</option><option>theories</option><option>behaviors</option></select></span> during crises.</div>
+      <div class="chunk-kr">당면한 위기 유형 외에도 / Liu와 동료들은 주장했다 / 전통매체와 소셜미디어가 / 위기 중 지시와 권장 행동을 따르려는 동기에 대해 / 다른 청중에게 다른 효과를 미친다고</div>
+    </div>
+    <div class="chunk-row">
+      <div class="chunk-meta">❹ · 연령별 매체 선호</div>
+      <div class="chunk-en">For example, although <span class="b-wrap"><select onchange="markBlank(this,&quot;younger&quot;)"><option value="">▾</option><option>elderly</option><option>retired</option><option>older</option><option>younger</option></select></span> audiences seem to <span class="b-wrap"><select onchange="markBlank(this,&quot;favor&quot;)"><option value="">▾</option><option>reject</option><option>avoid</option><option>favor</option><option>ignore</option></select></span> social media to traditional media sources during times of crisis, <span class="b-wrap"><select onchange="markBlank(this,&quot;older&quot;)"><option value="">▾</option><option>newborn</option><option>older</option><option>middle</option><option>younger</option></select></span> audiences indicate a <span class="b-wrap"><select onchange="markBlank(this,&quot;preference&quot;)"><option value="">▾</option><option>indifference</option><option>dislike</option><option>preference</option><option>hatred</option></select></span> for traditional media.</div>
+      <div class="chunk-kr">예를 들어, 더 젊은 청중은 / 위기 시 전통매체보다 소셜미디어를 선호하는 것처럼 보이지만 / 더 나이 든 청중은 / 전통매체를 선호한다고 나타난다</div>
+    </div>
+    <div class="chunk-row">
+      <div class="chunk-meta">❺ · 결론 — 둘 다 중요한 역할</div>
+      <div class="chunk-en">Thus, <span class="b-wrap"><select onchange="markBlank(this,&quot;both&quot;)"><option value="">▾</option><option>both</option><option>neither</option><option>only one of</option><option>none of</option></select></span> traditional and social media play a <span class="b-wrap"><select onchange="markBlank(this,&quot;prominent&quot;)"><option value="">▾</option><option>forgettable</option><option>minor</option><option>invisible</option><option>prominent</option></select></span> role in <span class="b-wrap"><select onchange="markBlank(this,&quot;delivering&quot;)"><option value="">▾</option><option>delivering</option><option>distorting</option><option>destroying</option><option>hiding</option></select></span> important scientific information to the public during crises.</div>
+      <div class="chunk-kr">따라서 전통매체와 소셜미디어 둘 다 / 두드러진 역할을 한다 / 위기 중 대중에게 중요한 과학 정보를 전달하는 데</div>
+    </div>
+    <button class="check-btn" onclick="checkStage1()">✓ 전체 채점</button>
+    <div class="result-banner" id="s1-result"></div>
+  </div>
+  <div class="stage-panel" id="s2">
+    <span class="section-label sec1">Section 1 · Stage 2</span>
+    <div class="stage-heading">📋 내용 파악 4지선다</div>
+    <div class="stage-desc">본문을 읽고 각 청크의 핵심 내용을 파악하세요.</div>
+    <div class="full-passage-box">
+      <div class="fp-title">FULL PASSAGE</div>
+      <div class="fp-sentence">During crises that present immediate danger (e.g., natural disasters, acts of violence or terrorism, transportation crises), people seek trusted and verified sources to ease their immediate concerns, thus turning to traditional sources such as television and radio.</div>
+<div class="fp-sentence">For other crisis types, such as public health and political crises, however, people are more likely to turn to social media where they can seek multiple voices and a variety of expert opinions, as, unlike the first set of crises, public health and political crises may be more subjective and less straightforward, and thus necessitate a deeper dive into supplementary information and evidence.</div>
+<div class="fp-sentence">In addition to the type of crisis at hand, Liu, a communication scholar, and colleagues argued that traditional and social media have different effects on different audiences regarding the motivation to follow instructions and recommended behaviors during crises.</div>
+<div class="fp-sentence">For example, although younger audiences seem to favor social media to traditional media sources during times of crisis, older audiences indicate a preference for traditional media.</div>
+<div class="fp-sentence">Thus, both traditional and social media play a prominent role in delivering important scientific information to the public during crises.</div>
+    </div>
+    <div class="s2-qblock" id="q1">
+      <div class="s2-qnum">Q1 · ❶</div>
+      <div class="s2-question">즉각적 위험(자연재해, 테러 등) 시 사람들이 선택하는 매체는?</div>
+      <div class="s2-opts">
+        <div class="s2-opt" onclick="pickS2(this,&quot;q1&quot;,false)">① 친구 SNS의 비공식 정보</div>
+        <div class="s2-opt" onclick="pickS2(this,&quot;q1&quot;,true)">② 신뢰·검증된 전통매체(TV·라디오)</div>
+        <div class="s2-opt" onclick="pickS2(this,&quot;q1&quot;,false)">③ 익명 게시판</div>
+        <div class="s2-opt" onclick="pickS2(this,&quot;q1&quot;,false)">④ 사적 메모</div>
+      </div>
+    </div>
+    <div class="s2-qblock" id="q2">
+      <div class="s2-qnum">Q2 · ❷</div>
+      <div class="s2-question">공중보건·정치 위기에 소셜미디어가 선호되는 이유는?</div>
+      <div class="s2-opts">
+        <div class="s2-opt" onclick="pickS2(this,&quot;q2&quot;,false)">① 즉시 검증된 정보만 제공해서</div>
+        <div class="s2-opt" onclick="pickS2(this,&quot;q2&quot;,false)">② 단일한 권위적 답변을 제공해서</div>
+        <div class="s2-opt" onclick="pickS2(this,&quot;q2&quot;,true)">③ 주관적·복잡한 위기이므로 다양한 목소리와 보충 정보가 필요해서</div>
+        <div class="s2-opt" onclick="pickS2(this,&quot;q2&quot;,false)">④ 무료라서</div>
+      </div>
+    </div>
+    <div class="s2-qblock" id="q3">
+      <div class="s2-qnum">Q3 · ❸</div>
+      <div class="s2-question">Liu 학자의 주장은?</div>
+      <div class="s2-opts">
+        <div class="s2-opt" onclick="pickS2(this,&quot;q3&quot;,false)">① 전통매체와 소셜미디어 효과는 동일하다</div>
+        <div class="s2-opt" onclick="pickS2(this,&quot;q3&quot;,true)">② 매체 종류에 따라 청중의 행동 동기에 다른 효과를 미친다</div>
+        <div class="s2-opt" onclick="pickS2(this,&quot;q3&quot;,false)">③ 위기 시 어떤 매체도 효과가 없다</div>
+        <div class="s2-opt" onclick="pickS2(this,&quot;q3&quot;,false)">④ 매체 종류는 청중에게 영향을 주지 않는다</div>
+      </div>
+    </div>
+    <div class="s2-qblock" id="q4">
+      <div class="s2-qnum">Q4 · ❹~❺</div>
+      <div class="s2-question">연령대별 매체 선호와 결론은?</div>
+      <div class="s2-opts">
+        <div class="s2-opt" onclick="pickS2(this,&quot;q4&quot;,false)">① 모든 연령대가 소셜미디어만 사용한다</div>
+        <div class="s2-opt" onclick="pickS2(this,&quot;q4&quot;,true)">② 젊은 층은 소셜미디어, 나이 든 층은 전통매체를 선호하며, 둘 다 위기 정보 전달에 중요한 역할</div>
+        <div class="s2-opt" onclick="pickS2(this,&quot;q4&quot;,false)">③ 전통매체는 모든 연령대에서 외면받는다</div>
+        <div class="s2-opt" onclick="pickS2(this,&quot;q4&quot;,false)">④ 소셜미디어는 위기 시 사용되지 않는다</div>
+      </div>
+    </div>
+    <button class="check-btn" onclick="gradeAllS2(4,'s2-result','nav2')">✓ 채점하기</button>
+    <div class="result-banner" id="s2-result"></div>
+  </div>
+  <div class="stage-panel" id="s3">
+    <span class="section-label sec1">Section 1 · Stage 3</span>
+    <div class="stage-heading">🧩 요약 문장 배치</div>
+    <div class="stage-desc">서론·본론·예시·결론 자리에 알맞은 요약 문장을 배치하는 단계입니다.</div>
+    <div class="placeholder-box">
+      <div class="placeholder-icon">🚧</div>
+      <div class="placeholder-title">콘텐츠 입력 필요</div>
+      <div class="placeholder-desc">이 단계는 추후 콘텐츠가 추가될 예정입니다.<br>현재는 본문을 읽고 스스로 정리해보세요.</div>
+    </div>
+  </div>
+  <div class="stage-panel" id="s4">
+    <span class="section-label sec1">Section 1 · Stage 4</span>
+    <div class="stage-heading">🏷 글의 주제 / 제목</div>
+    <div class="stage-desc">본문의 핵심 주제와 제목을 4지선다로 고르는 단계입니다.</div>
+    <div class="placeholder-box">
+      <div class="placeholder-icon">🚧</div>
+      <div class="placeholder-title">콘텐츠 입력 필요</div>
+      <div class="placeholder-desc">이 단계는 추후 콘텐츠가 추가될 예정입니다.<br>현재는 본문을 읽고 스스로 정리해보세요.</div>
+    </div>
+  </div>
+  <div class="stage-panel" id="s5">
+    <span class="section-label sec2">Section 2 · Stage 5</span>
+    <div class="stage-heading">🔁 §2 변형 — 유의어 복습</div>
+    <div class="stage-desc">유의어로 바꾼 변형 지문을 다시 한 번 풀어봅니다.</div>
+    <div class="placeholder-box">
+      <div class="placeholder-icon">🚧</div>
+      <div class="placeholder-title">콘텐츠 입력 필요</div>
+      <div class="placeholder-desc">이 단계는 추후 콘텐츠가 추가될 예정입니다.<br>현재는 본문을 읽고 스스로 정리해보세요.</div>
+    </div>
+  </div>
+  <div class="stage-panel" id="s6">
+    <span class="section-label sec2">Section 2 · Stage 6</span>
+    <div class="stage-heading">✍ 핵심 문장 단어 배열</div>
+    <div class="stage-desc">한국어 해석을 보고 단어 조각을 올바른 순서로 배열합니다.</div>
+    <div class="placeholder-box">
+      <div class="placeholder-icon">🚧</div>
+      <div class="placeholder-title">콘텐츠 입력 필요</div>
+      <div class="placeholder-desc">이 단계는 추후 콘텐츠가 추가될 예정입니다.<br>현재는 본문을 읽고 스스로 정리해보세요.</div>
+    </div>
+  </div>
+</div>
+<script>
+function switchStage(n) {
+  document.querySelectorAll('.stage-panel').forEach(p => p.classList.remove('active'));
+  const target = document.getElementById('s'+String(n));
+  if(target) target.classList.add('active');
+  document.querySelectorAll('.stage-btn').forEach((b,i) => b.classList.toggle('active', i===n-1));
+}
+function markBlank(sel, correct) {
+  if (!sel.value) { sel.className=''; return; }
+  sel.className = sel.value === correct ? 'correct' : 'wrong';
+}
+function checkStage1() {
+  const selects = document.querySelectorAll('#s1 select');
+  let total=0, correct=0;
+  selects.forEach(sel => { total++; if(sel.className==='correct') correct++; else if(!sel.className && sel.value) sel.className='wrong'; });
+  const banner = document.getElementById('s1-result');
+  const pass = correct===total;
+  banner.className = 'result-banner show ' + (pass?'pass':'fail');
+  banner.textContent = pass ? `🎉 완벽! (${correct}/${total})` : `${correct}/${total} 정답 — 빨간 항목을 다시 확인하세요.`;
+  if(pass) document.getElementById('nav1').classList.add('done');
+}
+const s2Picks = {};
+function pickS2(el, blockId, isCorrect) {
+  if(s2Picks[blockId] && s2Picks[blockId].locked) return;
+  document.querySelectorAll('#'+blockId+' .s2-opt').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  s2Picks[blockId] = { el, isCorrect };
+}
+function gradeAllS2(count, resultId, navId) {
+  let total=0, correct=0;
+  for(let i=1; i<=count; i++) {
+    const id='q'+i; const block=document.getElementById(id); const pick=s2Picks[id]; total++;
+    const opts=block.querySelectorAll('.s2-opt');
+    if(pick && pick.el) {
+      pick.el.classList.remove('selected');
+      pick.el.classList.add(pick.isCorrect?'reveal-correct':'reveal-wrong');
+      if(pick.isCorrect) correct++;
+      block.classList.add(pick.isCorrect?'graded-correct':'graded-wrong');
+    }
+    // reveal correct option
+    opts.forEach(o => {
+      const onclickAttr = o.getAttribute('onclick')||'';
+      if(onclickAttr.includes(',true)')) o.classList.add('reveal-correct');
+    });
+    if(s2Picks[id]) s2Picks[id].locked=true;
+  }
+  const banner=document.getElementById(resultId);
+  const pass=correct===total;
+  banner.className='result-banner show '+(pass?'pass':'fail');
+  banner.textContent=pass?`🎉 전부 정답! (${correct}/${total})`:`${correct}/${total} 정답`;
+  if(pass) document.getElementById(navId).classList.add('done');
+}
+</script>
+<script>
+// === Auto-save to Firebase (v2) ===
+(function(){
+  const KANG_NUM = '18';
+  const SECTION = '2지문';
+  function toast(msg, ok){
+    let t = document.getElementById('_save_toast');
+    if(!t){
+      t = document.createElement('div');
+      t.id = '_save_toast';
+      t.style.cssText = 'position:fixed;bottom:24px;right:24px;padding:12px 18px;border-radius:8px;font-size:13px;font-weight:700;font-family:sans-serif;z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,.25);transition:opacity .3s;';
+      document.body.appendChild(t);
+    }
+    t.style.background = ok ? '#2a9d6f' : '#d95f5f';
+    t.style.color = '#fff';
+    t.textContent = msg;
+    t.style.opacity = '1';
+    setTimeout(()=>{ t.style.opacity = '0'; }, 3500);
+  }
+  function getUserInfo(){
+    let name = sessionStorage.getItem('bn_name')||localStorage.getItem('bn_name')||localStorage.getItem('bomnal_name')||'익명';
+    let school = sessionStorage.getItem('bn_school')||localStorage.getItem('bn_school')||localStorage.getItem('bomnal_school')||'종촌고';
+    return {name, school};
+  }
+  async function waitForFbSave(maxMs){
+    const start = Date.now();
+    while(!window._fbSave && (Date.now()-start) < maxMs){
+      await new Promise(r=>setTimeout(r, 100));
+    }
+    return !!window._fbSave;
+  }
+  async function saveStage(stageName, scoreCorrect, scoreTotal){
+    const info = getUserInfo();
+    const pct = scoreTotal>0 ? Math.round(scoreCorrect/scoreTotal*100) : 0;
+    const ready = await waitForFbSave(5000);
+    if(!ready){ toast('⚠ 저장 실패: Firebase 로드 중', false); return; }
+    try{
+      await window._fbSave({
+        submittedAt: new Date().toISOString(),
+        studentName: info.name, school: info.school,
+        score: pct, correct: scoreCorrect,
+        wrong: scoreTotal - scoreCorrect, total: scoreTotal,
+        elapsedMin: 0,
+        quizType: '종촌고3_RL_'+KANG_NUM+'강_'+SECTION+'_'+stageName
+      });
+      toast('✓ '+stageName+' 저장됨 ('+pct+'점)', true);
+    } catch(e){ toast('✗ 저장 오류', false); }
+  }
+  window._saveStage = saveStage;
+  function wrap(){
+    if(typeof window.checkStage1 === 'function' && !window.checkStage1._wrapped){
+      const orig = window.checkStage1;
+      window.checkStage1 = function(){
+        orig.apply(this, arguments);
+        const selects = document.querySelectorAll('#s1 select');
+        let total=0, correct=0;
+        selects.forEach(sel=>{total++; if(sel.className==='correct') correct++;});
+        saveStage('Stage1', correct, total);
+      };
+      window.checkStage1._wrapped = true;
+    }
+    if(typeof window.gradeAllS2 === 'function' && !window.gradeAllS2._wrapped){
+      const orig = window.gradeAllS2;
+      window.gradeAllS2 = function(count, resultId, navId){
+        orig.apply(this, arguments);
+        let total=count, correct=0;
+        for(let i=1;i<=count;i++){
+          const block=document.getElementById('q'+i);
+          if(block && block.classList.contains('graded-correct')) correct++;
+        }
+        saveStage('Stage2', correct, total);
+      };
+      window.gradeAllS2._wrapped = true;
+    }
+  }
+  wrap();
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', wrap);
+  } else {
+    setTimeout(wrap, 100);
+  }
+})();
+</script>
+</body>
+</html>
