@@ -419,8 +419,11 @@ const gc=s=>s>=95?'sS':s>=85?'sA':s>=70?'sB':s>=55?'sC':'sD';
 const gl=s=>s>=95?'S':s>=85?'A':s>=70?'B':s>=55?'C':'D';
 const ft=t=>t?t.toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}):'-';
 
-function nonSecLabel(qt){
+function nonSecLabel(qt, d){
   if(!qt) return '-';
+  const passageSuffix = (d && d.passages && d.passages.length>0)
+    ? ' ['+[...d.passages].sort((a,b)=>parseInt(a)-parseInt(b)).join(',')+'번]'
+    : '';
   if(qt.includes('동반의어')){
     let lbl='';
     const lesson=qt.match(/교과서(\d+)과/);
@@ -441,9 +444,9 @@ function nonSecLabel(qt){
   const mockM=qt.match(/^(고[123])_(\d{2})년(\d{1,2})월_(.+)$/);
   if(mockM){
     const grade=mockM[1], yr=mockM[2], mon=mockM[3], sub=mockM[4].replace(/_/g,' ');
-    return `${grade} ${yr}-${mon} ${sub}`;
+    return `${grade} ${yr}-${mon} ${sub}`+passageSuffix;
   }
-  return qt.slice(0,16);
+  return qt.slice(0,16)+passageSuffix;
 }
 
 function renderTable(data){
@@ -451,7 +454,7 @@ function renderTable(data){
   if(!data.length){document.getElementById('tblArea').innerHTML='<div class="empty-msg">📭 기록 없음</div>';return;}
   const rows=data.map((d,i)=>{
     const chips=d.wrongWords.slice(0,20).map(w=>{const eng=typeof w==='string'?w:(w.eng||w);const kor=typeof w==='object'?(w.kor||w.correct||''):'';return `<span class="wt-chip">${eng}${kor?`<span class="wa">→${kor}</span>`:''}</span>`;}).join('');
-    const sl=nonSecLabel(d.quizType);
+    const sl=nonSecLabel(d.quizType,d);
     const isSynanm=d.quizType&&d.quizType.includes('동반의어');
     const slStyle=isSynanm?'background:#e8f5e9;color:#2e7d32':sl==='전체'?'background:#e3f2fd;color:#1565c0':sl==='오답재시'?'background:#fff3e0;color:#e65100':sl==='오답완료'?'background:#e8f5e9;color:#2e7d32':sl==='어휘퀴즈'?'background:#f3e5f5;color:#6a1b9a':sl==='-'?'color:var(--muted);font-size:11px':'background:#e8eaf6;color:#3949ab';
     const slHtml=sl!=='-'?`<span style="display:inline-block;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:800;${slStyle}">${sl}</span>`:`<span style="color:var(--muted);font-size:11px">-</span>`;
@@ -674,11 +677,13 @@ function renderSectionView(){
     // 기타
     const nonSecMap={};
     otherRecords.forEach(d=>{
-      const baseKey=d.quizType?d.quizType.replace('_오답완료',''):d.quizType;
+      const qtBase=d.quizType?d.quizType.replace('_오답완료',''):d.quizType;
+      const pKey=(d.passages&&d.passages.length>0)?'|p'+[...d.passages].sort((a,b)=>parseInt(a)-parseInt(b)).join(','):'';
+      const baseKey=qtBase+pKey;
       if(!nonSecMap[baseKey]||(d.quizType&&d.quizType.includes('오답완료'))){nonSecMap[baseKey]=d;}
       else if(d.time&&nonSecMap[baseKey].time&&d.time>nonSecMap[baseKey].time&&!nonSecMap[baseKey].quizType?.includes('오답완료')){nonSecMap[baseKey]=d;}
     });
-    const nonSecHtml=Object.values(nonSecMap).length>0?`<div style="margin-bottom:10px;"><div style="font-size:11px;font-weight:800;color:var(--muted);margin-bottom:8px;letter-spacing:.5px;">🔤 기타 퀴즈</div><div style="display:flex;flex-wrap:wrap;gap:8px;">${Object.values(nonSecMap).sort((a,b)=>(b.time||0)-(a.time||0)).map(d=>{const isPerfect=d.wrong===0;const isVocabComplete=d.quizType&&d.quizType.includes('오답완료');const timeStr=d.time?d.time.toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}):'';const cellClass=isVocabComplete?'perfect':isPerfect?'perfect':'has-wrong';const badge=isVocabComplete?'<div style="font-size:10px;color:#2e7d32;font-weight:900;margin-top:2px">🏆 오답 0개 완료!</div>':'';return `<div class="sec-cell ${cellClass}" style="min-width:130px;text-align:left;"><div style="font-size:10px;font-weight:800;color:var(--muted);margin-bottom:4px;">${nonSecLabel(d.quizType)}</div><div class="sec-score">${d.score}점</div>${d.wrong>0?`<div class="sec-wrong">오답 ${d.wrong}개</div>`:''}${badge}<div class="sec-time">${timeStr}</div></div>`;}).join('')}</div></div>`:'';
+    const nonSecHtml=Object.values(nonSecMap).length>0?`<div style="margin-bottom:10px;"><div style="font-size:11px;font-weight:800;color:var(--muted);margin-bottom:8px;letter-spacing:.5px;">🔤 기타 퀴즈</div><div style="display:flex;flex-wrap:wrap;gap:8px;">${Object.values(nonSecMap).sort((a,b)=>(b.time||0)-(a.time||0)).map(d=>{const isPerfect=d.wrong===0;const isVocabComplete=d.quizType&&d.quizType.includes('오답완료');const timeStr=d.time?d.time.toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}):'';const cellClass=isVocabComplete?'perfect':isPerfect?'perfect':'has-wrong';const badge=isVocabComplete?'<div style="font-size:10px;color:#2e7d32;font-weight:900;margin-top:2px">🏆 오답 0개 완료!</div>':'';return `<div class="sec-cell ${cellClass}" style="min-width:130px;text-align:left;"><div style="font-size:10px;font-weight:800;color:var(--muted);margin-bottom:4px;">${nonSecLabel(d.quizType,d)}</div><div class="sec-score">${d.score}점</div>${d.wrong>0?`<div class="sec-wrong">오답 ${d.wrong}개</div>`:''}${badge}<div class="sec-time">${timeStr}</div></div>`;}).join('')}</div></div>`:'';
 
     // 총정리
     const reviewRecords=st.records.filter(d=>d.quizType&&d.quizType.includes('총정리'));
