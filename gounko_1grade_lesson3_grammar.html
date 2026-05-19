@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>고운고1 3과 어법선택형 · 봄날 ENGLISH</title>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Black+Han+Sans&family=Noto+Sans+KR:wght@300;400;700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--ink:#2a2a2a;--soft:#7a7570;--bg:#f5efe6;--card:#fdf8f2;--border:#e0d8ce;--accent:#5c3d1e}
+body{font-family:"Noto Sans KR",sans-serif;background:var(--bg);min-height:100vh;color:var(--ink)}
+header{background:linear-gradient(135deg,#f7efe4,#f0e6d8 50%,#ece0d2);padding:28px 24px 20px;text-align:center;border-bottom:1px solid var(--border)}
+.logo-row{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;margin-bottom:8px}
+.logo-circle{width:48px;height:48px;border-radius:50%;background:#f0ebe3;border:2px solid #e0d8ce;overflow:hidden;flex-shrink:0}
+.logo-circle img{width:100%;height:100%;object-fit:cover}
+.logo-title{font-family:"Black Han Sans",sans-serif;font-size:1rem;color:#5c3d1e}
+.quiz-meta{font-family:"Gowun Dodum",serif;font-size:.76rem;color:var(--soft);margin-top:2px}
+.test-badge{display:inline-block;background:#3d3d3d;color:#f0ede8;border-radius:30px;padding:3px 14px;font-size:.73rem;font-weight:700;letter-spacing:.5px;margin-top:6px}
+.score-display{font-family:"Gowun Dodum",serif;font-size:.83rem;color:var(--soft);margin-top:5px}
+#score-val{color:var(--accent);font-family:"Black Han Sans",sans-serif;font-size:.95rem}
+main{max-width:860px;margin:0 auto;padding:20px 14px 80px}
+.prog-bg{height:5px;background:#e0d8ce;border-radius:5px;overflow:hidden;margin-bottom:4px}
+.prog-fill{height:5px;background:linear-gradient(90deg,#5c3d1e,#a0724a);border-radius:5px;transition:width .4s}
+.prog-text{font-family:"Gowun Dodum",serif;font-size:.72rem;color:var(--soft);text-align:right;margin-bottom:16px}
+.back-nav{display:inline-flex;align-items:center;gap:6px;background:white;border:1.5px solid #d0c8bc;border-radius:10px;padding:6px 13px;font-family:inherit;font-size:.78rem;color:var(--soft);cursor:pointer;margin-bottom:16px;text-decoration:none}
+.back-nav:hover{border-color:#3d3d3d;color:#3d3d3d}
+.sec-header{background:#3d3d3d;color:#f0ede8;font-family:"Black Han Sans",sans-serif;font-size:.88rem;padding:9px 16px;border-radius:12px;margin:24px 0 12px;letter-spacing:.4px}
+.sec-header.hidden,.q-card.hidden{display:none!important}
+.q-card{background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:16px 16px 14px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,.04);transition:border-color .2s,background .2s}
+.q-card.ok{border-color:#81c784;background:#f7fff8}
+.q-card.fail{border-color:#e57373;background:#fff8f8}
+.q-num{font-family:"Black Han Sans",sans-serif;font-size:.75rem;color:var(--soft);margin-bottom:8px}
+.ko-text{font-size:.8rem;color:#5a5a5a;font-family:"Gowun Dodum",serif;line-height:1.8;margin-bottom:8px;padding:7px 10px;background:#f0ebe3;border-radius:8px}
+.eng-text{font-size:.88rem;line-height:2.4;color:#2a2a2a;font-family:"Gowun Dodum",serif}
+.sel-group{display:inline-flex;align-items:center;border:1.5px solid #c0b4a4;border-radius:6px;overflow:hidden;vertical-align:middle;margin:0 2px;font-size:.83rem}
+.sel-btn{padding:2px 9px;background:#fff;border:none;cursor:pointer;font-family:"Gowun Dodum",serif;font-size:.83rem;color:#3a3a3a;transition:background .12s;line-height:1.7;white-space:nowrap}
+.sel-btn:not(:last-child){border-right:1px solid #c0b4a4}
+.sel-btn:hover{background:#f0ebe3}
+.sel-btn:disabled{cursor:not-allowed}
+.sel-btn.correct{background:#2e7d32!important;color:#fff!important}
+.sel-btn.wrong{background:#c0392b!important;color:#fff!important}
+.q-feedback{margin-top:8px;font-size:.78rem;font-family:"Gowun Dodum",serif;display:none}
+.q-feedback.show{display:block}
+.q-feedback.ok{color:#1b5e20}
+.q-feedback.fail{color:#7f0000}
+.mode-selector{background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:13px 16px;margin-bottom:18px}
+.mode-title{font-family:"Black Han Sans",sans-serif;font-size:.85rem;color:var(--accent);margin-bottom:9px}
+.mode-btns{display:flex;gap:8px;flex-wrap:wrap}
+.mode-btn{padding:8px 15px;border-radius:10px;border:1.5px solid #c0b4a4;background:#fff;color:#5a5a5a;font-family:inherit;font-size:.82rem;font-weight:700;cursor:pointer;transition:all .15s}
+.mode-btn:hover{background:#f0ebe3}
+.mode-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.mode-note{font-family:"Gowun Dodum",serif;font-size:.72rem;color:var(--soft);margin-top:8px}
+.result-card{background:var(--card);border-radius:20px;border:2px solid var(--border);padding:32px 22px;text-align:center;display:none;box-shadow:0 6px 24px rgba(0,0,0,.08);margin-top:12px}
+.result-card.show{display:block;animation:fadeUp .5s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.result-score{font-family:"Black Han Sans",sans-serif;font-size:2.6rem;color:var(--accent);margin:12px 0}
+.result-msg{font-family:"Gowun Dodum",serif;font-size:.88rem;color:var(--soft);line-height:1.8}
+.result-btns{display:flex;gap:10px;justify-content:center;margin-top:18px;flex-wrap:wrap}
+.result-btns button{padding:10px 20px;border-radius:12px;font-family:inherit;font-size:.82rem;font-weight:700;cursor:pointer;border:2px solid #3d3d3d}
+.btn-retry{background:#3d3d3d;color:#fff}
+.btn-back{background:transparent;color:#3d3d3d}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo-row">
+    <div class="logo-circle"><img src="https://bomnalenglish.github.io/bomnalquizz/IMG_6063.jpg" alt="봄날" onerror="this.style.display='none'"/></div>
+    <div><div class="logo-title">봄날 BOMNAL ENGLISH</div><div class="quiz-meta">고운고등학교 1학년 · YBM 박준언 · 3과</div></div>
+  </div>
+  <div><span class="test-badge">📗 어법 선택형 연습 — 워크북 6</span></div>
+  <div class="score-display">현재 점수: <span id="score-val">0</span> / <span id="score-max">0</span>점</div>
+</header>
+<main>
+  <a class="back-nav" href="javascript:history.back()">← 이전 페이지로</a>
+  <div class="mode-selector">
+    <div class="mode-title">📋 시험 범위 선택</div>
+    <div class="mode-btns">
+      <button class="mode-btn active" data-mode="본문" onclick="switchMode('본문')">📘 본문만 (33문항)</button>
+      <button class="mode-btn" data-mode="본문외" onclick="switchMode('본문외')">📙 본문외만 (7문항)</button>
+      <button class="mode-btn" data-mode="전체" onclick="switchMode('전체')">📚 전체 (40문항)</button>
+    </div>
+    <div class="mode-note">기록은 선택한 범위로 따로 저장됩니다. 도중 변경하면 진행이 초기화됩니다.</div>
+  </div>
+  <div class="prog-bg"><div class="prog-fill" id="prog" style="width:0%"></div></div>
+  <div class="prog-text" id="prog-txt">0 / 0 완료</div>
+<div class="sec-header">📘 교과서 본문 — English or Englishes?</div>
+<div class="q-card" id="c0">
+  <div class="q-num">1번</div>
+  <div class="ko-text">만약 당신이 남아프리카 공화국을 여행하는 도중 도로에 '전방에 로봇 있음'이라고 쓰인 영어 간판을 보면 어떻게 반응하겠는가?</div>
+  <div class="eng-text">How <span class="sel-group" data-qi="0" data-ans="1"><button class="sel-btn" onclick="pick(this,0,0)">will</button><button class="sel-btn" onclick="pick(this,0,1)">would</button></span> you react if you saw an English sign <span class="sel-group" data-qi="1" data-ans="1"><button class="sel-btn" onclick="pick(this,1,0)">read</button><button class="sel-btn" onclick="pick(this,1,1)">reading</button></span> "Robot Ahead" on the road while <span class="sel-group" data-qi="2" data-ans="0"><button class="sel-btn" onclick="pick(this,2,0)">driving</button><button class="sel-btn" onclick="pick(this,2,1)">driven</button></span> in South Africa?</div>
+  <div class="q-feedback" id="fb0"></div>
+</div>
+<div class="q-card" id="c1">
+  <div class="q-num">2번</div>
+  <div class="ko-text">아마도 당신은 사람처럼 생긴 로봇을 찾기 위해 차 앞을 둘러볼 것이다.</div>
+  <div class="eng-text">You would probably look around the front of your car for a robot <span class="sel-group" data-qi="3" data-ans="0"><button class="sel-btn" onclick="pick(this,3,0)">that</button><button class="sel-btn" onclick="pick(this,3,1)">what</button></span> <span class="sel-group" data-qi="4" data-ans="1"><button class="sel-btn" onclick="pick(this,4,0)">look</button><button class="sel-btn" onclick="pick(this,4,1)">looks</button></span> like a human.</div>
+  <div class="q-feedback" id="fb1"></div>
+</div>
+<div class="q-card" id="c2">
+  <div class="q-num">3번</div>
+  <div class="ko-text">당신은 잠깐 혼란스럽겠지만, 남아프리카 공화국에서는 'robot'이 또한 '신호등'을 의미한다는 사실을 알았을 때 웃을 것이다.</div>
+  <div class="eng-text">You would be <span class="sel-group" data-qi="5" data-ans="1"><button class="sel-btn" onclick="pick(this,5,0)">confusing</button><button class="sel-btn" onclick="pick(this,5,1)">confused</button></span> momentarily, but <span class="sel-group" data-qi="6" data-ans="0"><button class="sel-btn" onclick="pick(this,6,0)">laugh</button><button class="sel-btn" onclick="pick(this,6,1)">laughed</button></span> when you learned <span class="sel-group" data-qi="7" data-ans="1"><button class="sel-btn" onclick="pick(this,7,0)">what</button><button class="sel-btn" onclick="pick(this,7,1)">that</button></span> the term "robot" also means "traffic light" in South Africa.</div>
+  <div class="q-feedback" id="fb2"></div>
+</div>
+<div class="q-card" id="c3">
+  <div class="q-num">4번</div>
+  <div class="ko-text">다른 나라들에서 온 방문객들에게 이 단어의 독특한 용례가 혼란과 오해를 초래할 수도 있겠지만, 이것은 또한 전 세계에서 사용되는 여러 가지 다른 종류의 영어인 세계 영어의 다양성을 강조한다.</div>
+  <div class="eng-text">For visitors from <span class="sel-group" data-qi="8" data-ans="1"><button class="sel-btn" onclick="pick(this,8,0)">another</button><button class="sel-btn" onclick="pick(this,8,1)">other</button></span> countries, the unique usage of this word might cause confusion and misunderstanding, but it <span class="sel-group" data-qi="9" data-ans="0"><button class="sel-btn" onclick="pick(this,9,0)">also highlights</button><button class="sel-btn" onclick="pick(this,9,1)">is also highlighted</button></span> the diversity of World Englishes, the different varieties of the English language <span class="sel-group" data-qi="10" data-ans="1"><button class="sel-btn" onclick="pick(this,10,0)">using</button><button class="sel-btn" onclick="pick(this,10,1)">used</button></span> around the world.</div>
+  <div class="q-feedback" id="fb3"></div>
+</div>
+<div class="q-card" id="c4">
+  <div class="q-num">5번</div>
+  <div class="ko-text">전 세계적인 공통어로서의 영어 / 영어는 많은 나라들에서 광범위한 사용과 채택으로 인해 널리 사용되는 '공통어'가 되어서, 다른 모국어를 사용하는 사람들이 서로 소통하고 이해할 수 있게 한다.</div>
+  <div class="eng-text">English as a Global Language / English has become a widely used "lingua franca" due to its extensive usage and adoption in many countries, <span class="sel-group" data-qi="11" data-ans="1"><button class="sel-btn" onclick="pick(this,11,0)">allow</button><button class="sel-btn" onclick="pick(this,11,1)">allowing</button></span> individuals <span class="sel-group" data-qi="12" data-ans="0"><button class="sel-btn" onclick="pick(this,12,0)">who</button><button class="sel-btn" onclick="pick(this,12,1)">whose</button></span> <span class="sel-group" data-qi="13" data-ans="0"><button class="sel-btn" onclick="pick(this,13,0)">speak</button><button class="sel-btn" onclick="pick(this,13,1)">speaks</button></span> different native languages <span class="sel-group" data-qi="14" data-ans="1"><button class="sel-btn" onclick="pick(this,14,0)">communicate</button><button class="sel-btn" onclick="pick(this,14,1)">to communicate</button></span> and <span class="sel-group" data-qi="15" data-ans="0"><button class="sel-btn" onclick="pick(this,15,0)">understand</button><button class="sel-btn" onclick="pick(this,15,1)">understanding</button></span> each other.</div>
+  <div class="q-feedback" id="fb4"></div>
+</div>
+<div class="q-card" id="c5">
+  <div class="q-num">6번</div>
+  <div class="ko-text">과학, 기술, 사업 및 오락 같은 중요한 분야들에서 영어에 대한 높은 수요로 인해, 전 세계에 걸쳐 약 17억 5천만 명의 사람들이 영어를 유용한 의사소통 수단으로 사용한다.</div>
+  <div class="eng-text">About 1.75 billion people around the world <span class="sel-group" data-qi="16" data-ans="0"><button class="sel-btn" onclick="pick(this,16,0)">use</button><button class="sel-btn" onclick="pick(this,16,1)">uses</button></span> English as a useful means of communication, due to the high demand of English in critical fields such as science, technology, business, and entertainment.</div>
+  <div class="q-feedback" id="fb5"></div>
+</div>
+<div class="q-card" id="c6">
+  <div class="q-num">7번</div>
+  <div class="ko-text">게다가, 디지털 시대에 사람들은 매일 영어로 된 엄청난 양의 온라인 정보와 자료들에 노출되어 있다.</div>
+  <div class="eng-text">Moreover, in the digital era, people <span class="sel-group" data-qi="17" data-ans="1"><button class="sel-btn" onclick="pick(this,17,0)">exposed</button><button class="sel-btn" onclick="pick(this,17,1)">are exposed</button></span> to a vast amount of online information and resources in English on a daily basis.</div>
+  <div class="q-feedback" id="fb6"></div>
+</div>
+<div class="q-card" id="c7">
+  <div class="q-num">8번</div>
+  <div class="ko-text">이러한 요인들이 일관되게 영어의 광범위한 사용과 전 세계적인 영향력에 기여해왔다.</div>
+  <div class="eng-text">These factors have <span class="sel-group" data-qi="18" data-ans="0"><button class="sel-btn" onclick="pick(this,18,0)">consistently contributed</button><button class="sel-btn" onclick="pick(this,18,1)">been consistently contributed</button></span> to the widespread use and global influence of the English language.</div>
+  <div class="q-feedback" id="fb7"></div>
+</div>
+<div class="q-card" id="c8">
+  <div class="q-num">9번</div>
+  <div class="ko-text">국가마다 영어 능력이 향상됨에 따라 싱가포르 영어, 한국 영어, 인도 영어 등 다양한 영어 종류들이 전 세계적으로 등장했다.</div>
+  <div class="eng-text">As English ability grows in different nations, various English varieties have <span class="sel-group" data-qi="19" data-ans="0"><button class="sel-btn" onclick="pick(this,19,0)">emerged</button><button class="sel-btn" onclick="pick(this,19,1)">been emerged</button></span> worldwide, including Singaporean English, Korean English, Indian English, and others.</div>
+  <div class="q-feedback" id="fb8"></div>
+</div>
+<div class="q-card" id="c9">
+  <div class="q-num">10번</div>
+  <div class="ko-text">이전에는 영국 영어와 미국 영어가 표준 모델들로 여겨졌다.</div>
+  <div class="eng-text">Previously, British English and American English were <span class="sel-group" data-qi="20" data-ans="1"><button class="sel-btn" onclick="pick(this,20,0)">considering</button><button class="sel-btn" onclick="pick(this,20,1)">considered</button></span> the standard models.</div>
+  <div class="q-feedback" id="fb9"></div>
+</div>
+<div class="q-card" id="c10">
+  <div class="q-num">11번</div>
+  <div class="ko-text">그러나, 미국 영어는 초기에는 표준 형태라기보다 지역적 변이로 보였던 것에 주목하는 것이 중요하다.</div>
+  <div class="eng-text">However, it is important to note <span class="sel-group" data-qi="21" data-ans="1"><button class="sel-btn" onclick="pick(this,21,0)">what</button><button class="sel-btn" onclick="pick(this,21,1)">that</button></span> American English was initially seen as a regional variation rather than a standard form.</div>
+  <div class="q-feedback" id="fb10"></div>
+</div>
+<div class="q-card" id="c11">
+  <div class="q-num">12번</div>
+  <div class="ko-text">그 결과, 우리는 오늘날 영어의 다른 종류들을 단순히 '영어'가 아닌, '영어들'로 지칭한다.</div>
+  <div class="eng-text">As a result, we <span class="sel-group" data-qi="22" data-ans="0"><button class="sel-btn" onclick="pick(this,22,0)">now refer</button><button class="sel-btn" onclick="pick(this,22,1)">are now referred</button></span> to the different varieties of English as "Englishes," not simply "English."</div>
+  <div class="q-feedback" id="fb11"></div>
+</div>
+<div class="q-card" id="c12">
+  <div class="q-num">13번</div>
+  <div class="ko-text">영어는 지역적 현실에 맞게 진화한다 / 한 언어가 특정 지역이나 공동체에서 채택될 때, 지역 사람들이 그 언어를 자신들의 일상의 현실과 문화적 맥락을 더 정확하게 반영할 수 있도록 활용함에 따라, 그 언어가 변화하고 수정되는 것은 자연스럽다.</div>
+  <div class="eng-text">English Evolves to Fit Local Realities / When a language is <span class="sel-group" data-qi="23" data-ans="1"><button class="sel-btn" onclick="pick(this,23,0)">adopting</button><button class="sel-btn" onclick="pick(this,23,1)">adopted</button></span> in a specific region or community, it is natural for it <span class="sel-group" data-qi="24" data-ans="1"><button class="sel-btn" onclick="pick(this,24,0)">undergoing</button><button class="sel-btn" onclick="pick(this,24,1)">to undergo</button></span> changes or modifications as the local people utilize the language to more accurately <span class="sel-group" data-qi="25" data-ans="0"><button class="sel-btn" onclick="pick(this,25,0)">reflect</button><button class="sel-btn" onclick="pick(this,25,1)">reflecting</button></span> their daily realities and cultural contexts.</div>
+  <div class="q-feedback" id="fb12"></div>
+</div>
+<div class="q-card" id="c13">
+  <div class="q-num">14번</div>
+  <div class="ko-text">언어 변화는 문법, 발음, 어휘 및 일상 표현들을 포함해 다양한 언어 양상에 걸쳐 발생한다.</div>
+  <div class="eng-text">Linguistic change <span class="sel-group" data-qi="26" data-ans="0"><button class="sel-btn" onclick="pick(this,26,0)">takes</button><button class="sel-btn" onclick="pick(this,26,1)">is taken</button></span> place across various aspects of language, including grammar, pronunciation, vocabulary, and everyday expressions.</div>
+  <div class="q-feedback" id="fb13"></div>
+</div>
+<div class="q-card" id="c14">
+  <div class="q-num">15번</div>
+  <div class="ko-text">변화는 특히 어휘에서 두드러진다.</div>
+  <div class="eng-text">The change <span class="sel-group" data-qi="27" data-ans="0"><button class="sel-btn" onclick="pick(this,27,0)">is</button><button class="sel-btn" onclick="pick(this,27,1)">to be</button></span> particularly noticeable in vocabulary.</div>
+  <div class="q-feedback" id="fb14"></div>
+</div>
+<div class="q-card" id="c15">
+  <div class="q-num">16번</div>
+  <div class="ko-text">영어 어휘는 변화되어 왔고 새로운 표현들이 영어의 다양한 종류 안에서 만들어져 왔다.</div>
+  <div class="eng-text">English vocabulary has <span class="sel-group" data-qi="28" data-ans="1"><button class="sel-btn" onclick="pick(this,28,0)">modified</button><button class="sel-btn" onclick="pick(this,28,1)">been modified</button></span> and new expressions have <span class="sel-group" data-qi="29" data-ans="1"><button class="sel-btn" onclick="pick(this,29,0)">created</button><button class="sel-btn" onclick="pick(this,29,1)">been created</button></span> within the different varieties of English.</div>
+  <div class="q-feedback" id="fb15"></div>
+</div>
+<div class="q-card" id="c16">
+  <div class="q-num">17번</div>
+  <div class="ko-text">인도 영어에서, 'prepone'은 'postpone'의 반의어로서 '일정을 조정하다'의 의미로 만들어졌다.</div>
+  <div class="eng-text">In Indian English, the term "prepone" <span class="sel-group" data-qi="30" data-ans="1"><button class="sel-btn" onclick="pick(this,30,0)">coined</button><button class="sel-btn" onclick="pick(this,30,1)">was coined</button></span> to mean "to reschedule" as the opposite of "postpone."</div>
+  <div class="q-feedback" id="fb16"></div>
+</div>
+<div class="q-card" id="c17">
+  <div class="q-num">18번</div>
+  <div class="ko-text">예를 들어, 목요일에 예정된 회의가 수요일로 변경되면, 그것은 '일정이 당겨졌다'고 여겨진다.</div>
+  <div class="eng-text">For instance, if a meeting scheduled for Thursday <span class="sel-group" data-qi="31" data-ans="0"><button class="sel-btn" onclick="pick(this,31,0)">is</button><button class="sel-btn" onclick="pick(this,31,1)">are</button></span> moved to Wednesday, it is <span class="sel-group" data-qi="32" data-ans="0"><button class="sel-btn" onclick="pick(this,32,0)">considered</button><button class="sel-btn" onclick="pick(this,32,1)">to consider</button></span> "preponed."</div>
+  <div class="q-feedback" id="fb17"></div>
+</div>
+<div class="q-card" id="c18">
+  <div class="q-num">19번</div>
+  <div class="ko-text">홍콩 영어 사용자들은 격려나 지원을 보여주기 위해 'add oil'을 외치는데, 이는 중국어 표현을 그대로 옮긴 것으로, 원래 엔진에 휘발유를 더 주입하다는 의미였다.</div>
+  <div class="eng-text">Hong Kong English speakers shout "add oil" to <span class="sel-group" data-qi="33" data-ans="0"><button class="sel-btn" onclick="pick(this,33,0)">show</button><button class="sel-btn" onclick="pick(this,33,1)">showing</button></span> encouragement or support, a direct translation from a Chinese expression, <span class="sel-group" data-qi="34" data-ans="0"><button class="sel-btn" onclick="pick(this,34,0)">which</button><button class="sel-btn" onclick="pick(this,34,1)">that</button></span> originally meant to inject more gasoline into an engine.</div>
+  <div class="q-feedback" id="fb18"></div>
+</div>
+<div class="q-card" id="c19">
+  <div class="q-num">20번</div>
+  <div class="ko-text">필리핀에서, 'dirty kitchens'를 가진 집들이 많은데, 이는 사실 '더러운' 부엌들이 아니다.</div>
+  <div class="eng-text">In the Philippines, there <span class="sel-group" data-qi="35" data-ans="1"><button class="sel-btn" onclick="pick(this,35,0)">is</button><button class="sel-btn" onclick="pick(this,35,1)">are</button></span> many houses with "dirty kitchens," <span class="sel-group" data-qi="36" data-ans="0"><button class="sel-btn" onclick="pick(this,36,0)">which</button><button class="sel-btn" onclick="pick(this,36,1)">what</button></span> <span class="sel-group" data-qi="37" data-ans="1"><button class="sel-btn" onclick="pick(this,37,0)">is</button><button class="sel-btn" onclick="pick(this,37,1)">are</button></span> not actually "dirty" kitchens.</div>
+  <div class="q-feedback" id="fb19"></div>
+</div>
+<div class="q-card" id="c20">
+  <div class="q-num">21번</div>
+  <div class="ko-text">대신, 그것들은 집 밖에 있는 부엌들을 지칭하는데, 더운 기후에서 집안에 열과 냄새를 가두는 것을 피하기 위해 그곳에서 대부분의 요리가 일어난다.</div>
+  <div class="eng-text">Instead, they refer to kitchens outside the home, <span class="sel-group" data-qi="38" data-ans="1"><button class="sel-btn" onclick="pick(this,38,0)">which</button><button class="sel-btn" onclick="pick(this,38,1)">where</button></span> most of the cooking takes place to avoid <span class="sel-group" data-qi="39" data-ans="0"><button class="sel-btn" onclick="pick(this,39,0)">trapping</button><button class="sel-btn" onclick="pick(this,39,1)">to trap</button></span> heat and smell inside the house in a hot climate.</div>
+  <div class="q-feedback" id="fb20"></div>
+</div>
+<div class="q-card" id="c21">
+  <div class="q-num">22번</div>
+  <div class="ko-text">이러한 진화는 언어가 그것을 사용하는 공동체들의 일상 경험과 문화적 맥락에 더 잘 부합하도록 한다.</div>
+  <div class="eng-text">This evolution allows language <span class="sel-group" data-qi="40" data-ans="1"><button class="sel-btn" onclick="pick(this,40,0)">better match</button><button class="sel-btn" onclick="pick(this,40,1)">to better match</button></span> up with the everyday experiences and cultural contexts of the communities <span class="sel-group" data-qi="41" data-ans="1"><button class="sel-btn" onclick="pick(this,41,0)">what</button><button class="sel-btn" onclick="pick(this,41,1)">that</button></span> <span class="sel-group" data-qi="42" data-ans="0"><button class="sel-btn" onclick="pick(this,42,0)">utilize</button><button class="sel-btn" onclick="pick(this,42,1)">utilizes</button></span> it.</div>
+  <div class="q-feedback" id="fb21"></div>
+</div>
+<div class="q-card" id="c22">
+  <div class="q-num">23번</div>
+  <div class="ko-text">외국어가 영어를 풍성하게 한다 / 이러한 영어 표현들이 지역적으로 널리 사용되고 다른 나라들에서 노출됨으로써, 그것들은 영어 어휘의 확장과 다양화에 기여한다.</div>
+  <div class="eng-text">Foreign Languages Enrich English / As these English expressions are widely <span class="sel-group" data-qi="43" data-ans="1"><button class="sel-btn" onclick="pick(this,43,0)">using</button><button class="sel-btn" onclick="pick(this,43,1)">used</button></span> locally and <span class="sel-group" data-qi="44" data-ans="0"><button class="sel-btn" onclick="pick(this,44,0)">gain</button><button class="sel-btn" onclick="pick(this,44,1)">gained</button></span> exposure in <span class="sel-group" data-qi="45" data-ans="0"><button class="sel-btn" onclick="pick(this,45,0)">other</button><button class="sel-btn" onclick="pick(this,45,1)">others</button></span> countries, they contribute to the expansion and diversification of the English vocabulary.</div>
+  <div class="q-feedback" id="fb22"></div>
+</div>
+<div class="q-card" id="c23">
+  <div class="q-num">24번</div>
+  <div class="ko-text">게다가 영어 사전들은 외국어에서 차용된 단어들을 수용해왔다.</div>
+  <div class="eng-text">Moreover, English dictionaries have <span class="sel-group" data-qi="46" data-ans="0"><button class="sel-btn" onclick="pick(this,46,0)">incorporated</button><button class="sel-btn" onclick="pick(this,46,1)">been incorporated</button></span> words borrowed from foreign languages.</div>
+  <div class="q-feedback" id="fb23"></div>
+</div>
+<div class="q-card" id="c24">
+  <div class="q-num">25번</div>
+  <div class="ko-text">외국어에서 차용된 가장 대중적인 단어들의 일부는 일본어의 tsunami, emoji, origami와 같은 확립된 용어들을 포함한다.</div>
+  <div class="eng-text"><span class="sel-group" data-qi="47" data-ans="1"><button class="sel-btn" onclick="pick(this,47,0)">Some</button><button class="sel-btn" onclick="pick(this,47,1)">Some of</button></span> the most popular English words <span class="sel-group" data-qi="48" data-ans="0"><button class="sel-btn" onclick="pick(this,48,0)">borrowed</button><button class="sel-btn" onclick="pick(this,48,1)">are borrowed</button></span> from foreign languages <span class="sel-group" data-qi="49" data-ans="0"><button class="sel-btn" onclick="pick(this,49,0)">include</button><button class="sel-btn" onclick="pick(this,49,1)">includes</button></span> established terms such as tsunami, emoji, and origami in Japanese.</div>
+  <div class="q-feedback" id="fb24"></div>
+</div>
+<div class="q-card" id="c25">
+  <div class="q-num">26번</div>
+  <div class="ko-text">덴마크어의 hygge와 튀르키예어의 kiosk 또한 영어 화자들 사이에서 전 세계적으로 통용되고 있다.</div>
+  <div class="eng-text">Hygge in Danish and kiosk in Turkish have <span class="sel-group" data-qi="50" data-ans="0"><button class="sel-btn" onclick="pick(this,50,0)">also gained</button><button class="sel-btn" onclick="pick(this,50,1)">been also gained</button></span> worldwide currency among English speakers.</div>
+  <div class="q-feedback" id="fb25"></div>
+</div>
+<div class="q-card" id="c26">
+  <div class="q-num">27번</div>
+  <div class="ko-text">최근에 한류가 전 세계적으로 확산하면서, kimchi, hanbok, kimbab 및 hallyu 같은 한국 문화와 관련된 단어들이 영어 사전들에 추가되었다.</div>
+  <div class="eng-text">Recently, as the Korean wave has spread globally, words <span class="sel-group" data-qi="51" data-ans="0"><button class="sel-btn" onclick="pick(this,51,0)">related</button><button class="sel-btn" onclick="pick(this,51,1)">are related</button></span> to Korean culture such as kimchi, hanbok, kimbab, and hallyu <span class="sel-group" data-qi="52" data-ans="0"><button class="sel-btn" onclick="pick(this,52,0)">have</button><button class="sel-btn" onclick="pick(this,52,1)">has</button></span> <span class="sel-group" data-qi="53" data-ans="1"><button class="sel-btn" onclick="pick(this,53,0)">added</button><button class="sel-btn" onclick="pick(this,53,1)">been added</button></span> to English dictionaries.</div>
+  <div class="q-feedback" id="fb26"></div>
+</div>
+<div class="q-card" id="c27">
+  <div class="q-num">28번</div>
+  <div class="ko-text">oppa, noona, mukbang, daebak 등 점점 더 많은 한국 단어들이 영어 사전들에 추가되면서, 영어 어휘가 더욱 풍성해지는 결과를 낳았다.</div>
+  <div class="eng-text">More and more Korean words including oppa, noona, mukbang, daebak, and so forth <span class="sel-group" data-qi="54" data-ans="1"><button class="sel-btn" onclick="pick(this,54,0)">is</button><button class="sel-btn" onclick="pick(this,54,1)">are</button></span> <span class="sel-group" data-qi="55" data-ans="1"><button class="sel-btn" onclick="pick(this,55,0)">adding</button><button class="sel-btn" onclick="pick(this,55,1)">being added</button></span> to English dictionaries, <span class="sel-group" data-qi="56" data-ans="0"><button class="sel-btn" onclick="pick(this,56,0)">resulting</button><button class="sel-btn" onclick="pick(this,56,1)">resulted</button></span> in a richer English vocabulary.</div>
+  <div class="q-feedback" id="fb27"></div>
+</div>
+<div class="q-card" id="c28">
+  <div class="q-num">29번</div>
+  <div class="ko-text">한국 문화와 관련된 단어들과 표현들이 영어 사전들에 포함됨에 따라, 영어 어휘가 더 다양화되고, 그에 따라 전 세계에 한국 문화의 이해가 심화되고 있다.</div>
+  <div class="eng-text">As words and expressions <span class="sel-group" data-qi="57" data-ans="1"><button class="sel-btn" onclick="pick(this,57,0)">related</button><button class="sel-btn" onclick="pick(this,57,1)">related to</button></span> Korean culture <span class="sel-group" data-qi="58" data-ans="1"><button class="sel-btn" onclick="pick(this,58,0)">is</button><button class="sel-btn" onclick="pick(this,58,1)">are</button></span> <span class="sel-group" data-qi="59" data-ans="1"><button class="sel-btn" onclick="pick(this,59,0)">including</button><button class="sel-btn" onclick="pick(this,59,1)">included</button></span> in English dictionaries, English vocabulary is becoming more <span class="sel-group" data-qi="60" data-ans="1"><button class="sel-btn" onclick="pick(this,60,0)">diversifying</button><button class="sel-btn" onclick="pick(this,60,1)">diversified</button></span> and the understanding of Korean culture around the world <span class="sel-group" data-qi="61" data-ans="0"><button class="sel-btn" onclick="pick(this,61,0)">is</button><button class="sel-btn" onclick="pick(this,61,1)">are</button></span> deepened, accordingly.</div>
+  <div class="q-feedback" id="fb28"></div>
+</div>
+<div class="q-card" id="c29">
+  <div class="q-num">30번</div>
+  <div class="ko-text">세계 영어에 대해 열린 자세를 갖자 / 우리는 다른 나라들의 문화를 수용하는 영어 표현들을 사용하며, 다른 문화에 대한 우리의 이해와 존중을 확대할 기회를 창출하고 있다.</div>
+  <div class="eng-text">Be Open Towards World Englishes / <span class="sel-group" data-qi="62" data-ans="1"><button class="sel-btn" onclick="pick(this,62,0)">Use</button><button class="sel-btn" onclick="pick(this,62,1)">Using</button></span> English expressions <span class="sel-group" data-qi="63" data-ans="0"><button class="sel-btn" onclick="pick(this,63,0)">that</button><button class="sel-btn" onclick="pick(this,63,1)">what</button></span> <span class="sel-group" data-qi="64" data-ans="0"><button class="sel-btn" onclick="pick(this,64,0)">incorporate</button><button class="sel-btn" onclick="pick(this,64,1)">incorporates</button></span> the cultures of different countries, we are <span class="sel-group" data-qi="65" data-ans="0"><button class="sel-btn" onclick="pick(this,65,0)">creating</button><button class="sel-btn" onclick="pick(this,65,1)">created</button></span> opportunities to <span class="sel-group" data-qi="66" data-ans="0"><button class="sel-btn" onclick="pick(this,66,0)">broaden</button><button class="sel-btn" onclick="pick(this,66,1)">broadening</button></span> our understanding of and respect for other cultures.</div>
+  <div class="q-feedback" id="fb29"></div>
+</div>
+<div class="q-card" id="c30">
+  <div class="q-num">31번</div>
+  <div class="ko-text">이 점에서, 전 세계의 영어 화자들은 다른 영어 화자들에 대해 개방된 자세를 가질 필요가 있다.</div>
+  <div class="eng-text">In this respect, English speakers around the world <span class="sel-group" data-qi="67" data-ans="0"><button class="sel-btn" onclick="pick(this,67,0)">need</button><button class="sel-btn" onclick="pick(this,67,1)">needs</button></span> <span class="sel-group" data-qi="68" data-ans="1"><button class="sel-btn" onclick="pick(this,68,0)">being</button><button class="sel-btn" onclick="pick(this,68,1)">to be</button></span> open to <span class="sel-group" data-qi="69" data-ans="1"><button class="sel-btn" onclick="pick(this,69,0)">another</button><button class="sel-btn" onclick="pick(this,69,1)">other</button></span> English speakers.</div>
+  <div class="q-feedback" id="fb30"></div>
+</div>
+<div class="q-card" id="c31">
+  <div class="q-num">32번</div>
+  <div class="ko-text">영어의 다양성을 수용하며 우리는 개개인의 목소리가 편견이나 고정 관념 없이 들려지는, 보다 포용적인 영어 화자들의 공동체를 만들 수 있다.</div>
+  <div class="eng-text"><span class="sel-group" data-qi="70" data-ans="1"><button class="sel-btn" onclick="pick(this,70,0)">Embrace</button><button class="sel-btn" onclick="pick(this,70,1)">Embracing</button></span> the diversity of English, we can build a more inclusive community of English speakers <span class="sel-group" data-qi="71" data-ans="1"><button class="sel-btn" onclick="pick(this,71,0)">which</button><button class="sel-btn" onclick="pick(this,71,1)">where</button></span> everyone's voice is heard without prejudice or stereotypes.</div>
+  <div class="q-feedback" id="fb31"></div>
+</div>
+<div class="q-card" id="c32">
+  <div class="q-num">33번</div>
+  <div class="ko-text">영어는 단지 원어민 화자들에게만 속하는 것이 아니고, 그것을 사용하는 모두를 위한 언어이다.</div>
+  <div class="eng-text">English <span class="sel-group" data-qi="72" data-ans="1"><button class="sel-btn" onclick="pick(this,72,0)">is</button><button class="sel-btn" onclick="pick(this,72,1)">does</button></span> not solely <span class="sel-group" data-qi="73" data-ans="0"><button class="sel-btn" onclick="pick(this,73,0)">belong</button><button class="sel-btn" onclick="pick(this,73,1)">belonged</button></span> to native speakers, but instead it is a language for anyone <span class="sel-group" data-qi="74" data-ans="0"><button class="sel-btn" onclick="pick(this,74,0)">who</button><button class="sel-btn" onclick="pick(this,74,1)">what</button></span> <span class="sel-group" data-qi="75" data-ans="1"><button class="sel-btn" onclick="pick(this,75,0)">use</button><button class="sel-btn" onclick="pick(this,75,1)">uses</button></span> it.</div>
+  <div class="q-feedback" id="fb32"></div>
+</div>
+<div class="sec-header">📙 본문 외 지문</div>
+<div class="q-card" id="c33">
+  <div class="q-num">외 1번</div>
+  <div class="ko-text">1828년에, 미국 법률가이자 작가인 Noah Webster는 미국에 영어의 미국 버전을 제공한다는 목표를 가지고 '미국 영어 사전'을 출간했다.</div>
+  <div class="eng-text">In 1828, an American lawyer and author Noah Webster <span class="sel-group" data-qi="76" data-ans="0"><button class="sel-btn" onclick="pick(this,76,0)">published</button><button class="sel-btn" onclick="pick(this,76,1)">was published</button></span> "An American Dictionary of the English Language" with a goal of <span class="sel-group" data-qi="77" data-ans="1"><button class="sel-btn" onclick="pick(this,77,0)">provide</button><button class="sel-btn" onclick="pick(this,77,1)">providing</button></span> America with its own version of the English language.</div>
+  <div class="q-feedback" id="fb33"></div>
+</div>
+<div class="q-card" id="c34">
+  <div class="q-num">외 2번</div>
+  <div class="ko-text">Webster 시대의 대부분의 사전들은 사람들이 일상 생활에서 실제로 영어를 사용하는 방식을 문서화하기보다는 영어가 어떻게 사용되어야 하는지를 규정하였다.</div>
+  <div class="eng-text">Most dictionaries in Webster's day dictated how <span class="sel-group" data-qi="78" data-ans="1"><button class="sel-btn" onclick="pick(this,78,0)">should English words</button><button class="sel-btn" onclick="pick(this,78,1)">English words should</button></span> be <span class="sel-group" data-qi="79" data-ans="1"><button class="sel-btn" onclick="pick(this,79,0)">using</button><button class="sel-btn" onclick="pick(this,79,1)">used</button></span> rather than documenting the way people <span class="sel-group" data-qi="80" data-ans="0"><button class="sel-btn" onclick="pick(this,80,0)">actually used</button><button class="sel-btn" onclick="pick(this,80,1)">were actually used</button></span> English in daily life.</div>
+  <div class="q-feedback" id="fb34"></div>
+</div>
+<div class="q-card" id="c35">
+  <div class="q-num">외 3번</div>
+  <div class="ko-text">자신의 사전에서, Webster는 이러한 관행을 깨고 미국인들이 말하는 방식을 기술하기를 추구했다.</div>
+  <div class="eng-text">In his dictionary, Webster broke this convention and <span class="sel-group" data-qi="81" data-ans="1"><button class="sel-btn" onclick="pick(this,81,0)">seeks</button><button class="sel-btn" onclick="pick(this,81,1)">sought</button></span> <span class="sel-group" data-qi="82" data-ans="1"><button class="sel-btn" onclick="pick(this,82,0)">describing</button><button class="sel-btn" onclick="pick(this,82,1)">to describe</button></span> the way Americans spoke.</div>
+  <div class="q-feedback" id="fb35"></div>
+</div>
+<div class="q-card" id="c36">
+  <div class="q-num">외 4번</div>
+  <div class="ko-text">그가 그의 사전에 일상적인 단어들을 포함했을 때, 비평가들은 그가 영어를 오염시켰다고 비난했다.</div>
+  <div class="eng-text">When he included informal words in his dictionary, critics accused him of <span class="sel-group" data-qi="83" data-ans="1"><button class="sel-btn" onclick="pick(this,83,0)">pollute</button><button class="sel-btn" onclick="pick(this,83,1)">polluting</button></span> the English language.</div>
+  <div class="q-feedback" id="fb36"></div>
+</div>
+<div class="q-card" id="c37">
+  <div class="q-num">외 5번</div>
+  <div class="ko-text">그러나, Webster는 이러한 단어들이 영어의 미국 변이들을 포착함으로써, 미국 영어를 영국 영어와 구별한다고 주장했다.</div>
+  <div class="eng-text">However, Webster argued <span class="sel-group" data-qi="84" data-ans="1"><button class="sel-btn" onclick="pick(this,84,0)">what</button><button class="sel-btn" onclick="pick(this,84,1)">that</button></span> these words captured American variations of English, <span class="sel-group" data-qi="85" data-ans="0"><button class="sel-btn" onclick="pick(this,85,0)">distinguishing</button><button class="sel-btn" onclick="pick(this,85,1)">distinguished</button></span> American English from British English.</div>
+  <div class="q-feedback" id="fb37"></div>
+</div>
+<div class="q-card" id="c38">
+  <div class="q-num">외 6번</div>
+  <div class="ko-text">영어가 세계의 공통어로 부상하면서, 예를 들면, 세계 영어 옥스퍼드 편람의 창작과 함께 전 세계에 걸쳐 영어의 변이들을 등록하려는 움직임이 있었다.</div>
+  <div class="eng-text">With the rise of English as the world's lingua franca, there <span class="sel-group" data-qi="86" data-ans="1"><button class="sel-btn" onclick="pick(this,86,0)">have</button><button class="sel-btn" onclick="pick(this,86,1)">has</button></span> been a movement to <span class="sel-group" data-qi="87" data-ans="0"><button class="sel-btn" onclick="pick(this,87,0)">register</button><button class="sel-btn" onclick="pick(this,87,1)">registering</button></span> English variations all over the world, for example, with the creation of the Oxford Handbook of World Englishes.</div>
+  <div class="q-feedback" id="fb38"></div>
+</div>
+<div class="q-card" id="c39">
+  <div class="q-num">외 7번</div>
+  <div class="ko-text">이제 영어 사전들이 영어를 사용하는 다문화 인구의 정체성과 경험을 반영하는 단어들과 구들을 인정하고 문서화하는 것은 필수적이다.</div>
+  <div class="eng-text">Now, it is essential for English dictionaries <span class="sel-group" data-qi="88" data-ans="1"><button class="sel-btn" onclick="pick(this,88,0)">recognizing</button><button class="sel-btn" onclick="pick(this,88,1)">to recognize</button></span> and <span class="sel-group" data-qi="89" data-ans="0"><button class="sel-btn" onclick="pick(this,89,0)">document</button><button class="sel-btn" onclick="pick(this,89,1)">documenting</button></span> words and phrases <span class="sel-group" data-qi="90" data-ans="0"><button class="sel-btn" onclick="pick(this,90,0)">that</button><button class="sel-btn" onclick="pick(this,90,1)">what</button></span> <span class="sel-group" data-qi="91" data-ans="0"><button class="sel-btn" onclick="pick(this,91,0)">reflect</button><button class="sel-btn" onclick="pick(this,91,1)">reflects</button></span> the identities and experiences of the multicultural populations <span class="sel-group" data-qi="92" data-ans="0"><button class="sel-btn" onclick="pick(this,92,0)">who</button><button class="sel-btn" onclick="pick(this,92,1)">which</button></span> <span class="sel-group" data-qi="93" data-ans="0"><button class="sel-btn" onclick="pick(this,93,0)">use</button><button class="sel-btn" onclick="pick(this,93,1)">uses</button></span> English.</div>
+  <div class="q-feedback" id="fb39"></div>
+</div>
+
+  <div class="result-card" id="result">
+    <div style="font-family:'Black Han Sans',sans-serif;font-size:1.1rem;color:var(--accent)">🎉 어법 선택형 완료!</div>
+    <div class="result-score" id="r-score"></div>
+    <div class="result-msg" id="r-msg"></div>
+    <div class="result-btns">
+      <button class="btn-retry" onclick="location.reload()">🔄 다시 풀기</button>
+      <button class="btn-back" onclick="history.back()">← 이전 페이지로</button>
+    </div>
+  </div>
+</main>
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getFirestore,collection,addDoc,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+const cfg={apiKey:"AIzaSyCxS524S8KAaF87DomPtl9sJdF-eqes404",authDomain:"bomnalvaca.firebaseapp.com",projectId:"bomnalvaca",storageBucket:"bomnalvaca.firebasestorage.app",messagingSenderId:"115868052300",appId:"1:115868052300:web:765c08867b6f1ce0987de9"};
+const app=initializeApp(cfg);const db=getFirestore(app);
+window._log=async(d)=>{try{await addDoc(collection(db,"quiz_results"),{...d,timestamp:serverTimestamp(),file:"gounko_1grade_lesson3_grammar"})}catch(e){console.error(e)}};
+</script>
+<script>
+const NAME=sessionStorage.getItem("bn_name")||localStorage.getItem("bn_name")||"학생";
+const SCHOOL=sessionStorage.getItem("bn_school")||localStorage.getItem("bn_school")||"학교";
+const QI2CARD=[0, 0, 0, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 4, 4, 5, 6, 7, 8, 9, 10, 11, 12, 12, 12, 13, 14, 15, 15, 16, 17, 17, 18, 18, 19, 19, 19, 20, 20, 21, 21, 21, 22, 22, 22, 23, 24, 24, 24, 25, 26, 26, 26, 27, 27, 27, 28, 28, 28, 28, 28, 29, 29, 29, 29, 29, 30, 30, 30, 31, 31, 32, 32, 32, 32, 33, 33, 34, 34, 34, 35, 35, 36, 37, 37, 38, 38, 39, 39, 39, 39, 39, 39];
+const TOTAL_CARDS=40;
+const BONMUN_END=32; // last card index of 본문
+let cardDone={};let cardWrong={};let earned=0;
+let _currentMode='본문';
+let _t0=Date.now();
+let _saved=false;
+
+function _inMode(ci){
+  if(_currentMode==='전체') return true;
+  if(_currentMode==='본문') return ci<=BONMUN_END;
+  return ci>BONMUN_END;
+}
+function _modeCards(){const a=[];for(let i=0;i<TOTAL_CARDS;i++) if(_inMode(i)) a.push(i);return a;}
+function _modeTotal(){return _modeCards().length;}
+function _modeDone(){return _modeCards().filter(ci=>cardDone[ci]).length;}
+function _modeWrongNumbers(){
+  return _modeCards()
+    .filter(ci=>cardDone[ci] && cardWrong[ci]>0)
+    .map(ci=>{const el=document.querySelector('#c'+ci+' .q-num');return el?el.textContent.trim():(ci+1)+'번';})
+    .join(', ');
+}
+function _modeWrongDetails(){
+  // For admin review: which blanks were wrong + correct answer
+  const out=[];
+  _modeCards().forEach(ci=>{
+    if(!cardDone[ci]) return;
+    const card=document.getElementById('c'+ci);
+    if(!card) return;
+    const qn=card.querySelector('.q-num');
+    const grps=card.querySelectorAll('.sel-group');
+    grps.forEach((g,bi)=>{
+      const ans=parseInt(g.dataset.ans);
+      const picked=g.dataset.picked;
+      if(picked===undefined) return;
+      const pickedIdx=parseInt(picked);
+      if(pickedIdx===ans) return;
+      const btns=g.querySelectorAll('.sel-btn');
+      const myWord=btns[pickedIdx]?btns[pickedIdx].textContent:'';
+      const correctWord=btns[ans]?btns[ans].textContent:'';
+      out.push((qn?qn.textContent.trim():(ci+1)+'번')+' ('+(bi+1)+'): '+myWord+' → '+correctWord);
+    });
+  });
+  return out.join(' / ');
+}
+function _applyModeVisibility(){
+  for(let i=0;i<TOTAL_CARDS;i++){
+    const c=document.getElementById('c'+i);
+    if(c) c.classList.toggle('hidden', !_inMode(i));
+  }
+  const hdrs=document.querySelectorAll('.sec-header');
+  if(hdrs[0]) hdrs[0].classList.toggle('hidden', _currentMode==='본문외');
+  if(hdrs[1]) hdrs[1].classList.toggle('hidden', _currentMode==='본문');
+}
+function switchMode(mode){
+  if(mode===_currentMode) return;
+  if(Object.keys(cardDone).length>0 && !confirm('진행 내용이 초기화됩니다. 모드를 변경하시겠습니까?')) return;
+  _currentMode=mode; cardDone={}; cardWrong={}; earned=0; _saved=false; _t0=Date.now();
+  document.querySelectorAll('.q-card').forEach(c=>c.classList.remove('ok','fail'));
+  document.querySelectorAll('.sel-group').forEach(g=>{delete g.dataset.checked; delete g.dataset.picked;});
+  document.querySelectorAll('.sel-btn').forEach(b=>{b.disabled=false;b.classList.remove('correct','wrong');});
+  document.querySelectorAll('.q-feedback').forEach(f=>{f.className='q-feedback';f.innerHTML='';});
+  const r=document.getElementById('result'); if(r) r.classList.remove('show');
+  document.querySelectorAll('.mode-btn').forEach(b=>b.classList.toggle('active', b.dataset.mode===mode));
+  _applyModeVisibility();
+  updateUI();
+}
+function _saveProgress(completed){
+  if(_saved) return;
+  _saved=true;
+  const total=_modeTotal(); const done=_modeDone();
+  if(done===0) return;
+  const correctN=earned; const wrongN=done-correctN;
+  const pct=Math.round(correctN/total*100);
+  const elapsedMin=Math.max(0,Math.round((Date.now()-_t0)/60000));
+  if(window._log) window._log({
+    studentName:NAME, school:SCHOOL,
+    score:pct, correct:correctN, wrong:wrongN, total:total,
+    elapsedMin:elapsedMin,
+    quizType:'고운고1 Lesson3 어법 ('+_currentMode+')',
+    wrongNumbers:_modeWrongNumbers(),
+    wrongSentences:_modeWrongDetails(),
+    completed:!!completed
+  });
+}
+window.addEventListener('beforeunload',()=>_saveProgress(false));
+
+function pick(btn,qi,idx){
+  const grp=btn.closest('.sel-group');if(grp.dataset.checked)return;
+  const ci=QI2CARD[qi];
+  if(!_inMode(ci)) return;
+  grp.dataset.checked='1';
+  grp.dataset.picked=String(idx);
+  const ans=parseInt(grp.dataset.ans);
+  const btns=grp.querySelectorAll('.sel-btn');btns.forEach(b=>b.disabled=true);
+  const ok=idx===ans;btn.classList.add(ok?'correct':'wrong');if(!ok)btns[ans].classList.add('correct');
+  if(!(ci in cardWrong))cardWrong[ci]=0;
+  if(!ok)cardWrong[ci]++;
+  const card=document.getElementById('c'+ci);
+  const grps=card.querySelectorAll('.sel-group');
+  const allDone=Array.from(grps).every(g=>g.dataset.checked);
+  if(allDone&&!cardDone[ci]){
+    cardDone[ci]=true;const isOk=cardWrong[ci]===0;if(isOk)earned++;
+    card.classList.add(isOk?'ok':'fail');
+    const fb=document.getElementById('fb'+ci);
+    fb.className='q-feedback '+(isOk?'ok':'fail')+' show';
+    fb.innerHTML=isOk?'✅ 정답!':'❌ 틀렸어요. 초록색이 정답입니다.';
+    updateUI();
+    if(_modeDone()>=_modeTotal()) showResult();
+  }
+}
+function updateUI(){
+  const done=_modeDone(); const total=_modeTotal();
+  document.getElementById('score-val').textContent=earned;
+  document.getElementById('score-max').textContent=total;
+  document.getElementById('prog').style.width=(total?done/total*100:0)+'%';
+  document.getElementById('prog-txt').textContent=done+' / '+total+' 완료';
+}
+function showResult(){
+  const total=_modeTotal();
+  const pct=Math.round(earned/total*100);
+  _saveProgress(true);
+  document.getElementById('r-score').textContent=earned+' / '+total+'점 ('+pct+'%)';
+  document.getElementById('r-msg').textContent=pct>=90?'완벽합니다! 어법 완전 정복! 🌟':pct>=70?'잘했어요! 틀린 문제 다시 확인해봐요. 💪':pct>=50?'절반 이상! 해석 보면서 다시 도전해봐요. 📖':'기초부터 차근차근! 🔄';
+  document.getElementById('result').classList.add('show');
+  setTimeout(()=>window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'}),200);
+}
+_applyModeVisibility();
+updateUI();
+</script>
+</body>
+</html>
