@@ -608,12 +608,42 @@ let studentName='',studentSchool='',mode='A',selectedNos=null,checkedNos=new Set
 let qs=[],idx=0,cor=0,wrn=0,wrongs=[],t0=0;
 let timerInterval=null,timerLeft=10;
 let _answered=false;
+let doneNos=new Set(); // 오늘 완료한 번호_모드 (예: "41_A")
+
+// === 오늘 진행 기록 저장 ===
+const QUIZ_ID='mock_go1_2025_06_voca';
+const _DAY_KEY=(function(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');})();
+const _PROG_KEY='bn_prog_'+QUIZ_ID;
+function _saveProg(){
+  try{localStorage.setItem(_PROG_KEY, JSON.stringify({day:_DAY_KEY, doneNos:Array.from(doneNos)}));}catch(e){}
+}
+function _loadProg(){
+  try{
+    const raw=localStorage.getItem(_PROG_KEY); if(!raw) return;
+    const data=JSON.parse(raw);
+    if(data.day!==_DAY_KEY){localStorage.removeItem(_PROG_KEY); return;}
+    if(Array.isArray(data.doneNos)) doneNos=new Set(data.doneNos);
+  }catch(e){}
+}
+function _cleanupOldProgress(){
+  try{
+    for(let i=localStorage.length-1;i>=0;i--){
+      const k=localStorage.key(i);
+      if(k && k.startsWith('bn_prog_')){
+        try{const v=JSON.parse(localStorage.getItem(k)); if(v.day!==_DAY_KEY) localStorage.removeItem(k);}
+        catch(e){localStorage.removeItem(k);}
+      }
+    }
+  }catch(e){}
+}
 
 function doLogin(){
   const s=document.getElementById('si').value,n=document.getElementById('ni').value.trim();
   if(!s){alert('학교를 선택해주세요!');return;}
   if(!n){alert('이름을 입력해주세요!');return;}
   studentSchool=s;studentName=n;
+  _cleanupOldProgress();
+  _loadProg();
   document.getElementById('loginScreen').classList.add('hidden');
   renderHub();document.getElementById('hubScreen').classList.remove('hidden');
 }
@@ -631,7 +661,9 @@ function renderHub(){
     const preview=words.slice(0,3).map(w=>w.eng).join(', ')+(words.length>3?'...':'');
     const card=document.createElement('div');card.className='num-card';
     card.dataset.no=no;
-    card.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:flex-start;"><div class="num-no">${label}</div><div class="num-chk" id="chk${no}"></div></div><div class="num-cnt">${words.length}개 단어</div><div class="num-preview">${preview}</div>`;
+    const doneA=doneNos.has(no+'_A'), doneB=doneNos.has(no+'_B');
+    const doneBadges=(doneA||doneB)?`<div style="margin-top:6px;font-size:10px;font-weight:800;">${doneA?'<span style="background:#e8f5e9;color:#2e7d32;padding:1px 6px;border-radius:8px;margin-right:3px;">✓ A 완료</span>':''}${doneB?'<span style="background:#e3f2fd;color:#1565c0;padding:1px 6px;border-radius:8px;">✓ B 완료</span>':''}</div>`:'';
+    card.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:flex-start;"><div class="num-no">${label}</div><div class="num-chk" id="chk${no}"></div></div><div class="num-cnt">${words.length}개 단어</div><div class="num-preview">${preview}</div>${doneBadges}`;
     card.onclick=()=>toggleCard(no,card);
     // 길게 누르면 바로 단독 학습
     card.ondblclick=(e)=>{e.stopPropagation();openMode([no],label);};
@@ -829,6 +861,11 @@ function showResult(){
       <button class="rbtn rbtn-p" onclick="startQuiz()">다시하기 🔄</button>
       <button class="rbtn rbtn-s" onclick="goHub()">허브로 ←</button>
     </div></div>`;
+  // Mark current selection as done for today
+  if(selectedNos && selectedNos.length){
+    selectedNos.forEach(no=>doneNos.add(no+'_'+mode));
+    _saveProg();
+  }
   _save({submittedAt:new Date().toISOString(),studentName,school:studentSchool,score:pct,correct:cor,wrong:wrn,total,elapsedMin:el,quizType:'고1_25년6월_동반의어_'+label+'_'+mode+'모드',wrongWords:wrongs.map(w=>({eng:w.eng,kor:w.kor,my:w.my,src:w.type}))});
 }
 </script>

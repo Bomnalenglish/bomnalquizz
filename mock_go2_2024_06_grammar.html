@@ -591,6 +591,33 @@ let userName='', userSchool='', selectedRefs=new Set(), doneRefs=new Set();
 let qs=[], idx=0, cor=0, wrn=0, wrongs=[], allResults=[], answered=false, t0=0;
 let filterMode='all';
 
+// === 오늘 진행 기록 저장 (페이지 재진입 시 완료 표시 유지) ===
+const QUIZ_ID='mock_go2_2024_06_grammar';
+const _DAY_KEY=(function(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');})();
+const _PROG_KEY='bn_prog_'+QUIZ_ID;
+function _saveProg(){
+  try{localStorage.setItem(_PROG_KEY, JSON.stringify({day:_DAY_KEY, doneRefs:Array.from(doneRefs)}));}catch(e){}
+}
+function _loadProg(){
+  try{
+    const raw=localStorage.getItem(_PROG_KEY); if(!raw) return;
+    const data=JSON.parse(raw);
+    if(data.day!==_DAY_KEY){localStorage.removeItem(_PROG_KEY); return;}
+    if(Array.isArray(data.doneRefs)) doneRefs=new Set(data.doneRefs);
+  }catch(e){}
+}
+function _cleanupOldProgress(){
+  try{
+    for(let i=localStorage.length-1;i>=0;i--){
+      const k=localStorage.key(i);
+      if(k && k.startsWith('bn_prog_')){
+        try{const v=JSON.parse(localStorage.getItem(k)); if(v.day!==_DAY_KEY) localStorage.removeItem(k);}
+        catch(e){localStorage.removeItem(k);}
+      }
+    }
+  }catch(e){}
+}
+
 function goPassageSelect(){
   userSchool = document.getElementById('si').value;
   userName = document.getElementById('ni').value.trim();
@@ -724,6 +751,7 @@ function showResult(){
   const total=idx, pct=total>0?Math.round(cor/total*100):0;
   const el=Math.round((Date.now()-t0)/60000);
   selectedRefs.forEach(r=>doneRefs.add(r));
+  _saveProg();
   const wrongSet = new Set(allResults.filter(r=>!r.correct).map(r=>r.pno+'_'+r.sn+'_'+r.ans));
   wrongQs = qs.filter(q=>wrongSet.has(q.pno+'_'+q.sn+'_'+q.correct));
 
@@ -808,6 +836,8 @@ window.addEventListener('DOMContentLoaded',()=>{
       if(sel.options[i].value&&s.includes(sel.options[i].value)){sel.value=sel.options[i].value;break;}
     }
   }
+  _cleanupOldProgress();
+  _loadProg();
 });
 </script>
 </body>
