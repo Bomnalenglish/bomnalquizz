@@ -56,7 +56,7 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--bg);min-height:100vh
 .hb{background:rgba(255,255,255,.2);border-radius:16px;padding:4px 12px;font-size:12px;font-weight:700;}
 .pw{height:4px;background:#bbdefb;}.pf{height:100%;background:linear-gradient(90deg,#1565c0,#f57f17);transition:width .4s;}
 
-#quizArea{padding:20px;max-width:720px;margin:0 auto;}
+#quizArea{padding:20px;max-width:780px;margin:0 auto;}
 .qc{background:white;border-radius:18px;padding:22px 20px;margin-bottom:16px;box-shadow:0 3px 16px rgba(21,101,192,.08);}
 .q-no-badge{display:flex;align-items:center;gap:6px;margin-bottom:12px;flex-wrap:wrap;}
 .qno{font-family:'Black Han Sans',sans-serif;font-size:13px;color:white;background:var(--pri);padding:3px 12px;border-radius:12px;}
@@ -67,12 +67,14 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--bg);min-height:100vh
 .qtype-4{background:#e1f5fe;color:#01579b;}
 .def-box{background:#f3e5f5;border-left:4px solid #9c27b0;border-radius:0 10px 10px 0;padding:12px 14px;font-size:13px;line-height:1.6;margin-bottom:12px;color:#4a148c;font-style:italic;}
 .def-label{font-size:10px;font-weight:800;color:#7b1fa2;margin-bottom:4px;letter-spacing:.5px;}
-.ko-box{background:#fff8e1;border-left:4px solid var(--acc);border-radius:0 10px 10px 0;padding:12px 14px;font-size:13px;line-height:1.7;margin-bottom:12px;color:#1a1a2e;}
+.statement-box{background:#fff8e1;border-left:4px solid var(--acc);border-radius:0 10px 10px 0;padding:14px 16px;font-size:14px;line-height:1.7;margin-bottom:12px;color:#1a1a2e;font-weight:700;}
+.statement-label{font-size:10px;font-weight:800;color:#e65100;margin-bottom:4px;letter-spacing:.5px;}
+.en-label{font-size:10px;font-weight:800;color:#999;margin-bottom:4px;letter-spacing:.5px;}
 .en-box{background:#f8faff;border-left:4px solid var(--pri);border-radius:0 10px 10px 0;padding:14px 16px;font-size:14px;line-height:2;margin-bottom:14px;color:#1a237e;}
-.blank{display:inline-block;min-width:60px;background:#bbdefb;border-bottom:3px solid #1565c0;border-radius:4px;padding:1px 8px;font-weight:800;color:#1565c0;text-align:center;font-style:italic;margin:0 2px;}
-.base-form{display:inline-block;background:#fff3e0;border:1px dashed #e65100;border-radius:6px;padding:1px 8px;font-size:13px;color:#e65100;font-weight:700;margin:0 2px;}
-.binary-pair{display:inline-block;background:#fce4ec;border:1px dashed #c2185b;border-radius:6px;padding:2px 10px;font-size:14px;color:#880e4f;font-weight:700;margin:0 2px;}
-.q-prompt{font-size:13px;font-weight:700;color:#1565c0;margin-bottom:10px;text-align:center;}
+.blank{display:inline-block;min-width:60px;background:#fff59d;border-bottom:3px solid #f57f17;border-radius:4px;padding:1px 10px;font-weight:800;color:#e65100;text-align:center;font-style:italic;margin:0 2px;}
+.binary-pair{display:inline-block;background:#fce4ec;border:1.5px dashed #c2185b;border-radius:6px;padding:2px 10px;font-size:14px;color:#880e4f;font-weight:700;margin:0 3px;}
+.base-form{display:inline-block;background:#fff3e0;border:1px dashed #e65100;border-radius:6px;padding:2px 10px;font-size:14px;color:#e65100;font-weight:800;margin:0 4px;}
+.q-prompt{font-size:13px;font-weight:700;color:#1565c0;margin-bottom:10px;text-align:center;padding:8px;background:#f5faff;border-radius:8px;}
 .choices{display:grid;gap:10px;}
 .cb{background:#f5f5f5;border:2px solid #e0e0e0;border-radius:11px;padding:13px 16px;font-family:'Nanum Gothic',sans-serif;font-size:14px;font-weight:700;cursor:pointer;text-align:left;transition:all .15s;display:flex;align-items:center;gap:12px;line-height:1.4;}
 .cb:hover:not(:disabled){border-color:var(--pri);background:#e3f2fd;}
@@ -128,7 +130,7 @@ window._fbSave=async function(data){
     <div class="info-grid">
       <div class="info-item">📝 18~20번 프로토타입</div>
       <div class="info-item">🎯 4유형 자유 선택</div>
-      <div class="info-item">📖 한국어 해석 함께</div>
+      <div class="info-item">📖 본문 통째로 제시</div>
       <div class="info-item">📊 자동채점 + 오답노트</div>
     </div>
     <select class="ni" id="si" style="background:white;color:#1565c0;font-weight:700;cursor:pointer;">
@@ -180,77 +182,86 @@ window._fbSave=async function(data){
 
 <script>
 // =================================================================
-// PASSAGES: 18~20번 프로토타입
-// 각 지문마다 4유형 (q1: 빈칸 / q2: 어형변화 / q3: 옳고그른 / q4: 영영풀이)
+// PASSAGES (18~20번 프로토타입)
+// - fullKo: 전체 한국어 해석
+// - fullEn: 전체 영어 본문
+// - q1~q4: 각 유형별 문제 (target = 본문에서 빈칸 처리할 부분)
+// 빈칸 위치는 본문 전체에 골고루 분포되도록 배치
 // =================================================================
 const PASSAGES = {
   '18': {
     title: '목적 추론 - Gardening Day',
+    fullKo: `주민들께, 제 이름은 Kari Patterson이고, 저는 River View 아파트의 관리인입니다. 우리의 커뮤니티를 더욱 아름답게 만들기 위해 화창한 날씨를 이용할 때입니다. 7월 13일 토요일 오전 9시에, 주민들은 북쪽 주차장에서 만날 예정입니다. 우리는 팀을 나누어 꽃과 작은 나무를 심고, 잡초를 뽑고, 잔디밭에 다채로운 장식을 할 것입니다. 올해 정원가꾸기 날에 우리와 함께 해 주시고, 특별한 기술이나 도구는 필요하지 않다는 것을 기억하세요. 작년에, 우리는 함께 일하며 즐거운 시간을 보냈으니, 오셔서 올해 행사도 더 멋지게 만들어 주세요! 따뜻한 마음을 담아, Kari Patterson`,
+    fullEn: `Dear Residents, My name is Kari Patterson, and I'm the manager of the River View Apartments. It's time to take advantage of the sunny weather to make our community more beautiful. On Saturday, July 13 at 9 a.m., residents will meet in the north parking lot. We will divide into teams to plant flowers and small trees, pull weeds, and put colorful decorations on the lawn. Please join us for this year's Gardening Day, and remember no special skills or tools are required. Last year, we had a great time working together, so come out and make this year's event even better! Warm regards, Kari Patterson`,
     q1: [
-      {ko:'우리의 커뮤니티를 더욱 아름답게 만들기 위해 화창한 날씨를 이용할 때입니다.', en:`It's time to take advantage of the sunny weather to make our community more ___BLANK___.`, ans:'beautiful', options:['beautiful','crowded','quiet','modern']},
-      {ko:'우리는 팀을 나누어 꽃과 작은 나무를 심고, 잡초를 뽑고, 잔디밭에 다채로운 장식을 할 것입니다.', en:`We will divide into teams to plant flowers and small trees, pull ___BLANK___, and put colorful decorations on the lawn.`, ans:'weeds', options:['weeds','leaves','seeds','roots']},
-      {ko:'특별한 기술이나 도구는 필요하지 않다는 것을 기억하세요.', en:`Please join us for this year's Gardening Day, and remember no special skills or tools are ___BLANK___.`, ans:'required', options:['required','refused','removed','replaced']}
+      {target:'beautiful', options:['beautiful','crowded','quiet','modern']},
+      {target:'weeds', options:['weeds','leaves','seeds','roots']},
+      {target:'required', options:['required','refused','removed','replaced']}
     ],
     q2: [
-      {ko:'주민들께, 제 이름은 Kari Patterson입니다.', en:`Dear ___BLANK___, My name is Kari Patterson.`, base:'resident', ans:'Residents', hint:'복수형 (주민들)'},
-      {ko:'잔디밭에 다채로운 장식을 할 것입니다.', en:`...put colorful ___BLANK___ on the lawn.`, base:'decorate', ans:'decorations', hint:'명사 복수형'},
-      {ko:'작년에, 우리는 함께 일하며 즐거운 시간을 보냈습니다.', en:`Last year, we had a great time ___BLANK___ together.`, base:'work', ans:'working', hint:'동명사 (~ing)'}
+      {target:'Residents', base:'resident'},
+      {target:'decorations', base:'decorate'},
+      {target:'working', base:'work'}
     ],
     q3: [
-      {ko:'화창한 날씨를 이용할 때입니다.', en:`It's time to ___PAIR___ the sunny weather.`, options:['take advantage of','take advantage with'], ansIdx:0},
-      {ko:'우리는 팀을 나누어 꽃과 작은 나무를 심을 것입니다.', en:`We will divide ___PAIR___ teams to plant flowers and small trees.`, options:['into','onto'], ansIdx:0},
-      {ko:'특별한 기술이나 도구는 필요하지 않습니다.', en:`No special skills or tools ___PAIR___ required.`, options:['are','is'], ansIdx:0}
+      {statement:`The Gardening Day event will be held on Saturday, July 13 at 9 a.m.`, isTrue:true},
+      {statement:`Participants need to bring their own tools and have special gardening skills.`, isTrue:false},
+      {statement:`Residents will meet in the south parking lot to start the event.`, isTrue:false}
     ],
     q4: [
-      {def:'a person who lives in a particular place permanently or for a long time', ko:'주민들께', en:`Dear ___BLANK___, My name is Kari Patterson.`, ans:'resident', options:['resident','manager','visitor','tourist']},
-      {def:'a wild plant growing where it is not wanted, especially among crops or garden plants', ko:'잡초를 뽑고', en:`...pull ___BLANK___, and put colorful decorations on the lawn.`, ans:'weeds', options:['weeds','flowers','trees','rocks']},
-      {def:'needed; necessary for something', ko:'필요하지 않다', en:`No special skills or tools are ___BLANK___.`, ans:'required', options:['required','suggested','offered','rejected']}
+      {target:'manager', def:`a person who is in charge of running a business, department, or organization`, options:['manager','resident','visitor','guard']},
+      {target:'parking lot', def:`an outdoor area set aside for parking vehicles`, options:['parking lot','driveway','garage','street']},
+      {target:'Gardening', def:`the activity of cultivating and tending a garden`, options:['Gardening','Cooking','Cleaning','Painting']}
     ]
   },
   '19': {
     title: '심경 추론 - Emma의 결승전',
+    fullKo: `결승전 경주였다. Emma는 그녀의 계주 팀의 마지막 주자였다. 그녀는 그녀의 자리에서 팀 동료가 그녀에게 바통을 건네주기를 초조하게 기다렸다. Emma는 그녀가 실수를 하지 않고 자신의 역할을 수행할 수 있을지 확신하지 못했다. "만약 내가 바통을 떨어뜨리면 어떡하지?"라고 생각하면서 그녀의 손이 떨렸다. 그녀는 그녀의 팀 동료가 다가올수록 심박수가 증가하는 것을 느꼈다. 하지만 그녀가 달리기 시작했을 때, 그녀는 순조롭게 바통을 받았다. 마지막 10미터에서, 그녀는 두 명의 다른 주자를 제치고 1위로 결승선을 통과했다! 그녀는 두 손을 하늘로 치켜들고, 얼굴에 큰 미소를 지었다. 팀 동료들이 그녀를 안아주자, 그녀는 "우리가 해냈어!"라고 소리쳤다. 그녀의 모든 힘든 훈련이 그럴만한 가치가 있었다.`,
+    fullEn: `It was the championship race. Emma was the final runner on her relay team. She anxiously waited in her spot for her teammate to pass her the baton. Emma wasn't sure she could perform her role without making a mistake. Her hands shook as she thought, "What if I drop the baton?" She felt her heart rate increasing as her teammate approached. But as she started running, she received the baton smoothly. In the final 10 meters, she passed two other runners and crossed the finish line in first place! She raised her hands in the air, and a huge smile came across her face. As her teammates hugged her, she shouted, "We did it!" All of her hard training had been worth it.`,
     q1: [
-      {ko:'그녀는 그녀의 자리에서 팀 동료가 그녀에게 바통을 건네주기를 초조하게 기다렸다.', en:`She ___BLANK___ waited in her spot for her teammate to pass her the baton.`, ans:'anxiously', options:['anxiously','calmly','loudly','happily']},
-      {ko:'그녀는 그녀의 팀 동료가 다가올수록 심박수가 증가하는 것을 느꼈다.', en:`She felt her heart ___BLANK___ increasing as her teammate approached.`, ans:'rate', options:['rate','beat','sound','speed']},
-      {ko:'그녀의 모든 힘든 훈련이 그럴만한 가치가 있었다.', en:`All of her hard training had been ___BLANK___ it.`, ans:'worth', options:['worth','through','without','beyond']}
+      {target:'anxiously', options:['anxiously','calmly','loudly','happily']},
+      {target:'rate', options:['rate','beat','sound','speed']},
+      {target:'worth', options:['worth','through','without','beyond']}
     ],
     q2: [
-      {ko:'그녀의 손이 떨렸다.', en:`Her hands ___BLANK___ as she thought, "What if I drop the baton?"`, base:'shake', ans:'shook', hint:'과거형'},
-      {ko:'그녀는 순조롭게 바통을 받았다.', en:`She received the baton ___BLANK___.`, base:'smooth', ans:'smoothly', hint:'부사 (~ly)'},
-      {ko:'팀 동료들이 그녀를 안아주었다.', en:`As her teammates ___BLANK___ her, she shouted, "We did it!"`, base:'hug', ans:'hugged', hint:'과거형 (자음 중복 주의)'}
+      {target:'shook', base:'shake'},
+      {target:'smoothly', base:'smooth'},
+      {target:'hugged', base:'hug'}
     ],
     q3: [
-      {ko:'Emma는 그녀가 실수를 하지 않고 자신의 역할을 수행할 수 있을지 확신하지 못했다.', en:`Emma wasn't sure she could perform her role without ___PAIR___ a mistake.`, options:['making','makes'], ansIdx:0},
-      {ko:'마지막 10미터에서, 그녀는 두 명의 다른 주자를 제치고 1위로 결승선을 통과했다.', en:`In the final 10 meters, she passed two other runners and ___PAIR___ the finish line in first place!`, options:['crossed','cross'], ansIdx:0},
-      {ko:'그녀의 모든 힘든 훈련이 그럴만한 가치가 있었다.', en:`All of her hard training ___PAIR___ worth it.`, options:['had been','have been'], ansIdx:0}
+      {statement:`Emma was the first runner on her relay team in the championship race.`, isTrue:false},
+      {statement:`Emma's heart rate increased as her teammate approached with the baton.`, isTrue:true},
+      {statement:`Emma dropped the baton and finished the race in last place.`, isTrue:false}
     ],
     q4: [
-      {def:'a final game or competition that decides who is the overall winner', ko:'결승전 경주였다.', en:`It was the ___BLANK___ race.`, ans:'championship', options:['championship','practice','rehearsal','preview']},
-      {def:'in a way that shows feelings of worry, nervousness, or fear', ko:'초조하게 기다렸다', en:`She ___BLANK___ waited in her spot for her teammate.`, ans:'anxiously', options:['anxiously','calmly','bravely','silently']},
-      {def:'to come or go near or nearer to someone or something', ko:'팀 동료가 다가올수록', en:`She felt her heart rate increasing as her teammate ___BLANK___.`, ans:'approached', options:['approached','avoided','ignored','rejected']}
+      {target:'championship', def:`a final game or competition that decides who is the overall winner`, options:['championship','practice','rehearsal','preview']},
+      {target:'approached', def:`came near or nearer to someone or something in space or time`, options:['approached','avoided','ignored','rejected']},
+      {target:'raised', def:`lifted or moved something to a higher position`, options:['raised','lowered','dropped','hidden']}
     ]
   },
   '20': {
     title: '주장 추론 - 자기 평가',
+    fullKo: `대부분의 사람들은 그것(진정한 자기 평가)이 그들이 누구인지, 무엇을 할 수 있는지에 대한 믿음을 낮추는 것을 의미할지도 모른다고 두려워하기 때문에, 진정한 자기 평가에 대한 생각을 거부한다. Goethe의 격언처럼, "너 자신을 현재의 너의 모습 이상으로 보는 것"은 큰 실수이다. 네가 너의 단점을 생각해 보기를 거부한다면 어떻게 너 자신을 인식하고 있다고 여겨질 수 있을까? 네가 너 자신에 대해 몇 가지를 인정해야 할지도 모른다는 걱정 때문에 자기를 평가하는 것을 두려워하지 마라. Goethe 격언의 후반부도 역시 중요하다. 그는 "너의 진정한 가치보다 너 자신을 낮게 평가하는 것"도 똑같이 해롭다고 말한다. 우리는 다른 능력들을 과대평가하는 것만큼 많이 그리고 위험하게 우리의 능력을 과소평가한다. 너 자신을 정확하게 그리고 정직하게 판단하는 능력을 길러라. 네가 할 수 있는 것과 너의 잠재력을 열기 위해 필요한 것을 파악하기 위해 내면을 들여다 봐라.`,
+    fullEn: `Most people resist the idea of a true self-estimate, probably because they fear it might mean downgrading some of their beliefs about who they are and what they're capable of. As Goethe's maxim goes, it is a great failing "to see yourself as more than you are." How could you really be considered self-aware if you refuse to consider your weaknesses? Don't fear self-assessment because you're worried you might have to admit some things about yourself. The second half of Goethe's maxim is important too. He states that it is equally damaging to "value yourself at less than your true worth." We underestimate our capabilities just as much and just as dangerously as we overestimate other abilities. Cultivate the ability to judge yourself accurately and honestly. Look inward to discern what you're capable of and what it will take to unlock that potential.`,
     q1: [
-      {ko:'네가 너의 단점을 생각해 보기를 거부한다면 어떻게 너 자신을 인식하고 있다고 여겨질 수 있을까?', en:`How could you really be considered self-aware if you ___BLANK___ to consider your weaknesses?`, ans:'refuse', options:['refuse','agree','attempt','hope']},
-      {ko:'네가 너 자신에 대해 몇 가지를 인정해야 할지도 모른다는 걱정 때문에 자기를 평가하는 것을 두려워하지 마라.', en:`Don't fear self-assessment because you're worried you might have to ___BLANK___ some things about yourself.`, ans:'admit', options:['admit','deny','forget','hide']},
-      {ko:'네가 할 수 있는 것과 너의 잠재력을 열기 위해 필요한 것을 파악하기 위해 내면을 들여다 봐라.', en:`Look inward to discern what you're capable of and what it will take to unlock that ___BLANK___.`, ans:'potential', options:['potential','failure','memory','weakness']}
+      {target:'resist', options:['resist','accept','admire','achieve']},
+      {target:'refuse', options:['refuse','agree','attempt','hope']},
+      {target:'potential', options:['potential','failure','memory','weakness']}
     ],
     q2: [
-      {ko:'그는 똑같이 해롭다고 말한다.', en:`He ___BLANK___ that it is equally damaging to "value yourself at less than your true worth."`, base:'state', ans:'states', hint:'3인칭 단수 현재 (-s)'},
-      {ko:'너 자신을 정확하게 그리고 정직하게 판단하는 능력을 길러라.', en:`Cultivate the ability to judge yourself ___BLANK___ and honestly.`, base:'accurate', ans:'accurately', hint:'부사 (~ly)'},
-      {ko:'우리는 우리의 능력을 과소평가한다.', en:`We underestimate our ___BLANK___ just as much and just as dangerously as we overestimate other abilities.`, base:'capable', ans:'capabilities', hint:'명사 복수형 (-ity → -ities)'}
+      {target:'downgrading', base:'downgrade'},
+      {target:'states', base:'state'},
+      {target:'accurately', base:'accurate'}
     ],
     q3: [
-      {ko:'대부분의 사람들은 그들의 믿음을 낮추는 것을 의미할지도 모른다고 두려워한다.', en:`Most people resist the idea of a true self-estimate, probably because they fear it might mean ___PAIR___ some of their beliefs.`, options:['downgrading','downgrade'], ansIdx:0},
-      {ko:'어떻게 너 자신을 인식하고 있다고 여겨질 수 있을까?', en:`How could you really be ___PAIR___ self-aware if you refuse to consider your weaknesses?`, options:['considered','consider'], ansIdx:0},
-      {ko:'우리의 능력을 과소평가한다.', en:`We underestimate our capabilities just as much and just as ___PAIR___ as we overestimate other abilities.`, options:['dangerously','dangerous'], ansIdx:0}
+      {statement:`Most people welcome the idea of a true self-estimate because it improves their self-image.`, isTrue:false},
+      {statement:`According to Goethe, valuing yourself less than your true worth is just as damaging as overvaluing yourself.`, isTrue:true},
+      {statement:`The author argues that we should rely on others' opinions rather than judging ourselves.`, isTrue:false}
     ],
     q4: [
-      {def:'to refuse to accept, do, or allow something', ko:'진정한 자기 평가에 대한 생각을 거부한다.', en:`Most people ___BLANK___ the idea of a true self-estimate.`, ans:'resist', options:['resist','accept','admire','achieve']},
-      {def:'to acknowledge or confess that something is true, often reluctantly', ko:'너 자신에 대해 몇 가지를 인정해야 할지도 모른다.', en:`You might have to ___BLANK___ some things about yourself.`, ans:'admit', options:['admit','deny','hide','reject']},
-      {def:'the possibility of becoming or developing into something in the future', ko:'너의 잠재력을 열기 위해', en:`What it will take to unlock that ___BLANK___.`, ans:'potential', options:['potential','reality','failure','memory']}
+      {target:'maxim', def:`a short, well-known saying expressing a general truth or rule of conduct`, options:['maxim','novel','letter','speech']},
+      {target:'admit', def:`to acknowledge or confess that something is true, often reluctantly`, options:['admit','deny','hide','reject']},
+      {target:'discern', def:`to perceive or recognize something with effort or difficulty`, options:['discern','ignore','forget','create']}
     ]
   }
 };
@@ -263,8 +274,7 @@ let selectedTypes = new Set([1,2,3,4]);
 let doneRefs = new Set();
 let qs=[], idx=0, cor=0, wrn=0, wrongs=[], allResults=[], answered=false, t0=0;
 
-// === 진행 기록 (오늘 완료한 지문) ===
-const QUIZ_ID = 'mock_go2_2024_06_memory_v2';
+const QUIZ_ID = 'mock_go2_2024_06_memory_v3';
 const _DAY_KEY = (function(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');})();
 const _PROG_KEY = 'bn_prog_'+QUIZ_ID;
 function _saveProg(){try{localStorage.setItem(_PROG_KEY, JSON.stringify({day:_DAY_KEY, doneRefs:Array.from(doneRefs)}));}catch(e){}}
@@ -348,7 +358,7 @@ function startQuiz(){
       if(!selectedTypes.has(t)) return;
       const arr = p['q'+t] || [];
       arr.forEach((q,qi)=>{
-        qs.push({...q, type:t, pno:ref, qi:qi+1, passageTitle:p.title});
+        qs.push({...q, type:t, pno:ref, qi:qi+1, passageTitle:p.title, fullKo:p.fullKo, fullEn:p.fullEn});
       });
     });
   });
@@ -363,6 +373,15 @@ function startQuiz(){
 }
 
 function escHTML(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+// 본문 안에서 target 위치를 찾아 replacement HTML로 치환 (첫 매치만)
+function injectMarker(fullEn, target, replacementHTML){
+  const escapedFull = escHTML(fullEn);
+  const escapedTarget = escHTML(target);
+  const idx = escapedFull.indexOf(escapedTarget);
+  if(idx === -1) return escapedFull + ' <span style="color:#c62828;font-size:10px;">[⚠️ target 찾기 실패: '+escapedTarget+']</span>';
+  return escapedFull.substring(0, idx) + replacementHTML + escapedFull.substring(idx + escapedTarget.length);
+}
 
 function showQ(){
   if(idx >= qs.length){showResult(); return;}
@@ -380,7 +399,7 @@ function showQ(){
 
 // ====== Type 1: 빈칸 추론 4지선다 ======
 function renderType1(area, q){
-  const enHTML = escHTML(q.en).replace(/___BLANK___/g, '<span class="blank">?</span>');
+  const enHTML = injectMarker(q.fullEn, q.target, '<span class="blank">?</span>');
   const choiceHTML = q.options.map((opt,i)=>`<button class="cb" data-idx="${i}"><span class="cn">${i+1}</span><span>${escHTML(opt)}</span></button>`).join('');
   area.innerHTML = `
     <div class="qc">
@@ -388,33 +407,31 @@ function renderType1(area, q){
         <span class="qno">지문 ${q.pno}번</span>
         <span class="qtype qtype-1">🔡 빈칸 추론</span>
       </div>
-      <div class="ko-box">📌 ${escHTML(q.ko)}</div>
-      <div class="en-box">${enHTML}</div>
-      <div class="q-prompt">⬛ 빈칸에 들어갈 알맞은 단어를 고르세요</div>
+      <div class="en-box"><div class="en-label">📖 PASSAGE</div>${enHTML}</div>
+      <div class="q-prompt">⬛ Choose the word that best fills the blank</div>
       <div class="choices" id="qChoices">${choiceHTML}</div>
       <div class="fb-msg" id="fb"></div>
     </div>`;
-  const correctIdx = q.options.indexOf(q.ans);
+  const correctIdx = q.options.indexOf(q.target);
   document.querySelectorAll('#qChoices .cb').forEach(b=>{
-    b.addEventListener('click', ()=>checkChoice(b, parseInt(b.dataset.idx), correctIdx, q.ans));
+    b.addEventListener('click', ()=>checkChoice(b, parseInt(b.dataset.idx), correctIdx, q.target));
   });
 }
 
-// ====== Type 2: 어형변화 주관식 ======
+// ====== Type 2: 어형변화 주관식 (힌트 없음) ======
 function renderType2(area, q){
-  const enHTML = escHTML(q.en).replace(/___BLANK___/g, '<span class="blank">?</span>');
+  const enHTML = injectMarker(q.fullEn, q.target, '<span class="blank">?</span>');
   area.innerHTML = `
     <div class="qc">
       <div class="q-no-badge">
         <span class="qno">지문 ${q.pno}번</span>
-        <span class="qtype qtype-2">✏️ 어형 변화</span>
+        <span class="qtype qtype-2">✏️ Word Form</span>
       </div>
-      <div class="ko-box">📌 ${escHTML(q.ko)}</div>
-      <div class="en-box">${enHTML}</div>
-      <div class="q-prompt">⬛ 원형: <span class="base-form">${escHTML(q.base)}</span> → 빈칸에 맞는 형태로 변형하세요 <span style="font-size:11px;color:#999;">(${escHTML(q.hint||'')})</span></div>
+      <div class="en-box"><div class="en-label">📖 PASSAGE</div>${enHTML}</div>
+      <div class="q-prompt">⬛ Change <span class="base-form">${escHTML(q.base)}</span> to the correct form for the blank</div>
       <div class="text-input-wrap">
-        <input type="text" class="text-input" id="textAns" placeholder="답을 입력하세요" autocomplete="off" autocapitalize="none">
-        <button class="submit-btn" id="submitBtn" onclick="submitText()">제출</button>
+        <input type="text" class="text-input" id="textAns" placeholder="Type your answer..." autocomplete="off" autocapitalize="none">
+        <button class="submit-btn" id="submitBtn" onclick="submitText()">Submit</button>
       </div>
       <div class="fb-msg" id="fb"></div>
     </div>`;
@@ -433,86 +450,97 @@ window.submitText = function(){
   document.getElementById('submitBtn').disabled = true;
   inp.disabled = true;
   const fb = document.getElementById('fb');
-  const isCorrect = userAns.toLowerCase() === q.ans.toLowerCase();
+  const isCorrect = userAns.toLowerCase() === q.target.toLowerCase();
   if(isCorrect){
     inp.classList.add('correct');
     fb.className = 'fb-msg ok'; fb.textContent = '✅ 정답!';
     cor++;
-    allResults.push({pno:q.pno, type:q.type, qi:q.qi, correct:true, my:userAns, ans:q.ans});
+    allResults.push({pno:q.pno, type:q.type, qi:q.qi, correct:true, my:userAns, ans:q.target});
   } else {
     inp.classList.add('wrong');
-    fb.className = 'fb-msg no'; fb.textContent = '❌ 오답! 정답: '+q.ans;
+    fb.className = 'fb-msg no'; fb.textContent = '❌ 오답! 정답: '+q.target;
     wrn++;
-    wrongs.push({label:'지문 '+q.pno+' · 어형변화', my:userAns, correct:q.ans});
-    allResults.push({pno:q.pno, type:q.type, qi:q.qi, correct:false, my:userAns, ans:q.ans});
+    wrongs.push({label:'지문 '+q.pno+' · 어형변화', my:userAns, correct:q.target});
+    allResults.push({pno:q.pno, type:q.type, qi:q.qi, correct:false, my:userAns, ans:q.target});
   }
-  setTimeout(()=>{idx++; showQ();}, isCorrect?900:2000);
+  setTimeout(()=>{idx++; showQ();}, isCorrect?900:2200);
 };
 
-// ====== Type 3: 옳고 그른 2지선다 ======
+// ====== Type 3: True / False (지문 전체 내용 판단) ======
 function renderType3(area, q){
-  const enHTML = escHTML(q.en).replace(/___PAIR___/g, '<span class="binary-pair">A / B</span>');
-  const choiceHTML = q.options.map((opt,i)=>`<button class="cb" data-idx="${i}"><span class="cn">${String.fromCharCode(65+i)}</span><span>${escHTML(opt)}</span></button>`).join('');
+  const enHTML = escHTML(q.fullEn);
+  // T/F 버튼 위치도 랜덤 셔플
+  const shouldSwap = Math.random() < 0.5;
+  const buttons = shouldSwap
+    ? [{label:'False', val:false},{label:'True', val:true}]
+    : [{label:'True', val:true},{label:'False', val:false}];
+  const correctIdx = buttons.findIndex(b=>b.val === q.isTrue);
+  const choiceHTML = buttons.map((b,i)=>{
+    const color = b.val ? '#2e7d32' : '#c62828';
+    const bg = b.val ? '#e8f5e9' : '#ffebee';
+    return `<button class="cb" data-idx="${i}" style="border-color:${color};background:${bg};color:${color};font-weight:800;"><span class="cn" style="background:${color};">${b.val?'T':'F'}</span><span>${b.label}</span></button>`;
+  }).join('');
   area.innerHTML = `
     <div class="qc">
       <div class="q-no-badge">
         <span class="qno">지문 ${q.pno}번</span>
-        <span class="qtype qtype-3">⚖️ 옳고 그른</span>
+        <span class="qtype qtype-3">⚖️ True or False</span>
       </div>
-      <div class="ko-box">📌 ${escHTML(q.ko)}</div>
-      <div class="en-box">${enHTML}</div>
-      <div class="q-prompt">⬛ 문맥상 옳은 것을 고르세요</div>
+      <div class="en-box"><div class="en-label">📖 PASSAGE</div>${enHTML}</div>
+      <div class="statement-box"><div class="statement-label">📝 STATEMENT</div>${escHTML(q.statement)}</div>
+      <div class="q-prompt">⬛ Is the statement TRUE or FALSE based on the passage?</div>
       <div class="choices" id="qChoices">${choiceHTML}</div>
       <div class="fb-msg" id="fb"></div>
     </div>`;
   document.querySelectorAll('#qChoices .cb').forEach(b=>{
-    b.addEventListener('click', ()=>checkChoice(b, parseInt(b.dataset.idx), q.ansIdx, q.options[q.ansIdx]));
+    b.addEventListener('click', ()=>checkChoice(b, parseInt(b.dataset.idx), correctIdx, q.isTrue?'True':'False'));
   });
 }
 
 // ====== Type 4: 영영풀이 4지선다 ======
 function renderType4(area, q){
-  const enHTML = escHTML(q.en).replace(/___BLANK___/g, '<span class="blank">?</span>');
+  const enHTML = injectMarker(q.fullEn, q.target, '<span class="blank">?</span>');
   const choiceHTML = q.options.map((opt,i)=>`<button class="cb" data-idx="${i}"><span class="cn">${i+1}</span><span>${escHTML(opt)}</span></button>`).join('');
   area.innerHTML = `
     <div class="qc">
       <div class="q-no-badge">
         <span class="qno">지문 ${q.pno}번</span>
-        <span class="qtype qtype-4">📖 영영 풀이</span>
+        <span class="qtype qtype-4">📖 Definition</span>
       </div>
-      <div class="def-box"><div class="def-label">📚 DEFINITION</div>${escHTML(q.def)}</div>
-      <div class="ko-box">📌 ${escHTML(q.ko)}</div>
-      <div class="en-box">${enHTML}</div>
-      <div class="q-prompt">⬛ 위 영영풀이에 해당하는 단어를 빈칸에 넣으세요</div>
+      <div class="en-box"><div class="en-label">📖 PASSAGE</div>${enHTML}</div>
+      <div class="def-box"><div class="def-label">📚 DEFINITION FOR THE BLANK</div>${escHTML(q.def)}</div>
+      <div class="q-prompt">⬛ Choose the word matching the definition</div>
       <div class="choices" id="qChoices">${choiceHTML}</div>
       <div class="fb-msg" id="fb"></div>
     </div>`;
-  const correctIdx = q.options.indexOf(q.ans);
+  const correctIdx = q.options.indexOf(q.target);
   document.querySelectorAll('#qChoices .cb').forEach(b=>{
-    b.addEventListener('click', ()=>checkChoice(b, parseInt(b.dataset.idx), correctIdx, q.ans));
+    b.addEventListener('click', ()=>checkChoice(b, parseInt(b.dataset.idx), correctIdx, q.target));
   });
 }
 
-// ====== 공통 채점 (Type 1, 3, 4용 - 선택형) ======
+// 공통 채점 (선택형 1·3·4)
 function checkChoice(btn, sel, correctIdx, correctVal){
   if(answered) return;
   answered = true;
   document.querySelectorAll('.cb').forEach(b=>b.disabled = true);
   const fb = document.getElementById('fb');
   const q = qs[idx];
+  // sel 단어 추출
+  const myAns = btn.querySelector('span:last-child').textContent;
   if(sel === correctIdx){
     btn.classList.add('correct');
     fb.className = 'fb-msg ok'; fb.textContent = '✅ 정답!';
     cor++;
-    allResults.push({pno:q.pno, type:q.type, qi:q.qi, correct:true, my:q.options[sel], ans:correctVal});
+    allResults.push({pno:q.pno, type:q.type, qi:q.qi, correct:true, my:myAns, ans:correctVal});
   } else {
     btn.classList.add('wrong');
     document.querySelectorAll('.cb').forEach(b=>{ if(parseInt(b.dataset.idx) === correctIdx) b.classList.add('reveal'); });
     fb.className = 'fb-msg no'; fb.textContent = '❌ 오답! 정답: '+correctVal;
     wrn++;
     const typeLabel = {1:'빈칸',2:'어형',3:'옳고그른',4:'영영풀이'}[q.type];
-    wrongs.push({label:'지문 '+q.pno+' · '+typeLabel, my:q.options[sel], correct:correctVal});
-    allResults.push({pno:q.pno, type:q.type, qi:q.qi, correct:false, my:q.options[sel], ans:correctVal});
+    wrongs.push({label:'지문 '+q.pno+' · '+typeLabel, my:myAns, correct:correctVal});
+    allResults.push({pno:q.pno, type:q.type, qi:q.qi, correct:false, my:myAns, ans:correctVal});
   }
   setTimeout(()=>{idx++; showQ();}, sel===correctIdx?800:1900);
 }
