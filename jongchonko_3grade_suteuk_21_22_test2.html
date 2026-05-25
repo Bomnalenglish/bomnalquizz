@@ -894,6 +894,11 @@ function goPassageSelect(){
   try{localStorage.setItem('bomnal_name',userName); localStorage.setItem('bomnal_school',userSchool);}catch(e){}
   document.getElementById('startScreen').classList.add('hidden');
   document.getElementById('userInfo').textContent = userName+' · '+userSchool;
+  // filterMode에 맞게 강 탭 'on' 클래스 설정 (URL 파라미터 반영)
+  document.querySelectorAll('.lesson-tabs .lt').forEach(b=>{
+    if(b.dataset.l === filterMode) b.classList.add('on');
+    else b.classList.remove('on');
+  });
   renderPassageGrid();
   document.getElementById('passageScreen').classList.remove('hidden');
 }
@@ -1180,6 +1185,12 @@ window.addEventListener('DOMContentLoaded', ()=>{
     for(let i=0;i<sel.options.length;i++){
       if(sel.options[i].value && s.includes(sel.options[i].value)){sel.value = sel.options[i].value; break;}
     }
+  }
+  // URL 파라미터 ?lesson=21 / 22 / T02 → 자동 필터
+  const params = new URLSearchParams(window.location.search);
+  const urlLesson = params.get('lesson');
+  if(urlLesson && ['21','22','T02'].includes(urlLesson)){
+    filterMode = urlLesson;
   }
   _loadProg();
 });

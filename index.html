@@ -347,11 +347,11 @@ const SCHOOLS = [
         {file:"jongchon3_review_18",  title:"18강 Review", sub:"문단 요약 · Gateway+1~4", emoji:"📖", badge:"18강"},
         {file:"__coming__",           title:"19강 Review", sub:"시험 범위 제외",            emoji:"➖", badge:"skip"},
         {file:"__coming__",           title:"20강 Review", sub:"시험 범위 제외",            emoji:"➖", badge:"skip"},
-        {file:"jongchonko_3grade_suteuk_21_22_test2", title:"21강 어휘·어법", sub:"수특 2027 · 어휘추론+어법어휘", emoji:"🎓", badge:"NEW"},
-        {file:"jongchonko_3grade_suteuk_21_22_test2", title:"22강 어휘·어법", sub:"수특 2027 · 어휘추론+어법어휘", emoji:"🎓", badge:"NEW"},
+        {file:"jongchonko_3grade_suteuk_21_22_test2", q:"?lesson=21", title:"21강 어휘·어법", sub:"수특 2027 · 어휘추론+어법어휘", emoji:"🎓", badge:"NEW"},
+        {file:"jongchonko_3grade_suteuk_21_22_test2", q:"?lesson=22", title:"22강 어휘·어법", sub:"수특 2027 · 어휘추론+어법어휘", emoji:"🎓", badge:"NEW"},
         {file:"jongchon3_review_23",  title:"23강 Review", sub:"물리·화학·생명·지구 · Gateway+1~3", emoji:"📖", badge:"23강"},
         {file:"__coming__",           title:"24강 Review", sub:"준비중",                    emoji:"🔒", badge:"coming"},
-        {file:"jongchonko_3grade_suteuk_21_22_test2", title:"Test 2 어휘·어법", sub:"수특 2027 · 어휘추론+어법어휘", emoji:"🎓", badge:"NEW"},
+        {file:"jongchonko_3grade_suteuk_21_22_test2", q:"?lesson=T02", title:"Test 2 어휘·어법", sub:"수특 2027 · 어휘추론+어법어휘", emoji:"🎓", badge:"NEW"},
         {file:"__coming__",           title:"Test 3",      sub:"준비중",                    emoji:"🔒", badge:"coming"}
       ]}
     ]
@@ -481,7 +481,7 @@ function renderSchoolPicker() {
   picker.appendChild(sep);
   VOCA_LEVELS.forEach((item) => {
     const a = document.createElement("a");
-    a.href = BASE + item.file + ".html";
+    a.href = BASE + item.file + ".html" + (item.q || "");
     a.target = "_blank"; a.rel = "noopener";
     a.style.cssText = "display:block;text-decoration:none;border-radius:12px;padding:12px 14px;border:2px solid #d0dde8;background:white;font-family:inherit;transition:border-color .15s,background .15s;";
     a.innerHTML = '<div style="font-size:.82rem;font-weight:700;color:#2a2a2a">📖 ' + item.title + '</div>' + (item.sub ? '<div style="font-size:.7rem;color:#7a7570;margin-top:2px">' + item.sub + '</div>' : '');
@@ -496,7 +496,7 @@ function renderSchoolPicker() {
   picker.appendChild(listenSep);
   LISTENING_LEVELS.forEach((item) => {
     const a = document.createElement("a");
-    a.href = BASE + item.file + ".html";
+    a.href = BASE + item.file + ".html" + (item.q || "");
     a.target = "_blank"; a.rel = "noopener";
     a.style.cssText = "display:block;text-decoration:none;border-radius:12px;padding:12px 14px;border:2px solid #d0dde8;background:white;font-family:inherit;transition:border-color .15s,background .15s;";
     a.innerHTML = '<div style="font-size:.82rem;font-weight:700;color:#2a2a2a">🎧 ' + item.title + '</div>' + (item.sub ? '<div style="font-size:.7rem;color:#7a7570;margin-top:2px">' + item.sub + '</div>' : '') + (item.badge ? '<span style="display:inline-block;font-size:.63rem;background:#3d3d3d;color:#f0ede8;border-radius:20px;padding:1px 8px;margin-top:4px">' + item.badge + '</span>' : '');
@@ -556,7 +556,7 @@ function renderVoca(){
   VOCA_LEVELS.forEach((item,i) => {
     const a = document.createElement('a');
     a.className = 'card ' + vc[i % vc.length];
-    a.href = BASE + item.file + '.html';
+    a.href = BASE + item.file + ".html" + (item.q || "");
     a.target = '_blank'; a.rel = 'noopener';
     a.innerHTML = '<span class="card-emoji">📖</span><div class="card-title">' + item.title + '</div>' + (item.sub ? '<div class="card-sub">' + item.sub + '</div>' : '') + (item.badge ? '<span class="badge">' + item.badge + '</span>' : '');
     grid.appendChild(a);
@@ -600,7 +600,7 @@ function openGroup(group, sectionTitle) {
     const a = document.createElement("a");
     a.className = "card " + nc() + (isComingItem ? " coming" : "");
     if (!isComingItem) {
-      a.href = BASE + item.file + ".html";
+      a.href = BASE + item.file + ".html" + (item.q || "");
       a.target = "_blank";
       a.rel = "noopener";
     }
@@ -656,7 +656,7 @@ function openSchool(s) {
       const a = document.createElement("a");
       a.className = "card " + nc() + (isComingItem ? " coming" : "");
       if (!isComingItem) {
-        a.href = BASE + item.file + ".html";
+        a.href = BASE + item.file + ".html" + (item.q || "");
         a.target = "_blank";
         a.rel = "noopener";
       }
