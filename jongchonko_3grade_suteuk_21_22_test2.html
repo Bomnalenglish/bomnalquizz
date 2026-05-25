@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>봄날 퀴즈 | 종촌고 3학년 수특 21·22강·Test02</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&family=Black+Han+Sans&display=swap');
+:root{--pri:#5e35b1;--acc:#43a047;--bg:#ede7f6;--card:#fff;--bdr:#b39ddb;--muted:#757575;--green:#2e7d32;--red:#c62828;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Nanum Gothic',sans-serif;background:var(--bg);min-height:100vh;color:#1a1a2e;}
+.hidden{display:none!important;}
+
+#startScreen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
+.s-card{background:var(--card);border-radius:24px;padding:36px 28px;text-align:center;max-width:520px;width:100%;box-shadow:0 8px 32px rgba(94,53,177,.15);}
+.s-card h1{font-family:'Black Han Sans',sans-serif;font-size:19px;color:var(--pri);margin-bottom:6px;}
+.s-sub{font-size:13px;color:var(--muted);margin-bottom:20px;}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:18px;}
+.info-item{background:var(--bg);border-radius:10px;padding:10px;text-align:center;font-size:12px;color:var(--pri);font-weight:700;}
+.ni{width:100%;padding:11px 14px;border:2px solid var(--bdr);border-radius:12px;font-size:14px;font-family:'Nanum Gothic',sans-serif;outline:none;margin-bottom:10px;}
+.ni:focus{border-color:var(--pri);}
+.start-btn{width:100%;padding:14px;border-radius:12px;border:none;background:linear-gradient(135deg,#5e35b1,#43a047);color:white;font-size:1rem;font-weight:800;cursor:pointer;font-family:inherit;}
+
+#passageScreen{padding:20px;max-width:680px;margin:0 auto;}
+.ps-header{background:linear-gradient(135deg,#5e35b1,#7e57c2);color:white;border-radius:16px;padding:18px 22px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;}
+.ps-title{font-family:'Black Han Sans',sans-serif;font-size:16px;}
+.ps-sub{font-size:11px;opacity:.8;margin-top:3px;}
+.user-info{background:rgba(255,255,255,.2);border-radius:10px;padding:6px 14px;font-size:12px;font-weight:700;}
+
+.type-section{background:white;border-radius:16px;padding:16px;margin-bottom:16px;box-shadow:0 3px 12px rgba(94,53,177,.06);}
+.type-label{font-size:12px;font-weight:800;color:var(--pri);margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+.type-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.tb{padding:11px 12px;border:2px solid #e0e0e0;border-radius:11px;background:white;color:#555;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s;text-align:center;line-height:1.4;}
+.tb:hover{border-color:var(--pri);background:#f5f0ff;}
+.tb.on{border-color:var(--pri);background:#5e35b1;color:white;}
+.tb-emoji{font-size:18px;display:block;margin-bottom:3px;}
+
+.lesson-tabs{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;}
+.lt{padding:7px 14px;border:2px solid var(--pri);border-radius:20px;background:white;color:var(--pri);font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s;}
+.lt.on{background:var(--pri);color:white;}
+
+.passage-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin-bottom:20px;}
+.p-card{background:white;border-radius:14px;padding:12px 8px;text-align:center;cursor:pointer;border:2.5px solid #e0e0e0;transition:all .18s;position:relative;}
+.p-card:hover{border-color:var(--pri);transform:translateY(-2px);box-shadow:0 6px 18px rgba(94,53,177,.12);}
+.p-card.sel{border-color:var(--pri);background:#ede7f6;}
+.p-card.done{border-color:#4caf50;background:#e8f5e9;}
+.p-no{font-family:'Black Han Sans',sans-serif;font-size:14px;color:var(--pri);margin-bottom:2px;}
+.p-type{font-size:9px;color:var(--muted);}
+.p-count{font-size:10px;color:var(--muted);margin-top:2px;}
+.p-badge{position:absolute;top:6px;right:6px;font-size:9px;padding:2px 6px;border-radius:8px;font-weight:700;}
+.done-badge{background:#e8f5e9;color:#2e7d32;}
+.sel-all-btn{width:100%;padding:12px;border-radius:12px;border:2px solid var(--pri);background:white;color:var(--pri);font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;margin-bottom:10px;}
+.go-btn{width:100%;padding:14px;border-radius:12px;border:none;background:linear-gradient(135deg,#5e35b1,#43a047);color:white;font-size:1rem;font-weight:800;cursor:pointer;font-family:inherit;}
+
+.hdr{background:#5e35b1;color:white;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.ht{font-family:'Black Han Sans',sans-serif;font-size:15px;}
+.hs{font-size:10px;opacity:.7;margin-top:2px;}
+.hb{background:rgba(255,255,255,.2);border-radius:16px;padding:4px 12px;font-size:12px;font-weight:700;}
+.pw{height:4px;background:#d1c4e9;}.pf{height:100%;background:linear-gradient(90deg,#5e35b1,#43a047);transition:width .4s;}
+
+#quizArea{padding:20px;max-width:780px;margin:0 auto;}
+.qc{background:white;border-radius:18px;padding:22px 20px;margin-bottom:16px;box-shadow:0 3px 16px rgba(94,53,177,.08);}
+.q-no-badge{display:flex;align-items:center;gap:6px;margin-bottom:12px;flex-wrap:wrap;}
+.qno{font-family:'Black Han Sans',sans-serif;font-size:13px;color:white;background:var(--pri);padding:3px 12px;border-radius:12px;}
+.qtype{font-size:11px;font-weight:700;padding:3px 10px;border-radius:10px;}
+.qtype-1{background:#ede7f6;color:#4527a0;}
+.qtype-2{background:#e8f5e9;color:#2e7d32;}
+.en-label{font-size:10px;font-weight:800;color:#999;margin-bottom:4px;letter-spacing:.5px;}
+.en-box{background:#f8faff;border-left:4px solid var(--pri);border-radius:0 10px 10px 0;padding:14px 16px;font-size:14px;line-height:2;margin-bottom:14px;color:#1a237e;}
+.ulopt{white-space:nowrap;margin:0 1px;display:inline-block;}
+.ulopt-label{display:inline-block;min-width:18px;height:18px;border-radius:50%;background:#5e35b1;color:white;font-size:10px;text-align:center;line-height:18px;font-weight:800;vertical-align:middle;margin-right:2px;padding:0 4px;}
+.ulopt-text{text-decoration:underline;text-decoration-thickness:2px;color:#5e35b1;font-weight:700;}
+.binary-pair{display:inline-block;background:#e8f5e9;border:1.5px dashed #2e7d32;border-radius:6px;padding:2px 10px;font-size:14px;color:#1b5e20;font-weight:700;margin:0 3px;}
+.q-prompt{font-size:13px;font-weight:700;color:var(--pri);margin-bottom:10px;text-align:center;padding:8px;background:#f5f0ff;border-radius:8px;}
+.q-point{margin-top:8px;font-size:11px;color:#999;text-align:center;font-style:italic;}
+.choices{display:grid;gap:10px;}
+.cb{background:#f5f5f5;border:2px solid #e0e0e0;border-radius:11px;padding:13px 16px;font-family:'Nanum Gothic',sans-serif;font-size:14px;font-weight:700;cursor:pointer;text-align:left;transition:all .15s;display:flex;align-items:center;gap:12px;line-height:1.4;}
+.cb:hover:not(:disabled){border-color:var(--pri);background:#ede7f6;}
+.cb.correct{background:#e8f5e9;border-color:#2e7d32;color:#1b5e20;}
+.cb.wrong{background:#ffebee;border-color:#c62828;color:#b71c1c;}
+.cb.reveal{background:#e8f5e9;border-color:#2e7d32;}
+.cn{width:24px;height:24px;border-radius:50%;background:#b39ddb;color:white;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0;}
+.fb-msg{padding:10px 14px;border-radius:10px;font-size:13px;font-weight:800;margin-top:12px;display:none;}
+.fb-msg.ok{background:#e8f5e9;color:#1b5e20;display:block;}
+.fb-msg.no{background:#ffebee;color:#b71c1c;display:block;}
+
+#resultScreen{padding:20px;max-width:600px;margin:0 auto;}
+.rc{background:white;border-radius:24px;padding:30px 22px;box-shadow:0 8px 32px rgba(94,53,177,.1);text-align:center;}
+.rs{font-family:'Black Han Sans',sans-serif;font-size:52px;color:var(--pri);line-height:1;}
+.rsub{font-size:13px;color:var(--muted);margin-top:4px;}
+.sr{display:flex;justify-content:center;gap:20px;margin-top:16px;flex-wrap:wrap;}
+.si{text-align:center;}.sn{font-family:'Black Han Sans',sans-serif;font-size:24px;}.sl{font-size:11px;color:var(--muted);margin-top:2px;}
+.wl{background:var(--bg);border-radius:14px;padding:14px;text-align:left;margin-top:14px;max-height:300px;overflow-y:auto;}
+.wl h3{font-size:12px;font-weight:800;color:var(--red);margin-bottom:8px;}
+.wi{background:white;border-radius:8px;padding:8px 12px;margin-bottom:6px;font-size:11px;border-left:3px solid #e91e63;}
+.wie{font-weight:800;color:var(--pri);}.wid{font-size:10px;color:var(--muted);margin-top:2px;}
+.rbtns{display:flex;gap:10px;justify-content:center;margin-top:18px;flex-wrap:wrap;}
+.rbtn{padding:12px 24px;border-radius:12px;border:none;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;}
+.rbtn-p{background:linear-gradient(135deg,#5e35b1,#43a047);color:white;}
+.rbtn-s{background:#f5f5f5;color:#5e35b1;border:2px solid #b39ddb;}
+
+@media(max-width:480px){.passage-grid{grid-template-columns:repeat(3,1fr)}}
+</style>
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getFirestore,collection,addDoc,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+const cfg={apiKey:"AIzaSyCxS524S8KAaF87DomPtl9sJdF-eqes404",authDomain:"bomnalvaca.firebaseapp.com",projectId:"bomnalvaca",storageBucket:"bomnalvaca.firebasestorage.app",messagingSenderId:"115868052300",appId:"1:115868052300:web:765c08867b6f1ce0987de9"};
+const app=initializeApp(cfg);const db=getFirestore(app);
+window._fbSave=async function(data){
+  try{await addDoc(collection(db,'quiz_results'),{...data,timestamp:serverTimestamp()});}
+  catch(e){console.warn('FB 저장 오류:',e);}
+};
+</script>
+</head>
+<body>
+
+<div id="startScreen">
+  <div class="s-card">
+    <h1>🎓 종촌고 3학년 수특 21·22강·Test02</h1>
+    <div class="s-sub">2027학년도 EBS 수능특강 영어 · 어휘추론 + 어법·어휘</div>
+    <div class="info-grid">
+      <div class="info-item">📝 21강·22강·Test02</div>
+      <div class="info-item">🎯 2유형 자유 선택</div>
+      <div class="info-item">🔍 5지선다 어휘 추론</div>
+      <div class="info-item">⚖️ 어법·어휘 2지선다</div>
+    </div>
+    <select class="ni" id="si" style="background:white;color:#5e35b1;font-weight:700;cursor:pointer;">
+      <option value="">학교 선택</option>
+      <option value="종촌고">종촌고</option>
+      <option value="고운고">고운고</option>
+      <option value="대성고">대성고</option>
+      <option value="기타">기타</option>
+    </select>
+    <input type="text" class="ni" id="ni" placeholder="이름 입력" maxlength="10">
+    <button class="start-btn" onclick="goPassageSelect()">다음 → 지문 선택</button>
+  </div>
+</div>
+
+<div id="passageScreen" class="hidden">
+  <div class="ps-header">
+    <div>
+      <div class="ps-title">📖 지문 & 유형 선택</div>
+      <div class="ps-sub">강과 지문, 문제 유형을 선택하세요</div>
+    </div>
+    <div class="user-info" id="userInfo"></div>
+  </div>
+
+  <div class="type-section">
+    <div class="type-label">🎯 문제 유형 (복수 선택)</div>
+    <div class="type-grid">
+      <button class="tb on" data-t="1" onclick="toggleType(1, this)"><span class="tb-emoji">🔍</span>어휘 추론<br><span style="font-size:10px;opacity:.7;">5지선다 (부적절 단어)</span></button>
+      <button class="tb on" data-t="2" onclick="toggleType(2, this)"><span class="tb-emoji">⚖️</span>어법·어휘<br><span style="font-size:10px;opacity:.7;">2지선다 (괄호 안 옳은 것)</span></button>
+    </div>
+  </div>
+
+  <div class="type-section">
+    <div class="type-label">📚 강 선택</div>
+    <div class="lesson-tabs">
+      <button class="lt on" data-l="all" onclick="filterLesson('all', this)">전체</button>
+      <button class="lt" data-l="21" onclick="filterLesson('21', this)">21강</button>
+      <button class="lt" data-l="22" onclick="filterLesson('22', this)">22강</button>
+      <button class="lt" data-l="T02" onclick="filterLesson('T02', this)">Test02</button>
+    </div>
+    <div class="passage-grid" id="passageGrid"></div>
+    <button class="sel-all-btn" onclick="selectAll()">현재 강 전체 선택 / 해제</button>
+  </div>
+  <button class="go-btn" onclick="startQuiz()">선택한 문제 풀기 🚀</button>
+</div>
+
+<div id="hdr" class="hdr hidden">
+  <div><div class="ht">🎓 종촌고 수특 21·22·T02</div><div class="hs" id="hs"></div></div>
+  <div class="hb" id="hb">0/0</div>
+</div>
+<div id="pw" class="pw hidden"><div class="pf" id="pf" style="width:0%"></div></div>
+<div id="quizArea" class="hidden"></div>
+<div id="resultScreen" class="hidden"></div>
+
+<script>
+// =================================================================
+// PASSAGES: 21강·22강·Test02
+// 각 지문: q1 = 어휘 추론 (5지선다), q2 = 어법·어휘 brackets (다수)
+// =================================================================
+const PASSAGES = {
+  '21-Lead': {
+    lesson: '21', title: '21강 ▶ 빈칸추론 (2026 6월 평가 34번) - Geography',
+    fullKo: `지리학과 떼려야 뗄 수 없게 연관된 한 단어가 있다: 어디. 그것은 지리학이 지구 표면에서 무언가가 어디서 일어나는지가 중요하다는 전제에서 시작하기 때문이다. 그러나 핵심 질문은 단순히 "어디서"라는 질문만이 아니다; 그것은 "왜 거기서"와 "그래서 어쩌라고"라는 질문들이다. 그러한 질문에 도달하는 것은 공간적 배열, 차이, 그리고 상호 연결을 진지하게 받아들이는 것을 의미한다. 가장 단순한 일상 활동에 참여하는 것조차도 공간적 상황 — 음식과 서비스를 어디에서 찾을지, 일터에 어떻게 갈지 등 — 에 대한 어느 정도의 이해를 요구한다. 규모를 더 크게 하면, 현상들이 지구 표면에서 어떻게 배열되어 있는지에 대한 어느 정도의 인식이 없이는, 합리적인 사업 또는 정책 판단을 내리는 것, 사건을 이해하는 것, 또는 행성에서의 삶을 형성하는 기본적인 힘들 일부를 파악하는 것이 어렵다. 새로운 상점이나 공공 서비스의 위치를 정하는 것은 인구 분포, 도로와 공공시설의 위치, 사회 경제적 양상 등을 고려하는 것을 요구한다. 왜 그리고 어디에서 이주가 일어나는지를 이해하는 것은 영토의 정치적 조직, 차별의 공간적 결과, 사회 경제적 양상, 그리고 물리적 환경의 배치를 고려하는 것을 요구한다.`,
+    fullEn: `One word is inextricably associated with geography: where. That is because geography starts from the premise that it matters where something takes place on Earth's surface. The key questions are not simply "where" questions, though; they are "why there" and "so what" questions. Getting to such questions means taking spatial arrangements, variations, and interconnections seriously. Engaging in even the simplest day-to-day activity requires some appreciation of spatial circumstances ― where to find food and services, how to get to work places, and the like. Moving up in scale, without some awareness of how phenomena are arranged on Earth's surface, it is difficult to make reasoned business or policy judgments, make sense of events, or grasp some of the basic forces shaping life on the planet. Locating a new store or public service requires taking into consideration population distributions, the location of roads and utilities, socio-economic patterns, and more. Understanding why and where migration happens requires consideration of the political organization of territory, the spatial consequences of discrimination, socio-economic patterns, and the layout of the physical environment.`,
+    q1: [{
+      options: [
+        {letter:'a', text:'inextricably'},
+        {letter:'b', text:'premise'},
+        {letter:'c', text:'reasoned'},
+        {letter:'d', text:'easy', correct:'difficult', isWrong:true},
+        {letter:'e', text:'discrimination'}
+      ]
+    }],
+    q2: [
+      {s:`One word [is / are] inextricably associated with geography: where.`, correctIdx:0, point:'주어-동사 수일치 (One word = 단수)'},
+      {s:`That is because geography [start / starts] from the premise that it matters where something takes place on Earth's surface.`, correctIdx:1, point:'3인칭 단수 (geography starts)'},
+      {s:`Getting to such questions [mean / means] taking spatial arrangements, variations, and interconnections seriously.`, correctIdx:1, point:'동명사 주어 + 단수 동사'},
+      {s:`Engaging in even the simplest day-to-day activity requires some [appreciation / depreciation] of spatial circumstances.`, correctIdx:0, point:'어휘 (이해/감상 vs 평가절하)'},
+      {s:`Moving up in scale, without some awareness of how phenomena [arrange / are arranged] on Earth's surface, it is difficult to make reasoned business or policy judgments.`, correctIdx:1, point:'수동태 (phenomena are arranged)'},
+      {s:`Moving up in scale, ..., it is difficult [make / to make] reasoned business or policy judgments.`, correctIdx:1, point:'가주어 it + to부정사'},
+      {s:`Locating a new store or public service [require / requires] taking into consideration population distributions.`, correctIdx:1, point:'동명사 주어 + 단수 동사'},
+      {s:`Understanding why and where migration happens requires consideration of the political organization of territory, the spatial consequences of [discrimination / appreciation], socio-economic patterns, and the layout of the physical environment.`, correctIdx:0, point:'어휘 (차별의 공간적 결과)'}
+    ]
+  }
+};
+
+const PASSAGE_ORDER = Object.keys(PASSAGES);
+
+let userName='', userSchool='';
+let selectedRefs = new Set();
+let selectedTypes = new Set([1,2]);
+let doneRefs = new Set();
+let filterMode = 'all';
+let qs=[], idx=0, cor=0, wrn=0, wrongs=[], allResults=[], answered=false, t0=0;
+
+const QUIZ_ID = 'jongchonko_3grade_suteuk_21_22_test2';
+const _DAY_KEY = (function(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');})();
+const _PROG_KEY = 'bn_prog_'+QUIZ_ID;
+function _saveProg(){try{localStorage.setItem(_PROG_KEY, JSON.stringify({day:_DAY_KEY, doneRefs:Array.from(doneRefs)}));}catch(e){}}
+function _loadProg(){
+  try{
+    const raw = localStorage.getItem(_PROG_KEY); if(!raw) return;
+    const data = JSON.parse(raw);
+    if(data.day !== _DAY_KEY){localStorage.removeItem(_PROG_KEY); return;}
+    if(Array.isArray(data.doneRefs)) doneRefs = new Set(data.doneRefs);
+  }catch(e){}
+}
+
+function goPassageSelect(){
+  userSchool = document.getElementById('si').value;
+  userName = document.getElementById('ni').value.trim();
+  if(!userSchool){alert('학교를 선택해주세요!'); return;}
+  if(!userName){alert('이름을 입력해주세요!'); return;}
+  try{localStorage.setItem('bomnal_name',userName); localStorage.setItem('bomnal_school',userSchool);}catch(e){}
+  document.getElementById('startScreen').classList.add('hidden');
+  document.getElementById('userInfo').textContent = userName+' · '+userSchool;
+  renderPassageGrid();
+  document.getElementById('passageScreen').classList.remove('hidden');
+}
+
+function toggleType(t, btn){
+  if(selectedTypes.has(t)) selectedTypes.delete(t);
+  else selectedTypes.add(t);
+  btn.classList.toggle('on');
+  renderPassageGrid();
+}
+
+function filterLesson(mode, btn){
+  filterMode = mode;
+  document.querySelectorAll('.lesson-tabs .lt').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  renderPassageGrid();
+}
+
+function refInLesson(ref){
+  if(filterMode === 'all') return true;
+  return PASSAGES[ref].lesson === filterMode;
+}
+
+function renderPassageGrid(){
+  const grid = document.getElementById('passageGrid');
+  grid.innerHTML = '';
+  PASSAGE_ORDER.forEach(ref=>{
+    if(!refInLesson(ref)) return;
+    const p = PASSAGES[ref];
+    let count = 0;
+    [1,2].forEach(t=>{ if(selectedTypes.has(t) && p['q'+t]) count += p['q'+t].length; });
+    const d = document.createElement('div');
+    d.className = 'p-card'+(selectedRefs.has(ref)?' sel':'')+(doneRefs.has(ref)?' done':'');
+    d.onclick = ()=>togglePassage(ref);
+    d.innerHTML = `<div class="p-no">${ref}</div><div class="p-type">${p.title.split('▶')[1]?.trim().split('-')[0]?.trim()||''}</div><div class="p-count">${count}문항</div>`
+      +(doneRefs.has(ref)?'<span class="p-badge done-badge">완료✓</span>':'')
+      +(selectedRefs.has(ref)&&!doneRefs.has(ref)?'<span class="p-badge" style="background:#ede7f6;color:#5e35b1;">선택</span>':'');
+    grid.appendChild(d);
+  });
+}
+
+function togglePassage(ref){
+  if(selectedRefs.has(ref)) selectedRefs.delete(ref);
+  else selectedRefs.add(ref);
+  renderPassageGrid();
+}
+
+function selectAll(){
+  const visible = PASSAGE_ORDER.filter(r=>refInLesson(r));
+  const allSel = visible.every(r=>selectedRefs.has(r));
+  visible.forEach(r=>{ if(allSel) selectedRefs.delete(r); else selectedRefs.add(r); });
+  renderPassageGrid();
+}
+
+function shuffle(arr){const b=[...arr]; for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];} return b;}
+
+function startQuiz(){
+  if(selectedRefs.size === 0){alert('지문을 하나 이상 선택하세요!'); return;}
+  if(selectedTypes.size === 0){alert('문제 유형을 하나 이상 선택하세요!'); return;}
+  qs = [];
+  PASSAGE_ORDER.forEach(ref=>{
+    if(!selectedRefs.has(ref)) return;
+    const p = PASSAGES[ref];
+    [1,2].forEach(t=>{
+      if(!selectedTypes.has(t)) return;
+      const arr = p['q'+t] || [];
+      arr.forEach((q,qi)=>{
+        qs.push({...q, type:t, pno:ref, qi:qi+1, passageTitle:p.title, fullKo:p.fullKo, fullEn:p.fullEn});
+      });
+    });
+  });
+  qs = shuffle(qs);
+  idx=0; cor=0; wrn=0; wrongs=[]; allResults=[]; answered=false; t0=Date.now();
+  document.getElementById('passageScreen').classList.add('hidden');
+  document.getElementById('hdr').classList.remove('hidden');
+  document.getElementById('pw').classList.remove('hidden');
+  document.getElementById('quizArea').classList.remove('hidden');
+  document.getElementById('hs').textContent = userName+' · '+selectedRefs.size+'개 지문 · '+qs.length+'문항';
+  showQ();
+}
+
+function escHTML(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+function showQ(){
+  if(idx >= qs.length){showResult(); return;}
+  answered = false;
+  const q = qs[idx];
+  document.getElementById('pf').style.width = (idx/qs.length*100).toFixed(0)+'%';
+  document.getElementById('hb').textContent = (idx+1)+'/'+qs.length;
+  const area = document.getElementById('quizArea');
+  if(q.type === 1) renderType1(area, q);
+  else if(q.type === 2) renderType2(area, q);
+}
+
+// ====== Type 1: 어휘 추론 5지선다 (5 underlined, pick the wrong one) ======
+function renderType1(area, q){
+  let displayEn = escHTML(q.fullEn);
+  q.options.forEach(opt=>{
+    const findText = opt.correct || opt.text;
+    const escapedFind = escHTML(findText);
+    const escapedDisplay = escHTML(opt.text);
+    const replacement = '<span class="ulopt"><span class="ulopt-label">'+opt.letter+'</span><span class="ulopt-text">'+escapedDisplay+'</span></span>';
+    const idx2 = displayEn.indexOf(escapedFind);
+    if(idx2 === -1){
+      displayEn += ' <span style="color:#c62828;font-size:10px;">[⚠️ '+escapedFind+' not found]</span>';
+    } else {
+      displayEn = displayEn.substring(0, idx2) + replacement + displayEn.substring(idx2 + escapedFind.length);
+    }
+  });
+  const correctIdx = q.options.findIndex(o=>o.isWrong);
+  const wrongOpt = q.options[correctIdx];
+  const correctMsg = '('+wrongOpt.letter+') '+wrongOpt.text+' → '+wrongOpt.correct;
+  const choiceHTML = q.options.map((opt,i)=>
+    '<button class="cb" data-idx="'+i+'"><span class="cn">'+opt.letter+'</span><span>('+opt.letter+') '+escHTML(opt.text)+'</span></button>'
+  ).join('');
+  area.innerHTML = '<div class="qc">' +
+    '<div class="q-no-badge">' +
+      '<span class="qno">'+q.pno+'</span>' +
+      '<span class="qtype qtype-1">🔍 어휘 추론</span>' +
+    '</div>' +
+    '<div class="en-box"><div class="en-label">📖 PASSAGE</div>'+displayEn+'</div>' +
+    '<div class="q-prompt">⬛ 다음 글의 밑줄 친 부분 중, 문맥상 낱말의 쓰임이 적절하지 않은 것은?</div>' +
+    '<div class="choices" id="qChoices">'+choiceHTML+'</div>' +
+    '<div class="fb-msg" id="fb"></div>' +
+  '</div>';
+  document.querySelectorAll('#qChoices .cb').forEach(b=>{
+    b.addEventListener('click', ()=>checkChoice(b, parseInt(b.dataset.idx), correctIdx, correctMsg));
+  });
+}
+
+// ====== Type 2: 어법·어휘 2지선다 (괄호 안 옳은 것 고르기) ======
+function renderType2(area, q){
+  // q.s contains "[opt1 / opt2]"
+  const match = q.s.match(/\[(.+?) \/ (.+?)\]/);
+  if(!match){
+    area.innerHTML = '<div class="qc">⚠️ 데이터 오류: 괄호 형식이 잘못되었습니다.</div>';
+    return;
+  }
+  const optA = match[1].trim();
+  const optB = match[2].trim();
+  const correctVal = q.correctIdx === 0 ? optA : optB;
+  // 버튼 순서 랜덤
+  const shouldSwap = Math.random() < 0.5;
+  const buttonOrder = shouldSwap ? [optB, optA] : [optA, optB];
+  const correctBtnIdx = buttonOrder.indexOf(correctVal);
+
+  // 본문에서 [opt1 / opt2] 부분을 시각적 강조
+  const sentenceHTML = escHTML(q.s).replace(/\[(.+?) \/ (.+?)\]/,
+    '<span class="binary-pair">[$1 / $2]</span>');
+
+  const choiceHTML = buttonOrder.map((opt,i)=>
+    '<button class="cb" data-idx="'+i+'"><span class="cn">'+String.fromCharCode(65+i)+'</span><span>'+escHTML(opt)+'</span></button>'
+  ).join('');
+  area.innerHTML = '<div class="qc">' +
+    '<div class="q-no-badge">' +
+      '<span class="qno">'+q.pno+'</span>' +
+      '<span class="qtype qtype-2">⚖️ 어법·어휘</span>' +
+    '</div>' +
+    '<div class="en-box"><div class="en-label">📖 SENTENCE</div>'+sentenceHTML+'</div>' +
+    '<div class="q-prompt">⬛ 괄호 안에서 어법·어휘에 맞는 것을 고르세요</div>' +
+    '<div class="choices" id="qChoices">'+choiceHTML+'</div>' +
+    '<div class="fb-msg" id="fb"></div>' +
+  '</div>';
+  document.querySelectorAll('#qChoices .cb').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      const msg = correctVal + (q.point ? ' (포인트: '+q.point+')' : '');
+      checkChoice(b, parseInt(b.dataset.idx), correctBtnIdx, msg);
+    });
+  });
+}
+
+// 공통 채점
+function checkChoice(btn, sel, correctIdx, correctMsg){
+  if(answered) return;
+  answered = true;
+  document.querySelectorAll('.cb').forEach(b=>b.disabled = true);
+  const fb = document.getElementById('fb');
+  const q = qs[idx];
+  const myAns = btn.querySelector('span:last-child').textContent;
+  if(sel === correctIdx){
+    btn.classList.add('correct');
+    fb.className = 'fb-msg ok'; fb.textContent = '✅ 정답! '+correctMsg;
+    cor++;
+    allResults.push({pno:q.pno, type:q.type, qi:q.qi, correct:true, my:myAns, ans:correctMsg});
+  } else {
+    btn.classList.add('wrong');
+    document.querySelectorAll('.cb').forEach(b=>{ if(parseInt(b.dataset.idx) === correctIdx) b.classList.add('reveal'); });
+    fb.className = 'fb-msg no'; fb.textContent = '❌ 오답! 정답: '+correctMsg;
+    wrn++;
+    const typeLabel = {1:'어휘추론',2:'어법어휘'}[q.type];
+    wrongs.push({label:q.pno+' · '+typeLabel, my:myAns, correct:correctMsg});
+    allResults.push({pno:q.pno, type:q.type, qi:q.qi, correct:false, my:myAns, ans:correctMsg});
+  }
+  setTimeout(()=>{idx++; showQ();}, sel===correctIdx?1000:2400);
+}
+
+let wrongQs = [];
+
+function showResult(){
+  document.getElementById('pf').style.width = '100%';
+  document.getElementById('quizArea').classList.add('hidden');
+  const total = idx, pct = total>0?Math.round(cor/total*100):0;
+  const el = Math.round((Date.now()-t0)/60000);
+  selectedRefs.forEach(r=>doneRefs.add(r));
+  _saveProg();
+  const wrongSet = new Set(allResults.filter(r=>!r.correct).map(r=>r.pno+'_'+r.type+'_'+r.qi));
+  wrongQs = qs.filter(q=>wrongSet.has(q.pno+'_'+q.type+'_'+q.qi));
+
+  const wHTML = wrongs.length>0
+    ? '<div class="wl"><h3>❌ 오답 ('+wrongs.length+'개)</h3>'+wrongs.map(w=>'<div class="wi"><div class="wie">'+w.label+'</div><div class="wid">내 답: '+w.my+' → 정답: '+w.correct+'</div></div>').join('')+'</div>'
+    : '<div style="color:#2e7d32;font-weight:800;padding:14px;text-align:center;">🎉 전부 정답!</div>';
+  const retryBtn = wrongs.length>0
+    ? `<button class="rbtn" style="background:linear-gradient(135deg,#c62828,#e91e63);color:white;" onclick="retryWrongs()">❌ 오답 다시풀기 (${wrongs.length}개)</button>`
+    : '';
+  const rs = document.getElementById('resultScreen');
+  rs.classList.remove('hidden');
+  rs.innerHTML = `<div class="rc">
+    <div style="font-size:12px;color:var(--muted);margin-bottom:4px;">종촌고 수특 · ${selectedRefs.size}개 지문 · ${total}문항</div>
+    <div class="rs">${pct}점</div>
+    <div class="rsub">${userName}의 결과</div>
+    <div class="sr">
+      <div class="si"><div class="sn" style="color:#2e7d32;">${cor}</div><div class="sl">정답</div></div>
+      <div class="si"><div class="sn" style="color:#c62828;">${wrn}</div><div class="sl">오답</div></div>
+      <div class="si"><div class="sn" style="color:#5e35b1;">${total}</div><div class="sl">총문항</div></div>
+      <div class="si"><div class="sn" style="color:#f57f17;">${el}분</div><div class="sl">소요</div></div>
+    </div>
+    ${wHTML}
+    <div class="rbtns">
+      ${retryBtn}
+      <button class="rbtn rbtn-p" onclick="goBack()">← 지문 다시 선택</button>
+      <button class="rbtn rbtn-s" onclick="location.reload()">처음부터 🔄</button>
+    </div>
+  </div>`;
+  if(window._fbSave) window._fbSave({
+    submittedAt: new Date().toISOString(),
+    studentName: userName, school: userSchool,
+    score: pct, correct: cor, wrong: wrn, total: total, elapsedMin: el,
+    quizType: '종촌고_수특_21_22_Test02',
+    passages: [...selectedRefs].sort(),
+    types: [...selectedTypes].sort(),
+    details: allResults.map(r=>({
+      지문: r.pno, 유형: {1:'어휘추론',2:'어법어휘'}[r.type], 번호: r.qi,
+      결과: r.correct?'✅정답':'❌오답', 내답: r.my, 정답: r.ans
+    })),
+    wrongWords: wrongs.map(w=>({label:w.label, my:w.my, correct:w.correct}))
+  });
+}
+
+function retryWrongs(){
+  if(wrongQs.length === 0) return;
+  qs = [...wrongQs];
+  idx=0; cor=0; wrn=0; wrongs=[]; allResults=[]; answered=false; t0=Date.now();
+  document.getElementById('resultScreen').classList.add('hidden');
+  document.getElementById('quizArea').classList.remove('hidden');
+  document.getElementById('hdr').classList.remove('hidden');
+  document.getElementById('pw').classList.remove('hidden');
+  document.getElementById('hs').textContent = userName+' · 오답 다시풀기';
+  showQ();
+}
+
+function goBack(){
+  document.getElementById('resultScreen').classList.add('hidden');
+  document.getElementById('hdr').classList.add('hidden');
+  document.getElementById('pw').classList.add('hidden');
+  selectedRefs.clear();
+  renderPassageGrid();
+  document.getElementById('passageScreen').classList.remove('hidden');
+}
+
+window.goPassageSelect = goPassageSelect;
+window.toggleType = toggleType;
+window.filterLesson = filterLesson;
+window.selectAll = selectAll;
+window.startQuiz = startQuiz;
+window.retryWrongs = retryWrongs;
+window.goBack = goBack;
+
+window.addEventListener('DOMContentLoaded', ()=>{
+  const n = localStorage.getItem('bomnal_name');
+  const s = localStorage.getItem('bomnal_school');
+  if(n) document.getElementById('ni').value = n;
+  if(s){
+    const sel = document.getElementById('si');
+    for(let i=0;i<sel.options.length;i++){
+      if(sel.options[i].value && s.includes(sel.options[i].value)){sel.value = sel.options[i].value; break;}
+    }
+  }
+  _loadProg();
+});
+</script>
+</body>
+</html>
