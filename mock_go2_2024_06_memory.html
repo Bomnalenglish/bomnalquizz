@@ -65,6 +65,10 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--bg);min-height:100vh
 .qtype-2{background:#e8f5e9;color:#1b5e20;}
 .qtype-3{background:#fce4ec;color:#880e4f;}
 .qtype-4{background:#e1f5fe;color:#01579b;}
+.qtype-5{background:#ede7f6;color:#4527a0;}
+.ulopt{white-space:nowrap;margin:0 1px;display:inline-block;}
+.ulopt-label{display:inline-block;min-width:18px;height:18px;border-radius:50%;background:#1565c0;color:white;font-size:10px;text-align:center;line-height:18px;font-weight:800;vertical-align:middle;margin-right:2px;padding:0 4px;}
+.ulopt-text{text-decoration:underline;text-decoration-thickness:2px;color:#1565c0;font-weight:700;}
 .def-box{background:#f3e5f5;border-left:4px solid #9c27b0;border-radius:0 10px 10px 0;padding:12px 14px;font-size:13px;line-height:1.6;margin-bottom:12px;color:#4a148c;font-style:italic;}
 .def-label{font-size:10px;font-weight:800;color:#7b1fa2;margin-bottom:4px;letter-spacing:.5px;}
 .statement-box{background:#fff8e1;border-left:4px solid var(--acc);border-radius:0 10px 10px 0;padding:14px 16px;font-size:14px;line-height:1.7;margin-bottom:12px;color:#1a1a2e;font-weight:700;}
@@ -126,10 +130,10 @@ window._fbSave=async function(data){
 <div id="startScreen">
   <div class="s-card">
     <h1>🧠 고2 24년 6월 본문 암기 (4유형 통합)</h1>
-    <div class="s-sub">2024년 6월 고2 모의고사 · 빈칸 · 어형변화 · 옳고그른 · 영영풀이</div>
+    <div class="s-sub">2024년 6월 고2 모의고사 · 5유형 (빈칸·어형·T/F·영영풀이·어휘추론)</div>
     <div class="info-grid">
       <div class="info-item">📝 18~24, 29~45번</div>
-      <div class="info-item">🎯 4유형 자유 선택</div>
+      <div class="info-item">🎯 5유형 자유 선택</div>
       <div class="info-item">📖 본문 통째로 제시</div>
       <div class="info-item">📊 자동채점 + 오답노트</div>
     </div>
@@ -161,6 +165,7 @@ window._fbSave=async function(data){
       <button class="tb on" data-t="2" onclick="toggleType(2, this)"><span class="tb-emoji">✏️</span>어형 변화<br><span style="font-size:10px;opacity:.7;">주관식 (원형→변화형)</span></button>
       <button class="tb on" data-t="3" onclick="toggleType(3, this)"><span class="tb-emoji">⚖️</span>옳고 그른<br><span style="font-size:10px;opacity:.7;">2지선다 문맥 판단</span></button>
       <button class="tb on" data-t="4" onclick="toggleType(4, this)"><span class="tb-emoji">📖</span>영영 풀이<br><span style="font-size:10px;opacity:.7;">정의 → 단어 추론</span></button>
+      <button class="tb on" data-t="5" onclick="toggleType(5, this)"><span class="tb-emoji">🔍</span>어휘 추론<br><span style="font-size:10px;opacity:.7;">5지선다 (부적절 단어)</span></button>
     </div>
   </div>
 
@@ -462,7 +467,16 @@ const PASSAGES = {
       {target:'venture', def:`a new business or other activity that involves risk`, options:['venture','victory','vacation','virtue']},
       {target:'fallacy', def:`a mistaken belief, especially one based on unsound argument`, options:['fallacy','formula','foundation','fortune']},
       {target:'instinct', def:`a natural ability or tendency to behave in a certain way without thinking`, options:['instinct','intention','invitation','interruption']}
-    ]
+    ],
+    q5: [{
+      options: [
+        {letter:'a', text:'difficult'},
+        {letter:'b', text:'worthwhile'},
+        {letter:'c', text:'wasted'},
+        {letter:'d', text:'decreases', correct:'increases', isWrong:true},
+        {letter:'e', text:'accept'}
+      ]
+    }]
   },
   '33': {
     title: '빈칸 추론 - Light from Stars',
@@ -720,7 +734,7 @@ const PASSAGE_ORDER = Object.keys(PASSAGES).sort((a,b)=>parseInt(a)-parseInt(b))
 
 let userName='', userSchool='';
 let selectedRefs = new Set();
-let selectedTypes = new Set([1,2,3,4]);
+let selectedTypes = new Set([1,2,3,4,5]);
 let doneRefs = new Set();
 let qs=[], idx=0, cor=0, wrn=0, wrongs=[], allResults=[], answered=false, t0=0;
 
@@ -772,7 +786,7 @@ function renderPassageGrid(){
   PASSAGE_ORDER.forEach(ref=>{
     const p = PASSAGES[ref];
     let count = 0;
-    [1,2,3,4].forEach(t=>{ if(selectedTypes.has(t) && p['q'+t]) count += p['q'+t].length; });
+    [1,2,3,4,5].forEach(t=>{ if(selectedTypes.has(t) && p['q'+t]) count += p['q'+t].length; });
     const d = document.createElement('div');
     d.className = 'p-card'+(selectedRefs.has(ref)?' sel':'')+(doneRefs.has(ref)?' done':'');
     d.onclick = ()=>togglePassage(ref);
@@ -804,7 +818,7 @@ function startQuiz(){
   PASSAGE_ORDER.forEach(ref=>{
     if(!selectedRefs.has(ref)) return;
     const p = PASSAGES[ref];
-    [1,2,3,4].forEach(t=>{
+    [1,2,3,4,5].forEach(t=>{
       if(!selectedTypes.has(t)) return;
       const arr = p['q'+t] || [];
       arr.forEach((q,qi)=>{
@@ -845,6 +859,7 @@ function showQ(){
   else if(q.type === 2) renderType2(area, q);
   else if(q.type === 3) renderType3(area, q);
   else if(q.type === 4) renderType4(area, q);
+  else if(q.type === 5) renderType5(area, q);
 }
 
 // ====== Type 1: 빈칸 추론 4지선다 ======
@@ -969,7 +984,44 @@ function renderType4(area, q){
   });
 }
 
-// 공통 채점 (선택형 1·3·4)
+// ====== Type 5: 어휘 추론 5지선다 (문맥상 부적절한 단어 찾기) ======
+function renderType5(area, q){
+  let displayEn = escHTML(q.fullEn);
+  // 각 옵션을 본문에서 찾아 밑줄 + 동그라미 라벨로 치환
+  q.options.forEach(opt=>{
+    const findText = opt.correct || opt.text;
+    const escapedFind = escHTML(findText);
+    const escapedDisplay = escHTML(opt.text);
+    const replacement = '<span class="ulopt"><span class="ulopt-label">'+opt.letter+'</span><span class="ulopt-text">'+escapedDisplay+'</span></span>';
+    const idx = displayEn.indexOf(escapedFind);
+    if(idx === -1){
+      displayEn += ' <span style="color:#c62828;font-size:10px;">[⚠️ '+escapedFind+' not found]</span>';
+    } else {
+      displayEn = displayEn.substring(0, idx) + replacement + displayEn.substring(idx + escapedFind.length);
+    }
+  });
+  const correctIdx = q.options.findIndex(o=>o.isWrong);
+  const wrongOpt = q.options[correctIdx];
+  const correctMsg = '('+wrongOpt.letter+') '+wrongOpt.text+' → '+wrongOpt.correct;
+  const choiceHTML = q.options.map((opt,i)=>
+    '<button class="cb" data-idx="'+i+'"><span class="cn">'+opt.letter+'</span><span>('+opt.letter+') '+escHTML(opt.text)+'</span></button>'
+  ).join('');
+  area.innerHTML = '<div class="qc">' +
+    '<div class="q-no-badge">' +
+      '<span class="qno">지문 '+q.pno+'번</span>' +
+      '<span class="qtype qtype-5">🔍 Vocabulary in Context</span>' +
+    '</div>' +
+    '<div class="en-box"><div class="en-label">📖 PASSAGE</div>'+displayEn+'</div>' +
+    '<div class="q-prompt">⬛ Which underlined word is NOT contextually appropriate?</div>' +
+    '<div class="choices" id="qChoices">'+choiceHTML+'</div>' +
+    '<div class="fb-msg" id="fb"></div>' +
+  '</div>';
+  document.querySelectorAll('#qChoices .cb').forEach(b=>{
+    b.addEventListener('click', ()=>checkChoice(b, parseInt(b.dataset.idx), correctIdx, correctMsg));
+  });
+}
+
+// 공통 채점 (선택형 1·3·4·5)
 function checkChoice(btn, sel, correctIdx, correctVal){
   if(answered) return;
   answered = true;
@@ -988,7 +1040,7 @@ function checkChoice(btn, sel, correctIdx, correctVal){
     document.querySelectorAll('.cb').forEach(b=>{ if(parseInt(b.dataset.idx) === correctIdx) b.classList.add('reveal'); });
     fb.className = 'fb-msg no'; fb.textContent = '❌ 오답! 정답: '+correctVal;
     wrn++;
-    const typeLabel = {1:'빈칸',2:'어형',3:'옳고그른',4:'영영풀이'}[q.type];
+    const typeLabel = {1:'빈칸',2:'어형',3:'옳고그른',4:'영영풀이',5:'어휘추론'}[q.type];
     wrongs.push({label:'지문 '+q.pno+' · '+typeLabel, my:myAns, correct:correctVal});
     allResults.push({pno:q.pno, type:q.type, qi:q.qi, correct:false, my:myAns, ans:correctVal});
   }
@@ -1050,7 +1102,7 @@ function showResult(){
     types: [...selectedTypes].sort(),
     details: allResults.map(r=>({
       지문: r.pno+'번',
-      유형: {1:'빈칸',2:'어형',3:'옳고그른',4:'영영풀이'}[r.type],
+      유형: {1:'빈칸',2:'어형',3:'옳고그른',4:'영영풀이',5:'어휘추론'}[r.type],
       번호: r.qi,
       결과: r.correct?'✅정답':'❌오답',
       내답: r.my,
