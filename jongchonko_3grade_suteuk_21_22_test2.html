@@ -125,13 +125,13 @@ window._fbSave=async function(data){
       <div class="info-item">⚖️ 어법·어휘 2지선다</div>
     </div>
     <select class="ni" id="si" style="background:white;color:#5e35b1;font-weight:700;cursor:pointer;">
-      <option value="">학교 선택</option>
+      <option value="">학교 선택 (선택사항)</option>
       <option value="종촌고">종촌고</option>
       <option value="고운고">고운고</option>
       <option value="대성고">대성고</option>
       <option value="기타">기타</option>
     </select>
-    <input type="text" class="ni" id="ni" placeholder="이름 입력" maxlength="10">
+    <input type="text" class="ni" id="ni" placeholder="이름 (선택사항)" maxlength="10">
     <button class="start-btn" onclick="goPassageSelect()">다음 → 지문 선택</button>
   </div>
 </div>
@@ -275,7 +275,7 @@ const PASSAGES = {
       {s:`The strongest criticisms of the overextension of technology [involve / involves] claims of dehumanization.`, correctIdx:0, point:'주어 복수 (criticisms)'},
       {s:`McLuhan was primarily a techno-utopian, but he also cautioned decades ago [against / for] too much human extension into technology.`, correctIdx:0, point:'caution against (~에 대해 경고)'},
       {s:`McLuhan famously claimed [that / what] every media extension of man is an amputation.`, correctIdx:0, point:'접속사 that'},
-      {s:`Once we have a car, we [don't / aren't] walk to the shops.`, correctIdx:0, point:'don't + 동사원형'},
+      {s:`Once we have a car, we [don't / aren't] walk to the shops.`, correctIdx:0, point:`don't + 동사원형`},
       {s:`Based on McLuhan's philosophy, we [are / is] becoming post-literate because we rely on screens full of pictures, rather than print media.`, correctIdx:0, point:'주어 we = 복수'},
       {s:`we are becoming post-literate [because / because of] we rely on screens full of pictures, rather than print media.`, correctIdx:0, point:'접속사 because + 절'},
       {s:`It is thus possible [that / what] extensions of human faculties...will bring about arrested development in the natural evolution of higher human faculties.`, correctIdx:0, point:'가주어 it + that절'}
@@ -987,10 +987,8 @@ function _loadProg(){
 }
 
 function goPassageSelect(){
-  userSchool = document.getElementById('si').value;
-  userName = document.getElementById('ni').value.trim();
-  if(!userSchool){alert('학교를 선택해주세요!'); return;}
-  if(!userName){alert('이름을 입력해주세요!'); return;}
+  userSchool = document.getElementById('si').value || '미입력';
+  userName = document.getElementById('ni').value.trim() || '익명';
   try{localStorage.setItem('bomnal_name',userName); localStorage.setItem('bomnal_school',userSchool);}catch(e){}
   document.getElementById('startScreen').classList.add('hidden');
   document.getElementById('userInfo').textContent = userName+' · '+userSchool;
