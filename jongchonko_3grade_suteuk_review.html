@@ -147,9 +147,10 @@ window._fbSave=async function(data){
 
   <div class="type-section">
     <div class="type-label">🎯 문제 유형 (복수 선택)</div>
-    <div class="type-grid">
+    <div class="type-grid" style="grid-template-columns:repeat(auto-fit,minmax(110px,1fr));">
       <button class="tb on" data-t="1" onclick="toggleType(1, this)"><span class="tb-emoji">🔍</span>어휘 추론<br><span style="font-size:10px;opacity:.7;">5지선다 (부적절 단어)</span></button>
-      <button class="tb on" data-t="2" onclick="toggleType(2, this)"><span class="tb-emoji">⚖️</span>어법·어휘<br><span style="font-size:10px;opacity:.7;">2지선다 (괄호 안 옳은 것)</span></button>
+      <button class="tb on" data-t="2" onclick="toggleType(2, this)"><span class="tb-emoji">⚖️</span>어법·어휘<br><span style="font-size:10px;opacity:.7;">2지선다 (괄호)</span></button>
+      <button class="tb on" data-t="3" onclick="toggleType(3, this)"><span class="tb-emoji">🧠</span>어휘 변형<br><span style="font-size:10px;opacity:.7;">5지선다 (동의어·의미)</span></button>
     </div>
   </div>
 
@@ -964,11 +965,64 @@ const PASSAGES = {
   }
 };
 
+// =================================================================
+// Q3_DATA: 어휘 변형 추론 (동의어·의미 추론 5지선다)
+// 각 지문당 1문항씩, 학교 내신 스타일 (품사 변형·동의어·추상화)
+// =================================================================
+const Q3_DATA = {
+  // 13강
+  '13-Gateway':{target:'unstable', kind:'synonym', options:['volatile','steady','rigid','predictable','secure'], correctIdx:0},
+  '13-01':{target:'coincidental', kind:'synonym', options:['intentional','accidental','planned','deliberate','predetermined'], correctIdx:1},
+  '13-02':{target:'prolific', kind:'synonym', options:['productive','limited','slow','inactive','inefficient'], correctIdx:0},
+  '13-03':{target:'conduit', kind:'synonym', options:['channel','barrier','obstacle','obstruction','container'], correctIdx:0},
+  '13-04':{target:'cautioned', kind:'synonym', options:['warned','celebrated','promoted','encouraged','supported'], correctIdx:0},
+  // 21강
+  '21-Lead':{target:'inextricably', kind:'synonym', options:['inseparably','randomly','partially','temporarily','accidentally'], correctIdx:0},
+  '21-01':{target:'persisted', kind:'synonym', options:['continued','surrendered','disappeared','collapsed','paused'], correctIdx:0},
+  '21-02':{target:'deceiving', kind:'synonym', options:['misleading','revealing','clarifying','enlightening','informing'], correctIdx:0},
+  '21-03':{target:'mutual', kind:'synonym', options:['reciprocal','individual','separate','one-sided','exclusive'], correctIdx:0},
+  // 22강
+  '22-Lead':{target:'variability', kind:'synonym', options:['fluctuation','stability','permanence','uniformity','continuity'], correctIdx:0},
+  '22-01':{target:'substantially', kind:'synonym', options:['significantly','slightly','rarely','insignificantly','marginally'], correctIdx:0},
+  '22-02':{target:'alleviate', kind:'synonym', options:['ease','intensify','aggravate','worsen','increase'], correctIdx:0},
+  '22-03':{target:'disastrous', kind:'synonym', options:['catastrophic','beneficial','favorable','advantageous','harmless'], correctIdx:0},
+  // Test02
+  'T02-01':{target:'prompt', kind:'synonym', options:['immediate','delayed','postponed','deferred','sluggish'], correctIdx:0},
+  'T02-02':{target:'contented', kind:'synonym', options:['satisfied','frustrated','annoyed','discouraged','alarmed'], correctIdx:0},
+  'T02-03':{target:'consequential', kind:'synonym', options:['significant','trivial','minor','negligible','insignificant'], correctIdx:0},
+  'T02-04':{target:'substitutes', kind:'synonym', options:['replacements','originals','companions','rivals','enemies'], correctIdx:0},
+  'T02-05':{target:'static', kind:'synonym', options:['unchanging','dynamic','evolving','progressive','adaptive'], correctIdx:0},
+  'T02-06':{target:'perpetually', kind:'synonym', options:['continuously','temporarily','occasionally','rarely','briefly'], correctIdx:0},
+  'T02-07':{target:'fruitful', kind:'synonym', options:['productive','barren','unproductive','useless','futile'], correctIdx:0},
+  'T02-08':{target:'overwhelming', kind:'synonym', options:['massive','minor','slight','trivial','minimal'], correctIdx:0},
+  'T02-09':{target:'adversity', kind:'synonym', options:['hardship','prosperity','comfort','advantage','blessing'], correctIdx:0},
+  'T02-10':{target:'enthusiasts', kind:'synonym', options:['fans','critics','enemies','rivals','strangers'], correctIdx:0},
+  'T02-11':{target:'spectacular', kind:'synonym', options:['breathtaking','ordinary','dull','unremarkable','plain'], correctIdx:0},
+  'T02-12':{target:'engender', kind:'synonym', options:['produce','prevent','destroy','hinder','obstruct'], correctIdx:0},
+  'T02-13':{target:'misinformed', kind:'synonym', options:['misled','enlightened','educated','informed','knowledgeable'], correctIdx:0},
+  'T02-14':{target:'coined', kind:'synonym', options:['created','borrowed','rejected','destroyed','erased'], correctIdx:0},
+  'T02-15':{target:'transform', kind:'synonym', options:['reshape','preserve','maintain','retain','uphold'], correctIdx:0},
+  'T02-16':{target:'mutually', kind:'synonym', options:['reciprocally','separately','individually','independently','unilaterally'], correctIdx:0},
+  'T02-17':{target:'beneficial', kind:'synonym', options:['advantageous','harmful','damaging','destructive','detrimental'], correctIdx:0},
+  'T02-18':{target:'innovative', kind:'synonym', options:['groundbreaking','traditional','outdated','conventional','conservative'], correctIdx:0},
+  'T02-19':{target:'sequential', kind:'synonym', options:['successive','simultaneous','parallel','concurrent','overlapping'], correctIdx:0},
+  'T02-20':{target:'apparent', kind:'synonym', options:['evident','hidden','obscure','concealed','disguised'], correctIdx:0},
+  'T02-21':{target:'accumulate', kind:'synonym', options:['amass','disperse','scatter','deplete','exhaust'], correctIdx:0},
+  'T02-22':{target:'eroded', kind:'synonym', options:['diminished','strengthened','reinforced','solidified','enhanced'], correctIdx:0},
+  'T02-23':{target:'prestigious', kind:'synonym', options:['distinguished','humble','ordinary','inferior','commonplace'], correctIdx:0},
+  'T02-24-25':{target:'ingenuity', kind:'synonym', options:['creativity','foolishness','ignorance','stupidity','rigidity'], correctIdx:0},
+  'T02-26-28':{target:'outdo', kind:'synonym', options:['surpass','follow','imitate','copy','obey'], correctIdx:0}
+};
+// PASSAGES에 q3 자동 부착
+Object.keys(Q3_DATA).forEach(k=>{
+  if(PASSAGES[k]) PASSAGES[k].q3 = [Q3_DATA[k]];
+});
+
 const PASSAGE_ORDER = Object.keys(PASSAGES);
 
 let userName='', userSchool='';
 let selectedRefs = new Set();
-let selectedTypes = new Set([1,2]);
+let selectedTypes = new Set([1,2,3]);
 let doneRefs = new Set();
 let filterMode = 'all';
 let qs=[], idx=0, cor=0, wrn=0, wrongs=[], allResults=[], answered=false, t0=0;
@@ -1033,7 +1087,7 @@ function renderPassageGrid(){
     if(!refInLesson(ref)) return;
     const p = PASSAGES[ref];
     let count = 0;
-    [1,2].forEach(t=>{ if(selectedTypes.has(t) && p['q'+t]) count += p['q'+t].length; });
+    [1,2,3].forEach(t=>{ if(selectedTypes.has(t) && p['q'+t]) count += p['q'+t].length; });
     const d = document.createElement('div');
     d.className = 'p-card'+(selectedRefs.has(ref)?' sel':'')+(doneRefs.has(ref)?' done':'');
     d.onclick = ()=>togglePassage(ref);
@@ -1066,7 +1120,7 @@ function startQuiz(){
   PASSAGE_ORDER.forEach(ref=>{
     if(!selectedRefs.has(ref)) return;
     const p = PASSAGES[ref];
-    [1,2].forEach(t=>{
+    [1,2,3].forEach(t=>{
       if(!selectedTypes.has(t)) return;
       const arr = p['q'+t] || [];
       arr.forEach((q,qi)=>{
@@ -1095,6 +1149,37 @@ function showQ(){
   const area = document.getElementById('quizArea');
   if(q.type === 1) renderType1(area, q);
   else if(q.type === 2) renderType2(area, q);
+  else if(q.type === 3) renderType3(area, q);
+}
+
+// ====== Type 3: 어휘 변형 추론 5지선다 (동의어·문맥 의미) ======
+function renderType3(area, q){
+  // 본문에서 target 강조
+  const escapedTarget = escHTML(q.target);
+  const highlightedEn = escHTML(q.fullEn).replace(escapedTarget,
+    '<span class="ulopt-text" style="background:rgba(94,53,177,.12);padding:1px 4px;border-radius:3px;">'+escapedTarget+'</span>');
+  // 5지선다
+  const prompt = q.kind === 'paraphrase'
+    ? '다음 중 <b>'+escapedTarget+'</b>을(를) 문맥상 가장 적절하게 바꾸어 표현한 것은?'
+    : '다음 중 <b>'+escapedTarget+'</b>과(와) 문맥상 가장 가까운 의미로 가장 적절한 것은?';
+  // 옵션 순서는 데이터 그대로 (correctIdx 사용)
+  const choiceHTML = q.options.map((opt,i)=>
+    '<button class="cb" data-idx="'+i+'"><span class="cn">'+(i+1)+'</span><span>'+escHTML(opt)+'</span></button>'
+  ).join('');
+  area.innerHTML = '<div class="qc">' +
+    '<div class="q-no-badge">' +
+      '<span class="qno">'+q.pno+'</span>' +
+      '<span class="qtype" style="background:#fce4ec;color:#880e4f;">🧠 어휘 변형</span>' +
+    '</div>' +
+    '<div class="en-box"><div class="en-label">📖 PASSAGE</div>'+highlightedEn+'</div>' +
+    '<div class="q-prompt">'+prompt+'</div>' +
+    '<div class="choices" id="qChoices">'+choiceHTML+'</div>' +
+    '<div class="fb-msg" id="fb"></div>' +
+  '</div>';
+  const correctVal = q.options[q.correctIdx];
+  document.querySelectorAll('#qChoices .cb').forEach(b=>{
+    b.addEventListener('click', ()=>checkChoice(b, parseInt(b.dataset.idx), q.correctIdx, correctVal));
+  });
 }
 
 // ====== Type 1: 어휘 추론 5지선다 (5 underlined, pick the wrong one) ======
@@ -1192,7 +1277,7 @@ function checkChoice(btn, sel, correctIdx, correctMsg){
     document.querySelectorAll('.cb').forEach(b=>{ if(parseInt(b.dataset.idx) === correctIdx) b.classList.add('reveal'); });
     fb.className = 'fb-msg no'; fb.textContent = '❌ 오답! 정답: '+correctMsg;
     wrn++;
-    const typeLabel = {1:'어휘추론',2:'어법어휘'}[q.type];
+    const typeLabel = {1:'어휘추론',2:'어법어휘',3:'어휘변형'}[q.type];
     wrongs.push({label:q.pno+' · '+typeLabel, my:myAns, correct:correctMsg});
     allResults.push({pno:q.pno, type:q.type, qi:q.qi, correct:false, my:myAns, ans:correctMsg});
   }
@@ -1244,7 +1329,7 @@ function showResult(){
     passages: [...selectedRefs].sort(),
     types: [...selectedTypes].sort(),
     details: allResults.map(r=>({
-      지문: r.pno, 유형: {1:'어휘추론',2:'어법어휘'}[r.type], 번호: r.qi,
+      지문: r.pno, 유형: {1:'어휘추론',2:'어법어휘',3:'어휘변형'}[r.type], 번호: r.qi,
       결과: r.correct?'✅정답':'❌오답', 내답: r.my, 정답: r.ans
     })),
     wrongWords: wrongs.map(w=>({label:w.label, my:w.my, correct:w.correct}))
