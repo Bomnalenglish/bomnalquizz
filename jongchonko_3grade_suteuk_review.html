@@ -1021,6 +1021,12 @@ function refInLesson(ref){
 }
 
 function renderPassageGrid(){
+  // 방어적: URL 파라미터가 있으면 filterMode 강제 동기화
+  const _p = new URLSearchParams(window.location.search);
+  const _u = _p.get('lesson');
+  if(_u && ['13','15','16','17','18','21','22','23','T02'].includes(_u) && filterMode !== _u){
+    filterMode = _u;
+  }
   const grid = document.getElementById('passageGrid');
   grid.innerHTML = '';
   PASSAGE_ORDER.forEach(ref=>{
