@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>봄날 퀴즈 | 종촌고 3학년 수특 21·22강·Test02</title>
+<title>봄날 퀴즈 | 종촌고 3학년 수특 영어 Review</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&family=Black+Han+Sans&display=swap');
 :root{--pri:#5e35b1;--acc:#43a047;--bg:#ede7f6;--card:#fff;--bdr:#b39ddb;--muted:#757575;--green:#2e7d32;--red:#c62828;}
@@ -116,10 +116,10 @@ window._fbSave=async function(data){
 
 <div id="startScreen">
   <div class="s-card">
-    <h1>🎓 종촌고 3학년 수특 21·22강·Test02</h1>
+    <h1 id="mainTitle">🎓 종촌고 3학년 수특 영어 Review</h1>
     <div class="s-sub">2027학년도 EBS 수능특강 영어 · 어휘추론 + 어법·어휘</div>
     <div class="info-grid">
-      <div class="info-item">📝 21강·22강·Test02</div>
+      <div class="info-item" id="rangeInfo">📝 13·21·22강·Test02</div>
       <div class="info-item">🎯 2유형 자유 선택</div>
       <div class="info-item">🔍 5지선다 어휘 추론</div>
       <div class="info-item">⚖️ 어법·어휘 2지선다</div>
@@ -169,7 +169,7 @@ window._fbSave=async function(data){
 </div>
 
 <div id="hdr" class="hdr hidden">
-  <div><div class="ht">🎓 종촌고 수특 21·22·T02</div><div class="hs" id="hs"></div></div>
+  <div><div class="ht" id="quizHeader">🎓 종촌고 수특 영어</div><div class="hs" id="hs"></div></div>
   <div class="hb" id="hb">0/0</div>
 </div>
 <div id="pw" class="pw hidden"><div class="pf" id="pf" style="width:0%"></div></div>
@@ -1284,11 +1284,20 @@ window.addEventListener('DOMContentLoaded', ()=>{
       if(sel.options[i].value && s.includes(sel.options[i].value)){sel.value = sel.options[i].value; break;}
     }
   }
-  // URL 파라미터 ?lesson=21 / 22 / T02 → 자동 필터
+  // URL 파라미터 ?lesson=13/15/16/17/18/21/22/23/T02 → 자동 필터 + 제목 동기화
   const params = new URLSearchParams(window.location.search);
   const urlLesson = params.get('lesson');
   if(urlLesson && ['13','15','16','17','18','21','22','23','T02'].includes(urlLesson)){
     filterMode = urlLesson;
+    // 강 이름 표시용 변환
+    const lessonLabel = urlLesson === 'T02' ? 'Test 02' : urlLesson + '강';
+    document.title = '봄날 퀴즈 | 종촌고 수특 ' + lessonLabel;
+    const mt = document.getElementById('mainTitle');
+    if(mt) mt.textContent = '🎓 종촌고 3학년 수특 ' + lessonLabel;
+    const ri = document.getElementById('rangeInfo');
+    if(ri) ri.textContent = '📝 ' + lessonLabel + ' 어휘·어법';
+    const qh = document.getElementById('quizHeader');
+    if(qh) qh.textContent = '🎓 종촌고 수특 ' + lessonLabel;
   }
   _loadProg();
 });
