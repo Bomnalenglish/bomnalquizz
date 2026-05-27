@@ -283,6 +283,11 @@ function collectAnswer(blankInfo) {
   return ans.trim();
 }
 
+function _bnTodayStr(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function _bnDraftKey(){return 'jongchon_1grade_ch3_draft_'+_bnTodayStr();}
+function _bnCleanupOldDrafts(){try{var today=_bnTodayStr();var prefix='jongchon_1grade_ch3_draft_';for(var i=localStorage.length-1;i>=0;i--){var k=localStorage.key(i);if(k&&k.indexOf(prefix)===0&&k!==prefix+today){localStorage.removeItem(k);}}localStorage.removeItem(prefix.slice(0,-1));}catch(e){}}
+_bnCleanupOldDrafts();
+
 function saveAnswers() {
   var data = {};
   var nameEl = document.getElementById('student-name');
@@ -298,11 +303,11 @@ function saveAnswers() {
       }
     }
   });
-  localStorage.setItem('jongchon_1grade_ch3_draft', JSON.stringify(data));
+  localStorage.setItem(_bnDraftKey(), JSON.stringify(data));
 }
 
 function restoreAnswers() {
-  var saved = localStorage.getItem('jongchon_1grade_ch3_draft');
+  var saved = localStorage.getItem(_bnDraftKey());
   if (!saved) return;
   try {
     var data = JSON.parse(saved);
@@ -318,7 +323,7 @@ function restoreAnswers() {
   } catch(e) {}
 }
 
-function clearDraft() { localStorage.removeItem('jongchon_1grade_ch3_draft'); }
+function clearDraft() { localStorage.removeItem(_bnDraftKey()); }
 
 function submitTest(auto) {
   const name = document.getElementById('student-name').value.trim() || (auto ? '(자동제출)' : '');

@@ -125,6 +125,32 @@ tr:hover td{background:#f8f9ff;}
   th,td{padding:7px 9px;font-size:11px;}
   .tab-btn{padding:10px 12px;font-size:12px;}
 }
+/* 회차 이력 모달 */
+.sec-cell[data-qt]{cursor:pointer;position:relative;}
+.sec-cell[data-qt]:hover{outline:2px solid #1565c0;transform:translateY(-1px);}
+.sec-cell[data-qt][data-rounds]:not([data-rounds="1"])::after{content:attr(data-rounds)"회";position:absolute;top:-6px;right:-6px;background:#e65100;color:white;font-size:9px;font-weight:900;padding:1px 5px;border-radius:8px;line-height:1.3;}
+.hist-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;}
+.hist-modal{background:white;border-radius:16px;max-width:720px;width:100%;max-height:85vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 12px 40px rgba(0,0,0,.3);}
+.hist-head{padding:16px 20px;background:linear-gradient(135deg,#1565c0,#0d47a1);color:white;display:flex;justify-content:space-between;align-items:flex-start;gap:14px;}
+.hist-head-left{flex:1;min-width:0;}
+.hist-head-name{font-size:17px;font-weight:900;}
+.hist-head-qt{font-size:11px;opacity:.9;margin-top:4px;word-break:break-all;}
+.hist-close{background:rgba(255,255,255,.2);border:none;color:white;font-size:18px;font-weight:900;cursor:pointer;width:30px;height:30px;border-radius:50%;flex-shrink:0;}
+.hist-close:hover{background:rgba(255,255,255,.35);}
+.hist-body{padding:14px 18px 18px;overflow-y:auto;}
+.hist-row{padding:12px 14px;border-radius:10px;margin-bottom:8px;border:1px solid #e3f2fd;background:#fafdff;}
+.hist-row.latest{border-color:#1565c0;background:linear-gradient(135deg,#e3f2fd,#fff);}
+.hist-row.perfect{border-color:#43a047;background:linear-gradient(135deg,#e8f5e9,#fff);}
+.hist-row-top{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:6px;flex-wrap:wrap;}
+.hist-rank{font-size:11px;font-weight:900;color:#1565c0;background:#e3f2fd;padding:2px 8px;border-radius:8px;}
+.hist-rank.latest{background:#1565c0;color:white;}
+.hist-rank.perfect{background:#43a047;color:white;}
+.hist-time{font-size:11px;color:#666;}
+.hist-score{font-size:20px;font-weight:900;}
+.hist-meta{font-size:11px;color:#555;margin-top:4px;display:flex;gap:12px;flex-wrap:wrap;}
+.hist-meta b{color:#222;}
+.hist-wrong-list{margin-top:6px;font-size:11px;color:#c62828;background:#ffebee;padding:6px 10px;border-radius:6px;line-height:1.5;word-break:break-all;}
+.hist-empty{padding:30px;text-align:center;color:#999;}
 </style>
 </head>
 <body>
@@ -370,6 +396,7 @@ async function loadData(){
 
     document.getElementById('lastRefresh').textContent=
       '갱신: '+new Date().toLocaleTimeString('ko-KR')+' (총 '+allData.length+'건)';
+    buildHistoryMap();
     renderSummary();renderCharts();applyFilter();renderSectionView();
   }catch(e){
     document.getElementById('tblArea').innerHTML=
@@ -523,6 +550,103 @@ window.toggleStudentDetail = function(id, btn){
   }
 };
 
+// ============================================================
+// 회차 이력 모달: 셀 클릭 시 그 학생의 그 시험 모든 회차 표시
+// ============================================================
+window._historyMap = {};
+function _qtBase(qt){
+  // '오답완료' suffix 제거하여 회차 통합
+  return String(qt||'').replace(/_?오답완료/g, '');
+}
+function buildHistoryMap(){
+  window._historyMap = {};
+  allData.forEach(d=>{
+    const stKey = (d.name||'') + '||' + (d.school||'');
+    const base = _qtBase(d.quizType);
+    const key = stKey + '|||' + base;
+    if(!window._historyMap[key]) window._historyMap[key]=[];
+    window._historyMap[key].push(d);
+  });
+  Object.keys(window._historyMap).forEach(k=>{
+    window._historyMap[k].sort((a,b)=>(b.time||0)-(a.time||0));
+  });
+}
+window.histCount = function(name, school, qt){
+  const key = (name||'') + '||' + (school||'') + '|||' + _qtBase(qt);
+  return (window._historyMap[key] || []).length;
+};
+window.showHistory = function(name, school, qt){
+  const key = (name||'') + '||' + (school||'') + '|||' + _qtBase(qt);
+  const records = window._historyMap[key] || [];
+  const rowsHtml = records.length===0
+    ? '<div class="hist-empty">📭 이력이 없습니다</div>'
+    : records.map((r,i)=>{
+        const isLatest = i===0;
+        const isPerfect = r.wrong===0 && (r.timedOut||0)===0;
+        const rowCls = isPerfect ? 'perfect' : (isLatest ? 'latest' : '');
+        const rankCls = isPerfect ? 'perfect' : (isLatest ? 'latest' : '');
+        const rankLbl = isLatest ? '🆕 최신' : (i+1)+'번째 최신';
+        const timeStr = r.time ? r.time.toLocaleString('ko-KR',{year:'2-digit',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}) : '-';
+        const scoreCol = r.score>=85?'#2e7d32':r.score>=70?'#1565c0':r.score>=50?'#e65100':'#c62828';
+        let wrongTxt = '';
+        if(r.wrongSentences) wrongTxt = r.wrongSentences;
+        else if(r.wrongWords && r.wrongWords.length>0){
+          wrongTxt = r.wrongWords.slice(0,15).map(w=>{
+            if(typeof w==='string') return w;
+            if(w.label) return w.label;
+            if(w.eng) return w.eng+(w.kor?'('+w.kor+')':'');
+            return JSON.stringify(w).slice(0,30);
+          }).join(', ');
+        } else if(r.wrongNumbers) wrongTxt = r.wrongNumbers;
+        const wrongHtml = wrongTxt ? `<div class="hist-wrong-list">❌ 오답: ${wrongTxt}</div>` : '';
+        const roundStr = (r.round||1)>1 ? `· ${r.round}라운드` : '';
+        const tabExitStr = r.tabSwitchCount>0 ? `· ⚠️ 탭이탈 ${r.tabSwitchCount}회` : '';
+        const elapsedStr = r.elapsed && r.elapsed>0 ? `· ⏱ ${r.elapsed}분` : '';
+        return `<div class="hist-row ${rowCls}">
+          <div class="hist-row-top">
+            <span class="hist-rank ${rankCls}">${rankLbl}</span>
+            <span class="hist-time">${timeStr}</span>
+            <span class="hist-score" style="color:${scoreCol};">${r.score}점</span>
+          </div>
+          <div class="hist-meta">
+            <span><b>정답</b> ${r.correct||0}/${r.total||0}</span>
+            <span><b>오답</b> ${r.wrong||0}개</span>
+            ${(r.timedOut||0)>0?`<span style="color:#c62828"><b>시간초과</b> ${r.timedOut}개</span>`:''}
+            <span style="color:#888">${elapsedStr}${roundStr}${tabExitStr}</span>
+          </div>
+          ${wrongHtml}
+        </div>`;
+      }).join('');
+  const overlay = document.createElement('div');
+  overlay.className = 'hist-overlay';
+  overlay.onclick = (e)=>{ if(e.target===overlay) closeHistory(); };
+  overlay.innerHTML = `
+    <div class="hist-modal">
+      <div class="hist-head">
+        <div class="hist-head-left">
+          <div class="hist-head-name">${name} (${school}) · 총 ${records.length}회 응시</div>
+          <div class="hist-head-qt">${_qtBase(qt)}</div>
+        </div>
+        <button class="hist-close" onclick="closeHistory()">✕</button>
+      </div>
+      <div class="hist-body">${rowsHtml}</div>
+    </div>`;
+  document.body.appendChild(overlay);
+};
+window.closeHistory = function(){
+  document.querySelectorAll('.hist-overlay').forEach(el=>el.remove());
+};
+document.addEventListener('keydown',(e)=>{
+  if(e.key==='Escape') window.closeHistory();
+});
+
+function _attrEsc(s){return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/'/g,'&#39;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function _cellAttrs(stName, stSchool, qt){
+  if(!qt) return '';
+  const rounds = window.histCount ? window.histCount(stName, stSchool, qt) : 1;
+  return ` data-st="${_attrEsc(stName)}||${_attrEsc(stSchool)}" data-qt="${_attrEsc(qt)}" data-rounds="${rounds}" onclick="(function(el){var p=el.dataset.st.split('||');window.showHistory(p[0],p[1]||'',el.dataset.qt);})(this)"`;
+}
+
 function renderSectionView(){
   const sq=document.getElementById('secSchool')?.value||'';
   const nq=(document.getElementById('secName')?.value||'').trim().toLowerCase();
@@ -565,7 +689,7 @@ function renderSectionView(){
         const isPerfect=s.wrong===0&&s.timedOut===0;
         const wrongTxt=s.wrong+s.timedOut>0?`<div class="sec-wrong">오답 ${s.wrong+s.timedOut}개</div>`:'';
         const timeStr=s.time?s.time.toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}):'';
-        return `<div class="sec-cell ${isPerfect?'perfect':'has-wrong'}"><div class="sec-num">${sn}섹션</div><div class="sec-score">${s.score}점</div>${wrongTxt}<div class="sec-time">${timeStr}</div></div>`;
+        return `<div class="sec-cell ${isPerfect?'perfect':'has-wrong'}"${_cellAttrs(st.name,st.school,s.quizType)}><div class="sec-num">${sn}섹션</div><div class="sec-score">${s.score}점</div>${wrongTxt}<div class="sec-time">${timeStr}</div></div>`;
       }).join('');
       return `<div style="margin-bottom:14px;"><div style="font-size:11px;font-weight:800;color:var(--muted);margin-bottom:8px;letter-spacing:.5px;">📚 어휘퀴즈 &nbsp;·&nbsp; 완료 ${doneCount}/${knownMax}${warnCount>0?`<span style="color:#e65100;margin-left:8px;">⚠️ 재도전 ${warnCount}개</span>`:''}${doneCount===knownMax&&perfectCount===knownMax?'<span style="color:var(--green);margin-left:8px;">🏆 전 섹션 클리어!</span>':''}</div><div class="sec-grid">${cells}</div></div>`;
     }).join('');
@@ -610,7 +734,7 @@ function renderSectionView(){
           const isPerfect = d.wrong===0;
           const cellClass = isPerfect ? 'perfect' : 'has-wrong';
           const timeStr = d.time ? d.time.toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}) : '';
-          return `<div class="sec-cell ${cellClass}" style="min-width:88px;text-align:left;">
+          return `<div class="sec-cell ${cellClass}" style="min-width:88px;text-align:left;"${_cellAttrs(st.name,st.school,d.quizType)}>
             <div style="font-size:10px;font-weight:800;color:var(--muted);margin-bottom:3px;">${d._stage}</div>
             <div class="sec-score">${d.score}점</div>
             ${d.wrong>0?`<div class="sec-wrong">오답 ${d.wrong}개</div>`:''}
@@ -672,7 +796,7 @@ function renderSectionView(){
         const timeStr=d.time?d.time.toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}):'';
         const roundStr=(d.round||1)>1?`<div style="font-size:10px;color:#e65100">${d.round}라운드</div>`:'';
         const perfectBadge=d.wrong===0&&(d.round||1)>1?'<div style="font-size:10px;color:#2e7d32;font-weight:900">🏆 완료!</div>':'';
-        return `<div class="sec-cell ${cellClass}" style="min-width:110px;text-align:left;"><div style="font-size:10px;font-weight:800;color:var(--muted);margin-bottom:3px;">${itemLabel}${modeMatch?' '+modeMatch+'모드':''}</div><div class="sec-score">${d.score}점</div>${d.wrong>0?`<div class="sec-wrong">오답 ${d.wrong}개</div>`:''}${roundStr}${perfectBadge}<div class="sec-time">${timeStr}</div></div>`;
+        return `<div class="sec-cell ${cellClass}" style="min-width:110px;text-align:left;"${_cellAttrs(st.name,st.school,d.quizType)}><div style="font-size:10px;font-weight:800;color:var(--muted);margin-bottom:3px;">${itemLabel}${modeMatch?' '+modeMatch+'모드':''}</div><div class="sec-score">${d.score}점</div>${d.wrong>0?`<div class="sec-wrong">오답 ${d.wrong}개</div>`:''}${roundStr}${perfectBadge}<div class="sec-time">${timeStr}</div></div>`;
       }).join('');
       const allPerfect=records.every(d=>d.wrong===0);
       return `<div style="margin-bottom:14px;"><div style="font-size:11px;font-weight:800;color:var(--muted);margin-bottom:8px;letter-spacing:.5px;">${gname}${allPerfect?'<span style="color:var(--green);margin-left:8px;">🏆 전부 완료!</span>':''}</div><div style="display:flex;flex-wrap:wrap;gap:8px;">${cells}</div></div>`;
@@ -687,7 +811,7 @@ function renderSectionView(){
       if(!nonSecMap[baseKey]||(d.quizType&&d.quizType.includes('오답완료'))){nonSecMap[baseKey]=d;}
       else if(d.time&&nonSecMap[baseKey].time&&d.time>nonSecMap[baseKey].time&&!nonSecMap[baseKey].quizType?.includes('오답완료')){nonSecMap[baseKey]=d;}
     });
-    const nonSecHtml=Object.values(nonSecMap).length>0?`<div style="margin-bottom:10px;"><div style="font-size:11px;font-weight:800;color:var(--muted);margin-bottom:8px;letter-spacing:.5px;">🔤 기타 퀴즈</div><div style="display:flex;flex-wrap:wrap;gap:8px;">${Object.values(nonSecMap).sort((a,b)=>(b.time||0)-(a.time||0)).map(d=>{const isPerfect=d.wrong===0;const isVocabComplete=d.quizType&&d.quizType.includes('오답완료');const timeStr=d.time?d.time.toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}):'';const cellClass=isVocabComplete?'perfect':isPerfect?'perfect':'has-wrong';const badge=isVocabComplete?'<div style="font-size:10px;color:#2e7d32;font-weight:900;margin-top:2px">🏆 오답 0개 완료!</div>':'';const ps=passagesStr(d);const pBadge=ps?`<div style="font-size:9px;color:#e65100;font-weight:800;margin-top:2px;background:#fff3e0;padding:1px 4px;border-radius:6px;display:inline-block;">📄 ${ps}</div>`:'';return `<div class="sec-cell ${cellClass}" style="min-width:130px;text-align:left;"><div style="font-size:10px;font-weight:800;color:var(--muted);margin-bottom:4px;">${nonSecLabel(d.quizType,d)}</div>${pBadge}<div class="sec-score">${d.score}점</div>${d.wrong>0?`<div class="sec-wrong">오답 ${d.wrong}개</div>`:''}${badge}<div class="sec-time">${timeStr}</div></div>`;}).join('')}</div></div>`:'';
+    const nonSecHtml=Object.values(nonSecMap).length>0?`<div style="margin-bottom:10px;"><div style="font-size:11px;font-weight:800;color:var(--muted);margin-bottom:8px;letter-spacing:.5px;">🔤 기타 퀴즈</div><div style="display:flex;flex-wrap:wrap;gap:8px;">${Object.values(nonSecMap).sort((a,b)=>(b.time||0)-(a.time||0)).map(d=>{const isPerfect=d.wrong===0;const isVocabComplete=d.quizType&&d.quizType.includes('오답완료');const timeStr=d.time?d.time.toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}):'';const cellClass=isVocabComplete?'perfect':isPerfect?'perfect':'has-wrong';const badge=isVocabComplete?'<div style="font-size:10px;color:#2e7d32;font-weight:900;margin-top:2px">🏆 오답 0개 완료!</div>':'';const ps=passagesStr(d);const pBadge=ps?`<div style="font-size:9px;color:#e65100;font-weight:800;margin-top:2px;background:#fff3e0;padding:1px 4px;border-radius:6px;display:inline-block;">📄 ${ps}</div>`:'';return `<div class="sec-cell ${cellClass}" style="min-width:130px;text-align:left;"${_cellAttrs(st.name,st.school,d.quizType)}><div style="font-size:10px;font-weight:800;color:var(--muted);margin-bottom:4px;">${nonSecLabel(d.quizType,d)}</div>${pBadge}<div class="sec-score">${d.score}점</div>${d.wrong>0?`<div class="sec-wrong">오답 ${d.wrong}개</div>`:''}${badge}<div class="sec-time">${timeStr}</div></div>`;}).join('')}</div></div>`:'';
 
     // 총정리
     const reviewRecords=st.records.filter(d=>d.quizType&&d.quizType.includes('총정리'));
@@ -696,7 +820,7 @@ function renderSectionView(){
     const reviewMap={};
     reviewRecords.forEach(d=>{const m=d.quizType.match(/총정리_([^_]+)/);const tab=m?m[1]:'기타';const isDone=d.quizType.includes('오답완료');if(!reviewMap[tab]||isDone||(d.time&&reviewMap[tab].time&&d.time>reviewMap[tab].time&&!reviewMap[tab].quizType?.includes('오답완료'))){reviewMap[tab]=d;}});
     const reviewHtml=Object.keys(reviewMap).length>0?(()=>{
-      const cells=reviewTabOrder.filter(tab=>reviewMap[tab]).map(tab=>{const d=reviewMap[tab];const isDone=d.quizType&&d.quizType.includes('오답완료');const isPerfect=d.wrong===0;const cellClass=(isDone||isPerfect)?'perfect':'has-wrong';const timeStr=d.time?d.time.toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}):'';const roundStr=(d.round||1)>1?`<div style="font-size:10px;color:#e65100">${d.round}라운드</div>`:'';const perfectBadge=(isDone||isPerfect)?'<div style="font-size:10px;color:#2e7d32;font-weight:900">🏆 클리어!</div>':'';return `<div class="sec-cell ${cellClass}" style="min-width:100px;text-align:left;"><div style="font-size:10px;font-weight:800;color:var(--muted);margin-bottom:3px;">${reviewTabLabel[tab]||tab}</div><div class="sec-score">${d.score}점</div>${d.wrong>0?`<div class="sec-wrong">오답 ${d.wrong}개</div>`:''}${roundStr}${perfectBadge}<div class="sec-time">${timeStr}</div></div>`;}).join('');
+      const cells=reviewTabOrder.filter(tab=>reviewMap[tab]).map(tab=>{const d=reviewMap[tab];const isDone=d.quizType&&d.quizType.includes('오답완료');const isPerfect=d.wrong===0;const cellClass=(isDone||isPerfect)?'perfect':'has-wrong';const timeStr=d.time?d.time.toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}):'';const roundStr=(d.round||1)>1?`<div style="font-size:10px;color:#e65100">${d.round}라운드</div>`:'';const perfectBadge=(isDone||isPerfect)?'<div style="font-size:10px;color:#2e7d32;font-weight:900">🏆 클리어!</div>':'';return `<div class="sec-cell ${cellClass}" style="min-width:100px;text-align:left;"${_cellAttrs(st.name,st.school,d.quizType)}><div style="font-size:10px;font-weight:800;color:var(--muted);margin-bottom:3px;">${reviewTabLabel[tab]||tab}</div><div class="sec-score">${d.score}점</div>${d.wrong>0?`<div class="sec-wrong">오답 ${d.wrong}개</div>`:''}${roundStr}${perfectBadge}<div class="sec-time">${timeStr}</div></div>`;}).join('');
       const allClear=reviewTabOrder.filter(t=>reviewMap[t]).every(t=>reviewMap[t].wrong===0||reviewMap[t].quizType?.includes('오답완료'));
       return `<div style="margin-bottom:14px;"><div style="font-size:11px;font-weight:800;color:var(--muted);margin-bottom:8px;letter-spacing:.5px;">📋 어진중3 1학기 총정리${allClear?'<span style="color:var(--green);margin-left:8px;">🏆 전 탭 클리어!</span>':''}</div><div style="display:flex;flex-wrap:wrap;gap:8px;">${cells}</div></div>`;
     })():'';
