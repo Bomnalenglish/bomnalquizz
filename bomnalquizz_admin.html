@@ -656,7 +656,6 @@ function renderSectionView(){
   let data=[...allData];
   if(sq) data=data.filter(d=>d.school&&d.school.startsWith(sq));
   if(nq) data=data.filter(d=>d.name.toLowerCase().includes(nq));
-  if(!data.length){area.innerHTML='<div class="no-data-msg">📭 기록이 없습니다<br><small>학생들이 퀴즈를 풀면 여기 나타나요</small></div>';return;}
 
   const students={};
   data.forEach(d=>{
@@ -664,6 +663,19 @@ function renderSectionView(){
     if(!students[key]) students[key]={name:d.name,school:d.school,records:[]};
     students[key].records.push(d);
   });
+
+  // ★ 추가: hub_access에서 접속만 한 학생도 카드로 표시 (퀴즈 결과 없어도 등장)
+  if (Array.isArray(allAccessData)) {
+    allAccessData.forEach(a=>{
+      if (!a.name || a.name==='익명' || a.name==='(이름없음)' || a.name==='-') return;
+      if (sq && !(a.school||'').startsWith(sq)) return;
+      if (nq && !a.name.toLowerCase().includes(nq)) return;
+      const key = `${a.name}||${a.school}`;
+      if (!students[key]) students[key] = {name: a.name, school: a.school, records: []};
+    });
+  }
+
+  if(!Object.keys(students).length){area.innerHTML='<div class="no-data-msg">📭 기록이 없습니다<br><small>학생들이 퀴즈를 풀면 여기 나타나요</small></div>';return;}
 
   const KNOWN_MAX={'종촌고1':7,'종촌고2':16,'고운고1':11,'고운고2':11,'종촌고3':0,'종촌중2':0,'어진중2':0,'고운중2':0,'대성고1':0};
 
@@ -924,14 +936,18 @@ function renderSectionView(){
         </div>
       </div>` : '';
 
-    return `<div class="student-card">
+    const isAccessOnly = st.records.length === 0;
+    return `<div class="student-card" ${isAccessOnly?'style="background:#fffbeb;border:1.5px dashed #f59e0b"':''}>
       <div class="student-card-header">
         <div style="white-space:nowrap;font-family:'Black Han Sans',sans-serif;font-size:16px;color:var(--primary);line-height:1.2;">
           👤 <span style="font-size:11px;color:var(--muted);font-weight:700;">${st.school}</span> ${st.name}
+          ${isAccessOnly?'<span style="margin-left:8px;padding:2px 8px;background:#fef3c7;color:#92400e;border-radius:10px;font-size:10px;font-weight:800">📡 접속만 함</span>':''}
         </div>
         <div class="student-summary">
-          <span class="sum-pill done">📝 총 ${st.records.length}회 응시</span>
-          <span class="sum-pill ${avgScore>=85?'done':'warn'}">평균 ${avgScore}점</span>
+          ${isAccessOnly
+            ? `<span class="sum-pill" style="background:#fef3c7;color:#92400e;">퀴즈 결과 없음</span>`
+            : `<span class="sum-pill done">📝 총 ${st.records.length}회 응시</span>
+               <span class="sum-pill ${avgScore>=85?'done':'warn'}">평균 ${avgScore}점</span>`}
           ${myAccess.length>0?`<span class="sum-pill" style="background:#e3f2fd;color:#1565c0;">🔐 접속 ${myAccess.length}건</span>`:''}
           <button onclick="toggleStudentDetail('${detailId}',this)" style="padding:4px 12px;border-radius:14px;border:none;background:#1565c0;color:white;font-size:11px;font-weight:800;cursor:pointer;font-family:inherit;">📋 상세보기</button>
         </div>
