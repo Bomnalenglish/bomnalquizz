@@ -261,6 +261,7 @@ tr:hover td{background:#f8f9ff;}
             <option value="code_fail">❌ 코드 실패</option>
             <option value="school_enter">🏫 학교 입장</option>
             <option value="quiz_click">📝 퀴즈 클릭</option>
+            <option value="quiz_open">🔓 퀴즈 페이지 열기</option>
           </select>
           <span class="ctrl-label">이름</span>
           <input type="text" class="ctrl-inp" id="accName" placeholder="검색..." oninput="renderAccess()">
@@ -836,6 +837,7 @@ function renderSectionView(){
     );
     const schoolEnters=myAccess.filter(a=>a.type==='school_enter');
     const quizClicks=myAccess.filter(a=>a.type==='quiz_click');
+    const quizOpens=myAccess.filter(a=>a.type==='quiz_open');
 
     let accessHtml='';
     if(myAccess.length>0){
@@ -846,10 +848,15 @@ function renderSectionView(){
         `<span class="acc-chip-quiz">📝 ${a.quiz||a.file||'-'} <span class="acc-chip-time">${ft(a.time)}</span></span>`
       ).join('');
       const moreClick=quizClicks.length>6?`<span style="font-size:11px;color:var(--muted)">+${quizClicks.length-6}건 더</span>`:'';
+      const openChips=quizOpens.slice(0,6).map(a=>
+        `<span class="acc-chip-quiz" style="background:#fef3c7;color:#92400e">🔓 ${a.quiz||a.file||'-'} <span class="acc-chip-time">${ft(a.time)}</span></span>`
+      ).join('');
+      const moreOpen=quizOpens.length>6?`<span style="font-size:11px;color:var(--muted)">+${quizOpens.length-6}건 더</span>`:'';
       accessHtml=`<div class="access-block">
-        <div class="access-block-title">🔐 접속·학습 기록 (총 ${myAccess.length}건 · 학교입장 ${schoolEnters.length} · 퀴즈클릭 ${quizClicks.length})</div>
+        <div class="access-block-title">🔐 접속·학습 기록 (총 ${myAccess.length}건 · 학교입장 ${schoolEnters.length} · 퀴즈클릭 ${quizClicks.length} · 페이지열기 ${quizOpens.length})</div>
         ${enterChips?`<div class="access-chips">${enterChips}</div>`:''}
         ${clickChips||moreClick?`<div class="access-chips">${clickChips}${moreClick}</div>`:''}
+        ${openChips||moreOpen?`<div class="access-chips">${openChips}${moreOpen}</div>`:''}
       </div>`;
     }
 
