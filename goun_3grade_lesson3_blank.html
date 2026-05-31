@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>고운중학교 3학년 Lesson 3 본문·대화문 빈칸 시험</title>
+  <style>
+    /* ─── 기본 리셋 ─── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+      background: #EFF3FB;
+      color: #1e293b;
+      min-height: 100vh;
+      padding-bottom: 40px;
+    }
+
+    /* ─── 헤더 ─── */
+    .header {
+      background: linear-gradient(135deg, #3B82F6, #1D4ED8);
+      color: white;
+      padding: 22px 20px 18px;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(30,64,175,0.25);
+    }
+    .header h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; }
+    .header .subtitle { font-size: 13px; opacity: 0.85; margin-top: 4px; }
+    .header .datetime {
+      font-size: 12px; opacity: 0.75; margin-top: 8px;
+      background: rgba(255,255,255,0.15); display: inline-block;
+      padding: 4px 12px; border-radius: 20px;
+    }
+
+    /* ─── 이름 입력 ─── */
+    .name-section {
+      background: white; margin: 14px 14px 0;
+      border-radius: 14px; padding: 16px 18px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+      display: flex; align-items: center; gap: 12px;
+    }
+    .name-section label { font-size: 15px; font-weight: 600; white-space: nowrap; }
+    .name-section input {
+      flex: 1; border: 2px solid #CBD5E1; border-radius: 8px;
+      padding: 9px 12px; font-size: 16px; outline: none;
+    }
+    .name-section input:focus { border-color: #3B82F6; }
+
+    /* ─── 문제 카드 ─── */
+    .question-card {
+      background: white; margin: 12px 14px 0;
+      border-radius: 14px; padding: 18px 18px 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    }
+    .q-num {
+      font-size: 12px; font-weight: 700; color: #3B82F6;
+      background: #EFF6FF; padding: 3px 10px;
+      border-radius: 20px; display: inline-block; margin-bottom: 12px;
+    }
+    .english-line {
+      font-size: 17px; line-height: 2.2; color: #0f172a;
+      font-weight: 500; word-break: break-word;
+    }
+    .korean-line {
+      font-size: 14px; color: #64748b; margin-top: 6px;
+      padding-top: 8px; border-top: 1px dashed #E2E8F0;
+    }
+
+    /* ─── 빈칸 (글자 박스) ─── */
+    .blank-group {
+      display: inline-flex; gap: 4px;
+      vertical-align: middle; margin: 0 2px;
+    }
+    .letter-box {
+      width: 28px; height: 34px;
+      border: 2px solid #3B82F6;
+      border-radius: 6px; text-align: center;
+      font-size: 16px; font-weight: 600; color: #1e40af;
+      outline: none; padding: 0; background: #F8FAFF;
+      -webkit-user-select: text;
+      user-select: text;
+      /* 자동완성/자동수정 전부 차단 */
+      autocomplete: "off";
+      -webkit-text-security: none;
+      IME-mode: disabled;
+    }
+    .letter-box:focus {
+      border-color: #1D4ED8;
+      background: #DBEAFE;
+      box-shadow: 0 0 0 3px rgba(59,130,246,0.2);
+    }
+    .letter-box.filled { background: #EFF6FF; }
+    .letter-box.correct-box { border-color: #22C55E; background: #F0FDF4; color: #15803D; }
+    .letter-box.wrong-box  { border-color: #EF4444; background: #FEF2F2; color: #DC2626; }
+
+    /* ─── 제출 버튼 ─── */
+    .submit-wrap { padding: 22px 14px 0; }
+    .submit-btn {
+      width: 100%; background: linear-gradient(135deg, #3B82F6, #1D4ED8);
+      color: white; border: none; border-radius: 14px;
+      padding: 17px; font-size: 18px; font-weight: 700;
+      cursor: pointer; letter-spacing: -0.3px;
+      box-shadow: 0 4px 14px rgba(29,78,216,0.35);
+    }
+    .submit-btn:active { transform: scale(0.98); }
+
+    /* ─── 결과 화면 ─── */
+    #result-screen { display: none; }
+
+    .result-header {
+      background: linear-gradient(135deg, #10B981, #059669);
+      color: white; padding: 28px 20px; text-align: center;
+      box-shadow: 0 4px 12px rgba(5,150,105,0.3);
+    }
+    .result-header.fail-header {
+      background: linear-gradient(135deg, #F59E0B, #D97706);
+      box-shadow: 0 4px 12px rgba(217,119,6,0.3);
+    }
+    .score-big { font-size: 64px; font-weight: 800; line-height: 1; }
+    .score-label { font-size: 15px; opacity: 0.9; margin-top: 6px; }
+    .result-meta { font-size: 12px; opacity: 0.8; margin-top: 10px; }
+
+    .result-card {
+      background: white; margin: 12px 14px 0;
+      border-radius: 14px; padding: 16px 16px 14px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    }
+    .result-card .q-num { margin-bottom: 8px; }
+    .result-eng { font-size: 15px; line-height: 2; color: #0f172a; font-weight: 500; }
+    .result-kor { font-size: 13px; color: #64748b; margin-top: 6px; }
+    .answer-row {
+      margin-top: 8px; padding-top: 8px;
+      border-top: 1px dashed #E2E8F0;
+      font-size: 13px;
+    }
+    .answer-row span { font-weight: 700; }
+    .ok  { color: #16A34A; }
+    .bad { color: #DC2626; }
+
+    /* ─── 스크린샷 안내 ─── */
+    .screenshot-guide {
+      margin: 14px 14px 0; background: #FFFBEB;
+      border: 2px solid #FCD34D; border-radius: 14px;
+      padding: 16px 16px; font-size: 14px; color: #78350F;
+      line-height: 1.6;
+    }
+    .screenshot-guide strong { display: block; font-size: 15px; margin-bottom: 6px; }
+
+    .retry-btn {
+      width: calc(100% - 28px); margin: 16px 14px 0;
+      background: white; border: 2px solid #3B82F6;
+      color: #3B82F6; border-radius: 14px; padding: 14px;
+      font-size: 16px; font-weight: 700; cursor: pointer;
+    }
+
+    /* ─── 안내 문구 ─── */
+    .tip {
+      text-align: center; font-size: 12px; color: #94A3B8;
+      margin: 12px 14px 0;
+    }
+  </style>
+
+<script>
+// 봄날 허브에서 전달된 학생 이름 자동 적용
+(function(){
+  var saved = sessionStorage.getItem('bn_name') || localStorage.getItem('bn_name');
+  if(saved){
+    window._hubStudentName = saved;
+    // 이름 입력란이 있으면 자동 입력
+    window.addEventListener('DOMContentLoaded', function(){
+      var inputs = document.querySelectorAll('input#student-name, input#nameInput, .name-input');
+      inputs.forEach(function(el){ if(!el.value) el.value = saved; });
+    });
+  }
+})();
+</script>
+</head>
+<body>
+
+<!-- ══════════════════ 시험 화면 ══════════════════ -->
+<div id="test-screen">
+
+  <div class="header">
+    <h1>📚 고운중학교 3학년 1챕터</h1>
+    <div class="subtitle">영어 문장 암기 시험 · 빈칸을 채워보세요</div>
+    <div class="datetime" id="test-datetime"></div>
+  </div>
+
+  <div class="name-section">
+    <label for="student-name">이름</label>
+    <input type="text" id="student-name" placeholder="이름을 입력하세요"
+      autocomplete="off" autocorrect="off" autocapitalize="words" spellcheck="false" />
+  </div>
+
+  <p class="tip">💡 각 칸에 글자를 하나씩 입력하세요. 자동완성은 지원되지 않습니다.</p>
+
+  <div id="questions-container"></div>
+
+  <div class="submit-wrap">
+    <button class="submit-btn" onclick="submitTest()">✅ 제출하고 채점받기</button>
+  </div>
+
+</div>
+
+<!-- ══════════════════ 결과 화면 ══════════════════ -->
+<div id="result-screen">
+  <div id="result-header-block"></div>
+  <div class="screenshot-guide">
+    <strong>📸 선생님께 결과를 보내주세요!</strong>
+    이 화면을 캡처(스크린샷)해서 선생님께 전송해 주세요.<br>
+    📱 아이폰: 전원 + 볼륨 올리기 버튼 / 안드로이드: 전원 + 볼륨 내리기 버튼
+  </div>
+  <div id="result-details"></div>
+  <button class="retry-btn" onclick="restartTest()">🔄 다시 시험 보기</button>
+</div>
+
+
+<script>
+/* ══════════════════════════════════════════════════════════
+   📝  선생님이 여기서 문장을 수정/추가하세요!
+   형식: { en: "영어 문장.", ko: "한국어 뜻." }
+   ══════════════════════════════════════════════════════════ */
+var QUIZ_INFO = { school: '고운중학교', grade: '3학년', chapter: 'Lesson 3 (기말고사)' };
+const SENTENCES = [
+  // ── 3과 본문 (The Ig Nobel Prize) ──
+  { en: "What happens when you walk backward while you are carrying a cup of coffee?", ko: "당신이 커피 한 잔을 들고 있으면서 뒷걸음질 치면 무슨 일이 일어날까?" },
+  { en: "Han Jiwon, a Korean high school student, did research on this topic in 2015.", ko: "한국의 고등학생인 한지원은 2015년에 이 주제에 관한 연구를 했다." },
+  { en: "Is this research project good enough to win a Nobel Prize?", ko: "이 연구 과제는 노벨상을 탈 만큼 충분히 훌륭한가?" },
+  { en: "Maybe not. But how about an Ig Nobel Prize?", ko: "아마도 아닐 것이다. 하지만 이그노벨상은 어떠한가?" },
+  { en: "He won one in 2017 for this fun research.", ko: "그는 2017년에 이 재미있는 연구로 그것을 탔다." },
+  { en: "The Ig Nobel Prizes are awarded for discoveries that first make one laugh and then think.", ko: "이그노벨상은 먼저 사람을 웃게 한 다음 생각하게 하는 발견에 수여된다." },
+  { en: "They were started in 1991 by AIR magazine to increase people's interest in science by honoring the unusual and the imaginative.", ko: "그것들은 특이한 사람들과 창의적인 사람들에게 영예를 줌으로써 과학에 대한 사람들의 관심을 증가시키기 위해 AIR 잡지에 의해 1991년에 시작되었다." },
+  { en: "The prizes are presented by real Nobel winners in Sanders Theater at Harvard University.", ko: "그 상은 하버드 대학의 Sanders 극장에서 진짜 노벨상 수상자들에 의해 수여된다." },
+  { en: "The room is usually filled with people who are eager to cheer for the brave scientists with their laughable research.", ko: "그 방은 웃긴 연구에 대해 용기 있는 과학자들을 몹시 응원하고 싶어 하는 사람들로 대개 가득 찬다." },
+  { en: "The U.K. Navy won the Ig Nobel Prize for Peace in 2000.", ko: "영국 해군은 2000년에 이그노벨 평화상을 탔다." },
+  { en: "To save money, the Navy made its sailors shout, Bang, instead of using real bombs.", ko: "돈을 절약하기 위해 그 해군은 진짜 폭탄을 사용하는 것 대신에 선원들을 쾅이라고 소리치게 했다." },
+  { en: "Is that funny enough for you to laugh out loud?", ko: "그것은 당신이 큰 소리로 웃을 만큼 충분히 재미있는가?" },
+  { en: "Andre Geim also won an award that year.", ko: "Andre Geim도 그해에 상을 받았다." },
+  { en: "He succeeded in floating a live frog in the air by using magnets.", ko: "그는 자석을 사용해서 살아 있는 개구리를 공중에 띄우는 데 성공했다." },
+  { en: "In my experience, if people don't have a sense of humor, they are usually not very good scientists, he said when he accepted his award.", ko: "그는 상을 받았을 때 제 경험상 사람들이 유머 감각이 없다면 그들은 대개 매우 훌륭한 과학자가 아니에요라고 말했다." },
+  { en: "If that still does not bring a smile to your face, how about this?", ko: "만약 그것이 여전히 당신의 얼굴에 미소를 띠게 하지 않는다면 이것은 어떤가?" },
+  { en: "In 2005, Gauri Nanda won the Ig Nobel Prize in Economics for inventing an alarm clock.", ko: "2005년에 Gauri Nanda는 자명종을 발명한 것에 대해 이그노벨 경제학상을 받았다." },
+  { en: "It keeps running away until the sleeper finally gets out of bed.", ko: "그것은 잠자는 사람이 결국 침대에서 나올 때까지 계속해서 도망 다닌다." },
+  { en: "Not only the winners' fun studies but also the ceremony for the Ig Nobel Prizes makes people laugh.", ko: "수상자들의 재미있는 연구뿐만 아니라 이그노벨상 시상식도 사람들을 웃게 한다." },
+  { en: "There are a number of interesting things that keep people from getting bored.", ko: "사람들이 지루해지는 것을 막는 재미있는 것들이 많이 있다." },
+  { en: "The opening and closing speeches are just two words each.", ko: "개회사와 폐회사는 각각 단 두 마디이다." },
+  { en: "If someone talks for too long, an eight-year-old girl called Miss Sweetie Poo shouts repeatedly, Please stop! I'm bored.", ko: "만약 누군가가 너무 오랫동안 말하면 Miss Sweetie Poo라고 불리는 여덟 살 소녀가 그만하세요 저 지루해요라고 반복해서 소리친다." },
+  { en: "Each winner receives ten trillion Zimbabwean dollars, which is worth less than one U.S. dollar.", ko: "각 수상자는 10조 짐바브웨 달러를 받는데 그것은 미국 1달러보다 더 적은 가치가 있다." },
+  { en: "Throwing paper planes is another fun tradition.", ko: "종이비행기를 던지는 것은 또 다른 재미있는 전통이다." },
+  { en: "The winners do not receive lots of money.", ko: "수상자는 많은 돈을 받지는 않는다." },
+  { en: "And the awards are not great honors like the Nobel Prizes.", ko: "그리고 그 상은 노벨상처럼 큰 영광은 아니다." },
+  { en: "But the Ig Nobel Prizes make science a lot more fun!", ko: "하지만 이그노벨상은 과학을 훨씬 더 재미있게 만든다!" },
+  // ── 3과 대화문 ──
+  { en: "Mom, I can't wait for the sports day.", ko: "엄마, 저는 체육 대회가 매우 기대돼요." },
+  { en: "I'm going to play basketball for my class. We've practiced hard for a few weeks.", ko: "저는 저희 학급을 위해 농구를 할 거예요. 저희는 몇 주 동안 열심히 연습해 왔어요." },
+  { en: "Oh, I'm looking forward to your game.", ko: "아, 난 네 경기가 몹시 기대되는구나." },
+  { en: "Actually, I'm a little worried. I'm afraid I'll make a mistake.", ko: "사실 저는 조금 걱정돼요. 제가 실수를 할까 봐 두려워요." },
+  { en: "Don't worry. You'll do a good job. I'll keep my fingers crossed!", ko: "걱정하지 마. 넌 잘할 거야. 행운을 빌게!" },
+  { en: "Soyun, are you going to take part in any races on the sports day?", ko: "소윤아, 너는 체육 대회에서 어떤 경기에라도 참가할 예정이니?" },
+  { en: "Sure. I'm going to run a 100 meter race at the end of the day.", ko: "물론이에요. 저는 그날의 마지막에 100미터 경주를 할 거예요." },
+  { en: "Wow, I'm looking forward to seeing you at the race.", ko: "와, 나는 경주에서 널 볼 것이 기대되는구나." },
+  { en: "Just do your best. I'll keep my fingers crossed!", ko: "그냥 최선을 다하렴. 행운을 빌게!" },
+  { en: "Mom, are you coming to the sports day?", ko: "엄마, 체육 대회에 오실 거예요?" },
+  { en: "Sure. I'm going to play the game Kick a Shoe.", ko: "물론이지. 나는 Kick a Shoe 게임을 할 거야." },
+  { en: "I'm also going to perform a funny dance with some other mothers.", ko: "나는 또한 다른 엄마들과 재미있는 춤을 공연할 거야." },
+  { en: "That sounds fun. I'm looking forward to watching you on the stage.", ko: "재미있을 것 같아요. 저는 엄마를 무대에서 보기를 기대하고 있어요." },
+  { en: "I'm looking forward to the model airplane contest tomorrow. Are you ready?", ko: "난 내일 모형 비행기 대회를 기대하고 있어. 넌 준비됐어?" },
+  { en: "Well, I think so, but I'm nervous.", ko: "음, 그런 것 같아, 하지만 난 긴장돼." },
+  { en: "You will do well. I'll keep my fingers crossed!", ko: "넌 잘할 거야. 행운을 빌게!" },
+  { en: "We're going on a field trip next Tuesday. What are you going to do in the talent show, Jimin?", ko: "우리는 다음 화요일에 수학여행을 가잖아. 너는 장기 자랑에서 무엇을 할 거니, 지민아?" },
+  { en: "I'm going to talk like our teachers do in class and tell some jokes.", ko: "나는 우리 선생님들이 수업에서 하시는 것처럼 말하고 몇 가지 농담을 할 거야." },
+  { en: "Don't worry. I'm sure you'll do great. I'll keep my fingers crossed!", ko: "걱정하지 마. 난 네가 잘할 거라고 확신해. 행운을 빌게!" },
+  { en: "Let me show you one part of my act.", ko: "내가 내 연기의 한 부분을 보여 줄게." },
+  { en: "Great! You always make us laugh out loud.", ko: "좋아! 넌 항상 우리를 큰 소리로 웃게 해." },
+  { en: "Can you tell me something about your invention?", ko: "네 발명품에 대한 것을 내게 말해 줄 수 있니?" },
+  { en: "They are a pair of special shoes. You can also clean the floor with them.", ko: "그것은 특별한 신발 한 켤레야. 너는 또한 그것으로 바닥을 청소할 수 있어." },
+  { en: "Great! I'm sure you'll win a prize.", ko: "훌륭해! 난 네가 상을 받을 거라고 확신해." },
+  { en: "Is this a cutting board or a bird feeder?", ko: "이것은 도마니 아니면 새 모이통이니?" },
+  { en: "It is not only a cutting board but also a bird feeder.", ko: "그건 도마일 뿐만 아니라 새 모이통이기도 해." },
+  { en: "You can do two things at the same time.", ko: "너는 동시에 두 가지를 할 수 있어." },
+  { en: "Yes. I'm really looking forward to using it.", ko: "응. 나는 그것을 사용하기를 정말 기대하고 있어." },
+];
+/* ══════════════════════════════════════════════════════════ */
+
+/* ─── 상태 변수 ─── */
+let currentBlanks = [];   // [{ word, blankId, length }, ...]
+let startDateTime = null;
+let tabSwitchCount = 0;
+let attemptCount = 0;
+
+/* ─── 날짜/시간 표시 ─── */
+function formatDT(d) {
+  const pad = n => String(n).padStart(2, '0');
+  return `${d.getFullYear()}.${pad(d.getMonth()+1)}.${pad(d.getDate())} `
+       + `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+}
+
+/* ─── 문장 토큰화 (단어 + 뒤에 붙는 구두점 분리) ─── */
+function tokenize(sentence) {
+  return sentence.trim().split(/\s+/).map(function(tok) {
+    // 끝에 붙은 구두점(.,!? 등)을 분리
+    var word = tok.replace(/[^A-Za-z]+$/, '');
+    var punct = tok.slice(word.length);
+    if (!word) { return { word: tok, punct: '' }; }
+    return { word: word, punct: punct };
+  });
+}
+
+/* ─── 빈칸 위치 랜덤 선택 (단어 3글자 이상 중 2개) ─── */
+function pickBlanks(tokens) {
+  const eligible = tokens
+    .map((t, i) => i)
+    .filter(i => tokens[i].word.length >= 3);
+
+  // Fisher–Yates shuffle
+  for (let i = eligible.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [eligible[i], eligible[j]] = [eligible[j], eligible[i]];
+  }
+  return new Set(eligible.slice(0, Math.min(2, eligible.length)));
+}
+
+/* ─── 글자 박스 HTML 생성 ─── */
+function buildLetterBoxes(blankId, word) {
+  let html = `<span class="blank-group" data-blank="${blankId}">`;
+  let inputIdx = 0;
+  for (let c = 0; c < word.length; c++) {
+    const ch = word[c];
+    if (ch === '-' || ch === '.' || ch === "'") {
+      html += `<span style="display:inline-flex;align-items:center;justify-content:center;width:10px;font-size:16px;font-weight:700;color:#3B82F6;">${ch}</span>`;
+    } else {
+      html += `<input
+        class="letter-box"
+        type="text" maxlength="2"
+        id="${blankId}_${inputIdx}"
+        data-blank="${blankId}"
+        data-idx="${inputIdx}"
+        data-charpos="${c}"
+        autocomplete="off"
+        autocorrect="off"
+        autocapitalize="none"
+        spellcheck="false"
+        inputmode="text"
+        aria-label="글자 ${inputIdx+1}"
+      />`;
+      inputIdx++;
+    }
+  }
+  html += `</span>`;
+  return html;
+}
+
+/* ─── 문제 렌더링 ─── */
+function renderQuestions() {
+  currentBlanks = [];
+  const container = document.getElementById('questions-container');
+  container.innerHTML = '';
+
+  SENTENCES.forEach((sent, si) => {
+    const tokens = tokenize(sent.en);
+    const blankSet = pickBlanks(tokens);
+
+    let engHtml = '';
+    tokens.forEach((tok, ti) => {
+      if (blankSet.has(ti)) {
+        const blankId = `q${si}_b${currentBlanks.length}`;
+        currentBlanks.push({ blankId, word: tok.word, sentIdx: si });
+        engHtml += buildLetterBoxes(blankId, tok.word);
+        if (tok.punct) engHtml += `<span>${tok.punct}</span>`;
+        engHtml += ' ';
+      } else {
+        engHtml += `<span>${tok.word}${tok.punct}</span> `;
+      }
+    });
+
+    const card = document.createElement('div');
+    card.className = 'question-card';
+    card.innerHTML = `
+      <div class="q-num">문제 ${si + 1}</div>
+      <div class="english-line">${engHtml}</div>
+      <div class="korean-line">🇰🇷 ${sent.ko}</div>
+    `;
+    container.appendChild(card);
+  });
+
+  /* 이벤트 등록 */
+  container.querySelectorAll('.letter-box').forEach(box => {
+    box.addEventListener('input', onLetterInput);
+    box.addEventListener('keydown', onLetterKeydown);
+    box.addEventListener('paste', e => e.preventDefault());   // 붙여넣기 차단
+  });
+}
+
+/* ─── 글자 입력 핸들러 ─── */
+function onLetterInput(e) {
+  const box = e.target;
+  let val = box.value;
+
+  /* 붙여넣기나 예측입력으로 2글자 이상 들어오면 첫 글자만 허용 */
+  if (val.length > 1) val = val[0];
+
+  /* 영문자만 허용 */
+  val = val.replace(/[^A-Za-z0-9']/g, '');
+  box.value = val;
+
+  if (val.length === 1) {
+    box.classList.add('filled');
+    /* 다음 칸으로 자동 이동 */
+    const blankId = box.dataset.blank;
+    const idx     = parseInt(box.dataset.idx);
+    const next    = document.getElementById(`${blankId}_${idx + 1}`);
+    if (next) next.focus();
+  } else {
+    box.classList.remove('filled');
+  }
+}
+
+/* ─── 백스페이스: 이전 칸으로 이동 ─── */
+function onLetterKeydown(e) {
+  const box = e.target;
+  if (e.key === 'Backspace' && box.value === '') {
+    const blankId = box.dataset.blank;
+    const idx     = parseInt(box.dataset.idx);
+    const prev    = document.getElementById(`${blankId}_${idx - 1}`);
+    if (prev) { prev.value = ''; prev.focus(); }
+  }
+}
+
+/* ─── 빈칸에서 학생 답 수집 ─── */
+function collectAnswer(blankInfo) {
+  let ans = '';
+  let inputIdx = 0;
+  for (let c = 0; c < blankInfo.word.length; c++) {
+    const ch = blankInfo.word[c];
+    if (ch === '-' || ch === '.' || ch === "'") {
+      ans += ch;
+    } else {
+      const box = document.getElementById(`${blankInfo.blankId}_${inputIdx}`);
+      ans += box ? (box.value || ' ') : ' ';
+      inputIdx++;
+    }
+  }
+  return ans.trim();
+}
+
+/* ─── 채점 ─── */
+function submitTest(auto) {
+  const name = document.getElementById('student-name').value.trim() || (auto ? '(자동제출)' : '');
+  if (!name) { alert('이름을 먼저 입력해 주세요!'); return; }
+
+  const incomplete = currentBlanks.some(b => {
+    const ans = collectAnswer(b);
+    const inputLen = b.word.split('').filter(ch => ch !== '-' && ch !== '.' && ch !== "'").length;
+    return ans.replace(/[\s\-\.']/g, '').length < inputLen;
+  });
+  if (!auto && incomplete) {
+    if (!confirm('아직 채우지 않은 칸이 있습니다. 그래도 제출할까요?')) return;
+  }
+
+  const endDT = new Date();
+  let correct = 0;
+
+  /* 결과 카드 생성 */
+  let detailsHtml = '';
+  const sentResults = {};  // sentIdx → [{blankId, word, userAns, ok}]
+
+  currentBlanks.forEach(b => {
+    const userAns = collectAnswer(b);
+    const ok = userAns.toLowerCase() === b.word.toLowerCase();
+    if (ok) correct++;
+    if (!sentResults[b.sentIdx]) sentResults[b.sentIdx] = [];
+    sentResults[b.sentIdx].push({ word: b.word, blankId: b.blankId, userAns, ok });
+  });
+
+  SENTENCES.forEach((sent, si) => {
+    if (!sentResults[si]) return;
+
+    /* 결과 영문장 재구성 */
+    const tokens = tokenize(sent.en);
+    const blankIds = sentResults[si].map(r => r.blankId);
+    let blankPtr = 0;
+
+    let engResult = '';
+    let usedBlanks = {};
+    // 어느 토큰이 어느 blankId에 매핑됐는지 역추적
+    const blankMap = {};
+    currentBlanks.forEach(b => {
+      if (b.sentIdx === si) blankMap[b.blankId] = b;
+    });
+
+    // 빈칸 위치를 다시 알아내기
+    tokens.forEach((tok, ti) => {
+      // sentResults[si] 중 tok.word와 매칭되는 것 찾기
+      const match = sentResults[si].find(r => !usedBlanks[r.blankId] && r.word === tok.word);
+      if (match) {
+        usedBlanks[match.blankId] = true;
+        const cls  = match.ok ? 'ok' : 'bad';
+        const mark = match.ok ? '✅' : '❌';
+        engResult += `<span class="${cls}"><u>${tok.word}</u>${tok.punct}</span> `;
+      } else {
+        engResult += `${tok.word}${tok.punct} `;
+      }
+    });
+
+    let answerRows = sentResults[si].map(r =>
+      r.ok
+        ? `<span class="ok">✅ "${r.word}" 정답!</span>`
+        : `<span class="bad">❌ 정답: <b>${r.word}</b> / 내 답: <b>${r.userAns || '(공백)'}</b></span>`
+    ).join('<br>');
+
+    detailsHtml += `
+      <div class="result-card">
+        <div class="q-num">문제 ${si + 1}</div>
+        <div class="result-eng">${engResult}</div>
+        <div class="result-kor">🇰🇷 ${sent.ko}</div>
+        <div class="answer-row">${answerRows}</div>
+      </div>`;
+  });
+
+  /* 점수 헤더 */
+  const total = currentBlanks.length;
+  const pct   = Math.round(correct / total * 100);
+  const emoji = pct === 100 ? '🏆' : pct >= 70 ? '😊' : '😢';
+  const isPass = pct >= 70;
+
+  document.getElementById('result-header-block').innerHTML = `
+    <div class="result-header ${isPass ? '' : 'fail-header'}">
+      <div style="font-size:36px;">${emoji}</div>
+      <div class="score-big">${correct} / ${total}</div>
+      <div class="score-label">${pct}점 &nbsp;·&nbsp; ${isPass ? '통과 🎉' : '다시 도전!'}</div>
+      <div class="result-meta">
+        👤 ${name} &nbsp;|&nbsp; 📅 ${formatDT(endDT)}
+        &nbsp;|&nbsp; 📝 ${attemptCount}회차 응시
+        &nbsp;|&nbsp; ${tabSwitchCount > 0 ? '⚠️ 탭 이탈 ' + tabSwitchCount + '회' : '✅ 탭 이탈 없음'}
+      </div>
+    </div>`;
+
+  document.getElementById('result-details').innerHTML = detailsHtml;
+
+
+  /* 구글 시트에 결과 전송 */
+  var wrongList = [];
+  Object.keys(sentResults).forEach(function(si) {
+    var hasWrong = sentResults[si].some(function(r) { return !r.ok; });
+    if (hasWrong) {
+      wrongList.push({ num: parseInt(si) + 1, en: SENTENCES[parseInt(si)].en });
+    }
+  });
+  submitToSheet(name, correct, total, wrongList);
+
+  /* 화면 전환 */
+  document.getElementById('test-screen').style.display   = 'none';
+  document.getElementById('result-screen').style.display = 'block';
+  window.scrollTo(0, 0);
+}
+
+/* ─── 다시 시작 ─── */
+function restartTest() {
+  document.getElementById('test-screen').style.display   = 'block';
+  document.getElementById('result-screen').style.display = 'none';
+  renderQuestions();
+  window.scrollTo(0, 0);
+}
+
+/* ─── 초기화 ─── */
+(function init() {
+  startDateTime = new Date();
+  document.getElementById('test-datetime').textContent = '시험 시작: ' + formatDT(startDateTime);
+  renderQuestions();
+
+  var storageKey = 'attemptCount_고운중_3학년_1챕터';
+  attemptCount = parseInt(localStorage.getItem(storageKey) || '0') + 1;
+  localStorage.setItem(storageKey, attemptCount);
+
+  document.addEventListener('visibilitychange', function() {
+    if (document.hidden) {
+      tabSwitchCount++;
+      if (document.getElementById('test-screen').style.display !== 'none') {
+        if (tabSwitchCount >= 3) {
+          setTimeout(function() {
+            alert('🚨 탭 이탈 3회 초과!\n\n부정행위 방지를 위해 시험이 자동 제출됩니다.');
+            submitTest(true);
+          }, 100);
+        } else {
+          setTimeout(function() {
+            alert('⚠️ 다른 탭/창으로 이동이 감지되었습니다!\n\n이탈 횟수: ' + tabSwitchCount + '회 / 3회\n3회 초과 시 자동 제출됩니다.');
+          }, 100);
+        }
+      }
+    }
+  });
+
+  document.addEventListener('copy',  function(e) { e.preventDefault(); });
+  document.addEventListener('cut',   function(e) { e.preventDefault(); });
+  document.addEventListener('paste', function(e) { e.preventDefault(); });
+  document.addEventListener('keydown', function(e) {
+    if (e.ctrlKey && ['c','v','x','a'].includes(e.key.toLowerCase())) { e.preventDefault(); }
+    if (e.metaKey && ['c','v','x','a'].includes(e.key.toLowerCase())) { e.preventDefault(); }
+  });
+})();
+
+/* ─── 구글 시트 전송 ─── */
+var SCRIPT_URL = 'SCRIPT_URL_HERE'; // ← 나중에 URL로 교체
+
+function submitToSheet(name, correct, total, wrongList) {
+  if (!SCRIPT_URL || SCRIPT_URL === 'SCRIPT_URL_HERE') return;
+  var now = new Date();
+  var pad = function(n) { return String(n).padStart(2, '0'); };
+  var dateStr = now.getFullYear() + '.' + pad(now.getMonth()+1) + '.' + pad(now.getDate());
+  var timeStr = pad(now.getHours()) + ':' + pad(now.getMinutes()) + ':' + pad(now.getSeconds());
+  var wrongNumbers = wrongList.length > 0 ? wrongList.map(function(w){ return w.num + '번'; }).join(', ') : '';
+  var wrongSentences = wrongList.length > 0
+    ? wrongList.map(function(w){ return w.num + '번: ' + w.en; }).join(' / ')
+    : '';
+  var payload = {
+    date: dateStr,
+    time: timeStr,
+    name: name,
+    school: QUIZ_INFO.school,
+    grade: QUIZ_INFO.grade,
+    chapter: QUIZ_INFO.chapter,
+    correct: correct,
+    total: total,
+    percent: Math.round(correct / total * 100),
+    wrongNumbers: wrongNumbers,
+    wrongSentences: wrongSentences
+  };
+  fetch(SCRIPT_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  }).catch(function(err) { console.log('전송 오류:', err); });
+}
+
+</script>
+</body>
+</html>
