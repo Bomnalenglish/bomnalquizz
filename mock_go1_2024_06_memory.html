@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>봄날 ENGLISH | 고1 24년 6월 본문암기</title>
+<style>
+  :root {
+    --pri: #6b46f0;
+    --pri-dark: #5638d1;
+    --pri-light: #e9e2ff;
+    --bg-deep: #1e1b4b;
+    --bg-mid: #2d2670;
+    --card: #ffffff;
+    --ink: #1a1a2e;
+    --muted: #6b7280;
+    --border: #e5e7eb;
+    --soft: #f8faff;
+    --easy: #c6f6d5;
+    --easy-text: #22543d;
+    --med: #fef3c7;
+    --med-text: #92400e;
+    --hard: #fed7d7;
+    --hard-text: #9b2c2c;
+    --correct: #10b981;
+    --wrong: #ef4444;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html,body{font-family:'Pretendard','Apple SD Gothic Neo','Malgun Gothic',sans-serif;background:#f3f4f6;color:var(--ink);min-height:100vh;-webkit-tap-highlight-color:transparent}
+  body{max-width:520px;margin:0 auto;background:#fff;min-height:100vh;position:relative;padding-bottom:90px}
+
+  /* 헤더 (보라색 그라데이션) */
+  .quiz-header{background:linear-gradient(135deg,var(--bg-deep),var(--bg-mid));color:white;padding:36px 22px 24px;position:relative}
+  .back-btn{position:absolute;top:18px;left:22px;background:none;border:none;color:white;font-size:24px;cursor:pointer;padding:6px}
+  .progress-bar{position:absolute;top:54px;left:22px;right:22px;height:6px;background:rgba(255,255,255,.18);border-radius:3px;overflow:hidden}
+  .progress-fill{height:100%;background:linear-gradient(90deg,#a78bfa,#c4b5fd);border-radius:3px;transition:width .3s}
+  .header-row{display:flex;justify-content:space-between;align-items:flex-end;margin-top:38px}
+  .timer{font-size:38px;font-weight:800;letter-spacing:1px}
+  .counter{font-size:16px;color:rgba(255,255,255,.85);font-weight:600}
+
+  /* 시작 화면 */
+  .start-screen{padding:24px 18px}
+  .start-card{background:white;border:1.5px solid var(--border);border-radius:18px;padding:24px 20px;box-shadow:0 4px 14px rgba(0,0,0,.04);margin-bottom:14px}
+  .start-card h2{font-size:18px;font-weight:800;color:var(--pri);margin-bottom:14px}
+  .start-card p{font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:14px}
+  .form-grp{margin-bottom:12px}
+  .form-grp label{display:block;font-size:13px;font-weight:700;color:var(--ink);margin-bottom:6px}
+  .form-grp input,.form-grp select{width:100%;padding:11px 13px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;font-family:inherit}
+  .mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+  .mode-card{background:white;border:2.5px solid var(--border);border-radius:14px;padding:16px 12px;text-align:center;cursor:pointer;transition:all .15s}
+  .mode-card.sel{border-color:var(--pri);background:var(--pri-light)}
+  .mode-card .icon{font-size:24px;margin-bottom:6px}
+  .mode-card .title{font-size:14px;font-weight:800;color:var(--pri);margin-bottom:3px}
+  .mode-card .desc{font-size:11px;color:var(--muted)}
+  .passage-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(70px,1fr));gap:8px;margin-bottom:16px}
+  .p-card{position:relative;background:white;border:1.5px solid var(--border);border-radius:10px;padding:10px 6px;cursor:pointer;text-align:center;transition:all .15s;font-size:12px;font-weight:700;color:var(--muted)}
+  .p-card.sel{border-color:var(--pri);background:var(--pri-light);color:var(--pri)}
+  .p-card .num{font-size:14px;font-weight:800;color:var(--pri)}
+  .p-card .topic{font-size:10px;color:var(--muted);margin-top:2px;line-height:1.2}
+  .actions{display:flex;gap:8px;margin-top:14px}
+  .btn{flex:1;padding:13px;border-radius:11px;border:none;font-family:inherit;font-size:14px;font-weight:800;cursor:pointer;transition:opacity .15s}
+  .btn-pri{background:var(--pri);color:white}
+  .btn-pri:hover{background:var(--pri-dark)}
+  .btn-pri:disabled{opacity:.5;cursor:not-allowed}
+  .btn-sec{background:white;color:var(--pri);border:1.5px solid var(--pri)}
+
+  /* 퀴즈 화면 */
+  #quizScreen{display:none}
+  .passage-box{padding:18px 22px 6px 22px;background:white}
+  .tool-row{display:flex;gap:8px;align-items:center;padding:10px 0 12px 0;font-size:13px;color:#94a3b8}
+  .tool-btn{width:34px;height:34px;border-radius:8px;background:#f3f4f6;display:flex;align-items:center;justify-content:center;font-size:15px}
+  .passage-text{font-size:16px;line-height:2;color:#1a1a2e;text-align:justify;letter-spacing:-.2px;padding-bottom:8px}
+  .passage-text .blank{display:inline-block;min-width:80px;background:#fff59d;border-bottom:3px solid #f57f17;border-radius:4px;padding:1px 12px;font-weight:800;color:#e65100;text-align:center;margin:0 3px}
+  .passage-text .hl{text-decoration:underline;text-decoration-color:#dc2626;text-decoration-thickness:2px;text-underline-offset:3px;font-weight:700}
+  .passage-text .hl-num{font-weight:800}
+  .passage-text .opt-pair{color:var(--pri);font-weight:700;margin:0 1px}
+  .passage-text .opt-bracket{background:#f3e8ff;padding:2px 5px;border-radius:4px;font-weight:700;color:#5638d1}
+
+  /* 문제 카드 */
+  .q-card{background:white;border-top:1px solid var(--border);padding:20px 22px;margin-top:6px}
+  .q-meta{display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+  .q-no{background:var(--pri);color:white;border-radius:14px;padding:5px 13px;font-size:14px;font-weight:800}
+  .q-diff{border-radius:14px;padding:4px 12px;font-size:11px;font-weight:800}
+  .q-diff.easy{background:var(--easy);color:var(--easy-text)}
+  .q-diff.med{background:var(--med);color:var(--med-text)}
+  .q-diff.hard{background:var(--hard);color:var(--hard-text)}
+  .q-type{background:var(--pri-light);color:var(--pri);border-radius:14px;padding:4px 13px;font-size:11px;font-weight:800}
+  .q-score{margin-left:auto;font-size:13px;color:var(--muted);font-weight:700}
+  .q-text{font-size:16px;font-weight:700;color:var(--ink);line-height:1.5;margin-bottom:16px}
+  .q-text .quote{font-weight:600;color:#4b5563}
+  .opt-list{display:flex;flex-direction:column;gap:8px}
+  .opt{display:flex;align-items:center;gap:11px;padding:13px 15px;background:white;border:1.5px solid var(--border);border-radius:12px;cursor:pointer;font-size:15px;transition:all .15s;text-align:left;font-family:inherit;color:var(--ink)}
+  .opt:hover{border-color:var(--pri);background:#fafafa}
+  .opt.sel{border-color:var(--pri);background:var(--pri-light)}
+  .opt.correct{border-color:var(--correct);background:#d1fae5}
+  .opt.wrong{border-color:var(--wrong);background:#fee2e2}
+  .opt .num{width:24px;height:24px;border-radius:50%;background:#f3f4f6;color:var(--muted);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .opt.sel .num{background:var(--pri);color:white}
+  .opt.correct .num{background:var(--correct);color:white}
+  .opt.wrong .num{background:var(--wrong);color:white}
+  .opt-text{flex:1}
+  .input-answer{width:100%;padding:14px 16px;border:1.5px solid var(--border);border-radius:12px;font-size:15px;font-family:inherit;background:#fafafa}
+  .input-answer:focus{outline:none;border-color:var(--pri);background:white}
+  .input-answer.correct{border-color:var(--correct);background:#d1fae5}
+  .input-answer.wrong{border-color:var(--wrong);background:#fee2e2}
+
+  /* 결과 화면 */
+  #resultScreen{display:none;padding:24px 18px}
+  .result-card{background:white;border:1.5px solid var(--border);border-radius:18px;padding:28px 22px;text-align:center;box-shadow:0 4px 14px rgba(0,0,0,.04);margin-bottom:14px}
+  .result-card h2{font-size:22px;font-weight:800;color:var(--pri);margin-bottom:14px}
+  .result-score{font-size:48px;font-weight:900;color:var(--pri);margin:10px 0}
+  .result-detail{font-size:14px;color:var(--muted);line-height:1.7}
+
+  /* 하단 고정 버튼 */
+  .bottom-bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);max-width:520px;width:100%;background:white;border-top:1px solid var(--border);padding:12px 16px;display:flex;gap:8px;z-index:50}
+  .bottom-bar .btn{padding:14px}
+
+  .hidden{display:none!important}
+
+  /* 피드백 박스 */
+  .feedback{margin-top:14px;padding:14px;border-radius:12px;font-size:13px;line-height:1.7}
+  .feedback.correct{background:#d1fae5;color:#065f46;border-left:4px solid var(--correct)}
+  .feedback.wrong{background:#fee2e2;color:#991b1b;border-left:4px solid var(--wrong)}
+  .feedback strong{font-weight:800}
+
+  @media(max-width:380px){
+    .timer{font-size:32px}
+    .passage-text{font-size:14px}
+    .opt{font-size:14px}
+  }
+</style>
+</head>
+<body>
+
+<!-- ─── 시작 화면 ─── -->
+<div id="startScreen" class="start-screen">
+  <div class="start-card">
+    <h2>🎯 고1 24년 6월 모의고사 본문암기</h2>
+    <p>지문별로 9가지 유형의 문제를 풀며 어휘·문맥·어법을 종합적으로 학습합니다. (부산광역시 교육청 학력평가)</p>
+    <div class="form-grp">
+      <label>이름</label>
+      <input id="nameInput" placeholder="이름을 입력하세요" />
+    </div>
+    <div class="form-grp">
+      <label>학교</label>
+      <input id="schoolInput" placeholder="학교를 입력하세요" />
+    </div>
+  </div>
+  <div class="start-card">
+    <h2>📚 지문 선택</h2>
+    <div class="mode-grid">
+      <div class="mode-card sel" data-mode="single">
+        <div class="icon">📖</div>
+        <div class="title">단일 지문</div>
+        <div class="desc">1개 지문 × 9문제</div>
+      </div>
+      <div class="mode-card" data-mode="all">
+        <div class="icon">📚</div>
+        <div class="title">전체 지문</div>
+        <div class="desc">선택한 지문 모두</div>
+      </div>
+    </div>
+    <div class="passage-grid" id="passageGrid"></div>
+    <div class="actions">
+      <button class="btn btn-sec" id="selectAllBtn">전체 선택</button>
+      <button class="btn btn-pri" id="startBtn" disabled>시작하기</button>
+    </div>
+  </div>
+</div>
+
+<!-- ─── 퀴즈 화면 ─── -->
+<div id="quizScreen">
+  <div class="quiz-header">
+    <button class="back-btn" onclick="if(confirm('정말 종료하시겠습니까?')) location.reload()">←</button>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="header-row">
+      <div class="timer" id="timer">20:00</div>
+      <div class="counter" id="counter">0/9 응답</div>
+    </div>
+  </div>
+  <div class="passage-box">
+    <div class="tool-row">
+      <div class="tool-btn">Aa</div>
+      <div class="tool-btn">🖊️</div>
+      <div class="tool-btn">✂️</div>
+      <div class="tool-btn">📐</div>
+      <div style="margin-left:auto" class="tool-btn">🌙</div>
+    </div>
+    <div class="passage-text" id="passageText"></div>
+  </div>
+  <div class="q-card">
+    <div class="q-meta" id="qMeta"></div>
+    <div class="q-text" id="qText"></div>
+    <div id="qBody"></div>
+    <div class="feedback hidden" id="feedback"></div>
+  </div>
+</div>
+
+<div class="bottom-bar hidden" id="bottomBar">
+  <button class="btn btn-sec" id="prevBtn">이전</button>
+  <button class="btn btn-pri" id="nextBtn">다음</button>
+</div>
+
+<!-- ─── 결과 화면 ─── -->
+<div id="resultScreen">
+  <div class="result-card">
+    <h2>🎉 학습 완료!</h2>
+    <div class="result-score" id="resultScore">0/0</div>
+    <div class="result-detail" id="resultDetail"></div>
+  </div>
+  <div class="actions">
+    <button class="btn btn-sec" onclick="location.reload()">다시 풀기</button>
+    <button class="btn btn-pri" onclick="location.href='index.html'">메인으로</button>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════
+   📝 지문 데이터 - 각 지문당 9문제
+   유형: 1.동의어 2.반의어 3.빈칸어휘 4.빈칸문맥 5.문맥상부적절
+        6.조합형 7.영영풀이 8.어형변환 9.다의어
+═══════════════════════════════════════════════════════════ */
+
+const PASSAGES = [
+  // ─── 19번: Emma 편지 ───
+  {
+    no: 19,
+    topic: '대학 합격 편지',
+    fullEn: `As I walked from the mailbox, my heart was beating rapidly. In my hands, I held the letter from the university I had applied to. I thought my grades were good enough to cross the line and my application letter was well-written, but was it enough? I hadn't slept a wink for days. As I carefully tore into the paper of the envelope, the letter slowly emerged with the opening phrase, "It is our great pleasure..." I shouted with joy, "I am in!" As I held the letter, I began to make a fantasy about my college life in a faraway city.`,
+    questions: [
+      { type:'syn', diff:'med', score:5,
+        word:'rapidly',
+        ctx:`my heart was beating <span class="hl">rapidly</span>`,
+        q:`다음 글의 밑줄 친 rapidly와 의미가 가장 가까운 것은?`,
+        opts:['slowly','quickly','calmly','steadily'], ans:1 },
+      { type:'ant', diff:'med', score:5,
+        word:'faraway',
+        ctx:`college life in a <span class="hl">faraway</span> city`,
+        q:`밑줄 친 'faraway'와 의미가 가장 반대인 것은?`,
+        opts:['distant','remote','nearby','far'], ans:2 },
+      { type:'blank-voca', diff:'med', score:5,
+        ctxPre:`As I carefully `, ctxPost:` the paper of the envelope, the letter slowly emerged.`,
+        q:`다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?`,
+        opts:['folded','tore into','sealed','signed'], ans:1 },
+      { type:'blank-ctx', diff:'med', score:5,
+        ctxPre:`I hadn't slept a `, ctxPost:` for days.`,
+        q:`다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?`,
+        opts:['hour','minute','wink','dream'], ans:2 },
+      { type:'wrong-word', diff:'med', score:5,
+        items:['applied','rapidly','emerged','disappointed'],
+        contextSentence:`As I walked from the mailbox, my heart was beating ①<u>rapidly</u>. In my hands, I held the letter from the university I had ②<u>applied</u> to. As I tore into the envelope, the letter slowly ③<u>emerged</u>. I shouted with joy, "I am in!" I was so ④<u>disappointed</u>.`,
+        q:`다음 글의 밑줄 친 ①~④ 중, 문맥상 낱말의 쓰임이 적절하지 않은 것은?`,
+        opts:['rapidly','applied','emerged','disappointed'], ans:3 },
+      { type:'abc', diff:'hard', score:6,
+        ctx:`I thought my grades were (A)[good / poor] enough to cross the line and my application letter was well-written. As I tore into the envelope, the letter (B)[hid / emerged] with the opening phrase, "It is our great pleasure..." I (C)[shouted / whispered] with joy.`,
+        q:`다음 글의 (A), (B), (C)에 들어갈 말로 가장 적절한 것끼리 짝지은 것은?`,
+        opts:['good — hid — shouted','poor — emerged — whispered','good — emerged — shouted','poor — hid — shouted'], ans:2 },
+      { type:'eng-def', diff:'med', score:5,
+        defn:`a paper container used to enclose a letter`,
+        q:`다음 영영 정의에 해당하는 단어로 가장 적절한 것은?`,
+        opts:['envelope','phrase','application','fantasy'], ans:0 },
+      { type:'word-form', diff:'hard', score:6,
+        ctxPre:`The letter slowly `, ctxPost:` with the opening phrase. (emerge — 과거형)`,
+        q:`다음 글의 빈칸에 괄호 안의 단어를 알맞은 형태로 바꿔 쓰시오. (영어로)`,
+        ans:'emerged' },
+      { type:'polysemy', diff:'hard', score:6,
+        word:'cross',
+        sentenceA:`my grades were good enough to <u>cross</u> the line`,
+        sentenceB:`I had to <u>cross</u> the river to reach the village.`,
+        q:`밑줄 친 'cross'의 (A)와 (B)에서의 의미로 가장 적절한 것은?`,
+        opts:['(A) 화나게 하다 — (B) 건너다','(A) 넘다(합격하다) — (B) 건너다','(A) 건너다 — (B) 화나게 하다','(A) 만나다 — (B) 만나다'], ans:1 }
+    ]
+  },
+  // ─── 20번: 방 정리 ───
+  {
+    no: 20,
+    topic: '방 정리와 마음',
+    fullEn: `Having a messy room can add up to negative feelings and destructive thinking. Psychologists say that having a disorderly room can indicate a disorganized mental state. One of the professional tidying experts says that the moment you start cleaning your room, you also start changing your life and gaining new perspective. When you clean your surroundings, positive and good atmosphere follows. You can do more things efficiently and neatly. So, clean up your closets, organize your drawers, and arrange your things first, then peace of mind will follow.`,
+    questions: [
+      { type:'syn', diff:'med', score:5,
+        word:'disorderly',
+        ctx:`having a <span class="hl">disorderly</span> room can indicate a disorganized mental state`,
+        q:`다음 글의 밑줄 친 disorderly와 의미가 가장 가까운 것은?`,
+        opts:['tidy','messy','clean','arranged'], ans:1 },
+      { type:'ant', diff:'med', score:5,
+        word:'negative',
+        ctx:`add up to <span class="hl">negative</span> feelings and destructive thinking`,
+        q:`밑줄 친 'negative'와 의미가 가장 반대인 것은?`,
+        opts:['harmful','positive','bad','wrong'], ans:1 },
+      { type:'blank-voca', diff:'easy', score:4,
+        ctxPre:`When you clean your surroundings, positive and good `, ctxPost:` follows.`,
+        q:`다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?`,
+        opts:['atmosphere','disorder','conflict','silence'], ans:0 },
+      { type:'blank-ctx', diff:'med', score:5,
+        ctxPre:`So, clean up your closets, organize your drawers, and arrange your things first, then `, ctxPost:` will follow.`,
+        q:`다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?`,
+        opts:['stress','confusion','peace of mind','disorder'], ans:2 },
+      { type:'wrong-word', diff:'med', score:5,
+        items:['negative','disorganized','positive','inefficient'],
+        contextSentence:`A messy room adds up to ①<u>negative</u> feelings. Having a disorderly room indicates a ②<u>disorganized</u> mental state. When you clean, ③<u>positive</u> atmosphere follows and you can do things more ④<u>inefficiently</u>.`,
+        q:`다음 글의 밑줄 친 ①~④ 중, 문맥상 낱말의 쓰임이 적절하지 않은 것은?`,
+        opts:['negative','disorganized','positive','inefficiently'], ans:3 },
+      { type:'abc', diff:'hard', score:6,
+        ctx:`Having a messy room can add up to (A)[positive / negative] feelings. The moment you start cleaning, you also start (B)[changing / ignoring] your life. So, clean up your closets and organize your drawers first, then peace of mind will (C)[follow / disappear].`,
+        q:`다음 글의 (A), (B), (C)에 들어갈 말로 가장 적절한 것끼리 짝지은 것은?`,
+        opts:['negative — changing — follow','positive — changing — follow','negative — ignoring — disappear','positive — ignoring — follow'], ans:0 },
+      { type:'eng-def', diff:'med', score:5,
+        defn:`a way of looking at or thinking about something`,
+        q:`다음 영영 정의에 해당하는 단어로 가장 적절한 것은?`,
+        opts:['closet','drawer','perspective','atmosphere'], ans:2 },
+      { type:'word-form', diff:'hard', score:6,
+        ctxPre:`You can do more things `, ctxPost:` and neatly. (efficient — 부사)`,
+        q:`다음 글의 빈칸에 괄호 안의 단어를 알맞은 형태로 바꿔 쓰시오. (영어로)`,
+        ans:'efficiently' },
+      { type:'polysemy', diff:'hard', score:6,
+        word:'follow',
+        sentenceA:`positive and good atmosphere <u>follows</u>`,
+        sentenceB:`Please <u>follow</u> the teacher's instructions.`,
+        q:`밑줄 친 'follow'의 (A)와 (B)에서의 의미로 가장 적절한 것은?`,
+        opts:['(A) 따르다 — (B) 따르다(따라가다/순종하다)','(A) 뒤따르다 — (B) 따르다(순종하다)','(A) 무시하다 — (B) 따르다','(A) 따르다 — (B) 무시하다'], ans:1 }
+    ]
+  }
+];
+
+/* ═══════════════════════════════════════════════════════════
+   상태 및 핵심 로직
+═══════════════════════════════════════════════════════════ */
+let mode = 'single';
+let selectedPassages = new Set();
+let userName = '', userSchool = '';
+let allQuestions = [];
+let curIdx = 0;
+let answers = {};
+let totalScore = 0, gotScore = 0;
+let timerInterval = null;
+let timeLeft = 0;
+
+const TYPE_LABELS = {
+  'syn':'동의어 고르기','ant':'반의어 고르기',
+  'blank-voca':'빈칸 어휘 완성','blank-ctx':'빈칸 문맥 완성',
+  'wrong-word':'문맥상 부적절한 어휘','abc':'(A)(B)(C) 조합형',
+  'eng-def':'영영풀이 매칭','word-form':'어형 변환','polysemy':'다의어 문맥적 의미'
+};
+const DIFF_LABELS = {'easy':'쉬움','med':'보통','hard':'어려움'};
+
+/* ─ 시작 화면 초기화 ─ */
+function initStart(){
+  const grid = document.getElementById('passageGrid');
+  PASSAGES.forEach(p => {
+    const card = document.createElement('div');
+    card.className = 'p-card';
+    card.dataset.no = p.no;
+    card.innerHTML = `<div class="num">${p.no}번</div><div class="topic">${p.topic}</div>`;
+    card.addEventListener('click', () => {
+      if (mode === 'single') {
+        selectedPassages.clear();
+        document.querySelectorAll('.p-card').forEach(c => c.classList.remove('sel'));
+      }
+      if (selectedPassages.has(p.no)) {
+        selectedPassages.delete(p.no);
+        card.classList.remove('sel');
+      } else {
+        selectedPassages.add(p.no);
+        card.classList.add('sel');
+      }
+      updateStartBtn();
+    });
+    grid.appendChild(card);
+  });
+
+  document.querySelectorAll('.mode-card').forEach(m => {
+    m.addEventListener('click', () => {
+      document.querySelectorAll('.mode-card').forEach(x => x.classList.remove('sel'));
+      m.classList.add('sel');
+      mode = m.dataset.mode;
+      if (mode === 'single' && selectedPassages.size > 1) {
+        selectedPassages.clear();
+        document.querySelectorAll('.p-card').forEach(c => c.classList.remove('sel'));
+      }
+      updateStartBtn();
+    });
+  });
+
+  document.getElementById('selectAllBtn').addEventListener('click', () => {
+    document.querySelector('.mode-card[data-mode="all"]').click();
+    selectedPassages.clear();
+    PASSAGES.forEach(p => selectedPassages.add(p.no));
+    document.querySelectorAll('.p-card').forEach(c => c.classList.add('sel'));
+    updateStartBtn();
+  });
+
+  document.getElementById('startBtn').addEventListener('click', startQuiz);
+}
+
+function updateStartBtn(){
+  document.getElementById('startBtn').disabled = selectedPassages.size === 0;
+}
+
+function startQuiz(){
+  userName = document.getElementById('nameInput').value.trim() || '학생';
+  userSchool = document.getElementById('schoolInput').value.trim() || '';
+  allQuestions = [];
+  PASSAGES.forEach(p => {
+    if (selectedPassages.has(p.no)) {
+      p.questions.forEach((q, i) => allQuestions.push({...q, passage:p, qIdx:i}));
+    }
+  });
+  if (allQuestions.length === 0) return;
+  totalScore = allQuestions.reduce((s,q) => s+q.score, 0);
+  curIdx = 0;
+  answers = {};
+  gotScore = 0;
+  timeLeft = allQuestions.length * 60; // 1분/문제
+  document.getElementById('startScreen').style.display = 'none';
+  document.getElementById('quizScreen').style.display = 'block';
+  document.getElementById('bottomBar').classList.remove('hidden');
+  startTimer();
+  renderQuestion();
+}
+
+function startTimer(){
+  if (timerInterval) clearInterval(timerInterval);
+  updateTimerDisplay();
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    updateTimerDisplay();
+    if (timeLeft <= 0) { clearInterval(timerInterval); finishQuiz(); }
+  }, 1000);
+}
+
+function updateTimerDisplay(){
+  const m = String(Math.floor(timeLeft/60)).padStart(2,'0');
+  const s = String(timeLeft%60).padStart(2,'0');
+  document.getElementById('timer').textContent = `${m}:${s}`;
+}
+
+/* ─ 문제 렌더링 ─ */
+function renderQuestion(){
+  const q = allQuestions[curIdx];
+  const total = allQuestions.length;
+  document.getElementById('counter').textContent = `${Object.keys(answers).length}/${total} 응답`;
+  document.getElementById('progressFill').style.width = ((curIdx+1)/total*100)+'%';
+
+  // 본문
+  const ptext = document.getElementById('passageText');
+  ptext.innerHTML = renderPassage(q);
+
+  // 메타
+  const meta = document.getElementById('qMeta');
+  meta.innerHTML = `
+    <div class="q-no">${curIdx+1}/${total}</div>
+    <div class="q-diff ${q.diff}">${DIFF_LABELS[q.diff]}</div>
+    <div class="q-type">${TYPE_LABELS[q.type]}</div>
+    <div class="q-score">${q.score}점</div>
+  `;
+
+  // 질문 + 본문
+  const qText = document.getElementById('qText');
+  let questionHtml = q.q;
+  if (q.type === 'eng-def') questionHtml += ` <span class="quote">"${q.defn}"</span>`;
+  if (q.type === 'polysemy') questionHtml += `<div style="margin-top:8px;font-size:14px;font-weight:500;color:#4b5563;line-height:1.7"><div>(A) ${q.sentenceA}</div><div style="margin-top:4px">(B) ${q.sentenceB}</div></div>`;
+  if (q.type === 'wrong-word') questionHtml = q.q + `<div style="margin-top:8px;font-size:14px;font-weight:500;color:#4b5563;line-height:1.7">${q.contextSentence}</div>`;
+  qText.innerHTML = questionHtml;
+
+  // 본체
+  const body = document.getElementById('qBody');
+  if (q.type === 'word-form') {
+    body.innerHTML = `<input class="input-answer" id="userInput" placeholder="답안을 입력해주세요" autocomplete="off">`;
+    const inp = document.getElementById('userInput');
+    if (answers[curIdx] !== undefined) inp.value = answers[curIdx];
+    inp.addEventListener('input', e => { answers[curIdx] = e.target.value; updateCounter(); });
+  } else {
+    const opts = q.opts || [];
+    body.innerHTML = `<div class="opt-list">${opts.map((o,i) =>
+      `<button class="opt ${answers[curIdx]===i?'sel':''}" data-i="${i}"><span class="num">${i+1}</span><span class="opt-text">${o}</span></button>`
+    ).join('')}</div>`;
+    body.querySelectorAll('.opt').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const i = parseInt(btn.dataset.i);
+        answers[curIdx] = i;
+        body.querySelectorAll('.opt').forEach(b => b.classList.remove('sel'));
+        btn.classList.add('sel');
+        updateCounter();
+      });
+    });
+  }
+
+  document.getElementById('feedback').classList.add('hidden');
+  document.getElementById('prevBtn').style.visibility = curIdx === 0 ? 'hidden' : 'visible';
+  document.getElementById('nextBtn').textContent = curIdx === total-1 ? '완료' : '다음';
+}
+
+function renderPassage(q){
+  let text = q.passage.fullEn;
+  if (q.type === 'syn' || q.type === 'ant') {
+    const re = new RegExp(`\\b(${q.word})\\b`, 'i');
+    text = text.replace(re, `<span class="hl">$1</span>`);
+  }
+  if (q.type === 'blank-voca' || q.type === 'blank-ctx') {
+    // 빈칸 표시: ctxPre + ____ + ctxPost로 치환
+    const full = q.ctxPre + '___BLANK___' + q.ctxPost;
+    // 정확한 매칭 단어 찾기 (대안: 단순히 정답 단어를 빈칸으로 치환)
+    const opts = q.opts || [];
+    const ans = opts[q.ans];
+    if (ans) {
+      const escAns = ans.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const re = new RegExp(`\\b${escAns}\\b`, 'i');
+      text = text.replace(re, `<span class="blank">____</span>`);
+    }
+  }
+  if (q.type === 'word-form') {
+    const re = new RegExp(`\\b${q.ans}\\b`, 'i');
+    text = text.replace(re, `<span class="blank">____</span>`);
+  }
+  if (q.type === 'wrong-word') {
+    // 본문에 ①②③④ 표시
+    const items = q.items || [];
+    items.forEach((w, i) => {
+      const re = new RegExp(`\\b(${w})\\b`, 'i');
+      const num = ['①','②','③','④'][i];
+      text = text.replace(re, `<span class="hl-num">${num}</span><span class="hl">$1</span>`);
+    });
+  }
+  if (q.type === 'abc') {
+    const m = q.ctx.match(/\(A\)\[(.+?)\s*\/\s*(.+?)\].+?\(B\)\[(.+?)\s*\/\s*(.+?)\].+?\(C\)\[(.+?)\s*\/\s*(.+?)\]/);
+    if (m) {
+      // 본문 자체를 q.ctx로 대체 (밑줄·괄호 강조 포함)
+      let abc = q.ctx;
+      abc = abc.replace(/\(([ABC])\)\[(.+?)\s*\/\s*(.+?)\]/g,
+        `<span class="opt-pair">($1)</span> <span class="opt-bracket">[$2 / $3]</span>`);
+      text = abc;
+    }
+  }
+  if (q.type === 'polysemy') {
+    const re = new RegExp(`\\b(${q.word})\\b`, 'i');
+    text = text.replace(re, `<span class="hl">$1</span>`);
+  }
+  return text;
+}
+
+function updateCounter(){
+  document.getElementById('counter').textContent = `${Object.keys(answers).length}/${allQuestions.length} 응답`;
+}
+
+function checkAnswer(){
+  const q = allQuestions[curIdx];
+  let correct = false;
+  if (q.type === 'word-form') {
+    const user = (answers[curIdx]||'').trim().toLowerCase();
+    correct = user === q.ans.toLowerCase();
+    const inp = document.getElementById('userInput');
+    inp.classList.add(correct?'correct':'wrong');
+  } else {
+    const sel = answers[curIdx];
+    correct = sel === q.ans;
+    document.querySelectorAll('.opt').forEach((b,i) => {
+      if (i === q.ans) b.classList.add('correct');
+      if (i === sel && !correct) b.classList.add('wrong');
+    });
+  }
+  if (correct) gotScore += q.score;
+  const fb = document.getElementById('feedback');
+  fb.classList.remove('hidden');
+  fb.classList.toggle('correct', correct);
+  fb.classList.toggle('wrong', !correct);
+  let ansText = q.type === 'word-form' ? q.ans : (q.opts[q.ans]);
+  fb.innerHTML = correct
+    ? `<strong>✓ 정답입니다!</strong> (+${q.score}점)`
+    : `<strong>✗ 오답입니다.</strong> 정답: <span style="font-weight:800">${ansText}</span>`;
+}
+
+/* ─ 다음/이전 ─ */
+document.addEventListener('DOMContentLoaded', () => {
+  initStart();
+  document.getElementById('nextBtn').addEventListener('click', () => {
+    if (answers[curIdx] === undefined) {
+      alert('답을 선택해 주세요.');
+      return;
+    }
+    // 정답 체크 후 다음으로 (체크 표시 1초 → 다음)
+    checkAnswer();
+    setTimeout(() => {
+      if (curIdx === allQuestions.length-1) finishQuiz();
+      else { curIdx++; renderQuestion(); }
+    }, 1400);
+  });
+  document.getElementById('prevBtn').addEventListener('click', () => {
+    if (curIdx > 0) { curIdx--; renderQuestion(); }
+  });
+});
+
+function finishQuiz(){
+  if (timerInterval) clearInterval(timerInterval);
+  document.getElementById('quizScreen').style.display = 'none';
+  document.getElementById('bottomBar').classList.add('hidden');
+  document.getElementById('resultScreen').style.display = 'block';
+  document.getElementById('resultScore').textContent = `${gotScore}/${totalScore}점`;
+  const pct = totalScore ? Math.round(gotScore/totalScore*100) : 0;
+  document.getElementById('resultDetail').innerHTML =
+    `${userName}님, 수고하셨습니다!<br>총 ${allQuestions.length}문제 중 정답률 <strong>${pct}%</strong>`;
+}
+</script>
+</body>
+</html>
