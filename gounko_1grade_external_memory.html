@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>봄날 퀴즈 | 고운고 1학년 외부지문 본문암기</title>
+<script type="module" src="bn_tracker.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&family=Black+Han+Sans&display=swap');
+:root{--pri:#6a1b9a;--acc:#ff6f00;--bg:linear-gradient(135deg,#e1bee7 0%,#ce93d8 100%);--card:#fff;--bdr:#ce93d8;--muted:#757575;--green:#2e7d32;--red:#c62828;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Nanum Gothic',sans-serif;background:var(--bg);min-height:100vh;color:#1a1a2e;}
+.hidden{display:none!important;}
+
+/* 시작 화면 */
+#startScreen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
+.s-card{background:var(--card);border-radius:24px;padding:30px 24px;max-width:480px;width:100%;box-shadow:0 12px 32px rgba(106,27,154,.25);text-align:center;}
+.s-card h1{font-family:'Black Han Sans';font-size:26px;color:var(--pri);margin-bottom:8px;line-height:1.3;}
+.s-sub{font-size:13px;color:var(--muted);margin-bottom:18px;}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:18px;}
+.info-item{background:#f3e5f5;color:#4a148c;padding:10px;border-radius:10px;font-size:12px;font-weight:700;}
+.ni{width:100%;padding:14px;border:2px solid var(--bdr);border-radius:12px;font-size:15px;margin-bottom:10px;font-family:inherit;}
+.go{width:100%;padding:16px;background:var(--pri);color:white;border:none;border-radius:14px;font-size:17px;font-weight:800;cursor:pointer;font-family:inherit;}
+.go:hover{background:#4a148c;}
+
+/* 상단 헤더 */
+.hdr{background:var(--pri);color:white;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:50;box-shadow:0 2px 8px rgba(0,0,0,.15);}
+.ht{font-size:14px;font-weight:800;}
+.hs{font-size:11px;opacity:.9;margin-top:2px;}
+.hb{background:rgba(255,255,255,.2);padding:6px 12px;border-radius:20px;font-size:13px;font-weight:800;}
+
+/* 진행바 */
+.pw{background:rgba(255,255,255,.7);height:8px;}
+.pi{background:var(--acc);height:100%;transition:width .3s;width:0%;}
+
+/* 본문 + 문제 영역 */
+.wrap{max-width:780px;margin:0 auto;padding:16px;}
+.passage-card{background:var(--card);border-radius:16px;padding:20px;margin-bottom:16px;box-shadow:0 4px 12px rgba(0,0,0,.08);}
+.passage-label{display:inline-block;background:#f3e5f5;color:#4a148c;padding:4px 12px;border-radius:14px;font-size:11px;font-weight:800;margin-bottom:12px;}
+.passage{font-size:14.5px;line-height:1.85;color:#222;letter-spacing:-.1px;}
+.passage .hl{background:#fff3e0;padding:1px 4px;border-radius:4px;font-weight:700;color:#bf360c;}
+.passage .hl-num{display:inline-block;background:#ff6f00;color:white;width:18px;height:18px;border-radius:50%;text-align:center;line-height:18px;font-size:11px;font-weight:800;margin:0 2px;}
+.passage .blank{display:inline-block;border-bottom:2px solid #6a1b9a;min-width:60px;text-align:center;padding:0 4px;color:#6a1b9a;font-weight:800;}
+.passage .ord{background:#e1bee7;color:#4a148c;padding:2px 8px;border-radius:8px;font-weight:800;font-size:13px;margin-right:4px;}
+
+.q-card{background:var(--card);border-radius:16px;padding:20px;box-shadow:0 4px 12px rgba(0,0,0,.08);}
+.q-type{display:inline-block;background:var(--acc);color:white;padding:4px 12px;border-radius:14px;font-size:11px;font-weight:800;margin-bottom:8px;}
+.q-text{font-size:15px;font-weight:700;line-height:1.6;margin-bottom:14px;color:#222;}
+.q-extra{background:#f3e5f5;padding:12px;border-radius:10px;font-size:13.5px;line-height:1.7;margin-bottom:14px;color:#333;}
+.q-extra .blank{display:inline-block;border-bottom:2px solid #6a1b9a;min-width:60px;text-align:center;padding:0 4px;color:#6a1b9a;font-weight:800;}
+
+.opt{display:block;width:100%;background:#fafafa;border:2px solid #e0e0e0;border-radius:10px;padding:12px 14px;margin-bottom:8px;font-size:14px;cursor:pointer;text-align:left;font-family:inherit;line-height:1.6;color:#222;transition:all .15s;}
+.opt:hover{background:#f3e5f5;border-color:var(--bdr);}
+.opt.sel{background:#f3e5f5;border-color:var(--pri);}
+.opt.correct{background:#c8e6c9;border-color:var(--green);color:#1b5e20;}
+.opt.wrong{background:#ffcdd2;border-color:var(--red);color:#b71c1c;}
+.opt-num{display:inline-block;background:var(--pri);color:white;width:22px;height:22px;border-radius:50%;text-align:center;line-height:22px;font-size:12px;font-weight:800;margin-right:8px;}
+.opt.correct .opt-num{background:var(--green);}
+.opt.wrong .opt-num{background:var(--red);}
+
+.feedback{margin-top:12px;padding:12px;border-radius:10px;font-size:14px;}
+.feedback.correct{background:#e8f5e9;color:#1b5e20;}
+.feedback.wrong{background:#ffebee;color:#b71c1c;}
+.feedback .ex{font-size:13px;color:#444;margin-top:8px;line-height:1.6;}
+
+.btn{padding:14px;font-size:15px;font-weight:800;border:none;border-radius:12px;cursor:pointer;font-family:inherit;}
+.btn-pri{background:var(--pri);color:white;}
+.btn-sec{background:#e1bee7;color:#4a148c;}
+.btn-row{display:flex;gap:8px;margin-top:12px;}
+.btn-row .btn{flex:1;}
+
+/* 결과 화면 */
+#resultScreen{padding:20px;}
+.rc{background:var(--card);border-radius:20px;padding:24px;max-width:540px;margin:0 auto;text-align:center;box-shadow:0 12px 32px rgba(0,0,0,.15);}
+.rs{font-size:48px;font-weight:800;color:var(--pri);font-family:'Black Han Sans';margin:10px 0;}
+.rsub{color:var(--muted);font-size:13px;margin-bottom:14px;}
+.sr{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:14px 0;}
+.si{background:#f3e5f5;padding:14px;border-radius:12px;}
+.sn{font-size:24px;font-weight:800;}
+.sl{font-size:11px;color:var(--muted);margin-top:2px;}
+.review{text-align:left;margin-top:16px;}
+.review h3{font-size:14px;color:var(--pri);margin-bottom:10px;border-bottom:2px solid var(--bdr);padding-bottom:6px;}
+.review-item{background:#fafafa;border-left:4px solid var(--red);padding:10px 12px;margin-bottom:8px;border-radius:6px;font-size:13px;line-height:1.6;}
+.review-item .qn{font-weight:800;color:var(--pri);margin-bottom:4px;}
+.review-item .ans{color:var(--green);font-weight:700;margin-top:4px;}
+.review-item .yours{color:var(--red);font-weight:700;}
+</style>
+</head>
+<body>
+
+<div id="startScreen">
+  <div class="s-card">
+    <h1>📚 고운고 1학년 외부지문 본문암기</h1>
+    <div class="s-sub">동물실험과 도덕적 가치 — 고난도 논설문 한국형 객관식 시험</div>
+    <div class="info-grid">
+      <div class="info-item">📝 객관식 10문항</div>
+      <div class="info-item">🎯 본문 전체 표시</div>
+      <div class="info-item">📊 자동채점 + 해설</div>
+      <div class="info-item">🧠 문단 암기 완성</div>
+    </div>
+    <select class="ni" id="si">
+      <option value="">학교 선택</option>
+      <option value="고운고">고운고</option>
+      <option value="고운중">고운중</option>
+      <option value="종촌고">종촌고</option>
+      <option value="종촌중">종촌중</option>
+      <option value="어진중">어진중</option>
+      <option value="기타">기타</option>
+    </select>
+    <input class="ni" id="ni" placeholder="이름을 입력하세요" maxlength="10">
+    <button class="go" onclick="startQuiz()">시험 시작 🚀</button>
+  </div>
+</div>
+
+<div id="hdr" class="hdr hidden">
+  <div><div class="ht">📚 고운고 1학년 외부지문 본문암기</div><div class="hs" id="hs"></div></div>
+  <div class="hb" id="hb">0/0</div>
+</div>
+<div class="pw hidden" id="pwBar"><div class="pi" id="pi"></div></div>
+
+<div class="wrap hidden" id="quizArea">
+  <div class="passage-card">
+    <div class="passage-label">📖 본문 (외부지문)</div>
+    <div class="passage" id="passageBox"></div>
+  </div>
+  <div class="q-card">
+    <span class="q-type" id="qType"></span>
+    <div class="q-text" id="qText"></div>
+    <div class="q-extra hidden" id="qExtra"></div>
+    <div id="optsBox"></div>
+    <div class="feedback hidden" id="feedback"></div>
+    <div class="btn-row">
+      <button class="btn btn-sec" id="submitBtn" onclick="submitAns()">정답 확인</button>
+      <button class="btn btn-pri hidden" id="nextBtn" onclick="nextQ()">다음 →</button>
+    </div>
+  </div>
+</div>
+
+<div id="resultScreen" class="hidden"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, addDoc, collection } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+const firebaseConfig = {
+  apiKey: "AIzaSyBhV5lI8DPa3M8m_LQ2dQHfgKfMQ3MvSnQ",
+  authDomain: "bomnalquiz.firebaseapp.com",
+  projectId: "bomnalquiz",
+  storageBucket: "bomnalquiz.firebasestorage.app",
+  messagingSenderId: "1090597280310",
+  appId: "1:1090597280310:web:5e2b3ad57e4b1bd0e8e9a3"
+};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+window._fbSave = async function(data){
+  try{ await addDoc(collection(db,'quiz_results'),data); console.log('저장 완료'); }
+  catch(e){ console.error('저장 실패',e); }
+};
+</script>
+
+<script>
+/* ─────────────────────────────────────────────────────────────
+   외부지문 본문 (5문단 — 순서 문제용으로 (A)(B)(C)(D)(E) 분리 가능)
+   ───────────────────────────────────────────────────────────── */
+const PASSAGE_PARTS = {
+  A: `It has long been believed that human life holds greater value than that of animals, making it acceptable to sacrifice them to save human lives. However, this simple view is challenged by the fact that monkeys, which are frequently used in animal testing, are highly social and intelligent beings. Not only do they live in groups and cooperate, but they also possess a clear capacity to feel pain. Given this ability to suffer, shouldn't their pain be treated as a moral issue?`,
+  B: `For some philosophers, the capacity to experience pain or pleasure serves as the foundation of moral value. Therefore, the interests of any being capable of suffering must be taken into account. From this perspective, causing harm to monkeys for research purposes is far from a minor issue. Even if we assume human life to be superior, the suffering of animals remains a significant factor that cannot simply be dismissed.`,
+  C: `The moral dilemma deepens further when the focus shifts to the numbers. While sacrificing one human to save five others is generally considered unacceptable, doing the same to a monkey is often viewed differently. But what if the ratio changes to 100 or even 10,000 monkeys for a single human life? Determining the exact point at which the harm outweighs the benefits is a question that offers no easy answers.`,
+  D: `Yet another difficulty also exists. Unlike in an emergency where inaction leads to certain death, medical research operates without any guaranteed success. Although scientists aim to prevent future deaths, the outcomes remain unpredictable. For instance, in the case of some deadly viruses, an outbreak might never occur. If the disease does not return, the research will not have saved any lives, meaning the monkeys would have suffered for nothing.`,
+  E: `Ultimately, this issue challenges us to reflect deeply on the way we assign value to life. Is it always right to prioritize humanity? Does the ability to suffer give animals moral importance? How much risk and uncertainty are we willing to accept? While a perfect solution may not exist, giving serious thought to these questions is an essential step toward making the right decision.`
+};
+const FULL_PASSAGE = PASSAGE_PARTS.A + ' ' + PASSAGE_PARTS.B + ' ' + PASSAGE_PARTS.C + ' ' + PASSAGE_PARTS.D + ' ' + PASSAGE_PARTS.E;
+
+/* ─────────────────────────────────────────────────────────────
+   문제 10문항 (한국형 객관식)
+   ───────────────────────────────────────────────────────────── */
+const QUESTIONS = [
+  // 1. 주제
+  {
+    type:'주제',
+    q:'다음 글의 주제로 가장 적절한 것은?',
+    passage:'full',
+    opts:[
+      'the need to ban all forms of animal experimentation worldwide',
+      'the technical limitations of using monkeys in medical research',
+      'the moral complexity of justifying animal testing on sentient beings',
+      'the economic benefits of replacing humans with monkeys in research',
+      'the biological similarity between humans and monkeys in scientific studies'
+    ],
+    ans:2,
+    ex:'본문은 원숭이가 사회적·지적 존재이며 고통을 느낀다는 점을 근거로 동물실험의 도덕적 정당화가 단순하지 않음을 논의한다. 따라서 "감응(感應) 동물에 대한 동물실험을 정당화하는 일의 도덕적 복잡성"이 주제.'
+  },
+  // 2. 제목
+  {
+    type:'제목',
+    q:'다음 글의 제목으로 가장 적절한 것은?',
+    passage:'full',
+    opts:[
+      'Monkeys vs. Humans: A Race for Genetic Superiority',
+      'When Suffering May Be for Nothing: The Moral Dilemma of Animal Testing',
+      'Why Animal Testing Is Always Cheaper than Other Alternatives',
+      'The Bright Future of Risk-Free Medical Research',
+      'How to Train Monkeys for Cooperative Scientific Tasks'
+    ],
+    ans:1,
+    ex:'본문의 핵심 표현 "the monkeys would have suffered for nothing"과 도덕적 딜레마라는 두 축을 동시에 담은 제목은 ②.'
+  },
+  // 3. 함축 의미
+  {
+    type:'함축',
+    q:'밑줄 친 the monkeys would have suffered for nothing 이 글에서 의미하는 바로 가장 적절한 것은?',
+    passage:'full',
+    opts:[
+      '원숭이가 실험에서 즉시 사망하는 것은 비도덕적이다.',
+      '동물실험은 항상 인간 생명을 구하는 데 실패한다.',
+      '확실하지 않은 결과를 위해 확실한 고통을 부과하는 일의 도덕적 부당함을 드러낸다.',
+      '원숭이는 인간보다 더 빠른 회복력을 가지고 있다.',
+      '연구자들은 원숭이의 고통에 대해 책임이 없다.'
+    ],
+    ans:2,
+    ex:'질병이 발생하지 않으면 연구는 한 명도 구하지 못하므로, 원숭이가 견딘 고통은 의미를 잃는다 → "확실한 희생 vs 불확실한 이익"의 비대칭을 꼬집는 표현.'
+  },
+  // 4. 어법 (틀린 것 고르기)
+  {
+    type:'어법',
+    q:'(A), (B), (C), (D), (E) 중 어법상 옳지 않은 것은?',
+    passage:'grammar',
+    opts:[
+      '(A) believed',
+      '(B) which',
+      '(C) cooperated',
+      '(D) being',
+      '(E) at'
+    ],
+    ans:2,
+    ex:'(C) "Not only do they live in groups and (C) cooperate"가 옳다. live와 등위접속사 and로 병렬을 이루는 본동사이므로 현재형 cooperate가 맞다. cooperated는 시제 불일치로 틀린 형태. ※ (A) believed: 가주어-진주어 구문의 수동태로 정상 / (B) which: monkeys 계속적 용법 / (D) being: "존재(명사)" + 형용사구 capable of suffering 수식 / (E) at: 선행사 point + 전치사+관계대명사 at which.'
+  },
+  // 5. 문맥상 잘못된 어휘
+  {
+    type:'어휘',
+    q:'(A) ~ (E) 중 문맥상 낱말의 쓰임이 적절하지 않은 것은?',
+    passage:'vocab',
+    opts:[
+      '(A) acceptable',
+      '(B) social',
+      '(C) foundation',
+      '(D) inferior',
+      '(E) unpredictable'
+    ],
+    ans:3,
+    ex:'(D) "Even if we assume human life to be (D) inferior" → 원문은 superior. 인간 생명이 우월하다고 가정한다고 해도 동물의 고통은 무시할 수 없다는 양보 논리이므로 inferior(열등한)는 문맥상 부적절. 정답은 (D).'
+  },
+  // 6. 빈칸 추론 (단어)
+  {
+    type:'빈칸',
+    q:'다음 빈칸에 들어갈 말로 가장 적절한 것은?',
+    passage:'blank',
+    extra:`From this perspective, causing harm to monkeys for research purposes is far from a (   ) issue. Even if we assume human life to be superior, the suffering of animals remains a significant factor that cannot simply be dismissed.`,
+    opts:[
+      'minor',
+      'public',
+      'global',
+      'physical',
+      'financial'
+    ],
+    ans:0,
+    ex:'고통받을 수 있는 모든 존재의 이익을 고려해야 한다는 관점에서, 원숭이에게 해를 끼치는 일은 "사소한(minor)" 문제가 아니다.'
+  },
+  // 7. 빈칸 추론 (구)
+  {
+    type:'빈칸',
+    q:'다음 빈칸에 들어갈 말로 가장 적절한 것은?',
+    passage:'blank',
+    extra:`Although scientists aim to prevent future deaths, the (   ) remain unpredictable. For instance, in the case of some deadly viruses, an outbreak might never occur.`,
+    opts:[
+      'experiments',
+      'monkeys',
+      'outcomes',
+      'researchers',
+      'humans'
+    ],
+    ans:2,
+    ex:'predict의 대상은 "결과(outcomes)". 과학자들이 미래의 죽음을 막으려 해도 그 "결과"는 예측할 수 없다.'
+  },
+  // 8. 글의 순서
+  {
+    type:'순서',
+    q:'주어진 글 다음에 이어질 글의 순서로 가장 적절한 것은?',
+    passage:'order',
+    extra:`<strong>[주어진 글]</strong> It has long been believed that human life holds greater value than that of animals... Given this ability to suffer, shouldn't their pain be treated as a moral issue?
+<br><br>
+<strong>(B)</strong> For some philosophers, the capacity to experience pain or pleasure serves as the foundation of moral value... the suffering of animals remains a significant factor that cannot simply be dismissed.
+<br><br>
+<strong>(C)</strong> The moral dilemma deepens further when the focus shifts to the numbers... Determining the exact point at which the harm outweighs the benefits is a question that offers no easy answers.
+<br><br>
+<strong>(D)</strong> Yet another difficulty also exists. Unlike in an emergency... the monkeys would have suffered for nothing.`,
+    opts:[
+      '(B) - (C) - (D)',
+      '(B) - (D) - (C)',
+      '(C) - (B) - (D)',
+      '(C) - (D) - (B)',
+      '(D) - (B) - (C)'
+    ],
+    ans:0,
+    ex:'문제 제기(주어진 글) → 철학적 근거 제시 (B: For some philosophers) → 숫자의 딜레마 (C: deepens further when the focus shifts to the numbers) → 불확실성의 딜레마 (D: Yet another difficulty). 연결어 deepens further / Yet another가 결정적 단서.'
+  },
+  // 9. 요약 (A)(B)
+  {
+    type:'요약',
+    q:'다음은 글의 요약문이다. 빈칸 (A), (B)에 들어갈 말로 가장 적절한 것은?',
+    passage:'summary',
+    extra:`Because monkeys can __(A)__ , their pain deserves moral weight; given the numbers involved and the __(B)__ of research, justifying animal testing is anything but simple.`,
+    opts:[
+      '(A) suffer — (B) uncertainty',
+      '(A) escape — (B) cost',
+      '(A) cooperate — (B) speed',
+      '(A) suffer — (B) popularity',
+      '(A) hide — (B) certainty'
+    ],
+    ans:0,
+    ex:'본문 결론: 원숭이는 고통(suffer)을 느끼는 사회적·지적 존재이며, 연구의 불확실성(uncertainty)까지 감안하면 정당화가 단순하지 않다. 따라서 (A) suffer / (B) uncertainty.'
+  },
+  // 10. 일치/불일치
+  {
+    type:'일치',
+    q:'다음 글의 내용과 일치하지 않는 것은?',
+    passage:'full',
+    opts:[
+      '원숭이는 무리를 지어 살며 협력한다.',
+      '일부 철학자에게 고통·쾌락을 느끼는 능력은 도덕적 가치의 토대다.',
+      '인간 생명이 우월하다고 가정해도 동물의 고통은 중요한 요소로 남는다.',
+      '응급 상황과 달리, 의학 연구는 성공이 항상 보장되어 있다.',
+      '글쓴이는 완벽한 해답은 없을지라도 진지한 성찰이 필요하다고 말한다.'
+    ],
+    ans:3,
+    ex:'본문에서 "medical research operates without any guaranteed success" → 의학 연구는 성공이 보장되지 않는다. 따라서 ④가 본문과 일치하지 않는다.'
+  }
+];
+
+/* ─────────────────────────────────────────────────────────────
+   본문 렌더링 (문제 유형에 따라 변형)
+   ───────────────────────────────────────────────────────────── */
+function renderPassage(q){
+  const box = document.getElementById('passageBox');
+  if(q.passage === 'full' || q.passage === 'summary' || q.passage === 'blank'){
+    box.innerHTML = escHTMLpreserve(FULL_PASSAGE);
+    return;
+  }
+  if(q.passage === 'grammar'){
+    // 어법 (A)~(E) 표시
+    let html = '';
+    html += escHTMLpreserve(PASSAGE_PARTS.A.replace('It has long been believed', 'It has long been <span class="hl-num">A</span> <span class="hl">believed</span>')
+      .replace('monkeys, which are frequently', 'monkeys, <span class="hl-num">B</span> <span class="hl">which</span> are frequently')
+      .replace('in groups and cooperate', 'in groups and <span class="hl-num">C</span> <span class="hl">cooperated</span>')) + ' ';
+    html += escHTMLpreserve(PASSAGE_PARTS.B.replace('any being capable', 'any <span class="hl-num">D</span> <span class="hl">being</span> capable')) + ' ';
+    html += escHTMLpreserve(PASSAGE_PARTS.C.replace('the exact point at which', 'the exact point <span class="hl-num">E</span> <span class="hl">at</span> which')) + ' ';
+    html += escHTMLpreserve(PASSAGE_PARTS.D) + ' ';
+    html += escHTMLpreserve(PASSAGE_PARTS.E);
+    box.innerHTML = html;
+    return;
+  }
+  if(q.passage === 'vocab'){
+    // 문맥상 잘못된 어휘 (A)~(E)
+    let html = '';
+    html += escHTMLpreserve(PASSAGE_PARTS.A.replace('making it acceptable', 'making it <span class="hl-num">A</span> <span class="hl">acceptable</span>')
+      .replace('highly social', 'highly <span class="hl-num">B</span> <span class="hl">social</span>')) + ' ';
+    html += escHTMLpreserve(PASSAGE_PARTS.B.replace('foundation of moral value', '<span class="hl-num">C</span> <span class="hl">foundation</span> of moral value')
+      .replace('human life to be superior', 'human life to be <span class="hl-num">D</span> <span class="hl">inferior</span>')) + ' ';
+    html += escHTMLpreserve(PASSAGE_PARTS.C) + ' ';
+    html += escHTMLpreserve(PASSAGE_PARTS.D.replace('outcomes remain unpredictable', 'outcomes remain <span class="hl-num">E</span> <span class="hl">unpredictable</span>')) + ' ';
+    html += escHTMLpreserve(PASSAGE_PARTS.E);
+    box.innerHTML = html;
+    return;
+  }
+  if(q.passage === 'order'){
+    // 글의 순서: 주어진 글만 표시
+    box.innerHTML = '<div style="background:#fff3e0;padding:10px;border-radius:8px;margin-bottom:8px;font-size:12.5px;color:#bf360c;font-weight:700;">⚠️ 본문 대신 아래 문제의 (A)(B)(C)(D) 부분을 직접 읽고 순서를 맞춰주세요.</div>' + escHTMLpreserve(PASSAGE_PARTS.A);
+    return;
+  }
+  box.innerHTML = escHTMLpreserve(FULL_PASSAGE);
+}
+
+function escHTMLpreserve(s){
+  // HTML 태그를 보존하기 위해 그대로 반환 (이미 안전한 데이터)
+  return s;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   상태 관리
+   ───────────────────────────────────────────────────────────── */
+let userName='', userSchool='', curIdx=0, answers=[], gotScore=0, t0=0;
+
+function startQuiz(){
+  userName = document.getElementById('ni').value.trim();
+  userSchool = document.getElementById('si').value;
+  if(!userName){ alert('이름을 입력하세요!'); return; }
+  if(!userSchool){ alert('학교를 선택하세요!'); return; }
+  try{
+    localStorage.setItem('bn_name', userName);
+    localStorage.setItem('bn_school', userSchool);
+  }catch(e){}
+  curIdx=0; answers=[]; gotScore=0; t0=Date.now();
+  document.getElementById('startScreen').classList.add('hidden');
+  document.getElementById('hdr').classList.remove('hidden');
+  document.getElementById('pwBar').classList.remove('hidden');
+  document.getElementById('quizArea').classList.remove('hidden');
+  document.getElementById('hs').textContent = userName + ' · 동물실험 외부지문 · ' + QUESTIONS.length + '문항';
+  renderQ();
+}
+
+function renderQ(){
+  const q = QUESTIONS[curIdx];
+  document.getElementById('hb').textContent = (curIdx+1)+'/'+QUESTIONS.length;
+  document.getElementById('pi').style.width = ((curIdx+1)/QUESTIONS.length*100)+'%';
+  renderPassage(q);
+  document.getElementById('qType').textContent = q.type;
+  document.getElementById('qText').textContent = q.q;
+  const ex = document.getElementById('qExtra');
+  if(q.extra){
+    ex.innerHTML = q.extra;
+    ex.classList.remove('hidden');
+  } else {
+    ex.classList.add('hidden');
+  }
+  const ob = document.getElementById('optsBox');
+  ob.innerHTML='';
+  q.opts.forEach((opt,i)=>{
+    const b = document.createElement('button');
+    b.className='opt';
+    b.innerHTML = `<span class="opt-num">${i+1}</span>${opt}`;
+    b.onclick = ()=>selectOpt(i);
+    ob.appendChild(b);
+  });
+  document.getElementById('feedback').classList.add('hidden');
+  document.getElementById('submitBtn').classList.remove('hidden');
+  document.getElementById('nextBtn').classList.add('hidden');
+  document.getElementById('nextBtn').textContent = (curIdx === QUESTIONS.length-1) ? '결과 보기 →' : '다음 →';
+}
+
+function selectOpt(i){
+  document.querySelectorAll('.opt').forEach(b=>b.classList.remove('sel'));
+  document.querySelectorAll('.opt')[i].classList.add('sel');
+  answers[curIdx] = i;
+}
+
+function submitAns(){
+  if(answers[curIdx] === undefined){ alert('답을 선택하세요!'); return; }
+  const q = QUESTIONS[curIdx];
+  const sel = answers[curIdx];
+  const correct = sel === q.ans;
+  document.querySelectorAll('.opt').forEach((b,i)=>{
+    b.onclick = null;
+    if(i === q.ans) b.classList.add('correct');
+    if(i === sel && !correct) b.classList.add('wrong');
+  });
+  if(correct) gotScore++;
+  const fb = document.getElementById('feedback');
+  fb.classList.remove('hidden');
+  fb.classList.toggle('correct', correct);
+  fb.classList.toggle('wrong', !correct);
+  fb.innerHTML = (correct
+      ? `<strong>✓ 정답입니다!</strong>`
+      : `<strong>✗ 오답입니다.</strong> 정답: <span style="font-weight:800">${q.ans+1}번</span>`)
+    + `<div class="ex">📝 ${q.ex}</div>`;
+  document.getElementById('submitBtn').classList.add('hidden');
+  document.getElementById('nextBtn').classList.remove('hidden');
+}
+
+function nextQ(){
+  if(curIdx === QUESTIONS.length-1){ showResult(); return; }
+  curIdx++;
+  renderQ();
+}
+
+function showResult(){
+  const pct = Math.round(gotScore/QUESTIONS.length*100);
+  const el = Math.round((Date.now()-t0)/60000);
+  const wrongs = QUESTIONS.map((q,i)=>({q,i,sel:answers[i]})).filter(x=>x.sel !== x.q.ans);
+  let wHTML = '';
+  if(wrongs.length){
+    wHTML = '<div class="review"><h3>📕 오답노트</h3>';
+    wrongs.forEach(w=>{
+      wHTML += `<div class="review-item">
+        <div class="qn">[${w.q.type}] Q${w.i+1}. ${w.q.q}</div>
+        <div class="yours">너의 답: ${w.sel===undefined?'미응답':(w.sel+1)+'번'} · <span class="ans">정답: ${w.q.ans+1}번</span></div>
+        <div style="margin-top:6px;color:#555;font-size:12.5px;">${w.q.ex}</div>
+      </div>`;
+    });
+    wHTML += '</div>';
+  }
+  document.getElementById('hdr').classList.add('hidden');
+  document.getElementById('pwBar').classList.add('hidden');
+  document.getElementById('quizArea').classList.add('hidden');
+  const rs = document.getElementById('resultScreen');
+  rs.classList.remove('hidden');
+  rs.innerHTML = `<div class="rc">
+    <div style="font-size:12px;color:var(--muted);margin-bottom:4px;">고운고 1학년 외부지문 본문암기 · ${QUESTIONS.length}문항</div>
+    <div class="rs">${pct}점</div>
+    <div class="rsub">${userName}의 결과</div>
+    <div class="sr">
+      <div class="si"><div class="sn" style="color:#2e7d32;">${gotScore}</div><div class="sl">정답</div></div>
+      <div class="si"><div class="sn" style="color:#c62828;">${QUESTIONS.length-gotScore}</div><div class="sl">오답</div></div>
+      <div class="si"><div class="sn" style="color:#6a1b9a;">${QUESTIONS.length}</div><div class="sl">총문항</div></div>
+      <div class="si"><div class="sn" style="color:#ff6f00;">${el}분</div><div class="sl">소요</div></div>
+    </div>
+    ${wHTML}
+    <div class="btn-row">
+      <button class="btn btn-sec" onclick="location.reload()">다시 풀기 🔄</button>
+      <button class="btn btn-pri" onclick="location.href='index.html'">메인으로</button>
+    </div>
+  </div>`;
+  if(window._fbSave) window._fbSave({
+    submittedAt: new Date().toISOString(),
+    studentName: userName,
+    school: userSchool,
+    score: pct,
+    correct: gotScore,
+    wrong: QUESTIONS.length-gotScore,
+    total: QUESTIONS.length,
+    elapsedMin: el,
+    quizType: '고운고_1학년_외부지문_본문암기',
+    details: QUESTIONS.map((q,i)=>({
+      유형: q.type,
+      문제: q.q,
+      정답: q.ans+1,
+      학생답: answers[i]===undefined?'미응답':(answers[i]+1)
+    }))
+  });
+}
+
+window.startQuiz = startQuiz;
+window.submitAns = submitAns;
+window.nextQ = nextQ;
+</script>
+
+</body>
+</html>
