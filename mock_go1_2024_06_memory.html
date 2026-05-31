@@ -210,7 +210,10 @@
   </div>
   <div class="actions">
     <button class="btn btn-sec" onclick="location.reload()">다시 풀기</button>
-    <button class="btn btn-pri" onclick="location.href='index.html'">메인으로</button>
+    <button class="btn btn-pri" id="backToPassageBtn">다른 지문 풀기</button>
+  </div>
+  <div class="actions" style="margin-top:8px">
+    <button class="btn btn-sec" style="flex:1" onclick="location.href='index.html'">메인 허브로</button>
   </div>
 </div>
 
@@ -1333,7 +1336,7 @@ function renderQuestion(){
   let questionHtml = q.q;
   if (q.type === 'eng-def') questionHtml += ` <span class="quote">"${q.defn}"</span>`;
   if (q.type === 'polysemy') questionHtml += `<div style="margin-top:8px;font-size:14px;font-weight:500;color:#4b5563;line-height:1.7"><div>(A) ${q.sentenceA}</div><div style="margin-top:4px">(B) ${q.sentenceB}</div></div>`;
-  if (q.type === 'wrong-word') questionHtml = q.q + `<div style="margin-top:8px;font-size:14px;font-weight:500;color:#4b5563;line-height:1.7">${q.contextSentence}</div>`;
+  // wrong-word는 본문 자체에 ①~④와 변형 단어가 들어가므로 q-text에는 질문만 표시
   qText.innerHTML = questionHtml;
 
   // 본체
@@ -1387,13 +1390,12 @@ function renderPassage(q){
     text = text.replace(re, `<span class="blank">____</span>`);
   }
   if (q.type === 'wrong-word') {
-    // 본문에 ①②③④ 표시
-    const items = q.items || [];
-    items.forEach((w, i) => {
-      const re = new RegExp(`\\b(${w})\\b`, 'i');
-      const num = ['①','②','③','④'][i];
-      text = text.replace(re, `<span class="hl-num">${num}</span><span class="hl">$1</span>`);
-    });
+    // 본문 전체를 contextSentence(잘못된 단어 포함)로 대체.
+    // contextSentence 안의 ①②③④<u>단어</u>를 그대로 본문에 표시.
+    text = q.contextSentence
+      .replace(/<u>/g, '<span class="hl">')
+      .replace(/<\/u>/g, '</span>')
+      .replace(/(①|②|③|④)/g, '<span class="hl-num">$1</span>');
   }
   if (q.type === 'abc') {
     const m = q.ctx.match(/\(A\)\[(.+?)\s*\/\s*(.+?)\].+?\(B\)\[(.+?)\s*\/\s*(.+?)\].+?\(C\)\[(.+?)\s*\/\s*(.+?)\]/);
@@ -1473,6 +1475,25 @@ function finishQuiz(){
   document.getElementById('resultDetail').innerHTML =
     `${userName}님, 수고하셨습니다!<br>총 ${allQuestions.length}문제 중 정답률 <strong>${pct}%</strong>`;
 }
+
+/* ─ 다른 지문 풀기: 지문 선택 화면으로 돌아감 (이름·학교는 유지) ─ */
+document.addEventListener('DOMContentLoaded', () => {
+  const btn = document.getElementById('backToPassageBtn');
+  if (btn) {
+    btn.addEventListener('click', () => {
+      // 결과·퀴즈 숨기고 시작화면 재표시
+      document.getElementById('resultScreen').style.display = 'none';
+      document.getElementById('quizScreen').style.display = 'none';
+      document.getElementById('startScreen').style.display = 'block';
+      // 진행 상태 초기화
+      selectedPassages.clear();
+      document.querySelectorAll('.p-card').forEach(c => c.classList.remove('sel'));
+      curIdx = 0; answers = {}; gotScore = 0;
+      updateStartBtn();
+      window.scrollTo(0,0);
+    });
+  }
+});
 </script>
 </body>
 </html>
