@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>종촌중학교 3학년 3과 영어 시험</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; background: #EFF3FB; color: #1e293b; min-height: 100vh; padding-bottom: 40px; }
+    .header { background: linear-gradient(135deg, #3B82F6, #1D4ED8); color: white; padding: 22px 20px 18px; text-align: center; box-shadow: 0 4px 12px rgba(30,64,175,0.25); }
+    .header h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; }
+    .header .subtitle { font-size: 13px; opacity: 0.85; margin-top: 4px; }
+    .header .datetime { font-size: 12px; opacity: 0.75; margin-top: 8px; background: rgba(255,255,255,0.15); display: inline-block; padding: 4px 12px; border-radius: 20px; }
+    .name-section { background: white; margin: 14px 14px 0; border-radius: 14px; padding: 16px 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); display: flex; align-items: center; gap: 12px; }
+    .name-section label { font-size: 15px; font-weight: 600; white-space: nowrap; }
+    .name-section input { flex: 1; border: 2px solid #CBD5E1; border-radius: 8px; padding: 9px 12px; font-size: 16px; outline: none; }
+    .name-section input:focus { border-color: #3B82F6; }
+
+    /* 두 큰 메인 탭 (본문 / 대화문) */
+    .main-tabs { padding: 18px 14px 0; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .main-tab { background: white; border: 3px solid #CBD5E1; border-radius: 18px; padding: 26px 16px; cursor: pointer; transition: all .2s; box-shadow: 0 3px 10px rgba(0,0,0,0.07); text-align: center; }
+    .main-tab:hover { border-color: #3B82F6; transform: translateY(-3px); box-shadow: 0 8px 20px rgba(59,130,246,0.18); }
+    .main-tab:active { transform: scale(0.97); }
+    .main-tab.passage { background: linear-gradient(135deg, #FEF3C7, #FDE68A); border-color: #F59E0B; }
+    .main-tab.passage:hover { border-color: #B45309; box-shadow: 0 8px 20px rgba(245,158,11,0.25); }
+    .main-tab.dialogue { background: linear-gradient(135deg, #DBEAFE, #BFDBFE); border-color: #3B82F6; }
+    .main-tab.dialogue:hover { border-color: #1D4ED8; box-shadow: 0 8px 20px rgba(29,78,216,0.25); }
+    .mt-emoji { font-size: 36px; margin-bottom: 8px; }
+    .mt-title { font-size: 18px; font-weight: 800; color: #0f172a; letter-spacing: -0.3px; }
+    .mt-sub { font-size: 12px; color: #64748b; margin-top: 4px; line-height: 1.4; }
+    .mt-count { font-size: 11px; color: #475569; margin-top: 6px; font-weight: 700; background: rgba(255,255,255,0.55); display: inline-block; padding: 3px 10px; border-radius: 10px; }
+    .passage .mt-count { color: #92400E; }
+    .dialogue .mt-count { color: #1E40AF; }
+
+    /* 대화문 선택 화면용 카드 그리드 */
+    .dialogue-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 14px 14px 0; }
+    .d-card { background: white; border: 2px solid #BFDBFE; border-radius: 12px; padding: 14px 12px; cursor: pointer; transition: all .18s; box-shadow: 0 2px 6px rgba(0,0,0,0.05); text-align: left; }
+    .d-card:hover { border-color: #1D4ED8; transform: translateY(-2px); box-shadow: 0 6px 16px rgba(29,78,216,0.18); }
+    .d-card:active { transform: scale(0.97); }
+    .d-tag { display: inline-block; font-size: 10px; font-weight: 700; color: #1E40AF; background: #DBEAFE; padding: 2px 8px; border-radius: 10px; margin-bottom: 6px; }
+    .d-title { font-size: 14px; font-weight: 700; color: #0f172a; }
+    .d-sub { font-size: 11px; color: #64748b; margin-top: 4px; }
+    .d-count { font-size: 10px; color: #94A3B8; margin-top: 6px; }
+    .d-progress { display: inline-block; font-size: 10px; color: #16A34A; background: #F0FDF4; padding: 2px 8px; border-radius: 10px; margin-top: 4px; font-weight: 700; }
+
+    .question-card { background: white; margin: 12px 14px 0; border-radius: 14px; padding: 18px 18px 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); }
+    .q-num { font-size: 12px; font-weight: 700; color: #3B82F6; background: #EFF6FF; padding: 3px 10px; border-radius: 20px; display: inline-block; margin-bottom: 12px; }
+    .english-line { font-size: 17px; line-height: 2.2; color: #0f172a; font-weight: 500; word-break: break-word; }
+    .korean-line { font-size: 14px; color: #64748b; margin-top: 6px; padding-top: 8px; border-top: 1px dashed #E2E8F0; }
+    .blank-group { display: inline-flex; gap: 4px; vertical-align: middle; margin: 0 2px; }
+    .letter-box { width: 28px; height: 34px; border: 2px solid #3B82F6; border-radius: 6px; text-align: center; font-size: 16px; font-weight: 600; color: #1e40af; outline: none; padding: 0; background: #F8FAFF; -webkit-user-select: text; user-select: text; }
+    .letter-box:focus { border-color: #1D4ED8; background: #DBEAFE; box-shadow: 0 0 0 3px rgba(59,130,246,0.2); }
+    .letter-box.filled { background: #EFF6FF; }
+    .letter-box.correct-box { border-color: #22C55E; background: #F0FDF4; color: #15803D; }
+    .letter-box.wrong-box  { border-color: #EF4444; background: #FEF2F2; color: #DC2626; }
+    .submit-wrap { padding: 22px 14px 0; }
+    .submit-btn { width: 100%; background: linear-gradient(135deg, #3B82F6, #1D4ED8); color: white; border: none; border-radius: 14px; padding: 17px; font-size: 18px; font-weight: 700; cursor: pointer; letter-spacing: -0.3px; box-shadow: 0 4px 14px rgba(29,78,216,0.35); }
+    .submit-btn:active { transform: scale(0.98); }
+    #start-screen, #dialogue-screen, #test-screen, #result-screen { display: none; }
+    #start-screen.active, #dialogue-screen.active, #test-screen.active, #result-screen.active { display: block; }
+    .result-header { background: linear-gradient(135deg, #10B981, #059669); color: white; padding: 28px 20px; text-align: center; box-shadow: 0 4px 12px rgba(5,150,105,0.3); }
+    .result-header.fail-header { background: linear-gradient(135deg, #F59E0B, #D97706); box-shadow: 0 4px 12px rgba(217,119,6,0.3); }
+    .score-big { font-size: 64px; font-weight: 800; line-height: 1; }
+    .score-label { font-size: 15px; opacity: 0.9; margin-top: 6px; }
+    .result-meta { font-size: 12px; opacity: 0.8; margin-top: 10px; }
+    .result-card { background: white; margin: 12px 14px 0; border-radius: 14px; padding: 16px 16px 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); }
+    .result-card .q-num { margin-bottom: 8px; }
+    .result-eng { font-size: 15px; line-height: 2; color: #0f172a; font-weight: 500; }
+    .result-kor { font-size: 13px; color: #64748b; margin-top: 6px; }
+    .answer-row { margin-top: 8px; padding-top: 8px; border-top: 1px dashed #E2E8F0; font-size: 13px; }
+    .answer-row span { font-weight: 700; }
+    .ok  { color: #16A34A; }
+    .bad { color: #DC2626; }
+    .screenshot-guide { margin: 14px 14px 0; background: #FFFBEB; border: 2px solid #FCD34D; border-radius: 14px; padding: 16px 16px; font-size: 14px; color: #78350F; line-height: 1.6; }
+    .screenshot-guide strong { display: block; font-size: 15px; margin-bottom: 6px; }
+    .retry-btn { width: calc(100% - 28px); margin: 16px 14px 0; background: white; border: 2px solid #3B82F6; color: #3B82F6; border-radius: 14px; padding: 14px; font-size: 16px; font-weight: 700; cursor: pointer; }
+    .back-btn { width: calc(100% - 28px); margin: 8px 14px 0; background: #F1F5F9; border: 2px solid #94A3B8; color: #475569; border-radius: 14px; padding: 12px; font-size: 14px; font-weight: 700; cursor: pointer; }
+    .tip { text-align: center; font-size: 12px; color: #94A3B8; margin: 12px 14px 0; }
+    .test-info-bar { background: #DBEAFE; margin: 14px 14px 0; border-radius: 12px; padding: 10px 14px; font-size: 13px; color: #1E40AF; font-weight: 600; text-align: center; }
+    .resume-banner { background: #FEF3C7; margin: 12px 14px 0; border-radius: 12px; padding: 10px 14px; font-size: 12px; color: #92400E; font-weight: 600; text-align: center; border: 1px solid #FCD34D; }
+  </style>
+
+<script>
+(function(){
+  var saved = sessionStorage.getItem('bn_name') || localStorage.getItem('bn_name');
+  if(saved){
+    window._hubStudentName = saved;
+    window.addEventListener('DOMContentLoaded', function(){
+      var inputs = document.querySelectorAll('input#student-name, input#nameInput, .name-input');
+      inputs.forEach(function(el){ if(!el.value) el.value = saved; });
+    });
+  }
+})();
+</script>
+</head>
+<body>
+
+<!-- ====== 시작 화면 (본문/대화문 두 탭) ====== -->
+<div id="start-screen" class="active">
+  <div class="header">
+    <h1>📚 종촌중학교 3학년 3과</h1>
+    <div class="subtitle">영어 빈칸 시험</div>
+    <div class="datetime" id="start-datetime"></div>
+  </div>
+  <div class="name-section">
+    <label for="student-name">이름</label>
+    <input type="text" id="student-name" placeholder="이름을 입력하세요"
+      autocomplete="off" autocorrect="off" autocapitalize="words" spellcheck="false" />
+  </div>
+  <p class="tip">💡 본문 또는 대화문을 골라서 시험을 시작하세요.</p>
+  <div class="main-tabs">
+    <button type="button" class="main-tab passage" onclick="enterPassage()">
+      <div class="mt-emoji">📖</div>
+      <div class="mt-title">본문</div>
+      <div class="mt-sub">English Words of Foreign Origin</div>
+      <div class="mt-count" id="passage-count-badge">27문장</div>
+    </button>
+    <button type="button" class="main-tab dialogue" onclick="enterDialogueSelect()">
+      <div class="mt-emoji">💬</div>
+      <div class="mt-title">대화문</div>
+      <div class="mt-sub">선택해서 시험보기</div>
+      <div class="mt-count" id="dialogue-count-badge">7개 대화문</div>
+    </button>
+  </div>
+</div>
+
+<!-- ====== 대화문 선택 화면 ====== -->
+<div id="dialogue-screen">
+  <div class="header">
+    <h1>💬 3과 대화문 선택</h1>
+    <div class="subtitle">어떤 대화문을 시험볼까요?</div>
+  </div>
+  <p class="tip">💡 카드를 누르면 바로 시험이 시작돼요.</p>
+  <div class="dialogue-grid" id="dialogue-grid"></div>
+  <button class="back-btn" onclick="backToStart()">← 처음으로</button>
+</div>
+
+<!-- ====== 시험 화면 ====== -->
+<div id="test-screen">
+  <div class="header">
+    <h1>📚 종촌중학교 3학년 3과</h1>
+    <div class="subtitle" id="test-subtitle">영어 빈칸 시험</div>
+    <div class="datetime" id="test-datetime"></div>
+  </div>
+  <div class="test-info-bar" id="test-info-bar"></div>
+  <div id="resume-notice"></div>
+  <p class="tip">💡 각 칸에 글자를 하나씩 입력하세요. 자동완성은 지원되지 않습니다.</p>
+  <div id="questions-container"></div>
+  <div class="submit-wrap">
+    <button class="submit-btn" onclick="submitTest()">✅ 제출하고 채점받기</button>
+  </div>
+  <button class="back-btn" onclick="backToStart()">← 처음으로</button>
+</div>
+
+<!-- ====== 결과 화면 ====== -->
+<div id="result-screen">
+  <div id="result-header-block"></div>
+  <div class="screenshot-guide">
+    <strong>📸 선생님께 결과를 보내주세요!</strong>
+    이 화면을 캡처(스크린샷)해서 선생님께 전송해 주세요.<br>
+    📱 아이폰: 전원 + 볼륨 올리기 버튼 / 안드로이드: 전원 + 볼륨 내리기 버튼
+  </div>
+  <div id="result-details"></div>
+  <button class="retry-btn" onclick="restartTest()">🔄 같은 파트 다시 시험</button>
+  <button class="back-btn" onclick="backToStart()">← 처음으로</button>
+</div>
+
+<!-- Firebase -->
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getFirestore,collection,addDoc,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+const cfg={apiKey:"AIzaSyCxS524S8KAaF87DomPtl9sJdF-eqes404",authDomain:"bomnalvaca.firebaseapp.com",projectId:"bomnalvaca",storageBucket:"bomnalvaca.firebasestorage.app",messagingSenderId:"115868052300",appId:"1:115868052300:web:765c08867b6f1ce0987de9"};
+const app=initializeApp(cfg);
+const db=getFirestore(app);
+window._fbReady=true;
+window._saveResult=async(data)=>{
+  try{
+    await addDoc(collection(db,"quiz_results"),{...data,timestamp:serverTimestamp()});
+    console.log("Firebase 저장 완료 ✅");
+  }catch(e){console.log("Firebase 저장 실패",e);}
+};
+</script>
+
+<script>
+var QUIZ_INFO = { school: '종촌중학교', grade: '3학년', chapter: '3과' };
+var CHAPTER_KEY = 'jongchon_3grade_ch3';
+
+const SECTIONS = {
+  'main': {
+    tag: '본문', emoji: '📖',
+    title: 'English Words of Foreign Origin',
+    sub: '외국에서 유래된 영어 단어들 — shampoo · robot · hurricane · hamburger',
+    sentences: [
+      { en: "English has often borrowed words from other cultures or languages.", ko: "영어는 다른 문화나 언어로부터 단어들을 자주 빌려 왔다." },
+      { en: "Here are some examples with interesting stories.", ko: "여기 재미있는 이야기들을 가진 몇 가지 예들이 있다." },
+      { en: "The word shampoo comes from the Hindi word champo, which means \"to press.\"", ko: "shampoo라는 단어는 힌디어 단어인 champo에서 왔으며, 그것은 '누르다'를 의미한다." },
+      { en: "In India, the word was used for a head massage.", ko: "인도에서, 그 단어는 머리 마사지에 쓰였다." },
+      { en: "British traders in India experienced a bath with a head massage and introduced it to Britain in the 18th century.", ko: "인도에 있는 영국 무역상들은 머리 마사지가 있는 목욕을 경험했고 그것을 18세기에 영국에 소개했다." },
+      { en: "The meaning of the word shampoo changed a few times after it first entered English around 1762.", ko: "shampoo라는 단어의 의미는 1762년경에 처음 영어에 들어온 후에 몇 번 바뀌었다." },
+      { en: "In the 19th century, shampoo got its present meaning of \"washing the hair.\"", ko: "19세기에, shampoo는 '머리 감기'라는 현재의 의미를 얻었다." },
+      { en: "Shortly after that, the word began to be also used for a special soap for the hair.", ko: "그 직후, 그 단어는 머리카락을 위한 특별한 비누에도 쓰이기 시작했다." },
+      { en: "The word robot comes from the play R.U.R., which was written in 1920 by a Czech writer Karel Capek.", ko: "robot이라는 단어는 1920년에 체코 작가인 Karel Capek에 의해 쓰여진 'R.U.R.'이라는 희곡에서 왔다." },
+      { en: "In the play, robots are machines that look like humans.", ko: "그 희곡에서, 로봇들은 인간들처럼 생긴 기계들이다." },
+      { en: "They are designed to work for humans and are produced in a factory.", ko: "그들은 인간들을 위해 일하도록 설계되고 공장에서 생산된다." },
+      { en: "It is interesting that the idea of using the word robot didn't come from Karel Capek himself.", ko: "robot이라는 단어를 사용한다는 아이디어가 Karel Capek 자기 자신에게서 오지 않았다는 것은 흥미롭다." },
+      { en: "He originally called the machines in his play labori from the Latin word for \"work.\"", ko: "그는 원래 자신의 희곡에서 그 기계들을 '일'을 의미하는 라틴어에서 온 labori라고 불렀다." },
+      { en: "However, his brother suggested roboti, which means \"slave workers\" in Czech.", ko: "하지만, 그의 형이 roboti를 제안했고, 그것은 체코어로 '노예 근로자들'을 의미한다." },
+      { en: "Karel Capek liked the idea and decided to use the word roboti.", ko: "Karel Capek은 그 아이디어를 마음에 들어 했고 roboti라는 단어를 사용하기로 결정했다." },
+      { en: "In 1938, the play was made into a science fiction show on television in Britain.", ko: "1938년에, 그 희곡은 영국에서 텔레비전 공상 과학물로 만들어졌다." },
+      { en: "The word hurricane comes from the Spanish word huracan, which originates from the name of a Mayan god.", ko: "hurricane이라는 단어는 스페인어 단어인 huracan에서 왔는데, 그것은 마야 신의 이름에서 유래한다." },
+      { en: "In the Mayan creation myth, Huracan is the weather god of wind, storm, and fire, and he is one of the three gods who created humans.", ko: "마야의 창조 신화에서, Huracan은 바람, 폭풍우, 그리고 불의 날씨 신이고, 그는 인간들을 창조한 세 명의 신들 중 하나이다." },
+      { en: "However, the first humans angered the gods, so Huracan caused a great flood.", ko: "하지만, 최초의 인간들은 그 신들을 화나게 했고, 그래서 Huracan은 거대한 홍수를 일으켰다." },
+      { en: "The first Spanish contact with the Mayan civilization was in 1517.", ko: "스페인의 마야 문명과의 첫 접촉은 1517년에 있었다." },
+      { en: "Spanish explorers who were passing through the Caribbean experienced a hurricane and picked up the word for it from the people in the area.", ko: "카리브해 지역을 지나가고 있던 스페인 탐험가들은 허리케인을 겪었고 그 지역의 사람들로부터 그것을 의미하는 단어를 듣게 되었다." },
+      { en: "In English, one of the early uses of hurricane was in a play by Shakespeare in 1608.", ko: "영어에서, hurricane의 초기 쓰임 중 하나는 1608년에 셰익스피어가 쓴 희곡에서였다." },
+      { en: "The word hamburger originally comes from Hamburg, Germany's second-largest city.", ko: "hamburger라는 단어는 원래 독일의 두 번째로 큰 도시인 함부르크에서 왔다." },
+      { en: "Hamburger means \"people or things from Hamburg\" in German.", ko: "Hamburger는 독일어로 '함부르크에서 온 사람들 또는 사물들'을 의미한다." },
+      { en: "The origin of the first hamburger is not clear.", ko: "최초의 햄버거의 기원은 명확하지 않다." },
+      { en: "However, it is believed that the hamburger was invented in a small town in Texas, USA, sometime between 1885 and 1904.", ko: "하지만, 햄버거는 1885년과 1904년 사이의 언젠가 미국 텍사스에 있는 작은 마을에서 발명되었다고 믿어진다." },
+      { en: "A cook placed a Hamburg-style steak between two slices of bread, and people started to call such food a hamburger.", ko: "한 요리사가 빵 두 조각 사이에 함부르크 스타일의 스테이크를 넣었고, 사람들이 그러한 음식을 햄버거라고 부르기 시작했다." }
+    ]
+  },
+  'd1': { tag: '대화문 1', emoji: '💬', title: 'raining cats and dogs', sub: 'Listen and Talk 01', sentences: [
+    { en: "Look. It's raining cats and dogs.", ko: "봐. 비가 억수같이 쏟아지고 있어." },
+    { en: "Raining cats and dogs? What does that mean?", ko: "Raining cats and dogs? 그게 무슨 뜻이야?" },
+    { en: "It means \"It's raining a lot.\"", ko: "그건 '비가 많이 온다'는 뜻이야." },
+    { en: "Oh. Don't worry. I have an umbrella in my backpack.", ko: "오. 걱정 마. 내 배낭에 우산이 있어." }
+  ]},
+  'd2': { tag: '대화문 2', emoji: '💬', title: '작별 인사 - Jiho와 Lucy', sub: 'Listen and Talk 02', sentences: [
+    { en: "Thank you for everything, Jiho. I had a great time in Korea.", ko: "여러 가지로 고마워, 지호야. 한국에서 즐거운 시간을 보냈어." },
+    { en: "My pleasure. Please come visit me again, Lucy.", ko: "내가 더 기뻤어. 또 만나러 와줘, Lucy." },
+    { en: "I'd love to, but before I do, I'd like to invite you to visit me in London.", ko: "그러고 싶어, 하지만 그러기 전에, 너를 런던으로 초대하고 싶어." },
+    { en: "Thanks. Anyway, it's too bad that you can't come to my soccer game tomorrow.", ko: "고마워. 어쨌든, 네가 내일 내 축구 경기에 못 오는 게 아쉽다." },
+    { en: "I'm sorry that I can't stay longer. I'll keep my fingers crossed for you.", ko: "더 오래 못 있어서 미안해. 너에게 행운을 빌게." },
+    { en: "Excuse me, but can you please say that again?", ko: "미안하지만, 다시 한번 말해 줄래?" },
+    { en: "I said, \"I'll keep my fingers crossed for you.\" It means \"I wish you good luck.\"", ko: "내가 '너에게 행운을 빌게.'라고 말했어. 그건 '너에게 행운을 빈다'는 뜻이야." },
+    { en: "Oh. Thanks. Have a nice trip.", ko: "오. 고마워. 즐거운 여행이 되길 바라." },
+    { en: "Thanks. I'll keep in touch.", ko: "고마워. 연락할게." }
+  ]},
+  'd3': { tag: '대화문 3', emoji: '💬', title: 'This juice is on me', sub: 'Listen and Talk 03', sentences: [
+    { en: "This juice is on me, Suho.", ko: "이 주스는 내가 살게, 수호야." },
+    { en: "Excuse me? Can you say that again?", ko: "뭐라고? 다시 한번 말해 줄래?" },
+    { en: "I said, \"This juice is on me.\" It means \"I'll pay for the juice.\"", ko: "내가 '이 주스는 내가 살게.'라고 말했어. 그건 '내가 주스 값을 낼게.'라는 뜻이야." },
+    { en: "Oh. Thanks a lot.", ko: "오. 정말 고마워." },
+    { en: "You're welcome.", ko: "천만에." }
+  ]},
+  'd4': { tag: '대화문 4', emoji: '💬', title: 'not my cup of tea', sub: 'Listen and Talk 04', sentences: [
+    { en: "Everything looks delicious.", ko: "모든 게 맛있어 보여." },
+    { en: "Yes. Would you like some of my spaghetti?", ko: "응. 내 스파게티 좀 먹을래?" },
+    { en: "No, thanks. Spaghetti is not my cup of tea.", ko: "아니, 괜찮아. 스파게티는 내 취향이 아니야." },
+    { en: "Not your cup of tea? What does that mean?", ko: "취향이 아니라고? 그게 무슨 뜻이야?" },
+    { en: "It means \"I don't like something.\"", ko: "그건 '나는 무언가를 좋아하지 않는다'는 뜻이야." },
+    { en: "Oh, I see. You don't like spaghetti.", ko: "오, 그렇구나. 너는 스파게티를 좋아하지 않는구나." }
+  ]},
+  'd5': { tag: '대화문 5', emoji: '💬', title: 'under the weather', sub: 'Listen and Talk 05', sentences: [
+    { en: "I feel under the weather.", ko: "나 몸이 좀 안 좋아." },
+    { en: "Excuse me, but can you please say that again?", ko: "미안하지만, 다시 한번 말해 줄래?" },
+    { en: "I said, \"I feel under the weather.\" It means \"I don't feel well.\" I think I have a cold.", ko: "내가 '몸이 좀 안 좋다'고 말했어. 그건 '몸이 좋지 않다'는 뜻이야. 감기에 걸린 것 같아." },
+    { en: "Oh. Why don't you buy some medicine before you get on the plane? You can get medicine at the store over there.", ko: "오. 비행기에 타기 전에 약을 좀 사는 게 어때? 저쪽 상점에서 약을 살 수 있어." },
+    { en: "I guess I should.", ko: "그래야 할 것 같아." }
+  ]},
+  'd6': { tag: '대화문 6', emoji: '💬', title: 'fingers crossed (복습)', sub: 'Review 06', sentences: [
+    { en: "I'll keep my fingers crossed for you.", ko: "너에게 행운을 빌게." },
+    { en: "I'm sorry, but can you please say that again?", ko: "미안하지만, 다시 한번 말해 줄래?" },
+    { en: "I said, \"I'll keep my fingers crossed for you.\" It means \"I wish you good luck.\"", ko: "내가 '너에게 행운을 빌게.'라고 말했어. 그건 '너에게 행운을 빈다'는 뜻이야." }
+  ]},
+  'd7': { tag: '대화문 7', emoji: '💬', title: 'under the weather (복습)', sub: 'Review 07', sentences: [
+    { en: "I feel under the weather.", ko: "나 몸이 좀 안 좋아." },
+    { en: "Excuse me, but can you please say that again?", ko: "미안하지만, 다시 한번 말해 줄래?" },
+    { en: "I said, \"I feel under the weather.\"", ko: "내가 '몸이 좀 안 좋다'고 말했어." },
+    { en: "What does that mean?", ko: "그게 무슨 뜻이야?" },
+    { en: "It means \"I don't feel well.\" I think I have a cold.", ko: "그건 '몸이 좋지 않다'는 뜻이야. 감기에 걸린 것 같아." },
+    { en: "Oh. Why don't you buy some medicine? You can get medicine at the store over there.", ko: "오. 약을 좀 사는 게 어때? 저쪽 상점에서 약을 살 수 있어." },
+    { en: "OK, I will.", ko: "응, 그럴게." }
+  ]}
+};
+
+let SENTENCES = [];
+let selectedSection = null;
+let currentBlanks = [];
+let startDateTime = null;
+let tabSwitchCount = 0;
+let attemptCount = 0;
+
+// ===== 날짜·키 유틸 =====
+function todayStr() {
+  var d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+function draftKey(sectionKey) { return CHAPTER_KEY + '_draft_' + todayStr() + '_' + sectionKey; }
+function blankPosKey(sectionKey) { return CHAPTER_KEY + '_blankpos_' + todayStr() + '_' + sectionKey; }
+function tabExitKey() { return CHAPTER_KEY + '_tabexit_' + todayStr(); }
+function attemptKey(sectionKey) { return CHAPTER_KEY + '_attempt_' + sectionKey; }
+
+function formatDT(d) {
+  const pad = n => String(n).padStart(2, '0');
+  return `${d.getFullYear()}.${pad(d.getMonth()+1)}.${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+}
+
+// ===== 화면 전환 =====
+function showScreen(id) {
+  ['start-screen', 'dialogue-screen', 'test-screen', 'result-screen'].forEach(s => {
+    document.getElementById(s).classList.toggle('active', s === id);
+  });
+  window.scrollTo(0, 0);
+}
+function backToStart() {
+  showScreen('start-screen');
+  renderProgressBadges();
+}
+
+// ===== 본문 진입 =====
+function enterPassage() {
+  startTestForSection('main');
+}
+
+// ===== 대화문 선택 화면 =====
+function enterDialogueSelect() {
+  renderDialogueGrid();
+  showScreen('dialogue-screen');
+}
+function renderDialogueGrid() {
+  const grid = document.getElementById('dialogue-grid');
+  grid.innerHTML = '';
+  Object.keys(SECTIONS).filter(k => k !== 'main').forEach(key => {
+    const s = SECTIONS[key];
+    const draft = localStorage.getItem(draftKey(key));
+    const hasDraft = draft && Object.keys(JSON.parse(draft) || {}).filter(k => k !== '__name__').length > 0;
+    const card = document.createElement('button');
+    card.type = 'button';
+    card.className = 'd-card';
+    card.innerHTML = `
+      <span class="d-tag">${s.emoji} ${s.tag}</span>
+      <div class="d-title">${s.title}</div>
+      <div class="d-sub">${s.sub}</div>
+      <div class="d-count">📝 ${s.sentences.length}문장</div>
+      ${hasDraft ? '<div class="d-progress">📝 풀던 답안 있음</div>' : ''}
+    `;
+    card.onclick = () => startTestForSection(key);
+    grid.appendChild(card);
+  });
+}
+
+// 시작 화면에 본문 풀던 답안 표시
+function renderProgressBadges() {
+  const draftMain = localStorage.getItem(draftKey('main'));
+  const hasMainDraft = draftMain && Object.keys(JSON.parse(draftMain) || {}).filter(k => k !== '__name__').length > 0;
+  const pBadge = document.getElementById('passage-count-badge');
+  if (pBadge) pBadge.textContent = hasMainDraft ? '30문장 · 📝 풀던 답안 있음' : '30문장';
+
+  let dialogueDraftCount = 0;
+  Object.keys(SECTIONS).filter(k => k !== 'main').forEach(key => {
+    const draft = localStorage.getItem(draftKey(key));
+    if (draft && Object.keys(JSON.parse(draft) || {}).filter(k => k !== '__name__').length > 0) {
+      dialogueDraftCount++;
+    }
+  });
+  const dBadge = document.getElementById('dialogue-count-badge');
+  if (dBadge) dBadge.textContent = dialogueDraftCount > 0 ? `7개 대화문 · 📝 ${dialogueDraftCount}개 풀던 중` : '7개 대화문';
+}
+
+// ===== 시험 시작 =====
+function startTestForSection(key) {
+  const name = document.getElementById('student-name').value.trim();
+  if (!name) {
+    alert('이름을 먼저 입력해 주세요!');
+    document.getElementById('student-name').focus();
+    return;
+  }
+  try { localStorage.setItem('bn_name', name); } catch(e) {}
+
+  selectedSection = key;
+  const sec = SECTIONS[key];
+  SENTENCES = sec.sentences;
+
+  document.getElementById('test-subtitle').textContent = `${sec.emoji} ${sec.tag} · ${sec.title}`;
+  document.getElementById('test-info-bar').textContent = `📝 ${sec.tag} · 총 ${SENTENCES.length}문장 · 빈칸을 채워보세요`;
+
+  startDateTime = new Date();
+  document.getElementById('test-datetime').textContent = '시험 시작: ' + formatDT(startDateTime);
+
+  attemptCount = parseInt(localStorage.getItem(attemptKey(key)) || '0') + 1;
+  localStorage.setItem(attemptKey(key), attemptCount);
+
+  renderQuestions();
+  showResumeNotice();
+  showScreen('test-screen');
+}
+
+function showResumeNotice() {
+  const notice = document.getElementById('resume-notice');
+  const draft = localStorage.getItem(draftKey(selectedSection));
+  if (draft) {
+    try {
+      const data = JSON.parse(draft);
+      const filled = Object.keys(data).filter(k => k !== '__name__' && data[k]).length;
+      if (filled > 0) {
+        notice.innerHTML = `<div class="resume-banner">📝 오늘 풀던 답안을 자동으로 불러왔어요 (${filled}칸)</div>`;
+        return;
+      }
+    } catch(e) {}
+  }
+  notice.innerHTML = '';
+}
+
+// ===== 토큰화·빈칸 선정 (그날은 위치 고정) =====
+function tokenize(sentence) {
+  return sentence.trim().split(/\s+/).map(function(tok) {
+    var word = tok.replace(/[^A-Za-z]+$/, '');
+    var punct = tok.slice(word.length);
+    if (!word) { return { word: tok, punct: '' }; }
+    return { word: word, punct: punct };
+  });
+}
+
+function pickBlanksForSentence(tokens, sentIdx) {
+  // 그날은 같은 빈칸 위치 유지 (localStorage), 새 회차는 새 위치
+  // 단, 사용자가 restartTest로 재시작하면 새 위치 생성
+  const eligible = tokens.map((t, i) => i).filter(i => tokens[i].word.length >= 3);
+  for (let i = eligible.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [eligible[i], eligible[j]] = [eligible[j], eligible[i]];
+  }
+  return eligible.slice(0, Math.min(2, eligible.length)).sort((a,b)=>a-b);
+}
+
+function getOrCreateBlankPositions() {
+  const key = blankPosKey(selectedSection);
+  const saved = localStorage.getItem(key);
+  if (saved) {
+    try { return JSON.parse(saved); } catch(e) {}
+  }
+  const positions = SENTENCES.map((sent, si) => pickBlanksForSentence(tokenize(sent.en), si));
+  localStorage.setItem(key, JSON.stringify(positions));
+  return positions;
+}
+
+function regenerateBlankPositions() {
+  localStorage.removeItem(blankPosKey(selectedSection));
+  return getOrCreateBlankPositions();
+}
+
+function buildLetterBoxes(blankId, word) {
+  let html = `<span class="blank-group" data-blank="${blankId}">`;
+  let inputIdx = 0;
+  for (let c = 0; c < word.length; c++) {
+    const ch = word[c];
+    if (ch === '-' || ch === '.' || ch === "'") {
+      html += `<span style="display:inline-flex;align-items:center;justify-content:center;width:10px;font-size:16px;font-weight:700;color:#3B82F6;">${ch}</span>`;
+    } else {
+      html += `<input class="letter-box" type="text" maxlength="2"
+        id="${blankId}_${inputIdx}" data-blank="${blankId}" data-idx="${inputIdx}" data-charpos="${c}"
+        autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" inputmode="text"/>`;
+      inputIdx++;
+    }
+  }
+  html += `</span>`;
+  return html;
+}
+
+function renderQuestions() {
+  currentBlanks = [];
+  const container = document.getElementById('questions-container');
+  container.innerHTML = '';
+  const positions = getOrCreateBlankPositions();
+  SENTENCES.forEach((sent, si) => {
+    const tokens = tokenize(sent.en);
+    const blankSet = new Set(positions[si] || []);
+    let engHtml = '';
+    tokens.forEach((tok, ti) => {
+      if (blankSet.has(ti)) {
+        const blankId = `q${si}_b${currentBlanks.length}`;
+        currentBlanks.push({ blankId, word: tok.word, sentIdx: si });
+        engHtml += buildLetterBoxes(blankId, tok.word);
+        if (tok.punct) engHtml += `<span>${tok.punct}</span>`;
+        engHtml += ' ';
+      } else {
+        engHtml += `<span>${tok.word}${tok.punct}</span> `;
+      }
+    });
+    const card = document.createElement('div');
+    card.className = 'question-card';
+    card.innerHTML = `<div class="q-num">문제 ${si + 1}</div><div class="english-line">${engHtml}</div><div class="korean-line">🇰🇷 ${sent.ko}</div>`;
+    container.appendChild(card);
+  });
+  container.querySelectorAll('.letter-box').forEach(box => {
+    box.addEventListener('input', onLetterInput);
+    box.addEventListener('keydown', onLetterKeydown);
+    box.addEventListener('paste', e => e.preventDefault());
+  });
+  restoreAnswers();
+}
+
+function onLetterInput(e) {
+  const box = e.target;
+  let val = box.value;
+  if (val.length > 1) val = val[0];
+  val = val.replace(/[^A-Za-z0-9']/g, '');
+  box.value = val;
+  if (val.length === 1) {
+    box.classList.add('filled');
+    const next = document.getElementById(`${box.dataset.blank}_${parseInt(box.dataset.idx) + 1}`);
+    if (next) next.focus();
+  } else {
+    box.classList.remove('filled');
+  }
+  saveAnswers();
+}
+
+function onLetterKeydown(e) {
+  const box = e.target;
+  if (e.key === 'Backspace' && box.value === '') {
+    const prev = document.getElementById(`${box.dataset.blank}_${parseInt(box.dataset.idx) - 1}`);
+    if (prev) { prev.value = ''; prev.classList.remove('filled'); prev.focus(); saveAnswers(); }
+  }
+}
+
+function collectAnswer(blankInfo) {
+  let ans = '';
+  let inputIdx = 0;
+  for (let c = 0; c < blankInfo.word.length; c++) {
+    const ch = blankInfo.word[c];
+    if (ch === '-' || ch === '.' || ch === "'") { ans += ch; }
+    else {
+      const box = document.getElementById(`${blankInfo.blankId}_${inputIdx}`);
+      ans += box ? (box.value || ' ') : ' ';
+      inputIdx++;
+    }
+  }
+  return ans.trim();
+}
+
+function saveAnswers() {
+  if (!selectedSection) return;
+  var data = {};
+  var nameEl = document.getElementById('student-name');
+  if (nameEl) data['__name__'] = nameEl.value;
+  currentBlanks.forEach(function(b) {
+    var inputIdx = 0;
+    for (var c = 0; c < b.word.length; c++) {
+      var ch = b.word[c];
+      if (ch !== '-' && ch !== '.' && ch !== "'") {
+        var box = document.getElementById(b.blankId + '_' + inputIdx);
+        if (box && box.value) data[b.blankId + '_' + inputIdx] = box.value;
+        inputIdx++;
+      }
+    }
+  });
+  localStorage.setItem(draftKey(selectedSection), JSON.stringify(data));
+}
+
+function restoreAnswers() {
+  var saved = localStorage.getItem(draftKey(selectedSection));
+  if (!saved) return;
+  try {
+    var data = JSON.parse(saved);
+    if (data['__name__']) {
+      var nameEl = document.getElementById('student-name');
+      if (nameEl && !nameEl.value) nameEl.value = data['__name__'];
+    }
+    Object.keys(data).forEach(function(key) {
+      if (key === '__name__') return;
+      var box = document.getElementById(key);
+      if (box && data[key]) { box.value = data[key]; box.classList.add('filled'); }
+    });
+  } catch(e) {}
+}
+
+function clearDraft() {
+  if (selectedSection) localStorage.removeItem(draftKey(selectedSection));
+}
+
+// ===== 제출 =====
+function submitTest(auto) {
+  const name = document.getElementById('student-name').value.trim() || (auto ? '(자동제출)' : '');
+  if (!name) { alert('이름을 먼저 입력해 주세요!'); return; }
+
+  const incomplete = currentBlanks.some(b => {
+    const ans = collectAnswer(b);
+    const inputLen = b.word.split('').filter(ch => ch !== '-' && ch !== '.' && ch !== "'").length;
+    return ans.replace(/[\s\-\.']/g, '').length < inputLen;
+  });
+  if (!auto && incomplete) {
+    if (!confirm('아직 채우지 않은 칸이 있습니다. 그래도 제출할까요?')) return;
+  }
+
+  const endDT = new Date();
+  let correct = 0;
+  let detailsHtml = '';
+  const sentResults = {};
+
+  currentBlanks.forEach(b => {
+    const userAns = collectAnswer(b);
+    const ok = userAns.toLowerCase() === b.word.toLowerCase();
+    if (ok) correct++;
+    if (!sentResults[b.sentIdx]) sentResults[b.sentIdx] = [];
+    sentResults[b.sentIdx].push({ word: b.word, blankId: b.blankId, userAns, ok });
+  });
+
+  SENTENCES.forEach((sent, si) => {
+    if (!sentResults[si]) return;
+    const tokens = tokenize(sent.en);
+    let usedBlanks = {};
+    let engResult = '';
+    tokens.forEach((tok) => {
+      const match = sentResults[si].find(r => !usedBlanks[r.blankId] && r.word === tok.word);
+      if (match) {
+        usedBlanks[match.blankId] = true;
+        const cls = match.ok ? 'ok' : 'bad';
+        engResult += `<span class="${cls}"><u>${tok.word}</u>${tok.punct}</span> `;
+      } else {
+        engResult += `${tok.word}${tok.punct} `;
+      }
+    });
+    let answerRows = sentResults[si].map(r =>
+      r.ok ? `<span class="ok">✅ "${r.word}" 정답!</span>`
+           : `<span class="bad">❌ 정답: <b>${r.word}</b> / 내 답: <b>${r.userAns || '(공백)'}</b></span>`
+    ).join('<br>');
+    detailsHtml += `<div class="result-card"><div class="q-num">문제 ${si + 1}</div><div class="result-eng">${engResult}</div><div class="result-kor">🇰🇷 ${sent.ko}</div><div class="answer-row">${answerRows}</div></div>`;
+  });
+
+  const total = currentBlanks.length;
+  const pct   = total > 0 ? Math.round(correct / total * 100) : 0;
+  const emoji = pct === 100 ? '🏆' : pct >= 70 ? '😊' : '😢';
+  const isPass = pct >= 70;
+  const sec = SECTIONS[selectedSection];
+  const totalTabExit = parseInt(localStorage.getItem(tabExitKey()) || '0');
+
+  document.getElementById('result-header-block').innerHTML = `
+    <div class="result-header ${isPass ? '' : 'fail-header'}">
+      <div style="font-size:36px;">${emoji}</div>
+      <div class="score-big">${correct} / ${total}</div>
+      <div class="score-label">${pct}점 &nbsp;·&nbsp; ${isPass ? '통과 🎉' : '다시 도전!'}</div>
+      <div style="font-size:13px;margin-top:8px;opacity:.9;">${sec.emoji} ${sec.tag} · ${sec.title}</div>
+      <div class="result-meta">👤 ${name} &nbsp;|&nbsp; 📅 ${formatDT(endDT)} &nbsp;|&nbsp; 📝 ${attemptCount}회차 응시 &nbsp;|&nbsp; ${tabSwitchCount > 0 ? '⚠️ 이번 시험 중 탭이탈 ' + tabSwitchCount + '회' : '✅ 이번 시험 중 탭이탈 없음'} &nbsp;|&nbsp; 📊 오늘 누적 탭이탈 ${totalTabExit}회</div>
+    </div>`;
+  document.getElementById('result-details').innerHTML = detailsHtml;
+
+  var wrongList = [];
+  Object.keys(sentResults).forEach(function(si) {
+    if (sentResults[si].some(function(r){ return !r.ok; })) {
+      wrongList.push({ num: parseInt(si)+1, en: SENTENCES[parseInt(si)].en });
+    }
+  });
+
+  submitToFirebase(name, correct, total, pct, wrongList, totalTabExit);
+  clearDraft();
+  showScreen('result-screen');
+}
+
+function submitToFirebase(name, correct, total, pct, wrongList, totalTabExit) {
+  var wrongNumbers = wrongList.map(function(w){ return w.num + '번'; }).join(', ');
+  var wrongSentences = wrongList.map(function(w){ return w.num + '번: ' + w.en; }).join(' / ');
+  var sec = SECTIONS[selectedSection];
+
+  var data = {
+    studentName: name,
+    school: QUIZ_INFO.school,
+    grade: QUIZ_INFO.grade,
+    chapter: QUIZ_INFO.chapter,
+    section: sec.tag + ' - ' + sec.title,
+    quizType: QUIZ_INFO.school + '_' + QUIZ_INFO.grade + '_' + QUIZ_INFO.chapter + '_빈칸시험_' + sec.tag,
+    score: pct,
+    correct: correct,
+    wrong: total - correct,
+    total: total,
+    tabSwitchCount: tabSwitchCount,
+    tabExitTotalToday: totalTabExit,
+    attemptCount: attemptCount,
+    wrongNumbers: wrongNumbers,
+    wrongSentences: wrongSentences,
+    userAgent: navigator.userAgent.substring(0, 100)
+  };
+
+  var waited = 0;
+  var timer = setInterval(function() {
+    waited += 200;
+    if (window._saveResult) {
+      clearInterval(timer);
+      window._saveResult(data);
+    } else if (waited >= 6000) {
+      clearInterval(timer);
+      console.log('Firebase 준비 안됨 - 저장 실패');
+    }
+  }, 200);
+}
+
+function restartTest() {
+  // 같은 파트 다시 시험 → 빈칸 위치 새로 생성
+  regenerateBlankPositions();
+  tabSwitchCount = 0;
+  startDateTime = new Date();
+  document.getElementById('test-datetime').textContent = '시험 시작: ' + formatDT(startDateTime);
+  attemptCount = parseInt(localStorage.getItem(attemptKey(selectedSection)) || '0') + 1;
+  localStorage.setItem(attemptKey(selectedSection), attemptCount);
+  clearDraft();
+  renderQuestions();
+  document.getElementById('resume-notice').innerHTML = '';
+  showScreen('test-screen');
+}
+
+// ===== 탭 이탈 누적 카운터 =====
+function incrementTabExitToday() {
+  const key = tabExitKey();
+  const cur = parseInt(localStorage.getItem(key) || '0') + 1;
+  localStorage.setItem(key, cur);
+  return cur;
+}
+
+(function init() {
+  document.getElementById('start-datetime').textContent = '오늘 ' + formatDT(new Date());
+  renderProgressBadges();
+  var nameInput = document.getElementById('student-name');
+  if (nameInput) nameInput.addEventListener('input', function() { saveAnswers(); });
+
+  // 탭 이탈 감지 - 시험 화면에서만 카운트 + 누적 저장
+  document.addEventListener('visibilitychange', function() {
+    if (document.hidden) {
+      const totalToday = incrementTabExitToday();
+      if (document.getElementById('test-screen').classList.contains('active')) {
+        tabSwitchCount++;
+        if (tabSwitchCount >= 3) {
+          setTimeout(function() {
+            alert('🚨 탭 이탈 3회 초과!\n\n부정행위 방지를 위해 시험이 자동 제출됩니다.\n오늘 누적 탭이탈: ' + totalToday + '회');
+            submitTest(true);
+          }, 100);
+        } else {
+          setTimeout(function() {
+            alert('⚠️ 다른 탭/창으로 이동이 감지되었습니다!\n\n이번 시험 이탈 횟수: ' + tabSwitchCount + '회 / 3회\n오늘 누적 탭이탈: ' + totalToday + '회\n3회 초과 시 자동 제출됩니다.');
+          }, 100);
+        }
+      }
+    }
+  });
+
+  // 복사·붙여넣기·잘라내기 차단
+  document.addEventListener('copy',  function(e) { e.preventDefault(); });
+  document.addEventListener('cut',   function(e) { e.preventDefault(); });
+  document.addEventListener('paste', function(e) { e.preventDefault(); });
+  document.addEventListener('keydown', function(e) {
+    if (e.ctrlKey && ['c','v','x','a'].includes(e.key.toLowerCase())) e.preventDefault();
+    if (e.metaKey && ['c','v','x','a'].includes(e.key.toLowerCase())) e.preventDefault();
+  });
+})();
+</script>
+</body>
+</html>
