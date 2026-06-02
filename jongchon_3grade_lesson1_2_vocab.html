@@ -367,7 +367,7 @@ async function submitAll(){
   const answered=Object.keys(state.answers).length;
   if(answered<state.totalQ*0.5){alert(`아직 ${state.totalQ-answered}문제가 남아있어요!`);return;}
   document.querySelectorAll('.quiz-section').forEach(s=>s.classList.remove('active'));document.getElementById('floatSubmit').classList.add('hidden');
-  const total=state.totalQ,correct=state.score,wrong=answered-correct,unanswered=total-answered,pct=Math.round(correct/total*100),elapsedMin=Math.round((Date.now()-state.startTime)/60000),wrongWords=Object.values(wrongWordsMap).slice(0,50);
+  const total=state.totalQ,correct=state.score,wrong=total-correct,unanswered=total-answered,pct=Math.round(correct/total*100),elapsedMin=Math.round((Date.now()-state.startTime)/60000),wrongWords=Object.values(wrongWordsMap).slice(0,50);
   let emoji='😢',label='다시 도전해봐요!';if(pct>=90){emoji='🏆';label='최고예요!';}else if(pct>=70){emoji='🎉';label='잘했어요! 조금만 더!';}else if(pct>=50){emoji='💪';label='절반 이상!';}
   document.getElementById('resultEmoji').textContent=emoji;document.getElementById('resultScore').textContent=`${pct}점`;document.getElementById('resultLabel').textContent=label;
   document.getElementById('resultDetail').innerHTML=`<div class="result-row"><span class="label">이름</span><span class="val">${studentName} (${studentSchool})</span></div><div class="result-row"><span class="label">총 문제</span><span class="val">${total}문제</span></div><div class="result-row"><span class="label">정답</span><span class="val" style="color:var(--correct)">${correct}개</span></div><div class="result-row"><span class="label">오답</span><span class="val" style="color:var(--wrong)">${wrong}개</span></div><div class="result-row"><span class="label">미응답</span><span class="val">${unanswered}개</span></div><div class="result-row"><span class="label">정답률</span><span class="val">${pct}%</span></div><div class="result-row"><span class="label">소요 시간</span><span class="val">${elapsedMin}분</span></div>`;
@@ -550,7 +550,18 @@ async function showRetryComplete() {
 }
 
 function collectWrongItems() {
-  const wrongKeys = Object.keys(state.answers).filter(k => !state.answers[k].correct);
+  // Include both wrong-answered AND unanswered questions
+  const wrongKeys = [];
+  const _bd = window._builtData || {};
+  Object.keys(_bd).forEach(_pfx => {
+    const _arr = _bd[_pfx];
+    if (!Array.isArray(_arr)) return;
+    for (let _i = 0; _i < _arr.length; _i++) {
+      const _k = _pfx + '-' + _i;
+      const _a = state.answers[_k];
+      if (!_a || !_a.correct) wrongKeys.push(_k);
+    }
+  });
   const list = [];
   const multiPrefixes = new Set(['dual','poly']);
   wrongKeys.forEach(key => {
