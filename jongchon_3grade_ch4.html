@@ -162,6 +162,8 @@
     📱 아이폰: 전원 + 볼륨 올리기 버튼 / 안드로이드: 전원 + 볼륨 내리기 버튼
   </div>
   <div id="result-details"></div>
+  <button class="retry-btn" id="retryWrongBtn" onclick="startRetryWrong()" style="display:none;background:#FEF2F2;border-color:#EF4444;color:#DC2626;">❌ 오답 다시 풀기 (<span id="wrongCount">0</span>문제)</button>
+  <div id="retryDoneMsg" style="display:none;text-align:center;padding:14px;color:#15803D;font-weight:700;">🎊 오답 0개 달성! 선생님께 전송 완료</div>
   <button class="retry-btn" onclick="restartTest()">🔄 같은 파트 다시 시험</button>
   <button class="back-btn" onclick="backToStart()">← 처음으로</button>
 </div>
@@ -305,6 +307,10 @@ let currentBlanks = [];
 let startDateTime = null;
 let tabSwitchCount = 0;
 let attemptCount = 0;
+let retryMode = false;
+let retryRound = 0;
+let retryIndices = [];
+let lastWrongIndices = [];
 
 // ===== 날짜·키 유틸 =====
 function todayStr() {
@@ -329,6 +335,10 @@ function showScreen(id) {
   window.scrollTo(0, 0);
 }
 function backToStart() {
+  retryMode = false;
+  retryRound = 0;
+  retryIndices = [];
+  lastWrongIndices = [];
   showScreen('start-screen');
   renderProgressBadges();
 }
@@ -487,7 +497,9 @@ function renderQuestions() {
   const container = document.getElementById('questions-container');
   container.innerHTML = '';
   const positions = getOrCreateBlankPositions();
-  SENTENCES.forEach((sent, si) => {
+  const __indices = retryMode ? retryIndices : SENTENCES.map((_, i) => i);
+  __indices.forEach(si => {
+    const sent = SENTENCES[si];
     const tokens = tokenize(sent.en);
     const blankSet = new Set(positions[si] || []);
     let engHtml = '';
@@ -504,7 +516,8 @@ function renderQuestions() {
     });
     const card = document.createElement('div');
     card.className = 'question-card';
-    card.innerHTML = `<div class="q-num">문제 ${si + 1}</div><div class="english-line">${engHtml}</div><div class="korean-line">🇰🇷 ${sent.ko}</div>`;
+    const __tag = retryMode ? `<span style="margin-left:6px;font-size:11px;background:#FEF2F2;color:#DC2626;padding:2px 8px;border-radius:12px;">오답 재도전</span>` : '';
+    card.innerHTML = `<div class="q-num">문제 ${si + 1}${__tag}</div><div class="english-line">${engHtml}</div><div class="korean-line">🇰🇷 ${sent.ko}</div>`;
     container.appendChild(card);
   });
   container.querySelectorAll('.letter-box').forEach(box => {
@@ -512,7 +525,7 @@ function renderQuestions() {
     box.addEventListener('keydown', onLetterKeydown);
     box.addEventListener('paste', e => e.preventDefault());
   });
-  restoreAnswers();
+  if (!retryMode) restoreAnswers();
 }
 
 function onLetterInput(e) {
@@ -661,21 +674,50 @@ function submitTest(auto) {
   document.getElementById('result-details').innerHTML = detailsHtml;
 
   var wrongList = [];
+  var wrongIdxList = [];
   Object.keys(sentResults).forEach(function(si) {
     if (sentResults[si].some(function(r){ return !r.ok; })) {
       wrongList.push({ num: parseInt(si)+1, en: SENTENCES[parseInt(si)].en });
+      wrongIdxList.push(parseInt(si));
     }
   });
+  lastWrongIndices = wrongIdxList;
 
-  submitToFirebase(name, correct, total, pct, wrongList, totalTabExit);
+  if (retryMode && wrongIdxList.length === 0) {
+    submitToFirebase(name, correct, total, pct, wrongList, totalTabExit, true);
+  } else if (!retryMode) {
+    submitToFirebase(name, correct, total, pct, wrongList, totalTabExit, false);
+  }
+
+  var retryBtn = document.getElementById('retryWrongBtn');
+  var doneMsg = document.getElementById('retryDoneMsg');
+  if (wrongIdxList.length > 0) {
+    retryBtn.style.display = 'block';
+    document.getElementById('wrongCount').textContent = wrongIdxList.length;
+    if (doneMsg) doneMsg.style.display = 'none';
+  } else {
+    retryBtn.style.display = 'none';
+    if (retryMode && doneMsg) doneMsg.style.display = 'block';
+  }
+
   clearDraft();
   showScreen('result-screen');
 }
 
-function submitToFirebase(name, correct, total, pct, wrongList, totalTabExit) {
+function startRetryWrong() {
+  if (!lastWrongIndices.length) return;
+  retryMode = true;
+  retryRound++;
+  retryIndices = lastWrongIndices.slice();
+  renderQuestions();
+  showScreen('test-screen');
+}
+
+function submitToFirebase(name, correct, total, pct, wrongList, totalTabExit, isRetryComplete) {
   var wrongNumbers = wrongList.map(function(w){ return w.num + '번'; }).join(', ');
   var wrongSentences = wrongList.map(function(w){ return w.num + '번: ' + w.en; }).join(' / ');
   var sec = SECTIONS[selectedSection];
+  var baseType = QUIZ_INFO.school + '_' + QUIZ_INFO.grade + '_' + QUIZ_INFO.chapter + '_빈칸시험_' + sec.tag;
 
   var data = {
     studentName: name,
@@ -683,7 +725,7 @@ function submitToFirebase(name, correct, total, pct, wrongList, totalTabExit) {
     grade: QUIZ_INFO.grade,
     chapter: QUIZ_INFO.chapter,
     section: sec.tag + ' - ' + sec.title,
-    quizType: QUIZ_INFO.school + '_' + QUIZ_INFO.grade + '_' + QUIZ_INFO.chapter + '_빈칸시험_' + sec.tag,
+    quizType: isRetryComplete ? baseType + '_오답완료' : baseType,
     score: pct,
     correct: correct,
     wrong: total - correct,
@@ -691,6 +733,7 @@ function submitToFirebase(name, correct, total, pct, wrongList, totalTabExit) {
     tabSwitchCount: tabSwitchCount,
     tabExitTotalToday: totalTabExit,
     attemptCount: attemptCount,
+    retryRound: isRetryComplete ? retryRound : 0,
     wrongNumbers: wrongNumbers,
     wrongSentences: wrongSentences,
     userAgent: navigator.userAgent.substring(0, 100)
@@ -711,6 +754,10 @@ function submitToFirebase(name, correct, total, pct, wrongList, totalTabExit) {
 
 function restartTest() {
   // 같은 파트 다시 시험 → 빈칸 위치 새로 생성
+  retryMode = false;
+  retryRound = 0;
+  retryIndices = [];
+  lastWrongIndices = [];
   regenerateBlankPositions();
   tabSwitchCount = 0;
   startDateTime = new Date();
