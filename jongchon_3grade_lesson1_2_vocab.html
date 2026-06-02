@@ -59,6 +59,9 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text
 .opt-btn.show-correct{background:#d1fae5;border-color:var(--correct);color:var(--correct);}
 .opt-btn:disabled{cursor:default;}
 .opt-btn.multi.selected{background:#fde8d8;border-color:var(--secondary);color:var(--primary);}
+.multi-confirm{margin-top:10px;width:100%;padding:10px;background:#f3f4f6;color:#9ca3af;border:none;border-radius:9px;font-size:12px;font-weight:700;cursor:not-allowed;transition:all .15s;}
+.multi-confirm.ready{background:var(--secondary);color:white;cursor:pointer;}
+.multi-confirm.ready:hover{background:var(--primary);}
 .opt-btn.multi.correct-sel{background:#d1fae5;border-color:var(--correct);color:var(--correct);}
 .opt-btn.multi.wrong-sel{background:#fee2e2;border-color:var(--wrong);color:var(--wrong);}
 .feedback{font-size:12px;font-weight:700;margin-top:7px;padding:5px 9px;border-radius:7px;display:none;}
@@ -324,7 +327,7 @@ function buildPoly(){
   const c=document.getElementById('polyQuestions');const d=shuffle(POLY_DATA);
   d.forEach((q,i)=>{
     const opts=shuffle(q.all6);const cnt=q.answers.length;const aj=JSON.stringify(q.answers).replace(/"/g,'&quot;');
-    c.innerHTML+=`<div class="q-card" id="poly-card-${i}"><div class="q-num">Q${i+1} · <span class="lesson-tag l${q.lesson}">L${q.lesson}</span></div><div class="q-word">${q.word}</div><div class="q-sub">이 단어의 뜻 ${cnt}개를 모두 고르세요</div><div class="options" id="poly-opts-${i}" style="grid-template-columns:1fr 1fr 1fr">${opts.map(o=>`<button class="opt-btn multi" onclick="toggleMulti('poly',${i},this,'${esc(o)}',${aj.replace(/'/g,"\\'")})">${o}</button>`).join('')}</div><div class="feedback" id="poly-fb-${i}"></div></div>`;
+    c.innerHTML+=`<div class="q-card" id="poly-card-${i}"><div class="q-num">Q${i+1} · <span class="lesson-tag l${q.lesson}">L${q.lesson}</span></div><div class="q-word">${q.word}</div><div class="q-sub">이 단어의 뜻 ${cnt}개를 모두 고르세요 (<span id="poly-count-${i}">0</span>/${cnt} 선택됨)</div><div class="options" id="poly-opts-${i}" style="grid-template-columns:1fr 1fr 1fr">${opts.map(o=>`<button class="opt-btn multi" onclick="toggleMulti('poly',${i},this,'${esc(o)}',${aj.replace(/'/g,"\\'")})">${o}</button>`).join('')}</div><button id="poly-confirm-${i}" class="multi-confirm" disabled onclick="confirmMulti('poly',${i},${aj.replace(/'/g,"\\'")})">✅ 답 확인하기</button><div class="feedback" id="poly-fb-${i}"></div></div>`;
   });state.totalQ+=d.length;
   return d;
 }
@@ -343,7 +346,9 @@ function toggleMulti(prefix,idx,btn,chosen,answers){
   const key=`${prefix}-${idx}`;if(state.answers[key]?.answered)return;
   if(!multiSelected[key])multiSelected[key]=new Set();const sel=multiSelected[key];
   if(btn.classList.contains('selected')){btn.classList.remove('selected');sel.delete(chosen);}else{btn.classList.add('selected');sel.add(chosen);}
-  if(sel.size===answers.length)confirmMulti(prefix,idx,answers);
+  const ce=document.getElementById(`${prefix}-count-${idx}`);if(ce)ce.textContent=sel.size;
+  const cb=document.getElementById(`${prefix}-confirm-${idx}`);
+  if(cb){const ready=sel.size===answers.length;cb.classList.toggle('ready',ready);cb.disabled=!ready;}
 }
 function confirmMulti(prefix,idx,answers){
   const key=`${prefix}-${idx}`;if(state.answers[key]?.answered)return;
@@ -410,10 +415,11 @@ function buildRetryQuestions() {
       card.innerHTML = `
         <div class="q-num">오답 ${i+1} · <span class="lesson-tag">재풀이</span></div>
         <div class="q-word">${item.word}</div>
-        <div class="q-sub">이 단어의 뜻 ${cnt}개를 모두 고르세요</div>
+        <div class="q-sub">이 단어의 뜻 ${cnt}개를 모두 고르세요 (<span id="retry-count-${i}">0</span>/${cnt} 선택됨)</div>
         <div class="options" style="grid-template-columns:1fr 1fr 1fr">
           ${opts.map(o=>`<button class="opt-btn multi" onclick="toggleRetryMulti(${i},this,'${o.replace(/'/g,"\'").replace(/"/g,'\\"')}',${aj})">${o}</button>`).join('')}
         </div>
+        <button id="retry-confirm-${i}" class="multi-confirm" disabled onclick="confirmRetryMulti(${i},${aj})">✅ 답 확인하기</button>
         <div class="feedback" id="retry-fb-${i}"></div>`;
     } else {
       const opts = opts4(item.answer, item.distractors);
@@ -439,7 +445,9 @@ function toggleRetryMulti(idx, btn, chosen, answers) {
   const sel = retryMultiSelected[key];
   if (btn.classList.contains('selected')) { btn.classList.remove('selected'); sel.delete(chosen); }
   else { btn.classList.add('selected'); sel.add(chosen); }
-  if (sel.size === answers.length) confirmRetryMulti(idx, answers);
+  const ce = document.getElementById('retry-count-' + idx); if (ce) ce.textContent = sel.size;
+  const cb = document.getElementById('retry-confirm-' + idx);
+  if (cb) { const ready = sel.size === answers.length; cb.classList.toggle('ready', ready); cb.disabled = !ready; }
 }
 
 function confirmRetryMulti(idx, answers) {
