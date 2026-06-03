@@ -5,6 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>봄날 ENGLISH | 고1 24년 6월 본문암기</title>
 <script type="module" src="bn_tracker.js"></script>
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getFirestore,collection,addDoc,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+const cfg={apiKey:"AIzaSyCxS524S8KAaF87DomPtl9sJdF-eqes404",authDomain:"bomnalvaca.firebaseapp.com",projectId:"bomnalvaca",storageBucket:"bomnalvaca.firebasestorage.app",messagingSenderId:"115868052300",appId:"1:115868052300:web:765c08867b6f1ce0987de9"};
+const app=initializeApp(cfg);const db=getFirestore(app);
+window._fbSave=async function(data){
+  try{await addDoc(collection(db,'quiz_results'),{...data,timestamp:serverTimestamp()});}
+  catch(e){console.warn('FB 저장 오류:',e);}
+};
+</script>
 <style>
   :root {
     --pri: #6b46f0;
@@ -1212,6 +1222,7 @@ let answers = {};
 let totalScore = 0, gotScore = 0;
 let timerInterval = null;
 let timeLeft = 0;
+let quizStartTime = 0;
 
 const TYPE_LABELS = {
   'syn':'동의어 고르기','ant':'반의어 고르기',
@@ -1292,6 +1303,7 @@ function startQuiz(){
   document.getElementById('startScreen').style.display = 'none';
   document.getElementById('quizScreen').style.display = 'block';
   document.getElementById('bottomBar').classList.remove('hidden');
+  quizStartTime = Date.now();
   startTimer();
   renderQuestion();
 }
@@ -1531,6 +1543,58 @@ function finishQuiz(){
   const pct = totalScore ? Math.round(gotScore/totalScore*100) : 0;
   document.getElementById('resultDetail').innerHTML =
     `${userName}님, 수고하셨습니다!<br>총 ${allQuestions.length}문제 중 정답률 <strong>${pct}%</strong>`;
+
+  // Firebase 저장
+  const elapsedMin = quizStartTime ? Math.max(1, Math.round((Date.now()-quizStartTime)/60000)) : 0;
+  let correctCnt = 0;
+  const details = [];
+  const wrongWords = [];
+  allQuestions.forEach((q, i) => {
+    const userAnsRaw = answers[i];
+    let userAns = '', isCorrect = false, ansText = '';
+    if (q.type === 'word-form') {
+      userAns = (userAnsRaw == null ? '' : String(userAnsRaw)).trim();
+      ansText = q.ans;
+      isCorrect = userAns.toLowerCase() === String(q.ans).toLowerCase();
+    } else {
+      userAns = (userAnsRaw != null && q.opts) ? (q.opts[userAnsRaw] || '') : '';
+      ansText = (q.opts && q.opts[q.ans] != null) ? q.opts[q.ans] : '';
+      isCorrect = userAnsRaw === q.ans;
+    }
+    if (isCorrect) correctCnt++;
+    const typeLabel = TYPE_LABELS[q.type] || q.type;
+    details.push({
+      지문: (q.passage&&q.passage.no)+'번',
+      유형: typeLabel,
+      결과: isCorrect ? '✅정답' : (userAnsRaw == null || userAnsRaw === '' ? '⚪미응답' : '❌오답'),
+      내답: userAns || '(미응답)',
+      정답: ansText
+    });
+    if (!isCorrect) {
+      wrongWords.push({
+        label: (q.passage&&q.passage.no)+'번 · '+typeLabel,
+        my: userAns || '(미응답)',
+        correct: ansText
+      });
+    }
+  });
+  const wrongCnt = allQuestions.length - correctCnt;
+  if (window._fbSave) window._fbSave({
+    submittedAt: new Date().toISOString(),
+    studentName: userName,
+    school: userSchool,
+    score: pct,
+    correct: correctCnt,
+    wrong: wrongCnt,
+    total: allQuestions.length,
+    gotScore: gotScore,
+    totalScore: totalScore,
+    elapsedMin: elapsedMin,
+    quizType: '고1_24년6월_본문암기',
+    passages: [...selectedPassages].sort((a,b)=>a-b),
+    details: details,
+    wrongWords: wrongWords
+  });
 }
 
 /* ─ 다른 지문 풀기: 지문 선택 화면으로 돌아감 (이름·학교는 유지) ─ */
