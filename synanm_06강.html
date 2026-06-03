@@ -263,7 +263,7 @@ function selM(btn,sel,ans,qi){
   document.querySelectorAll('.cb').forEach(b=>b.disabled=true);
   const fb=document.getElementById('fb');
   if(sel===ans){btn.classList.add('correct');fb.className='fb ok';fb.textContent='✅ 정답!';cor++;setTimeout(()=>{idx++;showQ();},800);}
-  else{btn.classList.add('wrong');document.querySelectorAll('.cb').forEach(b=>{if(b.dataset.v===ans)b.classList.add('reveal');});fb.className='fb no';fb.textContent='❌ 오답! 정답: '+ans;wrn++;wrongs.push({eng:qs[idx].word.eng,kor:ans,type:'뜻',my:sel,correct:ans});setTimeout(()=>{idx+=2;showQ();},1500);}
+  else{btn.classList.add('wrong');document.querySelectorAll('.cb').forEach(b=>{if(b.dataset.v===ans)b.classList.add('reveal');});fb.className='fb no';fb.textContent='❌ 내 답: '+sel+' / 정답: '+ans;wrn++;wrongs.push({eng:qs[idx].word.eng,kor:ans,type:'뜻',my:sel,correct:ans});setTimeout(()=>{idx+=2;showQ();},1500);}
 }
 function selS(btn,sel,syns,qi){
   if(answered||parseInt(qi)!==idx)return;
@@ -272,7 +272,7 @@ function selS(btn,sel,syns,qi){
   const fb=document.getElementById('fb');
   const ok=syns.includes(sel);
   if(ok){btn.classList.add('correct');fb.className='fb ok';fb.textContent='✅ 정답!';cor++;}
-  else{btn.classList.add('wrong');document.querySelectorAll('.cb').forEach(b=>{if(syns.includes(b.dataset.v))b.classList.add('reveal');});fb.className='fb no';fb.textContent='❌ 오답! 유의어: '+syns.join(', ');wrn++;wrongs.push({eng:qs[idx].word.eng,kor:qs[idx].word.kor,type:'유의어',my:sel,correct:syns[0]});}
+  else{btn.classList.add('wrong');document.querySelectorAll('.cb').forEach(b=>{if(syns.includes(b.dataset.v))b.classList.add('reveal');});fb.className='fb no';fb.textContent='❌ 내 답: '+c+' / 유의어: '+syns.join(', ');wrn++;wrongs.push({eng:qs[idx].word.eng,kor:qs[idx].word.kor,type:'유의어',my:sel,correct:syns[0]});}
   setTimeout(()=>{idx++;showQ();},1500);
 }
 function selJ(btn,sel,ans,qi){
@@ -282,7 +282,7 @@ function selJ(btn,sel,ans,qi){
   const fb=document.getElementById('fb');
   const la=ans==='syn'?'유의어':'반의어';const ls=sel==='syn'?'유의어':'반의어';
   if(sel===ans){btn.classList.add('correct');fb.className='fb ok';fb.textContent='✅ 정답! '+la;cor++;}
-  else{btn.classList.add('wrong');document.querySelectorAll('.jb').forEach(b=>{if((ans==='syn'&&b.classList.contains('sb'))||(ans==='ant'&&b.classList.contains('ab')))b.classList.add('reveal');});fb.className='fb no';fb.textContent='❌ 오답! 정답: '+la;wrn++;const q=qs[idx];wrongs.push({eng:q.w1+' ↔ '+q.w2,kor:q.kor,type:'관계',my:ls,correct:la});}
+  else{btn.classList.add('wrong');document.querySelectorAll('.jb').forEach(b=>{if((ans==='syn'&&b.classList.contains('sb'))||(ans==='ant'&&b.classList.contains('ab')))b.classList.add('reveal');});fb.className='fb no';fb.textContent='❌ 내 답: '+(sel==='syn'?'유의어':'반의어')+' / 정답: '+la;wrn++;const q=qs[idx];wrongs.push({eng:q.w1+' ↔ '+q.w2,kor:q.kor,type:'관계',my:ls,correct:la});}
   setTimeout(()=>{idx++;showQ();},1500);
 }
 function autoTO(){
