@@ -478,5 +478,79 @@ window.addEventListener('DOMContentLoaded',()=>{
   _loadProg();
 });
 </script>
+
+<!-- === TTS 음성 지원 (Web Speech API) === -->
+<style>
+.tts-btn{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border:none;background:#e0e7ff;color:#3730a3;border-radius:50%;cursor:pointer;font-size:14px;padding:0;vertical-align:middle;margin-left:6px;transition:all .15s;flex-shrink:0;line-height:1;font-family:inherit;}
+.tts-btn:hover{background:#c7d2fe;transform:scale(1.05);}
+.tts-btn:active{transform:scale(0.95);}
+.tts-btn.speaking{background:#fbbf24;color:white;animation:tts-pulse 1s ease-in-out infinite;}
+@keyframes tts-pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.1);}}
+</style>
+<script>
+(function(){
+  if(window.__ttsInstalled) return; window.__ttsInstalled=true;
+  function speakText(text, btn){
+    if(!('speechSynthesis' in window)) return;
+    try{
+      window.speechSynthesis.cancel();
+      const u=new SpeechSynthesisUtterance(text);
+      u.lang='en-US';u.rate=0.85;u.pitch=1;
+      const voices=window.speechSynthesis.getVoices();
+      const en=voices.find(v=>v.lang && /^en/i.test(v.lang));
+      if(en) u.voice=en;
+      if(btn){
+        btn.classList.add('speaking');
+        u.onend=u.onerror=function(){btn.classList.remove('speaking');};
+      }
+      window.speechSynthesis.speak(u);
+    }catch(e){}
+  }
+  function ttsText(s){
+    s=String(s||'').replace(/^["“”'\s]+|["“”'\s]+$/g,'');
+    s=s.replace(/\s*🔊\s*$/,'');
+    const idx=s.search(/[ㄱ-힝]/);
+    if(idx!==-1) s=s.slice(0,idx);
+    return s.replace(/[\s\(\)\[\];,~]+$/,'').trim();
+  }
+  const SEL='.q-word,.word-en,.word-box,.word-card .word-en';
+  function inject(root){
+    (root||document).querySelectorAll(SEL).forEach(w=>{
+      if(w.dataset.tts==='1') return;
+      const raw=w.textContent.trim();
+      const txt=ttsText(raw);
+      if(!txt || !/[A-Za-z]/.test(txt)) return;
+      const btn=document.createElement('button');
+      btn.className='tts-btn';
+      btn.type='button';
+      btn.title='발음 듣기';
+      btn.setAttribute('aria-label','발음 듣기');
+      btn.textContent='🔊';
+      btn.addEventListener('click',function(e){e.stopPropagation();e.preventDefault();speakText(txt,btn);});
+      w.appendChild(document.createTextNode(' '));
+      w.appendChild(btn);
+      w.dataset.tts='1';
+    });
+  }
+  const _obs=new MutationObserver(muts=>{
+    let needs=false;
+    muts.forEach(m=>m.addedNodes.forEach(n=>{if(n.nodeType===1) needs=true;}));
+    if(needs) inject(document.body);
+  });
+  function start(){
+    _obs.observe(document.body,{childList:true,subtree:true});
+    inject(document.body);
+    if(window.speechSynthesis && window.speechSynthesis.getVoices){
+      window.speechSynthesis.getVoices();
+      if(window.speechSynthesis.onvoiceschanged===null){
+        window.speechSynthesis.onvoiceschanged=function(){};
+      }
+    }
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',start);
+  else start();
+})();
+</script>
+
 </body>
 </html>
