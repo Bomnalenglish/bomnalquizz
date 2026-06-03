@@ -1,0 +1,2873 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>봄날 ENGLISH | 고1 23년 6월 본문암기</title>
+<script type="module" src="bn_tracker.js"></script>
+<script src="mock_word_dict.js"></script>
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getFirestore,collection,addDoc,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+const cfg={apiKey:"AIzaSyCxS524S8KAaF87DomPtl9sJdF-eqes404",authDomain:"bomnalvaca.firebaseapp.com",projectId:"bomnalvaca",storageBucket:"bomnalvaca.firebasestorage.app",messagingSenderId:"115868052300",appId:"1:115868052300:web:765c08867b6f1ce0987de9"};
+const app=initializeApp(cfg);const db=getFirestore(app);
+window._fbSave=async function(data){
+  try{await addDoc(collection(db,'quiz_results'),{...data,timestamp:serverTimestamp()});}
+  catch(e){console.warn('FB 저장 오류:',e);}
+};
+</script>
+<style>
+  :root {
+    --pri: #6b46f0;
+    --pri-dark: #5638d1;
+    --pri-light: #e9e2ff;
+    --bg-deep: #1e1b4b;
+    --bg-mid: #2d2670;
+    --card: #ffffff;
+    --ink: #1a1a2e;
+    --muted: #6b7280;
+    --border: #e5e7eb;
+    --soft: #f8faff;
+    --easy: #c6f6d5;
+    --easy-text: #22543d;
+    --med: #fef3c7;
+    --med-text: #92400e;
+    --hard: #fed7d7;
+    --hard-text: #9b2c2c;
+    --correct: #10b981;
+    --wrong: #ef4444;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html,body{font-family:'Pretendard','Apple SD Gothic Neo','Malgun Gothic',sans-serif;background:#f3f4f6;color:var(--ink);min-height:100vh;-webkit-tap-highlight-color:transparent}
+  body{max-width:520px;margin:0 auto;background:#fff;min-height:100vh;position:relative;padding-bottom:90px}
+
+  /* 헤더 (보라색 그라데이션) */
+  .quiz-header{background:linear-gradient(135deg,var(--bg-deep),var(--bg-mid));color:white;padding:36px 22px 24px;position:relative}
+  .back-btn{position:absolute;top:18px;left:22px;background:none;border:none;color:white;font-size:24px;cursor:pointer;padding:6px}
+  .progress-bar{position:absolute;top:54px;left:22px;right:22px;height:6px;background:rgba(255,255,255,.18);border-radius:3px;overflow:hidden}
+  .progress-fill{height:100%;background:linear-gradient(90deg,#a78bfa,#c4b5fd);border-radius:3px;transition:width .3s}
+  .header-row{display:flex;justify-content:space-between;align-items:flex-end;margin-top:38px}
+  .timer{font-size:38px;font-weight:800;letter-spacing:1px}
+  .counter{font-size:16px;color:rgba(255,255,255,.85);font-weight:600}
+
+  /* 시작 화면 */
+  .start-screen{padding:24px 18px}
+  .start-card{background:white;border:1.5px solid var(--border);border-radius:18px;padding:24px 20px;box-shadow:0 4px 14px rgba(0,0,0,.04);margin-bottom:14px}
+  .start-card h2{font-size:18px;font-weight:800;color:var(--pri);margin-bottom:14px}
+  .start-card p{font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:14px}
+  .form-grp{margin-bottom:12px}
+  .form-grp label{display:block;font-size:13px;font-weight:700;color:var(--ink);margin-bottom:6px}
+  .form-grp input,.form-grp select{width:100%;padding:11px 13px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;font-family:inherit}
+  .mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+  .mode-card{background:white;border:2.5px solid var(--border);border-radius:14px;padding:16px 12px;text-align:center;cursor:pointer;transition:all .15s}
+  .mode-card.sel{border-color:var(--pri);background:var(--pri-light)}
+  .mode-card .icon{font-size:24px;margin-bottom:6px}
+  .mode-card .title{font-size:14px;font-weight:800;color:var(--pri);margin-bottom:3px}
+  .mode-card .desc{font-size:11px;color:var(--muted)}
+  .passage-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(70px,1fr));gap:8px;margin-bottom:16px}
+  .p-card{position:relative;background:white;border:1.5px solid var(--border);border-radius:10px;padding:10px 6px;cursor:pointer;text-align:center;transition:all .15s;font-size:12px;font-weight:700;color:var(--muted)}
+  .p-card.sel{border-color:var(--pri);background:var(--pri-light);color:var(--pri)}
+  .p-card .num{font-size:14px;font-weight:800;color:var(--pri)}
+  .p-card .topic{font-size:10px;color:var(--muted);margin-top:2px;line-height:1.2}
+  .actions{display:flex;gap:8px;margin-top:14px}
+  .btn{flex:1;padding:13px;border-radius:11px;border:none;font-family:inherit;font-size:14px;font-weight:800;cursor:pointer;transition:opacity .15s}
+  .btn-pri{background:var(--pri);color:white}
+  .btn-pri:hover{background:var(--pri-dark)}
+  .btn-pri:disabled{opacity:.5;cursor:not-allowed}
+  .btn-sec{background:white;color:var(--pri);border:1.5px solid var(--pri)}
+
+  /* 퀴즈 화면 */
+  #quizScreen{display:none}
+  .passage-box{padding:18px 22px 6px 22px;background:white}
+  .tool-row{display:flex;gap:8px;align-items:center;padding:10px 0 12px 0;font-size:13px;color:#94a3b8}
+  .tool-btn{width:34px;height:34px;border-radius:8px;background:#f3f4f6;display:flex;align-items:center;justify-content:center;font-size:15px}
+  .passage-text{font-size:16px;line-height:2;color:#1a1a2e;text-align:justify;letter-spacing:-.2px;padding-bottom:8px}
+  .passage-text .blank{display:inline-block;min-width:80px;background:#fff59d;border-bottom:3px solid #f57f17;border-radius:4px;padding:1px 12px;font-weight:800;color:#e65100;text-align:center;margin:0 3px}
+  .passage-text .hl{text-decoration:underline;text-decoration-color:#dc2626;text-decoration-thickness:2px;text-underline-offset:3px;font-weight:700}
+  .passage-text .hl-num{font-weight:800}
+  .passage-text .opt-pair{color:var(--pri);font-weight:700;margin:0 1px}
+  .passage-text .opt-bracket{background:#f3e8ff;padding:2px 5px;border-radius:4px;font-weight:700;color:#5638d1}
+
+  /* 문제 카드 */
+  .q-card{background:white;border-top:1px solid var(--border);padding:20px 22px;margin-top:6px}
+  .q-meta{display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+  .q-no{background:var(--pri);color:white;border-radius:14px;padding:5px 13px;font-size:14px;font-weight:800}
+  .q-diff{border-radius:14px;padding:4px 12px;font-size:11px;font-weight:800}
+  .q-diff.easy{background:var(--easy);color:var(--easy-text)}
+  .q-diff.med{background:var(--med);color:var(--med-text)}
+  .q-diff.hard{background:var(--hard);color:var(--hard-text)}
+  .q-type{background:var(--pri-light);color:var(--pri);border-radius:14px;padding:4px 13px;font-size:11px;font-weight:800}
+  .q-score{margin-left:auto;font-size:13px;color:var(--muted);font-weight:700}
+  .q-text{font-size:16px;font-weight:700;color:var(--ink);line-height:1.5;margin-bottom:16px}
+  .q-text .quote{font-weight:600;color:#4b5563}
+  .opt-list{display:flex;flex-direction:column;gap:8px}
+  .opt{display:flex;align-items:center;gap:11px;padding:13px 15px;background:white;border:1.5px solid var(--border);border-radius:12px;cursor:pointer;font-size:15px;transition:all .15s;text-align:left;font-family:inherit;color:var(--ink)}
+  .opt:hover{border-color:var(--pri);background:#fafafa}
+  .opt.sel{border-color:var(--pri);background:var(--pri-light)}
+  .opt.correct{border-color:var(--correct);background:#d1fae5}
+  .opt.wrong{border-color:var(--wrong);background:#fee2e2}
+  .opt .num{width:24px;height:24px;border-radius:50%;background:#f3f4f6;color:var(--muted);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .opt.sel .num{background:var(--pri);color:white}
+  .opt.correct .num{background:var(--correct);color:white}
+  .opt.wrong .num{background:var(--wrong);color:white}
+  .opt-text{flex:1}
+  .input-answer{width:100%;padding:14px 16px;border:1.5px solid var(--border);border-radius:12px;font-size:15px;font-family:inherit;background:#fafafa}
+  .input-answer:focus{outline:none;border-color:var(--pri);background:white}
+  .input-answer.correct{border-color:var(--correct);background:#d1fae5}
+  .input-answer.wrong{border-color:var(--wrong);background:#fee2e2}
+
+  /* 결과 화면 */
+  #resultScreen{display:none;padding:24px 18px}
+  .result-card{background:white;border:1.5px solid var(--border);border-radius:18px;padding:28px 22px;text-align:center;box-shadow:0 4px 14px rgba(0,0,0,.04);margin-bottom:14px}
+  .result-card h2{font-size:22px;font-weight:800;color:var(--pri);margin-bottom:14px}
+  .result-score{font-size:48px;font-weight:900;color:var(--pri);margin:10px 0}
+  .result-detail{font-size:14px;color:var(--muted);line-height:1.7}
+
+  /* 하단 고정 버튼 */
+  .bottom-bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);max-width:520px;width:100%;background:white;border-top:1px solid var(--border);padding:12px 16px;display:flex;gap:8px;z-index:50}
+  .bottom-bar .btn{padding:14px}
+
+  .hidden{display:none!important}
+
+  /* 피드백 박스 */
+  .feedback{margin-top:14px;padding:14px;border-radius:12px;font-size:13px;line-height:1.7}
+  .feedback.correct{background:#d1fae5;color:#065f46;border-left:4px solid var(--correct)}
+  .feedback.wrong{background:#fee2e2;color:#991b1b;border-left:4px solid var(--wrong)}
+  .feedback strong{font-weight:800}
+
+  @media(max-width:380px){
+    .timer{font-size:32px}
+    .passage-text{font-size:14px}
+    .opt{font-size:14px}
+  }
+</style>
+</head>
+<body>
+
+<!-- ─── 시작 화면 ─── -->
+<div id="startScreen" class="start-screen">
+  <div class="start-card">
+    <h2>🎯 고1 23년 6월 모의고사 본문암기</h2>
+    <p>지문별로 9가지 유형의 문제를 풀며 어휘·문맥·어법을 종합적으로 학습합니다. (부산광역시 교육청 학력평가)</p>
+    <div class="form-grp">
+      <label>이름</label>
+      <input id="nameInput" placeholder="이름을 입력하세요" />
+    </div>
+    <div class="form-grp">
+      <label>학교</label>
+      <input id="schoolInput" placeholder="학교를 입력하세요" />
+    </div>
+  </div>
+  <div class="start-card">
+    <h2>📚 지문 선택</h2>
+    <div class="mode-grid">
+      <div class="mode-card sel" data-mode="single">
+        <div class="icon">📖</div>
+        <div class="title">단일 지문</div>
+        <div class="desc">1개 지문 × 9문제</div>
+      </div>
+      <div class="mode-card" data-mode="all">
+        <div class="icon">📚</div>
+        <div class="title">전체 지문</div>
+        <div class="desc">선택한 지문 모두</div>
+      </div>
+    </div>
+    <div class="passage-grid" id="passageGrid"></div>
+    <div class="actions">
+      <button class="btn btn-sec" id="selectAllBtn">전체 선택</button>
+      <button class="btn btn-pri" id="startBtn" disabled>시작하기</button>
+    </div>
+  </div>
+</div>
+
+<!-- ─── 퀴즈 화면 ─── -->
+<div id="quizScreen">
+  <div class="quiz-header">
+    <button class="back-btn" onclick="if(confirm('정말 종료하시겠습니까?')) location.reload()">←</button>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="header-row">
+      <div class="timer" id="timer">20:00</div>
+      <div class="counter" id="counter">0/9 응답</div>
+    </div>
+  </div>
+  <div class="passage-box">
+    <div class="tool-row">
+      <div class="tool-btn">Aa</div>
+      <div class="tool-btn">🖊️</div>
+      <div class="tool-btn">✂️</div>
+      <div class="tool-btn">📐</div>
+      <div style="margin-left:auto" class="tool-btn">🌙</div>
+    </div>
+    <div class="passage-text" id="passageText"></div>
+  </div>
+  <div class="q-card">
+    <div class="q-meta" id="qMeta"></div>
+    <div class="q-text" id="qText"></div>
+    <div id="qBody"></div>
+    <div class="feedback hidden" id="feedback"></div>
+  </div>
+</div>
+
+<div class="bottom-bar hidden" id="bottomBar">
+  <button class="btn btn-sec" id="prevBtn">이전</button>
+  <button class="btn btn-pri" id="nextBtn">다음</button>
+</div>
+
+<!-- ─── 결과 화면 ─── -->
+<div id="resultScreen">
+  <div class="result-card">
+    <h2>🎉 학습 완료!</h2>
+    <div class="result-score" id="resultScore">0/0</div>
+    <div class="result-detail" id="resultDetail"></div>
+  </div>
+  <div class="actions">
+    <button class="btn btn-sec" onclick="location.reload()">다시 풀기</button>
+    <button class="btn btn-pri" id="backToPassageBtn">다른 지문 풀기</button>
+  </div>
+  <div class="actions" style="margin-top:8px">
+    <button class="btn btn-sec" style="flex:1" onclick="location.href='index.html'">메인 허브로</button>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════
+   📝 지문 데이터 - 각 지문당 9문제
+   유형: 1.동의어 2.반의어 3.빈칸어휘 4.빈칸문맥 5.문맥상부적절
+        6.조합형 7.영영풀이 8.어형변환 9.다의어
+═══════════════════════════════════════════════════════════ */
+
+const PASSAGES = [
+  {
+    "no": 18,
+    "topic": "여행 패키지 홍보 편지",
+    "fullEn": "ACC Travel Agency Customers : ACC 여행사 고객님께 To promote a travel package Have you ever wanted to enjoy a holiday in nature? This summer / is the best time to turn your dream into reality . 원한 적이 있습니까? We have a perfect travel package for you. This travel package includes special trips to Lake Madison / as well as massage and meditation to help you relax . Also, / we provide yoga lessons taught by experienced instructors . If you book this package, / you will enjoy all this at a reasonable price. 즐길 것입니다. We are sure that it will be an unforgettable experience for you. 우리에게 전화하시면, If you call us, / we will be happy to give you more details. □ travel agency 여행사 □ provide 제공하다 □ 요약문 □ 어휘 □ meditation 명상 □ reasonable 합리적인 □ 지칭 □ 글의 순서 2023년 06월 모의고사 ▶ 무단도용 / 타사이트 게시금지 ◀ KeySentences/Phrases = blue words",
+    "questions": [
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "a travel package Have you ever wanted to enjoy a holiday in",
+        "ctxPost": "? This summer / is the best time to turn your dream into rea",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "nature",
+          "sensible",
+          "yeast",
+          "funny"
+        ],
+        "ans": 0,
+        "meaning_hint": "자연"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "ure? This summer / is the best time to turn your dream into",
+        "ctxPost": "",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "reality",
+          "whereas+",
+          "*default setting",
+          "harden"
+        ],
+        "ans": 0,
+        "meaning_hint": "현실"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "package includes special trips to Lake Madison / as well as",
+        "ctxPost": "and meditation to help you relax",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "undesirable",
+          "massage",
+          "promise",
+          "to-do list"
+        ],
+        "ans": 1,
+        "meaning_hint": "마사지"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "udes special trips to Lake Madison / as well as massage and",
+        "ctxPost": "to help you relax",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "used+to",
+          "instant",
+          "bag",
+          "meditation"
+        ],
+        "ans": 3,
+        "meaning_hint": "명상"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "ake Madison / as well as massage and meditation to help you",
+        "ctxPost": "",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "relax",
+          "unforgettable",
+          "scarce",
+          "trace"
+        ],
+        "ans": 0,
+        "meaning_hint": "쉬다"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "Also, / we",
+        "ctxPost": "yoga lessons taught by experienced instructors",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "repetitive",
+          "check",
+          "consistently",
+          "provide"
+        ],
+        "ans": 3,
+        "meaning_hint": "제공하다 텐"
+      }
+    ]
+  },
+  {
+    "no": 19,
+    "topic": "호텔 방 안도감",
+    "fullEn": "When I woke up in our hotel room, / it was almost midnight. The relief I felt after meeting my husband and daughter, who were not I didn’t see my husband nor daughter. I called them, / but I heard their phones ringing in the room. Feeling worried, / I went outside and walked down the street, / but they were nowhere to be found. When I decided (that) I should ask someone for help , / a crowd nearby caught my attention. 거리를 걸어 내려갔지만, I approached, / hoping to find my husband and daughter, / and suddenly I saw two familiar faces. 했을 때, 근처에 있던 군중이 I smiled, / feeling calm. Just then, / my daughter saw me and called, “Mom!” They were watching the magic show. 사라지는 것을 느꼈다. Finally, / I felt all my worries disappear. □ crowd 군중, 무리 □ suddenly 갑자기 □ disappear 사라지다 □ 지칭 □ 글의 순서 2023년 06월 모의고사 ▶ 무단도용 / 타사이트 게시금지 ◀ KeySentences/Phrases = blue words",
+    "questions": [
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "When I woke up in our hotel room, / it was almost",
+        "ctxPost": "",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "profession",
+          "individual",
+          "midnight",
+          "trader"
+        ],
+        "ans": 2,
+        "meaning_hint": "자정"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "Feeling",
+        "ctxPost": ", / I went outside and walked down the street, / but they we",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "label",
+          "prove",
+          "worried",
+          "preschooler"
+        ],
+        "ans": 2,
+        "meaning_hint": "걱정하는, 염려하는"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "I went outside and walked down the street, / but they were",
+        "ctxPost": "to be found",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "regular",
+          "nowhere",
+          "meditation",
+          "note"
+        ],
+        "ans": 1,
+        "meaning_hint": "어디에도 ~없다"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "I decided (that) I should ask someone for help , / a crowd",
+        "ctxPost": "caught my attention",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "nearby",
+          "*discrimination",
+          "separate",
+          "claim"
+        ],
+        "ans": 0,
+        "meaning_hint": "근처의, 가까이에"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "approached, / hoping to find my husband and daughter, / and",
+        "ctxPost": "I saw two familiar faces",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "excellence",
+          "*electrochemical",
+          "considerable",
+          "suddenly"
+        ],
+        "ans": 3,
+        "meaning_hint": "갑자기"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "g to find my husband and daughter, / and suddenly I saw two",
+        "ctxPost": "faces",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "used+to",
+          "familiar",
+          "funny",
+          "actor"
+        ],
+        "ans": 1,
+        "meaning_hint": "친숙한, 익숙한"
+      }
+    ]
+  },
+  {
+    "no": 20,
+    "topic": "업무·개인 일정 관리",
+    "fullEn": "Research shows that people who work have two calendars : one for work and one for their personal lives. Organize your professional and personal Although it may seem sensible, / having two separate calendars for work and personal life can lead to distractions. To check if something is missing , / you will find yourself checking your to­do lists / multiple times. 개인적인 삶을 위한 달력이다. Instead , / organize all of your tasks in one place. It doesn’t matter if you use digital or paper media. It’s okay to keep your professional and personal tasks / in one place. 한 곳에 정리하라. This will give you a good idea of how time is divided between work and home. 종이 매체를 사용하든 중요하지 않다. This will allow you to make informed decisions about which tasks are most important . ê □ calendar 달력 □ multiple 여러, 다수의 ■ 요약문 □ 어휘 2023년 06월 모의고사 ▶ 무단도용 / 타사이트 게시금지 ◀ KeySentences/Phrases = blue words",
+    "questions": [
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "",
+        "ctxPost": "shows that people who work have two calendars : one for wor",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "cycle",
+          "equally",
+          "research",
+          "quality"
+        ],
+        "ans": 2,
+        "meaning_hint": "연구"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "ê □",
+        "ctxPost": "달력 □ multiple 여러, 다수의 ■ 요약문 □ 어휘 2023년 06월 모의고사 ▶ 무단도용 / 타사",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "strange",
+          "neuron",
+          "***prune",
+          "calendar"
+        ],
+        "ans": 3,
+        "meaning_hint": "달력"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "ho work have two calendars : one for work and one for their",
+        "ctxPost": "lives",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "urgency",
+          "personal",
+          "boost",
+          "*profound"
+        ],
+        "ans": 1,
+        "meaning_hint": "개인적인"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "rganize your professional and personal Although it may seem",
+        "ctxPost": ", / having two separate calendars for work and personal life",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "sensible",
+          "merchant",
+          "experienced",
+          "priest"
+        ],
+        "ans": 0,
+        "meaning_hint": "현명한, 분별 있는, 합리적인"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "al and personal Although it may seem sensible, / having two",
+        "ctxPost": "calendars for work and personal life can lead to distractio",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "separate",
+          "belief",
+          "problem-solving",
+          "recognize"
+        ],
+        "ans": 0,
+        "meaning_hint": "분리된, 별도의"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "To check if something is",
+        "ctxPost": ", / you will find yourself checking your to­do lists / mult",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "missing",
+          "tool",
+          "*tactic",
+          "informed"
+        ],
+        "ans": 0,
+        "meaning_hint": "없어진, 빠진[누락된], 실종된,"
+      }
+    ]
+  },
+  {
+    "no": 21,
+    "topic": "고객 만족과 충성도",
+    "fullEn": "Why do you care how a customer reacts to a purchase? Good question. Why customer satisfaction is the most whether = 명사절 접속사 Satisfied customers become voluntary By understanding post­purchase behavior, / you can understand the influence and the likelihood of whether a buyer will repurchase A ambassadors. the product (and whether she will keep it or return it). 반응하는지에 대해 신경 쓰는가? You’ll also determine whether the buyer will encourage others to purchase the product from you. 재구매할지(그리고 그녀가 제품을 가질지 so customer satisfaction should be on the top of your to­do list. 추천하고 홍보해주며 부정적인 입소문을 방지하는 역할을 한다는 의미다. è 따라서 정답은 “recommend products to others for no gain” People tend to believe the opinions of people they know . People trust friends over advertisements / any day. 있어야 한다. They know that advertisements are paid / to tell the “good side” / and (know) that they’re used / to persuade them to purchase 의견을 믿는 경향이 있다. products and services. By continually monitoring / your customer’s satisfaction after the sale, / 그것들이 제품과 서비스를 구매하도록 you have the ability to avoid negative word­of­mouth advertising . 모니터함으로써, 당신은 부정적인 입소문 □ likelihood 가능성 □ satisfaction 만족 □ monitor 모니터[감시]하다 □ 요약문 □ 어휘 □ encourage 권장하다 □ advertisement 광고 □ avoid 피하다 □ 내용 일치 ■ 문장 삽입 2023년 06월 모의고사 ▶ 무단도용 / 타사이트 게시금지 ◀ KeySentences/Phrases = blue words",
+    "questions": [
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "erstanding post­purchase behavior, / you can understand the",
+        "ctxPost": "and the likelihood of whether a buyer will repurchase A amb",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "effectiveness",
+          "influence",
+          "*endorsement",
+          "introduce"
+        ],
+        "ans": 1,
+        "meaning_hint": "영향력"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "rchase behavior, / you can understand the influence and the",
+        "ctxPost": "of whether a buyer will repurchase A ambassadors",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "corner",
+          "likelihood",
+          "environment",
+          "scarcity"
+        ],
+        "ans": 1,
+        "meaning_hint": "가능성"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "nd the influence and the likelihood of whether a buyer will",
+        "ctxPost": "A ambassadors",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "copy",
+          "*endorsement",
+          "perception",
+          "repurchase"
+        ],
+        "ans": 3,
+        "meaning_hint": "재구매하다"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "the product (and whether she will keep it or",
+        "ctxPost": "it)",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "reflection",
+          "return",
+          "profession",
+          "intensely"
+        ],
+        "ans": 1,
+        "meaning_hint": "반품하다"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "반응하는지에 대해 신경 쓰는가? You’ll also",
+        "ctxPost": "whether the buyer will encourage others to purchase the pro",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "genuine",
+          "determine",
+          "trader",
+          "gap"
+        ],
+        "ans": 1,
+        "meaning_hint": "알아내다, 밝히다"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "는지에 대해 신경 쓰는가? You’ll also determine whether the buyer will",
+        "ctxPost": "others to purchase the product from you",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "educational",
+          "participant",
+          "encourage",
+          "land"
+        ],
+        "ans": 2,
+        "meaning_hint": "장려하다, 권장하다"
+      }
+    ]
+  },
+  {
+    "no": 22,
+    "topic": "컴퓨터화된 사회의 약속",
+    "fullEn": "The promise of a computerized society, / we were told, / was that it would pass to machines all of the repetitive drudgery In a computerized society, why consumers are doing more work A than they are expected to of work, / allowing us humans to pursue higher purposes and to have more leisure time . It didn’t work out this way. Instead of more time, / most of us have less. B 가질 수 있게 해준다는 것이었다. Companies large and small have off­loaded work onto the backs of consumers. 더 많은 시간 대신에, 우리 대부분은 Things that used to be done for us , / as part of the value­added service of working with a company , / we are now expected to do ourselves. = We are now expected to do ourselves things that used to ~ with a company, ★ 회사에 맡겨 해결하던 부가가치 With air travel, / we’re now expected to complete our own reservations and check­in, / jobs that used to be done by airline employees or travel agents. 우리가 직접 완수하도록 기대된다. At the grocery store, / we’re expected to bag our own groceries / and, in some supermarkets, to scan our own purchases. 우리 자신이 구매한 물건을 □ society 사회 □ off-load 떠넘기다 □ employee 직원, 종업원 □ 요약문 □ 어휘 □ leisure time 여가 시간 □ reservation 예약 * drudgery 고된 일 □ 연결어 □ 함축적 의미 2023년 06월 모의고사 ▶ 무단도용 / 타사이트 게시금지 ◀ KeySentences/Phrases = blue words",
+    "questions": [
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "The",
+        "ctxPost": "of a computerized society, / we were told, / was that it wo",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "material",
+          "massage",
+          "promise",
+          "infant"
+        ],
+        "ans": 2,
+        "meaning_hint": "약속, 장래성, 전망"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "The promise of a",
+        "ctxPost": "society, / we were told, / was that it would pass to machin",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "*laxative",
+          "superhighway",
+          "computerized",
+          "be expected+to"
+        ],
+        "ans": 2,
+        "meaning_hint": "컴퓨터화된"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "a computerized society, / we were told, / was that it would",
+        "ctxPost": "to machines all of the repetitive drudgery In a computerize",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "persuade",
+          "*drudgery",
+          "pass",
+          "livestock"
+        ],
+        "ans": 2,
+        "meaning_hint": "넘기다"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "were told, / was that it would pass to machines all of the",
+        "ctxPost": "drudgery In a computerized society, why consumers are doing",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "provide",
+          "repetitive",
+          "benefit",
+          "nowhere"
+        ],
+        "ans": 1,
+        "meaning_hint": "반복적인"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "than they are expected to of work, / allowing us humans to",
+        "ctxPost": "higher purposes and to have more leisure time",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "nature",
+          "industrialized",
+          "pursue",
+          "operation"
+        ],
+        "ans": 2,
+        "meaning_hint": "추가하다"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "은 시간 대신에, 우리 대부분은 Things that used to be done for us , / as",
+        "ctxPost": "of the value­added service of working with a company , / we",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "nearby",
+          "interaction",
+          "part",
+          "**groove"
+        ],
+        "ans": 2,
+        "meaning_hint": "일환, 일부"
+      }
+    ]
+  },
+  {
+    "no": 23,
+    "topic": "사회적으로 바람직한 특성",
+    "fullEn": "We tend to believe that we possess a host of socially desirable characteristics, / Our common belief that we are better and that we are free of most of those that are socially undesirable . For example , / a large majority of the general public thinks that they are more intelligent, more fair­minded, less prejudiced, and more skilled behind the wheel of an automobile than the average person. For example, 대다수의 일반 대중들은 This phenomenon is so reliable and ubiquitous that it has come to be known as the “Lake Wobegon effect,” / after Garrison Keillor’s fictional community where “the women are strong, / the men are good­looking, / C 강하고, 남성들은 잘생겼으며, 모든 and all the children are above average.” Wobegon effect”라고 알려지게 되었다. A survey of one million high school seniors found that 70% thought (that) they were above average in leadership ability, / and only 2% thought (that) they were below average . 생각했고, 2%만이 자신이 평균 이하라고 In terms of ability to get along with others , / all students thought (that) they were above average, / 이상이라고 생각했고, 60%는 자신이 상위 60% thought (that) they were in the top 10%, / and 25% thought (that) they were in the top 1%! □ socially 사회적으로 □ phenomenon □ senior 최고 학년 학생 □ desirable 바람직한 □ reliable □ in terms of ~에 있어서 □ characteristic 특성, 특징 □ fictional □ get along with ~와 잘 지내다 □ majority 대다수의 □ community * ubiquitous 도처에 있는 2023년 06월 모의고사 ▶ 무단도용 / 타사이트 게시금지 ◀ KeySentences/Phrases = blue words",
+    "questions": [
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "We tend to believe that we",
+        "ctxPost": "a host of socially desirable characteristics, / Our common",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "possess",
+          "issue",
+          "**frown",
+          "unlimited"
+        ],
+        "ans": 0,
+        "meaning_hint": "소유하다"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "We tend to believe that we possess a host of socially",
+        "ctxPost": "characteristics, / Our common belief that we are better and",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "praise",
+          "rent",
+          "process",
+          "desirable"
+        ],
+        "ans": 3,
+        "meaning_hint": "바람직한"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "최고 학년 학생 □ desirable 바람직한 □ reliable □ in terms of ~에 있어서 □",
+        "ctxPost": "특성, 특징 □ fictional □ get along with ~와 잘 지내다 □ majority 대다수",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "characteristic",
+          "fair-minded",
+          "necessity",
+          "snapshot"
+        ],
+        "ans": 0,
+        "meaning_hint": "특징"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "ter and that we are free of most of those that are socially",
+        "ctxPost": "",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "shape",
+          "word-of-mouth",
+          "whole",
+          "undesirable"
+        ],
+        "ans": 3,
+        "meaning_hint": "바람직하지 않은"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "ge majority of the general public thinks that they are more",
+        "ctxPost": ", more fair­minded, less prejudiced, and more skilled behind",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "intelligent",
+          "suddenly",
+          "area",
+          "phenomenon"
+        ],
+        "ans": 0,
+        "meaning_hint": "지적인"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "inks that they are more intelligent, more fair­minded, less",
+        "ctxPost": ", and more skilled behind the wheel of an automobile than th",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "prejudiced",
+          "stability",
+          "hold",
+          "curiosity"
+        ],
+        "ans": 0,
+        "meaning_hint": "편견이 있는"
+      }
+    ]
+  },
+  {
+    "no": 24,
+    "topic": "가난과 스트레스",
+    "fullEn": "Few people will be surprised to hear that poverty tends to create stress : Why Are Even Wealthy Countries a 2006 study published in the American journal Psychosomatic Medicine , / for example , / noted that a lower socioeconomic status was associated with higher levels of stress hormones in the body. * lead 동사용법 Psychosomatic Medicine에 발표된 However , / richer economies have their own distinct stresses. = ~를 ~으로 유도하다 ① leave + 목적어 + 목적보어[to부정사] ê The key issue is time pressure . A 1999 study of 31 countries / by American psychologist Robert Levine and Canadian psychologist Ara Norenzayan / found 미국 심리학자 Robert Levine과 캐나다 that wealthier, more industrialized nations had a faster pace of life — which led to a higher standard of living, / 속도를 가지고 있다는 것 ― 그리고 but at the same time / left the population feeling a constant sense of urgency, / as well as being more prone to heart disease . In effect , / fast­paced productivity creates wealth, / but it also leads people to feel time­poor / 창출하지만, 그것은 또한 사람들이 긴장을 when they lack the time to relax and enjoy themselves . □ be associated with ~와 관련이 있다 2023년 06월 모의고사 ▶ 무단도용 / 타사이트 게시금지 ◀ KeySentences/Phrases = blue words",
+    "questions": [
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "Few people will be surprised to hear that",
+        "ctxPost": "tends to create stress : Why Are Even Wealthy Countries a 2",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "poverty",
+          "persuade",
+          "familiar",
+          "operation"
+        ],
+        "ans": 0,
+        "meaning_hint": "가난"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "ychosomatic Medicine , / for example , / noted that a lower",
+        "ctxPost": "status was associated with higher levels of stress hormones",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "socioeconomic",
+          "test",
+          "prove",
+          "warrior"
+        ],
+        "ans": 0,
+        "meaning_hint": "사회 경제적"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "dicine , / for example , / noted that a lower socioeconomic",
+        "ctxPost": "was associated with higher levels of stress hormones in the",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "instructor",
+          "midnight",
+          "calendar",
+          "status"
+        ],
+        "ans": 3,
+        "meaning_hint": "지위"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "c Medicine에 발표된 However , / richer economies have their own",
+        "ctxPost": "stresses",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "via ~",
+          "distinct",
+          "productive",
+          "**frown"
+        ],
+        "ans": 1,
+        "meaning_hint": "뚜렷한"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "으로 유도하다 ① leave + 목적어 + 목적보어[to부정사] ê The key issue is time",
+        "ctxPost": "",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "set",
+          "pressure",
+          "intensely",
+          "pace"
+        ],
+        "ans": 1,
+        "meaning_hint": "압박"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "A 1999 study of 31 countries / by American",
+        "ctxPost": "Robert Levine and Canadian psychologist Ara Norenzayan / fo",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "machine",
+          "psychologist",
+          "transport",
+          "display"
+        ],
+        "ans": 1,
+        "meaning_hint": "심리학자"
+      }
+    ]
+  },
+  {
+    "no": 25,
+    "topic": "지역별 산림 점유율 도표",
+    "fullEn": "The above graph shows the share of forest area / 위 도표는 보여준다. 점유율을 산림 면적의 / Share of Forest Area in Total Land Area in total land area / by region / in 1990 and 2019. Africa’s share of forest area / in total land area / was over The share of forest area in America was 42.6% in 1990, / 더 컸다. which was larger than that in 2019. 10 퍼센트 포인트 이상 감소했다. that = the share of forest area in America 다섯 개 지역 중 가장 컸고, 같은 해 The share of forest area in Asia declined from 1990 아시아의 그것의 세 배 가 넘었다. è ~ more than twice that in Asia in the same year. to 2019 / by more than 10 percentage points. In 2019, / the share of forest area in Europe was the largest among the five regions, / ~ times + as + 원급 + as ~ è어법분석 불일치문제출제됨 that = the share of forest area è è t 2 h 배 at 은 = t 대 w 명 ice 사 / , 3 앞 배 의 부 내 터 용 는 의 th r 반 ee 복 t 을 im e 피 s 할 때 사용 more than three times that in Asia in the same year. è half나 twice일 경우는 [비교급 + than]은 쓸 수 없다. Oceania showed the smallest gap between 1990 and 2019 / in terms of the share of forest area / in total land area. 2023년 06월 모의고사 ▶ 무단도용 / 타사이트 게시금지 ◀ KeySentences/Phrases = blue words",
+    "questions": [
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "e of Forest Area in Total Land Area in total land area / by",
+        "ctxPost": "/ in 1990 and 2019",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "scarce",
+          "spoiled stew",
+          "region",
+          "hormone"
+        ],
+        "ans": 2,
+        "meaning_hint": "지역"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "The above graph shows the",
+        "ctxPost": "of forest area / 위 도표는 보여준다",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "connection",
+          "urgency",
+          "matter",
+          "share"
+        ],
+        "ans": 3,
+        "meaning_hint": "점유율"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "Oceania showed the smallest",
+        "ctxPost": "between 1990 and 2019 / in terms of the share of forest are",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "underwater",
+          "complete",
+          "gap",
+          "disordered"
+        ],
+        "ans": 2,
+        "meaning_hint": "차이"
+      }
+    ]
+  },
+  {
+    "no": 26,
+    "topic": "Gary Becker 약력",
+    "fullEn": "Gary Becker was born in Pottsville, Pennsylvania in 1930 / and grew up in Brooklyn, New York City. Gary Becker는 태어났고 Pottsville에서 Pennsylvania 주 1930년 / 자랐다. Brooklyn에서 New York City의 The Life of Economist Gary Becker His father, / who was not well educated, / had a deep interest in financial and political issues. Pennsylvania 주 Pottsville에서 태어났고 After graduating from high school, / Becker went to Princeton University, / where he majored in economics. New York City의 Brooklyn에서 자랐다. He was dissatisfied with his economic education at Princeton University / because “it didn’t seem to be handling real problems.” 관심이 있었다. Becker는 Princeton University로 He earned a doctor’s degree in economics / from the University of Chicago in 1955. 진학했고, 거기서 그는 경제학을 전공했다. “Princeton University에서의 경제학 His doctoral paper on the economics of discrimination was mentioned / by the Nobel Prize Committee / 것처럼 보이지 않았기” 때문에 as an important contribution to economics. Chicago에서 경제학 박사 학위를 Since 1985, / Becker had written a regular economics column in Business Week, / explaining economic analysis and ideas to the general public. Business Week에 경제학적 분석과 In 1992, / he was awarded the Nobel Prize in economic science. 1992년에, award + 간접목적어(A) + 직접목적어(B) è A + be awarded + B □ economics 경제학 □ paper 논문 □ be awarded (a prize) 수상하다, 상을 받다 □ 지칭 □ 글의 순서 □ dissatisfied with ~ ~에 불만족한 □ mention ~에 대하여 언급하다 * discrimination 차별 □ 연결어 □ 함축적 의미 2023년 06월 모의고사 ▶ 무단도용 / 타사이트 게시금지 ◀ KeySentences/Phrases = blue words",
+    "questions": [
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "ife of Economist Gary Becker His father, / who was not well",
+        "ctxPost": ", / had a deep interest in financial and political issues",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "ambassador",
+          "decline",
+          "educated",
+          "nor+"
+        ],
+        "ans": 2,
+        "meaning_hint": "교육을 받은, 교양 있는"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "ther, / who was not well educated, / had a deep interest in",
+        "ctxPost": "and political issues",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "hire",
+          "personal",
+          "financial",
+          "grocery"
+        ],
+        "ans": 2,
+        "meaning_hint": "금융의, 재정의"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "s not well educated, / had a deep interest in financial and",
+        "ctxPost": "issues",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "consistent",
+          "political",
+          "behave",
+          "promise"
+        ],
+        "ans": 1,
+        "meaning_hint": "정치의"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "Becker went to Princeton University, / where he majored in",
+        "ctxPost": "",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "favorable",
+          "economics",
+          "aeroplane",
+          "committee"
+        ],
+        "ans": 1,
+        "meaning_hint": "경제학"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "Becker는 Princeton University로 He earned a doctor’s",
+        "ctxPost": "in economics / from the University of Chicago in 1955",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "degree",
+          "missing",
+          "status",
+          "part"
+        ],
+        "ans": 0,
+        "meaning_hint": "학위"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "“Princeton University에서의 경제학 His",
+        "ctxPost": "paper on the economics of discrimination was mentioned / by",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "doctoral",
+          "occasionally",
+          "desirable",
+          "emotional"
+        ],
+        "ans": 0,
+        "meaning_hint": "박사학위의"
+      }
+    ]
+  },
+  {
+    "no": 27,
+    "topic": "2023 Drone Racing 대회 안내",
+    "fullEn": "2023 Drone Racing Championship 내신 출제가능성 ★☆☆ 오답률 4% 실용문 불일치 2023 Drone Racing Championship 2023 Drone Racing Championship 2023 Drone Racing Championship Are you the best drone racer? Then / take the opportunity to prove (that) you are the one ! • 6 p.m. - 8 p.m., Sunday, July 9 • Lakeside Community Center 그렇다면 여러분이 바로 그 사람이라는 오후 6시부터 오후 8시까지, 일요일, 7월 9일 Lakeside Community Center • Participants : High school students only · Lakeside Community Center • Bring your own drone for the race. • $500 and a medal will be awarded to the winner. · 500달러와 메달이 우승자에게 수여될 것입니다. • The first 10 participants will get souvenirs. For more details, / please visit www.droneracing.com / or call 313-6745-1189. 313-6745-1189로 전화하세요. 2023년 06월 모의고사 ▶ 무단도용 / 타사이트 게시금지 ◀ KeySentences/Phrases = blue words",
+    "questions": [
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "Championship Are you the best drone racer? Then / take the",
+        "ctxPost": "to prove (that) you are the one ! • 6 p",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "requirement",
+          "process",
+          "value-added",
+          "opportunity"
+        ],
+        "ans": 3,
+        "meaning_hint": "기회"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "re you the best drone racer? Then / take the opportunity to",
+        "ctxPost": "(that) you are the one ! • 6 p",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "prove",
+          "computerized",
+          "financial",
+          "shopper"
+        ],
+        "ans": 0,
+        "meaning_hint": "증명하다"
+      }
+    ]
+  },
+  {
+    "no": 28,
+    "topic": "여름 스쿠버 다이빙 강좌",
+    "fullEn": "Summer Scuba Diving One-day Class 내신 출제가능성 ★☆☆ 오답률 11% 실용문 일치 Summer Scuba Diving One­day Class Summer Scuba Diving One­day Class Summer Scuba Diving One-day Class Join our summer scuba diving lesson for beginners, / and become an underwater explorer! • 10:00 - 12:00 Learning the basics • 13:00 - 16:00 Practicing diving skills in a pool 수업에 참여하여, 수중 탐험가가 되세요! • Private lesson : $150 • Group lesson (up to 3 people) : $100 per person • Participants can rent our diving equipment for free. • Participants must be 10 years old or over. 알림 • Participants must register / at least 5 days before the class begins. For more information, / please go to www.ssdiver.com. □ underwater 수중의, 해저 □ private 개인의 □ basic 기초, 기본 원리 □ equipment 장비, 설비 2023년 06월 모의고사 ▶ 무단도용 / 타사이트 게시금지 ◀ KeySentences/Phrases = blue words",
+    "questions": [
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "r summer scuba diving lesson for beginners, / and become an",
+        "ctxPost": "explorer! • 10:00 - 12:00 Learning the basics • 13:00 - 16:",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "polish",
+          "producer",
+          "underwater",
+          "calendar"
+        ],
+        "ans": 2,
+        "meaning_hint": "수중의"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "eople) : $100 per person • Participants can rent our diving",
+        "ctxPost": "for free",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "equipment",
+          "perform",
+          "work out",
+          "volunteer"
+        ],
+        "ans": 0,
+        "meaning_hint": "장비"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "esson (up to 3 people) : $100 per person • Participants can",
+        "ctxPost": "our diving equipment for free",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "rent",
+          "population",
+          "satisfaction",
+          "undergo"
+        ],
+        "ans": 0,
+        "meaning_hint": "빌리다"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "알림 • Participants must",
+        "ctxPost": "/ at least 5 days before the class begins",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "issue",
+          "prejudiced",
+          "involve",
+          "register"
+        ],
+        "ans": 3,
+        "meaning_hint": "등록하다"
+      }
+    ]
+  },
+  {
+    "no": 29,
+    "topic": "어린이 칭찬의 효과적 방법",
+    "fullEn": "Although praise is one of the most powerful tools available for improving young children’s behavior , / The positive effect of parental praise on children's self-esteem it is equally powerful for improving your child’s self­esteem . Preschoolers believe what their parents tell them / in a very profound way. 향상시키는 데에도 똑같이 강력하다. They do not yet have the cognitive sophistication to reason analytically and (to) reject false information . (1) If a preschool boy consistently hears / from his mother / that he is smart and a good helper , / he is likely to incorporate that information into his self­image. 통합시킬 가능성이 높다. Thinking of himself as a boy who is smart and knows how to do things is likely to make him endure longer in problem­solving efforts / and (to) increase his confidence in trying new and difficult tasks. Similarly , / thinking of himself as the kind of boy who is a good helper will make him more likely to volunteer to help 그런 부류의 소년으로 생각하는 것은 with tasks at home and at preschool. volunteer to+동사원형 = 자발적으로 ~하다 □ self-esteem 자존감 □ consistently 계속, 일관되게 * profound 뜻 깊은 □ 지칭 ■ 글의 순서 □ preschooler 미취학 아동 □ be likely to ~할 가능성이 있다 ** sophistication 정교화 □ 연결어 □ 함축적 의미 2023년 06월 모의고사 ▶ 무단도용 / 타사이트 게시금지 ◀ KeySentences/Phrases = blue words",
+    "questions": [
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "Although",
+        "ctxPost": "is one of the most powerful tools available for improving y",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "praise",
+          "be expected+to",
+          "travel agency",
+          "interaction"
+        ],
+        "ans": 0,
+        "meaning_hint": "칭찬"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "e effect of parental praise on children's self-esteem it is",
+        "ctxPost": "powerful for improving your child’s self­esteem",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "medalist",
+          "equally",
+          "genuine",
+          "neuron"
+        ],
+        "ans": 1,
+        "meaning_hint": "똑같이"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "or , / The positive effect of parental praise on children's",
+        "ctxPost": "it is equally powerful for improving your child’s self­este",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "gap",
+          "advertiser",
+          "self-esteem",
+          "economics"
+        ],
+        "ans": 2,
+        "meaning_hint": "자존감"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "자존감 □ consistently 계속, 일관되게 * profound 뜻 깊은 □ 지칭 ■ 글의 순서 □",
+        "ctxPost": "미취학 아동 □ be likely to ~할 가능성이 있다 ** sophistication 정교화 □ 연결",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "clear",
+          "preschooler",
+          "polish",
+          "possibility"
+        ],
+        "ans": 1,
+        "meaning_hint": "미취학 아동"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "They do not",
+        "ctxPost": "have the cognitive sophistication to reason analytically an",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "yet",
+          "scarce",
+          "hire",
+          "consumer"
+        ],
+        "ans": 0,
+        "meaning_hint": "아직"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "They do not yet have the",
+        "ctxPost": "sophistication to reason analytically and (to) reject false",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "evidence",
+          "benefit",
+          "cognitive",
+          "religious"
+        ],
+        "ans": 2,
+        "meaning_hint": "인지적인"
+      }
+    ]
+  },
+  {
+    "no": 30,
+    "topic": "광고의 시장 적응",
+    "fullEn": "Advertisers often displayed considerable facility / in adapting their claims to the market status of the goods they promoted . A A marketing strategy of advertisers to cope with declining sales : market status and change their image. Fleischmann’s yeast, / for instance , / was used as an ingredient for cooking homemade bread. Yet more and more people in the early 20th century were buying their bread from stores or bakeries, / B 조절하는 상당한 능력을 자주 보여주었다. so consumer demand for yeast decreased. for instance, Fleischmann의 효모는 The producer of Fleischmann’s yeast hired the J. Walter Thompson advertising agency / 사람들이 가게나 빵집에서 빵을 사고 to come up with a different marketing strategy / to boost sales. No longer the “Soul of Bread,” / the Thompson agency first turned yeast into an important source of vitamins 전략을 고안하려고 J. Walter Thompson 어휘출제됨 = The Thompson agency first turned yeast, (being) no longer the “Soul of Bread”, into an important source of vitamins with significant health benefits. 더 이상 “Soul of Bread”가 아니라 상당한 Shortly thereafter , / the advertising agency transformed yeast into a natural laxative. 그 직후, 광고 대행사는 Repositioning yeast helped increase sales. 효모의 이미지 전환을 꾀하는 것은 □ advertiser 광고주 □ yeast 효모, 이스트 □ considerable 상당한, 적지 않은 □ demand 수요 □ significant 상당한, 현저한 ■ 요약문 □ 어휘",
+    "questions": [
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "효모의 이미지 전환을 꾀하는 것은 □",
+        "ctxPost": "광고주 □ yeast 효모, 이스트 □ considerable 상당한, 적지 않은 □ demand 수요 □",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "advertiser",
+          "transmit",
+          "crash into",
+          "hire"
+        ],
+        "ans": 0,
+        "meaning_hint": "광고주"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "Advertisers often displayed",
+        "ctxPost": "facility / in adapting their claims to the market status of",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "consistently",
+          "neural",
+          "considerable",
+          "find"
+        ],
+        "ans": 2,
+        "meaning_hint": "상당한"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "Advertisers often displayed considerable",
+        "ctxPost": "/ in adapting their claims to the market status of the good",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "gradually",
+          "repurchase",
+          "facility",
+          "repetitive"
+        ],
+        "ans": 2,
+        "meaning_hint": "능력"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "Fleischmann’s",
+        "ctxPost": ", / for instance , / was used as an ingredient for cooking h",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "possess",
+          "sunrise",
+          "yeast",
+          "find"
+        ],
+        "ans": 2,
+        "meaning_hint": "효모"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "t, / for instance , / was used as an ingredient for cooking",
+        "ctxPost": "bread",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "disordered",
+          "opportunity",
+          "homemade",
+          "check"
+        ],
+        "ans": 2,
+        "meaning_hint": "집에서 만든"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "instance , / was used as an ingredient for cooking homemade",
+        "ctxPost": "",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "offer",
+          "bread",
+          "experienced",
+          "underwater"
+        ],
+        "ans": 1,
+        "meaning_hint": "빵"
+      }
+    ]
+  },
+  {
+    "no": 31,
+    "topic": "전문가의 신뢰성",
+    "fullEn": "Individuals who perform at a high level in their profession often have instant credibility with others. Why do we want to listen to and connect with individuals of exceptional People admire them, / they want to be like them, / and they feel connected to them. When they speak, / others listen ― even if the area of their skill has nothing to do with the advice they give . Think about a world-famous basketball player. He has made more money from endorsements than he ever did / playing basketball. ê Is it because of his knowledge of the products he endorses ? No. It’s because of what he can do with a basketball. 그는 그가 농구를 하면서 그간 벌었던 The same can be said of an Olympic medalist swimmer. 아니다. 그것은 그가 농구로 People listen to him / because of what he can do in the pool. 올림픽 메달리스트 수영 선수도 ⓫ And when an actor tells us (that) we should drive a certain car , / we don’t listen / because of his expertise on engines. 특정 자동차를 운전해야 한다고 말할 때, ⓬ We listen because we admire his talent. ⓭ Excellence connects. ⓮ If you possess a high level of ability in an area, / others may desire to connect with you / because of it. □ profession 직업, 직종 □ advice 조언, 충고 □ instant 즉각적인 □ make money 돈을 벌다 □ credibility 신뢰 □ endorse 광고하다, 보증하다 □ the same can be said of ~ ~도 마찬가지다 □ 내용 일치 □ 문장 삽입 □ admire 존경하다 □ expertise 전문 지식 □ have nothing to do with ~와는 전혀 관계가 없다 □ talent 재능, 소질 2023년 06월 모의고사 ▶ 무단도용 / 타사이트 게시금지 ◀ KeySentences/Phrases = blue words",
+    "questions": [
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "Individuals who",
+        "ctxPost": "at a high level in their profession often have instant cred",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "perform",
+          "depend on",
+          "satisfied",
+          "conscious"
+        ],
+        "ans": 0,
+        "meaning_hint": "수행하다"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "Individuals who perform at a high level in their",
+        "ctxPost": "often have instant credibility with others",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "pace",
+          "profession",
+          "mood",
+          "land"
+        ],
+        "ans": 1,
+        "meaning_hint": "직업"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "who perform at a high level in their profession often have",
+        "ctxPost": "credibility with others",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "instant",
+          "admire",
+          "belief",
+          "yoga"
+        ],
+        "ans": 0,
+        "meaning_hint": "즉각적인"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "isten to and connect with individuals of exceptional People",
+        "ctxPost": "them, / they want to be like them, / and they feel connecte",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "*laxative",
+          "intelligent",
+          "admire",
+          "occasional"
+        ],
+        "ans": 2,
+        "meaning_hint": "존경하다"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "When they speak, / others listen ― even if the",
+        "ctxPost": "of their skill has nothing to do with the advice they give",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "midnight",
+          "interval",
+          "area",
+          "polish"
+        ],
+        "ans": 2,
+        "meaning_hint": "분야"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "Think about a",
+        "ctxPost": "basketball player",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "characteristic",
+          "world-famous",
+          "enable",
+          "preschooler"
+        ],
+        "ans": 1,
+        "meaning_hint": "세계적으로 유명한"
+      }
+    ]
+  },
+  {
+    "no": 32,
+    "topic": "뇌와 도시 비유",
+    "fullEn": "Think of the brain as a city. If you were to look out over a city and ask “where is the economy located?” / The brain operates from the interaction of all the elements, just like a city. * 가정법 미래 = If S + were to V원형, S + would/could/might + V원형 Instead , / the economy emerges from the interaction of all the elements ― 묻는다면 그 질문에 대한 좋은 답이 from the stores and the banks to the merchants and the customers. 문장삽입 è어법분석 a è so is it (✖) so it is with the brain’s operation. 상호 작용으로부터 나타난다. And so it is with the brain’s operation : it doesn’t happen in one spot. = = s it o is is a t ls h o e t c h a e s e c a w s i e th w t i h th e t b h r e a in b ’ r s a i o n p ’s e r o a p ti e o r n a . tion. 그리고 그것은 뇌의 작동도 그러하다: Just as in a city, / no neighborhood of the brain operates in isolation. è “so is it” 어순은 주어 it이 선행절의 주어와 다를 때 사용함 도시에서처럼, 뇌의 어떤 지역도 In brains and in cities, / everything emerges from the interaction between residents, / at all scales, / locally and distantly. 거주자들 간의 상호 작용으로부터 Just as trains bring materials and textiles into a city, / which become processed into the economy , / ★ 기차가 자재와 직물을 도시로 so the raw electrochemical signals from sensory organs are transported along superhighways of neurons. D 초고속도로를 따라서 전해진다. There / the signals undergo processing and transformation into our conscious reality. just as + S1 + V1, so + S2 + V2 □ located ~에 위치한 □ neighborhood 지역, 지방 □ textile 직물 □ undergo 겪다 □ 요약문 □ 어휘 □ interaction 상호 작용 □ scale 규모, 범위 □ signal 신호, 조짐 □ conscious ",
+    "questions": [
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "If you were to look out over a city and ask “where is the",
+        "ctxPost": "located?” / The brain operates from the interaction of all",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "claim",
+          "genuine",
+          "economy",
+          "word-of-mouth"
+        ],
+        "ans": 2,
+        "meaning_hint": "경제"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "here is the economy located?” / The brain operates from the",
+        "ctxPost": "of all the elements, just like a city",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "locate",
+          "strategy",
+          "hunt for",
+          "interaction"
+        ],
+        "ans": 3,
+        "meaning_hint": "상호작용"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "e 규모, 범위 □ signal 신호, 조짐 □ conscious 의식적인 □ 내용 일치 ■ 문장 삽입 □",
+        "ctxPost": "요소 □ locally 근거리에 □ sensory organ 감각 기관 □ reality 현실, 실제 □",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "economy",
+          "element",
+          "reservation",
+          "*tactic"
+        ],
+        "ans": 1,
+        "meaning_hint": "요소"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "문장삽입 è어법분석 a è so is it (✖) so it is with the brain’s",
+        "ctxPost": "",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "personal",
+          "operation",
+          "sensory",
+          "smile-like"
+        ],
+        "ans": 1,
+        "meaning_hint": "작동"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "it is with the brain’s operation : it doesn’t happen in one",
+        "ctxPost": "",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "vitamin",
+          "time consuming",
+          "laboratory",
+          "spot"
+        ],
+        "ans": 3,
+        "meaning_hint": "장소"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "+ V1, so + S2 + V2 □ located ~에 위치한 □ neighborhood 지역, 지방 □",
+        "ctxPost": "직물 □ undergo 겪다 □ 요약문 □ 어휘 □ interaction 상호 작용 □ scale 규모,",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "proof",
+          "scarce",
+          "value-added",
+          "textile"
+        ],
+        "ans": 3,
+        "meaning_hint": "직물"
+      }
+    ]
+  },
+  {
+    "no": 33,
+    "topic": "타인의 신체언어와 감정 전이",
+    "fullEn": "Someone else’s body language affects our own body, / which then creates an emotional echo that makes us feel accordingly . Emotions arise from body movements. [Body movements take precedence As Louis Armstrong sang, / “When you’re smiling, / the whole world smiles with you.” è emotional reflection A Louis Armstrong이 노래했듯이, / 때, “당신이 미소 지을 / 전 세계가 미소 짓는다. 당신과 함께” = = e e m m o o t t i i o o n n a a l l r r e e v so er n b a e n r c a e tion 다른 사람의 보디 랭귀지는 If copying another’s smile makes us feel happy, / the emotion of the smiler has been transmitted via our body. Strange as it may sound, / this theory states that emotions arise from our bodies. B For example , / our mood can be improved by simply lifting up the corners of our mouth. ê If people are asked to bite down on a pencil lengthwise, / taking care not to let the pencil touch their lips 감정이 우리 신체에서 발생한다 고 (thus forcing the mouth into a smile-like shape) , / they judge cartoons funnier / than if they have been asked to frown. For example, 우리의 기분은 단순히 The primacy of the body is sometimes summarized in the phrase / “I must be afraid, because I’m running.” D ex) Strange as[though] it may sound, ~ è Body movements induceemotions. 신체가 우선함 은 “나는 두려운 것이 = (As) strange as it may sound, ~ induce = cause/trigger/result in/bring about / activate 분명하다, 왜냐하면 나는 도망치고 있기 = Although it may sound strange, ~ è Although he was a soldier, he was very timid. = Soldier as[though] he was, he was very timid. 2023년 06월 모의고사 ▶ 무단도용 / 타사이트 게시금지 ◀ ",
+    "questions": [
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "body language affects our own body, / which then creates an",
+        "ctxPost": "echo that makes us feel accordingly",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "corner",
+          "time consuming",
+          "emotional",
+          "discount"
+        ],
+        "ans": 2,
+        "meaning_hint": "감정적인"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "age affects our own body, / which then creates an emotional",
+        "ctxPost": "that makes us feel accordingly",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "echo",
+          "world-famous",
+          "divide",
+          "award"
+        ],
+        "ans": 0,
+        "meaning_hint": "반향"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": ", / which then creates an emotional echo that makes us feel",
+        "ctxPost": "",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "financial",
+          "accordingly",
+          "via ~",
+          "take off"
+        ],
+        "ans": 1,
+        "meaning_hint": "그에 따라"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "ence As Louis Armstrong sang, / “When you’re smiling, / the",
+        "ctxPost": "world smiles with you",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "allow",
+          "characteristic",
+          "whole",
+          "introduce"
+        ],
+        "ans": 2,
+        "meaning_hint": "전체의"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "랭귀지는 If copying another’s smile makes us feel happy, / the",
+        "ctxPost": "of the smiler has been transmitted via our body",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "along ~",
+          "emotion",
+          "*prone",
+          "sunrise"
+        ],
+        "ans": 1,
+        "meaning_hint": "감정"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "g another’s smile makes us feel happy, / the emotion of the",
+        "ctxPost": "has been transmitted via our body",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "*reap",
+          "smiler",
+          "effectiveness",
+          "desire+to"
+        ],
+        "ans": 1,
+        "meaning_hint": "미소 짓는 사람"
+      }
+    ]
+  },
+  {
+    "no": 34,
+    "topic": "구매 수 제한과 판매",
+    "fullEn": "Restricting the number of items customers can buy boosts sales. A Scarcity encourages sales. Brian Wansink, / Professor of Marketing at Cornell University, / investigated the effectiveness of this tactic in 1998. 고객이 구입할 수 있는 품목의 개수를 He persuaded three supermarkets in Sioux City, Iowa, to offer Campbell’s soup at a small discount : 79 cents rather than 89 cents. (1) Cornell University의 마케팅 교수인 The discounted soup was sold / in one of three conditions : a control, / where there was no limit on the volume of purchases, 그는 Iowa 주 Sioux City에 있는 세 or two tests, / where customers were limited to either four or twelve cans. è 선행사가 장소일 경우 사용됨 할인된 수프는 세 가지 조건 중 하나의 In the unlimited condition / shoppers bought 3.3 cans on average, / 사용됨 제한되는 두 개의 실험군. whereas in the scarce condition, / when there was a limit, / they bought 5.3 on average . è 선행사가 상황이나 조건일 경우에도 ê This suggests (that) scarcity encourages sales. C è(Study)어법분석 ★ 유의어 변형 출제예상 è lack / shortage / insufficiency / deficiency (nor =and neither) do/does/did + S The findings are particularly strong / because the test took place in a supermarket with genuine shoppers. 그 결과는 특히 타당하다. It didn’t rely on claimed data, / nor was it held in a laboratory where consumers might behave differently . □ on average 평균 □ particularly 특히 * tactic 전략 □ 연결어 □ 함축적 의미 2023년 06월 모의고사 ▶ 무단도용 / 타사이트 게시금지 ◀ KeySentences/Phrases = blue words",
+    "questions": [
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "ssor of Marketing at Cornell University, / investigated the",
+        "ctxPost": "of this tactic in 1998",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "timetable",
+          "drive",
+          "effectiveness",
+          "transmit"
+        ],
+        "ans": 2,
+        "meaning_hint": "효과적임"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "개수를 He persuaded three supermarkets in Sioux City, Iowa, to",
+        "ctxPost": "Campbell’s soup at a small discount : 79 cents rather than",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "offer",
+          "knowledge",
+          "false",
+          "analytically"
+        ],
+        "ans": 0,
+        "meaning_hint": "제공하다"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "ts in Sioux City, Iowa, to offer Campbell’s soup at a small",
+        "ctxPost": ": 79 cents rather than 89 cents",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "discount",
+          "interval",
+          "psychologist",
+          "channel"
+        ],
+        "ans": 0,
+        "meaning_hint": "할인하다"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "è 선행사가 장소일 경우 사용됨 할인된 수프는 세 가지 조건 중 하나의 In the unlimited",
+        "ctxPost": "/ shoppers bought 3",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "reflection",
+          "advertising",
+          "condition",
+          "potential"
+        ],
+        "ans": 2,
+        "meaning_hint": "조건"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "e discounted soup was sold / in one of three conditions : a",
+        "ctxPost": ", / where there was no limit on the volume of purchases, 그는",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "determine",
+          "source",
+          "restrict",
+          "control"
+        ],
+        "ans": 3,
+        "meaning_hint": "대조군, 통제 집단"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "e conditions : a control, / where there was no limit on the",
+        "ctxPost": "of purchases, 그는 Iowa 주 Sioux City에 있는 세 or two tests, / wh",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "nutrient-dense",
+          "volume",
+          "computerized",
+          "equally"
+        ],
+        "ans": 1,
+        "meaning_hint": "양, 분량"
+      }
+    ]
+  },
+  {
+    "no": 35,
+    "topic": "기술과 생산성",
+    "fullEn": "Although technology has the potential to increase productivity , / it can also have a negative impact on productivity. A The negative impact of technology For example , / in many office environments / workers sit at desks with computers / and have access to the internet. 기술은 생산성을 높일 수 있는 They are able to check their personal e-mails / and use social media / whenever they want to. (1) This can stop them from doing their work / and make them less productive. ① 반복을 피하기 위함 그들은 원할 때마다 개인 이메일을 Introducing new technology can also have a negative impact on production 만들 수 있다. when it causes a change to the production process / or requires workers to learn a new system. 또한 새로운 기술을 도입하는 것은 Using technology can enable businesses to produce more goods / and to get more out of the other factors of production. ê Learning to use new technology can be time consuming and stressful for workers / and this can cause a decline in productivity. 2023년 06월 모의고사 ▶ 무단도용 / 타사이트 게시금지 ◀ KeySentences/Phrases = blue words",
+    "questions": [
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "Although",
+        "ctxPost": "has the potential to increase productivity , / it can also",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "effort",
+          "pathway",
+          "profession",
+          "technology"
+        ],
+        "ans": 3,
+        "meaning_hint": "기술"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "Although technology has the",
+        "ctxPost": "to increase productivity , / it can also have a negative im",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "prove",
+          "prejudiced",
+          "channel",
+          "potential"
+        ],
+        "ans": 3,
+        "meaning_hint": "잠재력"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "Although technology has the potential to increase",
+        "ctxPost": ", / it can also have a negative impact on productivity",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "wildly",
+          "part",
+          "contain",
+          "productivity"
+        ],
+        "ans": 3,
+        "meaning_hint": "생산성"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "기술은 생산성을 높일 수 있는 They are able to",
+        "ctxPost": "their personal e-mails / and use social media / whenever th",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "economics",
+          "fictional",
+          "check",
+          "population"
+        ],
+        "ans": 2,
+        "meaning_hint": "확인하다"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "기술은 생산성을 높일 수 있는 They are able to check their",
+        "ctxPost": "e-mails / and use social media / whenever they want to",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "helper",
+          "include",
+          "personal",
+          "phrase"
+        ],
+        "ans": 2,
+        "meaning_hint": "개인적인"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "is can stop them from doing their work / and make them less",
+        "ctxPost": "",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "post-purchase",
+          "productive",
+          "possess",
+          "population"
+        ],
+        "ans": 1,
+        "meaning_hint": "생산적인"
+      }
+    ]
+  },
+  {
+    "no": 36,
+    "topic": "시간 측정과 농업",
+    "fullEn": "Up until about 6,000 years ago, / most people were farmers. The necessity of time measurement and the invention and importance Many lived in different places throughout the year, / hunting for food or moving their livestock to areas with enough food. (B) There was no need to tell the time / because life depended on natural cycles, / such as the changing seasons 많은 사람들은 일 년 내내 or sunrise and sunset. ê Gradually more people started to live in larger settlements, / and some needed to tell the time. 시간을 알 필요가 없었다. (A) For example , / priests wanted to know when to carry out religious ceremonies. 어떤 사람들은 시간을 알 필요가 있었다. This was when people first invented clocks ― devices that show, measure, and keep track of passing time . 종교적인 의식을 수행해야 하는지 (C) Clocks have been important ever since. Today, / clocks are used for important things / such as setting busy airport timetables ― if the time is incorrect, / aeroplanes might crash into each other / when taking off or landing! □ throughout ~내내 □ settlement 정착지 □ depend on ~에 달려 있다 □ carry out 수행하다 □ sunrise 일출, 해돋이 □ ceremony 의식 □ gradually 점점, 서서히 □ keep track of 추적하다 2023년 06월 모의고사 ▶ 무단도용 / 타사이트 게시금지 ◀ KeySentences/Phrases = blue words",
+    "questions": [
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "ces throughout the year, / hunting for food or moving their",
+        "ctxPost": "to areas with enough food",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "time-poor",
+          "bakery",
+          "channel",
+          "livestock"
+        ],
+        "ans": 3,
+        "meaning_hint": "가축"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "ere was no need to tell the time / because life depended on",
+        "ctxPost": "cycles, / such as the changing seasons 많은 사람들은 일 년 내내 or su",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "consequently",
+          "socioeconomic",
+          "natural",
+          "desirable"
+        ],
+        "ans": 2,
+        "meaning_hint": "자연적인"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "al cycles, / such as the changing seasons 많은 사람들은 일 년 내내 or",
+        "ctxPost": "and sunset",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "contain",
+          "condition",
+          "for free",
+          "sunrise"
+        ],
+        "ans": 3,
+        "meaning_hint": "일출"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "such as the changing seasons 많은 사람들은 일 년 내내 or sunrise and",
+        "ctxPost": "",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "reposition",
+          "provide",
+          "sunset",
+          "free of"
+        ],
+        "ans": 2,
+        "meaning_hint": "일몰"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "ê",
+        "ctxPost": "more people started to live in larger settlements, / and so",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "poverty",
+          "for free",
+          "gradually",
+          "supply"
+        ],
+        "ans": 2,
+        "meaning_hint": "점점"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "each other / when taking off or landing! □ throughout ~내내 □",
+        "ctxPost": "정착지 □ depend on ~에 달려 있다 □ carry out 수행하다 □ sunrise 일출, 해돋이",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "return",
+          "reject",
+          "settlement",
+          "mess"
+        ],
+        "ans": 2,
+        "meaning_hint": "정착지"
+      }
+    ]
+  },
+  {
+    "no": 37,
+    "topic": "관리자와 생산성",
+    "fullEn": "Managers are always looking for ways to increase productivity , / which is the ratio of costs to output in production. Adam Smith's \"division of labor\" method of production improves productivity. Adam Smith, / writing when the manufacturing industry was new , / described a way that production could be made 관리자들은 항상 생산성을 높일 수 more efficient , / known as the “division of labor.” ★ 제조 산업이 새로 등장했을 때 known의 의미상의 주어 = “ a way ~ efficient” è 관계사절로 전환 = , which is known as the “division of labor.” è a way how ~ (✖), a way which ~ (✖) (C) Making most manufactured goods involves several different processes using different skills . Smith’s example was the manufacture of pins : the wire is straightened, (is) sharpened, / a head is put on, and then it is polished. Smith의 예는 핀의 제조였다. (B) One worker could do all these tasks, / and make 20 pins in a day. S + V è 주어동사관계 ê But this work can be divided into its separate processes, / with a number of workers each performing one task. (A) Because each worker specializes in one job, / he or she can work much faster / without changing from one task to another. Now 10 workers can produce thousands of pins in a day — a huge increase in productivity from the 200 they would have produced before . 있을 법한 결과를 추측할 때 흔히 사용된다. 그들이 생산했던 200개로부터 생산성 □ look for ~를 찾다 □ division of labor 노동 분업 □ divide A into B A를 B로 나누다 □ 주제/요지/주장/제목 ■ 어법 □ manufacturing industry 제조 산업 □ wire 철사, 전선 □ specialize 전문으로 하다 □ describe 설명하다, 묘사하다 □ sharpen 뾰족하게 하다 □ thousands of 수천의",
+    "questions": [
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "Managers are always looking for ways to increase",
+        "ctxPost": ", / which is the ratio of costs to output in production",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "constant",
+          "productivity",
+          "mood",
+          "supply"
+        ],
+        "ans": 1,
+        "meaning_hint": "생산성"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "to increase productivity , / which is the ratio of costs to",
+        "ctxPost": "in production",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "sharpen",
+          "display",
+          "output",
+          "participant"
+        ],
+        "ans": 2,
+        "meaning_hint": "생산량"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "e productivity , / which is the ratio of costs to output in",
+        "ctxPost": "",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "specialist",
+          "individual",
+          "production",
+          "accordingly"
+        ],
+        "ans": 2,
+        "meaning_hint": "생산"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "cturing industry 제조 산업 □ wire 철사, 전선 □ specialize 전문으로 하다 □",
+        "ctxPost": "설명하다, 묘사하다 □ sharpen 뾰족하게 하다 □ thousands of 수천의 □ efficient",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "analytically",
+          "supply",
+          "multiple",
+          "describe"
+        ],
+        "ans": 3,
+        "meaning_hint": "설명하다"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "a way that production could be made 관리자들은 항상 생산성을 높일 수 more",
+        "ctxPost": ", / known as the “division of labor",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "efficient",
+          "admire",
+          "yoga",
+          "test"
+        ],
+        "ans": 0,
+        "meaning_hint": "효율적인"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "Smith’s example was the",
+        "ctxPost": "of pins : the wire is straightened, (is) sharpened, / a hea",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "manufacture",
+          "strategy",
+          "restrict",
+          "agency"
+        ],
+        "ans": 0,
+        "meaning_hint": "제조, 제조하다"
+      }
+    ]
+  },
+  {
+    "no": 38,
+    "topic": "변화의 속도와 거울",
+    "fullEn": "Sometimes / the pace of change is far slower. 비교급 강조부사 = much / a lot / far / still / even + 비교급 Why don't we recognize the change in 때때로 / 속도는 변화의 훨씬 더 느리다. our faces that goes on every moment? - Our faces change every moment, but The face you saw reflected in your mirror this morning probably appeared no different from the face you saw the day before don't recognize short-term changes. ― or a week or a month ago . 때때로 변화의 속도는 훨씬 더 느리다. Yet we know that the face that stares back at us from the glass is not the same, / (and) cannot be the same, / ê take a photograph of yourself 5 or 10 years ago = ~해라, 그러면 ~할 것이다. è a photograph be taken of yourself 5 or 10 years ago * 명령문, or (else) S + will + 동사원형 or V현재시제 ê The proof is in your photo album : Look at a photograph taken of yourself 5 or 10 years ago / and you see clear differences 증거는 당신의 사진 앨범에 있다 : between the face in the snapshot and the face in your mirror. 가정법 과거 = If S + V과거, S + would(could/might) V원형 보게 될 것이다. If you lived in a world without mirrors for a year / and then saw your reflection, / you might be surprised by the change. 때문에 깜짝 놀랄지도 모른다. After an interval of 10 years / without seeing yourself, / you might not at first recognize the person peering from the mirror . 지난 후, 당신은 거울에서 쳐다보고 있는 Even something as basic as our own face changes / from moment to moment. 심지어 우리 자신의 얼굴같이 2023년 06월 모의고사 ▶ 무단도용 / 타사이트 게시금지 ◀ KeySentences/Phrases = blue words",
+    "questions": [
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "Sometimes / the",
+        "ctxPost": "of change is far slower",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "pace",
+          "recognize",
+          "operation",
+          "measure"
+        ],
+        "ans": 0,
+        "meaning_hint": "속도"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "0 years ago * 명령문, or (else) S + will + 동사원형 or V현재시제 ê The",
+        "ctxPost": "is in your photo album : Look at a photograph taken of your",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "manufacture",
+          "proof",
+          "specialize",
+          "primacy"
+        ],
+        "ans": 1,
+        "meaning_hint": "증거"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "hotograph taken of yourself 5 or 10 years ago / and you see",
+        "ctxPost": "differences 증거는 당신의 사진 앨범에 있다 : between the face in the sna",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "restrict",
+          "purchase",
+          "register",
+          "clear"
+        ],
+        "ans": 3,
+        "meaning_hint": "명확한"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "ear differences 증거는 당신의 사진 앨범에 있다 : between the face in the",
+        "ctxPost": "and the face in your mirror",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "lead to",
+          "world-famous",
+          "include",
+          "snapshot"
+        ],
+        "ans": 3,
+        "meaning_hint": "스냅사진"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "d in a world without mirrors for a year / and then saw your",
+        "ctxPost": ", / you might be surprised by the change",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "yoga",
+          "regular",
+          "condition",
+          "reflection"
+        ],
+        "ans": 3,
+        "meaning_hint": "거울에 비친) 모습"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "After an",
+        "ctxPost": "of 10 years / without seeing yourself, / you might not at f",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "belief",
+          "reality",
+          "**sophistication",
+          "interval"
+        ],
+        "ans": 3,
+        "meaning_hint": "기간"
+      }
+    ]
+  },
+  {
+    "no": 39,
+    "topic": "호기심과 학습",
+    "fullEn": "According to educational psychologist Susan Engel, / curiosity begins to decrease / as young as four years old. The reason why children's curiosity By the time we are adults, / we have fewer questions and more default settings . As Henry James put it, / “ Disinterested curiosity is past, / the mental grooves and channels set .” 우리가 어른이 될 무렵, 질문은 The decline in curiosity can be traced in the development of the brain / through childhood. 감소는 호기심의 원인을 찾을 수 있다. 발달에서 뇌의 / 통한 유년 시절을 ① ② w ce e r ta h i a n v e p o m ss o i r b e il it d ie e s fa u h l a t r . den into Henry James가 말했듯이, Though (it is) smaller than the adult brain, / the infant brain contains millions more neural connections. knowledge or beliefs \" 흥미를 유발하지 않는 호기심은 없어지고, The wiring, / however , / is a mess ; as young as ~ years old = as young as the age of ~ = ~살 정도의 어린 나이에 è 관용어구처럼 사용된다. the lines of communication between infant neurons are far less efficient than between those in the adult brain. C The baby’s perception of the world is consequently both intensely rich and wildly disordered . As children absorb more evidence from the world around them, / certain possibilities become much more likely and more useful / and harden into knowledge or beliefs. 아이들이 그들 주변의 세상으로부터 The neural pathways that enable those beliefs become faster and more automatic, / è(Study)어법분석 그러한 믿음을 가능하게 하는 신경 = the n th e e u ra o l n e p s a thways S 목적격관계대명사 V 어휘 * * e th v e e ry m o ti m m e e n [ t = [ e th ac e h in ti s m ta e n ] ",
+    "questions": [
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "According to",
+        "ctxPost": "psychologist Susan Engel, / curiosity begins to decrease /",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "educational",
+          "consumer",
+          "degree",
+          "benefit"
+        ],
+        "ans": 0,
+        "meaning_hint": "교육의"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "According to educational",
+        "ctxPost": "Susan Engel, / curiosity begins to decrease / as young as f",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "psychologist",
+          "manufacture",
+          "discount",
+          "otherwise"
+        ],
+        "ans": 0,
+        "meaning_hint": "심리학자"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "According to educational psychologist Susan Engel, /",
+        "ctxPost": "begins to decrease / as young as four years old",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "*ratio",
+          "claim",
+          "security",
+          "curiosity"
+        ],
+        "ans": 3,
+        "meaning_hint": "호기심"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "educational psychologist Susan Engel, / curiosity begins to",
+        "ctxPost": "/ as young as four years old",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "shortly thereafter",
+          "manager",
+          "decrease",
+          "wiring"
+        ],
+        "ans": 2,
+        "meaning_hint": "줄다"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "As Henry James",
+        "ctxPost": "it, / “ Disinterested curiosity is past, / the mental groov",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "put",
+          "machine",
+          "be expected+to",
+          "media"
+        ],
+        "ans": 0,
+        "meaning_hint": "말하다"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "As Henry James put it, / “",
+        "ctxPost": "curiosity is past, / the mental grooves and channels set",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "occasionally",
+          "disinterested",
+          "consistent",
+          "souvenir"
+        ],
+        "ans": 1,
+        "meaning_hint": "흥미 없는"
+      }
+    ]
+  },
+  {
+    "no": 40,
+    "topic": "좋은 음식과 나쁜 음식",
+    "fullEn": "Nearly eight of ten U.S. adults believe (that) there are “good foods” and “bad foods.” There are no good or bad foods, but combinations of foods that make up Unless we’re talking about spoiled stew, poison mushrooms, or something similar, / however , / A a good or bad diet. no foods can be labeled as either good or bad. There are, / however , / combinations of foods that add up to a healthful or unhealthful diet . B however, 우리가 상한 스튜, 독버섯, Consider the case of an adult who eats only foods thought of as “good” ― think of A as B = A를 B로 생각하다 è A be thought of as B 건강에 좋지 않은 식단이 되는 for example , / raw broccoli, apples, orange juice, boiled tofu, and carrots. 음식들의 조합이 있다. Although all these foods are nutrient­dense, / they do not add up to a healthy diet / because they don’t supply a wide enough variety of the nutrients we need . Or take the case of the teenager who occasionally eats fried chicken, / but otherwise stays away from fried foods. The occasional fried chicken isn’t going to knock his or her diet off track. 또는 튀긴 치킨을 가끔 먹지만, But the person who eats fried foods every day, / with few vegetables or fruits, / and loads up on supersized soft drinks, candy, and chips for snacks has a bad diet. 2023년 06월 모의고사 ▶ 무단도용 / 타사이트 게시금지 ◀ KeySentences/Phrases = blue words",
+    "questions": [
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "",
+        "ctxPost": "eight of ten U",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "complete",
+          "nearly",
+          "belief",
+          "hunt for"
+        ],
+        "ans": 1,
+        "meaning_hint": "거의"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "각하다 è A be thought of as B 건강에 좋지 않은 식단이 되는 for example , /",
+        "ctxPost": "broccoli, apples, orange juice, boiled tofu, and carrots",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "scan",
+          "reliable",
+          "word-of-mouth",
+          "raw"
+        ],
+        "ans": 3,
+        "meaning_hint": "날것의"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "for example , / raw broccoli, apples, orange juice, boiled",
+        "ctxPost": ", and carrots",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "drive",
+          "specialize",
+          "to-do list",
+          "tofu"
+        ],
+        "ans": 3,
+        "meaning_hint": "두부"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "/ they do not add up to a healthy diet / because they don’t",
+        "ctxPost": "a wide enough variety of the nutrients we need",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "supply",
+          "make money",
+          "locate",
+          "neuron"
+        ],
+        "ans": 0,
+        "meaning_hint": "공급하다"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "Although all these foods are",
+        "ctxPost": "­dense, / they do not add up to a healthy diet / because the",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "gradually",
+          "*default setting",
+          "nutrient",
+          "security"
+        ],
+        "ans": 2,
+        "meaning_hint": "영양소"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "Or take the case of the teenager who",
+        "ctxPost": "eats fried chicken, / but otherwise stays away from fried f",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "signal",
+          "occasionally",
+          "genuine",
+          "behave"
+        ],
+        "ans": 1,
+        "meaning_hint": "가끔"
+      }
+    ]
+  }
+];
+/* ═══════════════════════════════════════════════════════════
+   상태 및 핵심 로직
+═══════════════════════════════════════════════════════════ */
+let mode = 'single';
+let selectedPassages = new Set();
+let userName = '', userSchool = '';
+let allQuestions = [];
+let curIdx = 0;
+let answers = {};
+let totalScore = 0, gotScore = 0;
+let timerInterval = null;
+let timeLeft = 0;
+let quizStartTime = 0;
+
+const TYPE_LABELS = {
+  'syn':'동의어 고르기','ant':'반의어 고르기',
+  'blank-voca':'빈칸 어휘 완성','blank-ctx':'빈칸 문맥 완성',
+  'wrong-word':'문맥상 부적절한 어휘','abc':'(A)(B)(C) 조합형',
+  'eng-def':'영영풀이 매칭','word-form':'어형 변환','polysemy':'다의어 문맥적 의미'
+};
+const DIFF_LABELS = {'easy':'쉬움','med':'보통','hard':'어려움'};
+
+/* ─ 시작 화면 초기화 ─ */
+function initStart(){
+  const grid = document.getElementById('passageGrid');
+  PASSAGES.forEach(p => {
+    const card = document.createElement('div');
+    card.className = 'p-card';
+    card.dataset.no = p.no;
+    card.innerHTML = `<div class="num">${p.no}번</div><div class="topic">${p.topic}</div>`;
+    card.addEventListener('click', () => {
+      if (mode === 'single') {
+        selectedPassages.clear();
+        document.querySelectorAll('.p-card').forEach(c => c.classList.remove('sel'));
+      }
+      if (selectedPassages.has(p.no)) {
+        selectedPassages.delete(p.no);
+        card.classList.remove('sel');
+      } else {
+        selectedPassages.add(p.no);
+        card.classList.add('sel');
+      }
+      updateStartBtn();
+    });
+    grid.appendChild(card);
+  });
+
+  document.querySelectorAll('.mode-card').forEach(m => {
+    m.addEventListener('click', () => {
+      document.querySelectorAll('.mode-card').forEach(x => x.classList.remove('sel'));
+      m.classList.add('sel');
+      mode = m.dataset.mode;
+      if (mode === 'single' && selectedPassages.size > 1) {
+        selectedPassages.clear();
+        document.querySelectorAll('.p-card').forEach(c => c.classList.remove('sel'));
+      }
+      updateStartBtn();
+    });
+  });
+
+  document.getElementById('selectAllBtn').addEventListener('click', () => {
+    document.querySelector('.mode-card[data-mode="all"]').click();
+    selectedPassages.clear();
+    PASSAGES.forEach(p => selectedPassages.add(p.no));
+    document.querySelectorAll('.p-card').forEach(c => c.classList.add('sel'));
+    updateStartBtn();
+  });
+
+  document.getElementById('startBtn').addEventListener('click', startQuiz);
+}
+
+function updateStartBtn(){
+  document.getElementById('startBtn').disabled = selectedPassages.size === 0;
+}
+
+function startQuiz(){
+  userName = document.getElementById('nameInput').value.trim() || '학생';
+  userSchool = document.getElementById('schoolInput').value.trim() || '';
+  allQuestions = [];
+  PASSAGES.forEach(p => {
+    if (selectedPassages.has(p.no)) {
+      p.questions.forEach((q, i) => allQuestions.push({...q, passage:p, qIdx:i}));
+    }
+  });
+  if (allQuestions.length === 0) return;
+  totalScore = allQuestions.reduce((s,q) => s+q.score, 0);
+  curIdx = 0;
+  answers = {};
+  gotScore = 0;
+  timeLeft = allQuestions.length * 60; // 1분/문제
+  document.getElementById('startScreen').style.display = 'none';
+  document.getElementById('quizScreen').style.display = 'block';
+  document.getElementById('bottomBar').classList.remove('hidden');
+  quizStartTime = Date.now();
+  startTimer();
+  renderQuestion();
+}
+
+function startTimer(){
+  if (timerInterval) clearInterval(timerInterval);
+  updateTimerDisplay();
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    updateTimerDisplay();
+    if (timeLeft <= 0) { clearInterval(timerInterval); finishQuiz(); }
+  }, 1000);
+}
+
+function updateTimerDisplay(){
+  const m = String(Math.floor(timeLeft/60)).padStart(2,'0');
+  const s = String(timeLeft%60).padStart(2,'0');
+  document.getElementById('timer').textContent = `${m}:${s}`;
+}
+
+/* ─ 문제 렌더링 ─ */
+function renderQuestion(){
+  const q = allQuestions[curIdx];
+  const total = allQuestions.length;
+  document.getElementById('counter').textContent = `${Object.keys(answers).length}/${total} 응답`;
+  document.getElementById('progressFill').style.width = ((curIdx+1)/total*100)+'%';
+
+  // 본문
+  const ptext = document.getElementById('passageText');
+  ptext.innerHTML = renderPassage(q);
+
+  // 메타
+  const meta = document.getElementById('qMeta');
+  meta.innerHTML = `
+    <div class="q-no">${curIdx+1}/${total}</div>
+    <div class="q-diff ${q.diff}">${DIFF_LABELS[q.diff]}</div>
+    <div class="q-type">${TYPE_LABELS[q.type]}</div>
+    <div class="q-score">${q.score}점</div>
+  `;
+
+  // 질문 + 본문
+  const qText = document.getElementById('qText');
+  let questionHtml = q.q;
+  if (q.type === 'eng-def') questionHtml += ` <span class="quote">"${q.defn}"</span>`;
+  if (q.type === 'polysemy') questionHtml += `<div style="margin-top:8px;font-size:14px;font-weight:500;color:#4b5563;line-height:1.7"><div>(A) ${q.sentenceA}</div><div style="margin-top:4px">(B) ${q.sentenceB}</div></div>`;
+  // wrong-word는 본문 자체에 ①~④와 변형 단어가 들어가므로 q-text에는 질문만 표시
+  qText.innerHTML = questionHtml;
+
+  // 본체
+  const body = document.getElementById('qBody');
+  if (q.type === 'word-form') {
+    body.innerHTML = `<input class="input-answer" id="userInput" placeholder="답안을 입력해주세요" autocomplete="off">`;
+    const inp = document.getElementById('userInput');
+    if (answers[curIdx] !== undefined) inp.value = answers[curIdx];
+    inp.addEventListener('input', e => { answers[curIdx] = e.target.value; updateCounter(); });
+  } else {
+    const opts = q.opts || [];
+    body.innerHTML = `<div class="opt-list">${opts.map((o,i) =>
+      `<button class="opt ${answers[curIdx]===i?'sel':''}" data-i="${i}"><span class="num">${i+1}</span><span class="opt-text">${o}</span></button>`
+    ).join('')}</div>`;
+    body.querySelectorAll('.opt').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const i = parseInt(btn.dataset.i);
+        answers[curIdx] = i;
+        body.querySelectorAll('.opt').forEach(b => b.classList.remove('sel'));
+        btn.classList.add('sel');
+        updateCounter();
+      });
+    });
+  }
+
+  document.getElementById('feedback').classList.add('hidden');
+  document.getElementById('prevBtn').style.visibility = curIdx === 0 ? 'hidden' : 'visible';
+  document.getElementById('nextBtn').textContent = curIdx === total-1 ? '완료' : '다음';
+}
+
+function renderPassage(q){
+  let text = q.passage.fullEn;
+  if (q.type === 'syn' || q.type === 'ant') {
+    const re = new RegExp(`\\b(${q.word})\\b`, 'i');
+    text = text.replace(re, `<span class="hl">$1</span>`);
+  }
+  if (q.type === 'blank-voca' || q.type === 'blank-ctx') {
+    // 빈칸 표시: ctxPre + ____ + ctxPost로 치환
+    const full = q.ctxPre + '___BLANK___' + q.ctxPost;
+    // 정확한 매칭 단어 찾기 (대안: 단순히 정답 단어를 빈칸으로 치환)
+    const opts = q.opts || [];
+    const ans = opts[q.ans];
+    if (ans) {
+      const escAns = ans.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const re = new RegExp(`\\b${escAns}\\b`, 'i');
+      text = text.replace(re, `<span class="blank">____</span>`);
+    }
+  }
+  if (q.type === 'word-form') {
+    const re = new RegExp(`\\b${q.ans}\\b`, 'i');
+    text = text.replace(re, `<span class="blank">____</span>`);
+  }
+  if (q.type === 'wrong-word') {
+    // 본문 전체를 contextSentence(잘못된 단어 포함)로 대체.
+    // contextSentence 안의 ①②③④<u>단어</u>를 그대로 본문에 표시.
+    text = q.contextSentence
+      .replace(/<u>/g, '<span class="hl">')
+      .replace(/<\/u>/g, '</span>')
+      .replace(/(①|②|③|④)/g, '<span class="hl-num">$1</span>');
+  }
+  if (q.type === 'abc') {
+    const m = q.ctx.match(/\(A\)\[(.+?)\s*\/\s*(.+?)\].+?\(B\)\[(.+?)\s*\/\s*(.+?)\].+?\(C\)\[(.+?)\s*\/\s*(.+?)\]/);
+    if (m) {
+      // 본문 자체를 q.ctx로 대체 (밑줄·괄호 강조 포함)
+      let abc = q.ctx;
+      abc = abc.replace(/\(([ABC])\)\[(.+?)\s*\/\s*(.+?)\]/g,
+        `<span class="opt-pair">($1)</span> <span class="opt-bracket">[$2 / $3]</span>`);
+      text = abc;
+    }
+  }
+  if (q.type === 'polysemy') {
+    const re = new RegExp(`\\b(${q.word})\\b`, 'i');
+    text = text.replace(re, `<span class="hl">$1</span>`);
+  }
+  return text;
+}
+
+function updateCounter(){
+  document.getElementById('counter').textContent = `${Object.keys(answers).length}/${allQuestions.length} 응답`;
+}
+
+/* ─── 단어 사전 (오답·정답 단어 뜻 표시용) ─── */
+const WORD_DICT = {
+  'abundant':'풍부한','accepted':'받아들여진','accidentally':'우연히','action':'행동','adaptable':'적응할 수 있는','adjustable':'조정 가능한','advanced':'고급의, 진보된','advantage':'이점, 우위','agency':'주도성, 행위 주체성','aggressive':'공격적인','aging':'노화','agriculture':'농업','anger':'분노','animals':'동물들','anonymously':'익명으로','antagonistic':'적대적인','application':'지원, 신청','applied':'지원했다','appointed':'임명된','approved':'승인된','arranged':'정돈된','artificial':'인공적인','aspect':'측면, 양상','atmosphere':'분위기, 대기','attention':'관심, 주의','authority':'권한','avoiding':'피하기',
+  'bad':'나쁜','belief':'믿음','beneficial':'유익한','bigger':'더 큰','body':'몸','boredom':'지루함',
+  'calmly':'침착하게','celebrated':'유명한, 축하한','center':'중심','cheap':'저렴한','civilization':'문명','clean':'깨끗한','closet':'옷장','coined':'(새 말을) 만든','collective':'집단의','combat':'전투','comfortable':'편안한','common':'흔한','community':'공동체','competed':'경쟁했다','competition':'경쟁, 대회','complain':'불평하다','complaint':'불평','complicates':'복잡하게 만든다','conflict':'갈등','confusion':'혼란','consciously':'의식적으로','consequence':'결과','convince':'설득하다','copy':'복사','cortex':'(대뇌)피질','counterpart':'상대','crop':'작물',
+  'dangerous':'위험한','deadly':'치명적인','decisive':'결정적인','decrease':'감소','decreased':'감소했다','definitive':'결정적인, 명확한','delayed':'지연된','deliberately':'의도적으로','demonstrating':'보여주는','denial':'부인','density':'밀도','denying':'부인하기','dependent':'의존하는','descendant':'후손','design':'설계','desirables':'바람직한 것들','destruction':'파괴','developed':'개발했다, 발전한','difficult':'어려운','difficulty':'어려움','direct':'직접적인','disability':'장애','disadvantage':'불리한 점','disappear':'사라지다','disappeared':'사라졌다','disappointed':'실망한','diseases':'질병들','dislike':'싫음','dismissed':'무시된','disorder':'무질서','disorganized':'정돈되지 않은','disregarded':'무시된','disruption':'방해, 붕괴','distant':'먼','documented':'기록된','doubted':'의심한','drawer':'서랍','dream':'꿈','dreams':'꿈들',
+  'early':'이른, 초기의','ease':'쉬움, 편함','easiest':'가장 쉬운','ecosystem':'생태계','edge':'우위, 가장자리','educating':'교육하기','efficient':'효율적인','efficiently':'효율적으로','effort':'노력','elaboration':'정교화','elementary':'기초의','embraced':'받아들였다','emerged':'나타났다','emigrated':'이주했다','empowered':'권한을 부여받은','encouraged':'격려된','enemies':'적들','engine':'엔진','entirely':'완전히','envelope':'봉투','envisioned':'계획한, 마음에 그린','epidemic':'전염병의','equipment':'장비','escaped':'탈출한','essential':'필수적인','excessive':'과도한','exchange':'교환','exclusive':'배타적인','exit':'출구','exotic':'외래의','expanded':'확장된','expected':'예상된','experienced':'경험 있는','extinction':'멸종',
+  'factories':'공장들','fake':'가짜의','fame':'명성','fantasy':'환상','far':'먼','fast':'빠른','favoring':'선호함','fear':'두려움','feeding':'먹이를 주기, 영양을 공급함','fertilizer':'비료','few':'적은','fewer':'더 적은','fight':'싸움','finished':'끝난','fixed':'고정된','flexibility':'유연성','flexible':'유연한','flight':'비행','flying':'날기','focus':'집중','focused':'집중한','folded':'접은','foreign':'외국의','forget':'잊다','forgotten':'잊혀진','frequently':'자주','friendly':'우호적인','fully':'완전히',
+  'generation':'세대','genes':'유전자','genetic':'유전적인','genuine':'진정한','greatest':'가장 위대한','grew':'자랐다','grown':'자란',
+  'habitat':'서식지','halved':'절반이 된','happiness':'행복','harmful':'해로운','hastily':'급히','hazardous':'위험한','heart':'심장','helpful':'도움이 되는','helping':'돕기','helps':'돕는다','hi':'안녕','hidden':'숨겨진','hippocampus':'해마','hopeful':'희망적인','hopeless':'절망적인','hour':'시간',
+  'identifiably':'알아볼 수 있게','identity':'정체성','ignore':'무시하다','ignored':'무시된','impatiently':'성급하게','important':'중요한','independent':'독립적인','indication':'표시, 징후','indifference':'무관심','individual':'개별의','inefficient':'비효율적인','inefficiently':'비효율적으로','inspiration':'영감','inspirations':'영감들','instructions':'지시, 지침','instructor':'강사','intentionally':'의도적으로','interruption':'방해','interruptions':'방해들','interval':'간격',
+  'judgment':'판단','knowledge':'지식',
+  'larger':'더 큰','largest':'가장 큰','lasting':'지속되는','lavish':'사치스러운','laziness':'게으름','likely':'~할 가능성이 있는','lonely':'외로운','longer':'더 긴','longest':'가장 긴','losers':'패배자들','loss':'손실','luck':'행운','lunch':'점심','luxurious':'호화로운',
+  'major':'주요한','many':'많은','mastery':'숙달','meager':'빈약한','meaningful':'의미있는','memorable':'기억할 만한','memory':'기억','messy':'지저분한','migration':'이주','migratory':'이주성의','mild':'온화한','mindset':'사고방식','minimum':'최소의','minor':'사소한','minute':'분, 미세한','mirror':'거울','money':'돈',
+  'native':'토착의, 모국의','natural':'자연스러운','nearby':'가까이의','negative':'부정적인','neglected':'무시된, 방치된','nervously':'초조하게','never':'결코 ~ 않다','noteworthy':'주목할 만한','noticed':'알아챈','nuclear':'원자력의','nutrients':'영양분',
+  'observe':'관찰하다','obstacle':'장애물','occasion':'경우','occur':'발생하다','offspring':'자손','opponent':'상대, 적','optional':'선택적인','ordinary':'평범한','outdated':'구식의','overlooked':'간과된',
+  'painful':'고통스러운','panic':'당황','parents':'부모','partial':'부분적인','partially':'부분적으로','passing':'지나가는','patent':'특허','perceives':'인식하다','perfect':'완벽한','permanent':'영구적인','perspective':'관점','phrase':'구, 어구','pilot':'조종사','place':'장소','plain':'평범한','plant':'공장, 식물; 심다','pleasure':'기쁨','plentiful':'풍부한','poems':'시들','popularity':'인기','population':'인구','positive':'긍정적인','possession':'소유','poverty':'빈곤','power':'힘, 권력','precisely':'정확히','prematurely':'너무 이르게, 조기에','preparation':'준비','prevent':'막다','prevents':'막는다','problem':'문제','professor':'교수','profound':'심오한, 지대한','progress':'진보','progressed':'진보한','promising':'유망한','protecting':'보호하기','public':'공개된, 공적인','published':'출판된','punishment':'처벌','pursuing':'추구하기',
+  'quick':'빠른','quickly':'빠르게','quietly':'조용히',
+  'radically':'급격히','random':'무작위의','rapidly':'빠르게','rare':'드문','rarely':'거의 ~않는','real':'진짜의','recovery':'회복','reduced':'감소된','reflection':'반영','region':'영역, 지역','regretted':'후회한','rejected':'거절된','rejecting':'거절하기','rejection':'거절','remembered':'기억된','remote':'먼','reproduction':'번식','reshaping':'재구조화','resistance':'저항','restless':'안절부절하는','returned':'돌아온','reward':'보상','rewarded':'보상받은','rigid':'경직된','rigidity':'경직성','rocks':'바위들','rose':'올랐다','route':'경로',
+  'sadness':'슬픔','safe':'안전한','scarce':'부족한','school':'학교','sealed':'봉인된','search':'찾기','secretly':'비밀스럽게','separately':'개별적으로, 따로','separation':'분리','shift':'전환하다, 교대','shorten':'줄이다','shrunken':'줄어든','sight':'시야','signed':'서명한','silence':'침묵','silently':'조용히','similar':'비슷한','simple':'단순한','single':'단 하나의','sleeping':'잠자기','slow':'느린','slowly':'느리게','smallest':'가장 작은','social':'사교적인','soft':'부드러운','soil':'토양','solar':'태양의','solve':'해결하다','spacing':'간격 두기','species':'종','speedy':'빠른','stable':'안정된','standard':'표준의','steadily':'꾸준히','stimulus':'자극','stops':'멈춘다','straight':'직선의','strange':'이상한','strength':'힘','stress':'스트레스','strong':'강한','student':'학생','submission':'복종','succeed':'성공하다','success':'성공','suddenly':'갑자기','suffering':'고통','survival':'생존','survived':'생존한',
+  'temporary':'일시적인','temptation':'유혹','theory':'이론','threat':'위협','threaten':'위협하다','threatening':'위협적인','tidy':'단정한','tiny':'아주 작은','took':'가져갔다, 시작했다','totally':'완전히','transporting':'운반하기','traveled':'여행한','tribe':'부족','tribes':'부족들','trivial':'사소한','turbulence':'난기류','two':'둘',
+  'unchanged':'변하지 않은','unclear':'불분명한','unconsciously':'무의식적으로','uneasy':'불안한','unexpected':'예상치 못한','unfinished':'미완성의','unnecessary':'불필요한','unusual':'특이한','useless':'쓸모없는','usually':'보통',
+  'valuable':'가치 있는','village':'마을','violating':'위반하기','vital':'필수적인, 중요한',
+  'weak':'약한','wealth':'부','wealthiest':'가장 부유한','wealthy':'부유한','weapons':'무기들','weed':'잡초','weeds':'잡초들','weight':'무게','when':'언제','where':'어디','who':'누구','why':'왜','widened':'넓어진','will':'의지','willingly':'기꺼이','wind':'바람','wink':'눈을 깜박이기, 한숨도 (잠을) 자다','wonder':'경이로움, 궁금해하다','wrong':'틀린','youngest':'가장 어린',
+  // 추가 단어들 (PDF 본문에서 자주 나오는 표현)
+  'conceal':'숨기다','abandon':'버리다, 포기하다','display':'보여주다','deny':'부인하다','innovation':'혁신','tradition':'전통','regulation':'규제','restriction':'제한','maximize':'최대화하다','generate':'생성하다, 일으키다','minimize':'최소화하다','overlook':'간과하다','positively':'긍정적으로','slightly':'약간','adversely':'부정적으로, 불리하게','disturbing':'불안하게 하는','reassuring':'안심시키는','frightening':'무서운','shocking':'충격적인','profitable':'수익성 있는','renewable':'재생 가능한','harmful':'해로운','enjoyable':'즐거운','delightful':'기쁜','sweet':'달콤한','solitary':'홀로의','isolated':'고립된','accompanied':'동반된','typically':'일반적으로','widely':'널리','frequency':'빈도','distance':'거리','lifespan':'수명','driver':'운전자','passenger':'승객','pedestrian':'보행자','neighbor':'이웃','disposal':'폐기, 처분','consumption':'소비','production':'생산','attached':'애착이 가는, 첨부된','boost':'증가시키다','unique':'독특한','vibrant':'활기찬','dull':'칙칙한','secondhand':'중고의','brand-new':'새 것의','reduce':'줄이다','increase':'증가시키다','recklessly':'무모하게','gradually':'점차적으로','demonstrate':'보여주다, 시연하다','adopt':'채택하다','limiting':'제한하는','expanding':'확장하는','extract':'추출하다','discard':'폐기하다','consumed':'소비된','regenerated':'재생된','considerable':'상당한','minimal':'최소의','facilitate':'촉진하다','hinder':'방해하다','considerably':'상당히','negatively':'부정적으로','efficiently':'효율적으로','proven':'증명된','blind':'시각장애의','strengthens':'강화하다','cuddled':'안아주다','alone':'홀로','far':'멀리','birth':'탄생','death':'죽음','infinitely':'무한히',
+  // 19~20번 추가
+  'tore':'찢었다','seal':'봉인하다','sign':'서명하다','fold':'접다','open':'열다','hide':'숨다','silly':'어리석은',
+  // 추가 (자주 옵션으로 나오는 일반어)
+  'hide':'숨다','show':'보여주다','give':'주다','receive':'받다','accept':'받아들이다','refuse':'거절하다','reject':'거부하다','stop':'멈추다','continue':'계속하다','start':'시작하다','end':'끝내다','begin':'시작하다','finish':'마치다',
+  'high':'높은','low':'낮은','old':'오래된','new':'새로운','good':'좋은','poor':'가난한, 부족한','little':'작은',
+  'occur':'발생하다','prevent':'막다','solve':'해결하다','support':'지지하다','defend':'방어하다','attack':'공격하다',
+  'happy':'행복한','sad':'슬픈','angry':'화난','calm':'침착한','excited':'신난'
+};
+
+function lookupMeaning(text) {
+  if (!text) return '';
+  // 한국어 포함되어 있으면 그대로 (사전 매핑 불필요)
+  if (/[ㄱ-힝]/.test(text)) return '';
+  // 단순 단어 매핑
+  const key = text.toLowerCase().trim().replace(/[.,!?;:]$/, '');
+  if (WORD_DICT[key]) return WORD_DICT[key];
+  // 'word (~)' 형태 → 단어만 추출
+  const m = key.match(/^([a-z][a-z'-]*)/);
+  if (m && WORD_DICT[m[1]]) return WORD_DICT[m[1]];
+  return '';
+}
+
+function checkAnswer(){
+  const q = allQuestions[curIdx];
+  let correct = false;
+  let userPick = '';
+  if (q.type === 'word-form') {
+    const user = (answers[curIdx]||'').trim().toLowerCase();
+    userPick = user;
+    correct = user === q.ans.toLowerCase();
+    const inp = document.getElementById('userInput');
+    inp.classList.add(correct?'correct':'wrong');
+  } else {
+    const sel = answers[curIdx];
+    userPick = q.opts[sel] || '';
+    correct = sel === q.ans;
+    document.querySelectorAll('.opt').forEach((b,i) => {
+      if (i === q.ans) b.classList.add('correct');
+      if (i === sel && !correct) b.classList.add('wrong');
+    });
+  }
+  if (correct) gotScore += q.score;
+  const fb = document.getElementById('feedback');
+  fb.classList.remove('hidden');
+  fb.classList.toggle('correct', correct);
+  fb.classList.toggle('wrong', !correct);
+  const ansText = q.type === 'word-form' ? q.ans : (q.opts[q.ans]);
+  const ansKo = lookupMeaning(ansText);
+  const userKo = lookupMeaning(userPick);
+  const ansHint = ansKo ? ` <span style="color:#1e40af;font-size:12px;font-weight:600">(${ansKo})</span>` : '';
+  const userHint = userKo && userPick.toLowerCase() !== ansText.toLowerCase()
+    ? `<br><span style="font-size:13px;color:#7c2d12">📕 선택한 답 <strong>"${userPick}"</strong>: ${userKo}</span>` : '';
+  fb.innerHTML = correct
+    ? `<strong>✓ 정답입니다!</strong> (+${q.score}점)<br><span style="font-size:13px;color:#065f46">📗 정답 <strong>"${ansText}"</strong>${ansHint ? ': '+ansKo : ''}</span>`
+    : `<strong>✗ 오답입니다.</strong><br><span style="font-size:13px;color:#065f46">📗 정답 <strong>"${ansText}"</strong>${ansHint ? ': '+ansKo : ''}</span>${userHint}`;
+}
+
+/* ─ 다음/이전 ─ */
+document.addEventListener('DOMContentLoaded', () => {
+  initStart();
+  document.getElementById('nextBtn').addEventListener('click', () => {
+    if (answers[curIdx] === undefined) {
+      alert('답을 선택해 주세요.');
+      return;
+    }
+    // 정답 체크 후 다음으로 (체크 표시 1초 → 다음)
+    checkAnswer();
+    setTimeout(() => {
+      if (curIdx === allQuestions.length-1) finishQuiz();
+      else { curIdx++; renderQuestion(); }
+    }, 1400);
+  });
+  document.getElementById('prevBtn').addEventListener('click', () => {
+    if (curIdx > 0) { curIdx--; renderQuestion(); }
+  });
+});
+
+function finishQuiz(){
+  if (timerInterval) clearInterval(timerInterval);
+  document.getElementById('quizScreen').style.display = 'none';
+  document.getElementById('bottomBar').classList.add('hidden');
+  document.getElementById('resultScreen').style.display = 'block';
+  document.getElementById('resultScore').textContent = `${gotScore}/${totalScore}점`;
+  const pct = totalScore ? Math.round(gotScore/totalScore*100) : 0;
+  document.getElementById('resultDetail').innerHTML =
+    `${userName}님, 수고하셨습니다!<br>총 ${allQuestions.length}문제 중 정답률 <strong>${pct}%</strong>`;
+
+  // Firebase 저장
+  const elapsedMin = quizStartTime ? Math.max(1, Math.round((Date.now()-quizStartTime)/60000)) : 0;
+  let correctCnt = 0;
+  const details = [];
+  const wrongWords = [];
+  allQuestions.forEach((q, i) => {
+    const userAnsRaw = answers[i];
+    let userAns = '', isCorrect = false, ansText = '';
+    if (q.type === 'word-form') {
+      userAns = (userAnsRaw == null ? '' : String(userAnsRaw)).trim();
+      ansText = q.ans;
+      isCorrect = userAns.toLowerCase() === String(q.ans).toLowerCase();
+    } else {
+      userAns = (userAnsRaw != null && q.opts) ? (q.opts[userAnsRaw] || '') : '';
+      ansText = (q.opts && q.opts[q.ans] != null) ? q.opts[q.ans] : '';
+      isCorrect = userAnsRaw === q.ans;
+    }
+    if (isCorrect) correctCnt++;
+    const typeLabel = TYPE_LABELS[q.type] || q.type;
+    details.push({
+      지문: (q.passage&&q.passage.no)+'번',
+      유형: typeLabel,
+      결과: isCorrect ? '✅정답' : (userAnsRaw == null || userAnsRaw === '' ? '⚪미응답' : '❌오답'),
+      내답: userAns || '(미응답)',
+      정답: ansText
+    });
+    if (!isCorrect) {
+      wrongWords.push({
+        label: (q.passage&&q.passage.no)+'번 · '+typeLabel,
+        my: userAns || '(미응답)',
+        correct: ansText
+      });
+    }
+  });
+  const wrongCnt = allQuestions.length - correctCnt;
+  if (window._fbSave) window._fbSave({
+    submittedAt: new Date().toISOString(),
+    studentName: userName,
+    school: userSchool,
+    score: pct,
+    correct: correctCnt,
+    wrong: wrongCnt,
+    total: allQuestions.length,
+    gotScore: gotScore,
+    totalScore: totalScore,
+    elapsedMin: elapsedMin,
+    quizType: '고1_23년6월_본문암기',
+    passages: [...selectedPassages].sort((a,b)=>a-b),
+    details: details,
+    wrongWords: wrongWords
+  });
+}
+
+/* ─ 다른 지문 풀기: 지문 선택 화면으로 돌아감 (이름·학교는 유지) ─ */
+document.addEventListener('DOMContentLoaded', () => {
+  const btn = document.getElementById('backToPassageBtn');
+  if (btn) {
+    btn.addEventListener('click', () => {
+      // 결과·퀴즈 숨기고 시작화면 재표시
+      document.getElementById('resultScreen').style.display = 'none';
+      document.getElementById('quizScreen').style.display = 'none';
+      document.getElementById('startScreen').style.display = 'block';
+      // 진행 상태 초기화
+      selectedPassages.clear();
+      document.querySelectorAll('.p-card').forEach(c => c.classList.remove('sel'));
+      curIdx = 0; answers = {}; gotScore = 0;
+      updateStartBtn();
+      window.scrollTo(0,0);
+    });
+  }
+});
+</script>
+</body>
+</html>
