@@ -322,6 +322,7 @@ function showRoundSummary(r){
   if(studentName) saveFirebase(stepLabel, correct, total);
   else promptName(()=>saveFirebase(stepLabel, correct, total));
   const pct=Math.round(correct/total*100);
+  const wrongCnt=total-correct;
   const sumDiv=document.getElementById('sum_'+r);
   sumDiv.style.display='block';
   sumDiv.innerHTML=`<div class="summary">
@@ -329,8 +330,96 @@ function showRoundSummary(r){
     <div class="total-score">${correct}<span style="font-size:1.1rem;opacity:.4">/${total}</span></div>
     <div class="summary-sub">정답률 ${pct}%</div>
     <div class="summary-msg">${pct===100?'완벽합니다!':pct>=80?'훌륭해요!':pct>=60?'잘 했어요!':'다시 도전해봐요!'}</div>
+    ${wrongCnt>0?`<button class="retry-step-btn ${STEP_NAMES[r]}" onclick="startRoundRetry(${r})" style="margin-top:14px;background:#c0392b;color:white;border:none;padding:11px 22px;border-radius:10px;cursor:pointer;font-weight:800;font-size:.95rem;">❌ 오답 ${wrongCnt}개 다시 풀기</button>`:''}
   </div>`;
   checkAllDone();
+}
+
+// === 라운드별 오답 다시 풀기 ===
+const roundRetryRound=[0,0,0];
+const roundRetryState=[null,null,null];
+
+function startRoundRetry(r){
+  let items;
+  if(roundRetryState[r] && roundRetryState[r].wrongAfter && roundRetryState[r].wrongAfter.length){
+    items=roundRetryState[r].wrongAfter;
+  } else {
+    items=ROUNDS[r].filter((_,i)=>scores[r][i]===false);
+  }
+  if(!items.length) return;
+  roundRetryRound[r]++;
+  const panel=document.getElementById('panel'+r);
+  const old=document.getElementById('retry_panel_'+r);
+  if(old) old.remove();
+  const ra=document.createElement('div');
+  ra.id='retry_panel_'+r;
+  ra.style.marginTop='24px';
+  ra.innerHTML=`<div class="step-header" style="background:#fef2f2;border-left:4px solid #c0392b;"><span class="step-badge" style="background:#c0392b;color:white;">오답 ${roundRetryRound[r]}라운드</span><span class="step-desc">${items.length}개 오답 다시 풀기 · 모두 맞히면 다음 단계로!</span></div><div id="retry_cards_${r}"></div><div id="retry_done_${r}" style="display:none;text-align:center;padding:14px 16px;margin-top:14px;border-radius:10px;font-weight:700;"></div>`;
+  panel.appendChild(ra);
+  roundRetryState[r]={items,scores:new Array(items.length).fill(null),answered:0,correct:0,wrongAfter:null};
+  buildRoundRetryCards(r,items);
+  setTimeout(()=>ra.scrollIntoView({behavior:'smooth',block:'start'}),80);
+}
+
+function buildRoundRetryCards(r, items){
+  const cardsEl=document.getElementById('retry_cards_'+r);
+  if(!cardsEl) return;
+  cardsEl.innerHTML='';
+  items.forEach((q, ri) => {
+    const cardId='sr'+r+'_'+ri;
+    const wordHTML=q.word?`<div><span class="word-en" onclick="speak('${q.word.replace(/'/g,"\\'")}')"><span>${q.word}</span><span class="speaker">🔊</span></span></div>`:'';
+    const defHTML=q.def?`<div class="definition-text">"${q.def}"</div>`:'';
+    const optsHTML=q.opts.map(o=>`<button class="opt-btn" onclick="retrySel('${cardId}',this)" data-v="${o}">${o}</button>`).join('');
+    cardsEl.insertAdjacentHTML('beforeend', `<div class="q-card" id="${cardId}"><div class="q-meta"><span class="q-num-badge">오답 ${ri+1}</span></div>${wordHTML}<div class="q-prompt">${q.prompt}</div>${defHTML}<div class="options">${optsHTML}</div><div class="feedback" id="fb_${cardId}"></div><button class="check-btn ${STEP_NAMES[r]}" id="cb_${cardId}" onclick="retrySubmit(${r},${ri},'${q.answer.replace(/'/g,"\\'")}',this)" disabled>확인</button></div>`);
+  });
+}
+
+function retrySel(cardId, btn){
+  const card=document.getElementById(cardId);
+  card.querySelectorAll('.opt-btn').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+  const cb=card.querySelector('.check-btn');
+  if(cb) cb.disabled=false;
+}
+
+function retrySubmit(r, ri, answer, btn){
+  if(btn.disabled) return;
+  const cardId='sr'+r+'_'+ri;
+  const card=document.getElementById(cardId);
+  const sel=card.querySelector('.opt-btn.selected');
+  if(!sel) return;
+  btn.style.display='none';
+  card.querySelectorAll('.opt-btn').forEach(b=>b.disabled=true);
+  const ok=sel.dataset.v===answer;
+  sel.classList.add(ok?'correct':'wrong');
+  if(!ok) card.querySelectorAll('.opt-btn').forEach(b=>{if(b.dataset.v===answer)b.classList.add('correct');});
+  const state=roundRetryState[r];
+  state.scores[ri]=ok;
+  state.answered++;
+  if(ok) state.correct++;
+  const fb=document.getElementById('fb_'+cardId);
+  fb.className='feedback show '+(ok?'ok':'bad');
+  fb.textContent=ok?'✅ 정답!':'❌ 내 답: '+sel.dataset.v+' / 정답: '+answer;
+  if(state.answered===state.items.length){
+    setTimeout(()=>{
+      const stillWrongIdx=state.scores.map((s,i)=>s===false?i:-1).filter(i=>i>=0);
+      const doneEl=document.getElementById('retry_done_'+r);
+      const stepLabels=['뜻맞추기','유의어찾기','영영풀이'];
+      if(stillWrongIdx.length>0){
+        roundRetryState[r].wrongAfter=stillWrongIdx.map(i=>state.items[i]);
+        doneEl.style.background='#fef3c7';
+        doneEl.style.color='#92400e';
+        doneEl.innerHTML=`라운드 ${roundRetryRound[r]} 결과: 정답 ${state.correct}/${state.items.length} · 아직 ${stillWrongIdx.length}개 오답<br><button class="retry-step-btn ${STEP_NAMES[r]}" onclick="startRoundRetry(${r})" style="margin-top:10px;background:#c0392b;color:white;border:none;padding:8px 18px;border-radius:8px;cursor:pointer;font-weight:700;">❌ 또 다시 풀기</button>`;
+      } else {
+        doneEl.style.background='#dcfce7';
+        doneEl.style.color='#15803d';
+        doneEl.innerHTML=`🎊 STEP ${r+1} 오답 ${state.items.length}개 모두 정답!`;
+        saveFirebase(stepLabels[r]+'_오답완료', state.items.length, state.items.length);
+        roundRetryState[r].wrongAfter=null;
+      }
+      doneEl.style.display='block';
+    },700);
+  }
 }
 
 function checkAllDone(){
