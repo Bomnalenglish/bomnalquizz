@@ -243,7 +243,7 @@ function answerMC(prefix,idx,btn,chosen,answer){
   const isCorrect=chosen===answer;
   card.querySelectorAll('.opt-btn').forEach(b=>{b.disabled=true;if(b.textContent.trim()===answer)b.classList.add('show-correct');});
   if(isCorrect){btn.classList.remove('show-correct');btn.classList.add('selected-correct');fb.textContent='✅ 정답입니다!';fb.className='feedback show ok';card.classList.add('correct-card');state.score++;}
-  else{btn.classList.add('selected-wrong');fb.textContent=`❌ 오답! 정답: ${answer}`;fb.className='feedback show no';card.classList.add('wrong-card');const w=card.querySelector('.q-word');recordWrong(w?w.textContent.trim().split(' ')[0]:String(idx),answer);}
+  else{btn.classList.add('selected-wrong');fb.textContent=`❌ 내 답: ${chosen} / 정답: ${answer}`;fb.className='feedback show no';card.classList.add('wrong-card');const w=card.querySelector('.q-word');recordWrong(w?w.textContent.trim().split(' ')[0]:String(idx),answer);}
   state.answers[key]={answered:true,correct:isCorrect};updateProgress();
 }
 
@@ -262,7 +262,7 @@ function confirmMulti(prefix,idx,answers){
   const correctSet=new Set(answers);let allCorrect=sel.size===correctSet.size&&[...sel].every(s=>correctSet.has(s));
   card.querySelectorAll('.opt-btn').forEach(b=>{b.disabled=true;const t=b.textContent.trim();if(sel.has(t)&&correctSet.has(t))b.className='opt-btn multi correct-sel';else if(sel.has(t)&&!correctSet.has(t))b.className='opt-btn multi wrong-sel';else if(correctSet.has(t))b.className='opt-btn multi correct-sel';else b.className='opt-btn multi';});
   if(allCorrect){fb.textContent='✅ 정답입니다!';fb.className='feedback show ok';card.classList.add('correct-card');state.score++;}
-  else{fb.textContent=`❌ 오답! 정답: ${answers.join(', ')}`;fb.className='feedback show no';card.classList.add('wrong-card');const w=card.querySelector('.q-word');recordWrong(w?w.textContent.trim().split(' ')[0]:String(idx),answers.join('/'));}
+  else{fb.textContent=`❌ 내 답: ${[...sel].join(', ')||'(없음)'} / 정답: ${answers.join(', ')}`;fb.className='feedback show no';card.classList.add('wrong-card');const w=card.querySelector('.q-word');recordWrong(w?w.textContent.trim().split(' ')[0]:String(idx),answers.join('/'));}
   state.answers[key]={answered:true,correct:allCorrect};updateProgress();
 }
 
@@ -370,7 +370,7 @@ function confirmRetryMulti(idx, answers) {
     else if (correctSet.has(t)) b.className = 'opt-btn multi correct-sel';
     else b.className = 'opt-btn multi';
   });
-  fb.textContent = allCorrect ? '✅ 정답!' : '❌ 정답: ' + answers.join(', ');
+  fb.textContent = allCorrect ? '✅ 정답!' : `❌ 내 답: ${[...sel].join(', ')||'(없음)'} / 정답: ${answers.join(', ')}`;
   fb.className = 'feedback show ' + (allCorrect ? 'ok' : 'no');
   card.classList.add(allCorrect ? 'correct-card' : 'wrong-card');
   window._retryAnswers[idx] = { done: true, correct: allCorrect };
@@ -388,7 +388,7 @@ function answerRetryMC(idx, btn, chosen, answer) {
   });
   if (isCorrect) { btn.classList.remove('show-correct'); btn.classList.add('selected-correct'); }
   else btn.classList.add('selected-wrong');
-  fb.textContent = isCorrect ? '✅ 정답!' : '❌ 정답: ' + answer;
+  fb.textContent = isCorrect ? '✅ 정답!' : `❌ 내 답: ${chosen} / 정답: ${answer}`;
   fb.className = 'feedback show ' + (isCorrect ? 'ok' : 'no');
   card.classList.add(isCorrect ? 'correct-card' : 'wrong-card');
   window._retryAnswers[idx] = { done: true, correct: isCorrect };
