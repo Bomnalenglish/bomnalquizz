@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>봄날 퀴즈 | 고1 25년 6월 본문 암기</title>
 <script type="module" src="bn_tracker.js"></script>
+<script src="mock_word_dict.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&family=Black+Han+Sans&display=swap');
 :root{--pri:#1565c0;--acc:#f57f17;--bg:#e3f2fd;--card:#fff;--bdr:#90caf9;--muted:#757575;--green:#2e7d32;--red:#c62828;}
@@ -382,20 +383,24 @@ function selBlank(btn,sel,ans){
   const fb=document.getElementById('fb');
   const q=qs[idx];
   const typeLabel = q.type==='topic' ? '주제' : '빈칸';
+  const ansHint = (window.formatMeaningHint?window.formatMeaningHint(ans):'');
+  const myHint  = (sel!==ans && window.formatMeaningHint?window.formatMeaningHint(sel):'');
   if(sel===ans){
     btn.classList.add('correct');
-    fb.className='fb-msg ok';fb.textContent='✅ 정답!';
+    fb.className='fb-msg ok';
+    fb.innerHTML='✅ 정답: <strong>'+sel+'</strong>'+ansHint;
     cor++;
     allResults.push({pno:q.pno, type:typeLabel, correct:true, my:sel, ans:ans});
   } else {
     btn.classList.add('wrong');
     document.querySelectorAll('.cb').forEach(b=>{if(b.textContent.trim()===ans)b.classList.add('reveal');});
-    fb.className='fb-msg no';fb.textContent='❌ 내 답: '+sel+' / 정답: '+ans;
+    fb.className='fb-msg no';
+    fb.innerHTML='❌ 내 답: <strong>'+sel+'</strong>'+myHint+'<br>📗 정답: <strong>'+ans+'</strong>'+ansHint;
     wrn++;
     wrongs.push({pid:q.pid, label:q.pno+'번 '+typeLabel, my:sel, correct:ans, exp:''});
     allResults.push({pno:q.pno, type:typeLabel, correct:false, my:sel, ans:ans});
   }
-  setTimeout(()=>{idx++;showQ();},sel===ans?700:1800);
+  setTimeout(()=>{idx++;showQ();},sel===ans?900:2200);
 }
 
 function selTF(btn,sel,ans){

@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>봄날 퀴즈 | 고2 24년 6월 본문 암기 (4유형 통합)</title>
 <script type="module" src="bn_tracker.js"></script>
+<script src="mock_word_dict.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&family=Black+Han+Sans&display=swap');
 :root{--pri:#1565c0;--acc:#f57f17;--bg:#e3f2fd;--card:#fff;--bdr:#90caf9;--muted:#757575;--green:#2e7d32;--red:#c62828;}
@@ -1099,12 +1100,12 @@ window.submitText = function(){
   const isCorrect = userAns.toLowerCase() === q.target.toLowerCase();
   if(isCorrect){
     inp.classList.add('correct');
-    fb.className = 'fb-msg ok'; fb.textContent = '✅ 정답!';
+    fb.className = 'fb-msg ok'; fb.innerHTML = '✅ 정답: <strong>'+q.target+'</strong>'+(window.formatMeaningHint?window.formatMeaningHint(q.target):'');
     cor++;
     allResults.push({pno:q.pno, type:q.type, qi:q.qi, correct:true, my:userAns, ans:q.target});
   } else {
     inp.classList.add('wrong');
-    fb.className = 'fb-msg no'; fb.textContent = '❌ 내 답: '+userAns+' / 정답: '+q.target;
+    fb.className = 'fb-msg no'; fb.innerHTML = '❌ 내 답: <strong>'+userAns+'</strong>'+(window.formatMeaningHint?window.formatMeaningHint(userAns):'')+'<br>📗 정답: <strong>'+q.target+'</strong>'+(window.formatMeaningHint?window.formatMeaningHint(q.target):'');
     wrn++;
     wrongs.push({label:'지문 '+q.pno+' · 어형변화', my:userAns, correct:q.target});
     allResults.push({pno:q.pno, type:q.type, qi:q.qi, correct:false, my:userAns, ans:q.target});
@@ -1213,13 +1214,13 @@ function checkChoice(btn, sel, correctIdx, correctVal){
   const myAns = btn.querySelector('span:last-child').textContent;
   if(sel === correctIdx){
     btn.classList.add('correct');
-    fb.className = 'fb-msg ok'; fb.textContent = '✅ 정답!';
+    fb.className = 'fb-msg ok'; fb.innerHTML = '✅ 정답: <strong>'+correctVal+'</strong>'+(window.formatMeaningHint?window.formatMeaningHint(correctVal):'');
     cor++;
     allResults.push({pno:q.pno, type:q.type, qi:q.qi, correct:true, my:myAns, ans:correctVal});
   } else {
     btn.classList.add('wrong');
     document.querySelectorAll('.cb').forEach(b=>{ if(parseInt(b.dataset.idx) === correctIdx) b.classList.add('reveal'); });
-    fb.className = 'fb-msg no'; fb.textContent = '❌ 내 답: '+myAns+' / 정답: '+correctVal;
+    fb.className = 'fb-msg no'; fb.innerHTML = '❌ 내 답: <strong>'+myAns+'</strong>'+(window.formatMeaningHint?window.formatMeaningHint(myAns):'')+'<br>📗 정답: <strong>'+correctVal+'</strong>'+(window.formatMeaningHint?window.formatMeaningHint(correctVal):'');
     wrn++;
     const typeLabel = {1:'빈칸',2:'어형',3:'옳고그른',4:'영영풀이',5:'어휘추론'}[q.type];
     wrongs.push({label:'지문 '+q.pno+' · '+typeLabel, my:myAns, correct:correctVal});

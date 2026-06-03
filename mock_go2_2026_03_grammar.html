@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>봄날 퀴즈 | 고2 26년 3월 어법·어휘 선택</title>
 <script type="module" src="bn_tracker.js"></script>
+<script src="mock_word_dict.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&family=Black+Han+Sans&display=swap');
 :root{--pri:#1565c0;--acc:#f57f17;--bg:#e3f2fd;--card:#fff;--bdr:#90caf9;--muted:#757575;--green:#2e7d32;--red:#c62828;}
@@ -688,13 +689,13 @@ function selChoice(btn, sel, ans){
   const q=qs[idx];
   if(sel===ans){
     btn.classList.add('correct');
-    fb.className='fb-msg ok';fb.textContent='✅ 정답!';
+    fb.className='fb-msg ok';fb.innerHTML='✅ 정답: <strong>'+q.correct+'</strong>'+(window.formatMeaningHint?window.formatMeaningHint(q.correct):'');
     cor++;
     allResults.push({pno:q.pno, sn:q.sn, correct:true, my:q.options[sel-1], ans:q.correct});
   } else {
     btn.classList.add('wrong');
     document.querySelectorAll('.cb').forEach(b=>{if(parseInt(b.dataset.idx)===ans)b.classList.add('reveal');});
-    fb.className='fb-msg no';fb.textContent='❌ 내 답: '+sel+' / 정답: '+q.correct;
+    fb.className='fb-msg no';fb.innerHTML='❌ 내 답: <strong>'+sel+'</strong>'+(window.formatMeaningHint?window.formatMeaningHint(sel):'')+'<br>📗 정답: <strong>'+q.correct+'</strong>'+(window.formatMeaningHint?window.formatMeaningHint(q.correct):'');
     wrn++;
     wrongs.push({label:'지문 '+q.pno+'번 ('+q.sn+')', my:q.options[sel-1], correct:q.correct});
     allResults.push({pno:q.pno, sn:q.sn, correct:false, my:q.options[sel-1], ans:q.correct});

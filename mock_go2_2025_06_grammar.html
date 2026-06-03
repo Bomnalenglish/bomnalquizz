@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>봄날 퀴즈 | 고2 25년 6월 어법·어휘</title>
 <script type="module" src="bn_tracker.js"></script>
+<script src="mock_word_dict.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&family=Black+Han+Sans&display=swap');
 :root{--pri:#2e7d32;--acc:#f57f17;--bg:#f0f0eb;--card:#fff;--muted:#888;}
@@ -1345,6 +1346,21 @@ function selectChoice(key, sel, ans, pno, qi){
     else if(opt === ans && !correct) btn.classList.add('reveal-correct');
   });
   grp.classList.add(correct ? 'done-correct' : 'done-wrong');
+
+  // 한국어 뜻 힌트 표시
+  if (!grp.querySelector('.meaning-hint') && window.formatMeaningHint) {
+    const ansK = window.formatMeaningHint(ans);
+    const myK  = (!correct && sel !== ans) ? window.formatMeaningHint(sel) : '';
+    if (ansK || myK) {
+      const hint = document.createElement('div');
+      hint.className = 'meaning-hint';
+      hint.style.cssText = 'font-size:12px;color:#1e40af;margin-top:4px;display:inline-block;background:#f0f9ff;padding:3px 8px;border-radius:6px;border:1px solid #bfdbfe;';
+      hint.innerHTML = correct
+        ? `📗 <strong>${ans}</strong>${ansK}`
+        : `📗 정답 <strong>${ans}</strong>${ansK}` + (myK ? ` · 내 답 <strong>${sel}</strong>${myK}` : '');
+      grp.parentNode.insertBefore(hint, grp.nextSibling);
+    }
+  }
 
   // 지문별 점수 업데이트
   updatePassageScore(pno);
