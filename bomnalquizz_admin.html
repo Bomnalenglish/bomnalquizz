@@ -544,10 +544,24 @@ window.toggleStudentDetail = function(id, btn){
   if(!el) return;
   if(el.style.display==='none'){
     el.style.display='block';
-    btn.textContent='📋 접기';
+    btn.textContent='📋 전체 응시 기록 접기';
   } else {
     el.style.display='none';
-    btn.textContent='📋 상세보기';
+    btn.textContent='📋 전체 응시 기록 펼치기';
+  }
+};
+
+// 학생 카드 전체 토글 (헤더 클릭 시)
+window.toggleStudentCard = function(bodyId, headerEl){
+  const body = document.getElementById(bodyId);
+  if(!body) return;
+  const chev = headerEl.querySelector('.card-chevron');
+  if(body.style.display === 'none'){
+    body.style.display = 'block';
+    if(chev) chev.style.transform = 'rotate(90deg)';
+  } else {
+    body.style.display = 'none';
+    if(chev) chev.style.transform = 'rotate(0deg)';
   }
 };
 
@@ -840,6 +854,9 @@ function renderSectionView(){
 
     const totalDone=st.records.filter(d=>categorize(d.quizType)!=='other').length;
     const avgScore=totalDone>0?Math.round(st.records.reduce((a,b)=>a+b.score,0)/st.records.length):0;
+    // 최근 응시일 계산 (records의 time 중 최대)
+    const latestTime = st.records.length > 0 ? Math.max(...st.records.map(d=>d.time||0)) : 0;
+    const latestDate = latestTime > 0 ? new Date(latestTime).toLocaleDateString('ko-KR',{year:'2-digit',month:'2-digit',day:'2-digit'}).replace(/\.\s/g,'.').replace(/\.$/,'') : '-';
 
     // ★★★ 핵심 추가: hub_access에서 이 학생 접속·학습 기록 ★★★
     const schoolBase=st.school.replace(/[123]$/,'');
@@ -937,9 +954,11 @@ function renderSectionView(){
       </div>` : '';
 
     const isAccessOnly = st.records.length === 0;
+    const cardBodyId = 'cardbody_'+st.name.replace(/[^가-힣a-zA-Z0-9]/g,'_')+'_'+st.school.replace(/[^가-힣a-zA-Z0-9]/g,'_');
     return `<div class="student-card" ${isAccessOnly?'style="background:#fffbeb;border:1.5px dashed #f59e0b"':''}>
-      <div class="student-card-header">
+      <div class="student-card-header" onclick="toggleStudentCard('${cardBodyId}',this)" style="cursor:pointer;margin-bottom:0;">
         <div style="white-space:nowrap;font-family:'Black Han Sans',sans-serif;font-size:16px;color:var(--primary);line-height:1.2;">
+          <span class="card-chevron" style="display:inline-block;width:14px;font-size:14px;color:var(--muted);margin-right:2px;transition:transform .2s;">▶</span>
           👤 <span style="font-size:11px;color:var(--muted);font-weight:700;">${st.school}</span> ${st.name}
           ${isAccessOnly?'<span style="margin-left:8px;padding:2px 8px;background:#fef3c7;color:#92400e;border-radius:10px;font-size:10px;font-weight:800">📡 접속만 함</span>':''}
         </div>
@@ -947,18 +966,21 @@ function renderSectionView(){
           ${isAccessOnly
             ? `<span class="sum-pill" style="background:#fef3c7;color:#92400e;">퀴즈 결과 없음</span>`
             : `<span class="sum-pill done">📝 총 ${st.records.length}회 응시</span>
-               <span class="sum-pill ${avgScore>=85?'done':'warn'}">평균 ${avgScore}점</span>`}
+               <span class="sum-pill ${avgScore>=85?'done':'warn'}">평균 ${avgScore}점</span>
+               <span class="sum-pill" style="background:#ede7f6;color:#5e35b1;">📅 최근 ${latestDate}</span>`}
           ${myAccess.length>0?`<span class="sum-pill" style="background:#e3f2fd;color:#1565c0;">🔐 접속 ${myAccess.length}건</span>`:''}
-          <button onclick="toggleStudentDetail('${detailId}',this)" style="padding:4px 12px;border-radius:14px;border:none;background:#1565c0;color:white;font-size:11px;font-weight:800;cursor:pointer;font-family:inherit;">📋 상세보기</button>
         </div>
       </div>
-      ${secBlocksHtml}
-      ${reviewHtml}
-      ${readingLabHtml}
-      ${synanmHtml}
-      ${nonSecHtml}
-      ${allRecordsHtml}
-      ${accessHtml}
+      <div id="${cardBodyId}" class="student-card-body" style="display:none;margin-top:14px;padding-top:14px;border-top:1px dashed #cbd5e1;">
+        ${secBlocksHtml}
+        ${reviewHtml}
+        ${readingLabHtml}
+        ${synanmHtml}
+        ${nonSecHtml}
+        ${st.records.length>0?`<div style="margin-bottom:10px;"><button onclick="toggleStudentDetail('${detailId}',this);event.stopPropagation();" style="padding:5px 14px;border-radius:14px;border:none;background:#1565c0;color:white;font-size:11px;font-weight:800;cursor:pointer;font-family:inherit;">📋 전체 응시 기록 펼치기</button></div>`:''}
+        ${allRecordsHtml}
+        ${accessHtml}
+      </div>
     </div>`;
   }).join('');
 
