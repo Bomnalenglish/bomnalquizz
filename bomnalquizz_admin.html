@@ -174,6 +174,18 @@ tr:hover td{background:#f8f9ff;}
 .stat-val.warn{color:#ea580c;}
 .detail-wrong-list{background:white;border:1px solid #e2e8f0;border-radius:8px;padding:10px 12px;margin-top:6px;}
 .dwl-label{font-size:11px;font-weight:800;color:#475569;margin-bottom:6px;}
+/* 같은 날 같은 시험 시도 이력 */
+.attempt-count{display:inline-block;background:#fff7e0;color:#c2410c;padding:1px 7px;border-radius:11px;font-size:10px;font-weight:800;margin-left:4px;border:1px solid #fdba74;}
+.attempt-history{display:flex;flex-direction:column;gap:6px;}
+.ah-label{font-size:11px;font-weight:800;color:#475569;margin-bottom:4px;}
+.ah-row{background:white;border:1px solid #e2e8f0;border-radius:8px;padding:8px 11px;}
+.ah-row.is-latest{border-color:#1565c0;background:linear-gradient(135deg,#eff6ff,#fff);}
+.ah-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:11.5px;}
+.ah-tag-latest{background:#1565c0;color:white;font-size:9.5px;font-weight:800;padding:1px 6px;border-radius:8px;letter-spacing:.3px;}
+.ah-time{color:#475569;font-weight:700;}
+.ah-meta{color:#64748b;font-size:10.5px;}
+.ah-text{font-size:11px;color:var(--red);line-height:1.8;margin-top:6px;}
+.ah-text-bold{font-size:12px;color:var(--red);font-weight:700;margin-top:6px;}
 @media(max-width:640px){
   .chart-grid{grid-template-columns:1fr;}
   .summary-grid{grid-template-columns:repeat(2,1fr);}
@@ -502,6 +514,26 @@ function applyFilter(){
 const gc=s=>s>=95?'sS':s>=85?'sA':s>=70?'sB':s>=55?'sC':'sD';
 const gl=s=>s>=95?'S':s>=85?'A':s>=70?'B':s>=55?'C':'D';
 const ft=t=>t?t.toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}):'-';
+const ftHM=t=>t?t.toLocaleString('ko-KR',{hour:'2-digit',minute:'2-digit'}):'-';
+
+// 같은 학생·같은 시험·같은 날 응시 묶기 (내공스터디 스타일)
+function groupAttempts(data){
+  const m=new Map();
+  for(const d of data){
+    const meta=parseQuizMeta(d);
+    const baseType=(meta.type||'').replace(/[✓↻]/g,'');
+    const dt=d.time?d.time.toLocaleDateString('ko-KR'):'unk';
+    const key=`${d.school||''}|${d.name||''}|${meta.textbook}|${baseType}|${meta.lesson}|${meta.passages}|${dt}`;
+    if(!m.has(key)) m.set(key,[]);
+    m.get(key).push(d);
+  }
+  const groups=[];
+  m.forEach(records=>{
+    records.sort((a,b)=>(a.time||0)-(b.time||0));
+    groups.push({records,latest:records[records.length-1]});
+  });
+  return groups;
+}
 
 function passagesStr(d){
   if(!d || !d.passages || d.passages.length===0) return '';
@@ -537,44 +569,84 @@ function nonSecLabel(qt, d){
 function renderTable(data){
   document.getElementById('cntBadge').textContent=data.length+'건';
   if(!data.length){document.getElementById('tblArea').innerHTML='<div class="empty-msg">📭 기록 없음</div>';return;}
-  const rows=data.map((d,i)=>{
-    // 교재명·차시·유형 분리 (내공스터디 스타일)
-    const meta = parseQuizMeta(d);
-    const chips=d.wrongWords.slice(0,30).map(w=>{const eng=typeof w==='string'?w:(w.eng||w);const kor=typeof w==='object'?(w.kor||w.correct||''):'';return `<span class="wt-chip">${eng}${kor?`<span class="wa">→${kor}</span>`:''}</span>`;}).join('');
-    const typeChip = meta.type ? `<span class="type-pill type-${meta.typeClass}">${meta.type}</span>` : '';
-    const passageInfo = meta.passages ? `<span class="passage-info">${meta.passages}</span>` : '';
+
+  // 학생·시험·날짜별로 묶기 → 같은 시험 다회 응시는 한 줄로 모이고 펼치면 이전 시도가 보임
+  const groups=groupAttempts(data);
+  const so=document.getElementById('fSort').value;
+  if(so==='time_asc') groups.sort((a,b)=>(a.latest.time||0)-(b.latest.time||0));
+  else if(so==='score_desc') groups.sort((a,b)=>b.latest.score-a.latest.score);
+  else if(so==='score_asc') groups.sort((a,b)=>a.latest.score-b.latest.score);
+  else groups.sort((a,b)=>(b.latest.time||0)-(a.latest.time||0));
+
+  const buildChips=(att)=>(att.wrongWords||[]).slice(0,30).map(w=>{const eng=typeof w==='string'?w:(w.eng||w);const kor=typeof w==='object'?(w.kor||w.correct||''):'';return `<span class="wt-chip">${eng}${kor?`<span class="wa">→${kor}</span>`:''}</span>`;}).join('');
+
+  const rows=groups.map((g,i)=>{
+    const d=g.latest;
+    const attempts=g.records;
+    const total=attempts.length;
+    const meta=parseQuizMeta(d);
+    const typeChip=meta.type?`<span class="type-pill type-${meta.typeClass}">${meta.type}</span>`:'';
+    const passageInfo=meta.passages?`<span class="passage-info">${meta.passages}</span>`:'';
     const roundBadge=d.round>1?`<span class="round-badge">${d.round}라운드</span>`:'';
-    const hasWrongs = (d.wrongWords && d.wrongWords.length>0) || d.wrongSentences || d.wrongNumbers;
-    const wrongCnt = (d.wrongWords && d.wrongWords.length) || (d.wrongSentences ? d.wrongSentences.split(' / ').length : 0) || (d.wrongNumbers ? (d.wrongNumbers.match(/번/g)||[]).length : 0);
+    const attemptBadge=total>1?`<span class="attempt-count" title="이 시험을 같은 날 ${total}회 응시">${total}회</span>`:'';
+    const hasWrongs=(d.wrongWords&&d.wrongWords.length>0)||d.wrongSentences||d.wrongNumbers;
+    const anyHasWrong=attempts.some(a=>(a.wrongWords&&a.wrongWords.length)||a.wrongSentences||a.wrongNumbers);
+    const expandable=anyHasWrong||total>1;
+    const wrongCnt=(d.wrongWords&&d.wrongWords.length)||(d.wrongSentences?d.wrongSentences.split(' / ').length:0)||(d.wrongNumbers?(d.wrongNumbers.match(/번/g)||[]).length:0);
+
+    // 시도 이력 (최신순, 다회 응시일 때만)
+    const historyHtml=total>1?`<div class="attempt-history">
+      <div class="ah-label">📜 시도 이력 (총 ${total}회 · 최신순)</div>
+      ${attempts.slice().reverse().map(att=>{
+        const isLatest=att.id===d.id;
+        const attChips=buildChips(att);
+        return `<div class="ah-row ${isLatest?'is-latest':''}">
+          <div class="ah-head">
+            ${isLatest?'<span class="ah-tag-latest">최신</span>':''}
+            <span class="ah-time">${ftHM(att.time)}</span>
+            <span class="sp ${gc(att.score)}">${att.score}점</span>
+            <span class="ah-meta">정답 ${att.correct||0} / 오답 ${att.wrong||0}${att.timedOut?' / 시간초과 '+att.timedOut:''}${att.elapsed?' · '+att.elapsed+'분':''}</span>
+            ${att.round>1?`<span class="round-badge">${att.round}라운드</span>`:''}
+            <button class="del-btn-mini" onclick="deleteSingle('${att.id}')" title="이 시도만 삭제">🗑️</button>
+          </div>
+          ${attChips?`<div class="wt-chips" style="margin-top:6px">${attChips}</div>`:''}
+          ${(!att.wrongWords||!att.wrongWords.length)&&att.wrongSentences?`<div class="ah-text">${att.wrongSentences.split(' / ').join('<br>')}</div>`:''}
+          ${(!att.wrongWords||!att.wrongWords.length)&&!att.wrongSentences&&att.wrongNumbers?`<div class="ah-text-bold">${att.wrongNumbers}</div>`:''}
+        </div>`;
+      }).join('')}
+    </div>`:'';
+
+    const singleDetailHtml=total===1&&hasWrongs?`
+      <div class="detail-stats">
+        <div class="stat-item"><span class="stat-label">정답</span><span class="stat-val ok">${d.correct||0}</span></div>
+        <div class="stat-item"><span class="stat-label">오답</span><span class="stat-val no">${d.wrong||0}</span></div>
+        <div class="stat-item"><span class="stat-label">시간초과</span><span class="stat-val ${d.timedOut>0?'warn':'ok'}">${d.timedOut||0}</span></div>
+        <div class="stat-item"><span class="stat-label">총문제</span><span class="stat-val">${d.total||0}</span></div>
+      </div>
+      ${(d.wrongWords&&d.wrongWords.length>0)?`<div class="detail-wrong-list"><div class="dwl-label">📝 오답 단어 (${d.wrongWords.length}개)</div><div class="wt-chips">${buildChips(d)}</div></div>`:''}
+      ${(!d.wrongWords||d.wrongWords.length===0)&&d.wrongSentences?`<div class="detail-wrong-list"><div class="dwl-label">📝 오답 문장</div><div style="font-size:11px;color:var(--red);line-height:1.8">${d.wrongSentences.split(' / ').join('<br>')}</div></div>`:''}
+      ${(!d.wrongWords||d.wrongWords.length===0)&&!d.wrongSentences&&d.wrongNumbers?`<div class="detail-wrong-list"><div class="dwl-label">📝 오답 번호</div><div style="font-size:12px;color:var(--red);line-height:1.7;font-weight:700">${d.wrongNumbers}</div></div>`:''}
+    `:'';
+
     return `<tbody class="row-group">
       <tr class="data-row">
         <td class="td-check"><input type="checkbox" class="row-chk" data-id="${d.id}" style="cursor:pointer"></td>
-        <td class="td-expand">${hasWrongs?`<button class="expand-btn" onclick="toggleRowDetail(this)" title="상세 보기">▶</button>`:'<span style="color:#cbd5e1">·</span>'}</td>
+        <td class="td-expand">${expandable?`<button class="expand-btn" onclick="toggleRowDetail(this)" title="상세 보기">▶</button>`:'<span style="color:#cbd5e1">·</span>'}</td>
         <td class="td-idx">${i+1}</td>
         <td class="td-class">${d.school}</td>
         <td class="td-name"><strong>${d.name}</strong></td>
-        <td class="td-textbook"><div class="textbook-name">${meta.textbook}</div>${typeChip?'<div style="margin-top:3px">'+typeChip+'</div>':''}</td>
-        <td class="td-lesson">${meta.lesson || '<span style="color:#cbd5e1">-</span>'}${passageInfo?'<br>'+passageInfo:''}${roundBadge}</td>
+        <td class="td-textbook"><div class="textbook-name">${meta.textbook}</div>${(typeChip||attemptBadge)?'<div style="margin-top:3px">'+typeChip+attemptBadge+'</div>':''}</td>
+        <td class="td-lesson">${meta.lesson||'<span style="color:#cbd5e1">-</span>'}${passageInfo?'<br>'+passageInfo:''}${roundBadge}</td>
         <td class="td-time">${d.elapsed?d.elapsed+'분':'-'}</td>
         <td class="td-score"><span class="sp ${gc(d.score)}">${d.score}점</span><div class="score-sub">${gl(d.score)}</div></td>
         <td class="td-submit">${ft(d.time)}</td>
         <td class="td-actions">
           ${hasWrongs?`<span class="wrong-count-badge">오답 ${wrongCnt}</span>`:'<span class="ok-badge">✅</span>'}
-          <button class="del-btn-mini" onclick="deleteSingle('${d.id}')" title="삭제">🗑️</button>
+          <button class="del-btn-mini" onclick="deleteSingle('${d.id}')" title="이 시도 삭제">🗑️</button>
         </td>
       </tr>
-      ${hasWrongs?`<tr class="detail-row" style="display:none"><td colspan="11" style="padding:0;background:#f8fafc;border-top:1px dashed #cbd5e1">
-        <div class="detail-content">
-          <div class="detail-stats">
-            <div class="stat-item"><span class="stat-label">정답</span><span class="stat-val ok">${d.correct||0}</span></div>
-            <div class="stat-item"><span class="stat-label">오답</span><span class="stat-val no">${d.wrong||0}</span></div>
-            <div class="stat-item"><span class="stat-label">시간초과</span><span class="stat-val ${d.timedOut>0?'warn':'ok'}">${d.timedOut||0}</span></div>
-            <div class="stat-item"><span class="stat-label">총문제</span><span class="stat-val">${d.total||0}</span></div>
-          </div>
-          ${(d.wrongWords&&d.wrongWords.length>0)?`<div class="detail-wrong-list"><div class="dwl-label">📝 오답 단어 (${d.wrongWords.length}개)</div><div class="wt-chips">${chips}</div></div>`:''}
-          ${(!d.wrongWords||d.wrongWords.length===0)&&d.wrongSentences?`<div class="detail-wrong-list"><div class="dwl-label">📝 오답 문장</div><div style="font-size:11px;color:var(--red);line-height:1.8">${d.wrongSentences.split(' / ').join('<br>')}</div></div>`:''}
-          ${(!d.wrongWords||d.wrongWords.length===0)&&!d.wrongSentences&&d.wrongNumbers?`<div class="detail-wrong-list"><div class="dwl-label">📝 오답 번호</div><div style="font-size:12px;color:var(--red);line-height:1.7;font-weight:700">${d.wrongNumbers}</div></div>`:''}
-        </div>
+      ${expandable?`<tr class="detail-row" style="display:none"><td colspan="11" style="padding:0;background:#f8fafc;border-top:1px dashed #cbd5e1">
+        <div class="detail-content">${historyHtml||singleDetailHtml}</div>
       </td></tr>`:''}
     </tbody>`;
   }).join('');
