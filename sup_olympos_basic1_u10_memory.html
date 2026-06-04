@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>봄날 ENGLISH | 올림포스 독해 기본 1 · Unit 10 본문암기</title>
+<script type="module" src="bn_tracker.js"></script>
+<script src="mock_word_dict.js"></script>
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getFirestore,collection,addDoc,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+const cfg={apiKey:"AIzaSyCxS524S8KAaF87DomPtl9sJdF-eqes404",authDomain:"bomnalvaca.firebaseapp.com",projectId:"bomnalvaca",storageBucket:"bomnalvaca.firebasestorage.app",messagingSenderId:"115868052300",appId:"1:115868052300:web:765c08867b6f1ce0987de9"};
+const app=initializeApp(cfg);const db=getFirestore(app);
+window._fbSave=async function(data){
+  try{await addDoc(collection(db,'quiz_results'),{...data,timestamp:serverTimestamp()});}
+  catch(e){console.warn('FB 저장 오류:',e);}
+};
+</script>
+<style>
+  :root {
+    --pri: #6b46f0;
+    --pri-dark: #5638d1;
+    --pri-light: #e9e2ff;
+    --bg-deep: #1e1b4b;
+    --bg-mid: #2d2670;
+    --card: #ffffff;
+    --ink: #1a1a2e;
+    --muted: #6b7280;
+    --border: #e5e7eb;
+    --soft: #f8faff;
+    --easy: #c6f6d5;
+    --easy-text: #22543d;
+    --med: #fef3c7;
+    --med-text: #92400e;
+    --hard: #fed7d7;
+    --hard-text: #9b2c2c;
+    --correct: #10b981;
+    --wrong: #ef4444;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html,body{font-family:'Pretendard','Apple SD Gothic Neo','Malgun Gothic',sans-serif;background:#f3f4f6;color:var(--ink);min-height:100vh;-webkit-tap-highlight-color:transparent}
+  body{max-width:520px;margin:0 auto;background:#fff;min-height:100vh;position:relative;padding-bottom:90px}
+
+  /* 헤더 (보라색 그라데이션) */
+  .quiz-header{background:linear-gradient(135deg,var(--bg-deep),var(--bg-mid));color:white;padding:36px 22px 24px;position:relative}
+  .back-btn{position:absolute;top:18px;left:22px;background:none;border:none;color:white;font-size:24px;cursor:pointer;padding:6px}
+  .progress-bar{position:absolute;top:54px;left:22px;right:22px;height:6px;background:rgba(255,255,255,.18);border-radius:3px;overflow:hidden}
+  .progress-fill{height:100%;background:linear-gradient(90deg,#a78bfa,#c4b5fd);border-radius:3px;transition:width .3s}
+  .header-row{display:flex;justify-content:space-between;align-items:flex-end;margin-top:38px}
+  .timer{font-size:38px;font-weight:800;letter-spacing:1px}
+  .counter{font-size:16px;color:rgba(255,255,255,.85);font-weight:600}
+
+  /* 시작 화면 */
+  .start-screen{padding:24px 18px}
+  .start-card{background:white;border:1.5px solid var(--border);border-radius:18px;padding:24px 20px;box-shadow:0 4px 14px rgba(0,0,0,.04);margin-bottom:14px}
+  .start-card h2{font-size:18px;font-weight:800;color:var(--pri);margin-bottom:14px}
+  .start-card p{font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:14px}
+  .form-grp{margin-bottom:12px}
+  .form-grp label{display:block;font-size:13px;font-weight:700;color:var(--ink);margin-bottom:6px}
+  .form-grp input,.form-grp select{width:100%;padding:11px 13px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;font-family:inherit}
+  .mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+  .mode-card{background:white;border:2.5px solid var(--border);border-radius:14px;padding:16px 12px;text-align:center;cursor:pointer;transition:all .15s}
+  .mode-card.sel{border-color:var(--pri);background:var(--pri-light)}
+  .mode-card .icon{font-size:24px;margin-bottom:6px}
+  .mode-card .title{font-size:14px;font-weight:800;color:var(--pri);margin-bottom:3px}
+  .mode-card .desc{font-size:11px;color:var(--muted)}
+  .passage-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(70px,1fr));gap:8px;margin-bottom:16px}
+  .p-card{position:relative;background:white;border:1.5px solid var(--border);border-radius:10px;padding:10px 6px;cursor:pointer;text-align:center;transition:all .15s;font-size:12px;font-weight:700;color:var(--muted)}
+  .p-card.sel{border-color:var(--pri);background:var(--pri-light);color:var(--pri)}
+  .p-card .num{font-size:14px;font-weight:800;color:var(--pri)}
+  .p-card .topic{font-size:10px;color:var(--muted);margin-top:2px;line-height:1.2}
+  .actions{display:flex;gap:8px;margin-top:14px}
+  .btn{flex:1;padding:13px;border-radius:11px;border:none;font-family:inherit;font-size:14px;font-weight:800;cursor:pointer;transition:opacity .15s}
+  .btn-pri{background:var(--pri);color:white}
+  .btn-pri:hover{background:var(--pri-dark)}
+  .btn-pri:disabled{opacity:.5;cursor:not-allowed}
+  .btn-sec{background:white;color:var(--pri);border:1.5px solid var(--pri)}
+
+  /* 퀴즈 화면 */
+  #quizScreen{display:none}
+  .passage-box{padding:18px 22px 6px 22px;background:white}
+  .tool-row{display:flex;gap:8px;align-items:center;padding:10px 0 12px 0;font-size:13px;color:#94a3b8}
+  .tool-btn{width:34px;height:34px;border-radius:8px;background:#f3f4f6;display:flex;align-items:center;justify-content:center;font-size:15px}
+  .passage-text{font-size:16px;line-height:2;color:#1a1a2e;text-align:justify;letter-spacing:-.2px;padding-bottom:8px}
+  .passage-text .blank{display:inline-block;min-width:80px;background:#fff59d;border-bottom:3px solid #f57f17;border-radius:4px;padding:1px 12px;font-weight:800;color:#e65100;text-align:center;margin:0 3px}
+  .passage-text .hl{text-decoration:underline;text-decoration-color:#dc2626;text-decoration-thickness:2px;text-underline-offset:3px;font-weight:700}
+  .passage-text .hl-num{font-weight:800}
+  .passage-text .opt-pair{color:var(--pri);font-weight:700;margin:0 1px}
+  .passage-text .opt-bracket{background:#f3e8ff;padding:2px 5px;border-radius:4px;font-weight:700;color:#5638d1}
+
+  /* 문제 카드 */
+  .q-card{background:white;border-top:1px solid var(--border);padding:20px 22px;margin-top:6px}
+  .q-meta{display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+  .q-no{background:var(--pri);color:white;border-radius:14px;padding:5px 13px;font-size:14px;font-weight:800}
+  .q-diff{border-radius:14px;padding:4px 12px;font-size:11px;font-weight:800}
+  .q-diff.easy{background:var(--easy);color:var(--easy-text)}
+  .q-diff.med{background:var(--med);color:var(--med-text)}
+  .q-diff.hard{background:var(--hard);color:var(--hard-text)}
+  .q-type{background:var(--pri-light);color:var(--pri);border-radius:14px;padding:4px 13px;font-size:11px;font-weight:800}
+  .q-score{margin-left:auto;font-size:13px;color:var(--muted);font-weight:700}
+  .q-text{font-size:16px;font-weight:700;color:var(--ink);line-height:1.5;margin-bottom:16px}
+  .q-text .quote{font-weight:600;color:#4b5563}
+  .opt-list{display:flex;flex-direction:column;gap:8px}
+  .opt{display:flex;align-items:center;gap:11px;padding:13px 15px;background:white;border:1.5px solid var(--border);border-radius:12px;cursor:pointer;font-size:15px;transition:all .15s;text-align:left;font-family:inherit;color:var(--ink)}
+  .opt:hover{border-color:var(--pri);background:#fafafa}
+  .opt.sel{border-color:var(--pri);background:var(--pri-light)}
+  .opt.correct{border-color:var(--correct);background:#d1fae5}
+  .opt.wrong{border-color:var(--wrong);background:#fee2e2}
+  .opt .num{width:24px;height:24px;border-radius:50%;background:#f3f4f6;color:var(--muted);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .opt.sel .num{background:var(--pri);color:white}
+  .opt.correct .num{background:var(--correct);color:white}
+  .opt.wrong .num{background:var(--wrong);color:white}
+  .opt-text{flex:1}
+  .input-answer{width:100%;padding:14px 16px;border:1.5px solid var(--border);border-radius:12px;font-size:15px;font-family:inherit;background:#fafafa}
+  .input-answer:focus{outline:none;border-color:var(--pri);background:white}
+  .input-answer.correct{border-color:var(--correct);background:#d1fae5}
+  .input-answer.wrong{border-color:var(--wrong);background:#fee2e2}
+
+  /* 결과 화면 */
+  #resultScreen{display:none;padding:24px 18px}
+  .result-card{background:white;border:1.5px solid var(--border);border-radius:18px;padding:28px 22px;text-align:center;box-shadow:0 4px 14px rgba(0,0,0,.04);margin-bottom:14px}
+  .result-card h2{font-size:22px;font-weight:800;color:var(--pri);margin-bottom:14px}
+  .result-score{font-size:48px;font-weight:900;color:var(--pri);margin:10px 0}
+  .result-detail{font-size:14px;color:var(--muted);line-height:1.7}
+
+  /* 하단 고정 버튼 */
+  .bottom-bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);max-width:520px;width:100%;background:white;border-top:1px solid var(--border);padding:12px 16px;display:flex;gap:8px;z-index:50}
+  .bottom-bar .btn{padding:14px}
+
+  .hidden{display:none!important}
+
+  /* 피드백 박스 */
+  .feedback{margin-top:14px;padding:14px;border-radius:12px;font-size:13px;line-height:1.7}
+  .feedback.correct{background:#d1fae5;color:#065f46;border-left:4px solid var(--correct)}
+  .feedback.wrong{background:#fee2e2;color:#991b1b;border-left:4px solid var(--wrong)}
+  .feedback strong{font-weight:800}
+
+  @media(max-width:380px){
+    .timer{font-size:32px}
+    .passage-text{font-size:14px}
+    .opt{font-size:14px}
+  }
+
+  .ko-box{display:none;margin-top:10px;padding:13px 14px;border-radius:10px;background:#fefce8;border:1px solid #fde047;border-left:4px solid #ca8a04;font-size:13px;line-height:1.7;color:#713f12;font-weight:500;}
+  .ko-box.show{display:block;}
+  .ko-box .ko-label{font-weight:800;font-size:12px;color:#854d0e;margin-bottom:6px;}
+  .next-q-btn-mem{display:none;margin-top:12px;width:100%;padding:13px;background:linear-gradient(135deg,#1e40af,#3b82f6);color:#fff;border:none;border-radius:11px;font-family:inherit;font-size:14px;font-weight:800;cursor:pointer;}
+  .next-q-btn-mem.show{display:block;}
+</style>
+</head>
+<body>
+
+<!-- ─── 시작 화면 ─── -->
+<div id="startScreen" class="start-screen">
+  <div class="start-card">
+    <h2>🎯 올림포스 독해 기본 1 · Unit 10 본문암기</h2>
+    <p>지문별로 9가지 유형의 문제를 풀며 어휘·문맥·어법을 종합적으로 학습합니다. (부산광역시 교육청 학력평가)</p>
+    <div class="form-grp">
+      <label>이름</label>
+      <input id="nameInput" placeholder="이름을 입력하세요" />
+    </div>
+    <div class="form-grp">
+      <label>학교</label>
+      <input id="schoolInput" placeholder="학교를 입력하세요" />
+    </div>
+  </div>
+  <div class="start-card">
+    <h2>📚 지문 선택</h2>
+    <div class="mode-grid">
+      <div class="mode-card sel" data-mode="single">
+        <div class="icon">📖</div>
+        <div class="title">단일 지문</div>
+        <div class="desc">1개 지문 × 9문제</div>
+      </div>
+      <div class="mode-card" data-mode="all">
+        <div class="icon">📚</div>
+        <div class="title">전체 지문</div>
+        <div class="desc">선택한 지문 모두</div>
+      </div>
+    </div>
+    <div class="passage-grid" id="passageGrid"></div>
+    <div class="actions">
+      <button class="btn btn-sec" id="selectAllBtn">전체 선택</button>
+      <button class="btn btn-pri" id="startBtn" disabled>시작하기</button>
+    </div>
+  </div>
+</div>
+
+<!-- ─── 퀴즈 화면 ─── -->
+<div id="quizScreen">
+  <div class="quiz-header">
+    <button class="back-btn" onclick="if(confirm('정말 종료하시겠습니까?')) location.reload()">←</button>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="header-row">
+      <div class="timer" id="timer">20:00</div>
+      <div class="counter" id="counter">0/9 응답</div>
+    </div>
+  </div>
+  <div class="passage-box">
+    <div class="tool-row">
+      <div class="tool-btn">Aa</div>
+      <div class="tool-btn">🖊️</div>
+      <div class="tool-btn">✂️</div>
+      <div class="tool-btn">📐</div>
+      <div style="margin-left:auto" class="tool-btn">🌙</div>
+    </div>
+    <div class="passage-text" id="passageText"></div>
+  </div>
+  <div class="q-card">
+    <div class="q-meta" id="qMeta"></div>
+    <div class="q-text" id="qText"></div>
+    <div id="qBody"></div>
+    <div class="feedback hidden" id="feedback"></div>
+  <div class="ko-box" id="koBox"></div>
+  <button class="next-q-btn-mem" id="nextQBtnMem" type="button">다음 →</button>
+  </div>
+</div>
+
+<div class="bottom-bar hidden" id="bottomBar">
+  <button class="btn btn-pri" id="nextBtn" style="width:100%;">다음</button>
+</div>
+
+<!-- ─── 결과 화면 ─── -->
+<div id="resultScreen">
+  <div class="result-card">
+    <h2>🎉 학습 완료!</h2>
+    <div class="result-score" id="resultScore">0/0</div>
+    <div class="result-detail" id="resultDetail"></div>
+  </div>
+  <div class="actions">
+    <button class="btn btn-sec" onclick="location.reload()">다시 풀기</button>
+    <button class="btn btn-pri" id="backToPassageBtn">다른 지문 풀기</button>
+  </div>
+  <div class="actions" style="margin-top:8px">
+    <button class="btn btn-sec" style="flex:1" onclick="location.href='index.html'">메인 허브로</button>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════
+   📝 지문 데이터 - 각 지문당 9문제
+   유형: 1.동의어 2.반의어 3.빈칸어휘 4.빈칸문맥 5.문맥상부적절
+        6.조합형 7.영영풀이 8.어형변환 9.다의어
+═══════════════════════════════════════════════════════════ */
+
+const PASSAGES = [
+  {
+    "no": 1,
+    "label": "ANALYSIS",
+    "topic": "다음 빈칸에 들어갈 말로 가장 적절한 것은?",
+    "fullEn": "Many developmental theorists and researchers, including those studying human as well as nonhuman primate subjects, have recognized the role that fear can play in a primate’s social development. When an infant is frightened it always seeks out its mother for protection and safety, and all exploratory and play activity stops until the infant has been sufficiently comforted and reassured by its attachment object. Thus, frequently frightened infants will very likely have less time to explore and fewer opportunities to play than will infants who are not. Such voluntary restraints may serve to slow down the social development of shy or anxious infants if these tendencies are maintained throughout their childhood years.",
+    "fullKo": "",
+    "questions": [
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "ays seeks out its mother for protection and safety, and all",
+        "ctxPost": "and play activity stops until the infant has been sufficien",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "remarkable",
+          "competitive",
+          "application",
+          "exploratory"
+        ],
+        "ans": 3,
+        "meaning_hint": "탐색의"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "When an infant is",
+        "ctxPost": "it always seeks out its mother for protection and safety, a",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "shade",
+          "overlook",
+          "landscape",
+          "frightened"
+        ],
+        "ans": 3,
+        "meaning_hint": "겁을 먹은, 놀란"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "infant has been sufficiently comforted and reassured by its",
+        "ctxPost": "object",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "community center",
+          "attachment",
+          "finance",
+          "living standard"
+        ],
+        "ans": 1,
+        "meaning_hint": "애착"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "When an",
+        "ctxPost": "is frightened it always seeks out its mother for protection",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "impression",
+          "exchange",
+          "infant",
+          "rational"
+        ],
+        "ans": 2,
+        "meaning_hint": "유아"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "Such voluntary restraints may",
+        "ctxPost": "to slow down the social development of shy or anxious infan",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "fossil",
+          "monitor",
+          "serve",
+          "intensity"
+        ],
+        "ans": 2,
+        "meaning_hint": "(~한) 역할을 하다"
+      }
+    ]
+  },
+  {
+    "no": 2,
+    "label": "Practice01",
+    "topic": "다음 빈칸에 들어갈 말로 가장 적절한 것은?",
+    "fullEn": "Our complex brains might have evolved to establish strong social bonds, but defining what should be part of that social group appears to be rather flexible. For instance, some people treat their pets as if they are members of their family, and believe they can relate to the pets’ needs, desires, fears and dreams. Others see animals as distinct from humans and wouldn’t think of talking to one as if it was a friend. Many people keep the ashes of a deceased loved one nearby, believing those ashes continue to serve as some link to their existence. Even if inanimate objects don’t have a distinct personality, many of us still attribute certain human characteristics to non-human objects or beings, such as pets, dolls or even cars and memorabilia.",
+    "fullKo": "",
+    "questions": [
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "Even if",
+        "ctxPost": "objects don’t have a distinct personality, many of us still",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "inanimate",
+          "promptly",
+          "significant",
+          "give up"
+        ],
+        "ans": 0,
+        "meaning_hint": "무생물의"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "Our complex brains might have evolved to",
+        "ctxPost": "strong social bonds, but defining what should be part of th",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "sensitivity",
+          "attach",
+          "establish",
+          "policy"
+        ],
+        "ans": 2,
+        "meaning_hint": "형성하다"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "Others see animals as",
+        "ctxPost": "from humans and wouldn’t think of talking to one as if it w",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "donate",
+          "castle",
+          "distinct",
+          "asleep"
+        ],
+        "ans": 2,
+        "meaning_hint": "별개의"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "eceased loved one nearby, believing those ashes continue to",
+        "ctxPost": "as some link to their existence",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "market",
+          "herd",
+          "serve",
+          "fascination"
+        ],
+        "ans": 2,
+        "meaning_hint": "(~한) 역할을 하다"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "Many people keep the ashes of a",
+        "ctxPost": "loved one nearby, believing those ashes continue to serve a",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "propose",
+          "deceased",
+          "previously",
+          "conformity"
+        ],
+        "ans": 1,
+        "meaning_hint": "사망한"
+      }
+    ]
+  },
+  {
+    "no": 3,
+    "label": "Practice02",
+    "topic": "다음 빈칸에 들어갈 말로 가장 적절한 것은?",
+    "fullEn": "Although the wish to be alone is often strong, its intensity varies from person to person. An equally impelling impulse, though, is to seek the company of others and to spend extended periods of time sharing activities. In these periods we exchange information and feelings in both conversational and non-verbal forms (facial expressions, eye contact, gestures, touching, and so on). We need other people to provide us with love, support, approval, bodily contact, reassurance, physical help and a myriad of other practical, physical and emotional needs. In a very basic sense we need others to confirm that we are there, that we exist and that we have an identity that is unique and separate from anyone else. Thus, we generally cannot exist for too long without seeking companionship.",
+    "fullKo": "",
+    "questions": [
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "In a very basic sense we need others to",
+        "ctxPost": "that we are there, that we exist and that we have an identi",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "confirm",
+          "count against",
+          "dime",
+          "index"
+        ],
+        "ans": 0,
+        "meaning_hint": "확인하다, 확증하다"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "onfirm that we are there, that we exist and that we have an",
+        "ctxPost": "that is unique and separate from anyone else",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "identity",
+          "tonal",
+          "discard",
+          "contribution"
+        ],
+        "ans": 0,
+        "meaning_hint": "정체성"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "We need other people to provide us with love, support,",
+        "ctxPost": ", bodily contact, reassurance, physical help and a myriad of",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "approval",
+          "offspring",
+          "individually",
+          "surface"
+        ],
+        "ans": 0,
+        "meaning_hint": "인정, 승인"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "An",
+        "ctxPost": "impelling impulse, though, is to seek the company of others",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "manager",
+          "line up",
+          "equally",
+          "organization"
+        ],
+        "ans": 2,
+        "meaning_hint": "똑같이"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "Although the wish to be alone is often strong, its",
+        "ctxPost": "varies from person to person",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "department",
+          "self-enhance",
+          "tropical",
+          "intensity"
+        ],
+        "ans": 3,
+        "meaning_hint": "강도"
+      }
+    ]
+  },
+  {
+    "no": 4,
+    "label": "Practice03",
+    "topic": "다음 빈칸에 들어갈 말로 가장 적절한 것은?",
+    "fullEn": "At one end of the spectrum of transformations was the forest gardening as practiced by the peoples of New Guinea and Amazonia that mimicked natural growth and left minimal traces on the land. At the other end was monoculture: cultivating only one species of plant or raising only one species of animal. The beginnings of monoculture can be seen in the wheat fields of the Middle East, the rice paddies of China, and the herds of sheep and goats on the Eurasian steppe. Biologically speaking, these species suddenly became very successful, measured by their rates of survival and reproduction. So did other, unwanted species. Crops that ripened or were stored after harvesting attracted rats, mice, sparrows, and roaches. Water pools provided habitats for mosquitoes. Garbage and human or animal waste attracted flies. Thanks to humans, weeds and pests were also biological winners.",
+    "fullKo": "",
+    "questions": [
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "me very successful, measured by their rates of survival and",
+        "ctxPost": "",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "reproduction",
+          "subsequent",
+          "rudeness",
+          "particularly"
+        ],
+        "ans": 0,
+        "meaning_hint": "번식, 생식"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "At the other end was",
+        "ctxPost": ": cultivating only one species of plant or raising only one",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "outburst",
+          "monoculture",
+          "measure",
+          "genius"
+        ],
+        "ans": 1,
+        "meaning_hint": "단일 재배"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "So did other,",
+        "ctxPost": "species",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "edible",
+          "unwanted",
+          "entirely",
+          "announcement"
+        ],
+        "ans": 1,
+        "meaning_hint": "쓸모없는"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "w Guinea and Amazonia that mimicked natural growth and left",
+        "ctxPost": "traces on the land",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "delighted",
+          "mash",
+          "minimal",
+          "innovation"
+        ],
+        "ans": 2,
+        "meaning_hint": "최소한의"
+      },
+      {
+        "type": "blank-voca",
+        "diff": "med",
+        "score": 5,
+        "ctxPre": "At one end of the",
+        "ctxPost": "of transformations was the forest gardening as practiced by",
+        "q": "다음 글의 빈칸에 들어갈 말로 가장 적절한 것은?",
+        "opts": [
+          "official",
+          "grasp",
+          "minimal",
+          "spectrum"
+        ],
+        "ans": 3,
+        "meaning_hint": "범위, 영역"
+      }
+    ]
+  }
+];
+/* ═══════════════════════════════════════════════════════════
+   상태 및 핵심 로직
+═══════════════════════════════════════════════════════════ */
+let mode = 'single';
+let selectedPassages = new Set();
+let userName = '', userSchool = '';
+let allQuestions = [];
+let curIdx = 0;
+let answers = {};
+let totalScore = 0, gotScore = 0;
+let timerInterval = null;
+let timeLeft = 0;
+let quizStartTime = 0;
+
+const TYPE_LABELS = {
+  'syn':'동의어 고르기','ant':'반의어 고르기',
+  'blank-voca':'빈칸 어휘 완성','blank-ctx':'빈칸 문맥 완성',
+  'wrong-word':'문맥상 부적절한 어휘','abc':'(A)(B)(C) 조합형',
+  'eng-def':'영영풀이 매칭','word-form':'어형 변환','polysemy':'다의어 문맥적 의미'
+};
+const DIFF_LABELS = {'easy':'쉬움','med':'보통','hard':'어려움'};
+
+/* ─ 시작 화면 초기화 ─ */
+function initStart(){
+  const grid = document.getElementById('passageGrid');
+  PASSAGES.forEach(p => {
+    const card = document.createElement('div');
+    card.className = 'p-card';
+    card.dataset.no = p.no;
+    card.innerHTML = `<div class="num">${p.no}번</div><div class="topic">${p.topic}</div>`;
+    card.addEventListener('click', () => {
+      if (mode === 'single') {
+        selectedPassages.clear();
+        document.querySelectorAll('.p-card').forEach(c => c.classList.remove('sel'));
+      }
+      if (selectedPassages.has(p.no)) {
+        selectedPassages.delete(p.no);
+        card.classList.remove('sel');
+      } else {
+        selectedPassages.add(p.no);
+        card.classList.add('sel');
+      }
+      updateStartBtn();
+    });
+    grid.appendChild(card);
+  });
+
+  document.querySelectorAll('.mode-card').forEach(m => {
+    m.addEventListener('click', () => {
+      document.querySelectorAll('.mode-card').forEach(x => x.classList.remove('sel'));
+      m.classList.add('sel');
+      mode = m.dataset.mode;
+      if (mode === 'single' && selectedPassages.size > 1) {
+        selectedPassages.clear();
+        document.querySelectorAll('.p-card').forEach(c => c.classList.remove('sel'));
+      }
+      updateStartBtn();
+    });
+  });
+
+  document.getElementById('selectAllBtn').addEventListener('click', () => {
+    document.querySelector('.mode-card[data-mode="all"]').click();
+    selectedPassages.clear();
+    PASSAGES.forEach(p => selectedPassages.add(p.no));
+    document.querySelectorAll('.p-card').forEach(c => c.classList.add('sel'));
+    updateStartBtn();
+  });
+
+  document.getElementById('startBtn').addEventListener('click', startQuiz);
+}
+
+function updateStartBtn(){
+  document.getElementById('startBtn').disabled = selectedPassages.size === 0;
+}
+
+function startQuiz(){
+  userName = document.getElementById('nameInput').value.trim() || '학생';
+  userSchool = document.getElementById('schoolInput').value.trim() || '';
+  allQuestions = [];
+  PASSAGES.forEach(p => {
+    if (selectedPassages.has(p.no)) {
+      p.questions.forEach((q, i) => allQuestions.push({...q, passage:p, qIdx:i}));
+    }
+  });
+  if (allQuestions.length === 0) return;
+  totalScore = allQuestions.reduce((s,q) => s+q.score, 0);
+  curIdx = 0;
+  answers = {};
+  gotScore = 0;
+  timeLeft = allQuestions.length * 60; // 1분/문제
+  document.getElementById('startScreen').style.display = 'none';
+  document.getElementById('quizScreen').style.display = 'block';
+  document.getElementById('bottomBar').classList.remove('hidden');
+  quizStartTime = Date.now();
+  startTimer();
+  renderQuestion();
+}
+
+function startTimer(){
+  if (timerInterval) clearInterval(timerInterval);
+  updateTimerDisplay();
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    updateTimerDisplay();
+    if (timeLeft <= 0) { clearInterval(timerInterval); finishQuiz(); }
+  }, 1000);
+}
+
+function updateTimerDisplay(){
+  const m = String(Math.floor(timeLeft/60)).padStart(2,'0');
+  const s = String(timeLeft%60).padStart(2,'0');
+  document.getElementById('timer').textContent = `${m}:${s}`;
+}
+
+/* ─ 문제 렌더링 ─ */
+function renderQuestion(){
+  // 초기화: ko-box 숨기고 nextBtn 다시 보이게
+  const koBox = document.getElementById('koBox');
+  if (koBox) koBox.classList.remove('show');
+  const nb = document.getElementById('nextQBtnMem');
+  if (nb) nb.classList.remove('show');
+  const mainNext = document.getElementById('nextBtn');
+  if (mainNext) mainNext.style.display = '';
+  const q = allQuestions[curIdx];
+  const total = allQuestions.length;
+  document.getElementById('counter').textContent = `${Object.keys(answers).length}/${total} 응답`;
+  document.getElementById('progressFill').style.width = ((curIdx+1)/total*100)+'%';
+
+  // 본문
+  const ptext = document.getElementById('passageText');
+  ptext.innerHTML = renderPassage(q);
+
+  // 메타
+  const meta = document.getElementById('qMeta');
+  meta.innerHTML = `
+    <div class="q-no">${curIdx+1}/${total}</div>
+    <div class="q-diff ${q.diff}">${DIFF_LABELS[q.diff]}</div>
+    <div class="q-type">${TYPE_LABELS[q.type]}</div>
+    <div class="q-score">${q.score}점</div>
+  `;
+
+  // 질문 + 본문
+  const qText = document.getElementById('qText');
+  let questionHtml = q.q;
+  if (q.type === 'eng-def') questionHtml += ` <span class="quote">"${q.defn}"</span>`;
+  if (q.type === 'polysemy') questionHtml += `<div style="margin-top:8px;font-size:14px;font-weight:500;color:#4b5563;line-height:1.7"><div>(A) ${q.sentenceA}</div><div style="margin-top:4px">(B) ${q.sentenceB}</div></div>`;
+  // wrong-word는 본문 자체에 ①~④와 변형 단어가 들어가므로 q-text에는 질문만 표시
+  qText.innerHTML = questionHtml;
+
+  // 본체
+  const body = document.getElementById('qBody');
+  if (q.type === 'word-form') {
+    body.innerHTML = `<input class="input-answer" id="userInput" placeholder="답안을 입력해주세요" autocomplete="off">`;
+    const inp = document.getElementById('userInput');
+    if (answers[curIdx] !== undefined) inp.value = answers[curIdx];
+    inp.addEventListener('input', e => { answers[curIdx] = e.target.value; updateCounter(); });
+  } else {
+    const opts = q.opts || [];
+    body.innerHTML = `<div class="opt-list">${opts.map((o,i) =>
+      `<button class="opt ${answers[curIdx]===i?'sel':''}" data-i="${i}"><span class="num">${i+1}</span><span class="opt-text">${o}</span></button>`
+    ).join('')}</div>`;
+    body.querySelectorAll('.opt').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const i = parseInt(btn.dataset.i);
+        answers[curIdx] = i;
+        body.querySelectorAll('.opt').forEach(b => b.classList.remove('sel'));
+        btn.classList.add('sel');
+        updateCounter();
+      });
+    });
+  }
+
+  document.getElementById('feedback').classList.add('hidden');
+  document.getElementById('nextBtn').textContent = curIdx === total-1 ? '완료' : '다음';
+}
+
+function renderPassage(q){
+  let text = q.passage.fullEn;
+  if (q.type === 'syn' || q.type === 'ant') {
+    const re = new RegExp(`\\b(${q.word})\\b`, 'i');
+    text = text.replace(re, `<span class="hl">$1</span>`);
+  }
+  if (q.type === 'blank-voca' || q.type === 'blank-ctx') {
+    // 빈칸 표시: ctxPre + ____ + ctxPost로 치환
+    const full = q.ctxPre + '___BLANK___' + q.ctxPost;
+    // 정확한 매칭 단어 찾기 (대안: 단순히 정답 단어를 빈칸으로 치환)
+    const opts = q.opts || [];
+    const ans = opts[q.ans];
+    if (ans) {
+      const escAns = ans.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const re = new RegExp(`\\b${escAns}\\b`, 'i');
+      text = text.replace(re, `<span class="blank">____</span>`);
+    }
+  }
+  if (q.type === 'word-form') {
+    const re = new RegExp(`\\b${q.ans}\\b`, 'i');
+    text = text.replace(re, `<span class="blank">____</span>`);
+  }
+  if (q.type === 'wrong-word') {
+    // 본문 전체를 contextSentence(잘못된 단어 포함)로 대체.
+    // contextSentence 안의 ①②③④<u>단어</u>를 그대로 본문에 표시.
+    text = q.contextSentence
+      .replace(/<u>/g, '<span class="hl">')
+      .replace(/<\/u>/g, '</span>')
+      .replace(/(①|②|③|④)/g, '<span class="hl-num">$1</span>');
+  }
+  if (q.type === 'abc') {
+    const m = q.ctx.match(/\(A\)\[(.+?)\s*\/\s*(.+?)\].+?\(B\)\[(.+?)\s*\/\s*(.+?)\].+?\(C\)\[(.+?)\s*\/\s*(.+?)\]/);
+    if (m) {
+      // 본문 자체를 q.ctx로 대체 (밑줄·괄호 강조 포함)
+      let abc = q.ctx;
+      abc = abc.replace(/\(([ABC])\)\[(.+?)\s*\/\s*(.+?)\]/g,
+        `<span class="opt-pair">($1)</span> <span class="opt-bracket">[$2 / $3]</span>`);
+      text = abc;
+    }
+  }
+  if (q.type === 'polysemy') {
+    const re = new RegExp(`\\b(${q.word})\\b`, 'i');
+    text = text.replace(re, `<span class="hl">$1</span>`);
+  }
+  return text;
+}
+
+function updateCounter(){
+  document.getElementById('counter').textContent = `${Object.keys(answers).length}/${allQuestions.length} 응답`;
+}
+
+/* ─── 단어 사전 (오답·정답 단어 뜻 표시용) ─── */
+const WORD_DICT = {
+  'abundant':'풍부한','accepted':'받아들여진','accidentally':'우연히','action':'행동','adaptable':'적응할 수 있는','adjustable':'조정 가능한','advanced':'고급의, 진보된','advantage':'이점, 우위','agency':'주도성, 행위 주체성','aggressive':'공격적인','aging':'노화','agriculture':'농업','anger':'분노','animals':'동물들','anonymously':'익명으로','antagonistic':'적대적인','application':'지원, 신청','applied':'지원했다','appointed':'임명된','approved':'승인된','arranged':'정돈된','artificial':'인공적인','aspect':'측면, 양상','atmosphere':'분위기, 대기','attention':'관심, 주의','authority':'권한','avoiding':'피하기',
+  'bad':'나쁜','belief':'믿음','beneficial':'유익한','bigger':'더 큰','body':'몸','boredom':'지루함',
+  'calmly':'침착하게','celebrated':'유명한, 축하한','center':'중심','cheap':'저렴한','civilization':'문명','clean':'깨끗한','closet':'옷장','coined':'(새 말을) 만든','collective':'집단의','combat':'전투','comfortable':'편안한','common':'흔한','community':'공동체','competed':'경쟁했다','competition':'경쟁, 대회','complain':'불평하다','complaint':'불평','complicates':'복잡하게 만든다','conflict':'갈등','confusion':'혼란','consciously':'의식적으로','consequence':'결과','convince':'설득하다','copy':'복사','cortex':'(대뇌)피질','counterpart':'상대','crop':'작물',
+  'dangerous':'위험한','deadly':'치명적인','decisive':'결정적인','decrease':'감소','decreased':'감소했다','definitive':'결정적인, 명확한','delayed':'지연된','deliberately':'의도적으로','demonstrating':'보여주는','denial':'부인','density':'밀도','denying':'부인하기','dependent':'의존하는','descendant':'후손','design':'설계','desirables':'바람직한 것들','destruction':'파괴','developed':'개발했다, 발전한','difficult':'어려운','difficulty':'어려움','direct':'직접적인','disability':'장애','disadvantage':'불리한 점','disappear':'사라지다','disappeared':'사라졌다','disappointed':'실망한','diseases':'질병들','dislike':'싫음','dismissed':'무시된','disorder':'무질서','disorganized':'정돈되지 않은','disregarded':'무시된','disruption':'방해, 붕괴','distant':'먼','documented':'기록된','doubted':'의심한','drawer':'서랍','dream':'꿈','dreams':'꿈들',
+  'early':'이른, 초기의','ease':'쉬움, 편함','easiest':'가장 쉬운','ecosystem':'생태계','edge':'우위, 가장자리','educating':'교육하기','efficient':'효율적인','efficiently':'효율적으로','effort':'노력','elaboration':'정교화','elementary':'기초의','embraced':'받아들였다','emerged':'나타났다','emigrated':'이주했다','empowered':'권한을 부여받은','encouraged':'격려된','enemies':'적들','engine':'엔진','entirely':'완전히','envelope':'봉투','envisioned':'계획한, 마음에 그린','epidemic':'전염병의','equipment':'장비','escaped':'탈출한','essential':'필수적인','excessive':'과도한','exchange':'교환','exclusive':'배타적인','exit':'출구','exotic':'외래의','expanded':'확장된','expected':'예상된','experienced':'경험 있는','extinction':'멸종',
+  'factories':'공장들','fake':'가짜의','fame':'명성','fantasy':'환상','far':'먼','fast':'빠른','favoring':'선호함','fear':'두려움','feeding':'먹이를 주기, 영양을 공급함','fertilizer':'비료','few':'적은','fewer':'더 적은','fight':'싸움','finished':'끝난','fixed':'고정된','flexibility':'유연성','flexible':'유연한','flight':'비행','flying':'날기','focus':'집중','focused':'집중한','folded':'접은','foreign':'외국의','forget':'잊다','forgotten':'잊혀진','frequently':'자주','friendly':'우호적인','fully':'완전히',
+  'generation':'세대','genes':'유전자','genetic':'유전적인','genuine':'진정한','greatest':'가장 위대한','grew':'자랐다','grown':'자란',
+  'habitat':'서식지','halved':'절반이 된','happiness':'행복','harmful':'해로운','hastily':'급히','hazardous':'위험한','heart':'심장','helpful':'도움이 되는','helping':'돕기','helps':'돕는다','hi':'안녕','hidden':'숨겨진','hippocampus':'해마','hopeful':'희망적인','hopeless':'절망적인','hour':'시간',
+  'identifiably':'알아볼 수 있게','identity':'정체성','ignore':'무시하다','ignored':'무시된','impatiently':'성급하게','important':'중요한','independent':'독립적인','indication':'표시, 징후','indifference':'무관심','individual':'개별의','inefficient':'비효율적인','inefficiently':'비효율적으로','inspiration':'영감','inspirations':'영감들','instructions':'지시, 지침','instructor':'강사','intentionally':'의도적으로','interruption':'방해','interruptions':'방해들','interval':'간격',
+  'judgment':'판단','knowledge':'지식',
+  'larger':'더 큰','largest':'가장 큰','lasting':'지속되는','lavish':'사치스러운','laziness':'게으름','likely':'~할 가능성이 있는','lonely':'외로운','longer':'더 긴','longest':'가장 긴','losers':'패배자들','loss':'손실','luck':'행운','lunch':'점심','luxurious':'호화로운',
+  'major':'주요한','many':'많은','mastery':'숙달','meager':'빈약한','meaningful':'의미있는','memorable':'기억할 만한','memory':'기억','messy':'지저분한','migration':'이주','migratory':'이주성의','mild':'온화한','mindset':'사고방식','minimum':'최소의','minor':'사소한','minute':'분, 미세한','mirror':'거울','money':'돈',
+  'native':'토착의, 모국의','natural':'자연스러운','nearby':'가까이의','negative':'부정적인','neglected':'무시된, 방치된','nervously':'초조하게','never':'결코 ~ 않다','noteworthy':'주목할 만한','noticed':'알아챈','nuclear':'원자력의','nutrients':'영양분',
+  'observe':'관찰하다','obstacle':'장애물','occasion':'경우','occur':'발생하다','offspring':'자손','opponent':'상대, 적','optional':'선택적인','ordinary':'평범한','outdated':'구식의','overlooked':'간과된',
+  'painful':'고통스러운','panic':'당황','parents':'부모','partial':'부분적인','partially':'부분적으로','passing':'지나가는','patent':'특허','perceives':'인식하다','perfect':'완벽한','permanent':'영구적인','perspective':'관점','phrase':'구, 어구','pilot':'조종사','place':'장소','plain':'평범한','plant':'공장, 식물; 심다','pleasure':'기쁨','plentiful':'풍부한','poems':'시들','popularity':'인기','population':'인구','positive':'긍정적인','possession':'소유','poverty':'빈곤','power':'힘, 권력','precisely':'정확히','prematurely':'너무 이르게, 조기에','preparation':'준비','prevent':'막다','prevents':'막는다','problem':'문제','professor':'교수','profound':'심오한, 지대한','progress':'진보','progressed':'진보한','promising':'유망한','protecting':'보호하기','public':'공개된, 공적인','published':'출판된','punishment':'처벌','pursuing':'추구하기',
+  'quick':'빠른','quickly':'빠르게','quietly':'조용히',
+  'radically':'급격히','random':'무작위의','rapidly':'빠르게','rare':'드문','rarely':'거의 ~않는','real':'진짜의','recovery':'회복','reduced':'감소된','reflection':'반영','region':'영역, 지역','regretted':'후회한','rejected':'거절된','rejecting':'거절하기','rejection':'거절','remembered':'기억된','remote':'먼','reproduction':'번식','reshaping':'재구조화','resistance':'저항','restless':'안절부절하는','returned':'돌아온','reward':'보상','rewarded':'보상받은','rigid':'경직된','rigidity':'경직성','rocks':'바위들','rose':'올랐다','route':'경로',
+  'sadness':'슬픔','safe':'안전한','scarce':'부족한','school':'학교','sealed':'봉인된','search':'찾기','secretly':'비밀스럽게','separately':'개별적으로, 따로','separation':'분리','shift':'전환하다, 교대','shorten':'줄이다','shrunken':'줄어든','sight':'시야','signed':'서명한','silence':'침묵','silently':'조용히','similar':'비슷한','simple':'단순한','single':'단 하나의','sleeping':'잠자기','slow':'느린','slowly':'느리게','smallest':'가장 작은','social':'사교적인','soft':'부드러운','soil':'토양','solar':'태양의','solve':'해결하다','spacing':'간격 두기','species':'종','speedy':'빠른','stable':'안정된','standard':'표준의','steadily':'꾸준히','stimulus':'자극','stops':'멈춘다','straight':'직선의','strange':'이상한','strength':'힘','stress':'스트레스','strong':'강한','student':'학생','submission':'복종','succeed':'성공하다','success':'성공','suddenly':'갑자기','suffering':'고통','survival':'생존','survived':'생존한',
+  'temporary':'일시적인','temptation':'유혹','theory':'이론','threat':'위협','threaten':'위협하다','threatening':'위협적인','tidy':'단정한','tiny':'아주 작은','took':'가져갔다, 시작했다','totally':'완전히','transporting':'운반하기','traveled':'여행한','tribe':'부족','tribes':'부족들','trivial':'사소한','turbulence':'난기류','two':'둘',
+  'unchanged':'변하지 않은','unclear':'불분명한','unconsciously':'무의식적으로','uneasy':'불안한','unexpected':'예상치 못한','unfinished':'미완성의','unnecessary':'불필요한','unusual':'특이한','useless':'쓸모없는','usually':'보통',
+  'valuable':'가치 있는','village':'마을','violating':'위반하기','vital':'필수적인, 중요한',
+  'weak':'약한','wealth':'부','wealthiest':'가장 부유한','wealthy':'부유한','weapons':'무기들','weed':'잡초','weeds':'잡초들','weight':'무게','when':'언제','where':'어디','who':'누구','why':'왜','widened':'넓어진','will':'의지','willingly':'기꺼이','wind':'바람','wink':'눈을 깜박이기, 한숨도 (잠을) 자다','wonder':'경이로움, 궁금해하다','wrong':'틀린','youngest':'가장 어린',
+  // 추가 단어들 (PDF 본문에서 자주 나오는 표현)
+  'conceal':'숨기다','abandon':'버리다, 포기하다','display':'보여주다','deny':'부인하다','innovation':'혁신','tradition':'전통','regulation':'규제','restriction':'제한','maximize':'최대화하다','generate':'생성하다, 일으키다','minimize':'최소화하다','overlook':'간과하다','positively':'긍정적으로','slightly':'약간','adversely':'부정적으로, 불리하게','disturbing':'불안하게 하는','reassuring':'안심시키는','frightening':'무서운','shocking':'충격적인','profitable':'수익성 있는','renewable':'재생 가능한','harmful':'해로운','enjoyable':'즐거운','delightful':'기쁜','sweet':'달콤한','solitary':'홀로의','isolated':'고립된','accompanied':'동반된','typically':'일반적으로','widely':'널리','frequency':'빈도','distance':'거리','lifespan':'수명','driver':'운전자','passenger':'승객','pedestrian':'보행자','neighbor':'이웃','disposal':'폐기, 처분','consumption':'소비','production':'생산','attached':'애착이 가는, 첨부된','boost':'증가시키다','unique':'독특한','vibrant':'활기찬','dull':'칙칙한','secondhand':'중고의','brand-new':'새 것의','reduce':'줄이다','increase':'증가시키다','recklessly':'무모하게','gradually':'점차적으로','demonstrate':'보여주다, 시연하다','adopt':'채택하다','limiting':'제한하는','expanding':'확장하는','extract':'추출하다','discard':'폐기하다','consumed':'소비된','regenerated':'재생된','considerable':'상당한','minimal':'최소의','facilitate':'촉진하다','hinder':'방해하다','considerably':'상당히','negatively':'부정적으로','efficiently':'효율적으로','proven':'증명된','blind':'시각장애의','strengthens':'강화하다','cuddled':'안아주다','alone':'홀로','far':'멀리','birth':'탄생','death':'죽음','infinitely':'무한히',
+  // 19~20번 추가
+  'tore':'찢었다','seal':'봉인하다','sign':'서명하다','fold':'접다','open':'열다','hide':'숨다','silly':'어리석은',
+  // 추가 (자주 옵션으로 나오는 일반어)
+  'hide':'숨다','show':'보여주다','give':'주다','receive':'받다','accept':'받아들이다','refuse':'거절하다','reject':'거부하다','stop':'멈추다','continue':'계속하다','start':'시작하다','end':'끝내다','begin':'시작하다','finish':'마치다',
+  'high':'높은','low':'낮은','old':'오래된','new':'새로운','good':'좋은','poor':'가난한, 부족한','little':'작은',
+  'occur':'발생하다','prevent':'막다','solve':'해결하다','support':'지지하다','defend':'방어하다','attack':'공격하다',
+  'happy':'행복한','sad':'슬픈','angry':'화난','calm':'침착한','excited':'신난'
+};
+
+function lookupMeaning(text) {
+  if (!text) return '';
+  if (/[ㄱ-힝]/.test(text)) return '';
+  const key = text.toLowerCase().trim().replace(/[.,!?;:]$/, '');
+  const stem = (key.match(/^([a-z][a-z'-]*)/)||[])[1] || '';
+  // 1) 공유 사전(mock_word_dict.js, 1,125 항목) 직접 조회
+  const sd = window.WORD_DICT;
+  if (sd){
+    if (sd[key]) return sd[key];
+    if (stem && sd[stem]) return sd[stem];
+  }
+  // 2) 로컬 WORD_DICT 폴백
+  if (WORD_DICT[key]) return WORD_DICT[key];
+  if (stem && WORD_DICT[stem]) return WORD_DICT[stem];
+  return '';
+}
+
+function checkAnswer(){
+  const q = allQuestions[curIdx];
+  let correct = false;
+  let userPick = '';
+  if (q.type === 'word-form') {
+    const user = (answers[curIdx]||'').trim().toLowerCase();
+    userPick = user;
+    correct = user === q.ans.toLowerCase();
+    const inp = document.getElementById('userInput');
+    inp.classList.add(correct?'correct':'wrong');
+  } else {
+    const sel = answers[curIdx];
+    userPick = q.opts[sel] || '';
+    correct = sel === q.ans;
+    document.querySelectorAll('.opt').forEach((b,i) => {
+      if (i === q.ans) b.classList.add('correct');
+      if (i === sel && !correct) b.classList.add('wrong');
+    });
+  }
+  if (correct) gotScore += q.score;
+  const fb = document.getElementById('feedback');
+  fb.classList.remove('hidden');
+  fb.classList.toggle('correct', correct);
+  fb.classList.toggle('wrong', !correct);
+  const ansText = q.type === 'word-form' ? q.ans : (q.opts[q.ans]);
+  // 정답 뜻: 질문 데이터의 meaning_hint > 사전 조회
+  const ansKo = q.meaning_hint || lookupMeaning(ansText);
+  const userKo = lookupMeaning(userPick);
+  const ansLine = ansKo
+    ? `📗 정답 <strong>"${ansText}"</strong>: <span style="color:#1e40af;font-weight:700">${ansKo}</span>`
+    : `📗 정답 <strong>"${ansText}"</strong>`;
+  const userLine = (userKo && userPick && userPick.toLowerCase() !== ansText.toLowerCase())
+    ? `<br><span style="color:#7c2d12">📕 선택한 답 <strong>"${userPick}"</strong>: <span style="font-weight:700">${userKo}</span></span>`
+    : '';
+  fb.innerHTML = correct
+    ? `<strong>✓ 정답입니다!</strong> (+${q.score}점)<br><span style="font-size:13px;color:#065f46">${ansLine}</span>`
+    : `<strong>✗ 오답입니다.</strong><br><span style="font-size:13px;color:#065f46">${ansLine}</span>${userLine}`;
+
+  // 채점 후 본문 한국어 해석은 표시하지 않음 — 단어 뜻만 feedback에 노출
+  const koBox = document.getElementById('koBox');
+  if (koBox) koBox.classList.remove('show');
+  const nb = document.getElementById('nextQBtnMem');
+  if (nb) {
+    nb.classList.add('show');
+    nb.onclick = function(){
+      if (curIdx === allQuestions.length-1) finishQuiz();
+      else { curIdx++; renderQuestion(); }
+    };
+    setTimeout(()=>nb.scrollIntoView({behavior:'smooth', block:'nearest'}), 50);
+  }
+}
+
+/* ─ 다음/이전 ─ */
+document.addEventListener('DOMContentLoaded', () => {
+  initStart();
+  document.getElementById('nextBtn').addEventListener('click', () => {
+    if (answers[curIdx] === undefined) {
+      alert('답을 선택해 주세요.');
+      return;
+    }
+    // 정답 체크 후, "다음 →" 버튼이 채점 박스 옆에 노출됨. 자동 진행 안 함.
+    checkAnswer();
+    // 기존 nextBtn은 비활성화
+    document.getElementById('nextBtn').style.display = 'none';
+  });
+});
+
+function finishQuiz(){
+  if (timerInterval) clearInterval(timerInterval);
+  document.getElementById('quizScreen').style.display = 'none';
+  document.getElementById('bottomBar').classList.add('hidden');
+  document.getElementById('resultScreen').style.display = 'block';
+  document.getElementById('resultScore').textContent = `${gotScore}/${totalScore}점`;
+  const pct = totalScore ? Math.round(gotScore/totalScore*100) : 0;
+  document.getElementById('resultDetail').innerHTML =
+    `${userName}님, 수고하셨습니다!<br>총 ${allQuestions.length}문제 중 정답률 <strong>${pct}%</strong>`;
+
+  // Firebase 저장
+  const elapsedMin = quizStartTime ? Math.max(1, Math.round((Date.now()-quizStartTime)/60000)) : 0;
+  let correctCnt = 0;
+  const details = [];
+  const wrongWords = [];
+  allQuestions.forEach((q, i) => {
+    const userAnsRaw = answers[i];
+    let userAns = '', isCorrect = false, ansText = '';
+    if (q.type === 'word-form') {
+      userAns = (userAnsRaw == null ? '' : String(userAnsRaw)).trim();
+      ansText = q.ans;
+      isCorrect = userAns.toLowerCase() === String(q.ans).toLowerCase();
+    } else {
+      userAns = (userAnsRaw != null && q.opts) ? (q.opts[userAnsRaw] || '') : '';
+      ansText = (q.opts && q.opts[q.ans] != null) ? q.opts[q.ans] : '';
+      isCorrect = userAnsRaw === q.ans;
+    }
+    if (isCorrect) correctCnt++;
+    const typeLabel = TYPE_LABELS[q.type] || q.type;
+    details.push({
+      지문: (q.passage&&q.passage.no)+'번',
+      유형: typeLabel,
+      결과: isCorrect ? '✅정답' : (userAnsRaw == null || userAnsRaw === '' ? '⚪미응답' : '❌오답'),
+      내답: userAns || '(미응답)',
+      정답: ansText
+    });
+    if (!isCorrect) {
+      wrongWords.push({
+        label: (q.passage&&q.passage.no)+'번 · '+typeLabel,
+        my: userAns || '(미응답)',
+        correct: ansText
+      });
+    }
+  });
+  const wrongCnt = allQuestions.length - correctCnt;
+  if (window._fbSave) window._fbSave({
+    submittedAt: new Date().toISOString(),
+    studentName: userName,
+    school: userSchool,
+    score: pct,
+    correct: correctCnt,
+    wrong: wrongCnt,
+    total: allQuestions.length,
+    gotScore: gotScore,
+    totalScore: totalScore,
+    elapsedMin: elapsedMin,
+    quizType: '올림포스기본1_U10_본문암기',
+    passages: [...selectedPassages].sort((a,b)=>a-b),
+    details: details,
+    wrongWords: wrongWords
+  });
+}
+
+/* ─ 다른 지문 풀기: 지문 선택 화면으로 돌아감 (이름·학교는 유지) ─ */
+document.addEventListener('DOMContentLoaded', () => {
+  const btn = document.getElementById('backToPassageBtn');
+  if (btn) {
+    btn.addEventListener('click', () => {
+      // 결과·퀴즈 숨기고 시작화면 재표시
+      document.getElementById('resultScreen').style.display = 'none';
+      document.getElementById('quizScreen').style.display = 'none';
+      document.getElementById('startScreen').style.display = 'block';
+      // 진행 상태 초기화
+      selectedPassages.clear();
+      document.querySelectorAll('.p-card').forEach(c => c.classList.remove('sel'));
+      curIdx = 0; answers = {}; gotScore = 0;
+      updateStartBtn();
+      window.scrollTo(0,0);
+    });
+  }
+});
+</script>
+</body>
+</html>
