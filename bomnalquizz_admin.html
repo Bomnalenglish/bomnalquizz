@@ -184,6 +184,7 @@ tr:hover td{background:#f8f9ff;}
 .ah-tag-latest{background:#1565c0;color:white;font-size:9.5px;font-weight:800;padding:1px 6px;border-radius:8px;letter-spacing:.3px;}
 .ah-time{color:#475569;font-weight:700;}
 .ah-section{background:#e0f2fe;color:#0369a1;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:9px;}
+.ah-lesson{background:#fef9c3;color:#854d0e;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:9px;}
 .ah-meta{color:#64748b;font-size:10.5px;}
 .ah-text{font-size:11px;color:var(--red);line-height:1.8;margin-top:6px;}
 .ah-text-bold{font-size:12px;color:var(--red);font-weight:700;margin-top:6px;}
@@ -521,14 +522,12 @@ const ftHM=t=>t?t.toLocaleString('ko-KR',{hour:'2-digit',minute:'2-digit'}):'-';
 // 키: 학교 + 이름 + 원본 quizType(오답완료/재시도 마커 제거) + 지문 선택 + 날짜
 // → 1차/오답완료가 같은 그룹, 다른 섹션·다른 지문은 다른 그룹
 function groupAttempts(data){
+  // 학생·교재·날짜 단위로 한 행에 모음 (유형/차시/섹션 무관)
   const m=new Map();
   for(const d of data){
-    let qt=(d.quizType||'').replace(/_오답완료|_오답재시도|_재시도/g,'').trim();
-    // 같은 과의 다른 섹션(본문/대화문 1/대화문 2 …)을 한 묶음으로 합치기
-    qt=qt.replace(/_빈칸시험_.+$/,'_빈칸시험');
-    const ps=(d.passages||[]).slice().sort().join(',');
+    const meta=parseQuizMeta(d);
     const dt=d.time?d.time.toLocaleDateString('ko-KR'):'unk';
-    const key=`${d.school||''}|${d.name||''}|${qt}|${ps}|${dt}`;
+    const key=`${d.school||''}|${d.name||''}|${meta.textbook}|${dt}`;
     if(!m.has(key)) m.set(key,[]);
     m.get(key).push(d);
   }
@@ -604,10 +603,21 @@ function renderTable(data){
     const attempts=g.records;
     const total=attempts.length;
     const meta=parseQuizMeta(d);
-    const typeChip=meta.type?`<span class="type-pill type-${meta.typeClass}">${meta.type}</span>`:'';
+    // 그룹 안에 여러 유형/차시가 섞여 있는지 집계
+    const allMetas=attempts.map(parseQuizMeta);
+    const typeSet=[...new Set(allMetas.map(m=>(m.type||'').replace(/[✓↻]/g,'')).filter(Boolean))];
+    const lessonSet=[...new Set(allMetas.map(m=>m.lesson).filter(Boolean))];
     const passageInfo=meta.passages?`<span class="passage-info">${meta.passages}</span>`:'';
     const roundBadge=d.round>1?`<span class="round-badge">${d.round}라운드</span>`:'';
-    const attemptBadge=total>1?`<span class="attempt-count" title="이 시험을 같은 날 ${total}회 응시">${total}회</span>`:'';
+    const attemptBadge=total>1?`<span class="attempt-count" title="같은 날 ${total}회 응시">${total}회</span>`:'';
+    // 유형 칩: 단일이면 그대로, 복수면 모두 표시
+    const typeChip=typeSet.length===0?''
+      :typeSet.length===1?`<span class="type-pill type-${meta.typeClass}">${typeSet[0]}</span>`
+      :typeSet.map(t=>`<span class="type-pill type-default">${t}</span>`).join(' ');
+    // 차시 표시: 단일이면 그대로, 복수면 콤마로 묶음, 없으면 '-'
+    const lessonDisplay=lessonSet.length===0?'<span style="color:#cbd5e1">-</span>'
+      :lessonSet.length===1?lessonSet[0]
+      :`<span style="color:#475569">${lessonSet.join(', ')}</span>`;
     const hasWrongs=(d.wrongWords&&d.wrongWords.length>0)||d.wrongSentences||d.wrongNumbers;
     const anyHasWrong=attempts.some(a=>(a.wrongWords&&a.wrongWords.length)||a.wrongSentences||a.wrongNumbers);
     const expandable=anyHasWrong||total>1;
@@ -620,10 +630,14 @@ function renderTable(data){
         const isLatest=att.id===d.id;
         const attChips=buildChips(att);
         const sec=sectionTag(att.quizType);
+        const am=parseQuizMeta(att);
+        const attType=(am.type||'').replace(/[✓↻]/g,'');
         return `<div class="ah-row ${isLatest?'is-latest':''}">
           <div class="ah-head">
             ${isLatest?'<span class="ah-tag-latest">최신</span>':''}
             <span class="ah-time">${ftHM(att.time)}</span>
+            ${attType?`<span class="type-pill type-${am.typeClass}" style="font-size:9.5px">${am.type}</span>`:''}
+            ${am.lesson?`<span class="ah-lesson">${am.lesson}</span>`:''}
             ${sec?`<span class="ah-section">${sec}</span>`:''}
             <span class="sp ${gc(att.score)}">${att.score}점</span>
             <span class="ah-meta">정답 ${att.correct||0} / 오답 ${att.wrong||0}${att.timedOut?' / 시간초과 '+att.timedOut:''}${att.elapsed?' · '+att.elapsed+'분':''}</span>
@@ -656,8 +670,8 @@ function renderTable(data){
         <td class="td-idx">${i+1}</td>
         <td class="td-class">${d.school}</td>
         <td class="td-name"><strong>${d.name}</strong></td>
-        <td class="td-textbook"><div class="textbook-name">${meta.textbook}</div>${(typeChip||attemptBadge)?'<div style="margin-top:3px">'+typeChip+attemptBadge+'</div>':''}</td>
-        <td class="td-lesson">${meta.lesson||'<span style="color:#cbd5e1">-</span>'}${passageInfo?'<br>'+passageInfo:''}${roundBadge}</td>
+        <td class="td-textbook"><div class="textbook-name">${meta.textbook}</div>${(typeChip||attemptBadge)?'<div style="margin-top:3px;display:flex;flex-wrap:wrap;gap:3px;align-items:center">'+typeChip+attemptBadge+'</div>':''}</td>
+        <td class="td-lesson">${lessonDisplay}${passageInfo?'<br>'+passageInfo:''}${roundBadge}</td>
         <td class="td-time">${d.elapsed?d.elapsed+'분':'-'}</td>
         <td class="td-score"><span class="sp ${gc(d.score)}">${d.score}점</span><div class="score-sub">${gl(d.score)}</div></td>
         <td class="td-submit">${ft(d.time)}</td>
