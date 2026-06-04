@@ -585,7 +585,8 @@ window.goPassageBack=goPassageBack;
   const SEL='.q-word,.word-en,.word-box,.word-card .word-en';
   function inject(root){
     (root||document).querySelectorAll(SEL).forEach(w=>{
-      if(w.dataset.tts==='1') return;
+      // 이미 자식으로 TTS 버튼이 있으면 skip (innerHTML 교체로 버튼이 사라진 경우엔 재주입)
+      if(w.querySelector(':scope > .tts-btn')) return;
       const raw=w.textContent.trim();
       const txt=ttsText(raw);
       if(!txt || !/[A-Za-z]/.test(txt)) return;
@@ -598,7 +599,6 @@ window.goPassageBack=goPassageBack;
       btn.addEventListener('click',function(e){e.stopPropagation();e.preventDefault();speakText(txt,btn);});
       w.appendChild(document.createTextNode(' '));
       w.appendChild(btn);
-      w.dataset.tts='1';
     });
   }
   const _obs=new MutationObserver(muts=>{
