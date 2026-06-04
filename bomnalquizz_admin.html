@@ -517,13 +517,15 @@ const ft=t=>t?t.toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-di
 const ftHM=t=>t?t.toLocaleString('ko-KR',{hour:'2-digit',minute:'2-digit'}):'-';
 
 // 같은 학생·같은 시험·같은 날 응시 묶기 (내공스터디 스타일)
+// 키: 학교 + 이름 + 원본 quizType(오답완료/재시도 마커 제거) + 지문 선택 + 날짜
+// → 1차/오답완료가 같은 그룹, 다른 섹션·다른 지문은 다른 그룹
 function groupAttempts(data){
   const m=new Map();
   for(const d of data){
-    const meta=parseQuizMeta(d);
-    const baseType=(meta.type||'').replace(/[✓↻]/g,'');
+    const qt=(d.quizType||'').replace(/_오답완료|_오답재시도|_재시도/g,'').trim();
+    const ps=(d.passages||[]).slice().sort().join(',');
     const dt=d.time?d.time.toLocaleDateString('ko-KR'):'unk';
-    const key=`${d.school||''}|${d.name||''}|${meta.textbook}|${baseType}|${meta.lesson}|${meta.passages}|${dt}`;
+    const key=`${d.school||''}|${d.name||''}|${qt}|${ps}|${dt}`;
     if(!m.has(key)) m.set(key,[]);
     m.get(key).push(d);
   }
