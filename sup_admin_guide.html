@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>봄날 ENGLISH | 부교재 콘텐츠 등록 가이드</title>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;700;900&family=JetBrains+Mono&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Noto Sans KR',sans-serif;background:#f5f7fa;min-height:100vh;color:#1a1a2e;line-height:1.6;}
+header{padding:24px 20px 14px;background:white;border-bottom:1px solid #cbdde9;}
+.logo-title{font-family:'Black Han Sans',sans-serif;font-size:1.15rem;color:#1565c0;}
+.subtitle{font-size:.78rem;color:#5e7791;margin-top:3px;}
+main{max-width:880px;margin:24px auto;padding:0 20px 60px;}
+.back-nav{display:inline-flex;align-items:center;gap:6px;background:white;border:1.5px solid #b0c4de;border-radius:10px;padding:7px 14px;font-size:.78rem;color:#5e7791;cursor:pointer;text-decoration:none;margin-bottom:18px;}
+h2{font-family:'Black Han Sans',sans-serif;font-size:1.05rem;color:#1565c0;margin:28px 0 12px;border-bottom:2px solid #cbdde9;padding-bottom:6px;}
+h3{font-family:'Black Han Sans',sans-serif;font-size:.92rem;color:#3d3d3d;margin:20px 0 10px;}
+p,li{font-size:.86rem;color:#2a2a2a;}
+ul,ol{padding-left:22px;margin:10px 0 16px;}
+li{margin-bottom:6px;}
+.box{background:white;border:1px solid #cbdde9;border-radius:10px;padding:16px 18px;margin:14px 0;}
+.box-note{background:#fff8e1;border:1px solid #ffd54f;border-left:4px solid #f57c00;}
+.box-success{background:#e8f5e9;border:1px solid #a5d6a7;border-left:4px solid #2e7d32;}
+code,.code{font-family:'JetBrains Mono',monospace;background:#eceff1;padding:1px 7px;border-radius:5px;font-size:.84em;}
+pre{font-family:'JetBrains Mono',monospace;background:#263238;color:#eceff1;padding:14px 16px;border-radius:8px;overflow-x:auto;font-size:.78rem;line-height:1.55;margin:12px 0;}
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.82rem;}
+th,td{border:1px solid #cbdde9;padding:8px 12px;text-align:left;}
+th{background:#e3f2fd;color:#1565c0;font-weight:800;}
+.step{background:#e3f2fd;color:#1565c0;font-weight:800;padding:2px 9px;border-radius:14px;font-size:.7rem;display:inline-block;margin-right:6px;}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo-title">🔧 부교재 콘텐츠 등록 가이드</div>
+  <div class="subtitle">관리자용 · PDF/원문 입력 → 어휘·본문암기·어법·총괄 자동 생성</div>
+</header>
+<main>
+  <a class="back-nav" href="supplements_hub.html">← 부교재 허브로</a>
+
+  <div class="box box-note">
+    <strong>📌 현재 상태:</strong> 본 가이드는 콘텐츠 등록의 <em>전체 흐름</em>을 설명합니다.
+    PDF 자동 파싱 UI는 별도 작업으로 추가될 예정이며, 현재는 Claude(또는 개발자)가
+    원문을 받아 모의고사와 같은 패턴으로 콘텐츠 파일을 생성합니다.
+  </div>
+
+  <h2>1. 부교재 구조 (공통)</h2>
+  <p>모든 부교재는 다음 공통 구조를 따릅니다:</p>
+  <pre>교재(Book)
+ └ Unit
+     ├ 지문 (Passage)
+     ├ ① 어휘퀴즈 (sup_&lt;book&gt;_u&lt;N&gt;_voca.html)
+     ├ ② 본문암기 (sup_&lt;book&gt;_u&lt;N&gt;_memory.html)
+     ├ ③ 어법·어휘 (sup_&lt;book&gt;_u&lt;N&gt;_grammar.html)
+     └ ④ 총괄퀴즈 (sup_&lt;book&gt;_u&lt;N&gt;_total.html)</pre>
+
+  <h2>2. 파일 명명 규칙</h2>
+  <table>
+    <thead><tr><th>유형</th><th>파일 패턴</th><th>예시</th></tr></thead>
+    <tbody>
+      <tr><td>부교재 허브</td><td>supplements_hub.html</td><td>고정</td></tr>
+      <tr><td>교재 메인</td><td><code>sup_&lt;book&gt;_hub.html</code></td><td><code>sup_olympos_basic1_hub.html</code></td></tr>
+      <tr><td>Unit picker</td><td><code>sup_&lt;book&gt;_u&lt;N&gt;_picker.html</code></td><td><code>sup_olympos_basic1_u1_picker.html</code></td></tr>
+      <tr><td>어휘퀴즈</td><td><code>sup_&lt;book&gt;_u&lt;N&gt;_voca.html</code></td><td><code>sup_olympos_basic1_u1_voca.html</code></td></tr>
+      <tr><td>본문암기</td><td><code>sup_&lt;book&gt;_u&lt;N&gt;_memory.html</code></td><td><code>sup_olympos_basic1_u1_memory.html</code></td></tr>
+      <tr><td>어법·어휘</td><td><code>sup_&lt;book&gt;_u&lt;N&gt;_grammar.html</code></td><td><code>sup_olympos_basic1_u1_grammar.html</code></td></tr>
+      <tr><td>총괄퀴즈</td><td><code>sup_&lt;book&gt;_u&lt;N&gt;_total.html</code></td><td><code>sup_olympos_basic1_u1_total.html</code></td></tr>
+    </tbody>
+  </table>
+
+  <h2>3. 등록 절차</h2>
+  <ol>
+    <li><span class="step">1단계</span> <strong>원문 준비:</strong> Unit별 영어 본문 + 한국어 해석 + 핵심 어휘 리스트를 준비합니다(PDF 또는 텍스트).</li>
+    <li><span class="step">2단계</span> <strong>Claude에 전달:</strong> 채팅창에 PDF 경로를 알려주거나 텍스트를 붙여넣어 "고1 24년 6월/23년 6월과 동일 형식으로 올림포스 독해 기본1 Unit N 생성"으로 요청합니다.</li>
+    <li><span class="step">3단계</span> <strong>자동 생성:</strong> Claude가 모의고사와 동일한 알고리즘으로 ①~④ 파일을 만들고 사전(<code>mock_word_dict.js</code>)에 어휘를 추가합니다.</li>
+    <li><span class="step">4단계</span> <strong>Unit 활성화:</strong> <code>sup_olympos_basic1_hub.html</code>의 해당 Unit을 <code>available:true</code>로 변경하고 <code>sup_..._u&lt;N&gt;_picker.html</code>에서 각 유형도 활성화.</li>
+    <li><span class="step">5단계</span> <strong>커밋·푸시:</strong> Git에 반영하면 학생들이 바로 학습 가능.</li>
+  </ol>
+
+  <h2>4. 모의고사와 동일한 학습 경험</h2>
+  <div class="box box-success">
+    <p>학생이 <strong>고1 24년 6월 / 23년 6월 / 올림포스 기본1 / 수능특강</strong> 어느 것을 풀어도
+    어휘퀴즈와 본문암기의 <strong>문제 형식·화면 구성·채점 방식·결과 확인</strong>이 동일하게 작동합니다.</p>
+    <ul>
+      <li>어휘퀴즈: 모드 선택(뜻/유의어/영영) → 4지선다 → 즉시 채점 + 한국어 뜻 힌트</li>
+      <li>본문암기: 지문 선택 → 빈칸/어형/옳고그른/영영/추론 → 다음 버튼으로 진행 → 단어 뜻 표시</li>
+      <li>어법·어휘: 5지선다 객관식 + 어법 오류/문맥 추론/밑줄 문제</li>
+      <li>총괄퀴즈: 위 4유형 종합 채점</li>
+    </ul>
+  </div>
+
+  <h2>5. 향후 확장</h2>
+  <p>아래 교재는 모두 동일 구조로 추가 가능합니다:</p>
+  <ul>
+    <li>📗 올림포스 독해 기본 2 / 영어독해 / 영문법</li>
+    <li>📕 리더스뱅크 (비상)</li>
+    <li>📔 수능특강 / 수능완성 (EBS)</li>
+    <li>🏫 학교 자체 프린트물</li>
+  </ul>
+  <p>새 교재를 추가하려면 <code>supplements_hub.html</code>의 <code>BOOKS</code> 배열에 한 줄 추가하면 됩니다.</p>
+
+  <h2>6. 데이터 구조 (개발자용 메모)</h2>
+  <p>각 퀴즈 파일은 모의고사 파일과 동일한 데이터 형태를 사용합니다:</p>
+  <ul>
+    <li><strong>어휘퀴즈:</strong> <code>VOCA = {"1": [{no, word, meaning, syn, def}, ...]}</code></li>
+    <li><strong>본문암기:</strong> <code>PASSAGES = [{no, topic, fullEn, fullKo, questions:[{type, opts, ans, meaning_hint}]}]</code></li>
+    <li><strong>어법·어휘:</strong> 기존 <code>ei_lesson3_grammar.html</code> 또는 <code>mock_go2_2024_06_grammar.html</code> 패턴 사용</li>
+    <li><strong>총괄:</strong> <code>mock_go1_2025_06_total.html</code> 패턴 (5지선다 종합)</li>
+  </ul>
+</main>
+</body>
+</html>

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>봄날 ENGLISH | 올림포스 독해 기본 1 · Unit 1</title>
+<script type="module" src="bn_tracker.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Noto Sans KR',sans-serif;background:linear-gradient(135deg,#f0f4f8,#e3edf5);min-height:100vh;color:#1a1a2e;}
+header{padding:24px 20px 14px;text-align:center;background:white;border-bottom:1px solid #cbdde9;}
+.book-tag{display:inline-block;background:#5e7791;color:white;border-radius:14px;padding:2px 10px;font-size:.65rem;font-weight:700;margin-bottom:6px;}
+.unit-no{font-family:'Black Han Sans',sans-serif;font-size:1.6rem;color:#1565c0;}
+.subtitle{font-size:.78rem;color:#5e7791;margin-top:3px;}
+main{max-width:760px;margin:24px auto;padding:0 16px 60px;}
+.back-nav{display:inline-flex;align-items:center;gap:6px;background:white;border:1.5px solid #b0c4de;border-radius:10px;padding:7px 14px;font-size:.78rem;color:#5e7791;cursor:pointer;text-decoration:none;margin-bottom:18px;}
+.back-nav:hover{border-color:#1565c0;color:#1565c0;}
+.types-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;}
+.type-card{background:white;border:2px solid #cbdde9;border-radius:16px;padding:20px 18px;cursor:pointer;text-decoration:none;color:inherit;display:flex;flex-direction:column;gap:6px;transition:all .15s;}
+.type-card:hover{border-color:#1565c0;background:#e8f1fa;transform:translateY(-3px);box-shadow:0 6px 18px rgba(21,101,192,.15);}
+.type-emoji{font-size:1.8rem;}
+.type-title{font-family:'Black Han Sans',sans-serif;font-size:1.05rem;color:#1a1a2e;}
+.type-sub{font-size:.74rem;color:#5e7791;line-height:1.5;}
+.type-tag{display:inline-block;background:#e3f2fd;color:#1565c0;font-size:.65rem;font-weight:700;padding:2px 8px;border-radius:12px;margin-top:4px;width:fit-content;}
+.disabled{opacity:.55;pointer-events:none;background:#f0f4f8;}
+.status-note{background:#fff8e1;border:1px solid #ffd54f;border-left:4px solid #f57c00;border-radius:10px;padding:14px 16px;margin-bottom:18px;font-size:.82rem;line-height:1.7;color:#5d4037;}
+</style>
+</head>
+<body>
+<header>
+  <div class="book-tag">📘 올림포스 독해 기본 1</div>
+  <div class="unit-no">Unit 1</div>
+  <div class="subtitle">학습 유형 선택</div>
+</header>
+<main>
+  <a class="back-nav" href="sup_olympos_basic1_hub.html">← Unit 목록으로</a>
+
+  <div class="status-note" id="statusNote" style="display:none;">
+    🔧 <strong>콘텐츠 준비 중</strong><br>
+    이 Unit의 지문·어휘·어법 문제는 아직 등록되지 않았습니다.
+    관리자가 원문(PDF/텍스트)을 입력하면 모의고사와 동일한 방식으로
+    어휘퀴즈·본문암기·어법·총괄퀴즈가 자동 생성됩니다.
+  </div>
+
+  <div class="types-grid" id="types-grid"></div>
+</main>
+
+<script>
+// ============================================================
+// Unit 1 학습 유형 (콘텐츠가 준비된 항목만 available:true)
+// ============================================================
+const UNIT_PREFIX = 'sup_olympos_basic1_u1';
+const TYPES = [
+  {
+    file: `${UNIT_PREFIX}_voca.html`,
+    title: '어휘퀴즈',
+    sub: '뜻 맞추기 · 유의어 · 영영풀이',
+    emoji: '🔤',
+    tag: '모의고사 방식',
+    available: false
+  },
+  {
+    file: `${UNIT_PREFIX}_memory.html`,
+    title: '본문암기',
+    sub: '빈칸 추론 · 어형 변화 · 영영풀이',
+    emoji: '📖',
+    tag: '모의고사 방식',
+    available: false
+  },
+  {
+    file: `${UNIT_PREFIX}_grammar.html`,
+    title: '어법·어휘',
+    sub: '어법 오류 · 어휘 추론 · 5지선다',
+    emoji: '📐',
+    tag: '학교 시험 스타일',
+    available: false
+  },
+  {
+    file: `${UNIT_PREFIX}_total.html`,
+    title: '총괄퀴즈',
+    sub: '어휘·암기·어법·추론 종합',
+    emoji: '🎯',
+    tag: '단원 완료 후',
+    available: false
+  }
+];
+
+const grid = document.getElementById('types-grid');
+let anyAvailable = false;
+TYPES.forEach(t => {
+  const card = document.createElement(t.available ? 'a' : 'div');
+  card.className = 'type-card' + (t.available ? '' : ' disabled');
+  if (t.available) { card.href = t.file; anyAvailable = true; }
+  card.innerHTML = `
+    <div class="type-emoji">${t.emoji}</div>
+    <div class="type-title">${t.title}</div>
+    <div class="type-sub">${t.sub}</div>
+    <span class="type-tag">${t.tag}</span>
+    ${!t.available ? '<div style="font-size:.65rem;color:#a0b4c7;margin-top:4px;">콘텐츠 등록 필요</div>' : ''}
+  `;
+  grid.appendChild(card);
+});
+if (!anyAvailable) {
+  document.getElementById('statusNote').style.display = 'block';
+}
+</script>
+</body>
+</html>
