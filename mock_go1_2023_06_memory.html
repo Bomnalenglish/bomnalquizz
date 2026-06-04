@@ -2796,14 +2796,18 @@ const WORD_DICT = {
 
 function lookupMeaning(text) {
   if (!text) return '';
-  // 한국어 포함되어 있으면 그대로 (사전 매핑 불필요)
   if (/[ㄱ-힝]/.test(text)) return '';
-  // 단순 단어 매핑
   const key = text.toLowerCase().trim().replace(/[.,!?;:]$/, '');
+  const stem = (key.match(/^([a-z][a-z'-]*)/)||[])[1] || '';
+  // 1) 공유 사전(mock_word_dict.js, 1,125 항목) 직접 조회
+  const sd = window.WORD_DICT;
+  if (sd){
+    if (sd[key]) return sd[key];
+    if (stem && sd[stem]) return sd[stem];
+  }
+  // 2) 로컬 WORD_DICT 폴백
   if (WORD_DICT[key]) return WORD_DICT[key];
-  // 'word (~)' 형태 → 단어만 추출
-  const m = key.match(/^([a-z][a-z'-]*)/);
-  if (m && WORD_DICT[m[1]]) return WORD_DICT[m[1]];
+  if (stem && WORD_DICT[stem]) return WORD_DICT[stem];
   return '';
 }
 
@@ -2832,14 +2836,18 @@ function checkAnswer(){
   fb.classList.toggle('correct', correct);
   fb.classList.toggle('wrong', !correct);
   const ansText = q.type === 'word-form' ? q.ans : (q.opts[q.ans]);
-  const ansKo = lookupMeaning(ansText);
+  // 정답 뜻: 질문 데이터의 meaning_hint > 사전 조회
+  const ansKo = q.meaning_hint || lookupMeaning(ansText);
   const userKo = lookupMeaning(userPick);
-  const ansHint = ansKo ? ` <span style="color:#1e40af;font-size:12px;font-weight:600">(${ansKo})</span>` : '';
-  const userHint = userKo && userPick.toLowerCase() !== ansText.toLowerCase()
-    ? `<br><span style="font-size:13px;color:#7c2d12">📕 선택한 답 <strong>"${userPick}"</strong>: ${userKo}</span>` : '';
+  const ansLine = ansKo
+    ? `📗 정답 <strong>"${ansText}"</strong>: <span style="color:#1e40af;font-weight:700">${ansKo}</span>`
+    : `📗 정답 <strong>"${ansText}"</strong>`;
+  const userLine = (userKo && userPick && userPick.toLowerCase() !== ansText.toLowerCase())
+    ? `<br><span style="color:#7c2d12">📕 선택한 답 <strong>"${userPick}"</strong>: <span style="font-weight:700">${userKo}</span></span>`
+    : '';
   fb.innerHTML = correct
-    ? `<strong>✓ 정답입니다!</strong> (+${q.score}점)<br><span style="font-size:13px;color:#065f46">📗 정답 <strong>"${ansText}"</strong>${ansHint ? ': '+ansKo : ''}</span>`
-    : `<strong>✗ 오답입니다.</strong><br><span style="font-size:13px;color:#065f46">📗 정답 <strong>"${ansText}"</strong>${ansHint ? ': '+ansKo : ''}</span>${userHint}`;
+    ? `<strong>✓ 정답입니다!</strong> (+${q.score}점)<br><span style="font-size:13px;color:#065f46">${ansLine}</span>`
+    : `<strong>✗ 오답입니다.</strong><br><span style="font-size:13px;color:#065f46">${ansLine}</span>${userLine}`;
 
   // 채점 후 본문 한국어 해석은 표시하지 않음 — 단어 뜻만 feedback에 노출
   const koBox = document.getElementById('koBox');
