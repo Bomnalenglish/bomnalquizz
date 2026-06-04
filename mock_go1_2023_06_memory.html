@@ -217,8 +217,7 @@ window._fbSave=async function(data){
 </div>
 
 <div class="bottom-bar hidden" id="bottomBar">
-  <button class="btn btn-sec" id="prevBtn">이전</button>
-  <button class="btn btn-pri" id="nextBtn">다음</button>
+  <button class="btn btn-pri" id="nextBtn" style="width:100%;">다음</button>
 </div>
 
 <!-- ─── 결과 화면 ─── -->
@@ -2706,7 +2705,6 @@ function renderQuestion(){
   }
 
   document.getElementById('feedback').classList.add('hidden');
-  document.getElementById('prevBtn').style.visibility = curIdx === 0 ? 'hidden' : 'visible';
   document.getElementById('nextBtn').textContent = curIdx === total-1 ? '완료' : '다음';
 }
 
@@ -2843,17 +2841,9 @@ function checkAnswer(){
     ? `<strong>✓ 정답입니다!</strong> (+${q.score}점)<br><span style="font-size:13px;color:#065f46">📗 정답 <strong>"${ansText}"</strong>${ansHint ? ': '+ansKo : ''}</span>`
     : `<strong>✗ 오답입니다.</strong><br><span style="font-size:13px;color:#065f46">📗 정답 <strong>"${ansText}"</strong>${ansHint ? ': '+ansKo : ''}</span>${userHint}`;
 
-  // 채점 후 본문 한국어 해석 표시 (Task 1)
-  const ko = q.passage && q.passage.fullKo ? q.passage.fullKo : '';
+  // 채점 후 본문 한국어 해석은 표시하지 않음 — 단어 뜻만 feedback에 노출
   const koBox = document.getElementById('koBox');
-  if (koBox) {
-    if (ko) {
-      koBox.innerHTML = '<div class="ko-label">📖 본문 한국어 해석</div>' + ko;
-      koBox.classList.add('show');
-    } else {
-      koBox.classList.remove('show');
-    }
-  }
+  if (koBox) koBox.classList.remove('show');
   const nb = document.getElementById('nextQBtnMem');
   if (nb) {
     nb.classList.add('show');
@@ -2877,9 +2867,6 @@ document.addEventListener('DOMContentLoaded', () => {
     checkAnswer();
     // 기존 nextBtn은 비활성화
     document.getElementById('nextBtn').style.display = 'none';
-  });
-  document.getElementById('prevBtn').addEventListener('click', () => {
-    if (curIdx > 0) { curIdx--; renderQuestion(); }
   });
 });
 
