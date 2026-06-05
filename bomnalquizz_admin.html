@@ -250,6 +250,7 @@ tr:hover td{background:#f8f9ff;}
     <button class="tab-btn active" onclick="switchTab('quiz')"    id="tab-quiz">📊 퀴즈 결과</button>
     <button class="tab-btn"        onclick="switchTab('section')" id="tab-section">📋 학생별 현황</button>
     <button class="tab-btn"        onclick="switchTab('access')"  id="tab-access">🔐 접속 기록</button>
+    <button class="tab-btn"        onclick="switchTab('students')" id="tab-students">👥 학생 코드 발급</button>
     <button class="tab-btn"        onclick="switchTab('vaca')"    id="tab-vaca">📚 단어장 · 학생 관리</button>
   </div>
   <div class="panels">
@@ -349,6 +350,52 @@ tr:hover td{background:#f8f9ff;}
       </div>
     </div>
 
+    <div class="panel" id="panel-students">
+      <div class="quiz-inner">
+        <div class="report-block">
+          <h2 style="margin:0 0 8px 0;font-size:1.04rem;">👥 학생 코드 발급</h2>
+          <div style="font-size:12.5px;color:#64748b;line-height:1.6;margin-bottom:14px;">
+            학생에게 부여할 <strong>코드·이름·학교</strong>를 등록하세요.
+            학생은 로그인 화면에 코드만 입력하면 이름·학교가 자동으로 채워지고, 그 뒤 모든 응시 결과가 본인 기록으로 누적됩니다.
+            코드는 영문·한글·숫자 모두 가능합니다 (예: <code>김도윤0402</code>).
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:end;padding:14px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;margin-bottom:14px;">
+            <div style="flex:1;min-width:160px;">
+              <label style="display:block;font-size:11px;font-weight:800;color:#475569;margin-bottom:4px;">학생 코드</label>
+              <input type="text" id="stuCode" class="ctrl-inp" placeholder="예: 김도윤0402" style="width:100%;">
+            </div>
+            <div style="flex:1;min-width:130px;">
+              <label style="display:block;font-size:11px;font-weight:800;color:#475569;margin-bottom:4px;">이름</label>
+              <input type="text" id="stuName" class="ctrl-inp" placeholder="예: 김도윤" style="width:100%;">
+            </div>
+            <div style="flex:1;min-width:140px;">
+              <label style="display:block;font-size:11px;font-weight:800;color:#475569;margin-bottom:4px;">학교</label>
+              <select id="stuSchool" class="ctrl-sel" style="width:100%;">
+                <option value="">선택…</option>
+                <optgroup label="종촌고"><option>종촌고1</option><option>종촌고2</option><option>종촌고3</option></optgroup>
+                <optgroup label="고운고"><option>고운고1</option><option>고운고2</option><option>고운고3</option></optgroup>
+                <optgroup label="대성고"><option>대성고1</option><option>대성고2</option><option>대성고3</option></optgroup>
+                <optgroup label="종촌중"><option>종촌중1</option><option>종촌중2</option><option>종촌중3</option></optgroup>
+                <optgroup label="어진중"><option>어진중1</option><option>어진중2</option><option>어진중3</option></optgroup>
+                <optgroup label="고운중"><option>고운중1</option><option>고운중2</option><option>고운중3</option></optgroup>
+              </select>
+            </div>
+            <button class="btn-refresh" onclick="addStudent()">➕ 학생 등록</button>
+          </div>
+          <div id="stuMsg" style="font-size:12px;margin-bottom:10px;"></div>
+          <div style="display:flex;gap:10px;align-items:center;margin-bottom:8px;">
+            <input type="text" id="stuFilter" class="ctrl-inp" placeholder="🔍 코드·이름·학교 검색" oninput="renderStudentList()" style="flex:1;max-width:280px;">
+            <span style="font-size:11.5px;color:#64748b;">등록 학생 <strong id="stuCount">0</strong>명</span>
+            <button class="btn-refresh" onclick="loadStudents()">🔄 새로고침</button>
+            <button class="btn-refresh" onclick="exportStudentsCSV()" style="background:linear-gradient(135deg,#16a34a,#15803d);">📤 코드표 CSV</button>
+          </div>
+          <div id="stuArea" style="overflow-x:auto;">
+            <div class="loading-msg">⏳ 학생 명단 불러오는 중…</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="panel panel-iframe" id="panel-vaca">
       <iframe id="vacaFrame" src="" title="봄날 vaca 관리자" allowfullscreen></iframe>
     </div>
@@ -357,12 +404,12 @@ tr:hover td{background:#f8f9ff;}
 
 <script type="module">
 import{initializeApp}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import{getFirestore,collection,getDocs,query,orderBy,deleteDoc,doc}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import{getFirestore,collection,getDocs,query,orderBy,deleteDoc,doc,addDoc,where,serverTimestamp}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 const cfg={apiKey:"AIzaSyCxS524S8KAaF87DomPtl9sJdF-eqes404",authDomain:"bomnalvaca.firebaseapp.com",projectId:"bomnalvaca",storageBucket:"bomnalvaca.firebasestorage.app",messagingSenderId:"115868052300",appId:"1:115868052300:web:765c08867b6f1ce0987de9"};
 const app=initializeApp(cfg);const db=getFirestore(app);
 window._db=db;window._col=collection;window._getDocs=getDocs;
-window._query=query;window._orderBy=orderBy;window._fbReady=true;
-window._deleteDoc=deleteDoc;window._doc=doc;
+window._query=query;window._orderBy=orderBy;window._where=where;window._fbReady=true;
+window._deleteDoc=deleteDoc;window._doc=doc;window._addDoc=addDoc;window._serverTs=serverTimestamp;
 </script>
 
 <script>
@@ -394,13 +441,14 @@ window.addEventListener('load',function(){
 
 let vacaLoaded=false;
 function switchTab(tab){
-  ['quiz','section','access','vaca'].forEach(t=>{
+  ['quiz','section','access','students','vaca'].forEach(t=>{
     document.getElementById('tab-'+t).classList.toggle('active',t===tab);
     document.getElementById('panel-'+t).classList.toggle('active',t===tab);
   });
   if(tab==='vaca'&&!vacaLoaded){document.getElementById('vacaFrame').src=VACA_URL;vacaLoaded=true;}
   if(tab==='section') renderSectionView();
   if(tab==='access') loadAccess();
+  if(tab==='students') loadStudents();
 }
 
 let allData = [];
@@ -1348,6 +1396,99 @@ async function confirmDeleteAll(){
   for(const id of ids){try{await window._deleteDoc(window._doc(window._db,'quiz_results',id));done++;}catch(e){fail++;}}
   allData=allData.filter(d=>!ids.includes(d.id));applyFilter();renderSectionView();
   document.getElementById('lastRefresh').textContent=`✅ ${done}건 삭제 완료${fail>0?' ('+fail+'건 실패)':''} · `+new Date().toLocaleTimeString('ko-KR');
+}
+
+// ═══════ 학생 코드 관리 ═══════
+let allStudents=[];
+
+async function loadStudents(){
+  document.getElementById('stuArea').innerHTML='<div class="loading-msg">⏳ 학생 명단 불러오는 중…</div>';
+  let w=0;while(!window._fbReady&&w<15000){await new Promise(r=>setTimeout(r,200));w+=200;}
+  try{
+    const snap=await window._getDocs(window._col(window._db,'students'));
+    allStudents=[];
+    snap.forEach(d=>{
+      const x=d.data();
+      allStudents.push({id:d.id,code:x.code||'',name:x.name||'',school:x.school||'',createdAt:x.createdAt&&x.createdAt.toDate?x.createdAt.toDate():null});
+    });
+    allStudents.sort((a,b)=>(a.school||'').localeCompare(b.school||'','ko')||(a.name||'').localeCompare(b.name||'','ko'));
+    renderStudentList();
+  }catch(e){
+    document.getElementById('stuArea').innerHTML=`<div class="empty-msg">⚠️ 오류: ${e.message}</div>`;
+  }
+}
+
+function renderStudentList(){
+  const q=(document.getElementById('stuFilter').value||'').trim().toLowerCase();
+  const list=q?allStudents.filter(s=>(s.code+s.name+s.school).toLowerCase().includes(q)):allStudents;
+  document.getElementById('stuCount').textContent=allStudents.length;
+  if(!list.length){
+    document.getElementById('stuArea').innerHTML=q
+      ?'<div class="empty-msg">📭 검색 결과 없음</div>'
+      :'<div class="empty-msg">📭 아직 등록된 학생이 없습니다<br><small>위 양식으로 첫 학생을 등록해주세요</small></div>';
+    return;
+  }
+  const ftDate=t=>t?t.toLocaleDateString('ko-KR'):'-';
+  const rows=list.map((s,i)=>`<tr>
+    <td class="nw" style="text-align:center;color:var(--muted);">${i+1}</td>
+    <td class="nw"><code style="background:#fef3c7;color:#92400e;padding:2px 8px;border-radius:8px;font-size:12px;font-weight:800;">${escapeHtml(s.code)}</code></td>
+    <td class="nw"><strong>${escapeHtml(s.name)}</strong></td>
+    <td class="nw" style="color:#475569;">${escapeHtml(s.school)}</td>
+    <td class="nw" style="font-size:11px;color:#94a3b8;">${ftDate(s.createdAt)}</td>
+    <td class="nw" style="text-align:center;"><button class="del-btn-mini" onclick="deleteStudent('${s.id}','${escapeAttr(s.code)}')" title="삭제">🗑️</button></td>
+  </tr>`).join('');
+  document.getElementById('stuArea').innerHTML=`<table class="report-table" style="width:auto;min-width:560px;">
+    <thead><tr><th style="width:40px;">#</th><th>코드</th><th>이름</th><th>학교</th><th>등록일</th><th style="width:50px;">삭제</th></tr></thead>
+    <tbody>${rows}</tbody></table>`;
+}
+
+function escapeHtml(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function escapeAttr(s){return String(s||'').replace(/'/g,"\\'");}
+
+async function addStudent(){
+  const code=document.getElementById('stuCode').value.trim();
+  const name=document.getElementById('stuName').value.trim();
+  const school=document.getElementById('stuSchool').value;
+  const msg=document.getElementById('stuMsg');
+  msg.style.color='#dc2626';
+  if(!code){msg.textContent='⚠️ 코드를 입력해주세요';return;}
+  if(!name){msg.textContent='⚠️ 이름을 입력해주세요';return;}
+  if(!school){msg.textContent='⚠️ 학교를 선택해주세요';return;}
+  if(allStudents.some(s=>s.code===code)){msg.textContent=`⚠️ 코드 "${code}"가 이미 등록되어 있습니다`;return;}
+  msg.style.color='#475569';msg.textContent='⏳ 등록 중…';
+  try{
+    await window._addDoc(window._col(window._db,'students'),{
+      code,name,school,createdAt:window._serverTs()
+    });
+    msg.style.color='#16a34a';
+    msg.textContent=`✅ 등록 완료: ${name} (${code})`;
+    document.getElementById('stuCode').value='';
+    document.getElementById('stuName').value='';
+    document.getElementById('stuSchool').value='';
+    document.getElementById('stuCode').focus();
+    await loadStudents();
+  }catch(e){
+    msg.style.color='#dc2626';msg.textContent='❌ 등록 실패: '+e.message;
+  }
+}
+
+async function deleteStudent(id,code){
+  if(!confirm(`학생 코드 "${code}"를 삭제할까요?\n(이미 저장된 응시 기록은 그대로 남습니다)`))return;
+  try{
+    await window._deleteDoc(window._doc(window._db,'students',id));
+    await loadStudents();
+  }catch(e){alert('삭제 실패: '+e.message);}
+}
+
+function exportStudentsCSV(){
+  if(!allStudents.length){alert('등록된 학생이 없습니다');return;}
+  const hdr=['코드','이름','학교','등록일'];
+  const rows=allStudents.map(s=>[s.code,s.name,s.school,s.createdAt?s.createdAt.toLocaleDateString('ko-KR'):'-']);
+  const csv=[hdr,...rows].map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8;'}));
+  a.download=`봄날학생코드_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
 }
 
 function exportCSV(){

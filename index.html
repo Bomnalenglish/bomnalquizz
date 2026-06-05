@@ -105,7 +105,23 @@ footer { text-align: center; padding: 28px; color: #aabbc8; font-size: .8rem; fo
   </div>
 </header>
 
-<div id="screen-name" class="screen active">
+<div id="screen-code" class="screen active">
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <h2>🔑 학생 코드 입력</h2>
+      <p>선생님께 받은 본인 코드를 입력해주세요.<br>예) <code style="background:#fef3c7;color:#92400e;padding:1px 6px;border-radius:6px;">김도윤0402</code></p>
+      <input type="text" class="auth-input" id="codeInput" placeholder="학생 코드" maxlength="20" onkeydown="if(event.key==='Enter')submitCode()" autocomplete="off">
+      <div class="err-msg" id="codeErr"></div>
+      <button class="auth-btn" onclick="submitCode()">로그인 →</button>
+      <div style="margin-top:18px;padding-top:14px;border-top:1px dashed #d0c8be;text-align:center;">
+        <div style="font-size:.78rem;color:#8a847b;margin-bottom:6px;">아직 코드가 없나요?</div>
+        <button class="auth-back" onclick="goStep('screen-name')" style="font-size:.82rem;">→ 이름·학교 직접 입력하기</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="screen-name" class="screen">
   <div class="auth-wrap">
     <div class="auth-card">
       <h2>👤 이름을 입력하세요</h2>
@@ -113,6 +129,7 @@ footer { text-align: center; padding: 28px; color: #aabbc8; font-size: .8rem; fo
       <input type="text" class="auth-input" id="nameInput" placeholder="예) 홍길동" maxlength="10" onkeydown="if(event.key==='Enter')submitName()">
       <div class="err-msg" id="nameErr"></div>
       <button class="auth-btn" onclick="submitName()">다음 →</button>
+      <br><button class="auth-back" onclick="goStep('screen-code')">← 코드 입력으로 돌아가기</button>
     </div>
   </div>
 </div>
@@ -219,13 +236,23 @@ footer { text-align: center; padding: 28px; color: #aabbc8; font-size: .8rem; fo
 
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import{getFirestore,collection,addDoc,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import{getFirestore,collection,addDoc,getDocs,query,where,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 const cfg={apiKey:"AIzaSyCxS524S8KAaF87DomPtl9sJdF-eqes404",authDomain:"bomnalvaca.firebaseapp.com",projectId:"bomnalvaca",storageBucket:"bomnalvaca.firebasestorage.app",messagingSenderId:"115868052300",appId:"1:115868052300:web:765c08867b6f1ce0987de9"};
 const app=initializeApp(cfg);
 const db=getFirestore(app);
 window._fbReady=true;
 window._logAccess=async(data)=>{
   try{await addDoc(collection(db,"hub_access"),{...data,timestamp:serverTimestamp(),userAgent:navigator.userAgent.substring(0,120)});}catch(e){console.log("log fail",e);}
+};
+// 학생 코드 조회 — 코드와 정확히 일치하는 students 문서 한 건을 반환 (없으면 null)
+window._lookupStudent=async(code)=>{
+  try{
+    const q=query(collection(db,"students"),where("code","==",code));
+    const snap=await getDocs(q);
+    if(snap.empty) return null;
+    const d=snap.docs[0].data();
+    return {id:snap.docs[0].id,code:d.code,name:d.name,school:d.school};
+  }catch(e){console.log("lookup fail",e);return null;}
 };
 </script>
 
@@ -789,22 +816,66 @@ function selectMockMonth(month){
 
 function goHome() { goStep("screen-pick"); document.getElementById("subtitle").textContent = "학교를 선택하세요"; }
 function doLogout() {
-  sessionStorage.removeItem("bn_name"); sessionStorage.removeItem("bn_school"); sessionStorage.removeItem("bn_auth");
-  localStorage.removeItem("bn_name"); localStorage.removeItem("bn_school");
+  ["bn_name","bn_school","bn_auth","bn_id"].forEach(k=>{sessionStorage.removeItem(k);localStorage.removeItem(k);});
   studentName = ""; studentSchool = "";
-  document.getElementById("nameInput").value = "";
+  var ni=document.getElementById("nameInput"); if(ni) ni.value="";
+  var ci=document.getElementById("codeInput"); if(ci) ci.value="";
   document.getElementById("subtitle").textContent = "봄날 영어 학원 전용 퀴즈";
-  goStep("screen-name");
+  goStep("screen-code");
+}
+
+// 학생 코드로 로그인
+async function submitCode(){
+  const code = document.getElementById("codeInput").value.trim();
+  const err = document.getElementById("codeErr");
+  err.textContent = "";
+  if (!code) { err.textContent = "코드를 입력해주세요"; return; }
+  // Firebase 준비 대기
+  let w=0; while(!window._lookupStudent && w<8000){ await new Promise(r=>setTimeout(r,200)); w+=200; }
+  if (!window._lookupStudent) { err.textContent = "잠시 후 다시 시도해주세요"; return; }
+  err.textContent = "⏳ 확인 중…";
+  err.style.color = "#475569";
+  const stu = await window._lookupStudent(code);
+  if (!stu) {
+    err.textContent = "❌ 등록되지 않은 코드입니다. 선생님께 문의하거나, 아래 '이름·학교 직접 입력'을 이용해주세요.";
+    err.style.color = "#dc2626";
+    return;
+  }
+  studentName = stu.name;
+  studentSchool = stu.school;
+  sessionStorage.setItem("bn_name", stu.name);
+  sessionStorage.setItem("bn_school", stu.school);
+  sessionStorage.setItem("bn_id", stu.code);
+  sessionStorage.setItem("bn_auth", "1");
+  localStorage.setItem("bn_name", stu.name);
+  localStorage.setItem("bn_school", stu.school);
+  localStorage.setItem("bn_id", stu.code);
+  localStorage.setItem("bn_auth", "1");
+  if (window._logAccess) window._logAccess({ type:"login", name:stu.name, school:stu.school, code:stu.code, via:"code" });
+  // 학교가 등록된 코드면 바로 학교 화면으로
+  openHub();
 }
 
 window.addEventListener("load", () => {
-  // 자동 로그인 제거 — 항상 이름 입력 첫 화면(screen-name)부터 시작
-  // 단, 이전에 입력한 이름이 있으면 input에 자동으로 채워서 입력 편의 제공
-  let name = sessionStorage.getItem("bn_name") || localStorage.getItem("bn_name");
-  if (name) {
-    var ni = document.getElementById("nameInput");
-    if (ni && !ni.value) ni.value = name;
+  // 이미 로그인되어 있으면 (코드 로그인 또는 이전 직접입력) 자동으로 홈으로
+  const savedName = localStorage.getItem("bn_name");
+  const savedSchool = localStorage.getItem("bn_school");
+  const savedAuth = localStorage.getItem("bn_auth");
+  if (savedName && savedSchool && savedAuth === "1") {
+    studentName = savedName;
+    studentSchool = savedSchool;
+    openHub();
+    return;
   }
+  // 이전에 입력한 이름이 있으면 양쪽 input에 자동 채움
+  const lastName = sessionStorage.getItem("bn_name") || localStorage.getItem("bn_name");
+  if (lastName) {
+    const ni = document.getElementById("nameInput");
+    if (ni && !ni.value) ni.value = lastName;
+  }
+  // 코드 입력란에 포커스
+  const ci = document.getElementById("codeInput");
+  if (ci) setTimeout(()=>ci.focus(), 100);
 });
 </script>
 </body>
