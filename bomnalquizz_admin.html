@@ -404,12 +404,12 @@ tr:hover td{background:#f8f9ff;}
 
 <script type="module">
 import{initializeApp}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import{getFirestore,collection,getDocs,query,orderBy,deleteDoc,doc,addDoc,where,serverTimestamp}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import{getFirestore,collection,getDocs,query,orderBy,deleteDoc,doc,addDoc,updateDoc,where,serverTimestamp}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 const cfg={apiKey:"AIzaSyCxS524S8KAaF87DomPtl9sJdF-eqes404",authDomain:"bomnalvaca.firebaseapp.com",projectId:"bomnalvaca",storageBucket:"bomnalvaca.firebasestorage.app",messagingSenderId:"115868052300",appId:"1:115868052300:web:765c08867b6f1ce0987de9"};
 const app=initializeApp(cfg);const db=getFirestore(app);
 window._db=db;window._col=collection;window._getDocs=getDocs;
 window._query=query;window._orderBy=orderBy;window._where=where;window._fbReady=true;
-window._deleteDoc=deleteDoc;window._doc=doc;window._addDoc=addDoc;window._serverTs=serverTimestamp;
+window._deleteDoc=deleteDoc;window._doc=doc;window._addDoc=addDoc;window._updateDoc=updateDoc;window._serverTs=serverTimestamp;
 </script>
 
 <script>
@@ -1400,6 +1400,15 @@ async function confirmDeleteAll(){
 
 // ═══════ 학생 코드 관리 ═══════
 let allStudents=[];
+let editingStudentId=null;
+
+const STU_SCHOOL_OPTIONS=`<option value="">선택…</option>
+<optgroup label="종촌고"><option>종촌고1</option><option>종촌고2</option><option>종촌고3</option></optgroup>
+<optgroup label="고운고"><option>고운고1</option><option>고운고2</option><option>고운고3</option></optgroup>
+<optgroup label="대성고"><option>대성고1</option><option>대성고2</option><option>대성고3</option></optgroup>
+<optgroup label="종촌중"><option>종촌중1</option><option>종촌중2</option><option>종촌중3</option></optgroup>
+<optgroup label="어진중"><option>어진중1</option><option>어진중2</option><option>어진중3</option></optgroup>
+<optgroup label="고운중"><option>고운중1</option><option>고운중2</option><option>고운중3</option></optgroup>`;
 
 async function loadStudents(){
   document.getElementById('stuArea').innerHTML='<div class="loading-msg">⏳ 학생 명단 불러오는 중…</div>';
@@ -1429,16 +1438,46 @@ function renderStudentList(){
     return;
   }
   const ftDate=t=>t?t.toLocaleDateString('ko-KR'):'-';
-  const rows=list.map((s,i)=>`<tr>
-    <td class="nw" style="text-align:center;color:var(--muted);">${i+1}</td>
-    <td class="nw"><code style="background:#fef3c7;color:#92400e;padding:2px 8px;border-radius:8px;font-size:12px;font-weight:800;">${escapeHtml(s.code)}</code></td>
-    <td class="nw"><strong>${escapeHtml(s.name)}</strong></td>
-    <td class="nw" style="color:#475569;">${escapeHtml(s.school)}</td>
-    <td class="nw" style="font-size:11px;color:#94a3b8;">${ftDate(s.createdAt)}</td>
-    <td class="nw" style="text-align:center;"><button class="del-btn-mini" onclick="deleteStudent('${s.id}','${escapeAttr(s.code)}')" title="삭제">🗑️</button></td>
-  </tr>`).join('');
-  document.getElementById('stuArea').innerHTML=`<table class="report-table" style="width:auto;min-width:560px;">
-    <thead><tr><th style="width:40px;">#</th><th>코드</th><th>이름</th><th>학교</th><th>등록일</th><th style="width:50px;">삭제</th></tr></thead>
+  const buildSchoolSelect=(id,current)=>{
+    let html=STU_SCHOOL_OPTIONS;
+    if(current){
+      // 현재 학교가 옵션에 있으면 selected로 변환
+      html=html.replace(`<option>${current}</option>`,`<option selected>${current}</option>`);
+      // 옵션에 없는 학교(과거 등록된 자유 입력값 등)면 첫 자리에 추가
+      if(!html.includes(`<option selected>${current}</option>`)){
+        html=`<option value="" disabled>선택…</option><option selected>${current}</option>`+html.replace('<option value="">선택…</option>','');
+      }
+    }
+    return `<select id="ed-school-${id}" class="ctrl-sel" style="width:130px;font-size:11.5px;">${html}</select>`;
+  };
+  const rows=list.map((s,i)=>{
+    if(s.id===editingStudentId){
+      return `<tr style="background:#fff8e1;">
+        <td class="nw" style="text-align:center;color:#92400e;font-weight:800;">${i+1}</td>
+        <td class="nw"><input type="text" id="ed-code-${s.id}" class="ctrl-inp" value="${escapeHtml(s.code)}" style="width:140px;font-size:12px;" placeholder="코드"></td>
+        <td class="nw"><input type="text" id="ed-name-${s.id}" class="ctrl-inp" value="${escapeHtml(s.name)}" style="width:100px;font-size:12px;" placeholder="이름"></td>
+        <td class="nw">${buildSchoolSelect(s.id,s.school)}</td>
+        <td class="nw" style="font-size:11px;color:#94a3b8;">${ftDate(s.createdAt)}</td>
+        <td class="nw" style="text-align:center;white-space:nowrap;">
+          <button class="del-btn-mini" onclick="saveEditStudent('${s.id}')" title="저장" style="font-size:14px;">✅</button>
+          <button class="del-btn-mini" onclick="cancelEditStudent()" title="취소">❌</button>
+        </td>
+      </tr>`;
+    }
+    return `<tr>
+      <td class="nw" style="text-align:center;color:var(--muted);">${i+1}</td>
+      <td class="nw"><code style="background:#fef3c7;color:#92400e;padding:2px 8px;border-radius:8px;font-size:12px;font-weight:800;">${escapeHtml(s.code)}</code></td>
+      <td class="nw"><strong>${escapeHtml(s.name)}</strong></td>
+      <td class="nw" style="color:#475569;">${escapeHtml(s.school)}</td>
+      <td class="nw" style="font-size:11px;color:#94a3b8;">${ftDate(s.createdAt)}</td>
+      <td class="nw" style="text-align:center;white-space:nowrap;">
+        <button class="del-btn-mini" onclick="startEditStudent('${s.id}')" title="수정">✏️</button>
+        <button class="del-btn-mini" onclick="deleteStudent('${s.id}','${escapeAttr(s.code)}')" title="삭제">🗑️</button>
+      </td>
+    </tr>`;
+  }).join('');
+  document.getElementById('stuArea').innerHTML=`<table class="report-table" style="width:auto;min-width:620px;">
+    <thead><tr><th style="width:40px;">#</th><th>코드</th><th>이름</th><th>학교</th><th>등록일</th><th style="width:80px;">관리</th></tr></thead>
     <tbody>${rows}</tbody></table>`;
 }
 
@@ -1472,10 +1511,48 @@ async function addStudent(){
   }
 }
 
+function startEditStudent(id){
+  editingStudentId=id;
+  renderStudentList();
+  // 코드 입력란에 포커스
+  setTimeout(()=>{const el=document.getElementById('ed-code-'+id);if(el){el.focus();el.select();}},50);
+}
+
+function cancelEditStudent(){
+  editingStudentId=null;
+  renderStudentList();
+}
+
+async function saveEditStudent(id){
+  const code=document.getElementById('ed-code-'+id).value.trim();
+  const name=document.getElementById('ed-name-'+id).value.trim();
+  const school=document.getElementById('ed-school-'+id).value;
+  const msg=document.getElementById('stuMsg');
+  msg.style.color='#dc2626';
+  if(!code){msg.textContent='⚠️ 코드를 비울 수 없습니다';return;}
+  if(!name){msg.textContent='⚠️ 이름을 비울 수 없습니다';return;}
+  if(!school){msg.textContent='⚠️ 학교를 선택해주세요';return;}
+  // 다른 학생이 같은 코드를 쓰는지 확인
+  if(allStudents.some(s=>s.id!==id && s.code===code)){
+    msg.textContent=`⚠️ 코드 "${code}"는 다른 학생이 이미 사용 중입니다`;return;
+  }
+  msg.style.color='#475569';msg.textContent='⏳ 저장 중…';
+  try{
+    await window._updateDoc(window._doc(window._db,'students',id),{code,name,school});
+    editingStudentId=null;
+    msg.style.color='#16a34a';
+    msg.textContent=`✅ 수정 완료: ${name} (${code})`;
+    await loadStudents();
+  }catch(e){
+    msg.style.color='#dc2626';msg.textContent='❌ 수정 실패: '+e.message;
+  }
+}
+
 async function deleteStudent(id,code){
   if(!confirm(`학생 코드 "${code}"를 삭제할까요?\n(이미 저장된 응시 기록은 그대로 남습니다)`))return;
   try{
     await window._deleteDoc(window._doc(window._db,'students',id));
+    if(editingStudentId===id) editingStudentId=null;
     await loadStudents();
   }catch(e){alert('삭제 실패: '+e.message);}
 }
