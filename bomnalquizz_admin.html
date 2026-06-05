@@ -277,6 +277,10 @@ tr:hover td{background:#f8f9ff;}
             <optgroup label="어진중"><option value="어진중">어진중 전체</option><option value="어진중1">어진중1</option><option value="어진중2">어진중2</option><option value="어진중3">어진중3</option></optgroup>
             <optgroup label="고운중"><option value="고운중">고운중 전체</option><option value="고운중1">고운중1</option><option value="고운중2">고운중2</option><option value="고운중3">고운중3</option></optgroup>
           </select>
+          <span class="ctrl-label">교재</span>
+          <select class="ctrl-sel" id="fTextbook" onchange="applyFilter()">
+            <option value="">전체</option>
+          </select>
           <span class="ctrl-label">이름</span>
           <input type="text" class="ctrl-inp" id="fName" placeholder="검색..." oninput="applyFilter()">
           <span class="ctrl-label">정렬</span>
@@ -467,6 +471,7 @@ async function loadData(){
     document.getElementById('lastRefresh').textContent=
       '갱신: '+new Date().toLocaleTimeString('ko-KR')+' (총 '+allData.length+'건)';
     buildHistoryMap();
+    populateTextbookFilter();
     renderSummary();renderCharts();applyFilter();renderSectionView();
   }catch(e){
     document.getElementById('tblArea').innerHTML=
@@ -500,12 +505,29 @@ function renderCharts(){
     :'<div style="color:var(--muted);font-size:12px;padding:8px">데이터 없음</div>';
 }
 
+function populateTextbookFilter(){
+  const sel=document.getElementById('fTextbook');
+  if(!sel) return;
+  const counts=new Map();
+  allData.forEach(d=>{
+    const t=parseQuizMeta(d).textbook;
+    if(t&&t!=='-') counts.set(t,(counts.get(t)||0)+1);
+  });
+  // 가나다순 정렬 (한글 우선)
+  const opts=[...counts.entries()].sort((a,b)=>a[0].localeCompare(b[0],'ko'));
+  const cur=sel.value;
+  sel.innerHTML='<option value="">전체</option>'+opts.map(([t,c])=>`<option value="${t}">${t} (${c})</option>`).join('');
+  sel.value=cur; // 이전 선택 유지
+}
+
 function applyFilter(){
   const sq=document.getElementById('fSchool').value;
+  const tq=document.getElementById('fTextbook')?document.getElementById('fTextbook').value:'';
   const nq=document.getElementById('fName').value.trim().toLowerCase();
   const so=document.getElementById('fSort').value;
   let data=[...allData];
   if(sq) data=data.filter(d=>d.school&&d.school.startsWith(sq));
+  if(tq) data=data.filter(d=>parseQuizMeta(d).textbook===tq);
   if(nq) data=data.filter(d=>d.name.toLowerCase().includes(nq));
   if(so==='time_asc') data.sort((a,b)=>(a.time||0)-(b.time||0));
   else if(so==='score_desc') data.sort((a,b)=>b.score-a.score);
@@ -567,6 +589,15 @@ function nonSecLabel(qt, d){
   if(qt.includes('함축의미')) return '함축의미';
   if(qt.includes('빈칸추론')){const kang=qt.match(/([\dT]+강|전체)/);return '빈칸추론'+(kang?' '+kang[1]:'');}
   if(qt.includes('어휘퀴즈')){const complete=qt.includes('오답완료');const label=qt.replace('_어휘퀴즈_오답완료','').replace('_어휘퀴즈','').replace(/_/g,' ');return label+(complete?' ✅':'');}
+  // 올림포스: "올림포스기본1_U1_단어_뜻맞추기" → "올림포스 U1 뜻맞추기" / "_본문암기" → "올림포스 U1 본문암기"
+  if(/^올림포스/.test(qt)){
+    const u=qt.match(/_U(\d+)/);
+    const complete=qt.includes('오답완료');
+    let sub='';
+    if(/_단어_/.test(qt)){const r=qt.match(/_단어_([^_]+)/);sub='단어 '+(r?r[1]:'');}
+    else if(/_본문암기/.test(qt)) sub='본문암기';
+    return `올림포스${u?' U'+u[1]:''}${sub?' · '+sub:''}${complete?' ✅':''}`;
+  }
   // 모의고사 시리즈: "고2_24년6월_단어_1차뜻" → "고2 24-6 단어 1차"
   const mockM=qt.match(/^(고[123])_(\d{2})년(\d{1,2})월_(.+)$/);
   if(mockM){
@@ -749,8 +780,9 @@ function parseQuizMeta(d){
   }
   else if (qt) textbook = qt.split('_')[0] || qt.slice(0, 20);
   // 차시 (Lesson/Unit/번호/과/섹션) 추출
+  const isOlym=/^올림포스/.test(qt);
   const lm = qt.match(/L(\d+)/i) || qt.match(/_U(\d+)/i) || qt.match(/Unit\s*(\d+)/i);
-  if (lm) lesson = 'Lesson '+lm[1];
+  if (lm) lesson = (isOlym?'Unit ':'Lesson ')+lm[1];
   else {
     // 종촌중학교_2학년_4과_빈칸시험_A → "4과 · A섹션"
     const cm=qt.match(/_(\d+과)_빈칸시험_([A-Z]|\d+)/);
@@ -759,6 +791,11 @@ function parseQuizMeta(d){
       const cm2=qt.match(/_(\d+과)/);
       if (cm2) lesson = cm2[1];
     }
+  }
+  // 올림포스 어휘 라운드 (뜻맞추기/유의어찾기/영영풀이) 보조 표기
+  if (isOlym && /_단어_/.test(qt)) {
+    const rm=qt.match(/_단어_([^_]+)/);
+    if (rm) type = '어휘·'+rm[1].replace(/_오답완료|_오답재시도/g,'');
   }
   return { textbook, type, typeClass, lesson, passages };
 }
