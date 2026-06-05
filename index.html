@@ -857,25 +857,21 @@ async function submitCode(){
 }
 
 window.addEventListener("load", () => {
-  // 이미 로그인되어 있으면 (코드 로그인 또는 이전 직접입력) 자동으로 홈으로
-  const savedName = localStorage.getItem("bn_name");
-  const savedSchool = localStorage.getItem("bn_school");
-  const savedAuth = localStorage.getItem("bn_auth");
-  if (savedName && savedSchool && savedAuth === "1") {
-    studentName = savedName;
-    studentSchool = savedSchool;
-    openHub();
-    return;
+  // 자동 로그인 없음 — 허브를 열 때마다 항상 코드 입력 화면부터
+  // 이전에 입력한 코드/이름은 input에 자동으로 채워 다시 입력하지 않게 도와줌
+  const lastCode = localStorage.getItem("bn_id");
+  if (lastCode) {
+    const ci = document.getElementById("codeInput");
+    if (ci) ci.value = lastCode;
   }
-  // 이전에 입력한 이름이 있으면 양쪽 input에 자동 채움
   const lastName = sessionStorage.getItem("bn_name") || localStorage.getItem("bn_name");
   if (lastName) {
     const ni = document.getElementById("nameInput");
     if (ni && !ni.value) ni.value = lastName;
   }
-  // 코드 입력란에 포커스
+  // 코드 입력란에 포커스 (이미 채워져 있으면 끝부터)
   const ci = document.getElementById("codeInput");
-  if (ci) setTimeout(()=>ci.focus(), 100);
+  if (ci) setTimeout(()=>{ ci.focus(); ci.select(); }, 100);
 });
 </script>
 </body>
