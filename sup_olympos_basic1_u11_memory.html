@@ -810,7 +810,7 @@ function checkAnswer(){
       if (i === sel && !correct) b.classList.add('wrong');
     });
   }
-  if (correct) gotScore += q.score;
+  // gotScore는 더 이상 누적하지 않음 (finishQuiz에서 정답 개수로 다시 계산)
   const fb = document.getElementById('feedback');
   fb.classList.remove('hidden');
   fb.classList.toggle('correct', correct);
@@ -863,10 +863,20 @@ function finishQuiz(){
   document.getElementById('quizScreen').style.display = 'none';
   document.getElementById('bottomBar').classList.add('hidden');
   document.getElementById('resultScreen').style.display = 'block';
-  document.getElementById('resultScore').textContent = `${gotScore}/${totalScore}점`;
-  const pct = totalScore ? Math.round(gotScore/totalScore*100) : 0;
+  // 100점 만점 환산 (정답 개수 / 총 문제 수 × 100)
+  let _correctCnt = 0;
+  allQuestions.forEach((q, i) => {
+    const a = answers[i];
+    if (a == null) return;
+    let ok = false;
+    if (q.type === 'word-form') ok = String(a).trim().toLowerCase() === String(q.ans).toLowerCase();
+    else ok = a === q.ans;
+    if (ok) _correctCnt++;
+  });
+  const pct = allQuestions.length ? Math.round(_correctCnt/allQuestions.length*100) : 0;
+  document.getElementById('resultScore').textContent = `${pct}점`;
   document.getElementById('resultDetail').innerHTML =
-    `${userName}님, 수고하셨습니다!<br>총 ${allQuestions.length}문제 중 정답률 <strong>${pct}%</strong>`;
+    `${userName}님, 수고하셨습니다!<br>총 ${allQuestions.length}문제 중 <strong>${_correctCnt}개 정답</strong> · 정답률 <strong>${pct}%</strong>`;
 
   // Firebase 저장
   const elapsedMin = quizStartTime ? Math.max(1, Math.round((Date.now()-quizStartTime)/60000)) : 0;
