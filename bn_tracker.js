@@ -130,3 +130,93 @@ if (document.readyState === 'loading') {
 setTimeout(autoFillIdentity, 2000);
 
 window._autoFillIdentity = autoFillIdentity;
+
+/* ───────────────────────────────────────────────────────────
+   결과 저장 안전망: localStorage 백업 + Firestore REST API + 다음 페이지 진입 시 재시도
+   - 각 퀴즈 파일의 _fbSave / _saveResult 호출이 await 없이 fire-and-forget으로
+     진행되어 학생이 결과 직후 탭을 닫으면 네트워크 요청이 취소되던 문제를 보완
+   - window._fbSave / window._saveResult를 자동으로 감싸 (Object.defineProperty)
+     호출 시 localStorage에 먼저 백업 → Firestore 저장 → 성공하면 백업 제거
+   - 페이지 진입 때마다 미전송 백업을 REST API (keepalive)로 재시도
+─────────────────────────────────────────────────────────── */
+const _RESTFS_BASE = 'https://firestore.googleapis.com/v1/projects/bomnalvaca/databases/(default)/documents';
+const _PENDING_KEY = 'bn_pending_saves';
+
+function _toFs(v){
+  if (v === null || v === undefined) return { nullValue: null };
+  if (typeof v === 'boolean') return { booleanValue: v };
+  if (typeof v === 'number') return Number.isInteger(v) ? { integerValue: String(v) } : { doubleValue: v };
+  if (typeof v === 'string') return { stringValue: v };
+  if (v instanceof Date) return { timestampValue: v.toISOString() };
+  if (Array.isArray(v)) return { arrayValue: { values: v.map(_toFs) } };
+  if (typeof v === 'object') {
+    const fields = {};
+    for (const k of Object.keys(v)) fields[k] = _toFs(v[k]);
+    return { mapValue: { fields } };
+  }
+  return { stringValue: String(v) };
+}
+
+function _readPending(){
+  try { return JSON.parse(localStorage.getItem(_PENDING_KEY) || '[]'); } catch(e){ return []; }
+}
+function _writePending(arr){
+  try { localStorage.setItem(_PENDING_KEY, JSON.stringify(arr)); } catch(e){}
+}
+function _pushPending(item){ const a=_readPending(); a.push(item); _writePending(a); }
+function _dropPending(id){ const a=_readPending().filter(p=>p.id!==id); _writePending(a); }
+
+async function _postOneRest(collectionName, data){
+  // submittedAt 보강 (서버 timestamp는 REST에서 사용 불편 — 클라이언트 ISO 문자열로 대체)
+  const enriched = { ...data, submittedAt: data.submittedAt || new Date().toISOString() };
+  const payload = { fields: {} };
+  for (const k of Object.keys(enriched)) payload.fields[k] = _toFs(enriched[k]);
+  try {
+    const resp = await fetch(`${_RESTFS_BASE}/${collectionName}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+      keepalive: true   // 페이지 unload 후에도 요청 완료
+    });
+    return resp.ok;
+  } catch(e){
+    return false;
+  }
+}
+
+function _newId(){ return 'q_' + Date.now() + '_' + Math.random().toString(36).slice(2,8); }
+
+// _fbSave / _saveResult를 호출 시 자동으로 백업·재시도하도록 래핑
+function _wrapSaveSlot(slotName, collectionName){
+  let _orig = null;
+  Object.defineProperty(window, slotName, {
+    configurable: true,
+    set(fn){ _orig = fn; },
+    get(){
+      return async function(data){
+        const id = _newId();
+        _pushPending({ id, collection: collectionName, data, ts: Date.now() });
+        let saved = false;
+        if (_orig) {
+          try { await _orig(data); saved = true; } catch(e){ /* 실패 시 REST 폴백 */ }
+        }
+        if (!saved) saved = await _postOneRest(collectionName, data);
+        if (saved) _dropPending(id);
+        return saved;
+      };
+    }
+  });
+}
+_wrapSaveSlot('_fbSave', 'quiz_results');
+_wrapSaveSlot('_saveResult', 'quiz_results');
+
+// 페이지 진입 시 미전송 백업 재시도 (7일 지난 항목은 폐기)
+(async function _flushPending(){
+  const now = Date.now();
+  let arr = _readPending().filter(p => now - p.ts < 7*24*3600*1000);
+  _writePending(arr);
+  for (const p of arr) {
+    const ok = await _postOneRest(p.collection || 'quiz_results', p.data);
+    if (ok) _dropPending(p.id);
+  }
+})();
