@@ -308,6 +308,33 @@ function blankPosKey(sectionKey) { return CHAPTER_KEY + '_blankpos_' + todayStr(
 function tabExitKey() { return CHAPTER_KEY + '_tabexit_' + todayStr(); }
 function attemptKey(sectionKey) { return CHAPTER_KEY + '_attempt_' + sectionKey; }
 
+
+// === 어제 이전 draft / blankpos / tabexit 정리 (그날 것만 남김) ===
+function _bnCleanupOldChapterData(){
+  try{
+    var today = todayStr();
+    // 이 챕터의 모든 키를 검사. 날짜가 들어간 키(_draft_/_blankpos_/_tabexit_) 중 오늘이 아닌 것 삭제
+    var prefix = CHAPTER_KEY + '_';
+    var todayMarker = '_' + today + '_';
+    var tabExitToday = CHAPTER_KEY + '_tabexit_' + today;
+    var toRemove = [];
+    for(var i=0; i<localStorage.length; i++){
+      var k = localStorage.key(i);
+      if(!k || k.indexOf(prefix) !== 0) continue;
+      var isDraft = k.indexOf('_draft_') >= 0;
+      var isBlankpos = k.indexOf('_blankpos_') >= 0;
+      var isTabexit = k.indexOf('_tabexit_') >= 0;
+      if(isDraft || isBlankpos){
+        // 키 형식: <CHAPTER_KEY>_draft_<YYYY-MM-DD>_<section> 또는 _blankpos_<...>
+        if(k.indexOf(todayMarker) < 0) toRemove.push(k);
+      } else if(isTabexit){
+        if(k !== tabExitToday) toRemove.push(k);
+      }
+    }
+    toRemove.forEach(function(k){ localStorage.removeItem(k); });
+  }catch(e){}
+}
+_bnCleanupOldChapterData();
 function formatDT(d) {
   const pad = n => String(n).padStart(2, '0');
   return `${d.getFullYear()}.${pad(d.getMonth()+1)}.${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
