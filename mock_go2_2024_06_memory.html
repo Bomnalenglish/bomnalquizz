@@ -145,6 +145,15 @@ window._fbSave=async function(data){
       <div class="info-item">📖 본문 통째로 제시</div>
       <div class="info-item">📊 자동채점 + 오답노트</div>
     </div>
+    
+  <div id="resumeBox" style="display:none;background:linear-gradient(135deg,#fff7e0,#fef3c7);border:2px solid #fcd34d;border-radius:14px;padding:14px 16px;margin:12px auto;text-align:left;max-width:560px;">
+    <div style="font-family:'Black Han Sans',sans-serif;font-size:1rem;color:#92400e;margin-bottom:4px;">⏸️ 풀던 시험이 있어요</div>
+    <div id="resumeInfo" style="font-size:.78rem;color:#a16207;line-height:1.5;margin-bottom:10px;"></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button style="flex:1;min-width:120px;padding:11px 14px;font-size:.88rem;background:linear-gradient(135deg,#f59e0b,#d97706);color:white;border:none;border-radius:10px;font-weight:800;cursor:pointer;" onclick="resumeSession()">▶️ 이어서 풀기</button>
+      <button style="flex:1;min-width:120px;padding:11px 14px;font-size:.88rem;background:linear-gradient(135deg,#94a3b8,#64748b);color:white;border:none;border-radius:10px;font-weight:800;cursor:pointer;" onclick="discardSession()">🔄 새로 시작</button>
+    </div>
+  </div>
     <select class="ni" id="si" style="background:white;color:#1565c0;font-weight:700;cursor:pointer;">
       <option value="">학교 선택</option>
       <option value="종촌고">종촌고</option>
@@ -942,7 +951,7 @@ function _cleanupOldProgress(){
   try{
     for(let i=localStorage.length-1;i>=0;i--){
       const k = localStorage.key(i);
-      if(k && k.startsWith('bn_prog_')){
+      if(k && (k.startsWith('bn_prog_') || k.startsWith('bn_session_'))){
         try{const v=JSON.parse(localStorage.getItem(k)); if(v.day!==_DAY_KEY) localStorage.removeItem(k);}
         catch(e){localStorage.removeItem(k);}
       }
@@ -1131,6 +1140,7 @@ function revealKoAndWait(q){
 }
 window.goNextQ = function(){
   idx++;
+  _saveSession();
   showQ();
 };
 
@@ -1252,7 +1262,97 @@ function checkChoice(btn, sel, correctIdx, correctVal){
 
 let wrongQs = [];
 
+
+// === 진행 중 세션 저장 (같은 날 재진입 시 이어서 풀기) ===
+const _SESSION_KEY = 'bn_session_' + QUIZ_ID;
+function _saveSession(){
+  if(typeof qs==='undefined' || !qs.length || idx>=qs.length) return;
+  try{
+    const state = {
+      day: _DAY_KEY,
+      userName: (typeof userName!=='undefined'?userName:''),
+      userSchool: (typeof userSchool!=='undefined'?userSchool:''),
+      qs, idx,
+      cor: (typeof cor!=='undefined'?cor:0),
+      wrn: (typeof wrn!=='undefined'?wrn:0),
+      wrongs: (typeof wrongs!=='undefined'?wrongs:[]),
+      allResults: (typeof allResults!=='undefined'?allResults:[]),
+      selectedRefs: (typeof selectedRefs!=='undefined'?Array.from(selectedRefs):[]),
+      doneRefs: (typeof doneRefs!=='undefined'?Array.from(doneRefs):[]),
+      selectedNos: (typeof selectedNos!=='undefined'?Array.from(selectedNos||[]):[]),
+      doneNos: (typeof doneNos!=='undefined'?Array.from(doneNos):[]),
+      quizMode: (typeof quizMode!=='undefined'?quizMode:''),
+      filterMode: (typeof filterMode!=='undefined'?filterMode:''),
+      mode: (typeof mode!=='undefined'?mode:''),
+      round: (typeof round!=='undefined'?round:''),
+      elapsedMs: (typeof t0!=='undefined' && t0)?(Date.now()-t0):0,
+      savedAt: Date.now()
+    };
+    localStorage.setItem(_SESSION_KEY, JSON.stringify(state));
+  }catch(e){}
+}
+function _loadSession(){
+  try{
+    const raw = localStorage.getItem(_SESSION_KEY); if(!raw) return null;
+    const s = JSON.parse(raw);
+    if(s.day !== _DAY_KEY){ localStorage.removeItem(_SESSION_KEY); return null; }
+    if(!s.qs || !s.qs.length || s.idx >= s.qs.length){ localStorage.removeItem(_SESSION_KEY); return null; }
+    return s;
+  }catch(e){ return null; }
+}
+function _clearSession(){ try{ localStorage.removeItem(_SESSION_KEY); }catch(e){} }
+function _restoreSessionState(s){
+  if(typeof userName!=='undefined'){ userName = s.userName||''; }
+  if(typeof userSchool!=='undefined'){ userSchool = s.userSchool||''; }
+  qs = s.qs; idx = s.idx;
+  if(typeof cor!=='undefined') cor = s.cor||0;
+  if(typeof wrn!=='undefined') wrn = s.wrn||0;
+  if(typeof wrongs!=='undefined') wrongs = s.wrongs||[];
+  if(typeof allResults!=='undefined') allResults = s.allResults||[];
+  if(typeof selectedRefs!=='undefined') selectedRefs = new Set(s.selectedRefs||[]);
+  if(typeof doneRefs!=='undefined' && Array.isArray(s.doneRefs)) doneRefs = new Set(s.doneRefs);
+  if(typeof selectedNos!=='undefined') selectedNos = new Set(s.selectedNos||[]);
+  if(typeof doneNos!=='undefined' && Array.isArray(s.doneNos)) doneNos = new Set(s.doneNos);
+  if(typeof quizMode!=='undefined' && s.quizMode) quizMode = s.quizMode;
+  if(typeof filterMode!=='undefined' && s.filterMode) filterMode = s.filterMode;
+  if(typeof mode!=='undefined' && s.mode) mode = s.mode;
+  if(typeof round!=='undefined' && s.round) round = s.round;
+  if(typeof t0!=='undefined') t0 = Date.now() - (s.elapsedMs||0);
+  if(typeof answered!=='undefined') answered = false;
+}
+function _enterQuizScreen(){
+  ['startScreen','passageScreen','loginScreen','passages','hubScreen','startView'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.classList.add('hidden');
+  });
+  ['hdr','pw','quizArea','quizScreen','quizWrap','quizView'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.classList.remove('hidden');
+  });
+}
+function resumeSession(){
+  const s = _loadSession(); if(!s){ const rb=document.getElementById('resumeBox'); if(rb) rb.style.display='none'; return; }
+  _restoreSessionState(s);
+  _enterQuizScreen();
+  if(typeof showQ==='function') showQ();
+  else if(typeof renderQuestion==='function') renderQuestion();
+  else if(typeof drawQ==='function') drawQ();
+}
+function discardSession(){ _clearSession(); const rb=document.getElementById('resumeBox'); if(rb) rb.style.display='none'; }
+function checkResumePrompt(){
+  const s = _loadSession(); if(!s) return;
+  const rb = document.getElementById('resumeBox'); if(!rb) return;
+  const remain = s.qs.length - s.idx;
+  const elapsedMin = Math.round((s.elapsedMs||0)/60000);
+  const info = document.getElementById('resumeInfo');
+  if(info) info.innerHTML =
+    '<strong>'+(s.userName||'학생')+'</strong>님 · '+s.qs.length+'문제 중 <strong>'+s.idx+'번째</strong>까지 풀었어요 ('+remain+'문제 남음)<br>'+
+    '진행한 시간: '+elapsedMin+'분 · 정답 '+(s.cor||0)+' / 오답 '+(s.wrn||0);
+  rb.style.display='block';
+}
+window.resumeSession = resumeSession;
+window.discardSession = discardSession;
+
 function showResult(){
+  _clearSession();
   document.getElementById('pf').style.width = '100%';
   document.getElementById('quizArea').classList.add('hidden');
   const total = idx, pct = total>0?Math.round(cor/total*100):0;
@@ -1355,6 +1455,7 @@ window.addEventListener('DOMContentLoaded', ()=>{
   }
   _cleanupOldProgress();
   _loadProg();
+  checkResumePrompt();
 });
 </script>
 </body>

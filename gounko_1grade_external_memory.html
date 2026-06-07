@@ -465,10 +465,71 @@ function submitAns(){
 function nextQ(){
   if(curIdx === QUESTIONS.length-1){ showResult(); return; }
   curIdx++;
+  _saveSession();
   renderQ();
 }
 
+// === 같은 날 이어서 풀기 (세션 저장/복원) ===
+const QUIZ_ID='gounko_1grade_external_memory';
+const _DAY_KEY=(function(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');})();
+const _SESSION_KEY='bn_session_'+QUIZ_ID;
+function _saveSession(){
+  try{
+    if(!QUESTIONS||!QUESTIONS.length||curIdx>=QUESTIONS.length) return;
+    if(curIdx===0 && !answers.length) return;
+    localStorage.setItem(_SESSION_KEY, JSON.stringify({
+      day:_DAY_KEY, userName, userSchool, curIdx, answers, gotScore,
+      elapsedMs: t0 ? (Date.now()-t0) : 0
+    }));
+  }catch(e){}
+}
+function _loadSession(){
+  try{
+    const raw=localStorage.getItem(_SESSION_KEY); if(!raw) return null;
+    const s=JSON.parse(raw);
+    if(s.day!==_DAY_KEY){localStorage.removeItem(_SESSION_KEY); return null;}
+    if(s.curIdx>=QUESTIONS.length){localStorage.removeItem(_SESSION_KEY); return null;}
+    return s;
+  }catch(e){return null;}
+}
+function _clearSession(){try{localStorage.removeItem(_SESSION_KEY);}catch(e){}}
+function _resumeFromSession(){
+  const s=_loadSession(); if(!s) return false;
+  userName=s.userName||''; userSchool=s.userSchool||'';
+  curIdx=s.curIdx||0; answers=s.answers||[]; gotScore=s.gotScore||0;
+  t0 = Date.now() - (s.elapsedMs||0);
+  document.getElementById('startScreen').classList.add('hidden');
+  document.getElementById('hdr').classList.remove('hidden');
+  document.getElementById('pwBar').classList.remove('hidden');
+  document.getElementById('quizArea').classList.remove('hidden');
+  document.getElementById('hs').textContent = userName + ' · 동물실험 외부지문 · ' + QUESTIONS.length + '문항';
+  renderQ();
+  return true;
+}
+function _checkResumePrompt(){
+  const s=_loadSession(); if(!s) return;
+  if(document.getElementById('resumeBox')) return;
+  const start=document.getElementById('startScreen'); if(!start) return;
+  const remain=QUESTIONS.length-s.curIdx;
+  const elapsedMin=Math.round((s.elapsedMs||0)/60000);
+  const box=document.createElement('div');
+  box.id='resumeBox';
+  box.style.cssText='background:linear-gradient(135deg,#fff7e0,#fef3c7);border:2px solid #fcd34d;border-radius:14px;padding:14px 16px;margin:12px auto;text-align:left;max-width:560px;';
+  box.innerHTML = `
+    <div style="font-family:'Black Han Sans',sans-serif;font-size:1rem;color:#92400e;margin-bottom:4px;">⏸️ 풀던 시험이 있어요</div>
+    <div style="font-size:.78rem;color:#a16207;line-height:1.5;margin-bottom:10px;"><strong>${s.userName||'학생'}</strong>님 · ${QUESTIONS.length}문제 중 <strong>${s.curIdx}번째</strong>까지 풀었어요 (${remain}문제 남음)<br>진행한 시간: ${elapsedMin}분 · 정답 ${s.gotScore||0}</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button style="flex:1;min-width:120px;padding:11px 14px;font-size:.88rem;background:linear-gradient(135deg,#f59e0b,#d97706);color:white;border:none;border-radius:10px;font-weight:800;cursor:pointer;" onclick="_resumeFromSession();this.closest('#resumeBox').remove();">▶️ 이어서 풀기</button>
+      <button style="flex:1;min-width:120px;padding:11px 14px;font-size:.88rem;background:linear-gradient(135deg,#94a3b8,#64748b);color:white;border:none;border-radius:10px;font-weight:800;cursor:pointer;" onclick="_clearSession();this.closest('#resumeBox').remove();">🔄 새로 시작</button>
+    </div>`;
+  start.insertBefore(box, start.firstChild);
+}
+window._resumeFromSession=_resumeFromSession;
+window._clearSession=_clearSession;
+window.addEventListener('DOMContentLoaded',function(){ setTimeout(_checkResumePrompt, 60); });
+
 function showResult(){
+  _clearSession();
   const pct = Math.round(gotScore/QUESTIONS.length*100);
   const el = Math.round((Date.now()-t0)/60000);
   const wrongs = QUESTIONS.map((q,i)=>({q,i,sel:answers[i]})).filter(x=>x.sel !== x.q.ans);

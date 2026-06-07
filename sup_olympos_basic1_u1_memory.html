@@ -926,7 +926,7 @@ function checkAnswer(){
     nb.classList.add('show');
     nb.onclick = function(){
       if (curIdx === allQuestions.length-1) finishQuiz();
-      else { curIdx++; renderQuestion(); }
+      else { curIdx++; _saveSession(); renderQuestion(); }
     };
     setTimeout(()=>nb.scrollIntoView({behavior:'smooth', block:'nearest'}), 50);
   }
@@ -947,7 +947,99 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
+
+// === 같은 날 이어서 풀기 (세션 저장/복원) ===
+const QUIZ_ID='sup_olympos_basic1_u1_memory';
+const _DAY_KEY=(function(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');})();
+const _SESSION_KEY='bn_session_'+QUIZ_ID;
+function _saveSession(){
+  try{
+    if(!allQuestions || !allQuestions.length || curIdx>=allQuestions.length) return;
+    const elapsedMs = (typeof quizStartTime!=='undefined' && quizStartTime) ? (Date.now()-quizStartTime) : 0;
+    localStorage.setItem(_SESSION_KEY, JSON.stringify({
+      day:_DAY_KEY,
+      userName:userName||'',
+      userSchool:userSchool||'',
+      mode:(typeof mode!=='undefined'?mode:'single'),
+      selectedPassages: (typeof selectedPassages!=='undefined'?Array.from(selectedPassages):[]),
+      allQuestions, curIdx, answers,
+      gotScore: (typeof gotScore!=='undefined'?gotScore:0),
+      totalScore: (typeof totalScore!=='undefined'?totalScore:0),
+      timeLeft: (typeof timeLeft!=='undefined'?timeLeft:0),
+      elapsedMs
+    }));
+  }catch(e){}
+}
+function _loadSession(){
+  try{
+    const raw=localStorage.getItem(_SESSION_KEY); if(!raw) return null;
+    const s=JSON.parse(raw);
+    if(s.day!==_DAY_KEY){localStorage.removeItem(_SESSION_KEY); return null;}
+    if(!s.allQuestions||!s.allQuestions.length||s.curIdx>=s.allQuestions.length){localStorage.removeItem(_SESSION_KEY); return null;}
+    return s;
+  }catch(e){return null;}
+}
+function _clearSession(){try{localStorage.removeItem(_SESSION_KEY);}catch(e){}}
+function _cleanupOldSessions(){
+  try{
+    for(let i=localStorage.length-1;i>=0;i--){
+      const k=localStorage.key(i);
+      if(k && k.startsWith('bn_session_')){
+        try{const v=JSON.parse(localStorage.getItem(k)); if(v.day!==_DAY_KEY) localStorage.removeItem(k);}
+        catch(e){localStorage.removeItem(k);}
+      }
+    }
+  }catch(e){}
+}
+function _resumeFromSession(){
+  const s=_loadSession(); if(!s){ const rb=document.getElementById('resumeBox'); if(rb) rb.style.display='none'; return; }
+  userName = s.userName||''; userSchool = s.userSchool||'';
+  if(typeof mode!=='undefined' && s.mode) mode = s.mode;
+  if(typeof selectedPassages!=='undefined') selectedPassages = new Set(s.selectedPassages||[]);
+  allQuestions = s.allQuestions; curIdx = s.curIdx; answers = s.answers||{};
+  if(typeof gotScore!=='undefined') gotScore = s.gotScore||0;
+  if(typeof totalScore!=='undefined') totalScore = s.totalScore||0;
+  if(typeof timeLeft!=='undefined') timeLeft = s.timeLeft||(allQuestions.length*60);
+  if(typeof quizStartTime!=='undefined') quizStartTime = Date.now() - (s.elapsedMs||0);
+  // 화면 전환
+  const ss=document.getElementById('startScreen'); if(ss) ss.style.display='none';
+  const qs=document.getElementById('quizScreen'); if(qs) qs.style.display='block';
+  const bb=document.getElementById('bottomBar'); if(bb) bb.classList.remove('hidden');
+  const rs=document.getElementById('resultScreen'); if(rs) rs.style.display='none';
+  if(typeof startTimer==='function') startTimer();
+  if(typeof renderQuestion==='function') renderQuestion();
+}
+function _discardSession(){ _clearSession(); const rb=document.getElementById('resumeBox'); if(rb) rb.style.display='none'; }
+function _checkResumePrompt(){
+  const s=_loadSession(); if(!s) return;
+  const ss=document.getElementById('startScreen'); if(!ss) return;
+  if(document.getElementById('resumeBox')) return;
+  const remain = s.allQuestions.length - s.curIdx;
+  const elapsedMin = Math.round((s.elapsedMs||0)/60000);
+  const box=document.createElement('div');
+  box.id='resumeBox';
+  box.style.cssText='background:linear-gradient(135deg,#fff7e0,#fef3c7);border:2px solid #fcd34d;border-radius:14px;padding:14px 16px;margin:12px auto;text-align:left;max-width:560px;';
+  box.innerHTML = `
+    <div style="font-family:'Black Han Sans',sans-serif;font-size:1rem;color:#92400e;margin-bottom:4px;">⏸️ 풀던 시험이 있어요</div>
+    <div style="font-size:.78rem;color:#a16207;line-height:1.5;margin-bottom:10px;">
+      <strong>${s.userName||'학생'}</strong>님 · ${s.allQuestions.length}문제 중 <strong>${s.curIdx}번째</strong>까지 풀었어요 (${remain}문제 남음)<br>
+      진행한 시간: ${elapsedMin}분
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button style="flex:1;min-width:120px;padding:11px 14px;font-size:.88rem;background:linear-gradient(135deg,#f59e0b,#d97706);color:white;border:none;border-radius:10px;font-weight:800;cursor:pointer;" onclick="_resumeFromSession();this.closest('#resumeBox').remove();">▶️ 이어서 풀기</button>
+      <button style="flex:1;min-width:120px;padding:11px 14px;font-size:.88rem;background:linear-gradient(135deg,#94a3b8,#64748b);color:white;border:none;border-radius:10px;font-weight:800;cursor:pointer;" onclick="_clearSession();this.closest('#resumeBox').remove();">🔄 새로 시작</button>
+    </div>`;
+  // Insert at top of startScreen card
+  const card = ss.querySelector('.s-card, .start-card, .lcard, .login-card') || ss;
+  card.insertBefore(box, card.firstChild);
+}
+window._resumeFromSession=_resumeFromSession;
+window._clearSession=_clearSession;
+document.addEventListener('DOMContentLoaded',function(){ _cleanupOldSessions(); setTimeout(_checkResumePrompt, 80); });
+
+
 function finishQuiz(){
+  _clearSession();
   if (timerInterval) clearInterval(timerInterval);
   document.getElementById('quizScreen').style.display = 'none';
   document.getElementById('bottomBar').classList.add('hidden');
