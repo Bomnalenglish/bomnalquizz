@@ -475,6 +475,7 @@ function switchMode(mode){
 }
 function _saveProgress(completed){
   if(_saved) return;
+  if(typeof _RESUMING!=='undefined' && _RESUMING) return;
   _saved=true;
   const total=_modeTotal(); const done=_modeDone();
   if(done===0) return;
@@ -493,8 +494,102 @@ function _saveProgress(completed){
 }
 window.addEventListener('beforeunload',()=>_saveProgress(false));
 
+
+// === 같은 날 이어서 풀기 (세션 저장/복원) ===
+const QUIZ_ID='gounko_1grade_lesson4_grammar';
+const _DAY_KEY=(function(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');})();
+const _SESSION_KEY='bn_session_'+QUIZ_ID;
+const _picks={};
+let _RESUMING=false;
+function _saveSession(){
+  try{
+    if(Object.keys(_picks).length===0) return;
+    localStorage.setItem(_SESSION_KEY, JSON.stringify({
+      day:_DAY_KEY,
+      mode:(typeof _currentMode!=='undefined'?_currentMode:'본문'),
+      picks:_picks,
+      cardDone:(typeof cardDone!=='undefined'?cardDone:{}),
+      cardWrong:(typeof cardWrong!=='undefined'?cardWrong:{}),
+      earned:(typeof earned!=='undefined'?earned:0),
+      elapsedMs:(typeof _t0!=='undefined' && _t0)?(Date.now()-_t0):0
+    }));
+  }catch(e){}
+}
+function _loadSession(){
+  try{
+    const raw=localStorage.getItem(_SESSION_KEY); if(!raw) return null;
+    const s=JSON.parse(raw);
+    if(s.day!==_DAY_KEY){localStorage.removeItem(_SESSION_KEY); return null;}
+    if(!s.picks||Object.keys(s.picks).length===0){localStorage.removeItem(_SESSION_KEY); return null;}
+    return s;
+  }catch(e){return null;}
+}
+function _clearSession(){try{localStorage.removeItem(_SESSION_KEY);}catch(e){}}
+function _cleanupOldSessions(){
+  try{
+    for(let i=localStorage.length-1;i>=0;i--){
+      const k=localStorage.key(i);
+      if(k && k.startsWith('bn_session_')){
+        try{const v=JSON.parse(localStorage.getItem(k)); if(v.day!==_DAY_KEY) localStorage.removeItem(k);}
+        catch(e){localStorage.removeItem(k);}
+      }
+    }
+  }catch(e){}
+}
+function _resumeFromSession(){
+  const s=_loadSession(); if(!s) return false;
+  if(typeof _currentMode!=='undefined' && s.mode && s.mode!==_currentMode){
+    // switch mode without confirm (we're resuming)
+    if(typeof switchMode==='function'){
+      _RESUMING=true;
+      _currentMode = s.mode;
+      if(typeof _applyModeVisibility==='function') _applyModeVisibility();
+      document.querySelectorAll('.mode-btn').forEach(b=>b.classList.toggle('active', b.dataset.mode===s.mode));
+      _RESUMING=false;
+    }
+  }
+  if(typeof _t0!=='undefined') _t0 = Date.now() - (s.elapsedMs||0);
+  _RESUMING=true;
+  try{
+    Object.entries(s.picks||{}).forEach(([qi, idx])=>{
+      const grp=document.querySelector(`.sel-group[data-qi="${qi}"]`);
+      if(!grp || grp.dataset.checked) return;
+      const btns=grp.querySelectorAll('.sel-btn');
+      if(btns[idx]){
+        try{ pick(btns[idx], parseInt(qi), parseInt(idx)); }catch(e){}
+      }
+    });
+  }finally{ _RESUMING=false; }
+  return true;
+}
+function _checkResumePrompt(){
+  const s=_loadSession(); if(!s) return;
+  if(document.getElementById('resumeBox')) return;
+  const picked=Object.keys(s.picks||{}).length;
+  const box=document.createElement('div');
+  box.id='resumeBox';
+  box.style.cssText='background:linear-gradient(135deg,#fff7e0,#fef3c7);border:2px solid #fcd34d;border-radius:14px;padding:14px 16px;margin:12px auto;text-align:left;max-width:680px;';
+  box.innerHTML = `
+    <div style="font-family:'Black Han Sans',sans-serif;font-size:1rem;color:#92400e;margin-bottom:4px;">⏸️ 풀던 시험이 있어요</div>
+    <div style="font-size:.78rem;color:#a16207;line-height:1.5;margin-bottom:10px;">
+      이전 모드: <strong>${s.mode||'본문'}</strong> · ${picked}개 보기 풀었어요
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button style="flex:1;min-width:120px;padding:11px 14px;font-size:.88rem;background:linear-gradient(135deg,#f59e0b,#d97706);color:white;border:none;border-radius:10px;font-weight:800;cursor:pointer;" onclick="_resumeFromSession();this.closest('#resumeBox').remove();">▶️ 이어서 풀기</button>
+      <button style="flex:1;min-width:120px;padding:11px 14px;font-size:.88rem;background:linear-gradient(135deg,#94a3b8,#64748b);color:white;border:none;border-radius:10px;font-weight:800;cursor:pointer;" onclick="_clearSession();this.closest('#resumeBox').remove();">🔄 새로 시작</button>
+    </div>`;
+  // Insert at top of main content (before first .q-card or body)
+  const target = document.querySelector('.sec-header') || document.querySelector('.q-card') || document.body.firstChild;
+  if(target && target.parentNode) target.parentNode.insertBefore(box, target);
+}
+window._resumeFromSession=_resumeFromSession;
+window._clearSession=_clearSession;
+window.addEventListener('DOMContentLoaded',function(){ _cleanupOldSessions(); setTimeout(_checkResumePrompt, 100); });
+
+
 function pick(btn,qi,idx){
   const grp=btn.closest('.sel-group');if(grp.dataset.checked)return;
+  _picks[qi]=idx;
   const ci=QI2CARD[qi];
   if(!_inMode(ci)) return;
   grp.dataset.checked='1';
@@ -514,8 +609,9 @@ function pick(btn,qi,idx){
     fb.className='q-feedback '+(isOk?'ok':'fail')+' show';
     fb.innerHTML=isOk?'✅ 정답!':'❌ 틀렸어요. 초록색이 정답입니다.';
     updateUI();
-    if(_modeDone()>=_modeTotal()) showResult();
+    if(_modeDone()>=_modeTotal()){ _clearSession(); showResult(); }
   }
+  _saveSession();
 }
 function updateUI(){
   const done=_modeDone(); const total=_modeTotal();

@@ -1328,6 +1328,76 @@ function renderQuiz(){
 }
 
 // ── 선택 처리 ──────────────────────────────────────────
+// === 같은 날 이어서 풀기 (세션 저장/복원) ===
+const _SESSION_KEY_GR = 'bn_session_mock_go2_2025_06_grammar';
+let _GR_RESUMING = false;
+function _saveSessionGR(){
+  try{
+    if(!answers || Object.keys(answers).length===0) return;
+    localStorage.setItem(_SESSION_KEY_GR, JSON.stringify({
+      day:_DAY_KEY,
+      userName, userSchool,
+      selectedNos: Array.from(selectedNos||[]),
+      answers,
+      elapsedMs: t0 ? (Date.now()-t0) : 0
+    }));
+  }catch(e){}
+}
+function _loadSessionGR(){
+  try{
+    const raw=localStorage.getItem(_SESSION_KEY_GR); if(!raw) return null;
+    const s=JSON.parse(raw);
+    if(s.day!==_DAY_KEY){localStorage.removeItem(_SESSION_KEY_GR); return null;}
+    if(!s.answers||Object.keys(s.answers).length===0){localStorage.removeItem(_SESSION_KEY_GR); return null;}
+    return s;
+  }catch(e){return null;}
+}
+function _clearSessionGR(){try{localStorage.removeItem(_SESSION_KEY_GR);}catch(e){}}
+function _resumeFromSessionGR(){
+  const s=_loadSessionGR(); if(!s) return false;
+  userName = s.userName||''; userSchool = s.userSchool||'';
+  selectedNos = new Set(s.selectedNos||[]);
+  t0 = Date.now() - (s.elapsedMs||0);
+  _GR_RESUMING = true;
+  try{
+    startQuiz();
+    // After renderQuiz, replay each answer by simulating selectChoice
+    setTimeout(()=>{
+      for(const [key, a] of Object.entries(s.answers||{})){
+        if(!a) continue;
+        const grp=document.getElementById('grp-'+key); if(!grp) continue;
+        const btns=grp.querySelectorAll('.choice-btn');
+        const btn=[...btns].find(b=>b.dataset.opt===a.sel);
+        if(btn && !btn.disabled){
+          selectChoice(key, a.sel, a.ans, a.pno, a.qi);
+        }
+      }
+      _GR_RESUMING=false;
+    }, 50);
+  }catch(e){ _GR_RESUMING=false; }
+  return true;
+}
+function _checkResumePromptGR(){
+  const s=_loadSessionGR(); if(!s) return;
+  if(document.getElementById('resumeBox')) return;
+  const start=document.getElementById('startScreen'); if(!start) return;
+  const picked=Object.keys(s.answers||{}).length;
+  const box=document.createElement('div');
+  box.id='resumeBox';
+  box.style.cssText='background:linear-gradient(135deg,#fff7e0,#fef3c7);border:2px solid #fcd34d;border-radius:14px;padding:14px 16px;margin:12px auto;text-align:left;max-width:560px;';
+  box.innerHTML = `
+    <div style="font-family:'Black Han Sans',sans-serif;font-size:1rem;color:#92400e;margin-bottom:4px;">⏸️ 풀던 시험이 있어요</div>
+    <div style="font-size:.78rem;color:#a16207;line-height:1.5;margin-bottom:10px;"><strong>${s.userName||'학생'}</strong>님 · ${s.selectedNos.length}개 지문 · ${picked}개 보기 풀었어요</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button style="flex:1;min-width:120px;padding:11px 14px;font-size:.88rem;background:linear-gradient(135deg,#f59e0b,#d97706);color:white;border:none;border-radius:10px;font-weight:800;cursor:pointer;" onclick="_resumeFromSessionGR();this.closest('#resumeBox').remove();">▶️ 이어서 풀기</button>
+      <button style="flex:1;min-width:120px;padding:11px 14px;font-size:.88rem;background:linear-gradient(135deg,#94a3b8,#64748b);color:white;border:none;border-radius:10px;font-weight:800;cursor:pointer;" onclick="_clearSessionGR();this.closest('#resumeBox').remove();">🔄 새로 시작</button>
+    </div>`;
+  start.insertBefore(box, start.firstChild);
+}
+window._resumeFromSessionGR=_resumeFromSessionGR;
+window._clearSessionGR=_clearSessionGR;
+window.addEventListener('DOMContentLoaded',function(){ setTimeout(_checkResumePromptGR, 80); });
+
 function selectChoice(key, sel, ans, pno, qi){
   if(answers[key]) return; // 이미 답했으면 무시
 
@@ -1366,6 +1436,7 @@ function selectChoice(key, sel, ans, pno, qi){
   updatePassageScore(pno);
   updateProgress();
   checkAllDone(pno, qi);
+  if(typeof _saveSessionGR==='function') _saveSessionGR();
 }
 
 function updatePassageScore(pno){
@@ -1410,6 +1481,7 @@ function updateProgress(){
 
 // ── 채점 ──────────────────────────────────────────
 function doSubmit(){
+  if(typeof _clearSessionGR==='function') _clearSessionGR();
   // 아직 안 답한 것 체크
   const done = Object.keys(answers).length;
   if(done < totalItems){

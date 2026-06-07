@@ -816,9 +816,83 @@ function render() {
 // ============================================================
 // INTERACTION
 // ============================================================
+// === 같은 날 이어서 풀기 (세션 저장/복원) ===
+const QUIZ_ID='go2_march_grammar';
+const _DAY_KEY=(function(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');})();
+const _SESSION_KEY='bn_session_'+QUIZ_ID;
+const _picks = questions.map(q => q.items.map(() => null));
+let _RESUMING = false;
+function _saveSession(){
+  try{
+    let any=false; _picks.forEach(arr=>arr.forEach(v=>{if(v!==null) any=true;}));
+    if(!any) return;
+    localStorage.setItem(_SESSION_KEY, JSON.stringify({
+      day:_DAY_KEY, picks:_picks, answeredCount, correctCount
+    }));
+  }catch(e){}
+}
+function _loadSession(){
+  try{
+    const raw=localStorage.getItem(_SESSION_KEY); if(!raw) return null;
+    const s=JSON.parse(raw);
+    if(s.day!==_DAY_KEY){localStorage.removeItem(_SESSION_KEY); return null;}
+    return s;
+  }catch(e){return null;}
+}
+function _clearSession(){try{localStorage.removeItem(_SESSION_KEY);}catch(e){}}
+function _cleanupOldSessions(){
+  try{
+    for(let i=localStorage.length-1;i>=0;i--){
+      const k=localStorage.key(i);
+      if(k && k.startsWith('bn_session_')){
+        try{const v=JSON.parse(localStorage.getItem(k)); if(v.day!==_DAY_KEY) localStorage.removeItem(k);}
+        catch(e){localStorage.removeItem(k);}
+      }
+    }
+  }catch(e){}
+}
+function _resumeFromSession(){
+  const s=_loadSession(); if(!s) return false;
+  _RESUMING=true;
+  try{
+    (s.picks||[]).forEach((arr, qIdx)=>{
+      (arr||[]).forEach((optIdx, itemIdx)=>{
+        if(optIdx==null) return;
+        const btn=document.getElementById(`cb-${qIdx}-${itemIdx}-${optIdx}`);
+        if(btn && !btn.disabled) handleClick(qIdx, itemIdx, optIdx);
+      });
+    });
+  } finally { _RESUMING=false; }
+  return true;
+}
+function _checkResumePrompt(){
+  const s=_loadSession(); if(!s) return;
+  if(document.getElementById('resumeBox')) return;
+  let picked=0; (s.picks||[]).forEach(a=>a.forEach(v=>{if(v!=null) picked++;}));
+  if(!picked) return;
+  const box=document.createElement('div');
+  box.id='resumeBox';
+  box.style.cssText='background:linear-gradient(135deg,#fff7e0,#fef3c7);border:2px solid #fcd34d;border-radius:14px;padding:14px 16px;margin:12px auto;text-align:left;max-width:760px;';
+  box.innerHTML = `
+    <div style="font-family:'Black Han Sans',sans-serif;font-size:1rem;color:#92400e;margin-bottom:4px;">⏸️ 풀던 시험이 있어요</div>
+    <div style="font-size:.78rem;color:#a16207;line-height:1.5;margin-bottom:10px;">
+      ${picked}개 보기 풀었어요 · 정답 ${s.correctCount||0}
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button style="flex:1;min-width:120px;padding:11px 14px;font-size:.88rem;background:linear-gradient(135deg,#f59e0b,#d97706);color:white;border:none;border-radius:10px;font-weight:800;cursor:pointer;" onclick="_resumeFromSession();this.closest('#resumeBox').remove();">▶️ 이어서 풀기</button>
+      <button style="flex:1;min-width:120px;padding:11px 14px;font-size:.88rem;background:linear-gradient(135deg,#94a3b8,#64748b);color:white;border:none;border-radius:10px;font-weight:800;cursor:pointer;" onclick="_clearSession();this.closest('#resumeBox').remove();">🔄 새로 시작</button>
+    </div>`;
+  const main=document.getElementById('main');
+  if(main && main.parentNode) main.parentNode.insertBefore(box, main);
+}
+window._resumeFromSession=_resumeFromSession;
+window._clearSession=_clearSession;
+window.addEventListener('DOMContentLoaded',function(){ _cleanupOldSessions(); setTimeout(_checkResumePrompt, 150); });
+
 function handleClick(qIdx, itemIdx, optIdx) {
   // Already answered?
   if (state[qIdx][itemIdx] !== null) return;
+  _picks[qIdx][itemIdx] = optIdx;
 
   const q = questions[qIdx];
   const item = q.items[itemIdx];
@@ -856,8 +930,10 @@ function handleClick(qIdx, itemIdx, optIdx) {
   updateQStatus(qIdx);
   updateProgress();
 
+  _saveSession();
   // Check if all done
   if (answeredCount === totalItems) {
+    _clearSession();
     showSummary();
   }
 }
