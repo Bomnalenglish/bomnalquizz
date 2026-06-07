@@ -440,7 +440,7 @@ function onMeaning(btn, sel, ans, q) {
     fb.className = 'fb-box ok'; fb.textContent = '✅ 정답!';
     numCorrect++;
     nb.textContent = '다음 →'; nb.className = 'next-btn show';
-    nb.onclick = function() { qIdx++; renderQ(); };
+    nb.onclick = function() { qIdx++; _saveSession(); renderQ(); };
   } else {
     btn.classList.add('no'); markAnswer(ans);
     fb.className = 'fb-box no'; fb.textContent = '❌ 내 답: ' + sel + ' / 정답: ' + ans;
@@ -493,7 +493,7 @@ function onSynonym(btn, sel, syns, q) {
   }
   nb.textContent = (qIdx + 1 >= questions.length) ? '결과 보기 →' : '다음 →';
   nb.className = 'next-btn show';
-  nb.onclick = function() { qIdx++; renderQ(); };
+  nb.onclick = function() { qIdx++; _saveSession(); renderQ(); };
 }
 
 function renderJudge(card, q) {
@@ -539,7 +539,7 @@ function onJudge(sel, q) {
   }
   nb.textContent = (qIdx + 1 >= questions.length) ? '결과 보기 →' : '다음 →';
   nb.className = 'next-btn show';
-  nb.onclick = function() { qIdx++; renderQ(); };
+  nb.onclick = function() { qIdx++; _saveSession(); renderQ(); };
 }
 
 function disableAll() {
@@ -557,7 +557,98 @@ function markSynAnswer(syns) {
   });
 }
 
+
+// === 같은 날 이어서 풀기 (세션 저장/복원) ===
+var QUIZ_ID='gounko_2grade_march_synanm';
+var _DAY_KEY=(function(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');})();
+var _SESSION_KEY='bn_session_'+QUIZ_ID;
+function _saveSession(){
+  try{
+    if(!questions||!questions.length||qIdx>=questions.length) return;
+    var elapsedMs = startTime ? (Date.now()-startTime) : 0;
+    var totalElapsedMs = (typeof totalStartTime!=='undefined' && totalStartTime) ? (Date.now()-totalStartTime) : elapsedMs;
+    localStorage.setItem(_SESSION_KEY, JSON.stringify({
+      day:_DAY_KEY,
+      name:(typeof studentName!=='undefined'?studentName:''),
+      school:(typeof school!=='undefined'?school:''),
+      mode:(typeof mode!=='undefined'?mode:''),
+      isRetry:(typeof isRetry!=='undefined'?isRetry:false),
+      retryCount:(typeof retryCount!=='undefined'?retryCount:0),
+      questions:questions, qIdx:qIdx,
+      numCorrect:(typeof numCorrect!=='undefined'?numCorrect:0),
+      numWrong:(typeof numWrong!=='undefined'?numWrong:0),
+      wrongList:(typeof wrongList!=='undefined'?wrongList:[]),
+      elapsedMs:elapsedMs, totalElapsedMs:totalElapsedMs
+    }));
+  }catch(e){}
+}
+function _loadSession(){
+  try{
+    var raw=localStorage.getItem(_SESSION_KEY); if(!raw) return null;
+    var s=JSON.parse(raw);
+    if(s.day!==_DAY_KEY){localStorage.removeItem(_SESSION_KEY); return null;}
+    if(!s.questions||!s.questions.length||s.qIdx>=s.questions.length){localStorage.removeItem(_SESSION_KEY); return null;}
+    return s;
+  }catch(e){return null;}
+}
+function _clearSession(){try{localStorage.removeItem(_SESSION_KEY);}catch(e){}}
+function _cleanupOldSessions(){
+  try{
+    for(var i=localStorage.length-1;i>=0;i--){
+      var k=localStorage.key(i);
+      if(k && k.startsWith('bn_session_')){
+        try{var v=JSON.parse(localStorage.getItem(k)); if(v.day!==_DAY_KEY) localStorage.removeItem(k);}
+        catch(e){localStorage.removeItem(k);}
+      }
+    }
+  }catch(e){}
+}
+function _resumeFromSession(){
+  var s=_loadSession(); if(!s) return false;
+  studentName = s.name||''; school = s.school||'';
+  if(s.mode) mode = s.mode;
+  if(typeof isRetry!=='undefined') isRetry = !!s.isRetry;
+  if(typeof retryCount!=='undefined') retryCount = s.retryCount||0;
+  questions = s.questions; qIdx = s.qIdx;
+  numCorrect = s.numCorrect||0; numWrong = s.numWrong||0;
+  wrongList = s.wrongList||[];
+  startTime = Date.now() - (s.elapsedMs||0);
+  if(typeof totalStartTime!=='undefined') totalStartTime = Date.now() - (s.totalElapsedMs||s.elapsedMs||0);
+  // 시작 화면 숨기고 퀴즈 화면 표시
+  var ss=document.getElementById('pg-start'); if(ss) ss.style.display='none';
+  var qs=document.getElementById('pg-quiz'); if(qs) qs.style.display='block';
+  var rs=document.getElementById('pg-result'); if(rs) rs.style.display='none';
+  if(typeof renderQ==='function') renderQ();
+  return true;
+}
+function _checkResumePrompt(){
+  var s=_loadSession(); if(!s) return;
+  var host=document.querySelector('#pg-start .info-card')||document.querySelector('#pg-start .start-card')||document.getElementById('pg-start');
+  if(!host || document.getElementById('resumeBox')) return;
+  var remain = s.questions.length - s.qIdx;
+  var elapsedMin = Math.round((s.elapsedMs||0)/60000);
+  var box=document.createElement('div');
+  box.id='resumeBox';
+  box.style.cssText='background:linear-gradient(135deg,#fff7e0,#fef3c7);border:2px solid #fcd34d;border-radius:14px;padding:14px 16px;margin:12px auto;text-align:left;max-width:560px;';
+  box.innerHTML = `
+    <div style="font-family:'Black Han Sans',sans-serif;font-size:1rem;color:#92400e;margin-bottom:4px;">⏸️ 풀던 시험이 있어요</div>
+    <div style="font-size:.78rem;color:#a16207;line-height:1.5;margin-bottom:10px;">
+      <strong>${s.name||'학생'}</strong>님 · ${s.questions.length}문제 중 <strong>${s.qIdx}번째</strong>까지 풀었어요 (${remain}문제 남음)<br>
+      진행한 시간: ${elapsedMin}분 · 정답 ${s.numCorrect||0} / 오답 ${s.numWrong||0}
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button style="flex:1;min-width:120px;padding:11px 14px;font-size:.88rem;background:linear-gradient(135deg,#f59e0b,#d97706);color:white;border:none;border-radius:10px;font-weight:800;cursor:pointer;" onclick="_resumeFromSession();this.closest('#resumeBox').remove();">▶️ 이어서 풀기</button>
+      <button style="flex:1;min-width:120px;padding:11px 14px;font-size:.88rem;background:linear-gradient(135deg,#94a3b8,#64748b);color:white;border:none;border-radius:10px;font-weight:800;cursor:pointer;" onclick="_clearSession();this.closest('#resumeBox').remove();">🔄 새로 시작</button>
+    </div>`;
+  host.insertBefore(box, host.firstChild);
+}
+window._resumeFromSession=_resumeFromSession;
+window._clearSession=_clearSession;
+window.addEventListener('DOMContentLoaded',function(){ _cleanupOldSessions(); _checkResumePrompt(); });
+
+
 function showResult() {
+  _clearSession();
   document.getElementById('pg-quiz').style.display = 'none';
   var total = questions.length;
   var pct = total > 0 ? Math.round(numCorrect / total * 100) : 0;

@@ -169,6 +169,7 @@ const FIREBASE_SCHOOL = "\uc885\ucd0c\uace0";
 const LESSON_LABEL = "\uc885\ucd0c\uace02_3\uacfc";
 var studentName = sessionStorage.getItem('bn_name') || localStorage.getItem('bn_name') || '';
 function saveFirebase(stepLabel, correct, total) {
+  if(typeof _RESUMING!=="undefined" && _RESUMING) return; /* resume 중에는 저장 안 함 */
   var qType = FIREBASE_SCHOOL + '_' + LESSON_LABEL + '_어휘퀴즈_' + stepLabel;
   try {
     var s1 = document.createElement('script');
@@ -383,6 +384,96 @@ function buildS5() {
 }
 
 // ── 공통 answer/select ──
+
+// === 같은 날 이어서 풀기 (세션 저장/복원) ===
+const QUIZ_ID='jongchonko_2grade_lesson3_vocab';
+const _DAY_KEY=(function(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');})();
+const _SESSION_KEY='bn_session_'+QUIZ_ID;
+const _picks=[[],[],[],[],[]];
+const _picksAns=[[],[],[],[],[]]; // also store answer for resume
+let _RESUMING=false;
+function _saveSession(){
+  try{
+    const anyPick=_picks.some(arr=>(arr||[]).some(x=>x));
+    if(!anyPick) return;
+    localStorage.setItem(_SESSION_KEY, JSON.stringify({
+      day:_DAY_KEY,
+      name:(typeof studentName!=='undefined'?studentName:''),
+      scores:scores, answered:answered, correct_cnt:correct_cnt,
+      picks:_picks, picksAns:_picksAns,
+      curTab:(typeof curTab!=='undefined'?curTab:0)
+    }));
+  }catch(e){}
+}
+function _loadSession(){
+  try{
+    const raw=localStorage.getItem(_SESSION_KEY); if(!raw) return null;
+    const s=JSON.parse(raw);
+    if(s.day!==_DAY_KEY){localStorage.removeItem(_SESSION_KEY); return null;}
+    const any=(s.picks||[]).some(arr=>(arr||[]).some(x=>x));
+    if(!any){localStorage.removeItem(_SESSION_KEY); return null;}
+    return s;
+  }catch(e){return null;}
+}
+function _clearSession(){try{localStorage.removeItem(_SESSION_KEY);}catch(e){}}
+function _cleanupOldSessions(){
+  try{
+    for(let i=localStorage.length-1;i>=0;i--){
+      const k=localStorage.key(i);
+      if(k && k.startsWith('bn_session_')){
+        try{const v=JSON.parse(localStorage.getItem(k)); if(v.day!==_DAY_KEY) localStorage.removeItem(k);}
+        catch(e){localStorage.removeItem(k);}
+      }
+    }
+  }catch(e){}
+}
+function _resumeFromSession(){
+  const s=_loadSession(); if(!s) return false;
+  if(typeof studentName!=='undefined') studentName=s.name||'';
+  _RESUMING=true;
+  try{
+    const prefixes=['s1','s2','s3','s4','s5'];
+    (s.picks||[]).forEach((arr,tab)=>{
+      (arr||[]).forEach((pick,qi)=>{
+        if(!pick) return;
+        const ans=(s.picksAns[tab]||[])[qi];
+        const card=document.getElementById(prefixes[tab]+'_'+qi); if(!card) return;
+        const btn=[...card.querySelectorAll('.opt-btn')].find(b=>b.dataset.v===pick); if(!btn) return;
+        ansQ(tab,qi,pick,btn);
+        if(ans){
+          const cb=document.getElementById('cb_'+prefixes[tab]+'_'+qi);
+          if(cb && !cb.disabled){ submitQ(tab,qi,ans,cb); }
+        }
+      });
+    });
+  }finally{ _RESUMING=false; }
+  return true;
+}
+function _checkResumePrompt(){
+  const s=_loadSession(); if(!s) return;
+  if(document.getElementById('resumeBox')) return;
+  const answered=(s.picks||[]).reduce((sum,arr)=>sum+(arr||[]).filter(x=>x).length,0);
+  const box=document.createElement('div');
+  box.id='resumeBox';
+  box.style.cssText='background:linear-gradient(135deg,#fff7e0,#fef3c7);border:2px solid #fcd34d;border-radius:14px;padding:14px 16px;margin:12px auto;text-align:left;max-width:680px;';
+  box.innerHTML = `
+    <div style="font-family:'Black Han Sans',sans-serif;font-size:1rem;color:#92400e;margin-bottom:4px;">⏸️ 풀던 시험이 있어요</div>
+    <div style="font-size:.78rem;color:#a16207;line-height:1.5;margin-bottom:10px;">
+      <strong>${s.name||'학생'}</strong>님 · ${answered}문제 풀었어요. 이어서 풀까요?
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button style="flex:1;min-width:120px;padding:11px 14px;font-size:.88rem;background:linear-gradient(135deg,#f59e0b,#d97706);color:white;border:none;border-radius:10px;font-weight:800;cursor:pointer;" onclick="_resumeFromSession();this.closest('#resumeBox').remove();">▶️ 이어서 풀기</button>
+      <button style="flex:1;min-width:120px;padding:11px 14px;font-size:.88rem;background:linear-gradient(135deg,#94a3b8,#64748b);color:white;border:none;border-radius:10px;font-weight:800;cursor:pointer;" onclick="_clearSession();this.closest('#resumeBox').remove();">🔄 새로 시작</button>
+    </div>`;
+  const p0=document.getElementById('panel0');
+  if(p0 && p0.parentNode) p0.parentNode.insertBefore(box, p0);
+  else document.body.insertBefore(box, document.body.firstChild);
+}
+window._resumeFromSession=_resumeFromSession;
+window._clearSession=_clearSession;
+window.addEventListener('DOMContentLoaded',function(){ _cleanupOldSessions(); setTimeout(_checkResumePrompt,200); });
+
+
 function ansQ(tab, qi, val, btn) {
   const pfx = ['s1','s2','s3','s4','s5'][tab];
   const card = document.getElementById(pfx+'_'+qi);
@@ -403,7 +494,7 @@ function submitQ(tab, qi, answer, btn) {
   const ok = sel.dataset.v === answer;
   sel.classList.add(ok?'correct':'wrong');
   if(!ok) card.querySelectorAll('.opt-btn').forEach(b=>{if(b.dataset.v===answer)b.classList.add('correct');});
-  scores[tab][qi] = ok;
+  _picks[tab][qi]=sel.dataset.v; _picksAns[tab][qi]=answer; scores[tab][qi] = ok;
   answered[tab]++;
   if(ok) correct_cnt[tab]++;
   const fb = document.getElementById('fb_'+pfx+'_'+qi);
@@ -411,6 +502,7 @@ function submitQ(tab, qi, answer, btn) {
   fb.textContent = ok?'✅ 정답!':'❌ 내 답: '+sel.dataset.v+' / 정답: '+answer;
   if(tab===0){const nx=document.getElementById('s1_'+(qi+1));if(nx){const w=nx.querySelector('.word-en span:first-child');if(w)setTimeout(()=>speak(w.textContent),500);}}
   updateTabInfo();
+  _saveSession();
   // check done
   const totals = [S1.length, S2.length, S3.length, window._s4_questions?.length||0, S5.length];
   if(answered[tab] === totals[tab]) {

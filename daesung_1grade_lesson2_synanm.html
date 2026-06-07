@@ -402,7 +402,7 @@ function checkA(btn,sel,correct,q){
   document.getElementById('nxtbtn').style.display='block';
 }
 
-function nextQ(){qIdx++;loadQ();}
+function nextQ(){qIdx++;_saveSession();loadQ();}
 
 async function saveResult(d){
   try{
@@ -414,7 +414,92 @@ async function saveResult(d){
   }catch(e){}
 }
 
+
+// === 같은 날 이어서 풀기 (세션 저장/복원) ===
+var QUIZ_ID='daesung_1grade_lesson2_synanm';
+var _DAY_KEY=(function(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');})();
+var _SESSION_KEY='bn_session_'+QUIZ_ID;
+function _saveSession(){
+  try{
+    if(!qQueue||!qQueue.length||qIdx>=qQueue.length) return;
+    localStorage.setItem(_SESSION_KEY, JSON.stringify({
+      day:_DAY_KEY,
+      name:(typeof studentName!=='undefined'?studentName:''),
+      school:(typeof school!=='undefined'?school:''),
+      mode:(typeof mode!=='undefined'?mode:''),
+      curPart:(typeof curPart!=='undefined'?curPart:1),
+      round:(typeof round!=='undefined'?round:1),
+      words:(typeof words!=='undefined'?words:[]),
+      wrongWords:(typeof wrongWords!=='undefined'?wrongWords:[]),
+      qQueue:qQueue, qIdx:qIdx, sc:sc, tot:tot,
+      tabCnt:(typeof tabCnt!=='undefined'?tabCnt:0)
+    }));
+  }catch(e){}
+}
+function _loadSession(){
+  try{
+    var raw=localStorage.getItem(_SESSION_KEY); if(!raw) return null;
+    var s=JSON.parse(raw);
+    if(s.day!==_DAY_KEY){localStorage.removeItem(_SESSION_KEY); return null;}
+    if(!s.qQueue||!s.qQueue.length||s.qIdx>=s.qQueue.length){localStorage.removeItem(_SESSION_KEY); return null;}
+    return s;
+  }catch(e){return null;}
+}
+function _clearSession(){try{localStorage.removeItem(_SESSION_KEY);}catch(e){}}
+function _cleanupOldSessions(){
+  try{
+    for(var i=localStorage.length-1;i>=0;i--){
+      var k=localStorage.key(i);
+      if(k && k.startsWith('bn_session_')){
+        try{var v=JSON.parse(localStorage.getItem(k)); if(v.day!==_DAY_KEY) localStorage.removeItem(k);}
+        catch(e){localStorage.removeItem(k);}
+      }
+    }
+  }catch(e){}
+}
+function _resumeFromSession(){
+  var s=_loadSession(); if(!s) return false;
+  studentName=s.name||''; school=s.school||'';
+  if(s.mode) mode=s.mode;
+  if(typeof curPart!=='undefined' && s.curPart) curPart=s.curPart;
+  if(typeof round!=='undefined' && s.round) round=s.round;
+  if(typeof words!=='undefined') words=s.words||[];
+  if(typeof wrongWords!=='undefined') wrongWords=s.wrongWords||[];
+  if(typeof tabCnt!=='undefined') tabCnt=s.tabCnt||0;
+  qQueue=s.qQueue; qIdx=s.qIdx; sc=s.sc||0; tot=s.tot||0;
+  if(typeof answered!=='undefined') answered=false;
+  var ss=document.getElementById('pg-start'); if(ss) ss.style.display='none';
+  var qs=document.getElementById('pg-quiz'); if(qs) qs.style.display='block';
+  var rs=document.getElementById('pg-result'); if(rs) rs.style.display='none';
+  if(typeof loadQ==='function') loadQ();
+  return true;
+}
+function _checkResumePrompt(){
+  var s=_loadSession(); if(!s) return;
+  var host=document.querySelector('#pg-start .info-card')||document.querySelector('#pg-start .start-card')||document.getElementById('pg-start');
+  if(!host || document.getElementById('resumeBox')) return;
+  var remain=s.qQueue.length-s.qIdx;
+  var box=document.createElement('div');
+  box.id='resumeBox';
+  box.style.cssText='background:linear-gradient(135deg,#fff7e0,#fef3c7);border:2px solid #fcd34d;border-radius:14px;padding:14px 16px;margin:12px auto;text-align:left;max-width:560px;';
+  box.innerHTML = `
+    <div style="font-family:'Black Han Sans',sans-serif;font-size:1rem;color:#92400e;margin-bottom:4px;">⏸️ 풀던 시험이 있어요</div>
+    <div style="font-size:.78rem;color:#a16207;line-height:1.5;margin-bottom:10px;">
+      <strong>${s.name||'학생'}</strong>님 · ${s.qQueue.length}문제 중 <strong>${s.qIdx}번째</strong>까지 풀었어요 (${remain}문제 남음) · 정답 ${s.sc||0}
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button style="flex:1;min-width:120px;padding:11px 14px;font-size:.88rem;background:linear-gradient(135deg,#f59e0b,#d97706);color:white;border:none;border-radius:10px;font-weight:800;cursor:pointer;" onclick="_resumeFromSession();this.closest('#resumeBox').remove();">▶️ 이어서 풀기</button>
+      <button style="flex:1;min-width:120px;padding:11px 14px;font-size:.88rem;background:linear-gradient(135deg,#94a3b8,#64748b);color:white;border:none;border-radius:10px;font-weight:800;cursor:pointer;" onclick="_clearSession();this.closest('#resumeBox').remove();">🔄 새로 시작</button>
+    </div>`;
+  host.insertBefore(box, host.firstChild);
+}
+window._resumeFromSession=_resumeFromSession;
+window._clearSession=_clearSession;
+window.addEventListener('DOMContentLoaded',function(){ _cleanupOldSessions(); _checkResumePrompt(); });
+
+
 function showResult(){
+  _clearSession();
   saveResult({sn:studentName,qt:`대성고1_교과서2과_동반의어_파트${curPart}_${mode}모드_${round}라운드`,sc,tot,wc:wrongWords.length,rd:round,pt:curPart});
   showScreen('rs');
   const pct=tot>0?Math.round(sc/tot*100):0;
