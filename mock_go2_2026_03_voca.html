@@ -105,6 +105,14 @@ window._fbSave=async function(data){
   <div class="s-card">
     <h1>📖 고2 26년 3월 단어</h1>
     <div class="s-sub">2026년 3월 고2 모의고사 · 영어→한국어 / 한국어→영어 자동채점</div>
+    <div id="resumeBox" style="display:none;background:linear-gradient(135deg,#fff7e0,#fef3c7);border:2px solid #fcd34d;border-radius:14px;padding:14px 16px;margin:12px 0;text-align:left;">
+      <div style="font-family:'Black Han Sans',sans-serif;font-size:1rem;color:#92400e;margin-bottom:4px;">⏸️ 풀던 시험이 있어요</div>
+      <div id="resumeInfo" style="font-size:.78rem;color:#a16207;line-height:1.5;margin-bottom:10px;"></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="start-btn" style="flex:1;min-width:120px;padding:11px;font-size:.88rem;" onclick="resumeSession()">▶️ 이어서 풀기</button>
+        <button class="start-btn" style="flex:1;min-width:120px;padding:11px;font-size:.88rem;background:linear-gradient(135deg,#94a3b8,#64748b);" onclick="discardSession()">🔄 새로 시작</button>
+      </div>
+    </div>
     <div class="info-grid">
       <div class="info-item">📝 18~45번 (총 398단어)</div>
       <div class="info-item">🎯 지문별 선택 가능</div>
@@ -210,12 +218,81 @@ function _cleanupOldProgress(){
   try{
     for(let i=localStorage.length-1;i>=0;i--){
       const k=localStorage.key(i);
-      if(k && k.startsWith('bn_prog_')){
+      if(k && (k.startsWith('bn_prog_') || k.startsWith('bn_session_'))){
         try{const v=JSON.parse(localStorage.getItem(k)); if(v.day!==_DAY_KEY) localStorage.removeItem(k);}
         catch(e){localStorage.removeItem(k);}
       }
     }
   }catch(e){}
+}
+
+// === 진행 중 세션 저장 (같은 날 재진입 시 이어서 풀기) ===
+const _SESSION_KEY = 'bn_session_' + QUIZ_ID;
+function _saveSession(){
+  if(!qs.length || idx>=qs.length) return; // 진행 중이 아니면 저장 안 함
+  try{
+    const elapsedMs = t0 ? Date.now() - t0 : 0;
+    localStorage.setItem(_SESSION_KEY, JSON.stringify({
+      day: _DAY_KEY,
+      userName, userSchool,
+      selectedRefs: Array.from(selectedRefs),
+      doneRefs: Array.from(doneRefs),
+      quizMode, filterMode,
+      qs, idx, cor, wrn, wrongs, allResults,
+      elapsedMs,
+      savedAt: Date.now()
+    }));
+  }catch(e){console.log('session save fail', e);}
+}
+function _loadSession(){
+  try{
+    const raw = localStorage.getItem(_SESSION_KEY); if(!raw) return null;
+    const s = JSON.parse(raw);
+    if(s.day !== _DAY_KEY){ localStorage.removeItem(_SESSION_KEY); return null; }
+    if(!s.qs || !s.qs.length || s.idx >= s.qs.length) { localStorage.removeItem(_SESSION_KEY); return null; }
+    return s;
+  }catch(e){ return null; }
+}
+function _clearSession(){
+  try{ localStorage.removeItem(_SESSION_KEY); }catch(e){}
+}
+
+function resumeSession(){
+  const s = _loadSession();
+  if(!s){ document.getElementById('resumeBox').style.display='none'; return; }
+  userName = s.userName || '';
+  userSchool = s.userSchool || '';
+  selectedRefs = new Set(s.selectedRefs || []);
+  if(Array.isArray(s.doneRefs)) doneRefs = new Set(s.doneRefs);
+  quizMode = s.quizMode || 'en';
+  filterMode = s.filterMode || 'all';
+  qs = s.qs; idx = s.idx; cor = s.cor||0; wrn = s.wrn||0;
+  wrongs = s.wrongs || []; allResults = s.allResults || [];
+  answered = false;
+  t0 = Date.now() - (s.elapsedMs || 0);
+  document.getElementById('startScreen').classList.add('hidden');
+  document.getElementById('passageScreen').classList.add('hidden');
+  document.getElementById('hdr').classList.remove('hidden');
+  document.getElementById('pw').classList.remove('hidden');
+  document.getElementById('quizArea').classList.remove('hidden');
+  document.getElementById('hs').textContent = userName + ' · ' + selectedRefs.size + '개 지문 · ' + qs.length + '단어';
+  showQ();
+}
+
+function discardSession(){
+  _clearSession();
+  document.getElementById('resumeBox').style.display='none';
+}
+
+function checkResumePrompt(){
+  const s = _loadSession();
+  if(!s) return;
+  const remain = s.qs.length - s.idx;
+  const elapsedMin = Math.round((s.elapsedMs||0)/60000);
+  document.getElementById('resumeInfo').innerHTML =
+    `<strong>${s.userName||'학생'}</strong>님 · ${s.qs.length}단어 중 <strong>${s.idx}번째</strong>까지 풀었어요 (${remain}단어 남음)<br>` +
+    `진행한 시간: ${elapsedMin}분 · 정답 ${s.cor||0} / 오답 ${s.wrn||0}`;
+  document.getElementById('resumeBox').style.display='block';
 }
 
 function goPassageSelect(){
@@ -376,7 +453,7 @@ function selChoice(btn, sel, ans){
     wrongs.push({label:q.en+' / '+q.ko, my:sel, correct:ans, pref:q.pref});
     allResults.push({pref:q.pref, mode:q.mode, correct:false, my:sel, ans:ans, en:q.en, ko:q.ko});
   }
-  setTimeout(()=>{idx++;showQ();},sel===ans?700:1800);
+  setTimeout(()=>{idx++; _saveSession(); showQ();},sel===ans?700:1800);
 }
 
 let wrongQs = [];
@@ -388,6 +465,7 @@ function showResult(){
   const el=Math.round((Date.now()-t0)/60000);
   selectedRefs.forEach(r=>doneRefs.add(r));
   _saveProg();
+  _clearSession();
   const wrongKeys = new Set(wrongs.map(w=>w.label));
   wrongQs = qs.filter(q=>wrongKeys.has(q.en+' / '+q.ko));
 
@@ -476,6 +554,7 @@ window.addEventListener('DOMContentLoaded',()=>{
   }
   _cleanupOldProgress();
   _loadProg();
+  checkResumePrompt();
 });
 </script>
 
