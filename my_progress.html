@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>📊 내 학습 기록 · 봄날 ENGLISH</title>
+<script type="module" src="bn_tracker.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --pri:#1565c0;--pri-d:#0d47a1;--bg:#f0f4f8;--card:#fff;
+  --good:#16a34a;--mid:#f57c00;--bad:#dc2626;--muted:#64748b;--soft:#94a3b8;
+  --ink:#1e293b;
+}
+body{font-family:'Noto Sans KR',sans-serif;background:linear-gradient(135deg,#f0f4f8,#e3edf5);min-height:100vh;color:var(--ink);}
+header{padding:22px 16px 18px;text-align:center;background:white;border-bottom:1px solid #cbdde9;position:sticky;top:0;z-index:10;box-shadow:0 1px 4px rgba(0,0,0,.04);}
+.title{font-family:'Black Han Sans',sans-serif;font-size:1.2rem;color:var(--pri);letter-spacing:.5px;}
+.subtitle{font-size:.78rem;color:var(--muted);margin-top:2px;}
+.user-pill{display:inline-block;background:linear-gradient(135deg,#fff7e0,#fef3c7);color:#92400e;border:1.5px solid #fcd34d;border-radius:18px;padding:5px 14px;font-size:.82rem;font-weight:800;margin-top:8px;}
+.user-code{display:inline-block;background:rgba(255,255,255,.6);border-radius:10px;padding:1px 7px;font-size:.7rem;color:#a16207;margin-left:5px;font-weight:700;}
+main{max-width:840px;margin:18px auto;padding:0 14px 60px;}
+.back-nav{display:inline-flex;align-items:center;gap:5px;background:white;border:1.5px solid #b0c4de;border-radius:10px;padding:6px 14px;font-size:.78rem;color:#5e7791;cursor:pointer;text-decoration:none;margin-bottom:14px;}
+.back-nav:hover{border-color:var(--pri);color:var(--pri);}
+.loading{text-align:center;padding:60px 16px;color:var(--muted);font-size:.9rem;}
+.empty{text-align:center;padding:48px 16px;color:var(--muted);font-size:.9rem;background:white;border-radius:14px;border:1px dashed #cbd5e1;}
+.sec{margin-bottom:22px;}
+.sec-title{font-family:'Black Han Sans',sans-serif;font-size:.95rem;color:#0d47a1;margin:0 4px 10px;padding-left:10px;border-left:4px solid var(--pri);letter-spacing:.3px;}
+.sec-sub{font-size:.72rem;color:var(--soft);margin-left:6px;}
+/* summary stats */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+.stat{background:white;border-radius:14px;padding:14px 10px;text-align:center;border:1px solid #e2e8f0;box-shadow:0 1px 3px rgba(0,0,0,.04);}
+.stat-n{font-family:'Black Han Sans',sans-serif;font-size:1.5rem;color:var(--pri);line-height:1;}
+.stat-l{font-size:.7rem;color:var(--muted);margin-top:4px;font-weight:700;}
+.stat.good .stat-n{color:var(--good);}
+.stat.mid .stat-n{color:var(--mid);}
+@media(max-width:520px){.stats{grid-template-columns:repeat(2,1fr);}}
+/* records */
+.rec-table{width:100%;border-collapse:separate;border-spacing:0;background:white;border-radius:12px;overflow:hidden;border:1px solid #e2e8f0;}
+.rec-table th{font-size:11px;font-weight:800;color:#475569;background:#f8fafc;padding:9px 8px;text-align:left;border-bottom:1px solid #e2e8f0;}
+.rec-table td{font-size:12.5px;padding:9px 8px;border-bottom:1px solid #f1f5f9;color:#334155;vertical-align:top;}
+.rec-table tr:last-child td{border-bottom:none;}
+.rec-table .rec-date{white-space:nowrap;font-weight:700;color:#475569;font-size:11.5px;}
+.rec-table .rec-quiz{line-height:1.4;}
+.rec-table .quiz-book{font-weight:700;color:var(--pri);font-size:12px;}
+.rec-table .quiz-sub{font-size:11px;color:var(--soft);margin-top:1px;}
+.score-chip{display:inline-block;padding:3px 10px;border-radius:12px;font-size:11.5px;font-weight:900;white-space:nowrap;}
+.score-S{background:#fff3e0;color:#e65100;}
+.score-A{background:#e0f2f1;color:#00695c;}
+.score-B{background:#e3f2fd;color:#1565c0;}
+.score-C{background:#fffaeb;color:#a16207;}
+.score-D{background:#fee2e2;color:#b91c1c;}
+.wrong-mini{display:inline-block;background:#fee2e2;color:#b91c1c;border-radius:9px;padding:1px 7px;font-size:10.5px;font-weight:800;}
+.ok-mini{color:var(--good);font-size:13px;}
+/* wrong words */
+.word-chips{display:flex;flex-wrap:wrap;gap:6px;}
+.wc{display:inline-flex;align-items:center;gap:4px;background:#fff;border:1.5px solid #fca5a5;color:#b91c1c;border-radius:18px;padding:5px 12px;font-size:12px;font-weight:700;}
+.wc-cnt{background:#fee2e2;color:#7f1d1d;border-radius:10px;padding:1px 6px;font-size:10px;font-weight:800;}
+.wc-ko{color:#475569;font-weight:500;font-size:11px;margin-left:2px;}
+/* weak areas */
+.weak-list{display:flex;flex-direction:column;gap:8px;}
+.weak-item{background:white;border:1px solid #fed7aa;border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:10px;}
+.weak-icon{font-size:18px;}
+.weak-info{flex:1;}
+.weak-name{font-weight:800;font-size:12.5px;color:#9a3412;}
+.weak-meta{font-size:11px;color:#7a5230;margin-top:2px;}
+.weak-score{font-weight:900;color:#b45309;font-size:13px;}
+/* streak */
+.streak{background:linear-gradient(135deg,#fff3e0,#fef3c7);border:1.5px solid #fcd34d;border-radius:14px;padding:14px 16px;display:flex;align-items:center;gap:12px;margin-bottom:18px;}
+.streak-emoji{font-size:32px;line-height:1;}
+.streak-text{flex:1;}
+.streak-title{font-family:'Black Han Sans',sans-serif;font-size:.95rem;color:#92400e;}
+.streak-sub{font-size:.74rem;color:#a16207;margin-top:2px;}
+</style>
+</head>
+<body>
+<header>
+  <div class="title">📊 내 학습 기록</div>
+  <div class="subtitle">봄날 ENGLISH</div>
+  <div class="user-pill" id="userPill">⏳ 학생 정보 확인 중…</div>
+</header>
+<main>
+  <a class="back-nav" href="index.html">← 메인 허브로</a>
+  <div id="content" class="loading">⏳ 내 학습 기록 불러오는 중…</div>
+</main>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const cfg = {
+  apiKey:"AIzaSyCxS524S8KAaF87DomPtl9sJdF-eqes404",
+  authDomain:"bomnalvaca.firebaseapp.com",
+  projectId:"bomnalvaca",
+  storageBucket:"bomnalvaca.firebasestorage.app",
+  messagingSenderId:"115868052300",
+  appId:"1:115868052300:web:765c08867b6f1ce0987de9"
+};
+const app = initializeApp(cfg);
+const db = getFirestore(app);
+
+// 학생 정보 (없으면 로그인 화면으로 보냄)
+const studentName = localStorage.getItem('bn_name') || sessionStorage.getItem('bn_name') || '';
+const studentSchool = localStorage.getItem('bn_school') || sessionStorage.getItem('bn_school') || '';
+const studentCode = localStorage.getItem('bn_id') || sessionStorage.getItem('bn_id') || '';
+
+if (!studentName) {
+  alert('먼저 학생 코드로 로그인해주세요.');
+  location.href = 'index.html';
+} else {
+  document.getElementById('userPill').innerHTML =
+    `👤 ${studentName} · ${studentSchool}` +
+    (studentCode ? `<span class="user-code">${studentCode}</span>` : '');
+}
+
+/* ─ admin과 동일한 라벨 로직(축약) ─ */
+function parseQuizMeta(d){
+  const qt = d.quizType || '';
+  let textbook = '기타', type = '', lesson = '';
+  if (/단어|어휘|voca|동반의어|synanm/i.test(qt)) type='어휘';
+  if (/본문암기|memory/i.test(qt)) type='본문';
+  if (/어법|grammar/i.test(qt)) type='어법';
+  if (/총괄|total/i.test(qt)) type='총괄';
+  if (/문맥|context/i.test(qt)) type='문맥';
+  if (/순서|order/i.test(qt)) type='순서';
+  if (/삽입|insert/i.test(qt)) type='삽입';
+  if (/서술|writing/i.test(qt)) type='서술형';
+  if (/빈칸시험|챕터/i.test(qt)) type='빈칸';
+  if (/리딩|reading|독해/i.test(qt)) type='독해';
+  if (/_오답완료/.test(qt)) type+=' ✓';
+  if (/^종촌중[1-3]/.test(qt)) textbook='종촌중 '+qt.match(/^종촌중(\d)/)[1]+'학년';
+  else if (/^어진중[1-3]/.test(qt)) textbook='어진중 '+qt.match(/^어진중(\d)/)[1]+'학년';
+  else if (/^종촌고[1-3]/.test(qt)) textbook='종촌고 '+qt.match(/^종촌고(\d)/)[1]+'학년';
+  else if (/^고운고[1-3]/.test(qt)) textbook='고운고 '+qt.match(/^고운고(\d)/)[1]+'학년';
+  else if (/^대성고\d/.test(qt)) textbook=qt.match(/^대성고\d/)[0];
+  else if (/^올림포스기본1/.test(qt)) textbook='올림포스 기본 1';
+  else if (/^고1_/.test(qt)) { const m=qt.match(/^고1_(\d+년\d+월)/); textbook='고1 모의 '+(m?m[1].replace('년','-').replace('월',''):''); }
+  else if (/^고2_/.test(qt)) { const m=qt.match(/^고2_(\d+년\d+월)/); textbook='고2 모의 '+(m?m[1].replace('년','-').replace('월',''):''); }
+  else if (/^.+중학교_\d학년_\d+과_/.test(qt)) { const m=qt.match(/^(.+중학교)_(\d학년)_(\d+과)_/); textbook=m[1].replace('학교','')+' '+m[2]; }
+  else if (qt) textbook = qt.split('_')[0] || qt.slice(0,16);
+  // 차시
+  const isOlym=/^올림포스/.test(qt);
+  const lm = qt.match(/L(\d+)/i) || qt.match(/_U(\d+)/i) || qt.match(/Unit\s*(\d+)/i);
+  if (lm) lesson = (isOlym?'Unit ':'Lesson ')+lm[1];
+  else {
+    const cm=qt.match(/_(\d+과)_빈칸시험_(.+)$/);
+    if (cm) lesson = cm[1]+' · '+cm[2];
+    else { const cm2=qt.match(/_(\d+과)/); if (cm2) lesson=cm2[1]; }
+  }
+  return { textbook, type, lesson };
+}
+
+const gradeClass = s => s>=95?'S':s>=85?'A':s>=70?'B':s>=55?'C':'D';
+function ftDate(d){ if(!d) return '-'; return `${d.getMonth()+1}월 ${d.getDate()}일`; }
+function ftTime(d){ if(!d) return ''; return d.toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'}); }
+function dayKey(d){ return d ? `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}` : ''; }
+
+async function loadAndRender(){
+  const content = document.getElementById('content');
+  try {
+    // 본인 이름의 모든 기록 가져오기 (school 변형 가능성 → 클라이언트 측 필터)
+    const q1 = query(collection(db,'quiz_results'), where('studentName','==',studentName));
+    const snap = await getDocs(q1);
+    const records = [];
+    snap.forEach(d => {
+      const x = d.data();
+      // per-문제 이벤트(q 필드 또는 result ok/fail) 제외
+      if (x.q !== undefined || x.result === 'ok' || x.result === 'fail') return;
+      // 학교가 본인과 "관계 있는지"만 확인 — 빈 값/포함 관계 허용
+      const recSchool = x.school || '';
+      if (recSchool && studentSchool) {
+        const a = recSchool, b = studentSchool;
+        if (a !== b && !a.includes(b) && !b.includes(a) && !a.startsWith(b.slice(0,3)) && !b.startsWith(a.slice(0,3))) return;
+      }
+      const time = x.timestamp && typeof x.timestamp.toDate==='function'
+        ? x.timestamp.toDate()
+        : (x.submittedAt ? new Date(x.submittedAt) : null);
+      records.push({
+        score: x.score||0,
+        correct: x.correct||0,
+        wrong: x.wrongCount||x.wrong||0,
+        total: x.total||0,
+        elapsed: x.elapsedMin||0,
+        quizType: x.quizType||'',
+        wrongWords: x.wrongWords||[],
+        wrongNumbers: x.wrongNumbers||'',
+        wrongSentences: x.wrongSentences||'',
+        time
+      });
+    });
+
+    if (records.length === 0) {
+      content.innerHTML = `<div class="empty">📭 아직 풀어본 시험이 없어요<br><small style="color:#94a3b8">메인 허브로 돌아가 첫 퀴즈를 시작해보세요!</small></div>`;
+      return;
+    }
+
+    records.sort((a,b) => (b.time||0) - (a.time||0));
+    render(records);
+  } catch(e) {
+    content.innerHTML = `<div class="empty">⚠️ 기록을 불러오지 못했어요<br><small>${e.message}</small></div>`;
+  }
+}
+
+function render(records){
+  // ─ 요약 ─
+  const total = records.length;
+  const avgScore = Math.round(records.reduce((s,r)=>s+r.score,0)/total);
+  const perfectCount = records.filter(r=>r.score===100).length;
+  const totalMin = records.reduce((s,r)=>s+(r.elapsed||0),0);
+  const hrs = Math.floor(totalMin/60), mins = totalMin%60;
+  const totalTime = hrs>0 ? `${hrs}시간 ${mins}분` : `${totalMin}분`;
+
+  // ─ 연속 출석일 ─
+  const dayKeys = new Set(records.map(r=>dayKey(r.time)).filter(Boolean));
+  const today = new Date();
+  let streak = 0;
+  for (let i=0; i<60; i++) {
+    const d = new Date(today); d.setDate(d.getDate()-i);
+    if (dayKeys.has(dayKey(d))) streak++; else if (i>0) break;
+  }
+
+  // ─ 자주 틀린 단어 ─
+  const wmap = new Map();
+  records.forEach(r => {
+    (r.wrongWords||[]).forEach(w => {
+      const eng = typeof w==='string' ? w : (w.eng || w.word || '');
+      const kor = typeof w==='object' ? (w.kor || w.correct || w.meaning || '') : '';
+      if (!eng) return;
+      const key = eng.toLowerCase().trim();
+      if (!wmap.has(key)) wmap.set(key, {eng, kor, count:0});
+      wmap.get(key).count++;
+      if (kor && !wmap.get(key).kor) wmap.get(key).kor = kor;
+    });
+  });
+  const topWrong = [...wmap.values()].sort((a,b)=>b.count-a.count).slice(0,20);
+
+  // ─ 약한 영역 (textbook+type 별 평균점수) ─
+  const areaMap = new Map();
+  records.forEach(r => {
+    const m = parseQuizMeta(r);
+    const key = `${m.textbook} · ${m.type||'기타'}`;
+    if (!areaMap.has(key)) areaMap.set(key, {name:key, scores:[], count:0});
+    areaMap.get(key).scores.push(r.score);
+    areaMap.get(key).count++;
+  });
+  const weakAreas = [...areaMap.values()]
+    .filter(a => a.count >= 2)  // 2번 이상 푼 영역만
+    .map(a => ({...a, avg: Math.round(a.scores.reduce((s,v)=>s+v,0)/a.scores.length)}))
+    .sort((a,b) => a.avg - b.avg)
+    .slice(0, 5);
+
+  // ─ 최근 기록 (학생·교재·날짜 묶음, 같은 그룹은 최신 1건) ─
+  const groupMap = new Map();
+  records.forEach(r => {
+    const m = parseQuizMeta(r);
+    const dk = dayKey(r.time);
+    const k = `${m.textbook}|${dk}`;
+    if (!groupMap.has(k)) groupMap.set(k, []);
+    groupMap.get(k).push({...r, _meta:m});
+  });
+  const recentGroups = [...groupMap.values()]
+    .map(grp => {
+      grp.sort((a,b)=>(b.time||0)-(a.time||0));
+      const latest = grp[0];
+      const metas = [...new Set(grp.map(r=>r._meta.type).filter(Boolean))].join(' · ');
+      const lessons = [...new Set(grp.map(r=>r._meta.lesson).filter(Boolean))].join(', ');
+      return {
+        time: latest.time,
+        textbook: latest._meta.textbook,
+        type: metas,
+        lesson: lessons,
+        score: latest.score,
+        wrong: latest.wrong,
+        attempts: grp.length
+      };
+    })
+    .sort((a,b) => (b.time||0) - (a.time||0))
+    .slice(0, 20);
+
+  // ─ HTML ─
+  const wordsHtml = topWrong.length
+    ? `<div class="word-chips">${topWrong.map(w=>`
+        <span class="wc">${escHtml(w.eng)}${w.kor?`<span class="wc-ko">→ ${escHtml(w.kor)}</span>`:''}<span class="wc-cnt">${w.count}회</span></span>
+      `).join('')}</div>`
+    : `<div class="empty" style="padding:24px;font-size:.8rem;">🎉 자주 틀리는 단어가 없어요!</div>`;
+
+  const weakHtml = weakAreas.length
+    ? `<div class="weak-list">${weakAreas.map((a,i)=>`
+        <div class="weak-item">
+          <div class="weak-icon">${['🥺','😣','😅','🤔','💪'][i]||'💡'}</div>
+          <div class="weak-info">
+            <div class="weak-name">${escHtml(a.name)}</div>
+            <div class="weak-meta">${a.count}회 응시 · 평균 ${a.avg}점</div>
+          </div>
+          <div class="weak-score">${a.avg}점</div>
+        </div>
+      `).join('')}</div>`
+    : `<div class="empty" style="padding:24px;font-size:.8rem;">아직 충분한 데이터가 없어요. 더 풀어보면 약한 영역을 알려드릴게요!</div>`;
+
+  const recentHtml = `<table class="rec-table">
+    <thead><tr><th style="width:75px;">날짜</th><th>교재 · 유형</th><th style="width:60px;text-align:center;">점수</th><th style="width:60px;text-align:center;">오답</th></tr></thead>
+    <tbody>${recentGroups.map(g=>`
+      <tr>
+        <td class="rec-date">${ftDate(g.time)}<br><span style="font-weight:400;color:var(--soft);font-size:10px">${ftTime(g.time)}</span></td>
+        <td class="rec-quiz">
+          <div class="quiz-book">${escHtml(g.textbook)}${g.attempts>1?`<span style="color:#c2410c;font-size:10px;margin-left:5px;font-weight:800">${g.attempts}회</span>`:''}</div>
+          <div class="quiz-sub">${escHtml(g.type)}${g.lesson?' · '+escHtml(g.lesson):''}</div>
+        </td>
+        <td style="text-align:center"><span class="score-chip score-${gradeClass(g.score)}">${g.score}점</span></td>
+        <td style="text-align:center">${g.wrong>0?`<span class="wrong-mini">${g.wrong}</span>`:'<span class="ok-mini">✓</span>'}</td>
+      </tr>
+    `).join('')}</tbody>
+  </table>`;
+
+  document.getElementById('content').innerHTML = `
+    ${streak>=2 ? `<div class="streak">
+      <div class="streak-emoji">🔥</div>
+      <div class="streak-text">
+        <div class="streak-title">${streak}일 연속 학습 중!</div>
+        <div class="streak-sub">이 흐름을 유지해보세요 💪</div>
+      </div>
+    </div>` : ''}
+
+    <div class="sec">
+      <div class="stats">
+        <div class="stat"><div class="stat-n">${total}</div><div class="stat-l">총 응시</div></div>
+        <div class="stat ${avgScore>=85?'good':avgScore>=70?'mid':''}"><div class="stat-n">${avgScore}<span style="font-size:.9rem">점</span></div><div class="stat-l">평균 점수</div></div>
+        <div class="stat good"><div class="stat-n">${perfectCount}<span style="font-size:.9rem">회</span></div><div class="stat-l">🏆 100점</div></div>
+        <div class="stat"><div class="stat-n" style="font-size:1.1rem">${totalTime}</div><div class="stat-l">총 학습시간</div></div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-title">📜 최근 학습 <span class="sec-sub">최신 ${recentGroups.length}건</span></div>
+      ${recentHtml}
+    </div>
+
+    <div class="sec">
+      <div class="sec-title">🎯 자주 틀리는 단어 <span class="sec-sub">TOP 20</span></div>
+      ${wordsHtml}
+    </div>
+
+    <div class="sec">
+      <div class="sec-title">⚠️ 더 노력해야 할 영역 <span class="sec-sub">점수 낮은 순</span></div>
+      ${weakHtml}
+    </div>
+  `;
+}
+
+function escHtml(s){ return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+if (studentName) loadAndRender();
+</script>
+</body>
+</html>
