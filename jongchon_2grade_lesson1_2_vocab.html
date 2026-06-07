@@ -652,7 +652,125 @@ function updateProgress() {
 // ============================================================
 // SUBMIT → FIREBASE
 // ============================================================
+
+// === 같은 날 이어서 풀기 (세션 저장/복원) ===
+const QUIZ_ID='jongchon_2grade_lesson1_2_vocab';
+const _DAY_KEY=(function(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');})();
+const _SESSION_KEY='bn_session_'+QUIZ_ID;
+function _saveSession(){
+  try{
+    if(!state||!state.startTime) return;
+    if(!state.answers||Object.keys(state.answers).length===0) return;
+    localStorage.setItem(_SESSION_KEY, JSON.stringify({
+      day:_DAY_KEY,
+      name: (typeof studentName!=='undefined'?studentName:''),
+      school: (typeof studentSchool!=='undefined'?studentSchool:''),
+      answers: state.answers,
+      score: state.score||0,
+      totalQ: state.totalQ||0,
+      startTime: state.startTime,
+      wrongWordsMap: (typeof wrongWordsMap!=='undefined'?wrongWordsMap:{})
+    }));
+  }catch(e){}
+}
+function _loadSession(){
+  try{
+    const raw=localStorage.getItem(_SESSION_KEY); if(!raw) return null;
+    const s=JSON.parse(raw);
+    if(s.day!==_DAY_KEY){localStorage.removeItem(_SESSION_KEY); return null;}
+    if(!s.answers||Object.keys(s.answers).length===0){localStorage.removeItem(_SESSION_KEY); return null;}
+    return s;
+  }catch(e){return null;}
+}
+function _clearSession(){try{localStorage.removeItem(_SESSION_KEY);}catch(e){}}
+function _cleanupOldSessions(){
+  try{
+    for(let i=localStorage.length-1;i>=0;i--){
+      const k=localStorage.key(i);
+      if(k && k.startsWith('bn_session_')){
+        try{const v=JSON.parse(localStorage.getItem(k)); if(v.day!==_DAY_KEY) localStorage.removeItem(k);}
+        catch(e){localStorage.removeItem(k);}
+      }
+    }
+  }catch(e){}
+}
+
+let _RESUMING=false;
+function _resumeFromSession(){
+  const s=_loadSession(); if(!s) return false;
+  // 인풋 채우기 후 startQuiz 호출 → 카드 렌더링
+  const sel=document.getElementById('schoolSel');
+  const ni=document.getElementById('nameInput');
+  if(sel && s.school){
+    let matched=false;
+    for(const o of sel.options){ if(o.value===s.school){sel.value=s.school; matched=true; break;} }
+    if(!matched && sel.options.length>1) sel.value=sel.options[1].value;
+  }
+  if(ni && s.name) ni.value=s.name;
+  _RESUMING=true;
+  try{ startQuiz(); }catch(e){ _RESUMING=false; return false; }
+  _RESUMING=false;
+  // 렌더링 끝난 뒤 답한 문제 재현
+  setTimeout(()=>{
+    state.startTime = s.startTime || Date.now();
+    state.answers={}; state.score=0;
+    if(typeof wrongWordsMap!=='undefined' && s.wrongWordsMap){
+      for(const k of Object.keys(s.wrongWordsMap)) wrongWordsMap[k]=s.wrongWordsMap[k];
+    }
+    const restored=[];
+    for(const [key, ans] of Object.entries(s.answers||{})){
+      if(!ans||!ans.answered) continue;
+      const m=key.match(/^(.+)-(\d+)$/); if(!m) continue;
+      const prefix=m[1], idx=m[2];
+      const card=document.getElementById(`${prefix}-card-${idx}`);
+      if(!card) continue;
+      const optBtns=[...card.querySelectorAll('.opt-btn')];
+      if(Array.isArray(ans.chosen)){
+        // 다중 선택형
+        for(const c of ans.chosen){
+          const b=optBtns.find(x=>x.textContent.trim()===c);
+          if(b) b.click();
+        }
+        const cb=document.getElementById(`${prefix}-confirm-${idx}`);
+        if(cb) cb.click();
+        restored.push(key);
+      } else if(typeof ans.chosen==='string' && ans.chosen){
+        const b=optBtns.find(x=>x.textContent.trim()===ans.chosen);
+        if(b){ b.click(); restored.push(key); }
+      }
+    }
+    if(typeof updateProgress==='function') updateProgress();
+  }, 80);
+  return true;
+}
+
+function _checkResumePrompt(){
+  const s=_loadSession(); if(!s) return;
+  // 시작 화면에 노란 배너 삽입
+  const host = document.getElementById('infoWrap') || document.getElementById('startScreen') || document.querySelector('.start-card') || document.body;
+  if(document.getElementById('resumeBox')) return;
+  const answered=Object.keys(s.answers||{}).length;
+  const elapsedMin = Math.max(1, Math.round((Date.now()-(s.startTime||Date.now()))/60000));
+  const box=document.createElement('div');
+  box.id='resumeBox';
+  box.style.cssText='background:linear-gradient(135deg,#fff7e0,#fef3c7);border:2px solid #fcd34d;border-radius:14px;padding:14px 16px;margin:12px 0;text-align:left;';
+  box.innerHTML = `
+    <div style="font-family:'Black Han Sans',sans-serif;font-size:1rem;color:#92400e;margin-bottom:4px;">⏸️ 풀던 시험이 있어요</div>
+    <div style="font-size:.78rem;color:#a16207;line-height:1.5;margin-bottom:10px;">
+      <strong>${s.name||'학생'}</strong>님 · ${answered}문제 답함 · 진행한 시간 ${elapsedMin}분 · 누적 정답 ${s.score||0}
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button style="flex:1;min-width:120px;padding:11px 14px;font-size:.88rem;background:linear-gradient(135deg,#f59e0b,#d97706);color:white;border:none;border-radius:10px;font-weight:800;cursor:pointer;" onclick="_resumeFromSession();this.closest('#resumeBox').remove();">▶️ 이어서 풀기</button>
+      <button style="flex:1;min-width:120px;padding:11px 14px;font-size:.88rem;background:linear-gradient(135deg,#94a3b8,#64748b);color:white;border:none;border-radius:10px;font-weight:800;cursor:pointer;" onclick="_clearSession();this.closest('#resumeBox').remove();">🔄 새로 시작</button>
+    </div>`;
+  host.insertBefore(box, host.firstChild);
+}
+window._resumeFromSession=_resumeFromSession;
+window._clearSession=_clearSession;
+document.addEventListener('DOMContentLoaded',()=>{ _cleanupOldSessions(); _checkResumePrompt(); });
+
 async function submitAll() {
+  _clearSession();
   const answered = Object.keys(state.answers).length;
   if (answered < state.totalQ * 0.5) {
     alert(`아직 ${state.totalQ - answered}문제가 남아있어요! 조금 더 풀어보세요 😊`); return;
