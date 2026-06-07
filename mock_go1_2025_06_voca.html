@@ -133,7 +133,16 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--bg);min-height:100vh
   <div class="lcard">
     <h1>📝 고1 25년 6월 동반의어</h1>
     <div class="sub">2025년 6월 고1 학력평가 · 18~45번 전체 어휘</div>
-    <select class="ni" id="si" style="background:#fff;color:var(--pri);font-weight:700;cursor:pointer;">
+    
+  <div id="resumeBox" style="display:none;background:linear-gradient(135deg,#fff7e0,#fef3c7);border:2px solid #fcd34d;border-radius:14px;padding:14px 16px;margin:12px auto;text-align:left;max-width:520px;">
+    <div style="font-family:'Black Han Sans',sans-serif;font-size:1rem;color:#92400e;margin-bottom:4px;">⏸️ 풀던 시험이 있어요</div>
+    <div id="resumeInfo" style="font-size:.78rem;color:#a16207;line-height:1.5;margin-bottom:10px;"></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button style="flex:1;min-width:120px;padding:11px 14px;font-size:.88rem;background:linear-gradient(135deg,#f59e0b,#d97706);color:white;border:none;border-radius:10px;font-weight:800;cursor:pointer;" onclick="resumeSession()">▶️ 이어서 풀기</button>
+      <button style="flex:1;min-width:120px;padding:11px 14px;font-size:.88rem;background:linear-gradient(135deg,#94a3b8,#64748b);color:white;border:none;border-radius:10px;font-weight:800;cursor:pointer;" onclick="discardSession()">🔄 새로 시작</button>
+    </div>
+  </div>
+  <select class="ni" id="si" style="background:#fff;color:var(--pri);font-weight:700;cursor:pointer;">
       <option value="">학교 선택</option>
       <option>종촌고</option><option>고운고</option><option>대성고</option>
       <option>종촌중</option><option>어진중</option><option>고운중</option><option>기타</option>
@@ -630,13 +639,102 @@ function _cleanupOldProgress(){
   try{
     for(let i=localStorage.length-1;i>=0;i--){
       const k=localStorage.key(i);
-      if(k && k.startsWith('bn_prog_')){
+      if(k && (k.startsWith('bn_prog_') || k.startsWith('bn_session_'))){
         try{const v=JSON.parse(localStorage.getItem(k)); if(v.day!==_DAY_KEY) localStorage.removeItem(k);}
         catch(e){localStorage.removeItem(k);}
       }
     }
   }catch(e){}
 }
+
+// === 진행 중 세션 저장 (같은 날 재진입 시 이어서 풀기) ===
+const _SESSION_KEY = 'bn_session_' + QUIZ_ID;
+function _saveSession(){
+  if(typeof qs==='undefined' || !qs.length || idx>=qs.length) return;
+  try{
+    const state = {
+      day: _DAY_KEY,
+      userName: (typeof userName!=='undefined'?userName:''),
+      userSchool: (typeof userSchool!=='undefined'?userSchool:''),
+      qs, idx,
+      cor: (typeof cor!=='undefined'?cor:0),
+      wrn: (typeof wrn!=='undefined'?wrn:0),
+      wrongs: (typeof wrongs!=='undefined'?wrongs:[]),
+      allResults: (typeof allResults!=='undefined'?allResults:[]),
+      selectedRefs: (typeof selectedRefs!=='undefined'?Array.from(selectedRefs):[]),
+      doneRefs: (typeof doneRefs!=='undefined'?Array.from(doneRefs):[]),
+      selectedNos: (typeof selectedNos!=='undefined'?Array.from(selectedNos||[]):[]),
+      doneNos: (typeof doneNos!=='undefined'?Array.from(doneNos):[]),
+      quizMode: (typeof quizMode!=='undefined'?quizMode:''),
+      filterMode: (typeof filterMode!=='undefined'?filterMode:''),
+      mode: (typeof mode!=='undefined'?mode:''),
+      round: (typeof round!=='undefined'?round:''),
+      elapsedMs: (typeof t0!=='undefined' && t0)?(Date.now()-t0):0,
+      savedAt: Date.now()
+    };
+    localStorage.setItem(_SESSION_KEY, JSON.stringify(state));
+  }catch(e){}
+}
+function _loadSession(){
+  try{
+    const raw = localStorage.getItem(_SESSION_KEY); if(!raw) return null;
+    const s = JSON.parse(raw);
+    if(s.day !== _DAY_KEY){ localStorage.removeItem(_SESSION_KEY); return null; }
+    if(!s.qs || !s.qs.length || s.idx >= s.qs.length){ localStorage.removeItem(_SESSION_KEY); return null; }
+    return s;
+  }catch(e){ return null; }
+}
+function _clearSession(){ try{ localStorage.removeItem(_SESSION_KEY); }catch(e){} }
+function _restoreSessionState(s){
+  if(typeof userName!=='undefined'){ window.userName = s.userName||''; userName = window.userName; }
+  if(typeof userSchool!=='undefined'){ window.userSchool = s.userSchool||''; userSchool = window.userSchool; }
+  qs = s.qs; idx = s.idx;
+  if(typeof cor!=='undefined') cor = s.cor||0;
+  if(typeof wrn!=='undefined') wrn = s.wrn||0;
+  if(typeof wrongs!=='undefined') wrongs = s.wrongs||[];
+  if(typeof allResults!=='undefined') allResults = s.allResults||[];
+  if(typeof selectedRefs!=='undefined') selectedRefs = new Set(s.selectedRefs||[]);
+  if(typeof doneRefs!=='undefined' && Array.isArray(s.doneRefs)) doneRefs = new Set(s.doneRefs);
+  if(typeof selectedNos!=='undefined') selectedNos = new Set(s.selectedNos||[]);
+  if(typeof doneNos!=='undefined' && Array.isArray(s.doneNos)) doneNos = new Set(s.doneNos);
+  if(typeof quizMode!=='undefined' && s.quizMode) quizMode = s.quizMode;
+  if(typeof filterMode!=='undefined' && s.filterMode) filterMode = s.filterMode;
+  if(typeof mode!=='undefined' && s.mode) mode = s.mode;
+  if(typeof round!=='undefined' && s.round) round = s.round;
+  if(typeof t0!=='undefined') t0 = Date.now() - (s.elapsedMs||0);
+  if(typeof answered!=='undefined') answered = false;
+}
+function _enterQuizScreen(){
+  const start=document.getElementById('startScreen');     if(start) start.classList.add('hidden');
+  const pass=document.getElementById('passageScreen');    if(pass) pass.classList.add('hidden');
+  const ls=document.getElementById('loginScreen');        if(ls) ls.classList.add('hidden');
+  ['hdr','pw','quizArea','quizScreen','quizWrap'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.classList.remove('hidden');
+  });
+}
+function resumeSession(){
+  const s = _loadSession(); if(!s){ const rb=document.getElementById('resumeBox'); if(rb) rb.style.display='none'; return; }
+  _restoreSessionState(s);
+  _enterQuizScreen();
+  if(typeof showQ==='function') showQ();
+  else if(typeof renderQuestion==='function') renderQuestion();
+  else if(typeof drawQ==='function') drawQ();
+}
+function discardSession(){ _clearSession(); const rb=document.getElementById('resumeBox'); if(rb) rb.style.display='none'; }
+function checkResumePrompt(){
+  const s = _loadSession(); if(!s) return;
+  const rb = document.getElementById('resumeBox'); if(!rb) return;
+  const remain = s.qs.length - s.idx;
+  const elapsedMin = Math.round((s.elapsedMs||0)/60000);
+  const info = document.getElementById('resumeInfo');
+  if(info) info.innerHTML =
+    '<strong>'+(s.userName||'학생')+'</strong>님 · '+s.qs.length+'문제 중 <strong>'+s.idx+'번째</strong>까지 풀었어요 ('+remain+'문제 남음)<br>'+
+    '진행한 시간: '+elapsedMin+'분 · 정답 '+(s.cor||0)+' / 오답 '+(s.wrn||0);
+  rb.style.display='block';
+}
+window.resumeSession = resumeSession;
+window.discardSession = discardSession;
+
 
 function doLogin(){
   const s=document.getElementById('si').value,n=document.getElementById('ni').value.trim();
@@ -645,6 +743,7 @@ function doLogin(){
   studentSchool=s;studentName=n;
   _cleanupOldProgress();
   _loadProg();
+  checkResumePrompt();
   document.getElementById('loginScreen').classList.add('hidden');
   renderHub();document.getElementById('hubScreen').classList.remove('hidden');
 }
@@ -779,7 +878,7 @@ function showQ(){
         if(_answered)return;_answered=true;clearInterval(timerInterval);
         document.querySelectorAll('.cb').forEach(x=>x.disabled=true);
         const fb=document.getElementById('fb');
-        if(c===ck){b.classList.add('correct');fb.className='fb ok';fb.textContent='✅ 정답!';cor++;setTimeout(()=>{idx++;showQ();},800);}
+        if(c===ck){b.classList.add('correct');fb.className='fb ok';fb.textContent='✅ 정답!';cor++;setTimeout(()=>{idx++;_saveSession();showQ();},800);}
         else{b.classList.add('wrong');fb.className='fb no';fb.textContent='❌ 오답! 내 답: '+c+' / 정답: '+ck;wrn++;wrongs.push({eng:q.word.eng,kor:ck,type:'뜻',my:c,correct:ck});setTimeout(()=>{idx+=2;showQ();},1500);}
       };
       document.getElementById('ch').appendChild(b);
@@ -800,7 +899,7 @@ function showQ(){
         const fb=document.getElementById('fb');const ok=syns.includes(c);
         if(ok){b.classList.add('correct');fb.className='fb ok';fb.textContent='✅ 정답!';cor++;}
         else{b.classList.add('wrong');fb.className='fb no';fb.textContent='❌ 오답! 내 답: '+c+' / 유의어: '+syns.join(', ');wrn++;wrongs.push({eng:q.word.eng,kor:q.word.kor,type:'유의어',my:c,correct:syns[0]});}
-        setTimeout(()=>{idx++;showQ();},1500);
+        setTimeout(()=>{idx++;_saveSession();showQ();},1500);
       };
       document.getElementById('ch').appendChild(b);
     });
@@ -824,7 +923,7 @@ function showQ(){
         const fb=document.getElementById('fb');const la=q.rel==='syn'?'유의어':'반의어';
         if(sel===q.rel){this.classList.add('correct');fb.className='fb ok';fb.textContent='✅ 정답! '+la;cor++;}
         else{this.classList.add('wrong');fb.className='fb no';fb.textContent='❌ 내 답: '+(sel==='syn'?'유의어':'반의어')+' / 정답: '+la;wrn++;wrongs.push({eng:q.w1+' ↔ '+q.w2,kor:q.kor,type:'관계',my:(sel==='syn'?'유의어':'반의어'),correct:la});}
-        setTimeout(()=>{idx++;showQ();},1500);
+        setTimeout(()=>{idx++;_saveSession();showQ();},1500);
       };
     });
     startTimer();
@@ -838,10 +937,11 @@ function autoTO(){
   if(q.type==='M')wrongs.push({eng:q.word.eng,kor:q.word.kor,type:'뜻',my:'(초과)',correct:q.word.kor});
   else if(q.type==='S')wrongs.push({eng:q.word.eng,kor:q.word.kor,type:'유의어',my:'(초과)',correct:q.word.syn[0]});
   else wrongs.push({eng:q.w1+' ↔ '+q.w2,kor:q.kor,type:'관계',my:'(초과)',correct:(q.rel==='syn'?'유의어':'반의어')});
-  setTimeout(()=>{idx++;showQ();},1500);
+  setTimeout(()=>{idx++;_saveSession();showQ();},1500);
 }
 
 function showResult(){
+  _clearSession();
   clearInterval(timerInterval);
   document.getElementById('pf').style.width='100%';
   document.getElementById('quizArea').classList.add('hidden');
