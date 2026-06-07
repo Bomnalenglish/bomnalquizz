@@ -79,6 +79,14 @@ main{max-width:1100px;margin:0 auto;padding:20px 14px 80px}
 .result-btns button{padding:10px 20px;border-radius:12px;font-family:inherit;font-size:.82rem;font-weight:700;cursor:pointer;border:2px solid #3d3d3d}
 .btn-retry{background:#3d3d3d;color:#fff}.btn-retry:hover{opacity:.85}
 .btn-back{background:transparent;color:#3d3d3d}.btn-back:hover{background:#f0ede8}
+
+/* 🚫 해당하지 않는(어색한) 것 고르기 - 문제 유형 시각 표시 */
+.exclude-group::before{
+  content:"🚫 어색한 것";
+  display:inline-block;font-size:9.5px;background:#fef2f2;color:#b91c1c;
+  border:1px solid #fca5a5;border-radius:5px;padding:1px 6px;margin-right:4px;
+  font-weight:800;vertical-align:middle;white-space:nowrap;letter-spacing:.2px;
+}
 </style>
 </head>
 <body>
@@ -367,7 +375,7 @@ function initArranges(){
 }
 function moveToAns(chip,poolId,ansId){
   if(chip.classList.contains('disabled'))return;
-  const ans=document.getElementById(ansId);const ph=ans.querySelector('span');if(ph)ph.remove();
+  const ans=document.getElementById(ansId);const ph=ans.querySelector(':scope > span:not(.word-chip)');if(ph)ph.remove();
   chip.onclick=()=>moveToPool(chip,poolId,ansId);ans.appendChild(chip);
 }
 function moveToPool(chip,poolId,ansId){
