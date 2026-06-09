@@ -799,46 +799,51 @@ function selectMockYear(year){
   });
   goStep('screen-mock-month');
 }
+// 존재하는 모의고사 파일 명시 목록 (HEAD 요청 대신 정적 화이트리스트)
+const MOCK_FILES_AVAILABLE = new Set([
+  'mock_go1_2023_06_voca','mock_go1_2023_06_memory',
+  'mock_go1_2024_06_voca','mock_go1_2024_06_memory',
+  'mock_go1_2025_06_voca','mock_go1_2025_06_memory','mock_go1_2025_06_total',
+  'mock_go1_2026_06_voca',
+  'mock_go2_2024_06_voca','mock_go2_2024_06_memory','mock_go2_2024_06_grammar','mock_go2_2024_06_total',
+  'mock_go2_2024_06_context','mock_go2_2024_06_order','mock_go2_2024_06_insert','mock_go2_2024_06_writing',
+  'mock_go2_2025_06_memory','mock_go2_2025_06_grammar',
+  'mock_go2_2026_03_voca','mock_go2_2026_03_memory','mock_go2_2026_03_grammar','mock_go2_2026_03_total',
+  'mock_go2_2026_06_voca',
+]);
+
 function selectMockMonth(month){
   mockMonth = month;
   const gradeKey = MOCK_GRADE_MAP[mockGrade];
   const monthKey = MOCK_MONTH_MAP[month];
   const base = 'mock_' + gradeKey + '_' + mockYear + '_' + monthKey;
-  // 파일 존재 여부를 HEAD 요청으로 확인해, 없는 유형은 "준비 중"으로 비활성화
-  function setTypeBtn(elId, suffix){
+  function setTypeBtn(elId, suffix, labelText){
     const el = document.getElementById(elId); if(!el) return;
-    const url = BASE + base + suffix + '.html';
-    el.href = url;
-    el.classList.remove('coming-soon');
-    el.style.opacity = '1';
-    el.style.pointerEvents = 'auto';
-    el.removeAttribute('data-original-html');
-    fetch(url, {method:'HEAD'}).then(r=>{
-      if (!r.ok){
-        el.classList.add('coming-soon');
-        el.style.opacity = '.45';
-        el.style.pointerEvents = 'none';
-        el.removeAttribute('href');
-        if(!el.dataset.originalHtml) el.dataset.originalHtml = el.innerHTML;
-        const label = el.querySelector('h3, h2, strong, b, .title') || el;
-        // 작은 "준비 중" 배지를 텍스트 뒤에 한 번만 붙임
-        if(!el.querySelector('.cs-badge')){
-          const b = document.createElement('span');
-          b.className = 'cs-badge';
-          b.style.cssText='display:inline-block;font-size:.62rem;background:#f0ede8;color:#7a7570;border:1px solid #d0c8be;border-radius:8px;padding:1px 7px;margin-left:6px;font-weight:700;vertical-align:middle;';
-          b.textContent='준비 중';
-          label.appendChild(b);
-        }
-      } else if(el.dataset.originalHtml){
-        el.innerHTML = el.dataset.originalHtml;
-        delete el.dataset.originalHtml;
-      }
-    }).catch(()=>{});
+    const filename = base + suffix;
+    const exists = MOCK_FILES_AVAILABLE.has(filename);
+    // 기존 "준비 중" 배지 제거
+    el.querySelectorAll('.cs-badge').forEach(b=>b.remove());
+    if (exists) {
+      el.href = BASE + filename + '.html';
+      el.style.opacity = '1';
+      el.style.pointerEvents = 'auto';
+      el.classList.remove('coming-soon');
+    } else {
+      el.removeAttribute('href');
+      el.style.opacity = '.45';
+      el.style.pointerEvents = 'none';
+      el.classList.add('coming-soon');
+      const b = document.createElement('span');
+      b.className = 'cs-badge';
+      b.style.cssText='display:inline-block;font-size:.62rem;background:#f0ede8;color:#7a7570;border:1px solid #d0c8be;border-radius:8px;padding:1px 7px;margin-left:6px;font-weight:700;vertical-align:middle;';
+      b.textContent='준비 중';
+      (el.querySelector('h3, h2, strong, b, .title') || el).appendChild(b);
+    }
   }
-  setTypeBtn('mock-type-voca','_voca');
-  setTypeBtn('mock-type-memory','_memory');
-  setTypeBtn('mock-type-grammar','_grammar');
-  setTypeBtn('mock-type-total','_total');
+  setTypeBtn('mock-type-voca','_voca','단어');
+  setTypeBtn('mock-type-memory','_memory','본문암기');
+  setTypeBtn('mock-type-grammar','_grammar','어법선택');
+  setTypeBtn('mock-type-total','_total','총괄퀴즈');
   document.getElementById('mock-type-title').textContent = mockGrade + ' ' + mockYear + '년 ' + month + ' · 유형을 선택하세요.';
 
   // 동반의어: 파일이 있는 조합만 표시
