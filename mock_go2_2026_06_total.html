@@ -45,8 +45,12 @@ h2{font-family:'Black Han Sans',sans-serif;font-size:1rem;color:var(--ink);margi
 .q-school{background:#f1f5f9;color:#475569;padding:2px 8px;border-radius:10px;font-size:.66rem;font-weight:700;}
 .q-stem{font-size:.86rem;font-weight:700;color:var(--ink);margin-bottom:8px;line-height:1.5;}
 .q-body{font-size:.84rem;line-height:1.75;color:#334155;background:#f8fafc;border-radius:10px;padding:10px 12px;margin-bottom:10px;white-space:pre-wrap;}
-.q-body .blk{display:inline-block;min-width:140px;border-bottom:2px solid #6366f1;height:1.2em;background:#eef2ff;border-radius:3px;margin:0 3px;vertical-align:baseline;font-weight:800;color:#6366f1;text-align:center;padding:0 4px;}
-.q-body .blk:before{content:"빈칸";font-size:.72em;letter-spacing:.5px;}
+.q-body .blk{display:inline-block;min-width:90px;background:linear-gradient(135deg,#fef3c7,#fde68a);border:2px dashed #d97706;border-radius:6px;padding:1px 12px;color:#92400e;font-weight:800;letter-spacing:.4px;margin:0 4px;vertical-align:baseline;font-size:.86em;text-align:center;}
+.q-body .blk:before{content:"빈칸";}
+.q-body .order-block{display:block;margin-top:10px;padding:8px 12px;background:white;border-left:4px solid #6366f1;border-radius:0 8px 8px 0;}
+.q-body .order-block .lbl{font-weight:800;color:#6366f1;margin-right:6px;font-size:.95em;}
+.q-body .pos-marker{display:inline-block;background:#ede9fe;border:2px solid #8b5cf6;border-radius:50%;width:28px;height:28px;line-height:24px;text-align:center;color:#6d28d9;font-weight:800;margin:0 4px;vertical-align:middle;}
+.q-body .emph{text-decoration:underline;text-decoration-color:#dc2626;text-decoration-thickness:2px;text-underline-offset:3px;font-weight:700;color:#b91c1c;background:#fef2f2;padding:0 3px;border-radius:3px;}
 .choices{display:flex;flex-direction:column;gap:6px;}
 .opt-btn{display:flex;align-items:flex-start;gap:8px;background:white;border:2px solid var(--border);border-radius:10px;padding:9px 11px;cursor:pointer;font-family:inherit;text-align:left;font-size:.82rem;color:var(--ink);line-height:1.5;}
 .opt-btn:hover:not(:disabled){border-color:var(--pri);background:#f5f7ff;}
@@ -268,6 +272,22 @@ function buildRound(){
 function escHtml(s){ return String(s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
 // 빈칸 시각화 보강 — body 텍스트에서 빈칸 누락 위치 추정해 시각화
+// 함축 의미 문제: stem에서 밑줄친 영어 구절을 추출해 body에서 강조
+function applyUnderline(bodyHtml, stem){
+  if(!stem) return bodyHtml;
+  // Pattern: 밑줄 친 <English phrase> 가/이/은/는 (다음/이/가)?
+  // Phrase ends before Korean particle (가/이/은/는) or "다음 글에서/글의"
+  const m = stem.match(/밑줄\s*친\s+([A-Z][^가-힣]*?[A-Za-z])\s*(?:가|이|은|는)\s/);
+  if(!m) return bodyHtml;
+  let phrase = m[1].trim();
+  if(phrase.length < 8) return bodyHtml; // 너무 짧으면 skip
+  // 렌더된 body 안에서 escape된 phrase 찾기
+  const escPhrase = phrase.replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  // 정규식 특수문자 이스케이프
+  const reEsc = escPhrase.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return bodyHtml.replace(new RegExp(reEsc, 'g'), '<span class="emph">'+escPhrase+'</span>');
+}
+
 function reviveBlanks(body, type, stem){
   let t = body;
   const isBlank = /빈칸|cloze|함축|문장 위치|순서/.test((type||'') + ' ' + (stem||''));
@@ -297,7 +317,8 @@ function renderRoundQuestions(){
     const exhaustedNote = q._exhausted ? '<span class="q-school" style="background:#fff7e0;color:#92400e;">⚠ 추가 변형 없음</span>' : '';
     const typeBadge = q.type ? `<span class="q-type-badge">${escHtml(q.type)}</span>` : '';
     const schoolBadge = q.school ? `<span class="q-school">${escHtml(q.school)}</span>` : '';
-    const bodyHtml = reviveBlanks(escHtml(q.body), q.type||'', q.stem||'');
+    let bodyHtml = reviveBlanks(escHtml(q.body), q.type||'', q.stem||'');
+    bodyHtml = applyUnderline(bodyHtml, q.stem||'');
     card.innerHTML = `
       <div class="q-meta">
         <span class="q-no-badge">${n}번 · ${currentRound}차</span>
