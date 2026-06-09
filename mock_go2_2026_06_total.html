@@ -45,8 +45,11 @@ h2{font-family:'Black Han Sans',sans-serif;font-size:1rem;color:var(--ink);margi
 .q-school{background:#f1f5f9;color:#475569;padding:2px 8px;border-radius:10px;font-size:.66rem;font-weight:700;}
 .q-stem{font-size:.86rem;font-weight:700;color:var(--ink);margin-bottom:8px;line-height:1.5;}
 .q-body{font-size:.84rem;line-height:1.75;color:#334155;background:#f8fafc;border-radius:10px;padding:10px 12px;margin-bottom:10px;white-space:pre-wrap;}
-.q-body .blk{display:inline-block;min-width:140px;border-bottom:2px solid #6366f1;height:1.2em;background:#eef2ff;border-radius:3px;margin:0 3px;vertical-align:baseline;font-weight:800;color:#6366f1;text-align:center;padding:0 4px;}
-.q-body .blk:before{content:"빈칸";font-size:.72em;letter-spacing:.5px;}
+.q-body .blk{display:inline-block;min-width:90px;background:linear-gradient(135deg,#fef3c7,#fde68a);border:2px dashed #d97706;border-radius:6px;padding:1px 12px;color:#92400e;font-weight:800;letter-spacing:.4px;margin:0 4px;vertical-align:baseline;font-size:.86em;text-align:center;}
+.q-body .blk:before{content:"빈칸";}
+.q-body .order-block{display:block;margin-top:10px;padding:8px 12px;background:white;border-left:4px solid #6366f1;border-radius:0 8px 8px 0;}
+.q-body .order-block .lbl{font-weight:800;color:#6366f1;margin-right:6px;font-size:.95em;}
+.q-body .pos-marker{display:inline-block;min-width:30px;background:#ede9fe;border:2px solid #8b5cf6;border-radius:50%;width:28px;height:28px;line-height:24px;text-align:center;color:#6d28d9;font-weight:800;margin:0 4px;vertical-align:middle;}
 .choices{display:flex;flex-direction:column;gap:6px;}
 .opt-btn{display:flex;align-items:flex-start;gap:8px;background:white;border:2px solid var(--border);border-radius:10px;padding:9px 11px;cursor:pointer;font-family:inherit;text-align:left;font-size:.82rem;color:var(--ink);line-height:1.5;}
 .opt-btn:hover:not(:disabled){border-color:var(--pri);background:#f5f7ff;}
@@ -270,14 +273,35 @@ function escHtml(s){ return String(s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','
 // 빈칸 시각화 보강 — body 텍스트에서 빈칸 누락 위치 추정해 시각화
 function reviveBlanks(body, type, stem){
   let t = body;
-  const isBlank = /빈칸|cloze|함축|문장 위치|순서/.test((type||'') + ' ' + (stem||''));
-  // 1) underscores (already-visible blanks)
+  const typeStr = (type||'') + ' ' + (stem||'');
+  const isOrder = /순서/.test(typeStr);
+  const isPos = /문장 위치|문장 삽입|흐름/.test(typeStr);
+  const isBlank = /빈칸|cloze|함축/.test(typeStr);
+
+  // 0) underscore runs → blank
   t = t.replace(/_{3,}/g, '<span class="blk"></span>');
-  // 2) empty parens or single space inside () → 빈칸
   t = t.replace(/\(\s*\)/g, '(<span class="blk"></span>)');
   t = t.replace(/\(\s{2,}\)/g, '(<span class="blk"></span>)');
+
+  // 1) 순서 문제: (A)(B)(C)(D)(E) 각 단락 줄바꿈 + 라벨 박스
+  if(isOrder){
+    t = t.replace(/\s*\((A|B|C|D|E)\)\s*/g, '\n\n[BLOCK_$1]');
+    t = t.replace(/\[BLOCK_(A|B|C|D|E)\]/g, '<span class="order-block"><span class="lbl">($1)</span>');
+    // 닫기 처리: 다음 [BLOCK_]이 나오기 전까지 또는 끝까지 → 모든 order-block 동일 close
+    // 간단하게: 다음 줄바꿈 + < 또는 끝까지 묶음
+    // 일단 wrapping span은 다음 블럭/끝에서 자동 close
+    // CSS만으로 처리하려면 inline-block 안에 텍스트 그대로 둠 — closing span 추가:
+    t = t.replace(/(<span class="order-block"><span class="lbl">\([A-E]\)<\/span>)([\s\S]*?)(?=(\n\n<span class="order-block">|$))/g, '$1 $2</span>');
+  }
+
+  // 2) 문장 위치 문제: 번호 위치 (①②③④⑤ 또는 (①)) 시각화
+  if(isPos){
+    t = t.replace(/\(\s*([①②③④⑤])\s*\)/g, '<span class="pos-marker">$1</span>');
+    t = t.replace(/(?<![가-힣\w])([①②③④⑤])(?![가-힣\w])/g, '<span class="pos-marker">$1</span>');
+  }
+
+  // 3) 빈칸 문제: 의심되는 공백 패턴을 빈칸으로 복원
   if(isBlank){
-    // 3) " . " 또는 trailing " ." 패턴 (콤마/마침표 직전 공백 큰) → 빈칸
     t = t.replace(/\s{2,}\./g, ' <span class="blk"></span>.');
     t = t.replace(/(\s)\.(\s)/g, '$1<span class="blk"></span>.$2');
     t = t.replace(/\s{4,}/g, ' <span class="blk"></span> ');
