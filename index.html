@@ -804,10 +804,41 @@ function selectMockMonth(month){
   const gradeKey = MOCK_GRADE_MAP[mockGrade];
   const monthKey = MOCK_MONTH_MAP[month];
   const base = 'mock_' + gradeKey + '_' + mockYear + '_' + monthKey;
-  document.getElementById('mock-type-voca').href    = BASE + base + '_voca.html';
-  document.getElementById('mock-type-memory').href  = BASE + base + '_memory.html';
-  document.getElementById('mock-type-grammar').href = BASE + base + '_grammar.html';
-  document.getElementById('mock-type-total').href   = BASE + base + '_total.html';
+  // 파일 존재 여부를 HEAD 요청으로 확인해, 없는 유형은 "준비 중"으로 비활성화
+  function setTypeBtn(elId, suffix){
+    const el = document.getElementById(elId); if(!el) return;
+    const url = BASE + base + suffix + '.html';
+    el.href = url;
+    el.classList.remove('coming-soon');
+    el.style.opacity = '1';
+    el.style.pointerEvents = 'auto';
+    el.removeAttribute('data-original-html');
+    fetch(url, {method:'HEAD'}).then(r=>{
+      if (!r.ok){
+        el.classList.add('coming-soon');
+        el.style.opacity = '.45';
+        el.style.pointerEvents = 'none';
+        el.removeAttribute('href');
+        if(!el.dataset.originalHtml) el.dataset.originalHtml = el.innerHTML;
+        const label = el.querySelector('h3, h2, strong, b, .title') || el;
+        // 작은 "준비 중" 배지를 텍스트 뒤에 한 번만 붙임
+        if(!el.querySelector('.cs-badge')){
+          const b = document.createElement('span');
+          b.className = 'cs-badge';
+          b.style.cssText='display:inline-block;font-size:.62rem;background:#f0ede8;color:#7a7570;border:1px solid #d0c8be;border-radius:8px;padding:1px 7px;margin-left:6px;font-weight:700;vertical-align:middle;';
+          b.textContent='준비 중';
+          label.appendChild(b);
+        }
+      } else if(el.dataset.originalHtml){
+        el.innerHTML = el.dataset.originalHtml;
+        delete el.dataset.originalHtml;
+      }
+    }).catch(()=>{});
+  }
+  setTypeBtn('mock-type-voca','_voca');
+  setTypeBtn('mock-type-memory','_memory');
+  setTypeBtn('mock-type-grammar','_grammar');
+  setTypeBtn('mock-type-total','_total');
   document.getElementById('mock-type-title').textContent = mockGrade + ' ' + mockYear + '년 ' + month + ' · 유형을 선택하세요.';
 
   // 동반의어: 파일이 있는 조합만 표시
