@@ -324,7 +324,7 @@ function buildLetterBoxes(blankId, word) {
   let inputIdx = 0;
   for (let c = 0; c < word.length; c++) {
     const ch = word[c];
-    if (ch === '-' || ch === '.' || ch === "'") {
+    if (/[^A-Za-z0-9]/.test(ch)) {
       html += `<span style="display:inline-flex;align-items:center;justify-content:center;width:10px;font-size:16px;font-weight:700;color:#3B82F6;">${ch}</span>`;
     } else {
       html += `<input
@@ -431,7 +431,7 @@ function collectAnswer(blankInfo) {
   let inputIdx = 0;
   for (let c = 0; c < blankInfo.word.length; c++) {
     const ch = blankInfo.word[c];
-    if (ch === '-' || ch === '.' || ch === "'") {
+    if (/[^A-Za-z0-9]/.test(ch)) {
       ans += ch;
     } else {
       const box = document.getElementById(`${blankInfo.blankId}_${inputIdx}`);
@@ -449,7 +449,7 @@ function submitTest(auto) {
 
   const incomplete = currentBlanks.some(b => {
     const ans = collectAnswer(b);
-    const inputLen = b.word.split('').filter(ch => ch !== '-' && ch !== '.' && ch !== "'").length;
+    const inputLen = b.word.split('').filter(ch => !(/[^A-Za-z0-9]/.test(ch))).length;
     return ans.replace(/[\s\-\.']/g, '').length < inputLen;
   });
   if (!auto && incomplete) {
