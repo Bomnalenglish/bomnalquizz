@@ -245,7 +245,7 @@ function answerMC(prefix,idx,btn,chosen,answer){
   card.querySelectorAll('.opt-btn').forEach(b=>{b.disabled=true;if(b.textContent.trim()===answer)b.classList.add('show-correct');});
   if(isCorrect){btn.classList.remove('show-correct');btn.classList.add('selected-correct');fb.textContent='✅ 정답입니다!';fb.className='feedback show ok';card.classList.add('correct-card');state.score++;}
   else{btn.classList.add('selected-wrong');fb.textContent=`❌ 내 답: ${chosen} / 정답: ${answer}`;fb.className='feedback show no';card.classList.add('wrong-card');const w=card.querySelector('.q-word');recordWrong(w?w.textContent.trim().split(' ')[0]:String(idx),answer);}
-  state.answers[key]={answered:true,correct:isCorrect,chosen:chosen};updateProgress();_saveSession();
+  state.answers[key]={answered:true,correct:isCorrect,chosen:chosen,answer:answer};updateProgress();_saveSession();
 }
 
 function toggleMulti(prefix,idx,btn,chosen,answers){
@@ -264,7 +264,7 @@ function confirmMulti(prefix,idx,answers){
   card.querySelectorAll('.opt-btn').forEach(b=>{b.disabled=true;const t=b.textContent.trim();if(sel.has(t)&&correctSet.has(t))b.className='opt-btn multi correct-sel';else if(sel.has(t)&&!correctSet.has(t))b.className='opt-btn multi wrong-sel';else if(correctSet.has(t))b.className='opt-btn multi correct-sel';else b.className='opt-btn multi';});
   if(allCorrect){fb.textContent='✅ 정답입니다!';fb.className='feedback show ok';card.classList.add('correct-card');state.score++;}
   else{fb.textContent=`❌ 내 답: ${[...sel].join(', ')||'(없음)'} / 정답: ${answers.join(', ')}`;fb.className='feedback show no';card.classList.add('wrong-card');const w=card.querySelector('.q-word');recordWrong(w?w.textContent.trim().split(' ')[0]:String(idx),answers.join('/'));}
-  state.answers[key]={answered:true,correct:allCorrect,chosen:[...sel]};updateProgress();_saveSession();
+  state.answers[key]={answered:true,correct:allCorrect,chosen:[...sel],correctAnswers:[...answers]};updateProgress();_saveSession();
 }
 
 function switchSection(idx){document.querySelectorAll('.quiz-section').forEach((s,i)=>s.classList.toggle('active',i===idx));document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',i===idx));state.currentSection=idx;document.getElementById('resultScreen').classList.remove('show');document.getElementById('floatSubmit').classList.remove('hidden');}
@@ -286,6 +286,7 @@ function _saveSession(){
       answers: state.answers,
       score: state.score||0,
       totalQ: state.totalQ||0,
+      currentSection: state.currentSection||0,
       startTime: state.startTime,
       wrongWordsMap: (typeof wrongWordsMap!=='undefined'?wrongWordsMap:{})
     }));
@@ -332,25 +333,58 @@ function _resumeFromSession(){
   setTimeout(()=>{
     state.startTime = s.startTime || Date.now();
     state.answers={}; state.score=0;
+    // 마지막으로 보던 섹션으로 전환
+    if(typeof s.currentSection==='number' && typeof switchSection==='function'){
+      try{ switchSection(s.currentSection); }catch(e){}
+    }
     if(typeof wrongWordsMap!=='undefined' && s.wrongWordsMap){
       for(const k of Object.keys(s.wrongWordsMap)) wrongWordsMap[k]=s.wrongWordsMap[k];
     }
+    // 카드를 ID 위치 대신 내용(정답 텍스트)으로 찾아 셔플 재섞임 문제 회피
+    const usedCards = new Set();
     const restored=[];
     for(const [key, ans] of Object.entries(s.answers||{})){
       if(!ans||!ans.answered) continue;
       const m=key.match(/^(.+)-(\d+)$/); if(!m) continue;
-      const prefix=m[1], idx=m[2];
-      const card=document.getElementById(`${prefix}-card-${idx}`);
-      if(!card) continue;
-      const optBtns=[...card.querySelectorAll('.opt-btn')];
+      const prefix=m[1], oldIdx=m[2];
+      // 1순위: 저장된 정답으로 카드 찾기 (Single MC: ans.answer / Multi: ans.correctAnswers)
+      let target=null;
+      const allCards = Array.from(document.querySelectorAll(`[id^="${prefix}-card-"]`));
+      if (Array.isArray(ans.chosen) && Array.isArray(ans.correctAnswers)) {
+        // 다중 선택형: 카드의 모든 opt-btn 중 ans.correctAnswers를 정확히 포함하는 것 찾기
+        const wantSet = new Set(ans.correctAnswers);
+        for (const c of allCards) {
+          if (usedCards.has(c.id)) continue;
+          const btnTexts = Array.from(c.querySelectorAll('.opt-btn')).map(b=>b.textContent.trim());
+          const matchCount = ans.correctAnswers.filter(x=>btnTexts.includes(x)).length;
+          if (matchCount === ans.correctAnswers.length) { target=c; break; }
+        }
+      } else if (typeof ans.chosen==='string' && typeof ans.answer==='string') {
+        // 단일 MC: 카드 내 정답 텍스트 버튼 존재 + chosen 버튼 존재 + 미사용
+        for (const c of allCards) {
+          if (usedCards.has(c.id)) continue;
+          const btnTexts = Array.from(c.querySelectorAll('.opt-btn')).map(b=>b.textContent.trim());
+          if (btnTexts.includes(ans.answer) && btnTexts.includes(ans.chosen)) { target=c; break; }
+        }
+      }
+      // 2순위: 위치 기반 폴백 (예전 저장 데이터 호환)
+      if (!target) {
+        const positional = document.getElementById(`${prefix}-card-${oldIdx}`);
+        if (positional && !usedCards.has(positional.id)) target = positional;
+      }
+      if (!target) continue;
+      usedCards.add(target.id);
+      const optBtns=[...target.querySelectorAll('.opt-btn')];
       if(Array.isArray(ans.chosen)){
-        // 다중 선택형
         for(const c of ans.chosen){
           const b=optBtns.find(x=>x.textContent.trim()===c);
           if(b) b.click();
         }
-        const cb=document.getElementById(`${prefix}-confirm-${idx}`);
-        if(cb) cb.click();
+        const idMatch = target.id.match(/-card-(\d+)$/);
+        if (idMatch) {
+          const cb=document.getElementById(`${prefix}-confirm-${idMatch[1]}`);
+          if(cb) cb.click();
+        }
         restored.push(key);
       } else if(typeof ans.chosen==='string' && ans.chosen){
         const b=optBtns.find(x=>x.textContent.trim()===ans.chosen);
@@ -358,7 +392,7 @@ function _resumeFromSession(){
       }
     }
     if(typeof updateProgress==='function') updateProgress();
-  }, 80);
+  }, 220);
   return true;
 }
 

@@ -647,6 +647,7 @@ function _saveSession(){
       answers: state.answers,
       score: state.score||0,
       totalQ: state.totalQ||0,
+      currentSection: state.currentSection||0,
       startTime: state.startTime,
       wrongWordsMap: (typeof wrongWordsMap!=='undefined'?wrongWordsMap:{})
     }));
@@ -693,6 +694,10 @@ function _resumeFromSession(){
   setTimeout(()=>{
     state.startTime = s.startTime || Date.now();
     state.answers={}; state.score=0;
+    // 마지막으로 보던 섹션으로 전환
+    if(typeof s.currentSection==='number' && typeof switchSection==='function'){
+      try{ switchSection(s.currentSection); }catch(e){}
+    }
     if(typeof wrongWordsMap!=='undefined' && s.wrongWordsMap){
       for(const k of Object.keys(s.wrongWordsMap)) wrongWordsMap[k]=s.wrongWordsMap[k];
     }
@@ -719,7 +724,7 @@ function _resumeFromSession(){
       }
     }
     if(typeof updateProgress==='function') updateProgress();
-  }, 80);
+  }, 220);
   return true;
 }
 
