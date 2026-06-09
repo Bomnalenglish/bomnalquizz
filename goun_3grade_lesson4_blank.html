@@ -376,11 +376,12 @@ function renderQuestions() {
       if (blankSet.has(ti)) {
         const blankId = `q${si}_b${currentBlanks.length}`;
         currentBlanks.push({ blankId, word: tok.word, sentIdx: si });
+        if (tok.leadPunct) engHtml += `<span>${tok.leadPunct}</span>`;
         engHtml += buildLetterBoxes(blankId, tok.word);
         if (tok.punct) engHtml += `<span>${tok.punct}</span>`;
         engHtml += ' ';
       } else {
-        engHtml += `<span>${tok.word}${tok.punct}</span> `;
+        engHtml += `<span>${tok.leadPunct||''}${tok.word}${tok.punct}</span> `;
       }
     });
 

@@ -448,10 +448,14 @@ function showResumeNotice() {
 // ===== 토큰화·빈칸 선정 (그날은 위치 고정) =====
 function tokenize(sentence) {
   return sentence.trim().split(/\s+/).map(function(tok) {
-    var word = tok.replace(/[^A-Za-z]+$/, '');
-    var punct = tok.slice(word.length);
-    if (!word) { return { word: tok, punct: '' }; }
-    return { word: word, punct: punct };
+    var trailMatch = tok.match(/[^A-Za-z0-9]+$/);
+    var trail = trailMatch ? trailMatch[0] : '';
+    var rest = trail ? tok.slice(0, -trail.length) : tok;
+    var leadMatch = rest.match(/^[^A-Za-z0-9]+/);
+    var lead = leadMatch ? leadMatch[0] : '';
+    var word = rest.slice(lead.length);
+    if (!word) { return { word: tok, punct: '', leadPunct: '' }; }
+    return { word: word, punct: trail, leadPunct: lead };
   });
 }
 
@@ -515,11 +519,12 @@ function renderQuestions() {
       if (blankSet.has(ti)) {
         const blankId = `q${si}_b${currentBlanks.length}`;
         currentBlanks.push({ blankId, word: tok.word, sentIdx: si });
+        if (tok.leadPunct) engHtml += `<span>${tok.leadPunct}</span>`;
         engHtml += buildLetterBoxes(blankId, tok.word);
         if (tok.punct) engHtml += `<span>${tok.punct}</span>`;
         engHtml += ' ';
       } else {
-        engHtml += `<span>${tok.word}${tok.punct}</span> `;
+        engHtml += `<span>${tok.leadPunct||''}${tok.word}${tok.punct}</span> `;
       }
     });
     const card = document.createElement('div');
