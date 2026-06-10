@@ -49,6 +49,7 @@ h2{font-family:'Black Han Sans',sans-serif;font-size:1rem;color:var(--ink);margi
 .q-body .order-block{display:block;margin-top:10px;padding:8px 12px;background:white;border-left:4px solid #6366f1;border-radius:0 8px 8px 0;}
 .q-body .pos-marker{display:inline-block;background:#ede9fe;border:2px solid #8b5cf6;border-radius:50%;width:28px;height:28px;line-height:24px;text-align:center;color:#6d28d9;font-weight:800;margin:0 4px;vertical-align:middle;}
 .q-body .emph{text-decoration:underline;text-decoration-color:#dc2626;text-decoration-thickness:2px;text-underline-offset:3px;font-weight:700;color:#b91c1c;background:#fef2f2;padding:0 3px;border-radius:3px;}
+.q-body .footnote-line{display:block;margin-top:14px;padding:8px 12px;background:#f1f5f9;border-left:3px solid #94a3b8;border-radius:0 6px 6px 0;font-size:.76rem;color:#475569;font-style:italic;}
 .q-body .given-box{display:block;background:linear-gradient(135deg,#fef3c7,#fde68a);border:2px solid #d97706;border-radius:10px;padding:10px 14px;margin:8px 0 12px;font-style:italic;color:#78350f;font-weight:600;}
 .q-body .given-label{display:block;font-style:normal;font-weight:900;color:#92400e;font-size:.78rem;margin-bottom:4px;font-family:'Black Han Sans',sans-serif;letter-spacing:.3px;}
 .q-body .blk:before{content:"빈칸";font-size:.72em;letter-spacing:.5px;}
@@ -291,6 +292,15 @@ function applyUnderline(bodyHtml, stem){
   return bodyHtml.replace(new RegExp(reEsc, 'g'), '<span class="emph">'+escPhrase+'</span>');
 }
 
+// 어휘 문제 [UND]...[/UND] 마커를 밑줄 강조 span으로 변환
+function convertUndMarkers(bodyHtml){
+  return bodyHtml.replace(/\[UND\]([\s\S]+?)\[\/UND\]/g, '<span class="emph">$1</span>');
+}
+// 📚 어휘 주석 라인을 시각적 footnote 스타일로 변환
+function wrapFootnotes(bodyHtml){
+  return bodyHtml.replace(/(📚\s*어휘\s*주석:[^\n]*)/g, '<div class="footnote-line">$1</div>');
+}
+
 function reviveBlanks(body, type, stem){
   let t = body;
   const isBlank = /빈칸|cloze|함축|문장 위치|순서/.test((type||'') + ' ' + (stem||''));
@@ -326,6 +336,8 @@ function renderRoundQuestions(){
     let bodyHtml = reviveBlanks(escHtml(q.body), q.type||'', q.stem||'');
     bodyHtml = applyUnderline(bodyHtml, q.stem||'');
     bodyHtml = wrapGivenSentence(bodyHtml);
+    bodyHtml = convertUndMarkers(bodyHtml);
+    bodyHtml = wrapFootnotes(bodyHtml);
     card.innerHTML = `
       <div class="q-meta">
         <span class="q-no-badge">${n}번 · ${currentRound}차</span>
