@@ -294,8 +294,12 @@ function applyUnderline(bodyHtml, stem){
 function reviveBlanks(body, type, stem){
   let t = body;
   const isBlank = /빈칸|cloze|함축|문장 위치|순서/.test((type||'') + ' ' + (stem||''));
+  // 0) explicit [BLANK_위치] marker → blank
+  t = t.replace(/\[BLANK_위치\]/g, '<span class="blk"></span>');
   // 1) underscores (already-visible blanks)
   t = t.replace(/_{3,}/g, '<span class="blk"></span>');
+  // 1b) double underscores too
+  t = t.replace(/_{2,}/g, '<span class="blk"></span>');
   // 2) empty parens or single space inside () → 빈칸
   t = t.replace(/\(\s*\)/g, '(<span class="blk"></span>)');
   t = t.replace(/\(\s{2,}\)/g, '(<span class="blk"></span>)');
@@ -344,10 +348,11 @@ function renderRoundQuestions(){
 }
 
 function pickAnswer(n, idx){
-  if(userAnswers[n] !== undefined) return;
+  // 답 변경 허용 (제출 전까지)
   userAnswers[n] = idx;
   const card = document.querySelector(`.q-card[data-no="${n}"]`);
   card.querySelectorAll('.opt-btn').forEach(b=>{
+    b.classList.remove('sel');
     if(parseInt(b.dataset.pick) === idx) b.classList.add('sel');
   });
   updateHudProgress();
