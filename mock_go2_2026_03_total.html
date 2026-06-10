@@ -298,12 +298,30 @@ function convertUndMarkers(html){
   return html.replace(/\[UND\]([\s\S]*?)\[\/UND\]/g, '<span class="emph">$1</span>');
 }
 
-// 함축 (밑줄 친 부분) 첫 등장 underline (best-effort)
+// 함축 (밑줄 친 부분) — stem에서 인용된 영어 구절을 본문에서 찾아 underline
 function applyUnderline(html, stem){
-  if(!/함축|밑줄/.test(stem||'')) return html;
-  // Already has emph from [UND] — skip
+  if(!/밑줄|함축/.test(stem||'')) return html;
   if(html.includes('class="emph"')) return html;
-  return html;
+  // Extract quoted phrase: "밑줄 친 <PHRASE>가/이/의/는/을/를/에..." OR between quotes
+  let phrase = null;
+  // Try quoted form first
+  let qm = (stem||'').match(/[“"'‘]([^”"'’]{4,120})[”"'’]/);
+  if(qm) phrase = qm[1];
+  if(!phrase){
+    qm = (stem||'').match(/밑줄\s*친\s+([A-Za-z][A-Za-z0-9 ,'\-‘’“”.]{3,120}?)(?:[가이의는을를에]\s|\s*[가이의는을를에가]|$)/);
+    if(qm) phrase = qm[1];
+  }
+  if(!phrase) return html;
+  phrase = phrase.trim().replace(/[.,;:!?]+$/, '');
+  if(phrase.length < 4) return html;
+  // Escape regex special chars in phrase
+  const escRe = phrase.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  // Allow flexible whitespace between words
+  const flexRe = escRe.replace(/\s+/g, '\\s+');
+  try{
+    const re = new RegExp('(' + flexRe + ')', 'i');
+    return html.replace(re, '<span class="emph">$1</span>');
+  }catch(e){ return html; }
 }
 
 // 주어진 문장 → boxed yellow chip (terminate before 📚 footnote line as well)
