@@ -110,7 +110,8 @@ body{font-family:'Nanum Gothic',sans-serif;background:linear-gradient(135deg,#e3
 <script>
 const VOCAB = [{en:"record",ko:"기록"},{en:"cook",ko:"요리사; 요리하다"},{en:"practice",ko:"연습하다; 연습"},{en:"presentation",ko:"발표"},{en:"speech",ko:"연설, 말"},{en:"down",ko:"우울한"},{en:"enough",ko:"충분한"},{en:"tip",ko:"조언, 충고; 요령"},{en:"useful",ko:"유용한"},{en:"dish",ko:"요리"},{en:"fail",ko:"(시험에) 떨어지다; 실패하다"},{en:"audition",ko:"오디션"},{en:"role model",ko:"역할 모델, 롤 모델"},{en:"specific",ko:"특정한"},{en:"goal",ko:"목표"},{en:"disappointed",ko:"실망한, 낙담한"},{en:"let",ko:"~하게 하다"},{en:"enter",ko:"~에 들어가다; ~에 참가하다"},{en:"competition",ko:"대회, 시합"},{en:"against",ko:"~에 반대하여, ~에 맞서"},{en:"yet",ko:"아직"},{en:"grade",ko:"성적"},{en:"advice",ko:"조언, 충고"},{en:"hidden",ko:"숨겨진, 비밀의"},{en:"career",ko:"직업, 직장 생활"},{en:"space",ko:"우주"},{en:"expert",ko:"전문가"},{en:"difficulty",ko:"어려움"},{en:"talent",ko:"재능"},{en:"manager",ko:"관리자, 경영자"},{en:"recognize",ko:"알아보다, 인정하다"},{en:"ability",ko:"능력"},{en:"missing",ko:"(제자리에 있지 않고) 실종된, 없어진"},{en:"bathroom",ko:"화장실"},{en:"colored",ko:"색깔이 있는; 유색 인종의"},{en:"sorry",ko:"안된, 안쓰러운, 애석한"},{en:"glad",ko:"기쁜"},{en:"courage",ko:"용기"},{en:"lady",ko:"여성, 숙녀"},{en:"sign",ko:"표지판"},{en:"rocket science",ko:"로켓 공학"},{en:"allow",ko:"허락하다"},{en:"white",ko:"흰색의; 백인의"},{en:"permission",ko:"허락"},{en:"color",ko:"색(깔)"},{en:"skin",ko:"피부"},{en:"choice",ko:"선택"},{en:"impress",ko:"깊은 인상[감명]을 주다"},{en:"engineer",ko:"기술자, 엔지니어"},{en:"install",ko:"설치하다"},{en:"lose",ko:"(경기에서) 지다; 잃다[상실하다]"},{en:"programming language",ko:"프로그래밍 언어"},{en:"later",ko:"나중에, 후에"},{en:"ask",ko:"요청하다"},{en:"leader",ko:"리더"},{en:"suggestion",ko:"제안, 추천"},{en:"accept",ko:"받아들이다, 수락하다"},{en:"offer",ko:"제의, 제안; 제안하다"},{en:"bring",ko:"(물건, 사람을) 데려오다, 가져오다"},{en:"program",ko:"프로그램을 짜다; 프로그램"},{en:"machine",ko:"기계"},{en:"alone",ko:"혼자"},{en:"ready",ko:"준비된"},{en:"programmer",ko:"프로그래머"},{en:"change",ko:"변화; 바꾸다"},{en:"chance",ko:"기회"},{en:"challenge",ko:"도전; 도전하다"},{en:"forget",ko:"잊다"},{en:"tear",ko:"눈물"},{en:"laughter",ko:"웃음(소리)"},{en:"laugh at",ko:"~을 비웃다"},{en:"give up",ko:"(~을) 포기하다"},{en:"make a mistake",ko:"실수하다"},{en:"in front of",ko:"~의 앞에"},{en:"dream of",ko:"~을 꿈꾸다"},{en:"get over",ko:"~을 극복하다"},{en:"break down",ko:"~을 부수다"},{en:"be allowed to",ko:"~하도록 허락받다"},{en:"have no choice but to",ko:"~할 수밖에 없다"},{en:"Your Honor",ko:"(판사의 호칭∙지칭으로) 재판장님"},{en:"stand up for",ko:"~을 지지하다, 옹호하다"},{en:"be asked to",ko:"~ 해달라고 요청 받다"},{en:"thanks to",ko:"~ 덕분에"},{en:"be afraid of",ko:"~을 두려워하다"},{en:"figure",ko:"(중요한) 인물, 거물; 수치, 숫자"},{en:"character",ko:"(책, 영화의) 등장인물; 성격, 개성"},{en:"case",ko:"경우; 소송 (사건); 상자, 통"},{en:"matter",ko:"일, 문제; 중요하다, 문제가 되다"},{en:"face",ko:"(상황에) 직면하다; ~을 마주보다; 얼굴"},{en:"judge",ko:"판사; 판단하다"}];
 let userName='', userSchool='';
-let qs=[], idx=0, cor=0, wrn=0, answered=false;
+let allQs=[], qs=[], idx=0, cor=0, wrn=0, answered=false;
+let round=1, wrongThisRound=[], firstTryWrong=new Set();
 const results=[];
 
 function shuffle(arr){
@@ -122,17 +123,22 @@ function shuffle(arr){
   return a;
 }
 
+function makeQ(w){
+  const dist = shuffle(VOCAB.filter(o=>o.ko!==w.ko)).slice(0,4);
+  const opts = shuffle([w.ko, ...dist.map(d=>d.ko)]);
+  return {en:w.en, ko:w.ko, opts:opts};
+}
+
 function startQuiz(){
   userSchool=document.getElementById('schoolSel').value;
   userName=document.getElementById('nameInput').value.trim();
   if(!userSchool){alert('학교를 선택해주세요!');return;}
   if(!userName){alert('이름을 입력해주세요!');return;}
-  qs = shuffle(VOCAB).map(w=>{
-    const dist = shuffle(VOCAB.filter(o=>o.ko!==w.ko)).slice(0,4);
-    const opts = shuffle([w.ko, ...dist.map(d=>d.ko)]);
-    return {en:w.en, ko:w.ko, opts:opts};
-  });
-  idx=0; cor=0; wrn=0; results.length=0; answered=false;
+  allQs = shuffle(VOCAB).map(makeQ);
+  qs = allQs;
+  idx=0; cor=0; wrn=0; round=1;
+  wrongThisRound=[]; firstTryWrong.clear();
+  results.length=0; answered=false;
   document.getElementById('loginScreen').classList.add('hidden');
   document.getElementById('quizScreen').classList.remove('hidden');
   document.getElementById('hudName').textContent = userSchool+' · '+userName;
@@ -144,11 +150,26 @@ function escHTML(s){
 }
 
 function showQ(){
-  if(idx>=qs.length){ showResult(); return; }
+  if(idx>=qs.length){
+    if(wrongThisRound.length===0){
+      showResult();
+      return;
+    }
+    round++;
+    qs = wrongThisRound.map(makeQ);
+    wrongThisRound = [];
+    idx = 0;
+    alert('🔁 Round '+round+' — 오답 '+qs.length+'문제 다시 풀어요!');
+  }
   answered=false;
   const q=qs[idx];
   document.getElementById('pf').style.width=(idx/qs.length*100).toFixed(0)+'%';
-  document.getElementById('hudNo').textContent=(idx+1)+'/'+qs.length;
+  const hudNo=document.getElementById('hudNo');
+  if(round===1){
+    hudNo.textContent=(idx+1)+'/'+qs.length;
+  } else {
+    hudNo.textContent='Round '+round+' · '+(idx+1)+'/'+qs.length;
+  }
   document.getElementById('wordEn').textContent=q.en;
   const oc=document.getElementById('opts');
   oc.innerHTML='';
@@ -176,8 +197,10 @@ function selOpt(btn, sel, ans){
     btn.classList.add('correct');
     fb.className='fb show ok';
     fb.textContent='✅ 정답!';
-    cor++;
-    results.push({en:q.en, ko:ans, my:sel, correct:true});
+    if(round===1){
+      cor++;
+      results.push({en:q.en, ko:ans, my:sel, correct:true});
+    }
   } else {
     btn.classList.add('wrong');
     buttons.forEach(b=>{
@@ -186,8 +209,12 @@ function selOpt(btn, sel, ans){
     });
     fb.className='fb show no';
     fb.innerHTML='❌ 정답: <strong>'+escHTML(ans)+'</strong>';
-    wrn++;
-    results.push({en:q.en, ko:ans, my:sel, correct:false});
+    if(round===1){
+      wrn++;
+      firstTryWrong.add(q.en);
+      results.push({en:q.en, ko:ans, my:sel, correct:false});
+    }
+    wrongThisRound.push({en:q.en, ko:q.ko});
   }
   setTimeout(()=>{ idx++; showQ(); }, isCorrect?700:1500);
 }
@@ -196,10 +223,11 @@ function showResult(){
   document.getElementById('pf').style.width='100%';
   document.getElementById('quizScreen').classList.add('hidden');
   document.getElementById('resultScreen').classList.remove('hidden');
-  const total=qs.length;
+  const total=allQs.length;
   const pct=total>0?Math.round(cor/total*100):0;
   document.getElementById('rsScore').textContent=pct+'점';
-  document.getElementById('rsSub').textContent=userSchool+' · '+userName;
+  const roundsLabel = round>1 ? ' · 총 '+round+'라운드' : '';
+  document.getElementById('rsSub').textContent=userSchool+' · '+userName+roundsLabel;
   document.getElementById('rsOk').textContent=cor;
   document.getElementById('rsNo').textContent=wrn;
   document.getElementById('rsTotal').textContent=total;

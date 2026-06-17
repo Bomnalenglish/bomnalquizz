@@ -110,7 +110,8 @@ body{font-family:'Nanum Gothic',sans-serif;background:linear-gradient(135deg,#e8
 <script>
 const VOCAB = [{en:"mean",ko:"의미하다"},{en:"medicine",ko:"약"},{en:"pleasure",ko:"기쁨, 즐거움"},{en:"anyway",ko:"그런데, 그건 그렇고"},{en:"cross",ko:"교차하다, 서로 겹치게 놓다"},{en:"expression",ko:"(동작, 그림 등에 의한) 표현"},{en:"foreign",ko:"외국의"},{en:"origin",ko:"기원, 근원"},{en:"borrow",ko:"빌리다"},{en:"culture",ko:"문화"},{en:"language",ko:"언어"},{en:"example",ko:"예, 사례"},{en:"shampoo",ko:"샴푸"},{en:"Hindi",ko:"힌디어"},{en:"press",ko:"누르다"},{en:"massage",ko:"마사지, 안마"},{en:"British",ko:"영국의, 영국인의"},{en:"trader",ko:"무역상, 상인"},{en:"India",ko:"인도"},{en:"introduce",ko:"소개하다"},{en:"Britain",ko:"영국"},{en:"century",ko:"세기, 100년"},{en:"meaning",ko:"의미"},{en:"enter",ko:"들어오다"},{en:"around",ko:"~경에, ~무렵에"},{en:"present",ko:"현재의; 현재, 선물"},{en:"shortly",ko:"곧, 얼마 안 되어"},{en:"soap",ko:"비누"},{en:"robot",ko:"로봇"},{en:"play",ko:"연극, 희곡"},{en:"human",ko:"인간, 사람"},{en:"design",ko:"~을 설계하다, 디자인하다"},{en:"produce",ko:"생산하다"},{en:"factory",ko:"공장"},{en:"originally",ko:"원래, 본래"},{en:"machine",ko:"기계"},{en:"Latin",ko:"라틴어의; 라틴어"},{en:"however",ko:"그러나"},{en:"suggest",ko:"제안하다"},{en:"slave",ko:"노예"},{en:"Czech",ko:"체코의, 체코인의; 체코어, 체코인"},{en:"decide",ko:"결정하다, 결심하다"},{en:"science fiction",ko:"공상과학 소설"},{en:"hurricane",ko:"허리케인"},{en:"Spanish",ko:"스페인의; 스페인어"},{en:"originate",ko:"비롯되다, 유래하다"},{en:"Mayan",ko:"마야인[어]의"},{en:"creation",ko:"창조"},{en:"myth",ko:"신화"},{en:"anger",ko:"화나게 하다; 화, 분노"},{en:"cause",ko:"일으키다, ~의 원인이 되다"},{en:"flood",ko:"홍수"},{en:"contact",ko:"접촉, 연락"},{en:"civilization",ko:"문명"},{en:"explorer",ko:"탐험가"},{en:"experience",ko:"경험하다; 경험"},{en:"area",ko:"지역"},{en:"early",ko:"초기의; 일찍, 빨리"},{en:"use",ko:"사용, 이용; 사용하다, 쓰다"},{en:"clear",ko:"명확한, 분명한"},{en:"believe",ko:"믿다"},{en:"invent",ko:"발명하다"},{en:"sometime",ko:"(과거의) 어떤 때, 언젠가"},{en:"place",ko:"놓다, 두다"},{en:"slice",ko:"(음식을 얇게 썬) 조각"},{en:"such",ko:"그런, 그와 같은"},{en:"pay for",ko:"~ 값을 지불하다"},{en:"get on",ko:"~에 타다"},{en:"keep in touch",ko:"연락하다, 연락하고 지내다"},{en:"introduce A to B",ko:"A를 B에게 소개하다"},{en:"look like",ko:"~처럼 보이다"},{en:"on television",ko:"텔레비전에(방송되는)"},{en:"originate from",ko:"~에서 유래하다, 비롯하다"},{en:"pass through",ko:"~을 통과하다, 지나가다"},{en:"pick up",ko:"(정보를) 듣게 되다, 익히다"},{en:"come from",ko:"~에서 유래하다"},{en:"between A and B",ko:"A와 B 사이에"}];
 let userName='', userSchool='';
-let qs=[], idx=0, cor=0, wrn=0, answered=false;
+let allQs=[], qs=[], idx=0, cor=0, wrn=0, answered=false;
+let round=1, wrongThisRound=[], firstTryWrong=new Set();
 const results=[];
 
 function shuffle(arr){
@@ -122,17 +123,22 @@ function shuffle(arr){
   return a;
 }
 
+function makeQ(w){
+  const dist = shuffle(VOCAB.filter(o=>o.ko!==w.ko)).slice(0,4);
+  const opts = shuffle([w.ko, ...dist.map(d=>d.ko)]);
+  return {en:w.en, ko:w.ko, opts:opts};
+}
+
 function startQuiz(){
   userSchool=document.getElementById('schoolSel').value;
   userName=document.getElementById('nameInput').value.trim();
   if(!userSchool){alert('학교를 선택해주세요!');return;}
   if(!userName){alert('이름을 입력해주세요!');return;}
-  qs = shuffle(VOCAB).map(w=>{
-    const dist = shuffle(VOCAB.filter(o=>o.ko!==w.ko)).slice(0,4);
-    const opts = shuffle([w.ko, ...dist.map(d=>d.ko)]);
-    return {en:w.en, ko:w.ko, opts:opts};
-  });
-  idx=0; cor=0; wrn=0; results.length=0; answered=false;
+  allQs = shuffle(VOCAB).map(makeQ);
+  qs = allQs;
+  idx=0; cor=0; wrn=0; round=1;
+  wrongThisRound=[]; firstTryWrong.clear();
+  results.length=0; answered=false;
   document.getElementById('loginScreen').classList.add('hidden');
   document.getElementById('quizScreen').classList.remove('hidden');
   document.getElementById('hudName').textContent = userSchool+' · '+userName;
@@ -144,11 +150,26 @@ function escHTML(s){
 }
 
 function showQ(){
-  if(idx>=qs.length){ showResult(); return; }
+  if(idx>=qs.length){
+    if(wrongThisRound.length===0){
+      showResult();
+      return;
+    }
+    round++;
+    qs = wrongThisRound.map(makeQ);
+    wrongThisRound = [];
+    idx = 0;
+    alert('🔁 Round '+round+' — 오답 '+qs.length+'문제 다시 풀어요!');
+  }
   answered=false;
   const q=qs[idx];
   document.getElementById('pf').style.width=(idx/qs.length*100).toFixed(0)+'%';
-  document.getElementById('hudNo').textContent=(idx+1)+'/'+qs.length;
+  const hudNo=document.getElementById('hudNo');
+  if(round===1){
+    hudNo.textContent=(idx+1)+'/'+qs.length;
+  } else {
+    hudNo.textContent='Round '+round+' · '+(idx+1)+'/'+qs.length;
+  }
   document.getElementById('wordEn').textContent=q.en;
   const oc=document.getElementById('opts');
   oc.innerHTML='';
@@ -176,8 +197,10 @@ function selOpt(btn, sel, ans){
     btn.classList.add('correct');
     fb.className='fb show ok';
     fb.textContent='✅ 정답!';
-    cor++;
-    results.push({en:q.en, ko:ans, my:sel, correct:true});
+    if(round===1){
+      cor++;
+      results.push({en:q.en, ko:ans, my:sel, correct:true});
+    }
   } else {
     btn.classList.add('wrong');
     buttons.forEach(b=>{
@@ -186,8 +209,12 @@ function selOpt(btn, sel, ans){
     });
     fb.className='fb show no';
     fb.innerHTML='❌ 정답: <strong>'+escHTML(ans)+'</strong>';
-    wrn++;
-    results.push({en:q.en, ko:ans, my:sel, correct:false});
+    if(round===1){
+      wrn++;
+      firstTryWrong.add(q.en);
+      results.push({en:q.en, ko:ans, my:sel, correct:false});
+    }
+    wrongThisRound.push({en:q.en, ko:q.ko});
   }
   setTimeout(()=>{ idx++; showQ(); }, isCorrect?700:1500);
 }
@@ -196,10 +223,11 @@ function showResult(){
   document.getElementById('pf').style.width='100%';
   document.getElementById('quizScreen').classList.add('hidden');
   document.getElementById('resultScreen').classList.remove('hidden');
-  const total=qs.length;
+  const total=allQs.length;
   const pct=total>0?Math.round(cor/total*100):0;
   document.getElementById('rsScore').textContent=pct+'점';
-  document.getElementById('rsSub').textContent=userSchool+' · '+userName;
+  const roundsLabel = round>1 ? ' · 총 '+round+'라운드' : '';
+  document.getElementById('rsSub').textContent=userSchool+' · '+userName+roundsLabel;
   document.getElementById('rsOk').textContent=cor;
   document.getElementById('rsNo').textContent=wrn;
   document.getElementById('rsTotal').textContent=total;

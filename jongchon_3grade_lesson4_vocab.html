@@ -110,7 +110,8 @@ body{font-family:'Nanum Gothic',sans-serif;background:linear-gradient(135deg,#e8
 <script>
 const VOCAB = [{en:"refund",ko:"환불하다; 환불"},{en:"receipt",ko:"영수증"},{en:"receive",ko:"받다"},{en:"price",ko:"가격, 값"},{en:"exchange",ko:"교환하다; 교환"},{en:"spending",ko:"지출"},{en:"habit",ko:"습관"},{en:"smart",ko:"(결정·생각 등이) 현명한"},{en:"answer",ko:"답하다"},{en:"result",ko:"결과"},{en:"survey",ko:"(설문) 조사"},{en:"while",ko:"~하는 동안에; ~인데 반하여"},{en:"worry",ko:"걱정거리; 걱정하다"},{en:"enough",ko:"충분한"},{en:"allowance",ko:"용돈"},{en:"lastly",ko:"마지막으로"},{en:"spend",ko:"(돈을) 쓰다"},{en:"majority",ko:"대다수"},{en:"manage",ko:"관리하다"},{en:"effort",ko:"노력"},{en:"spender",ko:"(돈을) 쓰는 사람"},{en:"balance",ko:"균형, 잔액"},{en:"weekly",ko:"매주의, 주 1회의"},{en:"solve",ko:"해결하다, 풀다"},{en:"tip",ko:"조언"},{en:"divide",ko:"나누다"},{en:"carry",ko:"가지고 다니다, 나르다"},{en:"only",ko:"겨우 (~밖에), ~만"},{en:"each",ko:"각각의"},{en:"save",ko:"(돈을) 저축하다, 모으다"},{en:"last",ko:"지난"},{en:"few",ko:"몇몇의"},{en:"tight",ko:"(여유가 없이) 빠듯한"},{en:"budget",ko:"예산"},{en:"donate",ko:"기부하다, 기증하다"},{en:"remaining",ko:"남아있는, 남은"},{en:"charity",ko:"자선단체"},{en:"follow",ko:"따르다"},{en:"even",ko:"~조차, 심지어 ~하기까지"},{en:"although",ko:"비록 ~일지라도"},{en:"item",ko:"(하나의) 물품, 품목"},{en:"get a refund",ko:"환불받다"},{en:"get back",ko:"돌려받다, 돌아오다"},{en:"take care of",ko:"~을 처리하다, ~을 돌보다"},{en:"look good on",ko:"~와 잘 어울리다"},{en:"have difficulty -ing",ko:"~하는데 어려움을 겪다"},{en:"spend (돈) on",ko:"~에 돈을 쓰다"},{en:"take effort",ko:"노력을 필요로 하다"},{en:"be gone",ko:"사라지다, 없어지다"},{en:"use up",ko:"다 써 버리다"},{en:"most of",ko:"~의 대부분"},{en:"at the beginning of",ko:"~의 초반에"},{en:"carry around",ko:"가지고 다니다"},{en:"divide A into B",ko:"A를 B로 나누다"},{en:"each day",ko:"매일"},{en:"by -ing",ko:"~함으로써"},{en:"on sale",ko:"할인 중인"},{en:"make a list",ko:"목록을 만들다"},{en:"even if",ko:"~에도 불구하고"},{en:"on the spot",ko:"즉석에서, 즉각"}];
 let userName='', userSchool='';
-let qs=[], idx=0, cor=0, wrn=0, answered=false;
+let allQs=[], qs=[], idx=0, cor=0, wrn=0, answered=false;
+let round=1, wrongThisRound=[], firstTryWrong=new Set();
 const results=[];
 
 function shuffle(arr){
@@ -122,17 +123,22 @@ function shuffle(arr){
   return a;
 }
 
+function makeQ(w){
+  const dist = shuffle(VOCAB.filter(o=>o.ko!==w.ko)).slice(0,4);
+  const opts = shuffle([w.ko, ...dist.map(d=>d.ko)]);
+  return {en:w.en, ko:w.ko, opts:opts};
+}
+
 function startQuiz(){
   userSchool=document.getElementById('schoolSel').value;
   userName=document.getElementById('nameInput').value.trim();
   if(!userSchool){alert('학교를 선택해주세요!');return;}
   if(!userName){alert('이름을 입력해주세요!');return;}
-  qs = shuffle(VOCAB).map(w=>{
-    const dist = shuffle(VOCAB.filter(o=>o.ko!==w.ko)).slice(0,4);
-    const opts = shuffle([w.ko, ...dist.map(d=>d.ko)]);
-    return {en:w.en, ko:w.ko, opts:opts};
-  });
-  idx=0; cor=0; wrn=0; results.length=0; answered=false;
+  allQs = shuffle(VOCAB).map(makeQ);
+  qs = allQs;
+  idx=0; cor=0; wrn=0; round=1;
+  wrongThisRound=[]; firstTryWrong.clear();
+  results.length=0; answered=false;
   document.getElementById('loginScreen').classList.add('hidden');
   document.getElementById('quizScreen').classList.remove('hidden');
   document.getElementById('hudName').textContent = userSchool+' · '+userName;
@@ -144,11 +150,26 @@ function escHTML(s){
 }
 
 function showQ(){
-  if(idx>=qs.length){ showResult(); return; }
+  if(idx>=qs.length){
+    if(wrongThisRound.length===0){
+      showResult();
+      return;
+    }
+    round++;
+    qs = wrongThisRound.map(makeQ);
+    wrongThisRound = [];
+    idx = 0;
+    alert('🔁 Round '+round+' — 오답 '+qs.length+'문제 다시 풀어요!');
+  }
   answered=false;
   const q=qs[idx];
   document.getElementById('pf').style.width=(idx/qs.length*100).toFixed(0)+'%';
-  document.getElementById('hudNo').textContent=(idx+1)+'/'+qs.length;
+  const hudNo=document.getElementById('hudNo');
+  if(round===1){
+    hudNo.textContent=(idx+1)+'/'+qs.length;
+  } else {
+    hudNo.textContent='Round '+round+' · '+(idx+1)+'/'+qs.length;
+  }
   document.getElementById('wordEn').textContent=q.en;
   const oc=document.getElementById('opts');
   oc.innerHTML='';
@@ -176,8 +197,10 @@ function selOpt(btn, sel, ans){
     btn.classList.add('correct');
     fb.className='fb show ok';
     fb.textContent='✅ 정답!';
-    cor++;
-    results.push({en:q.en, ko:ans, my:sel, correct:true});
+    if(round===1){
+      cor++;
+      results.push({en:q.en, ko:ans, my:sel, correct:true});
+    }
   } else {
     btn.classList.add('wrong');
     buttons.forEach(b=>{
@@ -186,8 +209,12 @@ function selOpt(btn, sel, ans){
     });
     fb.className='fb show no';
     fb.innerHTML='❌ 정답: <strong>'+escHTML(ans)+'</strong>';
-    wrn++;
-    results.push({en:q.en, ko:ans, my:sel, correct:false});
+    if(round===1){
+      wrn++;
+      firstTryWrong.add(q.en);
+      results.push({en:q.en, ko:ans, my:sel, correct:false});
+    }
+    wrongThisRound.push({en:q.en, ko:q.ko});
   }
   setTimeout(()=>{ idx++; showQ(); }, isCorrect?700:1500);
 }
@@ -196,10 +223,11 @@ function showResult(){
   document.getElementById('pf').style.width='100%';
   document.getElementById('quizScreen').classList.add('hidden');
   document.getElementById('resultScreen').classList.remove('hidden');
-  const total=qs.length;
+  const total=allQs.length;
   const pct=total>0?Math.round(cor/total*100):0;
   document.getElementById('rsScore').textContent=pct+'점';
-  document.getElementById('rsSub').textContent=userSchool+' · '+userName;
+  const roundsLabel = round>1 ? ' · 총 '+round+'라운드' : '';
+  document.getElementById('rsSub').textContent=userSchool+' · '+userName+roundsLabel;
   document.getElementById('rsOk').textContent=cor;
   document.getElementById('rsNo').textContent=wrn;
   document.getElementById('rsTotal').textContent=total;

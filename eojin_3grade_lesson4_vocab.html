@@ -111,7 +111,8 @@ body{font-family:'Nanum Gothic',sans-serif;background:linear-gradient(135deg,#ff
 <script>
 const VOCAB = [{en:"Tourist Information Office",ko:"관광 안내소"},{en:"tourist map",ko:"관광 지도"},{en:"every",ko:"~마다; 모든"},{en:"lucky",ko:"행운의, 운이 좋은"},{en:"mark",ko:"~을 표시하다; 표시"},{en:"bill",ko:"계산서, 청구서"},{en:"meal",ko:"식사"},{en:"rich",ko:"풍부한, 풍성한"},{en:"digest",ko:"소화하다"},{en:"recipe",ko:"조리법"},{en:"date",ko:"날짜"},{en:"best-before date",ko:"유통 기한, 유효 기한"},{en:"forget",ko:"잊다"},{en:"by",ko:"(완료) ~까지"},{en:"if",ko:"~인지 아닌지; 만일 ~라면"},{en:"last",ko:"(상하지 않고) 지속되다; 지난; 마지막의"},{en:"pause",ko:"멈춤"},{en:"until",ko:"(계속) ~까지"},{en:"grand",ko:"웅장한"},{en:"bazaar",ko:"상점가[시장 거리]; 바자회"},{en:"travel",ko:"여행; 여행하다"},{en:"blog",ko:"블로그"},{en:"place",ko:"장소"},{en:"share",ko:"공유하다"},{en:"experience",ko:"경험"},{en:"visit",ko:"방문하다"},{en:"market",ko:"시장"},{en:"culture",ko:"문화"},{en:"country",ko:"나라"},{en:"history",ko:"역사"},{en:"taste",ko:"맛보다; ~한 맛이 나다"},{en:"local",ko:"지역의, 현지의"},{en:"wonder",ko:"궁금(해)하다"},{en:"whether",ko:"~인지 아닌지"},{en:"discover",ko:"발견하다"},{en:"Turkey",ko:"터키"},{en:"East",ko:"동양; 동부"},{en:"West",ko:"서양; 서부"},{en:"tradition",ko:"전통"},{en:"trade",ko:"거래하다; 교역, 무역"},{en:"natural",ko:"자연스러운; 자연의"},{en:"large",ko:"큰"},{en:"build",ko:"(건물을) 짓다"},{en:"goods",ko:"상품, 제품"},{en:"cloth",ko:"직물, 천"},{en:"covered",ko:"지붕이 덮인, 덮개가 씌워진"},{en:"roof",ko:"지붕"},{en:"attract",ko:"끌어들이다, 끌어당기다"},{en:"visitor",ko:"방문객"},{en:"almost",ko:"거의"},{en:"imaginable",ko:"상상할 수 있는"},{en:"item",ko:"물품"},{en:"extra",ko:"추가의"},{en:"tip",ko:"조언"},{en:"owner",ko:"주인"},{en:"carry",ko:"(가게에서 물품을) 팔다; 나르다"},{en:"traditional",ko:"전통적인"},{en:"Turkish",ko:"터키의; 터키어"},{en:"symbol",ko:"상징"},{en:"luck",ko:"운, 운명"},{en:"snack",ko:"간식"},{en:"try",ko:"노력하다; 맛보다; 시험 삼아 ~해보다"},{en:"floating market",ko:"수상 시장"},{en:"floating",ko:"(물 위, 공중에) 떠 있는"},{en:"Thailand",ko:"태국, 타이"},{en:"Thai",ko:"타이인; 타이(언)어; 타이의"},{en:"road",ko:"도로, 길"},{en:"transportation",ko:"운송, 교통"},{en:"disappear",ko:"사라지다"},{en:"popular",ko:"인기 있는"},{en:"crowded",ko:"붐비는"},{en:"tourist",ko:"관광객"},{en:"gift",ko:"선물"},{en:"directly",ko:"직접"},{en:"boat",ko:"배"},{en:"noodle",ko:"국수"},{en:"pass",ko:"지나가다, 통과하다; (건네)주다"},{en:"fishing pole",ko:"낚싯대"},{en:"pole",ko:"막대기, 장대"},{en:"the Netherlands",ko:"네덜란드"},{en:"mean",ko:"의미하다"},{en:"low",ko:"낮은"},{en:"land",ko:"땅"},{en:"suggest",ko:"시사하다, 암시하다; 제안[추천]하다"},{en:"sit",ko:"앉다, (어떤 곳에) 있다"},{en:"below",ko:"(위치가 ~보다) 아래에"},{en:"sea level",ko:"해수면"},{en:"thus",ko:"따라서, 그러므로"},{en:"Dutch",ko:"네덜란드(인[어])의"},{en:"effective",ko:"효과적인, 유효한"},{en:"grow",ko:"~을 키우다, 재배하다"},{en:"sell",ko:"팔다"},{en:"therefore",ko:"그러므로"},{en:"surprise",ko:"놀라움; 놀라게 하다"},{en:"house",ko:"거처를 제공하다, 수용하다; 집"},{en:"field",ko:"들판; -장"},{en:"busy",ko:"붐비는; 바쁜"},{en:"cart",ko:"수레"},{en:"move",ko:"~을 움직이다"},{en:"mostly",ko:"대부분, 주로"},{en:"electric-powered",ko:"전기로 작동되는, 전동의"},{en:"truck",ko:"트럭"},{en:"million",ko:"백만의"},{en:"ship",ko:"실어 나르다, 운송하다; 배"},{en:"corner",ko:"모서리; 구석, 외딴 곳"},{en:"wholesale",ko:"도매의"},{en:"look for",ko:"~을 찾다"},{en:"be good for",ko:"~에 좋다"},{en:"rich in",ko:"~이 풍부한"},{en:"help ~ with",ko:"~를 …로 돕다"},{en:"share ~ with",ko:"~를 …와 공유하다"},{en:"make sure",ko:"반드시 (… 하도록) 하다"},{en:"come back",ko:"돌아오다, 다시 유행하다"},{en:"keep ~ alive",ko:"~을 존속시키다, 살려 두다"},{en:"crowded with",ko:"~로 붐비는"},{en:"It is no surprise that",ko:"~하는 것은 놀랍지 않다"},{en:"be busy with",ko:"~으로 바쁘다"},{en:"all corners of the world",ko:"세계의 곳곳"}];
 let userName='', userSchool='';
-let qs=[], idx=0, cor=0, wrn=0, answered=false;
+let allQs=[], qs=[], idx=0, cor=0, wrn=0, answered=false;
+let round=1, wrongThisRound=[], firstTryWrong=new Set();
 const results=[];
 
 function shuffle(arr){
@@ -123,17 +124,22 @@ function shuffle(arr){
   return a;
 }
 
+function makeQ(w){
+  const dist = shuffle(VOCAB.filter(o=>o.ko!==w.ko)).slice(0,4);
+  const opts = shuffle([w.ko, ...dist.map(d=>d.ko)]);
+  return {en:w.en, ko:w.ko, opts:opts};
+}
+
 function startQuiz(){
   userSchool=document.getElementById('schoolSel').value;
   userName=document.getElementById('nameInput').value.trim();
   if(!userSchool){alert('학교를 선택해주세요!');return;}
   if(!userName){alert('이름을 입력해주세요!');return;}
-  qs = shuffle(VOCAB).map(w=>{
-    const dist = shuffle(VOCAB.filter(o=>o.ko!==w.ko)).slice(0,4);
-    const opts = shuffle([w.ko, ...dist.map(d=>d.ko)]);
-    return {en:w.en, ko:w.ko, opts:opts};
-  });
-  idx=0; cor=0; wrn=0; results.length=0; answered=false;
+  allQs = shuffle(VOCAB).map(makeQ);
+  qs = allQs;
+  idx=0; cor=0; wrn=0; round=1;
+  wrongThisRound=[]; firstTryWrong.clear();
+  results.length=0; answered=false;
   document.getElementById('loginScreen').classList.add('hidden');
   document.getElementById('quizScreen').classList.remove('hidden');
   document.getElementById('hudName').textContent = userSchool+' · '+userName;
@@ -145,11 +151,26 @@ function escHTML(s){
 }
 
 function showQ(){
-  if(idx>=qs.length){ showResult(); return; }
+  if(idx>=qs.length){
+    if(wrongThisRound.length===0){
+      showResult();
+      return;
+    }
+    round++;
+    qs = wrongThisRound.map(makeQ);
+    wrongThisRound = [];
+    idx = 0;
+    alert('🔁 Round '+round+' — 오답 '+qs.length+'문제 다시 풀어요!');
+  }
   answered=false;
   const q=qs[idx];
   document.getElementById('pf').style.width=(idx/qs.length*100).toFixed(0)+'%';
-  document.getElementById('hudNo').textContent=(idx+1)+'/'+qs.length;
+  const hudNo=document.getElementById('hudNo');
+  if(round===1){
+    hudNo.textContent=(idx+1)+'/'+qs.length;
+  } else {
+    hudNo.textContent='Round '+round+' · '+(idx+1)+'/'+qs.length;
+  }
   document.getElementById('wordEn').textContent=q.en;
   const oc=document.getElementById('opts');
   oc.innerHTML='';
@@ -177,8 +198,10 @@ function selOpt(btn, sel, ans){
     btn.classList.add('correct');
     fb.className='fb show ok';
     fb.textContent='✅ 정답!';
-    cor++;
-    results.push({en:q.en, ko:ans, my:sel, correct:true});
+    if(round===1){
+      cor++;
+      results.push({en:q.en, ko:ans, my:sel, correct:true});
+    }
   } else {
     btn.classList.add('wrong');
     buttons.forEach(b=>{
@@ -187,8 +210,12 @@ function selOpt(btn, sel, ans){
     });
     fb.className='fb show no';
     fb.innerHTML='❌ 정답: <strong>'+escHTML(ans)+'</strong>';
-    wrn++;
-    results.push({en:q.en, ko:ans, my:sel, correct:false});
+    if(round===1){
+      wrn++;
+      firstTryWrong.add(q.en);
+      results.push({en:q.en, ko:ans, my:sel, correct:false});
+    }
+    wrongThisRound.push({en:q.en, ko:q.ko});
   }
   setTimeout(()=>{ idx++; showQ(); }, isCorrect?700:1500);
 }
@@ -197,10 +224,11 @@ function showResult(){
   document.getElementById('pf').style.width='100%';
   document.getElementById('quizScreen').classList.add('hidden');
   document.getElementById('resultScreen').classList.remove('hidden');
-  const total=qs.length;
+  const total=allQs.length;
   const pct=total>0?Math.round(cor/total*100):0;
   document.getElementById('rsScore').textContent=pct+'점';
-  document.getElementById('rsSub').textContent=userSchool+' · '+userName;
+  const roundsLabel = round>1 ? ' · 총 '+round+'라운드' : '';
+  document.getElementById('rsSub').textContent=userSchool+' · '+userName+roundsLabel;
   document.getElementById('rsOk').textContent=cor;
   document.getElementById('rsNo').textContent=wrn;
   document.getElementById('rsTotal').textContent=total;

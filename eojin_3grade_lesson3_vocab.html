@@ -111,7 +111,8 @@ body{font-family:'Nanum Gothic',sans-serif;background:linear-gradient(135deg,#ff
 <script>
 const VOCAB = [{en:"common",ko:"흔한"},{en:"cause",ko:"원인; 야기하다"},{en:"appearance",ko:"외모, 생김새"},{en:"grade",ko:"성적"},{en:"understand",ko:"이해하다"},{en:"helpful",ko:"도움이 되는"},{en:"exam",ko:"시험"},{en:"improve",ko:"개선하다, 향상하다"},{en:"memory",ko:"기억, 기억력"},{en:"design",ko:"디자인"},{en:"screen",ko:"화면"},{en:"choose",ko:"선택하다, 고르다"},{en:"sleeve",ko:"소매"},{en:"wear",ko:"입다"},{en:"Sports Day",ko:"체육대회"},{en:"bee",ko:"벌"},{en:"expensive",ko:"비싼"},{en:"spend",ko:"(돈, 시간을) 쓰다"},{en:"low",ko:"기운이 없는; 낮은"},{en:"special",ko:"특별한"},{en:"simply",ko:"그냥, 그저"},{en:"stress",ko:"스트레스; 스트레스를 주다"},{en:"suggest",ko:"제안하다"},{en:"break",ko:"어기다; 깨다, 부수다; 쉬다"},{en:"promise",ko:"약속; 약속하다"},{en:"argue",ko:"논쟁하다, 다투다"},{en:"happen",ko:"일어나다, 발생하다"},{en:"horror",ko:"공포물(책·영화); 공포(감)"},{en:"scary",ko:"무서운"},{en:"scream",ko:"비명을 지르다"},{en:"guess",ko:"추측하다, 생각하다"},{en:"lung",ko:"폐"},{en:"scene",ko:"장면"},{en:"sound effect",ko:"음향 효과"},{en:"effect",ko:"효과"},{en:"bother",ko:"괴롭히다"},{en:"method",ko:"방법, 방식"},{en:"past",ko:"지난"},{en:"several",ko:"몇몇의"},{en:"work",ko:"효과가 있다; 일, 직장"},{en:"college",ko:"대학"},{en:"stressed",ko:"스트레스를 느끼는"},{en:"positive",ko:"긍정적인, 낙관적인"},{en:"fish",ko:"낚시하다; 물고기"},{en:"upset",ko:"속상한, 화가 난"},{en:"catch",ko:"잡다"},{en:"while",ko:"~하는 동안; 잠깐"},{en:"focused",ko:"집중한"},{en:"worry",ko:"고민, 걱정"},{en:"besides",ko:"게다가"},{en:"patient",ko:"참을성 있는, 인내하는"},{en:"else",ko:"그 밖의"},{en:"wonderful",ko:"훌륭한"},{en:"schoolwork",ko:"학업"},{en:"seem",ko:"~처럼 보이다"},{en:"situation",ko:"상황"},{en:"clean",ko:"청소하다"},{en:"number-one",ko:"최우선의, 최고의"},{en:"life",ko:"삶"},{en:"gloomy",ko:"침울한, 음울한"},{en:"relieve",ko:"덜다, 완화하다"},{en:"tidy",ko:"깔끔한, 단정한"},{en:"bright",ko:"밝은"},{en:"write",ko:"~을 적다, 쓰다"},{en:"me time",ko:"나만의 시간"},{en:"calendar",ko:"달력"},{en:"mean",ko:"의미하다"},{en:"matter",ko:"중요하다, 문제가 되다"},{en:"idea",ko:"아이디어"},{en:"would like to",ko:"~하고 싶다"},{en:"take ~ place",ko:"~등[순위]을 차지하다"},{en:"used to",ko:"~하곤 했다"},{en:"at the same time",ko:"동시에"},{en:"decide on",ko:"~을 결정하다"},{en:"make sense",ko:"일리가 있다, 타당하다"},{en:"have difficulty ~ing",ko:"~하는 데 어려움을 겪다"},{en:"for a while",ko:"잠시, 잠깐 동안"},{en:"deal with",ko:"~을 다루다, 처리하다"},{en:"argue over",ko:"~을 두고 논쟁하다"},{en:"at the top of one's lungs",ko:"목청껏, 큰 소리로"},{en:"thanks to",ko:"~ 덕분에"},{en:"forget about",ko:"~에 대해 잊다"},{en:"graduate from",ko:"~을 졸업하다"},{en:"look for",ko:"~을 찾다"},{en:"for some time",ko:"얼마 전부터, 아까부터"},{en:"go ~ing",ko:"~하러 가다"},{en:"leave ~ behind",ko:"~을 남겨 두고 잊다"},{en:"focus on",ko:"~에 집중하다"},{en:"stay free from",ko:"~으로부터 벗어나다"},{en:"for a good reason",ko:"합당한 이유로"},{en:"feel like",ko:"~한 느낌이 들다"},{en:"under stress",ko:"스트레스를 받는"},{en:"take time out",ko:"(하던 일을 멈추고) 시간을 내다"},{en:"as long as",ko:"~하는 한, ~이기만 하다면"},{en:"say goodbye to",ko:"~에게 작별을 고하다"}];
 let userName='', userSchool='';
-let qs=[], idx=0, cor=0, wrn=0, answered=false;
+let allQs=[], qs=[], idx=0, cor=0, wrn=0, answered=false;
+let round=1, wrongThisRound=[], firstTryWrong=new Set();
 const results=[];
 
 function shuffle(arr){
@@ -123,17 +124,22 @@ function shuffle(arr){
   return a;
 }
 
+function makeQ(w){
+  const dist = shuffle(VOCAB.filter(o=>o.ko!==w.ko)).slice(0,4);
+  const opts = shuffle([w.ko, ...dist.map(d=>d.ko)]);
+  return {en:w.en, ko:w.ko, opts:opts};
+}
+
 function startQuiz(){
   userSchool=document.getElementById('schoolSel').value;
   userName=document.getElementById('nameInput').value.trim();
   if(!userSchool){alert('학교를 선택해주세요!');return;}
   if(!userName){alert('이름을 입력해주세요!');return;}
-  qs = shuffle(VOCAB).map(w=>{
-    const dist = shuffle(VOCAB.filter(o=>o.ko!==w.ko)).slice(0,4);
-    const opts = shuffle([w.ko, ...dist.map(d=>d.ko)]);
-    return {en:w.en, ko:w.ko, opts:opts};
-  });
-  idx=0; cor=0; wrn=0; results.length=0; answered=false;
+  allQs = shuffle(VOCAB).map(makeQ);
+  qs = allQs;
+  idx=0; cor=0; wrn=0; round=1;
+  wrongThisRound=[]; firstTryWrong.clear();
+  results.length=0; answered=false;
   document.getElementById('loginScreen').classList.add('hidden');
   document.getElementById('quizScreen').classList.remove('hidden');
   document.getElementById('hudName').textContent = userSchool+' · '+userName;
@@ -145,11 +151,26 @@ function escHTML(s){
 }
 
 function showQ(){
-  if(idx>=qs.length){ showResult(); return; }
+  if(idx>=qs.length){
+    if(wrongThisRound.length===0){
+      showResult();
+      return;
+    }
+    round++;
+    qs = wrongThisRound.map(makeQ);
+    wrongThisRound = [];
+    idx = 0;
+    alert('🔁 Round '+round+' — 오답 '+qs.length+'문제 다시 풀어요!');
+  }
   answered=false;
   const q=qs[idx];
   document.getElementById('pf').style.width=(idx/qs.length*100).toFixed(0)+'%';
-  document.getElementById('hudNo').textContent=(idx+1)+'/'+qs.length;
+  const hudNo=document.getElementById('hudNo');
+  if(round===1){
+    hudNo.textContent=(idx+1)+'/'+qs.length;
+  } else {
+    hudNo.textContent='Round '+round+' · '+(idx+1)+'/'+qs.length;
+  }
   document.getElementById('wordEn').textContent=q.en;
   const oc=document.getElementById('opts');
   oc.innerHTML='';
@@ -177,8 +198,10 @@ function selOpt(btn, sel, ans){
     btn.classList.add('correct');
     fb.className='fb show ok';
     fb.textContent='✅ 정답!';
-    cor++;
-    results.push({en:q.en, ko:ans, my:sel, correct:true});
+    if(round===1){
+      cor++;
+      results.push({en:q.en, ko:ans, my:sel, correct:true});
+    }
   } else {
     btn.classList.add('wrong');
     buttons.forEach(b=>{
@@ -187,8 +210,12 @@ function selOpt(btn, sel, ans){
     });
     fb.className='fb show no';
     fb.innerHTML='❌ 정답: <strong>'+escHTML(ans)+'</strong>';
-    wrn++;
-    results.push({en:q.en, ko:ans, my:sel, correct:false});
+    if(round===1){
+      wrn++;
+      firstTryWrong.add(q.en);
+      results.push({en:q.en, ko:ans, my:sel, correct:false});
+    }
+    wrongThisRound.push({en:q.en, ko:q.ko});
   }
   setTimeout(()=>{ idx++; showQ(); }, isCorrect?700:1500);
 }
@@ -197,10 +224,11 @@ function showResult(){
   document.getElementById('pf').style.width='100%';
   document.getElementById('quizScreen').classList.add('hidden');
   document.getElementById('resultScreen').classList.remove('hidden');
-  const total=qs.length;
+  const total=allQs.length;
   const pct=total>0?Math.round(cor/total*100):0;
   document.getElementById('rsScore').textContent=pct+'점';
-  document.getElementById('rsSub').textContent=userSchool+' · '+userName;
+  const roundsLabel = round>1 ? ' · 총 '+round+'라운드' : '';
+  document.getElementById('rsSub').textContent=userSchool+' · '+userName+roundsLabel;
   document.getElementById('rsOk').textContent=cor;
   document.getElementById('rsNo').textContent=wrn;
   document.getElementById('rsTotal').textContent=total;
