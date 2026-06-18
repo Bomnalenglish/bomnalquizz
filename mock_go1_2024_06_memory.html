@@ -82,6 +82,7 @@ window._fbSave=async function(data){
   .tool-btn{width:34px;height:34px;border-radius:8px;background:#f3f4f6;display:flex;align-items:center;justify-content:center;font-size:15px}
   .passage-text{font-size:16px;line-height:2;color:#1a1a2e;text-align:justify;letter-spacing:-.2px;padding-bottom:8px}
   .passage-text .blank{display:inline-block;min-width:80px;background:#fff59d;border-bottom:3px solid #f57f17;border-radius:4px;padding:1px 12px;font-weight:800;color:#e65100;text-align:center;margin:0 3px}
+  .passage-text .wf-hint{display:inline-block;background:#e3f2fd;border:1.5px dashed #1976d2;border-radius:4px;padding:1px 8px;font-weight:700;color:#0d47a1;font-size:.9em;margin:0 2px;white-space:nowrap}
   .passage-text .hl{text-decoration:underline;text-decoration-color:#dc2626;text-decoration-thickness:2px;text-underline-offset:3px;font-weight:700}
   .passage-text .hl-num{font-weight:800}
   .passage-text .opt-pair{color:var(--pri);font-weight:700;margin:0 1px}
@@ -1400,7 +1401,11 @@ function renderPassage(q){
   }
   if (q.type === 'word-form') {
     const re = new RegExp(`\\b${q.ans}\\b`, 'i');
-    text = text.replace(re, `<span class="blank">____</span>`);
+    // ctxPost 끝의 (단어 — 변형형식) 힌트를 추출해 빈칸 옆에 표시
+    let hint = '';
+    const m = (q.ctxPost || '').match(/\(([^)]+—[^)]+)\)/);
+    if (m) hint = ` <span class="wf-hint">(${m[1]})</span>`;
+    text = text.replace(re, `<span class="blank">____</span>${hint}`);
   }
   if (q.type === 'wrong-word') {
     // 본문 전체를 contextSentence(잘못된 단어 포함)로 대체.
