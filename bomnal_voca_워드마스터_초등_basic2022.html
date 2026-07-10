@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
+<title>봄날 보카 · 워드마스터 초등 BASIC (2022)</title>
+<script type="module" src="bn_tracker.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#f5efe6;--card:#fdfaf6;--ink:#2a2a2a;--soft:#7a7570;
+  --primary:#4a6741;--accent:#c8844a;--red:#c0392b;--green:#2e7d32;
+  --bdr:#e0d8ce;--shadow:0 4px 20px rgba(0,0,0,.08);
+}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);min-height:100vh;color:var(--ink);}
+
+/* HEADER */
+header{background:linear-gradient(135deg,#f7efe4,#ece0d2);padding:32px 24px 24px;text-align:center;border-bottom:1px solid var(--bdr);}
+.logo-row{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:6px;}
+.logo-img{width:52px;height:52px;border-radius:50%;object-fit:cover;border:2px solid var(--bdr);}
+.logo-text{font-family:'Black Han Sans',sans-serif;font-size:1.5rem;color:#5c3d1e;}
+.logo-text .hl{color:#7a4e28;}
+.level-badge{display:inline-block;background:var(--primary);color:#fff;font-size:.78rem;font-weight:700;padding:3px 14px;border-radius:20px;margin-top:4px;letter-spacing:.5px;}
+
+/* SCREENS */
+.screen{display:none;}
+.screen.active{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:70vh;padding:24px;}
+
+/* INTRO / STAGE MENU */
+.auth-card{background:var(--card);border-radius:22px;padding:36px 28px;width:100%;max-width:400px;box-shadow:var(--shadow);border:1px solid var(--bdr);text-align:center;}
+.auth-card h2{font-family:'Black Han Sans',sans-serif;font-size:1.25rem;color:var(--ink);margin-bottom:8px;}
+.auth-card p{font-size:.85rem;color:var(--soft);margin-bottom:22px;font-family:'Gowun Dodum',serif;line-height:1.7;}
+.hello{font-size:1.05rem;font-weight:700;color:var(--primary);margin-bottom:6px;}
+.hello .sch{font-size:.82rem;color:var(--soft);font-weight:400;}
+.name-input{width:100%;padding:13px 16px;border:2px solid var(--bdr);border-radius:12px;font-size:1rem;font-family:inherit;outline:none;text-align:center;background:#fff;transition:border-color .2s;margin-bottom:6px;}
+.name-input:focus{border-color:var(--primary);}
+.name-input.err{border-color:var(--red);animation:shake .3s;}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.steps{display:flex;flex-direction:column;gap:10px;margin:8px 0 20px;text-align:left;}
+.step-item{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid var(--bdr);border-radius:14px;padding:12px 14px;}
+.step-num{width:30px;height:30px;flex-shrink:0;border-radius:50%;background:var(--primary);color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:.9rem;}
+.step-txt{font-size:.86rem;line-height:1.4;}
+.step-txt b{font-size:.92rem;}
+.start-btn{width:100%;margin-top:4px;padding:15px;border-radius:12px;border:none;background:#3d3d3d;color:#fff;font-size:1.05rem;font-weight:800;cursor:pointer;font-family:inherit;letter-spacing:.3px;transition:opacity .2s;}
+.start-btn:hover{opacity:.85;}
+
+/* MEMORIZE (STAGE 1) */
+#screen-memo{padding:20px;align-items:stretch;justify-content:flex-start;min-height:100vh;}
+.memo-wrap{max-width:520px;width:100%;margin:0 auto;}
+.stage-tag{text-align:center;font-size:.8rem;font-weight:700;color:var(--accent);margin-bottom:10px;letter-spacing:.5px;}
+.progress-bar{background:#e0d8ce;border-radius:20px;height:7px;margin-bottom:8px;overflow:hidden;}
+.progress-fill{height:100%;background:var(--primary);border-radius:20px;transition:width .4s ease;}
+.progress-text{text-align:right;font-size:.75rem;color:var(--soft);margin-top:4px;margin-bottom:16px;font-family:'Gowun Dodum',serif;}
+.memo-card{background:var(--card);border-radius:22px;padding:48px 24px 40px;text-align:center;box-shadow:var(--shadow);border:1px solid var(--bdr);margin-bottom:20px;position:relative;}
+.memo-en{font-size:2.8rem;font-weight:800;color:var(--ink);letter-spacing:-1px;margin-bottom:14px;word-break:break-word;}
+.memo-ko{font-size:1.35rem;color:var(--primary);font-weight:700;margin-bottom:24px;font-family:'Gowun Dodum',serif;line-height:1.5;}
+.sound-btn{background:none;border:2px solid var(--bdr);border-radius:50%;width:56px;height:56px;cursor:pointer;font-size:1.5rem;transition:all .15s;display:inline-flex;align-items:center;justify-content:center;}
+.sound-btn:hover{background:var(--bg);border-color:var(--primary);}
+.sound-btn.playing{background:var(--primary);border-color:var(--primary);color:#fff;animation:pulse .6s infinite;}
+.play-count{font-size:.72rem;color:var(--soft);margin-top:12px;font-family:'Gowun Dodum',serif;min-height:16px;}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+.memo-nav{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.nav-btn{padding:15px;border-radius:14px;border:2px solid var(--bdr);background:#fff;color:var(--ink);font-size:1rem;font-weight:800;cursor:pointer;font-family:inherit;transition:all .15s;}
+.nav-btn:hover:not(:disabled){border-color:var(--primary);background:#f0ede5;}
+.nav-btn:disabled{opacity:.4;cursor:default;}
+.nav-btn.primary{background:#3d3d3d;color:#fff;border-color:#3d3d3d;}
+.memo-tofinish{grid-column:1 / -1;}
+
+/* QUIZ (STAGE 2 & 3) */
+#screen-quiz{padding:20px;align-items:stretch;justify-content:flex-start;min-height:100vh;}
+.quiz-wrap{max-width:520px;width:100%;margin:0 auto;}
+.word-card{background:var(--card);border-radius:22px;padding:36px 24px 28px;text-align:center;box-shadow:var(--shadow);border:1px solid var(--bdr);margin-bottom:20px;position:relative;}
+.round-badge{position:absolute;top:14px;left:16px;font-size:.7rem;background:#fde4cc;color:#c8844a;padding:2px 10px;border-radius:20px;font-weight:700;}
+.word-en{font-size:2.4rem;font-weight:800;color:var(--ink);letter-spacing:-1px;margin-bottom:16px;}
+.choices{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px;}
+.choice-btn{background:var(--card);border:2px solid var(--bdr);border-radius:14px;padding:16px 14px;font-size:.95rem;font-family:'Noto Sans KR',sans-serif;cursor:pointer;transition:all .15s;text-align:center;line-height:1.4;color:var(--ink);font-weight:700;}
+.choice-btn:hover:not(:disabled){border-color:var(--primary);background:#f0ede5;}
+.choice-btn.correct{border-color:var(--green);background:#e8f5e9;color:var(--green);}
+.choice-btn.wrong{border-color:var(--red);background:#ffebee;color:var(--red);}
+.choice-btn:disabled{cursor:default;}
+.feedback{text-align:center;font-size:.92rem;font-weight:700;min-height:24px;margin-bottom:14px;font-family:'Gowun Dodum',serif;}
+.feedback.ok{color:var(--green);}
+.feedback.bad{color:var(--red);}
+.next-btn{width:100%;padding:15px;border-radius:14px;border:none;background:#3d3d3d;color:#fff;font-size:1rem;font-weight:800;cursor:pointer;font-family:inherit;display:none;transition:opacity .2s;}
+.next-btn:hover{opacity:.85;}
+.next-btn.show{display:block;}
+
+/* ROUND COMPLETE */
+#screen-round{background:var(--bg);}
+.round-card{background:var(--card);border-radius:22px;padding:40px 28px;width:100%;max-width:380px;box-shadow:var(--shadow);border:1px solid var(--bdr);text-align:center;}
+.round-emoji{font-size:3.5rem;margin-bottom:12px;}
+.round-title{font-family:'Black Han Sans',sans-serif;font-size:1.4rem;color:var(--ink);margin-bottom:8px;}
+.round-sub{font-size:.88rem;color:var(--soft);font-family:'Gowun Dodum',serif;line-height:1.7;margin-bottom:24px;white-space:pre-line;}
+.score-big{font-size:3rem;font-weight:800;color:var(--primary);line-height:1;}
+.score-label{font-size:.82rem;color:var(--soft);margin-top:4px;font-family:'Gowun Dodum',serif;margin-bottom:24px;}
+.retry-btn{width:100%;padding:14px;border-radius:12px;border:none;background:var(--accent);color:#fff;font-size:1rem;font-weight:800;cursor:pointer;font-family:inherit;margin-bottom:10px;}
+.retry-btn:hover{opacity:.88;}
+.done-btn{width:100%;padding:14px;border-radius:12px;border:2px solid var(--bdr);background:#fff;color:var(--soft);font-size:1rem;font-weight:800;cursor:pointer;font-family:inherit;}
+
+/* COMPLETE */
+#screen-done{background:var(--bg);}
+.done-card{background:var(--card);border-radius:22px;padding:44px 28px;width:100%;max-width:380px;box-shadow:var(--shadow);border:1px solid var(--bdr);text-align:center;}
+.done-emoji{font-size:4rem;margin-bottom:14px;}
+.done-title{font-family:'Black Han Sans',sans-serif;font-size:1.5rem;color:var(--ink);margin-bottom:10px;}
+.done-sub{font-size:.88rem;color:var(--soft);font-family:'Gowun Dodum',serif;line-height:1.8;margin-bottom:28px;white-space:pre-line;}
+.stat-row{display:flex;justify-content:center;gap:24px;margin-bottom:24px;}
+.stat-box{text-align:center;}
+.stat-n{font-size:2rem;font-weight:800;color:var(--primary);}
+.stat-l{font-size:.72rem;color:var(--soft);font-family:'Gowun Dodum',serif;}
+.home-btn{width:100%;padding:14px;border-radius:12px;border:none;background:#3d3d3d;color:#fff;font-size:1rem;font-weight:800;cursor:pointer;font-family:inherit;}
+
+footer{text-align:center;padding:24px;color:#bbb;font-size:.75rem;font-family:'Gowun Dodum',serif;}
+@media(max-width:480px){.word-en{font-size:2rem;}.memo-en{font-size:2.3rem;}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-row">
+    <img src="IMG_6063.jpg" alt="봄날" class="logo-img" onerror="this.style.display='none'"/>
+    <div><div class="logo-text">봄날 <span class="hl">BOMNAL</span> 보카</div></div>
+  </div>
+  <div class="level-badge">워드마스터 초등 BASIC (2022) · 300단어</div>
+</header>
+
+<!-- INTRO: 학생 확인 + 3단계 안내 -->
+<div id="screen-intro" class="screen active">
+  <div class="auth-card">
+    <div class="hello" id="helloBox"></div>
+    <p id="introDesc">3단계로 단어를 완벽하게 외워봐요!</p>
+    <input type="text" class="name-input" id="nameInput" placeholder="이름을 입력하세요" maxlength="12"
+           style="display:none" onkeydown="if(event.key==='Enter')startFromIntro()"/>
+    <div class="steps">
+      <div class="step-item"><div class="step-num">1</div><div class="step-txt"><b>암기</b><br>단어·뜻을 보며 발음을 3번씩 들어요 🔊</div></div>
+      <div class="step-item"><div class="step-num">2</div><div class="step-txt"><b>4지선다 퀴즈</b><br>영어를 보고 알맞은 뜻을 골라요 ✏️</div></div>
+      <div class="step-item"><div class="step-num">3</div><div class="step-txt"><b>오답 반복</b><br>틀린 단어만 0개가 될 때까지 다시! 🔁</div></div>
+    </div>
+    <button class="start-btn" onclick="startFromIntro()">1단계 암기 시작 →</button>
+  </div>
+</div>
+
+<!-- STAGE 1: 암기 -->
+<div id="screen-memo" class="screen">
+  <div class="memo-wrap">
+    <div class="stage-tag">STEP 1 · 암기</div>
+    <div class="progress-bar"><div class="progress-fill" id="memoFill"></div></div>
+    <div class="progress-text" id="memoText"></div>
+    <div class="memo-card">
+      <div class="memo-en" id="memoEn"></div>
+      <div class="memo-ko" id="memoKo"></div>
+      <button class="sound-btn" id="memoSound" onclick="replayMemo()" title="발음 듣기">🔊</button>
+      <div class="play-count" id="memoCount"></div>
+    </div>
+    <div class="memo-nav">
+      <button class="nav-btn" id="memoPrev" onclick="memoPrev()">← 이전</button>
+      <button class="nav-btn primary" id="memoNext" onclick="memoNext()">다음 →</button>
+      <button class="nav-btn primary memo-tofinish" id="memoToQuiz" style="display:none" onclick="startQuizStage()">2단계 퀴즈 시작하기 ✏️</button>
+    </div>
+  </div>
+</div>
+
+<!-- STAGE 2 & 3: 퀴즈 -->
+<div id="screen-quiz" class="screen">
+  <div class="quiz-wrap">
+    <div class="stage-tag" id="quizStageTag">STEP 2 · 4지선다 퀴즈</div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="progress-text" id="progressText"></div>
+    <div class="word-card">
+      <div class="round-badge" id="roundBadge">1라운드</div>
+      <div class="word-en" id="wordEn"></div>
+      <button class="sound-btn" id="soundBtn" onclick="speakWord()" title="발음 듣기" style="width:46px;height:46px;font-size:1.3rem">🔊</button>
+    </div>
+    <div class="choices" id="choices"></div>
+    <div class="feedback" id="feedback"></div>
+    <button class="next-btn" id="nextBtn" onclick="nextWord()">다음 →</button>
+  </div>
+</div>
+
+<!-- ROUND COMPLETE -->
+<div id="screen-round" class="screen">
+  <div class="round-card">
+    <div class="round-emoji" id="roundEmoji"></div>
+    <div class="round-title" id="roundTitle"></div>
+    <div class="round-sub" id="roundSub"></div>
+    <div class="score-big" id="roundScore"></div>
+    <div class="score-label" id="roundScoreLabel"></div>
+    <button class="retry-btn" id="retryBtn" onclick="startRetry()">오답 다시 풀기 🔄</button>
+    <button class="done-btn" onclick="finishEarly()">완료하기</button>
+  </div>
+</div>
+
+<!-- DONE -->
+<div id="screen-done" class="screen">
+  <div class="done-card">
+    <div class="done-emoji">🏆</div>
+    <div class="done-title">완벽해요!</div>
+    <div class="done-sub" id="doneSub"></div>
+    <div class="stat-row">
+      <div class="stat-box"><div class="stat-n" id="statRounds"></div><div class="stat-l">총 라운드</div></div>
+      <div class="stat-box"><div class="stat-n" id="statWords"></div><div class="stat-l">총 단어</div></div>
+      <div class="stat-box"><div class="stat-n" id="statWrong"></div><div class="stat-l">최초 오답</div></div>
+    </div>
+    <button class="home-btn" onclick="location.href='index.html'">허브로 돌아가기</button>
+  </div>
+</div>
+
+<footer>🌸 봄날 BOMNAL ENGLISH · 봄날 보카</footer>
+
+<!-- Firebase (bomnalvaca) -->
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getFirestore,collection,addDoc,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+const cfg={apiKey:"AIzaSyCxS524S8KAaF87DomPtl9sJdF-eqes404",authDomain:"bomnalvaca.firebaseapp.com",projectId:"bomnalvaca",storageBucket:"bomnalvaca.firebasestorage.app",messagingSenderId:"115868052300",appId:"1:115868052300:web:765c08867b6f1ce0987de9"};
+const app=initializeApp(cfg);
+const db=getFirestore(app);
+window._fbReady=true;
+window._saveResult=async(data)=>{
+  try{await addDoc(collection(db,"quiz_results"),{...data,timestamp:serverTimestamp()});}
+  catch(e){console.log("Firebase 저장 실패",e);}
+};
+</script>
+
+<script>
+/* ================================================
+   단어 데이터 — 워드마스터 초등 BASIC (2022) · 300단어
+   PDF: 워드마스터 초등 basic2022.pdf 에서 자동 추출
+   ================================================ */
+const LEVEL_INFO = { name: '워드마스터 초등 BASIC (2022)', desc: '초등 기초 300단어', quizType: '봄날보카_워드마스터초등BASIC2022' };
+
+const WORDS = [
+  { id: 1, en: 'face', ko: '얼굴' },
+  { id: 2, en: 'nose', ko: '코' },
+  { id: 3, en: 'body', ko: '몸' },
+  { id: 4, en: 'foot', ko: '발' },
+  { id: 5, en: 'neck', ko: '목' },
+  { id: 6, en: 'head', ko: '머리' },
+  { id: 7, en: 'mouth', ko: '입' },
+  { id: 8, en: 'teeth', ko: '이' },
+  { id: 9, en: 'eye', ko: '눈' },
+  { id: 10, en: 'hand', ko: '손' },
+  { id: 11, en: 'feel', ko: '느끼다' },
+  { id: 12, en: 'see', ko: '보다' },
+  { id: 13, en: 'happy', ko: '행복한' },
+  { id: 14, en: 'taste', ko: '맛이 ~하다' },
+  { id: 15, en: 'proud', ko: '자랑스러운' },
+  { id: 16, en: 'listen', ko: '듣다' },
+  { id: 17, en: 'angry', ko: '화나다' },
+  { id: 18, en: 'touch', ko: '만지다' },
+  { id: 19, en: 'smell', ko: '냄새' },
+  { id: 20, en: 'sad', ko: '슬프다' },
+  { id: 21, en: 'rude', ko: '예의 없는, 버릇없는' },
+  { id: 22, en: 'shy', ko: '수줍어하는' },
+  { id: 23, en: 'funny', ko: '재미있는' },
+  { id: 24, en: 'polite', ko: '예의 바른, 공손한' },
+  { id: 25, en: 'wise', ko: '지혜로운, 현명한' },
+  { id: 26, en: 'brave', ko: '용감한' },
+  { id: 27, en: 'clever', ko: '영리한, 똑똑한' },
+  { id: 28, en: 'kind', ko: '친절하다' },
+  { id: 29, en: 'lazy', ko: '게으르다' },
+  { id: 30, en: 'honest', ko: '정직하다' },
+  { id: 31, en: 'go', ko: '가다' },
+  { id: 32, en: 'wake up', ko: '(잠에서) 깨다' },
+  { id: 33, en: 'talk', ko: '말하다' },
+  { id: 34, en: 'sleep', ko: '(잠을) 자다' },
+  { id: 35, en: 'sit', ko: '앉다' },
+  { id: 36, en: 'wash', ko: '씻다' },
+  { id: 37, en: 'come', ko: '오다' },
+  { id: 38, en: 'outside', ko: '바깥' },
+  { id: 39, en: 'eat', ko: '먹다' },
+  { id: 40, en: 'stand', ko: '일어나다' },
+  { id: 41, en: 'illness', ko: '병' },
+  { id: 42, en: 'hospital', ko: '병원' },
+  { id: 43, en: 'weak', ko: '약한, 힘이 없는' },
+  { id: 44, en: 'pill', ko: '알약' },
+  { id: 45, en: 'cough', ko: '기침하다' },
+  { id: 46, en: 'healthy', ko: '건강한' },
+  { id: 47, en: 'pain', ko: '아픔, 고통' },
+  { id: 48, en: 'sick', ko: '아프다' },
+  { id: 49, en: 'strong', ko: '힘이 세다' },
+  { id: 50, en: 'tired', ko: '피곤하다' },
+  { id: 51, en: 'daughter', ko: '딸' },
+  { id: 52, en: 'aunt', ko: '고모, 이모' },
+  { id: 53, en: 'son', ko: '아들' },
+  { id: 54, en: 'brother', ko: '형, 오빠' },
+  { id: 55, en: 'mother', ko: '어머니' },
+  { id: 56, en: 'grandmother', ko: '할머니' },
+  { id: 57, en: 'grandfather', ko: '할아버지' },
+  { id: 58, en: 'uncle', ko: '삼촌' },
+  { id: 59, en: 'father', ko: '아버지' },
+  { id: 60, en: 'sister', ko: '여동생' },
+  { id: 61, en: 'kid', ko: '아이' },
+  { id: 62, en: 'girl', ko: '소녀, 여자아이' },
+  { id: 63, en: 'couple', ko: '1 부부, 남녀 2 두 개' },
+  { id: 64, en: 'man', ko: '남자' },
+  { id: 65, en: 'boy', ko: '소년, 남자아이' },
+  { id: 66, en: 'woman', ko: '여자' },
+  { id: 67, en: 'friend', ko: '친구' },
+  { id: 68, en: 'baby', ko: '아기' },
+  { id: 69, en: 'help', ko: '돕다, 거들다' },
+  { id: 70, en: 'meet', ko: '만나다' },
+  { id: 71, en: 'nurse', ko: '간호사' },
+  { id: 72, en: 'future', ko: '미래, 장래' },
+  { id: 73, en: 'firefighter', ko: '소방관' },
+  { id: 74, en: 'pianist', ko: '피아니스트' },
+  { id: 75, en: 'farmer', ko: '농부' },
+  { id: 76, en: 'dancer', ko: '무용수, 댄서' },
+  { id: 77, en: 'teacher', ko: '선생님' },
+  { id: 78, en: 'singer', ko: '가수' },
+  { id: 79, en: 'dream', ko: '꿈' },
+  { id: 80, en: 'doctor', ko: '의사' },
+  { id: 81, en: 'young', ko: '젊은, 어린' },
+  { id: 82, en: 'short', ko: '1 키가 작은 2 (길이가) 짧은' },
+  { id: 83, en: 'old', ko: '1 늙은 2 나이가 ~인' },
+  { id: 84, en: 'fat', ko: '뚱뚱한' },
+  { id: 85, en: 'slim', ko: '날씬한' },
+  { id: 86, en: 'ugly', ko: '못생긴' },
+  { id: 87, en: 'beautiful', ko: '아름답다' },
+  { id: 88, en: 'old', ko: '나이' },
+  { id: 89, en: 'tall', ko: '크다' },
+  { id: 90, en: 'cute', ko: '귀엽다' },
+  { id: 91, en: 'jacket', ko: '재킷' },
+  { id: 92, en: 'pants', ko: '1 바지 2 팬티' },
+  { id: 93, en: 'wear', ko: '입고 있다' },
+  { id: 94, en: 'skirt', ko: '치마' },
+  { id: 95, en: 'sock', ko: '양말' },
+  { id: 96, en: 'shirt', ko: '셔츠' },
+  { id: 97, en: 'shoes', ko: '신발' },
+  { id: 98, en: 'hat', ko: '모자' },
+  { id: 99, en: 'sweater', ko: '스웨터' },
+  { id: 100, en: 'coat', ko: '외투, 코트' },
+  { id: 101, en: 'full', ko: '1 배부른 2 가득 찬' },
+  { id: 102, en: 'food', ko: '음식' },
+  { id: 103, en: 'cake', ko: '케이크' },
+  { id: 104, en: 'milk', ko: '우유' },
+  { id: 105, en: 'water', ko: '물' },
+  { id: 106, en: 'egg', ko: '달걀' },
+  { id: 107, en: 'apple', ko: '사과' },
+  { id: 108, en: 'hungry', ko: '배고픈' },
+  { id: 109, en: 'bread', ko: '빵' },
+  { id: 110, en: 'drink', ko: '마시다' },
+  { id: 111, en: 'ship', ko: '배, 선박' },
+  { id: 112, en: 'bicycle', ko: '자전거' },
+  { id: 113, en: 'airplane', ko: '비행기' },
+  { id: 114, en: 'train', ko: '기차' },
+  { id: 115, en: 'car', ko: '자동차, 차' },
+  { id: 116, en: 'bus', ko: '버스' },
+  { id: 117, en: 'walk', ko: '걷다' },
+  { id: 118, en: 'Take', ko: '~가지고 가다, 데리고 가다' },
+  { id: 119, en: 'stop', ko: '멈추다' },
+  { id: 120, en: 'subway', ko: '지하철' },
+  { id: 121, en: 'yellow', ko: '노란색' },
+  { id: 122, en: 'white', ko: '흰색' },
+  { id: 123, en: 'triangle', ko: '삼각형' },
+  { id: 124, en: 'black', ko: '검정색' },
+  { id: 125, en: 'green', ko: '초록색' },
+  { id: 126, en: 'square', ko: '정사각형' },
+  { id: 127, en: 'circle', ko: '원' },
+  { id: 128, en: 'color', ko: '색깔' },
+  { id: 129, en: 'red', ko: '빨간색' },
+  { id: 130, en: 'blue', ko: '파란색' },
+  { id: 131, en: 'two', ko: '둘, 2' },
+  { id: 132, en: 'four', ko: '넷, 4' },
+  { id: 133, en: 'nine', ko: '아홉, 9' },
+  { id: 134, en: 'six', ko: '여섯, 6' },
+  { id: 135, en: 'seven', ko: '일곱, 7' },
+  { id: 136, en: 'one', ko: '하나, 1' },
+  { id: 137, en: 'ten', ko: '열, 10' },
+  { id: 138, en: 'five', ko: '다섯, 5' },
+  { id: 139, en: 'three', ko: '셋, 3' },
+  { id: 140, en: 'eight', ko: '여덟, 8' },
+  { id: 141, en: 'front', ko: '앞쪽에' },
+  { id: 142, en: 'up', ko: '위쪽에' },
+  { id: 143, en: 'outside', ko: '(~의) 밖에, ~ 밖으로' },
+  { id: 144, en: 'near', ko: '가까운, 가까이에' },
+  { id: 145, en: 'down', ko: '아래에' },
+  { id: 146, en: 'far', ko: '먼, 멀리에' },
+  { id: 147, en: 'right', ko: '오른쪽' },
+  { id: 148, en: 'left', ko: '왼쪽' },
+  { id: 149, en: 'inside', ko: '안쪽, 내부' },
+  { id: 150, en: 'behind', ko: '뒤에' },
+  { id: 151, en: 'night', ko: '밤, 야간' },
+  { id: 152, en: 'Thursday', ko: '목요일' },
+  { id: 153, en: 'Tuesday', ko: '화요일' },
+  { id: 154, en: 'Saturday', ko: '토요일' },
+  { id: 155, en: 'Friday', ko: '금요일' },
+  { id: 156, en: 'Wednesday', ko: '수요일' },
+  { id: 157, en: 'afternoon', ko: '오후' },
+  { id: 158, en: 'morning', ko: '아침' },
+  { id: 159, en: 'Monday', ko: '월요일' },
+  { id: 160, en: 'Sunday', ko: '일요일' },
+  { id: 161, en: 'garden', ko: '정원' },
+  { id: 162, en: 'door', ko: '문' },
+  { id: 163, en: 'roof', ko: '지붕' },
+  { id: 164, en: 'floor', ko: '바닥' },
+  { id: 165, en: 'wall', ko: '벽' },
+  { id: 166, en: 'bell', ko: '벨, 초인종' },
+  { id: 167, en: 'stairs', ko: '계단' },
+  { id: 168, en: 'room', ko: '방' },
+  { id: 169, en: 'house', ko: '집' },
+  { id: 170, en: 'window', ko: '창문' },
+  { id: 171, en: 'desk', ko: '책상' },
+  { id: 172, en: 'lamp', ko: '램프, 등' },
+  { id: 173, en: 'soap', ko: '비누' },
+  { id: 174, en: 'chair', ko: '의자' },
+  { id: 175, en: 'towel', ko: '수건' },
+  { id: 176, en: 'sofa', ko: '소파' },
+  { id: 177, en: 'clock', ko: '시계' },
+  { id: 178, en: 'bed', ko: '침대' },
+  { id: 179, en: 'mirror', ko: '거울' },
+  { id: 180, en: 'table', ko: '탁자' },
+  { id: 181, en: 'teach', ko: '가르치다' },
+  { id: 182, en: 'playground', ko: '운동장' },
+  { id: 183, en: 'write', ko: '쓰다' },
+  { id: 184, en: 'prize', ko: '상, 상품' },
+  { id: 185, en: 'study', ko: '공부하다' },
+  { id: 186, en: 'classroom', ko: '교실' },
+  { id: 187, en: 'read', ko: '읽다' },
+  { id: 188, en: 'class', ko: '반, 수업' },
+  { id: 189, en: 'student', ko: '학생' },
+  { id: 190, en: 'homework', ko: '숙제' },
+  { id: 191, en: 'bag', ko: '가방' },
+  { id: 192, en: 'pencil', ko: '연필' },
+  { id: 193, en: 'book', ko: '책' },
+  { id: 194, en: 'pen', ko: '펜' },
+  { id: 195, en: 'textbook', ko: '교과서' },
+  { id: 196, en: 'glue', ko: '풀' },
+  { id: 197, en: 'notebook', ko: '공책' },
+  { id: 198, en: 'scissors', ko: '가위' },
+  { id: 199, en: 'eraser', ko: '지우개' },
+  { id: 200, en: 'ruler', ko: '자' },
+  { id: 201, en: 'sale', ko: '1 판매 2 세일, 할인 판매' },
+  { id: 202, en: 'price', ko: '가격' },
+  { id: 203, en: 'coin', ko: '동전' },
+  { id: 204, en: 'choose', ko: '선택하다, 고르다' },
+  { id: 205, en: 'money', ko: '돈' },
+  { id: 206, en: 'sell', ko: '팔다' },
+  { id: 207, en: 'store', ko: '가게, 상점' },
+  { id: 208, en: 'buy', ko: '사다' },
+  { id: 209, en: 'change', ko: '바꾸다, 잔돈' },
+  { id: 210, en: 'shopping', ko: '쇼핑' },
+  { id: 211, en: 'library', ko: '도서관' },
+  { id: 212, en: 'zoo', ko: '동물원' },
+  { id: 213, en: 'church', ko: '교회' },
+  { id: 214, en: 'bank', ko: '은행' },
+  { id: 215, en: 'farm', ko: '농장' },
+  { id: 216, en: 'airport', ko: '공항' },
+  { id: 217, en: 'museum', ko: '박물관' },
+  { id: 218, en: 'park', ko: '공원' },
+  { id: 219, en: 'market', ko: '시장' },
+  { id: 220, en: 'restaurant', ko: '식당' },
+  { id: 221, en: 'cool', ko: '시원한' },
+  { id: 222, en: 'warm', ko: '따뜻한' },
+  { id: 223, en: 'hot', ko: '더운, 뜨거운' },
+  { id: 224, en: 'snowy', ko: '눈이 오는' },
+  { id: 225, en: 'rainy', ko: '비가 오는' },
+  { id: 226, en: 'rainbow', ko: '무지개' },
+  { id: 227, en: 'cloudy', ko: '흐린' },
+  { id: 228, en: 'sunny', ko: '화창한' },
+  { id: 229, en: 'cold', ko: '추운' },
+  { id: 230, en: 'windy', ko: '바람이 부는' },
+  { id: 231, en: 'air', ko: '공기, 대기' },
+  { id: 232, en: 'fall', ko: '가을' },
+  { id: 233, en: 'melt', ko: '녹다, 녹이다' },
+  { id: 234, en: 'ice', ko: '얼음' },
+  { id: 235, en: 'wind', ko: '바람' },
+  { id: 236, en: 'summer', ko: '여름' },
+  { id: 237, en: 'wet', ko: '젖은, 습한' },
+  { id: 238, en: 'winter', ko: '겨울' },
+  { id: 239, en: 'dry', ko: '건조하다, 말리다' },
+  { id: 240, en: 'spring', ko: '봄' },
+  { id: 241, en: 'dog', ko: '개' },
+  { id: 242, en: 'bat', ko: '박쥐' },
+  { id: 243, en: 'cat', ko: '고양이' },
+  { id: 244, en: 'lion', ko: '사자' },
+  { id: 245, en: 'ant', ko: '개미' },
+  { id: 246, en: 'bear', ko: '곰' },
+  { id: 247, en: 'pig', ko: '돼지' },
+  { id: 248, en: 'snake', ko: '뱀' },
+  { id: 249, en: 'fish', ko: '물고기' },
+  { id: 250, en: 'duck', ko: '오리' },
+  { id: 251, en: 'lake', ko: '호수' },
+  { id: 252, en: 'sea', ko: '바다' },
+  { id: 253, en: 'field', ko: '들판' },
+  { id: 254, en: 'mountain', ko: '산' },
+  { id: 255, en: 'tree', ko: '나무' },
+  { id: 256, en: 'land', ko: '육지, 땅' },
+  { id: 257, en: 'cloud', ko: '구름' },
+  { id: 258, en: 'flower', ko: '꽃' },
+  { id: 259, en: 'sky', ko: '하늘' },
+  { id: 260, en: 'river', ko: '강' },
+  { id: 261, en: 'king', ko: '왕' },
+  { id: 262, en: 'family', ko: '가족' },
+  { id: 263, en: 'small', ko: '작은' },
+  { id: 264, en: 'long', ko: '긴' },
+  { id: 265, en: 'give', ko: '주다' },
+  { id: 266, en: 'story', ko: '이야기' },
+  { id: 267, en: 'wait', ko: '기다리다' },
+  { id: 268, en: 'catch', ko: '잡다' },
+  { id: 269, en: 'have', ko: '~가지고 있다' },
+  { id: 270, en: 'big', ko: '크다' },
+  { id: 271, en: 'age', ko: '나이' },
+  { id: 272, en: 'cut', ko: '자르다' },
+  { id: 273, en: 'do', ko: '하다' },
+  { id: 274, en: 'bottle', ko: '병' },
+  { id: 275, en: 'deep', ko: '깊은' },
+  { id: 276, en: 'begin', ko: '시작하다' },
+  { id: 277, en: 'making', ko: '만들고있다' },
+  { id: 278, en: 'run', ko: '뛰다' },
+  { id: 279, en: 'name', ko: '이름' },
+  { id: 280, en: 'hard', ko: '열심히' },
+  { id: 281, en: 'bite', ko: '물다' },
+  { id: 282, en: 'low', ko: '낮은, 낮게' },
+  { id: 283, en: 'burn', ko: '1 타다 2 데다' },
+  { id: 284, en: 'hate', ko: '싫어하다, 미워하다' },
+  { id: 285, en: 'start', ko: '시작하다' },
+  { id: 286, en: 'open', ko: '열다' },
+  { id: 287, en: 'top', ko: '맨 위, 꼭대기' },
+  { id: 288, en: 'close', ko: '닫다' },
+  { id: 289, en: 'high', ko: '높다' },
+  { id: 290, en: 'dirty', ko: '더럽다' },
+  { id: 291, en: 'lie', ko: '1 누워 있다 2 거짓말, 거짓말하다' },
+  { id: 292, en: 'month', ko: '달, 월' },
+  { id: 293, en: 'fire', ko: '화재, 불' },
+  { id: 294, en: 'dark', ko: '어두운' },
+  { id: 295, en: 'year', ko: '나이, 살' },
+  { id: 296, en: 'week', ko: '주' },
+  { id: 297, en: 'turn', ko: '돌다' },
+  { id: 298, en: 'today', ko: '오늘' },
+  { id: 299, en: 'line', ko: '줄' },
+  { id: 300, en: 'new', ko: '새로운' },
+];
+/* ================================================ */
+
+// bn_name / bn_school : 봄날 허브에서 localStorage 로 전달
+let studentName = (localStorage.getItem('bn_name') || sessionStorage.getItem('bn_name') || '').trim();
+let studentSchool = (localStorage.getItem('bn_school') || sessionStorage.getItem('bn_school') || '').trim();
+
+// 상태
+let queue = [];
+let currentIdx = 0;
+let wrongWords = [];
+let allWrong = [];
+let round = 1;
+let currentWord = null;
+let answered = false;
+let totalQuestions = 0;
+let startTime = null;
+// 암기 단계 상태
+let memoIdx = 0;
+let memoTimer = null;
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+// 인트로: 학생 이름 표시 (없으면 입력 받기)
+function initIntro(){
+  const hello = document.getElementById('helloBox');
+  const input = document.getElementById('nameInput');
+  if(studentName){
+    hello.innerHTML = studentName + ' 학생' +
+      (studentSchool ? ' <span class="sch">(' + studentSchool + ')</span>' : '') + ' 안녕하세요! 👋';
+    input.style.display='none';
+  } else {
+    hello.textContent = '👤 이름을 입력하세요';
+    input.style.display='block';
+    document.getElementById('introDesc').textContent = '결과가 선생님께 전송됩니다. 이름을 정확히 입력해주세요.';
+  }
+}
+
+function startFromIntro(){
+  if(!studentName){
+    const val = document.getElementById('nameInput').value.trim();
+    if(!val){
+      const el=document.getElementById('nameInput');
+      el.classList.add('err'); el.placeholder='이름을 입력해주세요!';
+      setTimeout(()=>{el.classList.remove('err');el.placeholder='이름을 입력하세요';},1400);
+      return;
+    }
+    studentName = val;
+    try{ localStorage.setItem('bn_name', val); }catch(e){}
+  }
+  startTime = new Date();
+  startMemorize();
+}
+
+/* ===== STAGE 1 : 암기 (TTS 3회 자동재생) ===== */
+function startMemorize(){
+  memoIdx = 0;
+  showScreen('screen-memo');
+  loadMemo();
+}
+
+function loadMemo(){
+  const w = WORDS[memoIdx];
+  document.getElementById('memoEn').textContent = w.en;
+  document.getElementById('memoKo').textContent = w.ko;
+  const pct = Math.round((memoIdx)/WORDS.length*100);
+  document.getElementById('memoFill').style.width = pct + '%';
+  document.getElementById('memoText').textContent = (memoIdx+1) + ' / ' + WORDS.length;
+  document.getElementById('memoPrev').disabled = (memoIdx===0);
+  const last = (memoIdx === WORDS.length-1);
+  document.getElementById('memoNext').style.display = last ? 'none' : 'block';
+  document.getElementById('memoToQuiz').style.display = last ? 'block' : 'none';
+  // TTS 3회 자동재생
+  autoSpeak3(w.en);
+}
+
+function autoSpeak3(text){
+  if(memoTimer){ clearTimeout(memoTimer); memoTimer=null; }
+  if(!('speechSynthesis' in window)){ document.getElementById('memoCount').textContent=''; return; }
+  window.speechSynthesis.cancel();
+  const btn = document.getElementById('memoSound');
+  const cnt = document.getElementById('memoCount');
+  let n = 0;
+  function speakOnce(){
+    n++;
+    cnt.textContent = '🔊 발음 ' + n + ' / 3';
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang='en-US'; u.rate=0.8; u.pitch=1;
+    const voices = window.speechSynthesis.getVoices();
+    const en = voices.find(v=>v.lang && /^en/i.test(v.lang));
+    if(en) u.voice=en;
+    btn.classList.add('playing');
+    u.onend = function(){
+      btn.classList.remove('playing');
+      if(n < 3){ memoTimer = setTimeout(speakOnce, 550); }
+      else { cnt.textContent = '✅ 3번 듣기 완료'; }
+    };
+    u.onerror = function(){ btn.classList.remove('playing'); };
+    window.speechSynthesis.speak(u);
+  }
+  speakOnce();
+}
+
+function replayMemo(){ autoSpeak3(WORDS[memoIdx].en); }
+
+function memoNext(){
+  if(memoIdx < WORDS.length-1){ memoIdx++; loadMemo(); }
+}
+function memoPrev(){
+  if(memoIdx > 0){ memoIdx--; loadMemo(); }
+}
+
+/* ===== STAGE 2 & 3 : 퀴즈 + 오답 반복 ===== */
+function startQuizStage(){
+  if(memoTimer){ clearTimeout(memoTimer); }
+  if(window.speechSynthesis) window.speechSynthesis.cancel();
+  queue = shuffle([...WORDS]);
+  wrongWords = [];
+  allWrong = [];
+  round = 1;
+  currentIdx = 0;
+  totalQuestions = 0;
+  showScreen('screen-quiz');
+  loadWord();
+}
+
+function loadWord(){
+  if(currentIdx >= queue.length){ showRoundResult(); return; }
+  answered = false;
+  currentWord = queue[currentIdx];
+  totalQuestions++;
+  const total = queue.length;
+  const pct = Math.round((currentIdx/total)*100);
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressText').textContent = (currentIdx+1) + ' / ' + total;
+  document.getElementById('roundBadge').textContent = round + '라운드';
+  document.getElementById('quizStageTag').textContent = round===1 ? 'STEP 2 · 4지선다 퀴즈' : 'STEP 3 · 오답 반복 (' + round + '라운드)';
+  document.getElementById('wordEn').textContent = currentWord.en;
+  document.getElementById('feedback').textContent = '';
+  document.getElementById('feedback').className = 'feedback';
+  document.getElementById('nextBtn').classList.remove('show');
+  buildChoices();
+  setTimeout(()=>speakWord(), 300);
+}
+
+function speakWord(){
+  if(!window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(currentWord.en);
+  u.lang='en-US'; u.rate=0.85;
+  const voices = window.speechSynthesis.getVoices();
+  const en = voices.find(v=>v.lang && /^en/i.test(v.lang));
+  if(en) u.voice=en;
+  const btn = document.getElementById('soundBtn');
+  btn.classList.add('playing');
+  u.onend = ()=>btn.classList.remove('playing');
+  window.speechSynthesis.speak(u);
+}
+
+// 보기 생성: 정답과 뜻(ko)이 다른 오답 3개, 정답은 id 로 판정
+function buildChoices(){
+  const container = document.getElementById('choices');
+  container.innerHTML = '';
+  const pool = [];
+  const seenKo = new Set([currentWord.ko]);
+  for(const w of shuffle(WORDS.filter(w=>w.id!==currentWord.id))){
+    if(seenKo.has(w.ko)) continue;
+    seenKo.add(w.ko);
+    pool.push(w);
+    if(pool.length===3) break;
+  }
+  const options = shuffle([currentWord, ...pool]);
+  options.forEach(opt=>{
+    const btn = document.createElement('button');
+    btn.className='choice-btn';
+    btn.textContent = opt.ko;
+    btn.onclick = ()=>selectAnswer(btn, opt.id===currentWord.id);
+    container.appendChild(btn);
+  });
+}
+
+function selectAnswer(btn, isCorrect){
+  if(answered) return;
+  answered = true;
+  document.querySelectorAll('.choice-btn').forEach(b=>{
+    b.disabled = true;
+    if(b.textContent === currentWord.ko) b.classList.add('correct');
+  });
+  const fb = document.getElementById('feedback');
+  if(isCorrect){
+    btn.classList.add('correct');
+    fb.textContent = '✅ 정답!';
+    fb.className='feedback ok';
+  } else {
+    btn.classList.add('wrong');
+    fb.textContent = '❌ 내 답: ' + btn.textContent + ' / 정답: ' + currentWord.ko;
+    fb.className='feedback bad';
+    if(!wrongWords.find(w=>w.id===currentWord.id)) wrongWords.push(currentWord);
+    if(!allWrong.find(w=>w.id===currentWord.id)) allWrong.push(currentWord);
+  }
+  document.getElementById('nextBtn').classList.add('show');
+}
+
+function nextWord(){ currentIdx++; loadWord(); }
+
+function showRoundResult(){
+  const correct = queue.length - wrongWords.length;
+  const pct = Math.round(correct/queue.length*100);
+  if(wrongWords.length === 0){ showDone(); return; }
+  document.getElementById('roundEmoji').textContent = pct>=80 ? '😊' : '💪';
+  document.getElementById('roundTitle').textContent = round + '라운드 완료!';
+  document.getElementById('roundScore').textContent = correct + ' / ' + queue.length;
+  document.getElementById('roundScoreLabel').textContent = pct + '점 · 오답 ' + wrongWords.length + '개';
+  document.getElementById('roundSub').textContent =
+    '오답 ' + wrongWords.length + '개가 남았어요.\n다시 풀어서 완벽하게 마무리해봐요! 💪';
+  document.getElementById('retryBtn').style.display='block';
+  showScreen('screen-round');
+  saveResult(false);
+}
+
+function startRetry(){
+  round++;
+  queue = shuffle([...wrongWords]);
+  wrongWords = [];
+  currentIdx = 0;
+  showScreen('screen-quiz');
+  loadWord();
+}
+
+function finishEarly(){ showDone(); }
+
+function showDone(){
+  const elapsed = Math.max(1, Math.round((new Date()-startTime)/60000));
+  document.getElementById('doneSub').textContent =
+    studentName + ' 학생, 모든 단어를 완벽하게 외웠어요! 🎉\n총 ' + round + '라운드 · 약 ' + elapsed + '분 소요';
+  document.getElementById('statRounds').textContent = round;
+  document.getElementById('statWords').textContent = WORDS.length;
+  document.getElementById('statWrong').textContent = allWrong.length;
+  showScreen('screen-done');
+  saveResult(true);
+}
+
+function saveResult(completed){
+  const data = {
+    studentName,
+    school: studentSchool,
+    quizType: LEVEL_INFO.quizType,
+    level: LEVEL_INFO.name,
+    score: completed ? 100 : Math.round((WORDS.length-allWrong.length)/WORDS.length*100),
+    correct: WORDS.length - allWrong.length,
+    wrong: allWrong.length,
+    total: WORDS.length,
+    round,
+    completed,
+    wrongWords: allWrong.map(w=>({eng:w.en, kor:w.ko})),
+    userAgent: navigator.userAgent.substring(0,100)
+  };
+  let w = 0;
+  const t = setInterval(()=>{
+    w += 200;
+    if(window._saveResult){ clearInterval(t); window._saveResult(data); }
+    else if(w>=6000) clearInterval(t);
+  }, 200);
+}
+
+function shuffle(arr){
+  for(let i=arr.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]]=[arr[j],arr[i]];
+  }
+  return arr;
+}
+
+// 음성 목록 예열 + 인트로 초기화
+if(window.speechSynthesis){ window.speechSynthesis.getVoices(); window.speechSynthesis.onvoiceschanged=function(){}; }
+initIntro();
+</script>
+
+</body>
+</html>
