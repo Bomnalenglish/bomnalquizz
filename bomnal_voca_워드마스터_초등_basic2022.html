@@ -65,6 +65,16 @@ header{background:linear-gradient(135deg,#f7efe4,#ece0d2);padding:32px 24px 24px
 .nav-btn:hover:not(:disabled){border-color:var(--primary);background:#f0ede5;}
 .nav-btn:disabled{opacity:.4;cursor:default;}
 .nav-btn.primary{background:#3d3d3d;color:#fff;border-color:#3d3d3d;}
+
+/* COUNT SELECT */
+.count-grid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin:6px 0 20px;}
+.count-btn{padding:16px 6px;border-radius:14px;border:2px solid var(--bdr);background:#fff;color:var(--ink);font-size:1.1rem;font-weight:800;cursor:pointer;font-family:inherit;transition:all .15s;}
+.count-btn:hover{border-color:var(--primary);background:#f0ede5;transform:translateY(-2px);}
+.count-btn .cb-sub{display:block;font-size:.62rem;font-weight:400;color:var(--soft);margin-top:2px;font-family:'Gowun Dodum',serif;}
+.count-btn.all{grid-column:1 / -1;background:var(--primary);color:#fff;border-color:var(--primary);font-size:1rem;}
+.count-btn.all .cb-sub{color:#e8f0e4;}
+.count-btn.all:hover{opacity:.9;background:var(--primary);}
+.done-actions{display:flex;flex-direction:column;gap:10px;margin-bottom:10px;}
 .memo-tofinish{grid-column:1 / -1;}
 
 /* QUIZ (STAGE 2 & 3) */
@@ -136,7 +146,26 @@ footer{text-align:center;padding:24px;color:#bbb;font-size:.75rem;font-family:'G
       <div class="step-item"><div class="step-num">2</div><div class="step-txt"><b>4지선다 퀴즈</b><br>영어를 보고 알맞은 뜻을 골라요 ✏️</div></div>
       <div class="step-item"><div class="step-num">3</div><div class="step-txt"><b>오답 반복</b><br>틀린 단어만 0개가 될 때까지 다시! 🔁</div></div>
     </div>
-    <button class="start-btn" onclick="startFromIntro()">1단계 암기 시작 →</button>
+    <button class="start-btn" onclick="startFromIntro()">시작하기 →</button>
+  </div>
+</div>
+
+<!-- COUNT SELECT: 몇 개씩 학습할까요? -->
+<div id="screen-count" class="screen">
+  <div class="auth-card">
+    <h2>📚 몇 개씩 학습할까요?</h2>
+    <p>한 번에 학습할 단어 수를 선택하세요.<br>선택한 수만큼 랜덤으로 출제됩니다.</p>
+    <div class="count-grid">
+      <button class="count-btn" onclick="selectCount(5)">5</button>
+      <button class="count-btn" onclick="selectCount(10)">10</button>
+      <button class="count-btn" onclick="selectCount(15)">15</button>
+      <button class="count-btn" onclick="selectCount(20)">20</button>
+      <button class="count-btn" onclick="selectCount(25)">25</button>
+      <button class="count-btn" onclick="selectCount(30)">30</button>
+      <button class="count-btn" onclick="selectCount(50)">50</button>
+      <button class="count-btn all" onclick="selectCount('all')">전체 <span class="cb-sub">300단어 모두</span></button>
+    </div>
+    <button class="auth-back" onclick="showScreen('screen-intro')" style="background:none;border:none;color:var(--soft);font-size:.82rem;cursor:pointer;text-decoration:underline;font-family:inherit;">← 처음으로</button>
   </div>
 </div>
 
@@ -200,6 +229,10 @@ footer{text-align:center;padding:24px;color:#bbb;font-size:.75rem;font-family:'G
       <div class="stat-box"><div class="stat-n" id="statRounds"></div><div class="stat-l">총 라운드</div></div>
       <div class="stat-box"><div class="stat-n" id="statWords"></div><div class="stat-l">총 단어</div></div>
       <div class="stat-box"><div class="stat-n" id="statWrong"></div><div class="stat-l">최초 오답</div></div>
+    </div>
+    <div class="done-actions">
+      <button class="retry-btn" onclick="restartSame()">🔄 다시 하기 (같은 <span id="doneSameCount"></span>)</button>
+      <button class="nav-btn" onclick="chooseAnother()" style="width:100%">🔢 다른 갯수로 하기</button>
     </div>
     <button class="home-btn" onclick="location.href='index.html'">허브로 돌아가기</button>
   </div>
@@ -549,6 +582,9 @@ let startTime = null;
 // 암기 단계 상태
 let memoIdx = 0;
 let memoTimer = null;
+// 학습 범위 (선택한 갯수만큼 랜덤 추출)
+let sessionWords = [];
+let chosenCount = 'all';   // 5·10·... 숫자 또는 'all'
 
 function showScreen(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
@@ -583,8 +619,27 @@ function startFromIntro(){
     studentName = val;
     try{ localStorage.setItem('bn_name', val); }catch(e){}
   }
+  showCountScreen();
+}
+
+/* ===== 학습 갯수 선택 ===== */
+function showCountScreen(){
+  if(memoTimer){ clearTimeout(memoTimer); }
+  if(window.speechSynthesis) window.speechSynthesis.cancel();
+  showScreen('screen-count');
+}
+
+// n: 5·10·15·20·25·30·50 (숫자) 또는 'all'
+function selectCount(n){
+  chosenCount = n;
+  const pool = shuffle([...WORDS]);
+  sessionWords = (n === 'all') ? pool : pool.slice(0, Math.min(n, pool.length));
   startTime = new Date();
   startMemorize();
+}
+
+function countLabel(){
+  return chosenCount === 'all' ? '전체 ' + sessionWords.length + '단어' : sessionWords.length + '단어';
 }
 
 /* ===== STAGE 1 : 암기 (TTS 3회 자동재생) ===== */
@@ -595,14 +650,14 @@ function startMemorize(){
 }
 
 function loadMemo(){
-  const w = WORDS[memoIdx];
+  const w = sessionWords[memoIdx];
   document.getElementById('memoEn').textContent = w.en;
   document.getElementById('memoKo').textContent = w.ko;
-  const pct = Math.round((memoIdx)/WORDS.length*100);
+  const pct = Math.round((memoIdx)/sessionWords.length*100);
   document.getElementById('memoFill').style.width = pct + '%';
-  document.getElementById('memoText').textContent = (memoIdx+1) + ' / ' + WORDS.length;
+  document.getElementById('memoText').textContent = (memoIdx+1) + ' / ' + sessionWords.length;
   document.getElementById('memoPrev').disabled = (memoIdx===0);
-  const last = (memoIdx === WORDS.length-1);
+  const last = (memoIdx === sessionWords.length-1);
   document.getElementById('memoNext').style.display = last ? 'none' : 'block';
   document.getElementById('memoToQuiz').style.display = last ? 'block' : 'none';
   // TTS 3회 자동재생
@@ -636,10 +691,10 @@ function autoSpeak3(text){
   speakOnce();
 }
 
-function replayMemo(){ autoSpeak3(WORDS[memoIdx].en); }
+function replayMemo(){ autoSpeak3(sessionWords[memoIdx].en); }
 
 function memoNext(){
-  if(memoIdx < WORDS.length-1){ memoIdx++; loadMemo(); }
+  if(memoIdx < sessionWords.length-1){ memoIdx++; loadMemo(); }
 }
 function memoPrev(){
   if(memoIdx > 0){ memoIdx--; loadMemo(); }
@@ -649,7 +704,7 @@ function memoPrev(){
 function startQuizStage(){
   if(memoTimer){ clearTimeout(memoTimer); }
   if(window.speechSynthesis) window.speechSynthesis.cancel();
-  queue = shuffle([...WORDS]);
+  queue = shuffle([...sessionWords]);
   wrongWords = [];
   allWrong = [];
   round = 1;
@@ -767,13 +822,23 @@ function finishEarly(){ showDone(); }
 function showDone(){
   const elapsed = Math.max(1, Math.round((new Date()-startTime)/60000));
   document.getElementById('doneSub').textContent =
-    studentName + ' 학생, 모든 단어를 완벽하게 외웠어요! 🎉\n총 ' + round + '라운드 · 약 ' + elapsed + '분 소요';
+    studentName + ' 학생, ' + countLabel() + '를 완벽하게 외웠어요! 🎉\n총 ' + round + '라운드 · 약 ' + elapsed + '분 소요';
   document.getElementById('statRounds').textContent = round;
-  document.getElementById('statWords').textContent = WORDS.length;
+  document.getElementById('statWords').textContent = sessionWords.length;
   document.getElementById('statWrong').textContent = allWrong.length;
+  document.getElementById('doneSameCount').textContent = countLabel();
   showScreen('screen-done');
   saveResult(true);
 }
+
+// 완료 후: 같은 갯수로 다시
+function restartSame(){
+  sessionWords = shuffle([...sessionWords]);
+  startTime = new Date();
+  startMemorize();
+}
+// 완료 후: 다른 갯수 선택
+function chooseAnother(){ showCountScreen(); }
 
 function saveResult(completed){
   const data = {
@@ -781,10 +846,11 @@ function saveResult(completed){
     school: studentSchool,
     quizType: LEVEL_INFO.quizType,
     level: LEVEL_INFO.name,
-    score: completed ? 100 : Math.round((WORDS.length-allWrong.length)/WORDS.length*100),
-    correct: WORDS.length - allWrong.length,
+    score: completed ? 100 : Math.round((sessionWords.length-allWrong.length)/sessionWords.length*100),
+    correct: sessionWords.length - allWrong.length,
     wrong: allWrong.length,
-    total: WORDS.length,
+    total: sessionWords.length,
+    setSize: chosenCount === 'all' ? 'all' : sessionWords.length,
     round,
     completed,
     wrongWords: allWrong.map(w=>({eng:w.en, kor:w.ko})),
