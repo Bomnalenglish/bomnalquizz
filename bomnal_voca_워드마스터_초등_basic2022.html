@@ -664,9 +664,21 @@ function loadMemo(){
   autoSpeak3(w.en);
 }
 
+// 암기 화면의 "다음/2단계 시작" 버튼 활성·비활성 제어
+function setMemoNavEnabled(on){
+  document.getElementById('memoNext').disabled = !on;
+  document.getElementById('memoToQuiz').disabled = !on;
+}
+
 function autoSpeak3(text){
   if(memoTimer){ clearTimeout(memoTimer); memoTimer=null; }
-  if(!('speechSynthesis' in window)){ document.getElementById('memoCount').textContent=''; return; }
+  // 3번 재생이 끝나기 전에는 다음 버튼 잠금
+  setMemoNavEnabled(false);
+  if(!('speechSynthesis' in window)){
+    document.getElementById('memoCount').textContent='🔇 소리 미지원 기기';
+    setMemoNavEnabled(true);   // 소리 없으면 진행은 가능하도록
+    return;
+  }
   window.speechSynthesis.cancel();
   const btn = document.getElementById('memoSound');
   const cnt = document.getElementById('memoCount');
@@ -683,9 +695,9 @@ function autoSpeak3(text){
     u.onend = function(){
       btn.classList.remove('playing');
       if(n < 3){ memoTimer = setTimeout(speakOnce, 550); }
-      else { cnt.textContent = '✅ 3번 듣기 완료'; }
+      else { cnt.textContent = '✅ 3번 듣기 완료'; setMemoNavEnabled(true); }
     };
-    u.onerror = function(){ btn.classList.remove('playing'); };
+    u.onerror = function(){ btn.classList.remove('playing'); setMemoNavEnabled(true); };
     window.speechSynthesis.speak(u);
   }
   speakOnce();
