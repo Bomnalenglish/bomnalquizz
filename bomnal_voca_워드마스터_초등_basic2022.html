@@ -66,14 +66,22 @@ header{background:linear-gradient(135deg,#f7efe4,#ece0d2);padding:32px 24px 24px
 .nav-btn:disabled{opacity:.4;cursor:default;}
 .nav-btn.primary{background:#3d3d3d;color:#fff;border-color:#3d3d3d;}
 
-/* COUNT SELECT */
-.count-grid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin:6px 0 20px;}
-.count-btn{padding:16px 6px;border-radius:14px;border:2px solid var(--bdr);background:#fff;color:var(--ink);font-size:1.1rem;font-weight:800;cursor:pointer;font-family:inherit;transition:all .15s;}
-.count-btn:hover{border-color:var(--primary);background:#f0ede5;transform:translateY(-2px);}
-.count-btn .cb-sub{display:block;font-size:.62rem;font-weight:400;color:var(--soft);margin-top:2px;font-family:'Gowun Dodum',serif;}
-.count-btn.all{grid-column:1 / -1;background:var(--primary);color:#fff;border-color:var(--primary);font-size:1rem;}
-.count-btn.all .cb-sub{color:#e8f0e4;}
-.count-btn.all:hover{opacity:.9;background:var(--primary);}
+/* DAY SELECT */
+.day-card{max-width:440px;}
+.day-progress{margin:4px 0 16px;}
+.day-progress-bar{background:#e0d8ce;border-radius:20px;height:9px;overflow:hidden;}
+.day-progress-fill{height:100%;width:0;background:var(--primary);border-radius:20px;transition:width .5s ease;}
+.day-progress-text{font-size:.78rem;color:var(--soft);margin-top:6px;font-family:'Gowun Dodum',serif;text-align:center;}
+.day-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:6px 0 18px;}
+.day-btn{position:relative;padding:12px 4px;border-radius:12px;border:2px solid var(--bdr);background:#fff;color:var(--ink);font-size:.92rem;font-weight:800;cursor:pointer;font-family:inherit;transition:all .15s;line-height:1.2;}
+.day-btn .db-n{display:block;font-size:.6rem;font-weight:400;color:var(--soft);font-family:'Gowun Dodum',serif;}
+.day-btn:hover{border-color:var(--primary);background:#f0ede5;transform:translateY(-2px);}
+.day-btn.done{background:#e8f5e9;border-color:var(--green);color:var(--green);}
+.day-btn.done .db-n{color:var(--green);}
+.day-btn.done::after{content:'✅';position:absolute;top:-6px;right:-6px;font-size:.72rem;}
+.day-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.reset-btn{background:none;border:1px solid var(--bdr);color:var(--soft);font-size:.72rem;padding:5px 10px;border-radius:8px;cursor:pointer;font-family:inherit;transition:all .15s;}
+.reset-btn:hover{border-color:var(--red);color:var(--red);}
 .done-actions{display:flex;flex-direction:column;gap:10px;margin-bottom:10px;}
 .memo-tofinish{grid-column:1 / -1;}
 
@@ -150,22 +158,20 @@ footer{text-align:center;padding:24px;color:#bbb;font-size:.75rem;font-family:'G
   </div>
 </div>
 
-<!-- COUNT SELECT: 몇 개씩 학습할까요? -->
+<!-- DAY SELECT: 몇 일차를 학습할까요? -->
 <div id="screen-count" class="screen">
-  <div class="auth-card">
-    <h2>📚 몇 개씩 학습할까요?</h2>
-    <p>한 번에 학습할 단어 수를 선택하세요.<br>선택한 수만큼 랜덤으로 출제됩니다.</p>
-    <div class="count-grid">
-      <button class="count-btn" onclick="selectCount(5)">5</button>
-      <button class="count-btn" onclick="selectCount(10)">10</button>
-      <button class="count-btn" onclick="selectCount(15)">15</button>
-      <button class="count-btn" onclick="selectCount(20)">20</button>
-      <button class="count-btn" onclick="selectCount(25)">25</button>
-      <button class="count-btn" onclick="selectCount(30)">30</button>
-      <button class="count-btn" onclick="selectCount(50)">50</button>
-      <button class="count-btn all" onclick="selectCount('all')">전체 <span class="cb-sub">300단어 모두</span></button>
+  <div class="auth-card day-card">
+    <h2>📅 Day를 선택하세요</h2>
+    <p>Day마다 단어 10개씩 · 총 30일 구성<br>순서대로 하나씩 완료해봐요!</p>
+    <div class="day-progress">
+      <div class="day-progress-bar"><div class="day-progress-fill" id="dayProgFill"></div></div>
+      <div class="day-progress-text" id="dayProgText">총 30일 중 0일 완료</div>
     </div>
-    <button class="auth-back" onclick="showScreen('screen-intro')" style="background:none;border:none;color:var(--soft);font-size:.82rem;cursor:pointer;text-decoration:underline;font-family:inherit;">← 처음으로</button>
+    <div class="day-grid" id="dayGrid"></div>
+    <div class="day-foot">
+      <button class="auth-back" onclick="showScreen('screen-intro')" style="background:none;border:none;color:var(--soft);font-size:.82rem;cursor:pointer;text-decoration:underline;font-family:inherit;">← 처음으로</button>
+      <button class="reset-btn" onclick="resetProgress()">🗑 전체 초기화</button>
+    </div>
   </div>
 </div>
 
@@ -223,7 +229,7 @@ footer{text-align:center;padding:24px;color:#bbb;font-size:.75rem;font-family:'G
 <div id="screen-done" class="screen">
   <div class="done-card">
     <div class="done-emoji">🏆</div>
-    <div class="done-title">완벽해요!</div>
+    <div class="done-title" id="doneTitle">완벽해요!</div>
     <div class="done-sub" id="doneSub"></div>
     <div class="stat-row">
       <div class="stat-box"><div class="stat-n" id="statRounds"></div><div class="stat-l">총 라운드</div></div>
@@ -231,8 +237,8 @@ footer{text-align:center;padding:24px;color:#bbb;font-size:.75rem;font-family:'G
       <div class="stat-box"><div class="stat-n" id="statWrong"></div><div class="stat-l">최초 오답</div></div>
     </div>
     <div class="done-actions">
-      <button class="retry-btn" onclick="restartSame()">🔄 다시 하기 (같은 <span id="doneSameCount"></span>)</button>
-      <button class="nav-btn" onclick="chooseAnother()" style="width:100%">🔢 다른 갯수로 하기</button>
+      <button class="retry-btn" onclick="restartSame()">🔄 다시 하기 (<span id="doneSameCount"></span>)</button>
+      <button class="nav-btn" onclick="chooseAnother()" style="width:100%">📅 다른 Day 선택</button>
     </div>
     <button class="home-btn" onclick="location.href='index.html'">허브로 돌아가기</button>
   </div>
@@ -582,9 +588,13 @@ let startTime = null;
 // 암기 단계 상태
 let memoIdx = 0;
 let memoTimer = null;
-// 학습 범위 (선택한 갯수만큼 랜덤 추출)
+// 학습 범위 (Day 차수: 10개씩 · 총 30일)
 let sessionWords = [];
-let chosenCount = 'all';   // 5·10·... 숫자 또는 'all'
+let chosenDay = 1;              // 선택한 Day (1~30)
+const WORDS_PER_DAY = 10;
+const TOTAL_DAYS = Math.ceil(WORDS.length / WORDS_PER_DAY);   // 300/10 = 30
+// 교재 식별 태그 (진행 저장 키에 사용) — 파일명과 동일
+const PROGRESS_TAG = '워드마스터_초등_basic2022';
 
 function showScreen(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
@@ -619,28 +629,73 @@ function startFromIntro(){
     studentName = val;
     try{ localStorage.setItem('bn_name', val); }catch(e){}
   }
-  showCountScreen();
+  showDayScreen();
 }
 
-/* ===== 학습 갯수 선택 ===== */
-function showCountScreen(){
+/* ===== 학습 이력 (localStorage) ===== */
+// 학생별 + 교재별 키: bomnal_voca_진행_{이름}_{교재명}
+function progressKey(){
+  return 'bomnal_voca_진행_' + (studentName || '익명') + '_' + PROGRESS_TAG;
+}
+function loadDoneDays(){
+  try{
+    const raw = localStorage.getItem(progressKey());
+    const arr = raw ? JSON.parse(raw) : [];
+    return Array.isArray(arr) ? arr : [];
+  }catch(e){ return []; }
+}
+function saveDoneDays(arr){
+  try{ localStorage.setItem(progressKey(), JSON.stringify(arr)); }catch(e){}
+}
+function markDayDone(d){
+  const arr = loadDoneDays();
+  if(!arr.includes(d)){ arr.push(d); arr.sort((a,b)=>a-b); saveDoneDays(arr); }
+}
+function resetProgress(){
+  if(!confirm('이 교재의 학습 이력을 모두 초기화할까요?')) return;
+  try{ localStorage.removeItem(progressKey()); }catch(e){}
+  renderDayGrid();
+}
+
+/* ===== Day 선택 화면 ===== */
+function showDayScreen(){
   if(memoTimer){ clearTimeout(memoTimer); }
   if(window.speechSynthesis) window.speechSynthesis.cancel();
+  renderDayGrid();
   showScreen('screen-count');
 }
 
-// n: 5·10·15·20·25·30·50 (숫자) 또는 'all'
-function selectCount(n){
-  chosenCount = n;
-  const pool = shuffle([...WORDS]);
-  sessionWords = (n === 'all') ? pool : pool.slice(0, Math.min(n, pool.length));
+function renderDayGrid(){
+  const done = loadDoneDays();
+  const grid = document.getElementById('dayGrid');
+  grid.innerHTML = '';
+  for(let d=1; d<=TOTAL_DAYS; d++){
+    const isDone = done.includes(d);
+    const start = (d-1)*WORDS_PER_DAY + 1;
+    const end = Math.min(d*WORDS_PER_DAY, WORDS.length);
+    const btn = document.createElement('button');
+    btn.className = 'day-btn' + (isDone ? ' done' : '');
+    btn.innerHTML = 'Day ' + d + '<span class="db-n">' + start + '~' + end + '</span>';
+    btn.onclick = () => selectDay(d);
+    grid.appendChild(btn);
+  }
+  const n = done.length;
+  const pct = Math.round(n / TOTAL_DAYS * 100);
+  document.getElementById('dayProgFill').style.width = pct + '%';
+  document.getElementById('dayProgText').textContent =
+    '총 ' + TOTAL_DAYS + '일 중 ' + n + '일 완료 (' + pct + '%)';
+}
+
+// d: 1~30 → 해당 Day의 10개 단어 (PDF 순서 그대로)
+function selectDay(d){
+  chosenDay = d;
+  const start = (d-1)*WORDS_PER_DAY;
+  sessionWords = WORDS.slice(start, start + WORDS_PER_DAY);
   startTime = new Date();
   startMemorize();
 }
 
-function countLabel(){
-  return chosenCount === 'all' ? '전체 ' + sessionWords.length + '단어' : sessionWords.length + '단어';
-}
+function dayLabel(){ return 'Day ' + chosenDay; }
 
 /* ===== STAGE 1 : 암기 (TTS 3회 자동재생) ===== */
 function startMemorize(){
@@ -808,7 +863,7 @@ function nextWord(){ currentIdx++; loadWord(); }
 function showRoundResult(){
   const correct = queue.length - wrongWords.length;
   const pct = Math.round(correct/queue.length*100);
-  if(wrongWords.length === 0){ showDone(); return; }
+  if(wrongWords.length === 0){ showDone(true); return; }
   document.getElementById('roundEmoji').textContent = pct>=80 ? '😊' : '💪';
   document.getElementById('roundTitle').textContent = round + '라운드 완료!';
   document.getElementById('roundScore').textContent = correct + ' / ' + queue.length;
@@ -829,28 +884,34 @@ function startRetry(){
   loadWord();
 }
 
-function finishEarly(){ showDone(); }
+// 조기 완료(완료하기 버튼) → 3단계 미완료이므로 Day 완료로 기록하지 않음
+function finishEarly(){ showDone(false); }
 
-function showDone(){
+// fullyCompleted: 오답이 0이 되어 3단계까지 끝냈는가 → true일 때만 Day 완료 기록
+function showDone(fullyCompleted){
   const elapsed = Math.max(1, Math.round((new Date()-startTime)/60000));
+  if(fullyCompleted){ markDayDone(chosenDay); }
+  const msg = fullyCompleted
+    ? studentName + ' 학생, ' + dayLabel() + ' 단어를 완벽하게 외웠어요! 🎉'
+    : studentName + ' 학생, ' + dayLabel() + ' 학습을 마쳤어요.';
   document.getElementById('doneSub').textContent =
-    studentName + ' 학생, ' + countLabel() + '를 완벽하게 외웠어요! 🎉\n총 ' + round + '라운드 · 약 ' + elapsed + '분 소요';
+    msg + '\n총 ' + round + '라운드 · 약 ' + elapsed + '분 소요';
+  document.getElementById('doneTitle').textContent = fullyCompleted ? '완벽해요!' : '수고했어요!';
   document.getElementById('statRounds').textContent = round;
   document.getElementById('statWords').textContent = sessionWords.length;
   document.getElementById('statWrong').textContent = allWrong.length;
-  document.getElementById('doneSameCount').textContent = countLabel();
+  document.getElementById('doneSameCount').textContent = dayLabel();
   showScreen('screen-done');
-  saveResult(true);
+  saveResult(fullyCompleted);
 }
 
-// 완료 후: 같은 갯수로 다시
+// 완료 후: 같은 Day 다시 (PDF 순서 유지)
 function restartSame(){
-  sessionWords = shuffle([...sessionWords]);
   startTime = new Date();
   startMemorize();
 }
-// 완료 후: 다른 갯수 선택
-function chooseAnother(){ showCountScreen(); }
+// 완료 후: 다른 Day 선택
+function chooseAnother(){ showDayScreen(); }
 
 function saveResult(completed){
   const data = {
@@ -862,7 +923,7 @@ function saveResult(completed){
     correct: sessionWords.length - allWrong.length,
     wrong: allWrong.length,
     total: sessionWords.length,
-    setSize: chosenCount === 'all' ? 'all' : sessionWords.length,
+    day: chosenDay,
     round,
     completed,
     wrongWords: allWrong.map(w=>({eng:w.en, kor:w.ko})),
