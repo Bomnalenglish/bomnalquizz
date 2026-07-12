@@ -53,15 +53,10 @@ header{background:linear-gradient(135deg,#f7efe4,#ece0d2);padding:32px 24px 24px
 .progress-fill{height:100%;background:var(--primary);border-radius:20px;transition:width .4s ease;}
 .progress-text{text-align:right;font-size:.75rem;color:var(--soft);margin-top:4px;margin-bottom:16px;font-family:'Gowun Dodum',serif;}
 .memo-card{background:var(--card);border-radius:22px;padding:48px 24px 40px;text-align:center;box-shadow:var(--shadow);border:1px solid var(--bdr);margin-bottom:20px;position:relative;}
-.memo-img-box{position:relative;width:300px;height:300px;margin:0 auto 18px;border-radius:16px;overflow:hidden;border:1px solid var(--bdr);background:#f0ebe3;}
-.memo-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .35s ease;}
-.memo-img-box.state-img .memo-img{opacity:1;}
-.memo-img-spin{position:absolute;top:50%;left:50%;width:40px;height:40px;margin:-20px 0 0 -20px;border:4px solid #e4ddd2;border-top-color:var(--primary);border-radius:50%;animation:memospin .8s linear infinite;display:none;}
-.memo-img-box.state-loading .memo-img-spin{display:block;}
-@keyframes memospin{to{transform:rotate(360deg);}}
-.memo-img-letter{position:absolute;inset:0;display:none;align-items:center;justify-content:center;font-family:'Black Han Sans',sans-serif;font-size:7rem;color:#fff;background:linear-gradient(135deg,var(--primary),#6d8a5f);}
-.memo-img-box.state-text .memo-img-letter{display:flex;}
-@media(max-width:380px){.memo-img-box{width:260px;height:260px;}.memo-img-letter{font-size:6rem;}}
+.memo-emoji-card{width:300px;height:300px;margin:0 auto 18px;border-radius:36px;display:flex;align-items:center;justify-content:center;border:4px solid rgba(255,255,255,.75);box-shadow:0 10px 26px rgba(0,0,0,.10),inset 0 -8px 0 rgba(0,0,0,.05);transition:background .45s ease;user-select:none;background:#FFE0E9;}
+.memo-emoji{font-size:100px;line-height:1;filter:drop-shadow(0 5px 7px rgba(0,0,0,.18));animation:emojiPop .5s cubic-bezier(.2,1.35,.4,1);}
+@keyframes emojiPop{0%{transform:scale(.35) rotate(-8deg);opacity:0}100%{transform:scale(1) rotate(0);opacity:1}}
+@media(max-width:380px){.memo-emoji-card{width:260px;height:260px;border-radius:30px;}.memo-emoji{font-size:88px;}}
 .memo-en-row{display:flex;align-items:baseline;justify-content:center;flex-wrap:wrap;gap:8px;margin-bottom:14px;}
 .memo-en{font-size:2.8rem;font-weight:800;color:var(--ink);letter-spacing:-1px;word-break:break-word;}
 .memo-pos{font-size:1rem;font-weight:400;color:var(--accent);font-style:italic;font-family:'Gowun Dodum',serif;}
@@ -193,11 +188,7 @@ footer{text-align:center;padding:24px;color:#bbb;font-size:.75rem;font-family:'G
     <div class="progress-bar"><div class="progress-fill" id="memoFill"></div></div>
     <div class="progress-text" id="memoText"></div>
     <div class="memo-card">
-      <div class="memo-img-box state-loading" id="memoImgBox">
-        <div class="memo-img-spin" id="memoImgSpin"></div>
-        <div class="memo-img-letter" id="memoImgLetter"></div>
-        <img class="memo-img" id="memoImg" alt="" referrerpolicy="no-referrer" width="300" height="300"/>
-      </div>
+      <div class="memo-emoji-card" id="memoEmojiCard"><span class="memo-emoji" id="memoEmoji">📦</span></div>
       <div class="memo-en-row">
         <span class="memo-en" id="memoEn"></span>
         <span class="memo-pos" id="memoPos"></span>
@@ -735,70 +726,39 @@ function loadMemo(){
   const last = (memoIdx === sessionWords.length-1);
   document.getElementById('memoNext').style.display = last ? 'none' : 'block';
   document.getElementById('memoToQuiz').style.display = last ? 'block' : 'none';
-  // 단어 이미지 preload 시작 (TTS 시작 전) — 실패해도 첫글자 카드로 대체
-  loadWordImage(w.en);
+  // 단어 이모지 카드 표시 (뜻/품사 기반 + 파스텔 배경)
+  showWordEmoji(w.en, w.pos);
   // TTS 3회 자동재생
   autoSpeak3(w.en);
 }
 
-/* ===== 단어 이미지 (API 키 없이 직접 img src) =====
-   1) https://source.unsplash.com/300x300/?{단어}
-   2) 실패 시 https://loremflickr.com/300/300/{단어}
-   3) 그것도 실패 시 단어 첫글자 카드
-   * img 태그: referrerpolicy="no-referrer", width/height=300 고정, crossorigin 없음 */
-let _imgReqSeq = 0;   // 최신 요청만 반영 (빠른 이전/다음 대비)
+/* ===== 단어 이모지 카드 (외부 이미지 API 없음) ===== */
+// 단어별 이모지 (뜻/품사 기반). 없으면 품사별 기본 이모지 사용.
+const WORD_EMOJI = {"face": "😀","nose": "👃","body": "🧍","foot": "🦶","head": "🧠","mouth": "👄","teeth": "🦷","eye": "👁️","hand": "✋","feel": "🤗","see": "👀","taste": "👅","smell": "👃","touch": "👉","listen": "👂","daughter": "👧","aunt": "👩","son": "👦","brother": "👦","mother": "👩","grandmother": "👵","grandfather": "👴","uncle": "👨","father": "👨","sister": "👧","kid": "🧒","girl": "👧","couple": "👫","man": "👨","boy": "👦","woman": "👩","friend": "🧑‍🤝‍🧑","baby": "👶","nurse": "👩‍⚕️","firefighter": "👩‍🚒","pianist": "🎹","farmer": "👨‍🌾","dancer": "💃","teacher": "👩‍🏫","singer": "🎤","doctor": "👨‍⚕️","king": "👑","family": "👨‍👩‍👧‍👦","student": "🧑‍🎓","future": "🔮","dream": "💭","jacket": "🧥","pants": "👖","skirt": "👗","sock": "🧦","shirt": "👕","shoes": "👟","hat": "🎩","sweater": "🧶","coat": "🧥","wear": "👕","food": "🍱","cake": "🍰","milk": "🥛","water": "💧","egg": "🥚","apple": "🍎","bread": "🍞","ice": "🧊","bottle": "🍾","drink": "🥤","eat": "🍽️","hungry": "😋","full": "🤤","ship": "🚢","bicycle": "🚲","airplane": "✈️","train": "🚆","car": "🚗","bus": "🚌","subway": "🚇","yellow": "🟡","white": "⚪","black": "⚫","green": "🟢","red": "🔴","blue": "🔵","triangle": "🔺","square": "🟦","circle": "⭕","color": "🎨","two": "2️⃣","four": "4️⃣","nine": "9️⃣","six": "6️⃣","seven": "7️⃣","one": "1️⃣","ten": "🔟","five": "5️⃣","three": "3️⃣","eight": "8️⃣","night": "🌙","thursday": "📅","tuesday": "📅","saturday": "📅","friday": "📅","wednesday": "📅","afternoon": "🌤️","morning": "🌅","monday": "📅","sunday": "📅","today": "📆","month": "📆","week": "🗓️","year": "🎊","age": "🎂","garden": "🌷","door": "🚪","roof": "🏠","wall": "🧱","bell": "🔔","stairs": "🪜","room": "🛏️","house": "🏠","window": "🪟","desk": "🗄️","lamp": "💡","soap": "🧼","towel": "🧻","sofa": "🛋️","clock": "🕐","bed": "🛏️","mirror": "🪞","table": "🍽️","chair": "🪑","playground": "🛝","prize": "🏆","classroom": "🏫","class": "🧑‍🏫","homework": "📝","bag": "🎒","pencil": "✏️","book": "📚","pen": "🖊️","textbook": "📖","glue": "🧴","notebook": "📓","scissors": "✂️","eraser": "🧽","ruler": "📏","study": "📖","read": "📚","write": "✍️","teach": "👩‍🏫","sale": "🏷️","price": "💲","coin": "🪙","money": "💵","store": "🏪","shopping": "🛍️","sell": "💰","buy": "🛒","library": "📚","zoo": "🦁","church": "⛪","bank": "🏦","farm": "🚜","airport": "🛫","museum": "🏛️","park": "🏞️","market": "🏬","restaurant": "🍴","hospital": "🏥","illness": "🤒","pill": "💊","pain": "😣","cough": "🤧","sick": "🤒","weak": "🤕","strong": "💪","healthy": "💪","tired": "😫","snowy": "❄️","rainy": "🌧️","rainbow": "🌈","cloudy": "☁️","sunny": "☀️","windy": "🌬️","air": "💨","fall": "🍂","wind": "🌬️","summer": "🏖️","winter": "⛄","spring": "🌸","cloud": "☁️","sky": "🌤️","warm": "🌤️","hot": "🔥","cold": "🥶","cool": "😎","lake": "🏞️","sea": "🌊","field": "🌾","mountain": "⛰️","tree": "🌳","land": "🏝️","flower": "🌸","river": "🚣","dog": "🐶","bat": "🦇","cat": "🐱","lion": "🦁","ant": "🐜","bear": "🐻","pig": "🐷","snake": "🐍","fish": "🐟","duck": "🦆","happy": "😊","proud": "😎","angry": "😠","sad": "😢","rude": "😤","shy": "😳","funny": "😂","polite": "🙇","wise": "🦉","brave": "🦁","clever": "🧠","kind": "🤗","lazy": "😴","honest": "😇","young": "👶","old": "👴","beautiful": "🌸","cute": "🥰","tall": "🦒","short": "📏","small": "🐜","long": "📏","big": "🐘","fat": "🐘","deep": "🌊","high": "⬆️","low": "⬇️","dry": "🏜️","wet": "💧","new": "✨","dark": "🌑","dirty": "🫧","go": "🚶","wake up": "⏰","talk": "💬","sleep": "😴","sit": "🪑","wash": "🧼","come": "🙋","stand": "🧍","help": "🤝","meet": "🤝","walk": "🚶","take": "🤲","stop": "✋","choose": "👉","change": "🔄","melt": "💧","give": "🎁","wait": "⏳","catch": "🤾","have": "🤲","cut": "✂️","do": "✅","begin": "▶️","run": "🏃","bite": "😬","burn": "🔥","hate": "😡","start": "▶️","open": "🔓","close": "🔒","lie": "🛌","turn": "🔁","making": "🔨","name": "🏷️","fire": "🔥","line": "➖","top": "🔝","story": "📖","up": "⬆️","down": "⬇️","near": "📍","far": "🔭","right": "➡️","left": "⬅️","behind": "🔙","front": "⏩","outside": "🌳","inside": "🏠","hard": "💪"};
+const POS_EMOJI = { 'n.':'📦', 'v.':'⚡', 'adj.':'🌈', 'adv.':'💨', 'num.':'🔢' };
+// 아이 친화적 파스텔 배경색
+const PASTELS = ['#FFE0E9','#FFF3C4','#D8F5D0','#D4EEFF','#E9DEFF','#FFE4CF','#D0F5EF','#FDE2FF','#E8F0D8','#FFEFD6','#E0F7FA','#F3E0FF'];
 
-// 이미지 박스 상태: 'loading'(스피너) | 'img'(사진) | 'text'(첫글자)
-function setImgState(state){
-  const box = document.getElementById('memoImgBox');
-  if(!box) return;
-  box.classList.remove('state-loading','state-img','state-text');
-  box.classList.add('state-' + state);
+function emojiFor(word, pos){
+  const key = String(word || '').trim().toLowerCase();
+  return WORD_EMOJI[key] || POS_EMOJI[pos] || '📦';
 }
-function showLetterCard(word){
-  const L = ((word||'?').trim().charAt(0) || '?').toUpperCase();
-  document.getElementById('memoImgLetter').textContent = L;
-  setImgState('text');
+function pastelFor(word){
+  const s = String(word || '');
+  let hash = 0;
+  for(let i=0; i<s.length; i++){ hash = (hash * 31 + s.charCodeAt(i)) >>> 0; }
+  return PASTELS[hash % PASTELS.length];
 }
-
-function imgSources(word){
-  const q = encodeURIComponent(word);
-  return [
-    'https://source.unsplash.com/300x300/?' + q,
-    'https://loremflickr.com/300/300/' + q
-  ];
-}
-
-function loadWordImage(word){
-  const seq = ++_imgReqSeq;
-  const img = document.getElementById('memoImg');
-  const sources = imgSources(word);
-  let idx = 0;
-
-  setImgState('loading');                 // 고정 크기 박스 + 스피너 먼저
-  img.removeAttribute('src');
-
-  img.onload = function(){
-    if(seq !== _imgReqSeq) return;        // 오래된 요청 무시
-    if(img.naturalWidth <= 1){ img.onerror(); return; }  // 빈 응답 방어
-    console.log('[이미지] 로드 성공:', word, '→', img.currentSrc || img.src);
-    setImgState('img');
-  };
-  img.onerror = function(){
-    if(seq !== _imgReqSeq) return;
-    console.log('[이미지] 로드 실패:', word, '→', img.src);
-    idx++;
-    if(idx < sources.length){
-      console.log('[이미지] 다음 소스 시도:', word, '→', sources[idx]);
-      img.src = sources[idx];
-    } else {
-      console.log('[이미지] 모든 소스 실패 → 첫글자 카드 표시:', word);
-      showLetterCard(word);
-    }
-  };
-
-  console.log('[이미지] 로딩 시작:', word, '→', sources[0]);
-  img.src = sources[0];
+function showWordEmoji(word, pos){
+  const card = document.getElementById('memoEmojiCard');
+  const el = document.getElementById('memoEmoji');
+  if(!card || !el) return;
+  el.textContent = emojiFor(word, pos);
+  card.style.background = pastelFor(word);
+  // 등장 애니메이션 재생 (단어마다 다시 통통 튀게)
+  el.style.animation = 'none';
+  void el.offsetWidth;
+  el.style.animation = '';
 }
 
 // 암기 화면의 "다음/2단계 시작" 버튼 활성·비활성 제어
