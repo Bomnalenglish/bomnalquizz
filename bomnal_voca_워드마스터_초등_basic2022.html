@@ -52,20 +52,26 @@ header{background:linear-gradient(135deg,#f7efe4,#ece0d2);padding:32px 24px 24px
 .progress-bar{background:#e0d8ce;border-radius:20px;height:7px;margin-bottom:8px;overflow:hidden;}
 .progress-fill{height:100%;background:var(--primary);border-radius:20px;transition:width .4s ease;}
 .progress-text{text-align:right;font-size:.75rem;color:var(--soft);margin-top:4px;margin-bottom:16px;font-family:'Gowun Dodum',serif;}
-.memo-card{background:var(--card);border-radius:22px;padding:48px 24px 40px;text-align:center;box-shadow:var(--shadow);border:1px solid var(--bdr);margin-bottom:20px;position:relative;}
-.memo-emoji-card{width:300px;height:300px;margin:0 auto 18px;border-radius:36px;display:flex;align-items:center;justify-content:center;border:4px solid rgba(255,255,255,.75);box-shadow:0 10px 26px rgba(0,0,0,.10),inset 0 -8px 0 rgba(0,0,0,.05);transition:background .45s ease;user-select:none;background:#FFE0E9;}
-.memo-emoji{font-size:100px;line-height:1;filter:drop-shadow(0 5px 7px rgba(0,0,0,.18));animation:emojiPop .5s cubic-bezier(.2,1.35,.4,1);}
-@keyframes emojiPop{0%{transform:scale(.35) rotate(-8deg);opacity:0}100%{transform:scale(1) rotate(0);opacity:1}}
-@media(max-width:380px){.memo-emoji-card{width:260px;height:260px;border-radius:30px;}.memo-emoji{font-size:88px;}}
-.memo-en-row{display:flex;align-items:baseline;justify-content:center;flex-wrap:wrap;gap:8px;margin-bottom:14px;}
-.memo-en{font-size:2.8rem;font-weight:800;color:var(--ink);letter-spacing:-1px;word-break:break-word;}
-.memo-pos{font-size:1rem;font-weight:400;color:var(--accent);font-style:italic;font-family:'Gowun Dodum',serif;}
-.memo-ko{font-size:1.35rem;color:var(--primary);font-weight:700;margin-bottom:24px;font-family:'Gowun Dodum',serif;line-height:1.5;}
-.sound-btn{background:none;border:2px solid var(--bdr);border-radius:50%;width:56px;height:56px;cursor:pointer;font-size:1.5rem;transition:all .15s;display:inline-flex;align-items:center;justify-content:center;}
-.sound-btn:hover{background:var(--bg);border-color:var(--primary);}
+.memo-card{background:#FFE0E9;border-radius:32px;padding:56px 24px 40px;text-align:center;box-shadow:0 10px 28px rgba(0,0,0,.10),inset 0 -8px 0 rgba(0,0,0,.04);border:4px solid rgba(255,255,255,.7);margin-bottom:20px;position:relative;transition:background .45s ease;}
+.memo-en{font-size:3.4rem;font-weight:800;color:var(--ink);letter-spacing:-1px;word-break:break-word;line-height:1.1;animation:memoPop .45s cubic-bezier(.2,1.35,.4,1);}
+@keyframes memoPop{0%{transform:scale(.5);opacity:0}100%{transform:scale(1);opacity:1}}
+.memo-pos{display:inline-block;font-size:.82rem;font-weight:700;margin:10px 0 2px;padding:3px 12px;border-radius:20px;letter-spacing:.3px;background:#fff;color:var(--soft);box-shadow:0 2px 6px rgba(0,0,0,.06);}
+.memo-pos.pos-n{color:#2563eb;}       /* 명사 파랑 */
+.memo-pos.pos-v{color:#dc2626;}       /* 동사 빨강 */
+.memo-pos.pos-adj{color:#7c3aed;}     /* 형용사 보라 */
+.memo-pos.pos-adv{color:#0d9488;}     /* 부사 청록 */
+.memo-pos.pos-num{color:#d97706;}     /* 수사 주황 */
+.memo-ko{font-size:1.6rem;color:var(--primary);font-weight:700;margin:14px 0 26px;font-family:'Gowun Dodum',serif;line-height:1.5;}
+.sound-btn{background:#fff;border:2px solid rgba(255,255,255,.9);border-radius:50%;width:60px;height:60px;cursor:pointer;font-size:1.6rem;transition:all .15s;display:inline-flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,.10);}
+.sound-btn:hover{transform:translateY(-2px);}
 .sound-btn.playing{background:var(--primary);border-color:var(--primary);color:#fff;animation:pulse .6s infinite;}
-.play-count{font-size:.72rem;color:var(--soft);margin-top:12px;font-family:'Gowun Dodum',serif;min-height:16px;}
-@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+.memo-dots{display:flex;justify-content:center;gap:10px;margin-top:16px;}
+.memo-dot{width:13px;height:13px;border-radius:50%;background:#fff;box-shadow:inset 0 0 0 2px rgba(0,0,0,.08);transition:transform .2s,background .2s,box-shadow .2s;}
+.memo-dot.active{background:var(--primary);box-shadow:0 2px 8px rgba(74,103,65,.45);transform:scale(1.25);}
+.memo-dot.playing{animation:pulse .6s infinite;}
+.play-count{font-size:.75rem;color:var(--soft);margin-top:10px;font-family:'Gowun Dodum',serif;min-height:16px;font-weight:700;}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.18)}}
+@media(max-width:380px){.memo-en{font-size:2.9rem;}.memo-ko{font-size:1.4rem;}}
 .memo-nav{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
 .nav-btn{padding:15px;border-radius:14px;border:2px solid var(--bdr);background:#fff;color:var(--ink);font-size:1rem;font-weight:800;cursor:pointer;font-family:inherit;transition:all .15s;}
 .nav-btn:hover:not(:disabled){border-color:var(--primary);background:#f0ede5;}
@@ -187,14 +193,16 @@ footer{text-align:center;padding:24px;color:#bbb;font-size:.75rem;font-family:'G
     <div class="stage-tag">STEP 1 · 암기</div>
     <div class="progress-bar"><div class="progress-fill" id="memoFill"></div></div>
     <div class="progress-text" id="memoText"></div>
-    <div class="memo-card">
-      <div class="memo-emoji-card" id="memoEmojiCard"><span class="memo-emoji" id="memoEmoji">📦</span></div>
-      <div class="memo-en-row">
-        <span class="memo-en" id="memoEn"></span>
-        <span class="memo-pos" id="memoPos"></span>
-      </div>
+    <div class="memo-card" id="memoCard">
+      <div class="memo-en" id="memoEn"></div>
+      <div class="memo-pos" id="memoPos"></div>
       <div class="memo-ko" id="memoKo"></div>
       <button class="sound-btn" id="memoSound" onclick="replayMemo()" title="발음 듣기">🔊</button>
+      <div class="memo-dots" id="memoDots" aria-hidden="true">
+        <span class="memo-dot" data-i="1"></span>
+        <span class="memo-dot" data-i="2"></span>
+        <span class="memo-dot" data-i="3"></span>
+      </div>
       <div class="play-count" id="memoCount"></div>
     </div>
     <div class="memo-nav">
@@ -717,7 +725,7 @@ function startMemorize(){
 function loadMemo(){
   const w = sessionWords[memoIdx];
   document.getElementById('memoEn').textContent = w.en;
-  document.getElementById('memoPos').textContent = w.pos || '';
+  setMemoPos(w.pos);
   document.getElementById('memoKo').textContent = w.ko;
   const pct = Math.round((memoIdx)/sessionWords.length*100);
   document.getElementById('memoFill').style.width = pct + '%';
@@ -726,39 +734,46 @@ function loadMemo(){
   const last = (memoIdx === sessionWords.length-1);
   document.getElementById('memoNext').style.display = last ? 'none' : 'block';
   document.getElementById('memoToQuiz').style.display = last ? 'block' : 'none';
-  // 단어 이모지 카드 표시 (뜻/품사 기반 + 파스텔 배경)
-  showWordEmoji(w.en, w.pos);
+  // 파스텔 배경 카드 + 단어 등장 애니메이션 + 재생 표시 초기화
+  styleMemoCard(w.en);
+  setMemoDots(0, 0);
   // TTS 3회 자동재생
   autoSpeak3(w.en);
 }
 
-/* ===== 단어 이모지 카드 (외부 이미지 API 없음) ===== */
-// 단어별 이모지 (뜻/품사 기반). 없으면 품사별 기본 이모지 사용.
-const WORD_EMOJI = {"face": "😀","nose": "👃","body": "🧍","foot": "🦶","head": "🧠","mouth": "👄","teeth": "🦷","eye": "👁️","hand": "✋","feel": "🤗","see": "👀","taste": "👅","smell": "👃","touch": "👉","listen": "👂","daughter": "👧","aunt": "👩","son": "👦","brother": "👦","mother": "👩","grandmother": "👵","grandfather": "👴","uncle": "👨","father": "👨","sister": "👧","kid": "🧒","girl": "👧","couple": "👫","man": "👨","boy": "👦","woman": "👩","friend": "🧑‍🤝‍🧑","baby": "👶","nurse": "👩‍⚕️","firefighter": "👩‍🚒","pianist": "🎹","farmer": "👨‍🌾","dancer": "💃","teacher": "👩‍🏫","singer": "🎤","doctor": "👨‍⚕️","king": "👑","family": "👨‍👩‍👧‍👦","student": "🧑‍🎓","future": "🔮","dream": "💭","jacket": "🧥","pants": "👖","skirt": "👗","sock": "🧦","shirt": "👕","shoes": "👟","hat": "🎩","sweater": "🧶","coat": "🧥","wear": "👕","food": "🍱","cake": "🍰","milk": "🥛","water": "💧","egg": "🥚","apple": "🍎","bread": "🍞","ice": "🧊","bottle": "🍾","drink": "🥤","eat": "🍽️","hungry": "😋","full": "🤤","ship": "🚢","bicycle": "🚲","airplane": "✈️","train": "🚆","car": "🚗","bus": "🚌","subway": "🚇","yellow": "🟡","white": "⚪","black": "⚫","green": "🟢","red": "🔴","blue": "🔵","triangle": "🔺","square": "🟦","circle": "⭕","color": "🎨","two": "2️⃣","four": "4️⃣","nine": "9️⃣","six": "6️⃣","seven": "7️⃣","one": "1️⃣","ten": "🔟","five": "5️⃣","three": "3️⃣","eight": "8️⃣","night": "🌙","thursday": "📅","tuesday": "📅","saturday": "📅","friday": "📅","wednesday": "📅","afternoon": "🌤️","morning": "🌅","monday": "📅","sunday": "📅","today": "📆","month": "📆","week": "🗓️","year": "🎊","age": "🎂","garden": "🌷","door": "🚪","roof": "🏠","wall": "🧱","bell": "🔔","stairs": "🪜","room": "🛏️","house": "🏠","window": "🪟","desk": "🗄️","lamp": "💡","soap": "🧼","towel": "🧻","sofa": "🛋️","clock": "🕐","bed": "🛏️","mirror": "🪞","table": "🍽️","chair": "🪑","playground": "🛝","prize": "🏆","classroom": "🏫","class": "🧑‍🏫","homework": "📝","bag": "🎒","pencil": "✏️","book": "📚","pen": "🖊️","textbook": "📖","glue": "🧴","notebook": "📓","scissors": "✂️","eraser": "🧽","ruler": "📏","study": "📖","read": "📚","write": "✍️","teach": "👩‍🏫","sale": "🏷️","price": "💲","coin": "🪙","money": "💵","store": "🏪","shopping": "🛍️","sell": "💰","buy": "🛒","library": "📚","zoo": "🦁","church": "⛪","bank": "🏦","farm": "🚜","airport": "🛫","museum": "🏛️","park": "🏞️","market": "🏬","restaurant": "🍴","hospital": "🏥","illness": "🤒","pill": "💊","pain": "😣","cough": "🤧","sick": "🤒","weak": "🤕","strong": "💪","healthy": "💪","tired": "😫","snowy": "❄️","rainy": "🌧️","rainbow": "🌈","cloudy": "☁️","sunny": "☀️","windy": "🌬️","air": "💨","fall": "🍂","wind": "🌬️","summer": "🏖️","winter": "⛄","spring": "🌸","cloud": "☁️","sky": "🌤️","warm": "🌤️","hot": "🔥","cold": "🥶","cool": "😎","lake": "🏞️","sea": "🌊","field": "🌾","mountain": "⛰️","tree": "🌳","land": "🏝️","flower": "🌸","river": "🚣","dog": "🐶","bat": "🦇","cat": "🐱","lion": "🦁","ant": "🐜","bear": "🐻","pig": "🐷","snake": "🐍","fish": "🐟","duck": "🦆","happy": "😊","proud": "😎","angry": "😠","sad": "😢","rude": "😤","shy": "😳","funny": "😂","polite": "🙇","wise": "🦉","brave": "🦁","clever": "🧠","kind": "🤗","lazy": "😴","honest": "😇","young": "👶","old": "👴","beautiful": "🌸","cute": "🥰","tall": "🦒","short": "📏","small": "🐜","long": "📏","big": "🐘","fat": "🐘","deep": "🌊","high": "⬆️","low": "⬇️","dry": "🏜️","wet": "💧","new": "✨","dark": "🌑","dirty": "🫧","go": "🚶","wake up": "⏰","talk": "💬","sleep": "😴","sit": "🪑","wash": "🧼","come": "🙋","stand": "🧍","help": "🤝","meet": "🤝","walk": "🚶","take": "🤲","stop": "✋","choose": "👉","change": "🔄","melt": "💧","give": "🎁","wait": "⏳","catch": "🤾","have": "🤲","cut": "✂️","do": "✅","begin": "▶️","run": "🏃","bite": "😬","burn": "🔥","hate": "😡","start": "▶️","open": "🔓","close": "🔒","lie": "🛌","turn": "🔁","making": "🔨","name": "🏷️","fire": "🔥","line": "➖","top": "🔝","story": "📖","up": "⬆️","down": "⬇️","near": "📍","far": "🔭","right": "➡️","left": "⬅️","behind": "🔙","front": "⏩","outside": "🌳","inside": "🏠","hard": "💪"};
-const POS_EMOJI = { 'n.':'📦', 'v.':'⚡', 'adj.':'🌈', 'adv.':'💨', 'num.':'🔢' };
+/* ===== 암기 카드 꾸미기 (외부 이미지/이모지 없음) ===== */
 // 아이 친화적 파스텔 배경색
 const PASTELS = ['#FFE0E9','#FFF3C4','#D8F5D0','#D4EEFF','#E9DEFF','#FFE4CF','#D0F5EF','#FDE2FF','#E8F0D8','#FFEFD6','#E0F7FA','#F3E0FF'];
+const POS_CLASS = { 'n.':'pos-n', 'v.':'pos-v', 'adj.':'pos-adj', 'adv.':'pos-adv', 'num.':'pos-num' };
+const POS_KO = { 'n.':'명사', 'v.':'동사', 'adj.':'형용사', 'adv.':'부사', 'num.':'수사' };
 
-function emojiFor(word, pos){
-  const key = String(word || '').trim().toLowerCase();
-  return WORD_EMOJI[key] || POS_EMOJI[pos] || '📦';
-}
 function pastelFor(word){
   const s = String(word || '');
   let hash = 0;
   for(let i=0; i<s.length; i++){ hash = (hash * 31 + s.charCodeAt(i)) >>> 0; }
   return PASTELS[hash % PASTELS.length];
 }
-function showWordEmoji(word, pos){
-  const card = document.getElementById('memoEmojiCard');
-  const el = document.getElementById('memoEmoji');
-  if(!card || !el) return;
-  el.textContent = emojiFor(word, pos);
-  card.style.background = pastelFor(word);
-  // 등장 애니메이션 재생 (단어마다 다시 통통 튀게)
-  el.style.animation = 'none';
-  void el.offsetWidth;
-  el.style.animation = '';
+// 품사 배지 (색상 구분 + 한글 병기)
+function setMemoPos(pos){
+  const el = document.getElementById('memoPos');
+  el.className = 'memo-pos ' + (POS_CLASS[pos] || '');
+  el.textContent = pos ? (pos + (POS_KO[pos] ? ' · ' + POS_KO[pos] : '')) : '';
+  el.style.display = pos ? 'inline-block' : 'none';
+}
+// 파스텔 배경 + 단어 등장 애니메이션(단어마다 다시 통통 튀게)
+function styleMemoCard(word){
+  const card = document.getElementById('memoCard');
+  if(card) card.style.background = pastelFor(word);
+  const en = document.getElementById('memoEn');
+  if(en){ en.style.animation = 'none'; void en.offsetWidth; en.style.animation = ''; }
+}
+// 🔊 재생 표시 동그라미 (활성 개수 / 현재 재생 중 인덱스)
+function setMemoDots(activeCount, playingIdx){
+  document.querySelectorAll('#memoDots .memo-dot').forEach(function(d){
+    const i = +d.dataset.i;
+    d.classList.toggle('active', i <= activeCount);
+    d.classList.toggle('playing', i === playingIdx);
+  });
 }
 
 // 암기 화면의 "다음/2단계 시작" 버튼 활성·비활성 제어
@@ -783,6 +798,7 @@ function autoSpeak3(text){
   function speakOnce(){
     n++;
     cnt.textContent = '🔊 발음 ' + n + ' / 3';
+    setMemoDots(n, n);   // 동그라미: 1~n 활성, n번째 재생 중
     const u = new SpeechSynthesisUtterance(text);
     u.lang='en-US'; u.rate=0.8; u.pitch=1;
     const voices = window.speechSynthesis.getVoices();
@@ -792,7 +808,7 @@ function autoSpeak3(text){
     u.onend = function(){
       btn.classList.remove('playing');
       if(n < 3){ memoTimer = setTimeout(speakOnce, 550); }
-      else { cnt.textContent = '✅ 3번 듣기 완료'; setMemoNavEnabled(true); }
+      else { cnt.textContent = '✅ 3번 듣기 완료'; setMemoDots(3, 0); setMemoNavEnabled(true); }
     };
     u.onerror = function(){ btn.classList.remove('playing'); setMemoNavEnabled(true); };
     window.speechSynthesis.speak(u);
