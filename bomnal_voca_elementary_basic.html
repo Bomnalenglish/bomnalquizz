@@ -664,10 +664,25 @@ function renderDayGrid(){
   document.getElementById('dayProgText').textContent='30일 중 '+n+'일 완료 ('+pct+'%)';
 }
 function selectDay(d){
-  chosenDay=d;
-  const start=(d-1)*WORDS_PER_DAY;
-  sessionWords=WORDS.slice(start,start+WORDS_PER_DAY);
-  startTime=new Date();
+  // ── 이전 Day 학습 상태 완전 초기화 (다음 Day에 영향 없도록) ──
+  if(memoTimer){ clearTimeout(memoTimer); memoTimer=null; }
+  memoSpeakToken++;                 // 진행 중이던 발음 재생 세션 무효화
+  stopMemoAudio();                  // 암기 오디오 완전 정지
+  if(quizAudio){ try{ quizAudio.stop(); }catch(e){} quizAudio=null; }  // 퀴즈 오디오 정지
+  memoIdx=0; currentIdx=0; round=1; answered=false; currentWord=null;
+  queue=[]; wrongWords=[]; allWrong=[];
+
+  // ── currentDay(=d) 기준으로 startIndex/endIndex 매번 재계산 ──
+  chosenDay = d;
+  const startIndex = (d - 1) * WORDS_PER_DAY;              // Day N = words[(N-1)*10]
+  const endIndex   = startIndex + WORDS_PER_DAY - 1;       //        ~ words[(N-1)*10+9]
+  sessionWords = WORDS.slice(startIndex, endIndex + 1);    // slice 끝은 미포함이라 +1
+  startTime = new Date();
+
+  console.log('[Day 선택] Day ' + d + ' | startIndex=' + startIndex + ' endIndex=' + endIndex
+    + ' | 첫 단어=' + (sessionWords[0] ? sessionWords[0].en + '(' + sessionWords[0].ko + ')' : '없음')
+    + ' | 단어 수=' + sessionWords.length);
+
   startMemorize();
 }
 function dayLabel(){ return 'Day '+chosenDay; }
