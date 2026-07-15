@@ -735,17 +735,43 @@ function setMemoNavEnabled(on){
   document.getElementById('memoToQuiz').disabled=!on;
 }
 
-// Google TTS URL (Safari에서 speechSynthesis가 멈추는 문제 회피)
-// memoSpeakToken: 단어 바뀔 때마다 증가 → 이전 재생 세션의 타이머/콜백 무효화 (상단 선언)
-function ttsUrl(word){
-  return 'https://translate.google.com/translate_tts?ie=UTF-8&q=' + encodeURIComponent(word) + '&tl=en&client=tw-ob';
+/* ===== 발음 재생 (1순위 Youdao → 2순위 Oxford → 실패 시 무음) =====
+   memoSpeakToken: 단어 바뀔 때마다 증가 → 이전 재생 세션의 타이머/콜백 무효화 (상단 선언) */
+function ttsSources(word){
+  const w = encodeURIComponent(String(word||'').toLowerCase());
+  return [
+    'https://dict.youdao.com/dictvoice?audio=' + w + '&type=2',
+    'https://ssl.gstatic.com/dictionary/static/sounds/oxford/' + w + '--_gb_1.mp3'
+  ];
 }
-function stopMemoAudio(){
-  if(memoAudio){
-    try{ memoAudio.pause(); }catch(e){}
-    memoAudio.onended = memoAudio.onerror = null;
-    memoAudio = null;
+// 소스를 순서대로 시도. 어느 하나 ended → onDone('ok'), 전부 실패 → onDone('fail').
+// 반환 객체의 .stop() 으로 언제든 완전 정지. done(콜백)은 정확히 한 번만 호출.
+function playWordSources(word, onDone){
+  const sources = ttsSources(word);
+  let idx=0, audio=null, stopped=false, finished=false;
+  function cleanup(){
+    if(audio){ try{ audio.pause(); }catch(e){} audio.onended=audio.onerror=null; audio=null; }
   }
+  function finish(result){
+    if(finished || stopped) return;
+    finished=true; cleanup(); onDone(result);
+  }
+  function tryNext(){
+    if(stopped || finished) return;
+    if(idx >= sources.length){ finish('fail'); return; }   // 모든 소스 실패
+    const src = sources[idx++];
+    try{ audio = new Audio(src); }catch(e){ cleanup(); tryNext(); return; }
+    audio.onended = function(){ finish('ok'); };
+    audio.onerror = function(){ cleanup(); tryNext(); };    // 이 소스 실패 → 다음 소스
+    const p = audio.play();
+    if(p && p.catch) p.catch(function(){ cleanup(); tryNext(); });  // 재생 거부 → 다음 소스
+  }
+  tryNext();
+  return { stop:function(){ stopped=true; cleanup(); } };
+}
+// memoAudio 에는 위 컨트롤러 객체를 보관
+function stopMemoAudio(){
+  if(memoAudio){ try{ memoAudio.stop(); }catch(e){} memoAudio=null; }
 }
 
 function autoSpeak3(text){
@@ -765,6 +791,20 @@ function autoSpeak3(text){
     memoDotsDone();
     setMemoNavEnabled(true);
   }
+  // 소리가 전혀 안 될 때: 단어+뜻만 3초 표시 후 다음 버튼 활성화
+  function silentFinish(){
+    if(token!==memoSpeakToken) return;
+    if(memoTimer){ clearTimeout(memoTimer); memoTimer=null; }
+    stopMemoAudio();
+    btn.classList.remove('playing');
+    cnt.textContent='🔇 소리 없이 단어·뜻 보기 (3초)';
+    memoDotsDone();
+    memoTimer=setTimeout(function(){
+      if(token!==memoSpeakToken) return;
+      cnt.textContent='✅ 준비 완료!';
+      setMemoNavEnabled(true);
+    }, 3000);
+  }
 
   // n번째(1~3) 재생
   function playOne(n){
@@ -774,8 +814,7 @@ function autoSpeak3(text){
     btn.classList.add('playing');
 
     let advanced=false;
-    // ended·error·fallback 중 먼저 온 것 한 번만 처리 → 0.8초 뒤 다음 재생 or 완료
-    function afterThis(){
+    function advance(){
       if(advanced || token!==memoSpeakToken) return;
       advanced=true;
       if(memoTimer){ clearTimeout(memoTimer); memoTimer=null; }
@@ -785,19 +824,15 @@ function autoSpeak3(text){
       else { memoTimer=setTimeout(function(){ playOne(n+1); }, 800); }  // 0.8초 대기
     }
 
-    let audio;
-    try{ audio = new Audio(ttsUrl(text)); }
-    catch(e){ afterThis(); return; }
-    memoAudio = audio;
-    audio.onended = afterThis;
-    audio.onerror = afterThis;               // 재생 실패 시 자동으로 다음 재생
+    // 재생 시작 후 5초 안에 ended 안 오면 자동으로 다음으로
+    memoTimer = setTimeout(advance, 5000);
 
-    // ended/error가 안 올 경우 대비 fallback
-    const fallbackMs = text.length*120 + 4000;
-    memoTimer = setTimeout(afterThis, fallbackMs);
-
-    const p = audio.play();
-    if(p && p.catch) p.catch(function(){ afterThis(); });   // 재생 거부/실패 → 다음으로
+    memoAudio = playWordSources(text, function(result){
+      if(token!==memoSpeakToken) return;
+      // 첫 재생부터 모든 소스 실패 → 소리 없이 3초 fallback (멈추지 않음)
+      if(result==='fail' && n===1){ silentFinish(); }
+      else { advance(); }
+    });
   }
 
   playOne(1);
@@ -832,15 +867,11 @@ function loadWord(){
   setTimeout(()=>speakWord(),300);
 }
 function speakWord(){
-  if(quizAudio){ try{ quizAudio.pause(); }catch(e){} quizAudio.onended=quizAudio.onerror=null; quizAudio=null; }
+  if(quizAudio){ try{ quizAudio.stop(); }catch(e){} quizAudio=null; }
   const btn=document.getElementById('soundBtn');
-  let audio;
-  try{ audio=new Audio(ttsUrl(currentWord.en)); }catch(e){ return; }
-  quizAudio=audio;
   btn.classList.add('playing');
-  audio.onended=audio.onerror=function(){ btn.classList.remove('playing'); };
-  const p=audio.play();
-  if(p && p.catch) p.catch(function(){ btn.classList.remove('playing'); });
+  // Youdao → Oxford 순서로 시도, 끝나거나 실패하면 표시 해제
+  quizAudio = playWordSources(currentWord.en, function(){ btn.classList.remove('playing'); });
 }
 // 정답은 id로 판정, 보기는 뜻(ko) 중복 없이
 function buildChoices(){
