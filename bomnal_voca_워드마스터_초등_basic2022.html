@@ -759,24 +759,31 @@ let _picReqSeq = 0;   // 최신 요청만 반영 (빠른 이전/다음 대비)
 function loadMemoImage(word){
   const seq = ++_picReqSeq;
   const wrap = document.getElementById('memoPic');
-  const img = document.getElementById('memoPicImg');
-  if(!wrap || !img) return;
-  // 초기화: 스피너 보이고 이미지 숨김
+  const oldImg = document.getElementById('memoPicImg');
+  if(!wrap || !oldImg) return;
+
+  // 이전 이미지가 남지 않도록 <img>를 새 요소로 완전히 교체 + 스피너 표시
   wrap.classList.remove('loaded');
   wrap.classList.add('show');
-  img.removeAttribute('src');
+  const img = oldImg.cloneNode(false);
+  img.removeAttribute('src');            // 새 요소도 빈 값에서 시작
+  oldImg.replaceWith(img);
+
+  // 단어마다 새 URL + 캐시 방지용 timestamp
   const prompt = 'cute cartoon ' + word + ' pixar disney style colorful safe for kids no text';
-  const url = 'https://image.pollinations.ai/prompt/' + encodeURIComponent(prompt) + '?width=400&height=300&nologo=true';
+  const url = 'https://image.pollinations.ai/prompt/' + encodeURIComponent(prompt)
+            + '?width=400&height=300&nologo=true&seed=' + Date.now();
+
   img.onload = function(){
-    if(seq !== _picReqSeq) return;          // 그새 다른 단어로 이동했으면 무시
-    if(img.naturalWidth <= 1){ img.onerror(); return; }
-    wrap.classList.add('loaded');
+    if(seq !== _picReqSeq) return;        // 그새 다른 단어로 이동했으면 무시
+    if(img.naturalWidth <= 1){ if(img.onerror) img.onerror(); return; }
+    wrap.classList.add('loaded');         // 로딩 완료 → 이미지 표시
   };
   img.onerror = function(){
     if(seq !== _picReqSeq) return;
-    wrap.classList.remove('show','loaded');  // 실패 시 이미지 영역 숨김 → 카드만
+    wrap.classList.remove('show','loaded'); // 실패 시 이미지 영역 숨김 → 카드만
   };
-  img.src = url;
+  img.src = url;                          // 매번 새 URL로 교체
 }
 
 /* ===== 암기 카드 꾸미기 (외부 이미지/이모지 없음) ===== */
