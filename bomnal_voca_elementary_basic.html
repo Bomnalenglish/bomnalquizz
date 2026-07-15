@@ -694,6 +694,20 @@ function setMemoDots(activeCount,playingIdx){
     d.classList.toggle('playing', i===playingIdx);
   });
 }
+// 재생 중인 번호만 채워서 표시: ●○○ → ○●○ → ○○●
+function memoDotPlaying(cur){
+  document.querySelectorAll('#memoDots .memo-dot').forEach(function(d){
+    const i=+d.dataset.i;
+    d.classList.toggle('active', i===cur);
+    d.classList.toggle('playing', i===cur);
+  });
+}
+// 3번 완료: 전부 채움 ●●●
+function memoDotsDone(){
+  document.querySelectorAll('#memoDots .memo-dot').forEach(function(d){
+    d.classList.add('active'); d.classList.remove('playing');
+  });
+}
 
 function startMemorize(){ memoIdx=0; showScreen('screen-memo'); loadMemo(); }
 
@@ -719,36 +733,72 @@ function setMemoNavEnabled(on){
   document.getElementById('memoToQuiz').disabled=!on;
 }
 
+// 단어가 바뀔 때마다 증가 → 이전 재생 세션의 타이머/콜백 무효화
+let memoSpeakToken = 0;
+const MEMO_REPEAT = 3;
+
 function autoSpeak3(text){
+  const token = ++memoSpeakToken;              // 이 재생 세션 식별 (단어 바뀌면 무효화)
   if(memoTimer){ clearTimeout(memoTimer); memoTimer=null; }
-  setMemoNavEnabled(false);  // 3번 재생 완료 전 다음 버튼 잠금
-  if(!('speechSynthesis' in window)){
-    document.getElementById('memoCount').textContent='🔇 소리 미지원 기기';
-    setMemoNavEnabled(true); return;
-  }
-  window.speechSynthesis.cancel();
-  const btn=document.getElementById('memoSound');
+  setMemoNavEnabled(false);                    // 3번 완료 전 다음 버튼 잠금
   const cnt=document.getElementById('memoCount');
-  let n=0;
-  function speakOnce(){
-    n++;
+  const btn=document.getElementById('memoSound');
+
+  if(!('speechSynthesis' in window)){
+    cnt.textContent='🔇 소리 미지원 기기';
+    memoDotsDone(); setMemoNavEnabled(true);
+    return;
+  }
+
+  function finishAll(){
+    if(token!==memoSpeakToken) return;
+    if(memoTimer){ clearTimeout(memoTimer); memoTimer=null; }
+    btn.classList.remove('playing');
+    cnt.textContent='✅ 3번 듣기 완료!';
+    memoDotsDone();
+    setMemoNavEnabled(true);
+  }
+
+  // n번째(1~3) 재생
+  function playOne(n){
+    if(token!==memoSpeakToken) return;         // 단어 바뀜 → 중단
     cnt.textContent='🔊 발음 '+n+' / 3';
-    setMemoDots(n,n);
+    memoDotPlaying(n);                         // ●○○ / ○●○ / ○○●
+    btn.classList.add('playing');
+
+    let advanced=false;
+    // onend·fallback 중 먼저 온 것 한 번만 처리 → 0.5초 뒤 다음 재생 or 완료
+    function afterThis(){
+      if(advanced || token!==memoSpeakToken) return;
+      advanced=true;
+      if(memoTimer){ clearTimeout(memoTimer); memoTimer=null; }
+      btn.classList.remove('playing');
+      if(n>=MEMO_REPEAT){ finishAll(); }
+      else { memoTimer=setTimeout(function(){ playOne(n+1); }, 500); }  // 0.5초 대기
+    }
+
+    try{ window.speechSynthesis.cancel(); }catch(e){}   // 재생 전 반드시 cancel
+
     const u=new SpeechSynthesisUtterance(text);
     u.lang='en-US'; u.rate=0.8; u.pitch=1.05;
     const voices=window.speechSynthesis.getVoices();
     const en=voices.find(v=>v.lang && /^en/i.test(v.lang));
     if(en) u.voice=en;
-    btn.classList.add('playing');
-    u.onend=function(){
-      btn.classList.remove('playing');
-      if(n<3){ memoTimer=setTimeout(speakOnce,550); }
-      else { cnt.textContent='✅ 3번 듣기 완료!'; setMemoDots(3,0); setMemoNavEnabled(true); }
-    };
-    u.onerror=function(){ btn.classList.remove('playing'); setMemoNavEnabled(true); };
-    window.speechSynthesis.speak(u);
+    u.onend=afterThis;
+    u.onerror=afterThis;
+
+    // onend가 안 firing될 경우 대비 fallback: 글자수×100 + 1000ms 후 자동 진행
+    const fallbackMs = text.length*100 + 1000;
+    memoTimer=setTimeout(afterThis, fallbackMs);
+
+    // cancel 직후 곧바로 speak하면 일부 브라우저에서 씹히므로 약간의 지연
+    setTimeout(function(){
+      if(token!==memoSpeakToken || advanced) return;
+      try{ window.speechSynthesis.speak(u); }catch(e){ afterThis(); }
+    }, 60);
   }
-  speakOnce();
+
+  playOne(1);
 }
 function replayMemo(){ autoSpeak3(sessionWords[memoIdx].en); }
 function memoNext(){ if(memoIdx<sessionWords.length-1){ memoIdx++; loadMemo(); } }
