@@ -756,31 +756,45 @@ function loadMemo(){
 let _picReqSeq = 0;          // 최신 요청만 반영 (빠른 이전/다음 대비)
 const _imgPreload = {};      // word -> {img:Image, status:'loading'|'ok'|'err', cbs:[]}
 
-// 단어별 고정 URL (seed=단어 해시) → preload한 URL과 표시 URL이 동일해 캐시 적중
-function imgUrlFor(word){
-  const w = String(word || '');
-  let hash = 0;
-  for(let i=0; i<w.length; i++){ hash = (hash * 31 + w.charCodeAt(i)) >>> 0; }
-  const prompt = 'cute cartoon ' + w + ' pixar disney style colorful safe for kids no text';
-  return 'https://image.pollinations.ai/prompt/' + encodeURIComponent(prompt)
-       + '?width=400&height=300&nologo=true&seed=' + hash;
+// 단어별 3단계 fallback URL 목록 (1차→2차→3차)
+function imgUrlsFor(word){
+  const w = encodeURIComponent(String(word || ''));
+  const base = 'https://image.pollinations.ai/prompt/';
+  return [
+    base + 'cute%20kawaii%20cartoon%20' + w + '%20soft%20pastel%20colors%20children%20illustration%20pixar%20style?width=400&height=300&nologo=true&seed=42',
+    base + 'simple%20cute%20cartoon%20' + w + '%20white%20background%20illustration?width=400&height=300&nologo=true&seed=123',
+    base + 'colorful%20cartoon%20illustration%20' + w + '?width=400&height=300&nologo=true'
+  ];
 }
 
-// Image() 객체로 백그라운드 선로딩 (한 번만 요청, 상태·콜백 보관)
+// Image() 객체로 백그라운드 선로딩 — 1차 실패 시 onerror로 2차·3차 자동 fallback
 function preloadImage(word){
   if(!word) return null;
   if(_imgPreload[word]) return _imgPreload[word];
-  const rec = { img: new Image(), status: 'loading', cbs: [] };
+  const urls = imgUrlsFor(word);
+  const rec = { img: new Image(), status: 'loading', cbs: [], url: null };
   rec.img.referrerPolicy = 'no-referrer';
-  rec.img.onload = function(){
-    rec.status = (rec.img.naturalWidth > 1) ? 'ok' : 'err';
-    rec.cbs.splice(0).forEach(function(fn){ fn(rec.status); });
-  };
-  rec.img.onerror = function(){
-    rec.status = 'err';
-    rec.cbs.splice(0).forEach(function(fn){ fn('err'); });
-  };
-  rec.img.src = imgUrlFor(word);
+  let i = 0;
+  function tryNext(){
+    if(i >= urls.length){            // 1·2·3차 모두 실패
+      rec.status = 'err';
+      rec.cbs.splice(0).forEach(function(fn){ fn('err'); });
+      return;
+    }
+    const u = urls[i++];
+    rec.img.onload = function(){
+      if(rec.img.naturalWidth > 1){  // 유효한 이미지
+        rec.status = 'ok';
+        rec.url = u;                  // 성공한 URL 기록 (표시 때 재사용 → 캐시 적중)
+        rec.cbs.splice(0).forEach(function(fn){ fn('ok'); });
+      } else {
+        tryNext();                    // 빈 응답 → 다음 후보
+      }
+    };
+    rec.img.onerror = function(){ tryNext(); };   // 실패 → 다음 후보
+    rec.img.src = u;
+  }
+  tryNext();
   _imgPreload[word] = rec;
   return rec;
 }
@@ -803,10 +817,9 @@ function showMemoImage(word){
   wrap.classList.add('show');
 
   const rec = preloadImage(word);
-  const url = imgUrlFor(word);
   function reveal(){
     if(seq !== _picReqSeq) return;   // 그새 다른 단어로 이동 → 무시
-    img.src = url;                   // preload로 캐시됨 → 즉시 로드
+    img.src = rec.url;               // preload에서 성공한 URL (캐시됨) → 즉시 로드
     wrap.classList.add('loaded');    // 페이드인
   }
   function fail(){
