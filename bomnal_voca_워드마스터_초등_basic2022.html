@@ -52,7 +52,14 @@ header{background:linear-gradient(135deg,#f7efe4,#ece0d2);padding:32px 24px 24px
 .progress-bar{background:#e0d8ce;border-radius:20px;height:7px;margin-bottom:8px;overflow:hidden;}
 .progress-fill{height:100%;background:var(--primary);border-radius:20px;transition:width .4s ease;}
 .progress-text{text-align:right;font-size:.75rem;color:var(--soft);margin-top:4px;margin-bottom:16px;font-family:'Gowun Dodum',serif;}
-.memo-card{background:#FFE0E9;border-radius:32px;padding:56px 24px 40px;text-align:center;box-shadow:0 10px 28px rgba(0,0,0,.10),inset 0 -8px 0 rgba(0,0,0,.04);border:4px solid rgba(255,255,255,.7);margin-bottom:20px;position:relative;transition:background .45s ease;}
+.memo-card{background:#FFE0E9;border-radius:32px;padding:40px 24px;text-align:center;box-shadow:0 10px 28px rgba(0,0,0,.10),inset 0 -8px 0 rgba(0,0,0,.04);border:4px solid rgba(255,255,255,.7);margin-bottom:20px;position:relative;transition:background .45s ease;}
+.memo-pic{position:relative;width:100%;max-width:340px;aspect-ratio:4/3;margin:0 auto 20px;border-radius:20px;overflow:hidden;background:rgba(255,255,255,.55);box-shadow:0 4px 14px rgba(0,0,0,.08);display:none;}
+.memo-pic.show{display:block;}
+.memo-pic-img{width:100%;height:100%;object-fit:cover;display:block;opacity:0;transition:opacity .4s ease;}
+.memo-pic.loaded .memo-pic-img{opacity:1;}
+.memo-pic-spin{position:absolute;top:50%;left:50%;width:42px;height:42px;margin:-21px 0 0 -21px;border:4px solid rgba(0,0,0,.10);border-top-color:var(--primary);border-radius:50%;animation:memospin .8s linear infinite;}
+.memo-pic.loaded .memo-pic-spin{display:none;}
+@keyframes memospin{to{transform:rotate(360deg);}}
 .memo-en{font-size:3.4rem;font-weight:800;color:var(--ink);letter-spacing:-1px;word-break:break-word;line-height:1.1;animation:memoPop .45s cubic-bezier(.2,1.35,.4,1);}
 @keyframes memoPop{0%{transform:scale(.5);opacity:0}100%{transform:scale(1);opacity:1}}
 .memo-pos{display:inline-block;font-size:.82rem;font-weight:700;margin:10px 0 2px;padding:3px 12px;border-radius:20px;letter-spacing:.3px;background:#fff;color:var(--soft);box-shadow:0 2px 6px rgba(0,0,0,.06);}
@@ -194,6 +201,10 @@ footer{text-align:center;padding:24px;color:#bbb;font-size:.75rem;font-family:'G
     <div class="progress-bar"><div class="progress-fill" id="memoFill"></div></div>
     <div class="progress-text" id="memoText"></div>
     <div class="memo-card" id="memoCard">
+      <div class="memo-pic" id="memoPic">
+        <div class="memo-pic-spin" id="memoPicSpin"></div>
+        <img class="memo-pic-img" id="memoPicImg" alt="" referrerpolicy="no-referrer"/>
+      </div>
       <div class="memo-en" id="memoEn"></div>
       <div class="memo-pos" id="memoPos"></div>
       <div class="memo-ko" id="memoKo"></div>
@@ -737,8 +748,35 @@ function loadMemo(){
   // 파스텔 배경 카드 + 단어 등장 애니메이션 + 재생 표시 초기화
   styleMemoCard(w.en);
   setMemoDots(0, 0);
+  // Pollinations AI 이미지 (로딩 중 스피너, 실패 시 카드만)
+  loadMemoImage(w.en);
   // TTS 3회 자동재생
   autoSpeak3(w.en);
+}
+
+/* ===== Pollinations AI 이미지 ===== */
+let _picReqSeq = 0;   // 최신 요청만 반영 (빠른 이전/다음 대비)
+function loadMemoImage(word){
+  const seq = ++_picReqSeq;
+  const wrap = document.getElementById('memoPic');
+  const img = document.getElementById('memoPicImg');
+  if(!wrap || !img) return;
+  // 초기화: 스피너 보이고 이미지 숨김
+  wrap.classList.remove('loaded');
+  wrap.classList.add('show');
+  img.removeAttribute('src');
+  const prompt = 'cute cartoon ' + word + ' pixar disney style colorful safe for kids no text';
+  const url = 'https://image.pollinations.ai/prompt/' + encodeURIComponent(prompt) + '?width=400&height=300&nologo=true';
+  img.onload = function(){
+    if(seq !== _picReqSeq) return;          // 그새 다른 단어로 이동했으면 무시
+    if(img.naturalWidth <= 1){ img.onerror(); return; }
+    wrap.classList.add('loaded');
+  };
+  img.onerror = function(){
+    if(seq !== _picReqSeq) return;
+    wrap.classList.remove('show','loaded');  // 실패 시 이미지 영역 숨김 → 카드만
+  };
+  img.src = url;
 }
 
 /* ===== 암기 카드 꾸미기 (외부 이미지/이모지 없음) ===== */
