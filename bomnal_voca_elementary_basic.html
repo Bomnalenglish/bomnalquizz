@@ -65,17 +65,28 @@ header{background:linear-gradient(135deg,#ffe3ef,#e5f1ff);padding:30px 24px 24px
 .progress-bar{background:#ffe0ec;border-radius:20px;height:10px;margin-bottom:8px;overflow:hidden;}
 .progress-fill{height:100%;background:linear-gradient(90deg,#ffd66b,#ff8fb1);border-radius:20px;transition:width .4s ease;}
 .progress-text{text-align:right;font-size:.78rem;color:var(--soft);margin-top:4px;margin-bottom:16px;font-family:'Gowun Dodum',serif;}
-.memo-card{background:#EADCFB;border-radius:36px;padding:26px 24px 40px;text-align:center;box-shadow:0 14px 34px rgba(0,0,0,.12),inset 0 -9px 0 rgba(0,0,0,.045);border:6px solid #fff;margin-bottom:20px;position:relative;transition:background .5s ease;}
-.memo-num{display:inline-block;font-family:'Jua',sans-serif;font-size:1rem;color:#fff;background:rgba(0,0,0,.16);padding:4px 16px;border-radius:20px;margin-bottom:22px;letter-spacing:1px;text-shadow:0 1px 2px rgba(0,0,0,.15);}
-.memo-en{font-size:52px;font-weight:800;color:#3a3340;letter-spacing:-1px;word-break:break-word;line-height:1.1;font-family:'Jua',sans-serif;text-shadow:0 2px 3px rgba(255,255,255,.6);animation:memoPop .45s cubic-bezier(.2,1.35,.4,1);}
-@keyframes memoPop{0%{transform:scale(.5);opacity:0}100%{transform:scale(1);opacity:1}}
+.memo-card{background:#EADCFB;border-radius:36px;padding:22px 24px 40px;text-align:center;box-shadow:0 14px 34px rgba(0,0,0,.12),inset 0 -9px 0 rgba(0,0,0,.045);border:6px solid #fff;margin-bottom:20px;position:relative;transition:background .5s ease;overflow:hidden;}
+/* 카드 상단 진행바 + 번호 */
+.memo-cardbar{height:9px;border-radius:20px;background:rgba(255,255,255,.55);overflow:hidden;margin:0 4px 12px;box-shadow:inset 0 1px 2px rgba(0,0,0,.08);}
+.memo-cardbar-fill{height:100%;width:0;border-radius:20px;background:linear-gradient(90deg,#ffb3cd,#ff8fb1);transition:width .45s ease;}
+.memo-num{display:inline-block;font-family:'Jua',sans-serif;font-size:1rem;color:#fff;background:rgba(0,0,0,.18);padding:4px 16px;border-radius:20px;margin-bottom:24px;letter-spacing:1px;text-shadow:0 1px 2px rgba(0,0,0,.15);}
+.memo-en{font-size:56px;font-weight:800;color:#2a2333;letter-spacing:-1px;word-break:break-word;line-height:1.1;font-family:'Jua',sans-serif;text-shadow:0 2px 3px rgba(255,255,255,.65);}
+/* 영어: 위에서 내려오기 */
+.memo-en.drop{animation:enDrop .55s cubic-bezier(.2,1.2,.35,1) both;}
+@keyframes enDrop{0%{transform:translateY(-46px);opacity:0}100%{transform:translateY(0);opacity:1}}
+/* 영어: TTS 재생 중 통통 튀기 */
+.memo-en.pop{animation:enPop .42s cubic-bezier(.25,1.5,.4,1);}
+@keyframes enPop{0%{transform:scale(1)}35%{transform:scale(1.13)}70%{transform:scale(.97)}100%{transform:scale(1)}}
 .memo-pos{display:inline-block;font-size:.92rem;font-weight:800;margin:14px 0 4px;padding:5px 16px;border-radius:20px;letter-spacing:.3px;background:#fff;color:var(--soft);box-shadow:0 3px 8px rgba(0,0,0,.12);}
 .memo-pos.pos-n{color:#2f86e0;background:#e3f0ff;}
 .memo-pos.pos-v{color:#f2564b;background:#ffe6e3;}
 .memo-pos.pos-adj{color:#a066e6;background:#f2e8ff;}
 .memo-pos.pos-adv{color:#12a594;background:#dbf5f0;}
 .memo-pos.pos-num{color:#f08c00;background:#fff0d6;}
-.memo-ko{font-size:32px;color:#3a3340;font-weight:700;margin:16px 0 26px;font-family:'Gowun Dodum',serif;line-height:1.4;text-shadow:0 1px 2px rgba(255,255,255,.55);}
+.memo-ko{font-size:40px;color:#e8557f;font-weight:800;margin:14px 0 26px;font-family:'Gowun Dodum',serif;line-height:1.35;text-shadow:0 1px 2px rgba(255,255,255,.6);opacity:0;}
+/* 한글 뜻: 영어 먼저 보고 0.8초 뒤 아래에서 올라오기 */
+.memo-ko.rise{animation:koRise .5s ease .8s both;}
+@keyframes koRise{0%{transform:translateY(28px);opacity:0}100%{transform:translateY(0);opacity:1}}
 .sound-btn{background:#fff;border:none;border-radius:50%;width:64px;height:64px;cursor:pointer;font-size:1.7rem;transition:transform .15s;display:inline-flex;align-items:center;justify-content:center;box-shadow:0 5px 14px rgba(0,0,0,.12);}
 .sound-btn:hover{transform:translateY(-2px) scale(1.05);}
 .sound-btn.playing{background:var(--primary);color:#fff;animation:pulse .6s infinite;}
@@ -127,7 +138,7 @@ header{background:linear-gradient(135deg,#ffe3ef,#e5f1ff);padding:30px 24px 24px
 .home-btn{width:100%;padding:15px;border-radius:16px;border:none;background:linear-gradient(135deg,#9bd4ff,#7cc6ff);color:#fff;font-size:1rem;font-weight:800;cursor:pointer;font-family:'Jua',sans-serif;box-shadow:0 5px 12px rgba(124,198,255,.4);}
 
 footer{text-align:center;padding:24px;color:#d9b8c8;font-size:.78rem;font-family:'Gowun Dodum',serif;}
-@media(max-width:400px){.memo-en{font-size:42px;}.memo-ko{font-size:27px;}.day-grid{gap:7px;}}
+@media(max-width:400px){.memo-en{font-size:46px;}.memo-ko{font-size:33px;}.day-grid{gap:7px;}}
 </style>
 </head>
 <body>
@@ -177,6 +188,7 @@ footer{text-align:center;padding:24px;color:#d9b8c8;font-size:.78rem;font-family
     <div class="progress-bar"><div class="progress-fill" id="memoFill"></div></div>
     <div class="progress-text" id="memoText"></div>
     <div class="memo-card" id="memoCard">
+      <div class="memo-cardbar"><div class="memo-cardbar-fill" id="memoCardFill"></div></div>
       <div class="memo-num" id="memoNum"></div>
       <div class="memo-en" id="memoEn"></div>
       <div class="memo-pos" id="memoPos"></div>
@@ -744,12 +756,24 @@ function startMemorize(){ memoIdx=0; showScreen('screen-memo'); loadMemo(); }
 
 function loadMemo(){
   const w=sessionWords[memoIdx];
-  document.getElementById('memoCard').style.background=dayColor(chosenDay);
+  document.getElementById('memoCard').style.background=dayColor(chosenDay);   // Day별 배경
   document.getElementById('memoNum').textContent=(memoIdx+1)+' / '+sessionWords.length;
+
+  // 카드 상단 진행바 (현재 단어 기준)
+  document.getElementById('memoCardFill').style.width=Math.round((memoIdx+1)/sessionWords.length*100)+'%';
+
+  // 영어: 위에서 내려오기 (애니메이션 재시작)
   const en=document.getElementById('memoEn');
-  en.textContent=w.en; en.style.animation='none'; void en.offsetWidth; en.style.animation='';
+  en.textContent=w.en;
+  en.classList.remove('drop','pop'); void en.offsetWidth; en.classList.add('drop');
+
   setMemoPos(w.pos);
-  document.getElementById('memoKo').textContent=w.ko;
+
+  // 한글 뜻: 0.8초 뒤 아래에서 올라오기 (애니메이션 재시작)
+  const ko=document.getElementById('memoKo');
+  ko.textContent=w.ko;
+  ko.classList.remove('rise'); void ko.offsetWidth; ko.classList.add('rise');
+
   const pct=Math.round(memoIdx/sessionWords.length*100);
   document.getElementById('memoFill').style.width=pct+'%';
   document.getElementById('memoText').textContent='Day '+chosenDay+' · '+(memoIdx+1)+' / '+sessionWords.length;
@@ -759,6 +783,13 @@ function loadMemo(){
   document.getElementById('memoToQuiz').style.display=last?'block':'none';
   setDots(0);
   autoSpeak3(w.en);
+}
+
+// TTS 재생마다 영어 단어 통통 튀기 (drop 애니메이션과 겹치지 않게 pop 재적용)
+function bounceEn(){
+  const en=document.getElementById('memoEn');
+  if(!en) return;
+  en.classList.remove('drop','pop'); void en.offsetWidth; en.classList.add('pop');
 }
 
 function setMemoNavEnabled(on){
@@ -780,6 +811,7 @@ function autoSpeak3(text){
     cnt.textContent='🔊 발음 '+n+' / 3';
     setDots(n);
     btn.classList.add('playing');
+    if(n>=2) bounceEn();                        // 1번째는 내려오기(drop), 2·3번째는 통통(pop)
     memoAudio = playOnce(text, function(){
       if(token!==memoToken) return;
       btn.classList.remove('playing');
