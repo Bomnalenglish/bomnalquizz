@@ -53,13 +53,11 @@ header{background:linear-gradient(135deg,#f7efe4,#ece0d2);padding:32px 24px 24px
 .progress-fill{height:100%;background:var(--primary);border-radius:20px;transition:width .4s ease;}
 .progress-text{text-align:right;font-size:.75rem;color:var(--soft);margin-top:4px;margin-bottom:16px;font-family:'Gowun Dodum',serif;}
 .memo-card{background:#FFE0E9;border-radius:32px;padding:40px 24px;text-align:center;box-shadow:0 10px 28px rgba(0,0,0,.10),inset 0 -8px 0 rgba(0,0,0,.04);border:4px solid rgba(255,255,255,.7);margin-bottom:20px;position:relative;transition:background .45s ease;}
-.memo-pic{position:relative;width:100%;max-width:340px;aspect-ratio:4/3;margin:0 auto 20px;border-radius:20px;overflow:hidden;background:rgba(255,255,255,.55);box-shadow:0 4px 14px rgba(0,0,0,.08);display:none;}
+/* 이미지 영역은 항상 자리를 예약(레이아웃 흔들림 방지). 스피너 없이 로딩되면 자연스럽게 페이드인 */
+.memo-pic{position:relative;width:100%;max-width:340px;aspect-ratio:4/3;margin:0 auto 20px;border-radius:20px;overflow:hidden;background:rgba(255,255,255,.35);box-shadow:0 4px 14px rgba(0,0,0,.06);display:none;}
 .memo-pic.show{display:block;}
-.memo-pic-img{width:100%;height:100%;object-fit:cover;display:block;opacity:0;transition:opacity .4s ease;}
+.memo-pic-img{width:100%;height:100%;object-fit:cover;display:block;opacity:0;transition:opacity .5s ease;}
 .memo-pic.loaded .memo-pic-img{opacity:1;}
-.memo-pic-spin{position:absolute;top:50%;left:50%;width:42px;height:42px;margin:-21px 0 0 -21px;border:4px solid rgba(0,0,0,.10);border-top-color:var(--primary);border-radius:50%;animation:memospin .8s linear infinite;}
-.memo-pic.loaded .memo-pic-spin{display:none;}
-@keyframes memospin{to{transform:rotate(360deg);}}
 .memo-en{font-size:3.4rem;font-weight:800;color:var(--ink);letter-spacing:-1px;word-break:break-word;line-height:1.1;animation:memoPop .45s cubic-bezier(.2,1.35,.4,1);}
 @keyframes memoPop{0%{transform:scale(.5);opacity:0}100%{transform:scale(1);opacity:1}}
 .memo-pos{display:inline-block;font-size:.82rem;font-weight:700;margin:10px 0 2px;padding:3px 12px;border-radius:20px;letter-spacing:.3px;background:#fff;color:var(--soft);box-shadow:0 2px 6px rgba(0,0,0,.06);}
@@ -202,7 +200,6 @@ footer{text-align:center;padding:24px;color:#bbb;font-size:.75rem;font-family:'G
     <div class="progress-text" id="memoText"></div>
     <div class="memo-card" id="memoCard">
       <div class="memo-pic" id="memoPic">
-        <div class="memo-pic-spin" id="memoPicSpin"></div>
         <img class="memo-pic-img" id="memoPicImg" alt="" referrerpolicy="no-referrer"/>
       </div>
       <div class="memo-en" id="memoEn"></div>
@@ -748,42 +745,77 @@ function loadMemo(){
   // 파스텔 배경 카드 + 단어 등장 애니메이션 + 재생 표시 초기화
   styleMemoCard(w.en);
   setMemoDots(0, 0);
-  // Pollinations AI 이미지 (로딩 중 스피너, 실패 시 카드만)
-  loadMemoImage(w.en);
-  // TTS 3회 자동재생
+  // Pollinations AI 이미지 — 단어/뜻은 즉시 보이고 이미지는 로딩되면 나타남 (TTS는 대기 없이 바로)
+  showMemoImage(w.en);
+  preloadAhead(memoIdx, 3);   // 다음 3개 단어 이미지 백그라운드 선로딩
+  // TTS 3회 자동재생 (이미지 로딩과 무관하게 즉시 시작)
   autoSpeak3(w.en);
 }
 
-/* ===== Pollinations AI 이미지 ===== */
-let _picReqSeq = 0;   // 최신 요청만 반영 (빠른 이전/다음 대비)
-function loadMemoImage(word){
+/* ===== Pollinations AI 이미지 (preload + 논블로킹 표시) ===== */
+let _picReqSeq = 0;          // 최신 요청만 반영 (빠른 이전/다음 대비)
+const _imgPreload = {};      // word -> {img:Image, status:'loading'|'ok'|'err', cbs:[]}
+
+// 단어별 고정 URL (seed=단어 해시) → preload한 URL과 표시 URL이 동일해 캐시 적중
+function imgUrlFor(word){
+  const w = String(word || '');
+  let hash = 0;
+  for(let i=0; i<w.length; i++){ hash = (hash * 31 + w.charCodeAt(i)) >>> 0; }
+  const prompt = 'cute cartoon ' + w + ' pixar disney style colorful safe for kids no text';
+  return 'https://image.pollinations.ai/prompt/' + encodeURIComponent(prompt)
+       + '?width=400&height=300&nologo=true&seed=' + hash;
+}
+
+// Image() 객체로 백그라운드 선로딩 (한 번만 요청, 상태·콜백 보관)
+function preloadImage(word){
+  if(!word) return null;
+  if(_imgPreload[word]) return _imgPreload[word];
+  const rec = { img: new Image(), status: 'loading', cbs: [] };
+  rec.img.referrerPolicy = 'no-referrer';
+  rec.img.onload = function(){
+    rec.status = (rec.img.naturalWidth > 1) ? 'ok' : 'err';
+    rec.cbs.splice(0).forEach(function(fn){ fn(rec.status); });
+  };
+  rec.img.onerror = function(){
+    rec.status = 'err';
+    rec.cbs.splice(0).forEach(function(fn){ fn('err'); });
+  };
+  rec.img.src = imgUrlFor(word);
+  _imgPreload[word] = rec;
+  return rec;
+}
+
+// 현재 단어 이후 n개 미리 선로딩
+function preloadAhead(idx, n){
+  for(let k=1; k<=n; k++){
+    const nx = sessionWords[idx + k];
+    if(nx) preloadImage(nx.en);
+  }
+}
+
+// 스피너 없이: 이미 로딩됐으면 즉시, 아니면 로딩되는 순간 자연스럽게 페이드인
+function showMemoImage(word){
   const seq = ++_picReqSeq;
   const wrap = document.getElementById('memoPic');
-  const oldImg = document.getElementById('memoPicImg');
-  if(!wrap || !oldImg) return;
-
-  // 이전 이미지가 남지 않도록 <img>를 새 요소로 완전히 교체 + 스피너 표시
-  wrap.classList.remove('loaded');
+  const img = document.getElementById('memoPicImg');
+  if(!wrap || !img) return;
+  wrap.classList.remove('loaded');   // 이전 이미지 페이드아웃 (자리는 예약 유지)
   wrap.classList.add('show');
-  const img = oldImg.cloneNode(false);
-  img.removeAttribute('src');            // 새 요소도 빈 값에서 시작
-  oldImg.replaceWith(img);
 
-  // 단어마다 새 URL + 캐시 방지용 timestamp
-  const prompt = 'cute cartoon ' + word + ' pixar disney style colorful safe for kids no text';
-  const url = 'https://image.pollinations.ai/prompt/' + encodeURIComponent(prompt)
-            + '?width=400&height=300&nologo=true&seed=' + Date.now();
-
-  img.onload = function(){
-    if(seq !== _picReqSeq) return;        // 그새 다른 단어로 이동했으면 무시
-    if(img.naturalWidth <= 1){ if(img.onerror) img.onerror(); return; }
-    wrap.classList.add('loaded');         // 로딩 완료 → 이미지 표시
-  };
-  img.onerror = function(){
+  const rec = preloadImage(word);
+  const url = imgUrlFor(word);
+  function reveal(){
+    if(seq !== _picReqSeq) return;   // 그새 다른 단어로 이동 → 무시
+    img.src = url;                   // preload로 캐시됨 → 즉시 로드
+    wrap.classList.add('loaded');    // 페이드인
+  }
+  function fail(){
     if(seq !== _picReqSeq) return;
-    wrap.classList.remove('show','loaded'); // 실패 시 이미지 영역 숨김 → 카드만
-  };
-  img.src = url;                          // 매번 새 URL로 교체
+    wrap.classList.remove('show','loaded');  // 실패 시 이미지 영역 숨김 → 카드만
+  }
+  if(rec.status === 'ok')      reveal();
+  else if(rec.status === 'err') fail();
+  else rec.cbs.push(function(st){ st === 'ok' ? reveal() : fail(); });
 }
 
 /* ===== 암기 카드 꾸미기 (외부 이미지/이모지 없음) ===== */
