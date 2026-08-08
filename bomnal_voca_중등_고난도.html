@@ -121,6 +121,8 @@ header{background:linear-gradient(135deg,#ffe3ef,#e5f1ff);padding:30px 24px 24px
 .choice-btn.correct{border-color:var(--green);background:#e2f7ef;color:var(--green);}
 .choice-btn.wrong{border-color:var(--red);background:#ffecec;color:var(--red);}
 .choice-btn:disabled{cursor:default;}
+.choice-btn.selected{border-color:var(--primary);background:#ffeaf3;box-shadow:0 0 0 3px rgba(242,109,151,.28);transform:translateY(-1px);}
+.confirm-btn{background:linear-gradient(135deg,#9bd4ff,#5aa9e6) !important;box-shadow:0 5px 14px rgba(90,169,230,.4) !important;margin-bottom:8px;}
 .feedback{text-align:center;font-size:.95rem;font-weight:700;min-height:24px;margin-bottom:14px;font-family:'Jua',sans-serif;}
 .feedback.ok{color:var(--green);}
 .feedback.bad{color:var(--red);}
@@ -231,6 +233,7 @@ footer{text-align:center;padding:24px;color:#d9b8c8;font-size:.78rem;font-family
     </div>
     <div class="choices" id="choices"></div>
     <div class="feedback" id="feedback"></div>
+    <button class="next-btn confirm-btn" id="confirmBtn" onclick="confirmAnswer()">확인 ✓</button>
     <button class="next-btn" id="nextBtn" onclick="nextWord()">다음 →</button>
   </div>
 </div>
@@ -1210,6 +1213,7 @@ let memoToken = 0;       // 단어 바뀔 때마다 증가 → 이전 재생 세
 let memoAudio = null;    // 현재 암기 Audio 컨트롤러
 // 퀴즈 상태
 let queue = [], currentIdx = 0, currentWord = null, answered = false;
+let selectedBtn = null, selectedIsCorrect = false;
 let wrongWords = [], allWrong = [], round = 1, startTime = null;
 let quizAudio = null;
 
@@ -1481,6 +1485,8 @@ function loadWord(){
   document.getElementById('wordEn').textContent=currentWord.en;
   document.getElementById('feedback').textContent=''; document.getElementById('feedback').className='feedback';
   document.getElementById('nextBtn').classList.remove('show');
+  document.getElementById('confirmBtn').classList.remove('show');
+  selectedBtn=null;
   buildChoices();
   setTimeout(speakWord,300);
 }
@@ -1503,14 +1509,25 @@ function buildChoices(){
   shuffle([currentWord,...pool]).forEach(opt=>{
     const btn=document.createElement('button');
     btn.className='choice-btn'; btn.textContent=opt.ko;
-    btn.onclick=()=>selectAnswer(btn,opt.id===currentWord.id);
+    btn.onclick=()=>selectChoice(btn,opt.id===currentWord.id);
     container.appendChild(btn);
   });
 }
-function selectAnswer(btn,isCorrect){
-  if(answered) return; answered=true;
+// 보기 선택(하이라이트만) — 확인 전까지 다른 보기로 변경 가능
+function selectChoice(btn,isCorrect){
+  if(answered) return;
+  document.querySelectorAll('.choice-btn').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+  selectedBtn=btn; selectedIsCorrect=isCorrect;
+  document.getElementById('confirmBtn').classList.add('show');
+}
+// 확인 버튼 → 채점 확정
+function confirmAnswer(){
+  if(answered||!selectedBtn) return; answered=true;
+  document.getElementById('confirmBtn').classList.remove('show');
+  const btn=selectedBtn, isCorrect=selectedIsCorrect;
   document.querySelectorAll('.choice-btn').forEach(b=>{
-    b.disabled=true;
+    b.disabled=true; b.classList.remove('selected');
     if(b.textContent===currentWord.ko) b.classList.add('correct');
   });
   const fb=document.getElementById('feedback');
