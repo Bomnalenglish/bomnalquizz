@@ -939,8 +939,17 @@ function preselectMySchool(savedSchool){
 }
 
 window.addEventListener("load", () => {
-  // 자동 로그인 없음 — 허브를 열 때마다 항상 코드 입력 화면부터
-  // 이전에 입력한 코드/이름은 input에 자동으로 채워 다시 입력하지 않게 도와줌
+  // 자동 로그인: 이전에 로그인한 학생이면 코드 재입력 없이 바로 허브로
+  // (퀴즈에서 '허브로 돌아가기' 시 로그아웃되는 문제 해결)
+  const authName   = localStorage.getItem("bn_name");
+  const authSchool = localStorage.getItem("bn_school");
+  if (localStorage.getItem("bn_auth") === "1" && authName && authSchool) {
+    studentName = authName;
+    studentSchool = authSchool;
+    try { openHub(); } catch (e) { console.log("자동 로그인 실패", e); }
+    return;
+  }
+  // 미로그인 상태: 이전에 입력한 코드/이름은 input에 자동으로 채워 다시 입력하지 않게 도와줌
   const lastCode = localStorage.getItem("bn_id");
   if (lastCode) {
     const ci = document.getElementById("codeInput");
