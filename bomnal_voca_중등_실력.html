@@ -1,0 +1,2537 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
+<title>봄날 보카 · 워드마스터 중등 실력 1852</title>
+<script type="module" src="bn_tracker.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Jua&family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#fff7fb;--card:#ffffff;--ink:#3a3340;--soft:#9a94a3;
+  --primary:#ff8fb1;--primary-d:#f26d97;--accent:#7cc6ff;--mint:#7bd8c0;
+  --green:#3fb98f;--red:#ff6b6b;--bdr:#ffe0ec;--shadow:0 8px 26px rgba(255,143,177,.18);
+}
+body{font-family:'Noto Sans KR',sans-serif;background:linear-gradient(160deg,#fff7fb,#f2f8ff);min-height:100vh;color:var(--ink);}
+
+header{background:linear-gradient(135deg,#ffe3ef,#e5f1ff);padding:30px 24px 24px;text-align:center;border-bottom:3px solid #fff;}
+.logo-text{font-family:'Jua',sans-serif;font-size:1.6rem;color:#f26d97;}
+.logo-text .hl{color:#5aa9e6;}
+.level-badge{display:inline-block;background:var(--primary);color:#fff;font-size:.8rem;font-weight:700;padding:4px 16px;border-radius:20px;margin-top:8px;letter-spacing:.5px;box-shadow:0 3px 8px rgba(242,109,151,.3);}
+
+.screen{display:none;}
+.screen.active{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:70vh;padding:24px;}
+
+.auth-card{background:var(--card);border-radius:28px;padding:34px 26px;width:100%;max-width:430px;box-shadow:var(--shadow);border:3px solid #fff;text-align:center;}
+.auth-card h2{font-family:'Jua',sans-serif;font-size:1.4rem;margin-bottom:8px;}
+.auth-card p{font-size:.86rem;color:var(--soft);margin-bottom:20px;font-family:'Gowun Dodum',serif;line-height:1.7;}
+.hello{font-size:1.1rem;font-weight:700;color:var(--primary-d);margin-bottom:6px;font-family:'Jua',sans-serif;}
+.hello .sch{font-size:.82rem;color:var(--soft);font-weight:400;}
+.name-input{width:100%;padding:13px 16px;border:2.5px solid var(--bdr);border-radius:16px;font-size:1rem;font-family:inherit;outline:none;text-align:center;background:#fff;margin-bottom:6px;}
+.name-input:focus{border-color:var(--primary);}
+.name-input.err{border-color:var(--red);animation:shake .3s;}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.steps{display:flex;flex-direction:column;gap:10px;margin:8px 0 20px;text-align:left;}
+.step-item{display:flex;align-items:center;gap:12px;background:#fff8fc;border:2px solid var(--bdr);border-radius:18px;padding:12px 14px;}
+.step-num{width:34px;height:34px;flex-shrink:0;border-radius:50%;background:var(--primary);color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;font-family:'Jua',sans-serif;box-shadow:0 3px 7px rgba(242,109,151,.35);}
+.step-txt{font-size:.86rem;line-height:1.4;}
+.step-txt b{font-size:.94rem;}
+.start-btn{width:100%;margin-top:4px;padding:16px;border-radius:18px;border:none;background:linear-gradient(135deg,#ff9dbb,#f26d97);color:#fff;font-size:1.1rem;font-weight:800;cursor:pointer;font-family:'Jua',sans-serif;transition:transform .15s,box-shadow .15s;box-shadow:0 6px 16px rgba(242,109,151,.35);}
+.start-btn:hover{transform:translateY(-2px);box-shadow:0 9px 20px rgba(242,109,151,.45);}
+
+/* DAY SELECT */
+.day-card{max-width:460px;}
+.wpd-row{display:flex;align-items:center;justify-content:center;gap:10px;margin:2px 0 14px;flex-wrap:wrap;}
+.wpd-label{font-size:.82rem;color:var(--soft);font-family:'Gowun Dodum',serif;}
+.wpd-btns{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;}
+.wpd-btn{padding:6px 12px;border-radius:14px;border:2px solid var(--bdr);background:#fff;color:var(--soft);font-size:.82rem;font-weight:800;cursor:pointer;font-family:'Jua',sans-serif;transition:all .15s;}
+.wpd-btn:hover{border-color:var(--primary);}
+.wpd-btn.on{background:linear-gradient(135deg,#ff9dbb,#f26d97);color:#fff;border-color:transparent;box-shadow:0 3px 8px rgba(242,109,151,.3);}
+.day-progress{margin:4px 0 16px;}
+.day-progress-bar{background:#ffe0ec;border-radius:20px;height:12px;overflow:hidden;box-shadow:inset 0 1px 3px rgba(0,0,0,.06);}
+.day-progress-fill{height:100%;width:0;background:linear-gradient(90deg,#ffd66b,#ff8fb1,#7cc6ff);border-radius:20px;transition:width .6s ease;}
+.day-progress-text{font-size:.85rem;color:var(--primary-d);margin-top:8px;font-family:'Jua',sans-serif;text-align:center;}
+.day-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:9px;margin:6px 0 18px;}
+.day-btn{position:relative;padding:13px 4px;border-radius:16px;border:2.5px solid var(--bdr);background:#fff;color:var(--ink);font-size:.95rem;font-weight:800;cursor:pointer;font-family:'Jua',sans-serif;transition:all .15s;line-height:1.2;}
+.day-btn .db-n{display:block;font-size:.58rem;font-weight:400;color:var(--soft);font-family:'Gowun Dodum',serif;margin-top:2px;}
+.day-btn:hover{border-color:var(--primary);background:#fff3f8;transform:translateY(-3px) scale(1.03);}
+.day-btn.done{background:linear-gradient(135deg,#d6f7ec,#c7f0e4);border-color:var(--mint);color:var(--green);}
+.day-btn.done .db-n{color:var(--green);}
+.day-btn.done::after{content:'✅';position:absolute;top:-7px;right:-7px;font-size:.8rem;}
+.day-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.reset-btn{background:none;border:2px solid var(--bdr);color:var(--soft);font-size:.72rem;padding:6px 12px;border-radius:12px;cursor:pointer;font-family:inherit;transition:all .15s;}
+.reset-btn:hover{border-color:var(--red);color:var(--red);}
+.auth-back{background:none;border:none;color:var(--soft);font-size:.82rem;cursor:pointer;text-decoration:underline;font-family:inherit;}
+
+/* MEMORIZE */
+#screen-memo{padding:20px;align-items:stretch;justify-content:flex-start;min-height:100vh;}
+.memo-wrap{max-width:520px;width:100%;margin:0 auto;}
+.stage-tag{text-align:center;font-size:.85rem;font-weight:700;color:var(--primary-d);margin-bottom:10px;letter-spacing:.5px;font-family:'Jua',sans-serif;}
+.progress-bar{background:#ffe0ec;border-radius:20px;height:10px;margin-bottom:8px;overflow:hidden;}
+.progress-fill{height:100%;background:linear-gradient(90deg,#ffd66b,#ff8fb1);border-radius:20px;transition:width .4s ease;}
+.progress-text{text-align:right;font-size:.78rem;color:var(--soft);margin-top:4px;margin-bottom:16px;font-family:'Gowun Dodum',serif;}
+.memo-card{background:#EADCFB;border-radius:36px;padding:22px 24px 40px;text-align:center;box-shadow:0 14px 34px rgba(0,0,0,.12),inset 0 -9px 0 rgba(0,0,0,.045);border:6px solid #fff;margin-bottom:20px;position:relative;transition:background .5s ease;overflow:hidden;}
+/* 카드 상단 진행바 + 번호 */
+.memo-cardbar{height:9px;border-radius:20px;background:rgba(255,255,255,.55);overflow:hidden;margin:0 4px 12px;box-shadow:inset 0 1px 2px rgba(0,0,0,.08);}
+.memo-cardbar-fill{height:100%;width:0;border-radius:20px;background:linear-gradient(90deg,#ffb3cd,#ff8fb1);transition:width .45s ease;}
+.memo-num{display:inline-block;font-family:'Jua',sans-serif;font-size:1rem;color:#fff;background:rgba(0,0,0,.18);padding:4px 16px;border-radius:20px;margin-bottom:24px;letter-spacing:1px;text-shadow:0 1px 2px rgba(0,0,0,.15);}
+.memo-en{font-size:56px;font-weight:800;color:#2a2333;letter-spacing:-1px;word-break:break-word;line-height:1.1;font-family:'Jua',sans-serif;text-shadow:0 2px 3px rgba(255,255,255,.65);}
+/* 영어: 위에서 내려오기 */
+.memo-en.drop{animation:enDrop .55s cubic-bezier(.2,1.2,.35,1) both;}
+@keyframes enDrop{0%{transform:translateY(-46px);opacity:0}100%{transform:translateY(0);opacity:1}}
+/* 영어: TTS 재생 중 통통 튀기 */
+.memo-en.pop{animation:enPop .42s cubic-bezier(.25,1.5,.4,1);}
+@keyframes enPop{0%{transform:scale(1)}35%{transform:scale(1.13)}70%{transform:scale(.97)}100%{transform:scale(1)}}
+.memo-pos{display:inline-block;font-size:.92rem;font-weight:800;margin:14px 0 4px;padding:5px 16px;border-radius:20px;letter-spacing:.3px;background:#fff;color:var(--soft);box-shadow:0 3px 8px rgba(0,0,0,.12);}
+.memo-pos.pos-n{color:#2f86e0;background:#e3f0ff;}
+.memo-pos.pos-v{color:#f2564b;background:#ffe6e3;}
+.memo-pos.pos-adj{color:#a066e6;background:#f2e8ff;}
+.memo-pos.pos-adv{color:#12a594;background:#dbf5f0;}
+.memo-pos.pos-num{color:#f08c00;background:#fff0d6;}
+.memo-ko{font-size:40px;color:#e8557f;font-weight:800;margin:14px 0 26px;font-family:'Gowun Dodum',serif;line-height:1.35;text-shadow:0 1px 2px rgba(255,255,255,.6);opacity:0;}
+/* 한글 뜻: 영어 먼저 보고 0.8초 뒤 아래에서 올라오기 */
+.memo-ko.rise{animation:koRise .5s ease .8s both;}
+@keyframes koRise{0%{transform:translateY(28px);opacity:0}100%{transform:translateY(0);opacity:1}}
+.sound-btn{background:#fff;border:none;border-radius:50%;width:64px;height:64px;cursor:pointer;font-size:1.7rem;transition:transform .15s;display:inline-flex;align-items:center;justify-content:center;box-shadow:0 5px 14px rgba(0,0,0,.12);}
+.sound-btn:hover{transform:translateY(-2px) scale(1.05);}
+.sound-btn.playing{background:var(--primary);color:#fff;animation:pulse .6s infinite;}
+.memo-dots{display:flex;justify-content:center;gap:12px;margin-top:18px;}
+.memo-dot{width:15px;height:15px;border-radius:50%;background:#fff;box-shadow:inset 0 0 0 2px rgba(0,0,0,.10);transition:transform .2s,background .2s,box-shadow .2s;}
+.memo-dot.on{background:var(--primary);box-shadow:0 2px 8px rgba(242,109,151,.5);transform:scale(1.3);}
+.memo-dot.pulse{animation:pulse .6s infinite;}
+.play-count{font-size:.8rem;color:var(--primary-d);margin-top:12px;font-family:'Jua',sans-serif;min-height:18px;}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.18)}}
+.memo-nav{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.nav-btn{padding:16px;border-radius:18px;border:2.5px solid var(--bdr);background:#fff;color:var(--ink);font-size:1rem;font-weight:800;cursor:pointer;font-family:'Jua',sans-serif;transition:all .15s;}
+.nav-btn:hover:not(:disabled){border-color:var(--primary);background:#fff3f8;}
+.nav-btn:disabled{opacity:.4;cursor:default;}
+.nav-btn.primary{background:linear-gradient(135deg,#ff9dbb,#f26d97);color:#fff;border-color:transparent;box-shadow:0 5px 14px rgba(242,109,151,.35);}
+.memo-tofinish{grid-column:1 / -1;}
+
+/* QUIZ */
+#screen-quiz{padding:20px;align-items:stretch;justify-content:flex-start;min-height:100vh;}
+.quiz-wrap{max-width:520px;width:100%;margin:0 auto;}
+.word-card{background:#fff;border-radius:28px;padding:36px 24px 28px;text-align:center;box-shadow:var(--shadow);border:4px solid #fff;margin-bottom:20px;position:relative;}
+.round-badge{position:absolute;top:14px;left:16px;font-size:.72rem;background:#fff0c9;color:#e08e00;padding:3px 12px;border-radius:20px;font-weight:800;font-family:'Jua',sans-serif;}
+.word-en{font-size:2.6rem;font-weight:800;color:var(--ink);letter-spacing:-1px;margin-bottom:16px;font-family:'Jua',sans-serif;}
+.choices{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px;}
+.choice-btn{background:#fff;border:2.5px solid var(--bdr);border-radius:18px;padding:17px 14px;font-size:1rem;font-family:'Noto Sans KR',sans-serif;cursor:pointer;transition:all .15s;text-align:center;line-height:1.4;color:var(--ink);font-weight:700;}
+.choice-btn:hover:not(:disabled){border-color:var(--primary);background:#fff3f8;transform:translateY(-2px);}
+.choice-btn.correct{border-color:var(--green);background:#e2f7ef;color:var(--green);}
+.choice-btn.wrong{border-color:var(--red);background:#ffecec;color:var(--red);}
+.choice-btn:disabled{cursor:default;}
+.feedback{text-align:center;font-size:.95rem;font-weight:700;min-height:24px;margin-bottom:14px;font-family:'Jua',sans-serif;}
+.feedback.ok{color:var(--green);}
+.feedback.bad{color:var(--red);}
+.next-btn{width:100%;padding:16px;border-radius:18px;border:none;background:linear-gradient(135deg,#ff9dbb,#f26d97);color:#fff;font-size:1.05rem;font-weight:800;cursor:pointer;font-family:'Jua',sans-serif;display:none;box-shadow:0 5px 14px rgba(242,109,151,.35);}
+.next-btn.show{display:block;}
+
+/* ROUND / DONE */
+.round-card,.done-card{background:#fff;border-radius:28px;padding:40px 28px;width:100%;max-width:390px;box-shadow:var(--shadow);border:4px solid #fff;text-align:center;}
+.round-emoji,.done-emoji{font-size:3.6rem;margin-bottom:12px;}
+.round-title,.done-title{font-family:'Jua',sans-serif;font-size:1.5rem;margin-bottom:8px;}
+.round-sub,.done-sub{font-size:.9rem;color:var(--soft);font-family:'Gowun Dodum',serif;line-height:1.7;margin-bottom:22px;white-space:pre-line;}
+.score-big{font-size:3rem;font-weight:800;color:var(--primary-d);line-height:1;font-family:'Jua',sans-serif;}
+.score-label{font-size:.85rem;color:var(--soft);margin-top:4px;font-family:'Gowun Dodum',serif;margin-bottom:22px;}
+.retry-btn{width:100%;padding:15px;border-radius:16px;border:none;background:linear-gradient(135deg,#ffd66b,#ffb84d);color:#7a5200;font-size:1.05rem;font-weight:800;cursor:pointer;font-family:'Jua',sans-serif;margin-bottom:10px;box-shadow:0 5px 12px rgba(255,184,77,.4);}
+.done-btn{width:100%;padding:14px;border-radius:16px;border:2.5px solid var(--bdr);background:#fff;color:var(--soft);font-size:1rem;font-weight:800;cursor:pointer;font-family:'Jua',sans-serif;}
+.stat-row{display:flex;justify-content:center;gap:20px;margin-bottom:22px;}
+.stat-box{text-align:center;}
+.stat-n{font-size:2rem;font-weight:800;color:var(--primary-d);font-family:'Jua',sans-serif;}
+.stat-l{font-size:.72rem;color:var(--soft);font-family:'Gowun Dodum',serif;}
+.done-actions{display:flex;flex-direction:column;gap:10px;margin-bottom:10px;}
+.home-btn{width:100%;padding:15px;border-radius:16px;border:none;background:linear-gradient(135deg,#9bd4ff,#7cc6ff);color:#fff;font-size:1rem;font-weight:800;cursor:pointer;font-family:'Jua',sans-serif;box-shadow:0 5px 12px rgba(124,198,255,.4);}
+
+footer{text-align:center;padding:24px;color:#d9b8c8;font-size:.78rem;font-family:'Gowun Dodum',serif;}
+@media(max-width:400px){.memo-en{font-size:46px;}.memo-ko{font-size:33px;}.day-grid{gap:7px;}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-text">봄날 <span class="hl">BOMNAL</span> 보카</div>
+  <div class="level-badge">📕 워드마스터 중등 실력 · 1852단어</div>
+</header>
+
+<!-- INTRO -->
+<div id="screen-intro" class="screen active">
+  <div class="auth-card">
+    <div class="hello" id="helloBox"></div>
+    <p id="introDesc">암기 없이 바로 Day별 테스트로 실력을 확인해요! 💪</p>
+    <input type="text" class="name-input" id="nameInput" placeholder="이름을 입력하세요" maxlength="12"
+           style="display:none" onkeydown="if(event.key==='Enter')startFromIntro()"/>
+    <div class="steps">
+      <div class="step-item"><div class="step-num">1</div><div class="step-txt"><b>4지선다 테스트</b><br>영어 보고 알맞은 뜻 고르기 ✏️</div></div>
+      <div class="step-item"><div class="step-num">2</div><div class="step-txt"><b>오답 반복</b><br>틀린 단어만 0개 될 때까지! 🔁</div></div>
+    </div>
+    <button class="start-btn" onclick="startFromIntro()">시작하기 →</button>
+  </div>
+</div>
+
+<!-- DAY SELECT -->
+<div id="screen-day" class="screen">
+  <div class="auth-card day-card">
+    <h2>📅 Day를 선택하세요</h2>
+    <p id="daySub"></p>
+    <div class="wpd-row">
+      <span class="wpd-label">하루 단어 수</span>
+      <div class="wpd-btns" id="wpdBtns"></div>
+    </div>
+    <div class="day-progress">
+      <div class="day-progress-bar"><div class="day-progress-fill" id="dayProgFill"></div></div>
+      <div class="day-progress-text" id="dayProgText">40일 중 0일 완료</div>
+    </div>
+    <div class="day-grid" id="dayGrid"></div>
+    <div class="day-foot">
+      <button class="auth-back" onclick="showScreen('screen-intro')">← 처음으로</button>
+      <button class="reset-btn" onclick="resetProgress()">🗑 전체 초기화</button>
+    </div>
+  </div>
+</div>
+
+<!-- STAGE 1: 암기 -->
+<div id="screen-memo" class="screen">
+  <div class="memo-wrap">
+    <div class="stage-tag">STEP 1 · 암기 ✨</div>
+    <div class="progress-bar"><div class="progress-fill" id="memoFill"></div></div>
+    <div class="progress-text" id="memoText"></div>
+    <div class="memo-card" id="memoCard">
+      <div class="memo-cardbar"><div class="memo-cardbar-fill" id="memoCardFill"></div></div>
+      <div class="memo-num" id="memoNum"></div>
+      <div class="memo-en" id="memoEn"></div>
+      <div class="memo-pos" id="memoPos"></div>
+      <div class="memo-ko" id="memoKo"></div>
+      <button class="sound-btn" id="memoSound" onclick="replayMemo()" title="발음 듣기">🔊</button>
+      <div class="memo-dots" id="memoDots" aria-hidden="true">
+        <span class="memo-dot" data-i="1"></span>
+        <span class="memo-dot" data-i="2"></span>
+        <span class="memo-dot" data-i="3"></span>
+      </div>
+      <div class="play-count" id="memoCount"></div>
+    </div>
+    <div class="memo-nav">
+      <button class="nav-btn" id="memoPrev" onclick="memoPrev()">← 이전</button>
+      <button class="nav-btn primary" id="memoNext" onclick="memoNext()">다음 →</button>
+      <button class="nav-btn primary memo-tofinish" id="memoToQuiz" style="display:none" onclick="startQuizStage()">2단계 퀴즈 시작 ✏️</button>
+    </div>
+  </div>
+</div>
+
+<!-- STAGE 2 & 3: 퀴즈 -->
+<div id="screen-quiz" class="screen">
+  <div class="quiz-wrap">
+    <div class="stage-tag" id="quizStageTag">STEP 2 · 4지선다 퀴즈</div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="progress-text" id="progressText"></div>
+    <div class="word-card">
+      <div class="round-badge" id="roundBadge">1라운드</div>
+      <div class="word-en" id="wordEn"></div>
+      <button class="sound-btn" id="soundBtn" onclick="speakWord()" title="발음 듣기" style="width:50px;height:50px;font-size:1.4rem">🔊</button>
+    </div>
+    <div class="choices" id="choices"></div>
+    <div class="feedback" id="feedback"></div>
+    <button class="next-btn" id="nextBtn" onclick="nextWord()">다음 →</button>
+  </div>
+</div>
+
+<!-- ROUND COMPLETE -->
+<div id="screen-round" class="screen">
+  <div class="round-card">
+    <div class="round-emoji" id="roundEmoji"></div>
+    <div class="round-title" id="roundTitle"></div>
+    <div class="round-sub" id="roundSub"></div>
+    <div class="score-big" id="roundScore"></div>
+    <div class="score-label" id="roundScoreLabel"></div>
+    <button class="retry-btn" onclick="startRetry()">오답 다시 풀기 🔄</button>
+    <button class="done-btn" onclick="finishEarly()">완료하기</button>
+  </div>
+</div>
+
+<!-- DONE -->
+<div id="screen-done" class="screen">
+  <div class="done-card">
+    <div class="done-emoji">🏆</div>
+    <div class="done-title" id="doneTitle">완벽해요!</div>
+    <div class="done-sub" id="doneSub"></div>
+    <div class="stat-row">
+      <div class="stat-box"><div class="stat-n" id="statRounds"></div><div class="stat-l">총 라운드</div></div>
+      <div class="stat-box"><div class="stat-n" id="statWords"></div><div class="stat-l">총 단어</div></div>
+      <div class="stat-box"><div class="stat-n" id="statWrong"></div><div class="stat-l">최초 오답</div></div>
+    </div>
+    <div class="done-actions">
+      <button class="retry-btn" onclick="restartSame()">🔄 다시 하기 (<span id="doneSameCount"></span>)</button>
+      <button class="nav-btn" onclick="chooseAnother()" style="width:100%">📅 다른 Day 선택</button>
+    </div>
+    <button class="home-btn" onclick="location.href='index.html'">허브로 돌아가기</button>
+  </div>
+</div>
+
+<footer>🌸 봄날 BOMNAL ENGLISH · 워드마스터 중등 실력 1852</footer>
+
+<!-- Firebase (bomnalvaca) -->
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getFirestore,collection,addDoc,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+const cfg={apiKey:"AIzaSyCxS524S8KAaF87DomPtl9sJdF-eqes404",authDomain:"bomnalvaca.firebaseapp.com",projectId:"bomnalvaca",storageBucket:"bomnalvaca.firebasestorage.app",messagingSenderId:"115868052300",appId:"1:115868052300:web:765c08867b6f1ce0987de9"};
+const app=initializeApp(cfg);
+const db=getFirestore(app);
+window._fbReady=true;
+window._saveResult=async(data)=>{
+  try{await addDoc(collection(db,"quiz_results"),{...data,timestamp:serverTimestamp()});}
+  catch(e){console.log("Firebase 저장 실패",e);}
+};
+</script>
+
+<script>
+/* ================================================
+   워드마스터 중등 실력 · 1852단어 (Day별 테스트, 하루 단어수 설정)
+   ================================================ */
+const LEVEL_INFO = { name: '워드마스터 중등 실력 1852', desc: '워드마스터 중등 실력 1852단어', quizType: '봄날보카_워드마스터중등실력1852' };
+
+const WORDS = [
+  { id: 1, en: 'wise', ko: '지혜로운, 슬기로운' },
+  { id: 2, en: 'foolish', ko: '바보 같은, 어리석은' },
+  { id: 3, en: 'proud', ko: '자랑스러워하는, 거만한' },
+  { id: 4, en: 'honest', ko: '정직한, 솔직한' },
+  { id: 5, en: 'careful', ko: '조심성 있는' },
+  { id: 6, en: 'brave', ko: '용감한' },
+  { id: 7, en: 'lazy', ko: '게으른' },
+  { id: 8, en: 'calm', ko: '차분한, 침착한' },
+  { id: 9, en: 'rude', ko: '무례한, 예의 없는' },
+  { id: 10, en: 'active', ko: '활동적인, 적극적인' },
+  { id: 11, en: 'character', ko: '성격, 기질' },
+  { id: 12, en: 'serious', ko: '진지한, 진심의' },
+  { id: 13, en: 'strict', ko: '엄한, 엄격한' },
+  { id: 14, en: 'cruel', ko: '잔인한, 무자비한' },
+  { id: 15, en: 'mean', ko: '못된, 심술궂은' },
+  { id: 16, en: 'selfish', ko: '이기적인' },
+  { id: 17, en: 'evil', ko: '나쁜, 사악한' },
+  { id: 18, en: 'curious', ko: '호기심이 많은, 알고 싶어 하는' },
+  { id: 19, en: 'cheerful', ko: '쾌활한, 명랑한' },
+  { id: 20, en: 'friendly', ko: '친한, 친절한' },
+  { id: 21, en: 'modest', ko: '겸손한, 신중한' },
+  { id: 22, en: 'generous', ko: '관대한, (인심이) 후한' },
+  { id: 23, en: 'sensitive', ko: '민감한, 예민한' },
+  { id: 24, en: 'confident', ko: '자신만만한, 확신하는' },
+  { id: 25, en: 'positive', ko: '긍정적인' },
+  { id: 26, en: 'negative', ko: '부정적인' },
+  { id: 27, en: 'optimistic', ko: '낙관적인, 낙천적인' },
+  { id: 28, en: 'cautious', ko: '조심스러운, 신중한' },
+  { id: 29, en: 'make fun of', ko: '~을 놀리다, 비웃다' },
+  { id: 30, en: 'cheer up', ko: '기운을 내다, ~을 격려하다' },
+  { id: 31, en: 'cute', ko: '귀여운, 예쁜' },
+  { id: 32, en: 'pretty', ko: '예쁜, 귀여운' },
+  { id: 33, en: 'beautiful', ko: '아름다운' },
+  { id: 34, en: 'ugly', ko: '못생긴, 추한' },
+  { id: 35, en: 'overweight', ko: '과체중의, 너무 살찐' },
+  { id: 36, en: 'young', ko: '어린, 젊은' },
+  { id: 37, en: 'handsome', ko: '(남자가) 잘생긴' },
+  { id: 38, en: 'slim', ko: '호리호리한, 가냘픈' },
+  { id: 39, en: 'beard', ko: '턱수염' },
+  { id: 40, en: 'lovely', ko: '사랑스러운, 아름다운' },
+  { id: 41, en: 'neat', ko: '단정한, 깔끔한' },
+  { id: 42, en: 'plain', ko: '평범하게 생긴, 꾸밈없는' },
+  { id: 43, en: 'good-looking', ko: '잘생긴' },
+  { id: 44, en: 'skinny', ko: '깡마른, 바싹 여윈' },
+  { id: 45, en: 'fit', ko: '건강한, 적합하다' },
+  { id: 46, en: 'muscular', ko: '근육질의, 건장한' },
+  { id: 47, en: 'thin', ko: '(몸, 손가락 등이) 가는' },
+  { id: 48, en: 'bald', ko: '대머리의' },
+  { id: 49, en: 'curly', ko: '곱슬거리는' },
+  { id: 50, en: 'dye', ko: '염색하다' },
+  { id: 51, en: 'appearance', ko: '외모' },
+  { id: 52, en: 'attractive', ko: '매력적인' },
+  { id: 53, en: 'charming', ko: '매력적인, 멋진' },
+  { id: 54, en: 'mustache', ko: '코밑수염' },
+  { id: 55, en: 'sideburns', ko: '구레나룻' },
+  { id: 56, en: 'middle-aged', ko: '중년의' },
+  { id: 57, en: 'build', ko: '체격, 짓다' },
+  { id: 58, en: 'image', ko: '이미지, 상' },
+  { id: 59, en: 'grow up', ko: '성장하다, 자라다' },
+  { id: 60, en: 'both A and B B', ko: 'A와 둘 다' },
+  { id: 61, en: 'enjoy', ko: '즐기다' },
+  { id: 62, en: 'cry', ko: '울다' },
+  { id: 63, en: 'glad', ko: '기쁜' },
+  { id: 64, en: 'fear', ko: '공포' },
+  { id: 65, en: 'joy', ko: '기쁨, 즐거움' },
+  { id: 66, en: 'miss', ko: '그리워하다, 놓치다' },
+  { id: 67, en: 'laugh', ko: '웃다' },
+  { id: 68, en: 'mad', ko: '몹시 화난, 성난' },
+  { id: 69, en: 'annoyed', ko: '짜증 난, 화가 난' },
+  { id: 70, en: 'upset', ko: '화가 난, 기분이 상한' },
+  { id: 71, en: 'worried', ko: '걱정스러운' },
+  { id: 72, en: 'regret', ko: '유감, 후회' },
+  { id: 73, en: 'bother', ko: '괴롭히다, 방해하다' },
+  { id: 74, en: 'excited', ko: '흥분한, 신이 난' },
+  { id: 75, en: 'surprised', ko: '놀란' },
+  { id: 76, en: 'pleased', ko: '기쁜, 좋아하는' },
+  { id: 77, en: 'horrible', ko: '무서운, 끔찍한' },
+  { id: 78, en: 'grateful', ko: '감사하는, 고맙게 여기는' },
+  { id: 79, en: 'anxious', ko: '걱정되는, 근심이 되는' },
+  { id: 80, en: 'delighted', ko: '매우 기뻐하는' },
+  { id: 81, en: 'depressed', ko: '의기소침한, 낙담한' },
+  { id: 82, en: 'frightened', ko: '깜짝 놀란, 겁이 난' },
+  { id: 83, en: 'ashamed', ko: '부끄러워하는' },
+  { id: 84, en: 'emotion', ko: '감정' },
+  { id: 85, en: 'sympathy', ko: '동정' },
+  { id: 86, en: 'satisfied', ko: '만족한' },
+  { id: 87, en: 'disappointed', ko: '실망한, 낙담한' },
+  { id: 88, en: 'amused', ko: '즐기는, 즐거워하는' },
+  { id: 89, en: 'calm down', ko: '진정하다, 흥분을 가라앉히다' },
+  { id: 90, en: 'feel sorry for', ko: '~을 안쓰럽게[안됐다고] 여기다, ~에게 미안함을 느끼다' },
+  { id: 91, en: 'baker', ko: '제빵사' },
+  { id: 92, en: 'reporter', ko: '기자, 통신원' },
+  { id: 93, en: 'engineer', ko: '기사, 기술자' },
+  { id: 94, en: 'scientist', ko: '과학자' },
+  { id: 95, en: 'lawyer', ko: '변호사' },
+  { id: 96, en: 'dentist', ko: '치과의사' },
+  { id: 97, en: 'mechanic', ko: '정비공' },
+  { id: 98, en: 'architect', ko: '건축가' },
+  { id: 99, en: 'officer', ko: '공무원, 관리' },
+  { id: 100, en: 'gardener', ko: '정원사' },
+  { id: 101, en: 'photographer', ko: '사진사, 사진작가' },
+  { id: 102, en: 'president', ko: '대통령' },
+  { id: 103, en: 'salesperson', ko: '판매원' },
+  { id: 104, en: 'carpenter', ko: '목수' },
+  { id: 105, en: 'businessman', ko: '사업가' },
+  { id: 106, en: 'fisherman', ko: '어부' },
+  { id: 107, en: 'soldier', ko: '군인' },
+  { id: 108, en: 'professor', ko: '교수' },
+  { id: 109, en: 'judge', ko: '판사, 심사원' },
+  { id: 110, en: 'announcer', ko: '방송 진행자, 아나운서' },
+  { id: 111, en: 'hairdresser', ko: '미용사' },
+  { id: 112, en: 'accountant', ko: '회계사' },
+  { id: 113, en: 'novelist', ko: '소설가' },
+  { id: 114, en: 'security guard', ko: '경호원, 경비원' },
+  { id: 115, en: 'astronaut', ko: '우주비행사' },
+  { id: 116, en: 'detective', ko: '탐정' },
+  { id: 117, en: 'secretary', ko: '비서' },
+  { id: 118, en: 'illustrator', ko: '삽화가' },
+  { id: 119, en: 'be good at', ko: '~에 능숙하다, ~을 잘하다' },
+  { id: 120, en: 'be[become] interested in', ko: '~에 관심이[흥미가] 있다' },
+  { id: 121, en: 'pants', ko: '바지' },
+  { id: 122, en: 'sweater', ko: '스웨터' },
+  { id: 123, en: 'skirt', ko: '치마' },
+  { id: 124, en: 'tie', ko: '넥타이, ~을 묶다' },
+  { id: 125, en: 'belt', ko: '벨트, 허리띠' },
+  { id: 126, en: 'uniform', ko: '유니폼, 제복' },
+  { id: 127, en: 'socks', ko: '양말' },
+  { id: 128, en: 'material', ko: '직물, 천' },
+  { id: 129, en: 'gloves', ko: '장갑' },
+  { id: 130, en: 'boots', ko: '장화, 부츠' },
+  { id: 131, en: 'dress', ko: '옷, 의복' },
+  { id: 132, en: 'scarf', ko: '스카프, 목도리' },
+  { id: 133, en: 'jacket', ko: '재킷, 상의' },
+  { id: 134, en: 'shorts', ko: '반바지, 운동 팬츠' },
+  { id: 135, en: 'button', ko: '단추, ~에 단추를 채우다' },
+  { id: 136, en: 'jeans', ko: '청바지' },
+  { id: 137, en: 'suit', ko: '정장, 슈트' },
+  { id: 138, en: 'pocket', ko: '주머니' },
+  { id: 139, en: 'bow tie', ko: '나비넥타이' },
+  { id: 140, en: 'heels', ko: '굽 높은 구두' },
+  { id: 141, en: 'stockings', ko: '긴 양말, 스타킹' },
+  { id: 142, en: 'sandals', ko: '샌들' },
+  { id: 143, en: 'wallet', ko: '지갑' },
+  { id: 144, en: 'purse', ko: '돈주머니, 지갑' },
+  { id: 145, en: 'vest', ko: '조끼' },
+  { id: 146, en: 'overalls', ko: '멜빵 바지' },
+  { id: 147, en: 'athletic shoes', ko: '운동화' },
+  { id: 148, en: 'put on', ko: '(옷을) 입다, (모자' },
+  { id: 149, en: 'try on', ko: '~을 입어[신어] 보다' },
+  { id: 150, en: 'take off', ko: '(옷 등을) 벗다, 이륙하다' },
+  { id: 151, en: 'butter', ko: '버터' },
+  { id: 152, en: 'bread', ko: '빵' },
+  { id: 153, en: 'jam', ko: '잼' },
+  { id: 154, en: 'meat', ko: '고기' },
+  { id: 155, en: 'sugar', ko: '설탕' },
+  { id: 156, en: 'salt', ko: '소금' },
+  { id: 157, en: 'soup', ko: '수프' },
+  { id: 158, en: 'fish', ko: '생선' },
+  { id: 159, en: 'grab', ko: '간단히 먹다, 잡다' },
+  { id: 160, en: 'beef', ko: '소고기' },
+  { id: 161, en: 'steak', ko: '스테이크' },
+  { id: 162, en: 'pork', ko: '돼지고기' },
+  { id: 163, en: 'pepper', ko: '후추, 고추' },
+  { id: 164, en: 'diet', ko: '다이어트, 식이요법' },
+  { id: 165, en: 'snack', ko: '간식' },
+  { id: 166, en: 'egg', ko: '달걀' },
+  { id: 167, en: 'rice', ko: '밥' },
+  { id: 168, en: 'flour', ko: '밀가루' },
+  { id: 169, en: 'honey', ko: '꿀' },
+  { id: 170, en: 'mustard', ko: '겨자' },
+  { id: 171, en: 'noodle', ko: '국수' },
+  { id: 172, en: 'pickle', ko: '(오이 등을) 절인 것, 피클' },
+  { id: 173, en: 'stew', ko: '스튜, 찌개' },
+  { id: 174, en: 'cereal', ko: '곡물 식품, 시리얼' },
+  { id: 175, en: 'meal', ko: '식사' },
+  { id: 176, en: 'side dish', ko: '반찬, 주된 요리에 곁들이는 요리' },
+  { id: 177, en: 'appetizer', ko: '애피타이저, 식욕을 돋우는 것' },
+  { id: 178, en: 'powder', ko: '가루' },
+  { id: 179, en: 'set the table', ko: '식탁[밥상]을 차리다' },
+  { id: 180, en: 'eat out', ko: '외식하다' },
+  { id: 181, en: 'bake', ko: '굽다' },
+  { id: 182, en: 'fry', ko: '튀기다' },
+  { id: 183, en: 'boil', ko: '끓이다' },
+  { id: 184, en: 'glass', ko: '컵, 유리잔' },
+  { id: 185, en: 'knife', ko: '칼' },
+  { id: 186, en: 'basket', ko: '바구니' },
+  { id: 187, en: 'chop', ko: '썰다, 다지다' },
+  { id: 188, en: 'lid', ko: '뚜껑' },
+  { id: 189, en: 'handle', ko: '손잡이' },
+  { id: 190, en: 'pour', ko: '붓다' },
+  { id: 191, en: 'roll', ko: '밀다' },
+  { id: 192, en: 'slice', ko: '얇게 썰다' },
+  { id: 193, en: 'refrigerator', ko: '냉장고' },
+  { id: 194, en: 'pot', ko: '(속이 깊은) 냄비' },
+  { id: 195, en: 'bowl', ko: '(우묵한) 그릇, 통' },
+  { id: 196, en: 'plate', ko: '접시' },
+  { id: 197, en: 'tray', ko: '쟁반' },
+  { id: 198, en: 'jar', ko: '(입구가 넓은) 병, 단지' },
+  { id: 199, en: 'pan', ko: '(납작한) 냄비, 팬' },
+  { id: 200, en: 'beat', ko: '휘저어 섞다' },
+  { id: 201, en: 'steam', ko: '찌다' },
+  { id: 202, en: 'scoop', ko: '주걱, 국자' },
+  { id: 203, en: 'grill', ko: '(열로) 굽다, 익히다' },
+  { id: 204, en: 'kettle', ko: '주전자' },
+  { id: 205, en: 'opener', ko: '따개' },
+  { id: 206, en: 'cabinet', ko: '진열대' },
+  { id: 207, en: 'recipe', ko: '요리법' },
+  { id: 208, en: 'blender', ko: '부엌용 믹서기' },
+  { id: 209, en: 'be used for', ko: '~에 사용[이용]되다' },
+  { id: 210, en: 'keep on ~ing', ko: '계속 ~하다' },
+  { id: 211, en: 'garden', ko: '정원, 정원을 가꾸다' },
+  { id: 212, en: 'apartment', ko: '아파트' },
+  { id: 213, en: 'yard', ko: '마당' },
+  { id: 214, en: 'knock', ko: '노크를 하다, (문 등을) 두드리다' },
+  { id: 215, en: 'soap', ko: '비누' },
+  { id: 216, en: 'towel', ko: '타월, 수건' },
+  { id: 217, en: 'curtain', ko: '커튼' },
+  { id: 218, en: 'mirror', ko: '거울' },
+  { id: 219, en: 'neighbor', ko: '이웃(사람)' },
+  { id: 220, en: 'gate', ko: '문' },
+  { id: 221, en: 'bedroom', ko: '침실' },
+  { id: 222, en: 'roof', ko: '지붕' },
+  { id: 223, en: 'garage', ko: '차고' },
+  { id: 224, en: 'laundry', ko: '세탁물' },
+  { id: 225, en: 'water', ko: '물, 물을 주다' },
+  { id: 226, en: 'lawn', ko: '잔디' },
+  { id: 227, en: 'floor', ko: '마루, 바닥' },
+  { id: 228, en: 'feed', ko: '먹이를 주다' },
+  { id: 229, en: 'bathroom', ko: '욕실' },
+  { id: 230, en: 'ceiling', ko: '천장' },
+  { id: 231, en: 'shelf', ko: '선반' },
+  { id: 232, en: 'drawer', ko: '서랍' },
+  { id: 233, en: 'lamp', ko: '전기스탠드, 램프' },
+  { id: 234, en: 'sheet', ko: '시트, 홑이불' },
+  { id: 235, en: 'stair', ko: '계단, 층계' },
+  { id: 236, en: 'scale', ko: '체중계, 저울' },
+  { id: 237, en: 'sink', ko: '싱크대, 개수대' },
+  { id: 238, en: 'tap', ko: '수도꼭지' },
+  { id: 239, en: 'turn on TV', ko: '(라디오,' },
+  { id: 240, en: 'in place', ko: '제자리에 (있는)' },
+  { id: 241, en: 'park', ko: '주차하다, 공원' },
+  { id: 242, en: 'stop', ko: '정류장, 정차하다' },
+  { id: 243, en: 'drive', ko: '운전하다' },
+  { id: 244, en: 'subway', ko: '지하철' },
+  { id: 245, en: 'seat', ko: '좌석' },
+  { id: 246, en: 'road', ko: '길, 도로' },
+  { id: 247, en: 'fare', ko: '요금' },
+  { id: 248, en: 'bicycle', ko: '자전거' },
+  { id: 249, en: 'limit', ko: '한계, 제한' },
+  { id: 250, en: 'route', ko: '길, 경로' },
+  { id: 251, en: 'cross', ko: '~을 건너다, 십자가' },
+  { id: 252, en: 'track', ko: '철도 선로, 궤도' },
+  { id: 253, en: 'rail', ko: '철로' },
+  { id: 254, en: 'curve', ko: '굽이, 커브' },
+  { id: 255, en: 'sign', ko: '표지(판), 서명하다' },
+  { id: 256, en: 'station', ko: '역, 정거장' },
+  { id: 257, en: 'wheel', ko: '바퀴' },
+  { id: 258, en: 'license', ko: '면허증' },
+  { id: 259, en: 'accident', ko: '사고' },
+  { id: 260, en: 'traffic', ko: '교통(량), 교통의' },
+  { id: 261, en: 'forward', ko: '앞으로, 앞을 향하여' },
+  { id: 262, en: 'transfer', ko: '옮기다, 환승하다' },
+  { id: 263, en: 'passenger', ko: '승객' },
+  { id: 264, en: 'harbor', ko: '항구' },
+  { id: 265, en: 'gas', ko: '휘발유, 가솔린' },
+  { id: 266, en: 'platform', ko: '(역의) 플랫폼, 승강장' },
+  { id: 267, en: 'transport', ko: '수송하다, 운송하다' },
+  { id: 268, en: 'crash', ko: '충돌, 충돌하다' },
+  { id: 269, en: 'get on', ko: '(탈것에) 타다, 승차하다' },
+  { id: 270, en: 'on foot', ko: '걸어서, 도보로' },
+  { id: 271, en: 'glue', ko: '풀, 풀을 바르다' },
+  { id: 272, en: 'scissors', ko: '가위' },
+  { id: 273, en: 'eraser', ko: '지우개' },
+  { id: 274, en: 'desk', ko: '책상' },
+  { id: 275, en: 'chair', ko: '의자' },
+  { id: 276, en: 'room', ko: '방, 실' },
+  { id: 277, en: 'company', ko: '회사' },
+  { id: 278, en: 'interview', ko: '면접을 보다, 인터뷰를 하다' },
+  { id: 279, en: 'calendar', ko: '달력' },
+  { id: 280, en: 'printer', ko: '인쇄기, 프린터' },
+  { id: 281, en: 'envelope', ko: '봉투' },
+  { id: 282, en: 'folder', ko: '폴더, 서류철' },
+  { id: 283, en: 'call', ko: '통화, 전화를 걸다' },
+  { id: 284, en: 'letter', ko: '편지' },
+  { id: 285, en: 'seal', ko: '도장, 인감' },
+  { id: 286, en: 'clip', ko: '클립, 자르다' },
+  { id: 287, en: 'pin', ko: '핀, 핀으로 고정하다' },
+  { id: 288, en: 'message', ko: '메시지' },
+  { id: 289, en: 'bookcase', ko: '책장, 책꽂이' },
+  { id: 290, en: 'manager', ko: '관리자' },
+  { id: 291, en: 'calculator', ko: '계산기' },
+  { id: 292, en: 'stationery', ko: '문구류' },
+  { id: 293, en: 'staple', ko: '스테이플러로 고정시키다' },
+  { id: 294, en: 'punch', ko: '(표에 구멍을 뚫는) 펀치, 구멍을 뚫다' },
+  { id: 295, en: 'highlighter', ko: '형광 컬러 펜' },
+  { id: 296, en: 'document', ko: '서류, 문서' },
+  { id: 297, en: 'printout', ko: '출력물' },
+  { id: 298, en: 'photocopy', ko: '사진 복사물, 사진 복사하다' },
+  { id: 299, en: 'deal with', ko: '~을 다루다, 처리하다' },
+  { id: 300, en: 'fill out', ko: '~을 작성하다, 기입하다' },
+  { id: 301, en: 'building', ko: '건물' },
+  { id: 302, en: 'bakery', ko: '제과점' },
+  { id: 303, en: 'fire station', ko: '소방서' },
+  { id: 304, en: 'hospital', ko: '병원' },
+  { id: 305, en: 'museum', ko: '박물관' },
+  { id: 306, en: 'city hall', ko: '시청' },
+  { id: 307, en: 'police station', ko: '경찰서' },
+  { id: 308, en: 'left', ko: '왼쪽' },
+  { id: 309, en: 'trash', ko: '쓰레기' },
+  { id: 310, en: 'village', ko: '(시골) 마을, 촌락' },
+  { id: 311, en: 'direction', ko: '방향' },
+  { id: 312, en: 'street', ko: '거리' },
+  { id: 313, en: 'avenue', ko: '도시의 큰 대로, 넓은 길' },
+  { id: 314, en: 'block', ko: '(도로의) 블록, 구획' },
+  { id: 315, en: 'straight', ko: '똑바른, 직선의' },
+  { id: 316, en: 'corner', ko: '모퉁이, 구석' },
+  { id: 317, en: 'turn', ko: '회전, 방향 전환' },
+  { id: 318, en: 'drugstore', ko: '약국' },
+  { id: 319, en: 'pedestrian', ko: '보행자' },
+  { id: 320, en: 'department store', ko: '백화점' },
+  { id: 321, en: 'sidewalk', ko: '인도, 보도' },
+  { id: 322, en: 'crosswalk', ko: '횡단보도' },
+  { id: 323, en: 'intersection', ko: '교차로' },
+  { id: 324, en: 'patrol', ko: '순찰대, 순찰 경관' },
+  { id: 325, en: 'signal', ko: '신호, 신호기' },
+  { id: 326, en: 'highway', ko: '고속도로' },
+  { id: 327, en: 'sewer', ko: '하수구' },
+  { id: 328, en: 'give ~ a ride', ko: '~를 태워 주다' },
+  { id: 329, en: 'be known for', ko: '~로 알려져 있다, ~로 유명하다' },
+  { id: 330, en: 'in the middle of', ko: '~의 중간[중앙]에, ~의 도중에' },
+  { id: 331, en: 'iron', ko: '다리미, 철' },
+  { id: 332, en: 'lift', ko: '올리다, 들어올리다' },
+  { id: 333, en: 'wash', ko: '세탁물, 씻다' },
+  { id: 334, en: 'mop', ko: '대걸레, 대걸레로 닦다' },
+  { id: 335, en: 'daily', ko: '매일의, 나날의' },
+  { id: 336, en: 'hang', ko: '걸다, 매달리다' },
+  { id: 337, en: 'hammer', ko: '망치' },
+  { id: 338, en: 'switch', ko: '스위치' },
+  { id: 339, en: 'dust', ko: '먼지, 티끌' },
+  { id: 340, en: 'ladder', ko: '사다리' },
+  { id: 341, en: 'carry', ko: '나르다' },
+  { id: 342, en: 'tool', ko: '도구, 연장' },
+  { id: 343, en: 'drill', ko: '송곳, 구멍을 뚫다' },
+  { id: 344, en: 'saw', ko: '톱, 톱질하다' },
+  { id: 345, en: 'bucket', ko: '물통, 양동이' },
+  { id: 346, en: 'housework', ko: '가사, 집안일' },
+  { id: 347, en: 'dig', ko: '파다, 파헤치다' },
+  { id: 348, en: 'sweep', ko: '청소하다, 쓸다' },
+  { id: 349, en: 'fold', ko: '개다, 접다' },
+  { id: 350, en: 'rake', ko: '갈퀴, 긁어모으다' },
+  { id: 351, en: 'trim', ko: '깎아 다듬다' },
+  { id: 352, en: 'polish', ko: '닦다, 윤을 내다' },
+  { id: 353, en: 'screw', ko: '나사, 나사로 죄다' },
+  { id: 354, en: 'broom', ko: '빗자루' },
+  { id: 355, en: 'shovel', ko: '삽' },
+  { id: 356, en: 'wrench', ko: '렌치(너트를 죄는 기구)' },
+  { id: 357, en: 'flashlight', ko: '손전등' },
+  { id: 358, en: 'outlet', ko: '(전기) 콘센트, 출구' },
+  { id: 359, en: 'set up', ko: '세우다, 설치[설립]하다' },
+  { id: 360, en: 'clean up', ko: '치우다, 청소하다' },
+  { id: 361, en: 'bottle', ko: '병' },
+  { id: 362, en: 'package', ko: '(포장용) 용기, 상자' },
+  { id: 363, en: 'can', ko: '깡통, 통조림' },
+  { id: 364, en: 'item', ko: '항목, 품목' },
+  { id: 365, en: 'pack', ko: '꾸러미, 한 상자' },
+  { id: 366, en: 'ice', ko: '얼음' },
+  { id: 367, en: 'bar', ko: '막대기, 막대기 모양의 것' },
+  { id: 368, en: 'piece', ko: '조각' },
+  { id: 369, en: 'counter', ko: '계산대' },
+  { id: 370, en: 'spray', ko: '스프레이, 분무기' },
+  { id: 371, en: 'bin', ko: '(뚜껑 달린) 큰 상자' },
+  { id: 372, en: 'smoked', ko: '훈제된' },
+  { id: 373, en: 'fresh', ko: '신선한' },
+  { id: 374, en: 'grain', ko: '곡물, 곡류' },
+  { id: 375, en: 'vegetable', ko: '채소' },
+  { id: 376, en: 'cart', ko: '손수레, 카트' },
+  { id: 377, en: 'seafood', ko: '해산물' },
+  { id: 378, en: 'cashier', ko: '계산원' },
+  { id: 379, en: 'freezer', ko: '냉동고' },
+  { id: 380, en: 'frozen food', ko: '냉동식품' },
+  { id: 381, en: 'grocery', ko: '식료 잡화점, 식품점' },
+  { id: 382, en: 'container', ko: '용기' },
+  { id: 383, en: 'aisle', ko: '통로' },
+  { id: 384, en: 'dairy', ko: '우유의, 유제품의' },
+  { id: 385, en: 'bundle', ko: '(한 묶음의) 다발, 뭉치' },
+  { id: 386, en: 'pile', ko: '더미' },
+  { id: 387, en: 'cash register', ko: '금전 등록기' },
+  { id: 388, en: 'on sale', ko: '판매되는, 할인 중인' },
+  { id: 389, en: 'for free', ko: '공짜로, 무료로' },
+  { id: 390, en: 'line up', ko: '줄을 서다' },
+  { id: 391, en: 'clean', ko: '깨끗한, 청소하다' },
+  { id: 392, en: 'high', ko: '높은' },
+  { id: 393, en: 'low', ko: '낮은' },
+  { id: 394, en: 'open', ko: '열린, ?열다' },
+  { id: 395, en: 'heavy', ko: '무거운' },
+  { id: 396, en: 'full', ko: '가득 찬, 배부른' },
+  { id: 397, en: 'flat', ko: '평평한, 편평한' },
+  { id: 398, en: 'dark', ko: '어두운' },
+  { id: 399, en: 'deep', ko: '깊은' },
+  { id: 400, en: 'round', ko: '둥근, 한 바퀴를 도는' },
+  { id: 401, en: 'light', ko: '가벼운, (양이) 적은' },
+  { id: 402, en: 'famous', ko: '유명한' },
+  { id: 403, en: 'colorful', ko: '다채로운, 화려한' },
+  { id: 404, en: 'empty', ko: '텅 빈' },
+  { id: 405, en: 'metal', ko: '금속' },
+  { id: 406, en: 'plastic', ko: '플라스틱의, 비닐의' },
+  { id: 407, en: 'wide', ko: '넓은' },
+  { id: 408, en: 'tight', ko: '꽉 조이는' },
+  { id: 409, en: 'loose', ko: '헐렁한' },
+  { id: 410, en: 'sharp', ko: '날카로운' },
+  { id: 411, en: 'shallow', ko: '얕은' },
+  { id: 412, en: 'oval', ko: '달걀 모양, 타원형' },
+  { id: 413, en: 'square', ko: '정사각형, 광장' },
+  { id: 414, en: 'triangle', ko: '삼각형' },
+  { id: 415, en: 'crack', ko: '(갈라진) 틈, 틈새' },
+  { id: 416, en: 'glitter', ko: '빛나다' },
+  { id: 417, en: 'firm', ko: '단단한, 굳은' },
+  { id: 418, en: 'wooden', ko: '나무로 만든' },
+  { id: 419, en: 'be covered with', ko: '~으로 덮여 있다' },
+  { id: 420, en: 'prefer A to B', ko: 'B보다 A를 더 선호하다' },
+  { id: 421, en: 'watch', ko: '지켜보다' },
+  { id: 422, en: 'look', ko: '보다, 바라보다' },
+  { id: 423, en: 'listen', ko: '(주의해서) 듣다' },
+  { id: 424, en: 'smell', ko: '냄새, 후각' },
+  { id: 425, en: 'loud', ko: '(소리가) 큰, 시끄러운' },
+  { id: 426, en: 'bad', ko: '불쾌한, 나쁜' },
+  { id: 427, en: 'feel', ko: '(기분이) 들다, 느끼다' },
+  { id: 428, en: 'hard', ko: '굳은, 단단한' },
+  { id: 429, en: 'scream', ko: '비명을 지르다, 소리치다' },
+  { id: 430, en: 'noise', ko: '소음' },
+  { id: 431, en: 'bitter', ko: '쓴, 쓴맛의' },
+  { id: 432, en: 'sweet', ko: '달콤한' },
+  { id: 433, en: 'sour', ko: '신, 신맛의' },
+  { id: 434, en: 'juicy', ko: '즙이 많은' },
+  { id: 435, en: 'touch', ko: '촉감, 접촉' },
+  { id: 436, en: 'rough', ko: '거친, 가공하지 않은' },
+  { id: 437, en: 'soft', ko: '부드러운' },
+  { id: 438, en: 'sense', ko: '감각, 감지하다' },
+  { id: 439, en: 'objective', ko: '객관적인, 목적' },
+  { id: 440, en: 'sight', ko: '시각, 시력' },
+  { id: 441, en: 'stare', ko: '빤히 보다, 응시하다' },
+  { id: 442, en: 'whisper', ko: '속삭임, 속삭이다' },
+  { id: 443, en: 'audio', ko: '음의 재생, 오디오' },
+  { id: 444, en: 'flavor', ko: '맛, 풍미' },
+  { id: 445, en: 'smooth', ko: '부드러운, 부드럽게 하다' },
+  { id: 446, en: 'notice', ko: '주의, 주목' },
+  { id: 447, en: 'observe', ko: '관찰하다, 알아차리다' },
+  { id: 448, en: 'discover', ko: '발견하다, 알아내다' },
+  { id: 449, en: 'make sense', ko: '의미가 통하다, 이해가[말이] 되다' },
+  { id: 450, en: 'focus on', ko: '~에 집중하다, 초점을 맞추다' },
+  { id: 451, en: 'cough', ko: '기침, 기침하다' },
+  { id: 452, en: 'fever', ko: '열, 발열' },
+  { id: 453, en: 'sore', ko: '아픈, 쑤시는' },
+  { id: 454, en: 'cut', ko: '베인 상처, 상처를 내다' },
+  { id: 455, en: 'pain', ko: '고통' },
+  { id: 456, en: 'medicine', ko: '약' },
+  { id: 457, en: 'virus', ko: '바이러스' },
+  { id: 458, en: 'ache', ko: '통증, 아픔' },
+  { id: 459, en: 'dizzy', ko: '어지러운' },
+  { id: 460, en: 'disease', ko: '병, 질병' },
+  { id: 461, en: 'cancer', ko: '암' },
+  { id: 462, en: 'blind', ko: '눈이 먼, 시각 장애의' },
+  { id: 463, en: 'deaf', ko: '귀가 먹은, 청각 장애가 있는' },
+  { id: 464, en: 'patient', ko: '환자, 끈기 있는' },
+  { id: 465, en: 'cure', ko: '치료법, 치료하다' },
+  { id: 466, en: 'relax', ko: '쉬게 하다, 편히 쉬다' },
+  { id: 467, en: 'burn', ko: '화상, 화상을 입다[입히다]' },
+  { id: 468, en: 'symptom', ko: '증상' },
+  { id: 469, en: 'wound', ko: '상처, 상처를 내다' },
+  { id: 470, en: 'vomit', ko: '토하다' },
+  { id: 471, en: 'sneeze', ko: '재채기하다' },
+  { id: 472, en: 'bruise', ko: '멍, 타박상' },
+  { id: 473, en: 'examine', ko: '진찰하다' },
+  { id: 474, en: 'recover', ko: '회복하다' },
+  { id: 475, en: 'prevent', ko: '예방하다, 막다' },
+  { id: 476, en: 'medical', ko: '의학의' },
+  { id: 477, en: 'operate', ko: '수술하다' },
+  { id: 478, en: 'emergency', ko: '비상사태, 응급' },
+  { id: 479, en: 'catch a cold', ko: '감기에 걸리다' },
+  { id: 480, en: 'see a doctor', ko: '의사의 진찰을 받다, 병원에 가다' },
+  { id: 481, en: 'trip', ko: '여행' },
+  { id: 482, en: 'journey', ko: '(보통 멀리 가는) 여행, 여정' },
+  { id: 483, en: 'sightseeing', ko: '관광' },
+  { id: 484, en: 'visa', ko: '비자, 사증' },
+  { id: 485, en: 'flight', ko: '비행' },
+  { id: 486, en: 'landscape', ko: '풍경' },
+  { id: 487, en: 'reserve', ko: '예약하다' },
+  { id: 488, en: 'cancel', ko: '취소하다, 취소' },
+  { id: 489, en: 'scenery', ko: '풍경' },
+  { id: 490, en: 'apply (for)', ko: '신청하다' },
+  { id: 491, en: 'passport', ko: '여권' },
+  { id: 492, en: 'insurance', ko: '보험' },
+  { id: 493, en: 'reach', ko: '도착하다, 도달하다' },
+  { id: 494, en: 'attendant', ko: '안내원, 종업원' },
+  { id: 495, en: 'board', ko: '탑승하다, 승차하다' },
+  { id: 496, en: 'depart', ko: '출발하다' },
+  { id: 497, en: 'arrive', ko: '도착하다' },
+  { id: 498, en: 'land', ko: '땅, 착륙하다' },
+  { id: 499, en: 'abroad', ko: '해외로' },
+  { id: 500, en: 'itinerary', ko: '여행 일정표, 여행 일기' },
+  { id: 501, en: 'baggage', ko: '짐, 수하물' },
+  { id: 502, en: 'claim', ko: '요구, 청구' },
+  { id: 503, en: 'check', ko: '수표, 점검' },
+  { id: 504, en: 'destination', ko: '(여행 등의) 목적지' },
+  { id: 505, en: 'security', ko: '보안, 안전' },
+  { id: 506, en: 'delay', ko: '지연, 연기' },
+  { id: 507, en: 'jet lag', ko: '시차증(여행 시차에 의한 피로·신경 과민)' },
+  { id: 508, en: 'souvenir', ko: '기념품' },
+  { id: 509, en: 'all over the world', ko: '전 세계에' },
+  { id: 510, en: 'have a good time', ko: '즐겁게 보내다, 좋은 시간을 갖다' },
+  { id: 511, en: 'movie', ko: '영화' },
+  { id: 512, en: 'puzzle', ko: '수수께끼, 퍼즐' },
+  { id: 513, en: 'game', ko: '게임, 시합' },
+  { id: 514, en: 'interest', ko: '흥미, 관심' },
+  { id: 515, en: 'picture', ko: '사진, 그림' },
+  { id: 516, en: 'musical', ko: '음악의, 뮤지컬' },
+  { id: 517, en: 'dance', ko: '춤, 춤을 추다' },
+  { id: 518, en: 'activity', ko: '움직임, 활동' },
+  { id: 519, en: 'craft', ko: '(수)공예, 공예품을 만들다' },
+  { id: 520, en: 'collect', ko: '모으다' },
+  { id: 521, en: 'chess', ko: '체스, 서양 장기' },
+  { id: 522, en: 'hike', ko: '하이킹하다, 도보여행하다' },
+  { id: 523, en: 'comic', ko: '희극의, 만화의' },
+  { id: 524, en: 'camp', ko: '야영, 캠프' },
+  { id: 525, en: 'pleasure', ko: '기쁨' },
+  { id: 526, en: 'stamp', ko: '우표, 도장' },
+  { id: 527, en: 'jog', ko: '조깅하다' },
+  { id: 528, en: 'magic', ko: '마법, 주술' },
+  { id: 529, en: 'fix', ko: '고치다, 고정시키다' },
+  { id: 530, en: 'favorite', ko: '가장 좋아하는' },
+  { id: 531, en: 'mania', ko: '열광' },
+  { id: 532, en: 'volunteer', ko: '자원 봉사자,지원자' },
+  { id: 533, en: 'chat', ko: '수다를 떨다, (인터넷으로) 채팅하다' },
+  { id: 534, en: 'model', ko: '모형, 모델' },
+  { id: 535, en: 'knit', ko: '뜨개질을 하다' },
+  { id: 536, en: 'leisure', ko: '여가, 한가한 시간' },
+  { id: 537, en: 'involve', ko: '수반하다, 필요로 하다' },
+  { id: 538, en: 'spend ... on ~ing', ko: '~하는 데 …을 쓰다' },
+  { id: 539, en: 'go (out) for a walk', ko: '산책하러 (나)가다' },
+  { id: 540, en: 'from time to time', ko: '때때로, 가끔' },
+  { id: 541, en: 'stretch', ko: '몸을 쭉 뻗다, 쭉 내밀다' },
+  { id: 542, en: 'swim', ko: '수영하다' },
+  { id: 543, en: 'kick', ko: '(걷어) 차기, 발길질' },
+  { id: 544, en: 'outdoor', ko: '실외의, 집밖의' },
+  { id: 545, en: 'player', ko: '경기자, 선수' },
+  { id: 546, en: 'bowling', ko: '볼링' },
+  { id: 547, en: 'prize', ko: '상, 상품' },
+  { id: 548, en: 'competition', ko: '경쟁, 대회' },
+  { id: 549, en: 'goal', ko: '(축구의) 골, 득점' },
+  { id: 550, en: 'shoot', ko: '사격, (총 등을) 쏘다' },
+  { id: 551, en: 'coach', ko: '코치, 지도자' },
+  { id: 552, en: 'basketball', ko: '농구' },
+  { id: 553, en: 'baseball', ko: '야구' },
+  { id: 554, en: 'base', ko: '(야구의) 루, 토대' },
+  { id: 555, en: 'match', ko: '시합, 경기' },
+  { id: 556, en: 'batter', ko: '타자' },
+  { id: 557, en: 'throw', ko: '투구, 던짐' },
+  { id: 558, en: 'catch', ko: '잡다, 공을 받다' },
+  { id: 559, en: 'racket', ko: '라켓, 라켓으로 치다' },
+  { id: 560, en: 'athlete', ko: '(운동)선수' },
+  { id: 561, en: 'defender', ko: '수비수' },
+  { id: 562, en: 'score', ko: '(경기) 득점, 점수' },
+  { id: 563, en: 'referee', ko: '(운동 경기) 심판, 심판을 보다' },
+  { id: 564, en: 'champion', ko: '챔피언, 우승자' },
+  { id: 565, en: 'sweat', ko: '땀, (땀이 나도록) 힘든 일' },
+  { id: 566, en: 'dive', ko: '잠수, 잠수하다' },
+  { id: 567, en: 'skate', ko: '스케이트 구두, 스케이트를 타다' },
+  { id: 568, en: 'surf', ko: '파도, 파도를 타다' },
+  { id: 569, en: 'warm up', ko: '(스포츠나 활동 전에) 몸을 천천히 풀다, 준비 운동을 하다' },
+  { id: 570, en: 'up and down', ko: '위아래로, 이리저리' },
+  { id: 571, en: 'store', ko: '가게, 상점' },
+  { id: 572, en: 'gift', ko: '선물' },
+  { id: 573, en: 'cheap', ko: '값싼, 저렴한' },
+  { id: 574, en: 'expensive', ko: '값비싼' },
+  { id: 575, en: 'sale', ko: '판매, 염가 판매' },
+  { id: 576, en: 'sell', ko: '팔다' },
+  { id: 577, en: 'choose', ko: '선택하다' },
+  { id: 578, en: 'pay', ko: '지불하다' },
+  { id: 579, en: 'business', ko: '사업, 상업' },
+  { id: 580, en: 'tax', ko: '세금' },
+  { id: 581, en: 'exchange', ko: '교환, 거래소' },
+  { id: 582, en: 'select', ko: '선발하다, 선택하다' },
+  { id: 583, en: 'goods', ko: '상품, 물품' },
+  { id: 584, en: 'tag', ko: '꼬리표, 태그' },
+  { id: 585, en: 'medium', ko: '중간, 중간의' },
+  { id: 586, en: 'cash', ko: '현금' },
+  { id: 587, en: 'change', ko: '거스름돈, 변화' },
+  { id: 588, en: 'customer', ko: '고객' },
+  { id: 589, en: 'display', ko: '전시, 진열' },
+  { id: 590, en: 'stand', ko: '노점, 가판대' },
+  { id: 591, en: 'retail', ko: '소매' },
+  { id: 592, en: 'discount', ko: '할인, 할인하다' },
+  { id: 593, en: 'receipt', ko: '영수증' },
+  { id: 594, en: 'brand-name', ko: '(유명) 상표가 붙은' },
+  { id: 595, en: 'auction', ko: '경매' },
+  { id: 596, en: 'reasonable', ko: '(가격이) 합리적인, 저렴한' },
+  { id: 597, en: 'catalog', ko: '목록, (상품 등의) 카탈로그' },
+  { id: 598, en: 'quality', ko: '질, 품질' },
+  { id: 599, en: 'look around', ko: '둘러보다, 구경하다' },
+  { id: 600, en: 'drop by', ko: '잠깐 들르다' },
+  { id: 601, en: 'take', ko: '받다' },
+  { id: 602, en: 'order', ko: '주문, 주문하다' },
+  { id: 603, en: 'cook', ko: '요리사, 요리하다' },
+  { id: 604, en: 'chef', ko: '요리사, 주방장' },
+  { id: 605, en: 'buffet', ko: '뷔페 식당, 뷔페식 상차림' },
+  { id: 606, en: 'waiter', ko: '웨이터' },
+  { id: 607, en: 'dessert', ko: '디저트, 후식' },
+  { id: 608, en: 'napkin', ko: '냅킨' },
+  { id: 609, en: 'set', ko: '놓다, 준비하다' },
+  { id: 610, en: 'deliver', ko: '배달하다' },
+  { id: 611, en: 'wipe', ko: '닦다' },
+  { id: 612, en: 'straw', ko: '빨대, 지푸라기' },
+  { id: 613, en: 'bite', ko: '한입, 물다' },
+  { id: 614, en: 'spill', ko: '흘리다, 엎지르다' },
+  { id: 615, en: 'special', ko: '특별한 것, 특별 메뉴' },
+  { id: 616, en: 'rare', ko: '(고기 등이) 덜 익은, 드문' },
+  { id: 617, en: 'calorie', ko: '칼로리, 열량' },
+  { id: 618, en: 'serve', ko: '시중들다, 제공하다' },
+  { id: 619, en: 'tip', ko: '팁, (물건·신체의) 뾰족한 끝' },
+  { id: 620, en: 'beverage', ko: '음료' },
+  { id: 621, en: 'refill', ko: '새 보충물, 다시 채우다' },
+  { id: 622, en: 'wrap', ko: '싸다, 포장하다' },
+  { id: 623, en: 'bill', ko: '계산서, 청구서' },
+  { id: 624, en: 'total', ko: '합계, 총액' },
+  { id: 625, en: 'ingredient', ko: '재료' },
+  { id: 626, en: 'recommend', ko: '추천하다' },
+  { id: 627, en: 'appetite', ko: '식욕' },
+  { id: 628, en: 'be ready to', ko: '~할 준비가 되다' },
+  { id: 629, en: 'wait for', ko: '~을 기다리다' },
+  { id: 630, en: 'either A or B B', ko: 'A와 둘 중 하나' },
+  { id: 631, en: 'sand', ko: '모래' },
+  { id: 632, en: 'wave', ko: '파도' },
+  { id: 633, en: 'shell', ko: '조개' },
+  { id: 634, en: 'suntan', ko: '선탠, 볕에 그을음' },
+  { id: 635, en: 'raft', ko: '고무 보트, 뗏목' },
+  { id: 636, en: 'yacht', ko: '요트' },
+  { id: 637, en: 'sunglasses', ko: '선글라스' },
+  { id: 638, en: 'parasol', ko: '파라솔, 양산' },
+  { id: 639, en: 'mat', ko: '돗자리, 매트' },
+  { id: 640, en: 'vacation', ko: '방학' },
+  { id: 641, en: 'whistle', ko: '호각, 호각을 불다' },
+  { id: 642, en: 'lifeboat', ko: '구명보트' },
+  { id: 643, en: 'scuba', ko: '스쿠버, 잠수용 호흡 장치' },
+  { id: 644, en: 'swimsuit', ko: '수영복' },
+  { id: 645, en: 'sunblock', ko: '자외선 차단제' },
+  { id: 646, en: 'cooler', ko: '냉장 박스' },
+  { id: 647, en: 'blanket', ko: '담요' },
+  { id: 648, en: 'shade', ko: '그늘' },
+  { id: 649, en: 'shore', ko: '물가, 기슭' },
+  { id: 650, en: 'sunbath', ko: '일광욕' },
+  { id: 651, en: 'lifeguard', ko: '인명 구조원' },
+  { id: 652, en: 'float', ko: '물 위에 뜨다, (배 등을) 띄우다' },
+  { id: 653, en: 'flipper', ko: '물갈퀴, 오리발' },
+  { id: 654, en: 'binoculars', ko: '쌍안경' },
+  { id: 655, en: 'snorkel', ko: '스노클을 쓰고 잠수하다, 헤엄치다' },
+  { id: 656, en: 'pebble', ko: '조약돌, 자갈' },
+  { id: 657, en: 'expose', ko: '노출하다' },
+  { id: 658, en: 'all day long', ko: '하루 종일' },
+  { id: 659, en: 'look forward to ~ing', ko: '~을 고대하다, 손꼽아 기다리다' },
+  { id: 660, en: 'throw away', ko: '(쓰레기 등을) 버리다, (기회 등을) 놓치다' },
+  { id: 661, en: 'festival', ko: '축제' },
+  { id: 662, en: 'Valentine', ko: '밸런타인' },
+  { id: 663, en: 'blow', ko: '불다' },
+  { id: 664, en: 'Christmas', ko: '크리스마스' },
+  { id: 665, en: 'candy', ko: '사탕' },
+  { id: 666, en: 'year', ko: '해, 년' },
+  { id: 667, en: 'wish', ko: '소원, 기원하다' },
+  { id: 668, en: 'mask', ko: '가면' },
+  { id: 669, en: 'celebrate', ko: '기념하다, 축하하다' },
+  { id: 670, en: 'gather', ko: '(사람들이) 모이다, 모으다' },
+  { id: 671, en: 'honeymoon', ko: '신혼여행' },
+  { id: 672, en: 'Easter', ko: '부활절' },
+  { id: 673, en: 'hide', ko: '숨기다' },
+  { id: 674, en: 'invitation', ko: '초대, 초대장' },
+  { id: 675, en: 'Eve', ko: '전날 밤, 이브' },
+  { id: 676, en: 'decorate', ko: '장식하다' },
+  { id: 677, en: 'witch', ko: '마녀' },
+  { id: 678, en: 'trick', ko: '속이다, 속임수' },
+  { id: 679, en: 'costume', ko: '복장, 의상' },
+  { id: 680, en: 'turkey', ko: '칠면조, 칠면조 고기' },
+  { id: 681, en: 'anniversary', ko: '기념일' },
+  { id: 682, en: 'congratulate', ko: '축하하다' },
+  { id: 683, en: 'Thanksgiving', ko: '추수 감사절' },
+  { id: 684, en: 'Halloween', ko: '핼러윈' },
+  { id: 685, en: 'reindeer', ko: '순록' },
+  { id: 686, en: 'lantern', ko: '랜턴' },
+  { id: 687, en: 'stuff', ko: '(속을) 채우다, 것' },
+  { id: 688, en: 'crowded', ko: '붐비는, 혼잡한' },
+  { id: 689, en: 'take place', ko: '(회의, 행사 등이) 열리다' },
+  { id: 690, en: 'be similar to', ko: '~와 비슷하다, 유사하다' },
+  { id: 691, en: 'seesaw', ko: '시소, 시소를 타다' },
+  { id: 692, en: 'walk', ko: '걷다, 산책하다' },
+  { id: 693, en: 'ride', ko: '탈것, 타다' },
+  { id: 694, en: 'bench', ko: '긴 의자, 벤치' },
+  { id: 695, en: 'event', ko: '사건, 행사' },
+  { id: 696, en: 'picnic', ko: '소풍' },
+  { id: 697, en: 'zoo', ko: '동물원' },
+  { id: 698, en: 'concert', ko: '콘서트, 공연' },
+  { id: 699, en: 'visit', ko: '방문하다' },
+  { id: 700, en: 'rope', ko: '줄' },
+  { id: 701, en: 'backpack', ko: '배낭, 배낭을 지고 걷다' },
+  { id: 702, en: 'slide', ko: '미끄럼틀, 미끄러지다' },
+  { id: 703, en: 'fountain', ko: '분수' },
+  { id: 704, en: 'playground', ko: '놀이터, 운동장' },
+  { id: 705, en: 'swing', ko: '그네, 그네를 타다' },
+  { id: 706, en: 'sleeping bag', ko: '침낭' },
+  { id: 707, en: 'campfire', ko: '모닥불' },
+  { id: 708, en: 'fishing rod', ko: '낚싯대' },
+  { id: 709, en: 'sail', ko: '요트를 타다, 항해하다' },
+  { id: 710, en: 'amusement', ko: '놀이, 즐거움' },
+  { id: 711, en: 'merry-go-round', ko: '회전목마' },
+  { id: 712, en: 'flea market', ko: '벼룩시장' },
+  { id: 713, en: 'botanical garden', ko: '식물원' },
+  { id: 714, en: 'aquarium', ko: '수족관' },
+  { id: 715, en: 'thermos', ko: '보온병' },
+  { id: 716, en: 'peak', ko: '꼭대기' },
+  { id: 717, en: 'rapids', ko: '급류, 여울' },
+  { id: 718, en: 'get together', ko: '모이다, 모으다' },
+  { id: 719, en: 'because of', ko: '~때문에' },
+  { id: 720, en: 'be filled with', ko: '~으로 가득 차다' },
+  { id: 721, en: 'flood', ko: '홍수' },
+  { id: 722, en: 'hurricane', ko: '폭풍, 허리케인' },
+  { id: 723, en: 'thunder', ko: '천둥, 천둥같이 큰 소리' },
+  { id: 724, en: 'lightning', ko: '번개, 번개 같은' },
+  { id: 725, en: 'creature', ko: '(신의) 창조물, 피조물' },
+  { id: 726, en: 'valley', ko: '계곡, 골짜기' },
+  { id: 727, en: 'polar', ko: '북극[남극]의, 극지의' },
+  { id: 728, en: 'breeze', ko: '산들바람' },
+  { id: 729, en: 'cliff', ko: '벼랑, 절벽' },
+  { id: 730, en: 'volcano', ko: '화산' },
+  { id: 731, en: 'natural', ko: '자연의, 자연스러운' },
+  { id: 732, en: 'forest', ko: '숲, 삼림' },
+  { id: 733, en: 'desert', ko: '사막' },
+  { id: 734, en: 'explore', ko: '탐험하다' },
+  { id: 735, en: 'stream', ko: '시내, 개울' },
+  { id: 736, en: 'lake', ko: '호수' },
+  { id: 737, en: 'waterfall', ko: '폭포' },
+  { id: 738, en: 'river', ko: '강' },
+  { id: 739, en: 'ocean', ko: '바다, 대양' },
+  { id: 740, en: 'coast', ko: '해안, 연안' },
+  { id: 741, en: 'tide', ko: '조수, 간만' },
+  { id: 742, en: 'landslide', ko: '산사태' },
+  { id: 743, en: 'earthquake', ko: '지진' },
+  { id: 744, en: 'element', ko: '요소, 성분' },
+  { id: 745, en: 'appear', ko: '나타나다' },
+  { id: 746, en: 'source', ko: '원천, 수원' },
+  { id: 747, en: 'disaster', ko: '재난, 재해' },
+  { id: 748, en: 'food chain', ko: '먹이 사슬' },
+  { id: 749, en: 'find out', ko: '~을 찾아내다, 알아내다' },
+  { id: 750, en: 'right away', ko: '곧바로, 즉시' },
+  { id: 751, en: 'clear', ko: '청명한, 깨끗한' },
+  { id: 752, en: 'sunny', ko: '햇빛이 밝은, 화창한' },
+  { id: 753, en: 'cloudy', ko: '구름 낀' },
+  { id: 754, en: 'rainy', ko: '비가 오는' },
+  { id: 755, en: 'windy', ko: '바람이 부는' },
+  { id: 756, en: 'snowy', ko: '눈이 내리는' },
+  { id: 757, en: 'mild', ko: '온화한, 포근한' },
+  { id: 758, en: 'foggy', ko: '안개 낀' },
+  { id: 759, en: 'freezing', ko: '몹시 추운, 얼어붙을 듯한' },
+  { id: 760, en: 'icy', ko: '얼음의, 싸늘한' },
+  { id: 761, en: 'dry', ko: '건조한, 말리다' },
+  { id: 762, en: 'moist', ko: '축축한, 습기 있는' },
+  { id: 763, en: 'storm', ko: '폭풍(우)' },
+  { id: 764, en: 'rainfall', ko: '강우, 강우량' },
+  { id: 765, en: 'hail', ko: '우박, 싸락눈' },
+  { id: 766, en: 'snowstorm', ko: '눈보라' },
+  { id: 767, en: 'blizzard', ko: '강한 눈보라, 블리자드' },
+  { id: 768, en: 'drizzle', ko: '이슬비' },
+  { id: 769, en: 'melt', ko: '녹다, 녹이다' },
+  { id: 770, en: 'gale', ko: '강풍' },
+  { id: 771, en: 'forecast', ko: '예측, (일기의) 예보' },
+  { id: 772, en: 'condition', ko: '상태, 상황' },
+  { id: 773, en: 'drought', ko: '가뭄' },
+  { id: 774, en: 'climate', ko: '기후' },
+  { id: 775, en: 'degree', ko: '(온도 단위인) 도' },
+  { id: 776, en: 'temperature', ko: '온도' },
+  { id: 777, en: 'humid', ko: '습한, 눅눅한' },
+  { id: 778, en: 'sticky', ko: '끈적끈적한, 무더운' },
+  { id: 779, en: 'up to', ko: '~까지' },
+  { id: 780, en: 'on the way (to)', ko: '~로 가는 길에' },
+  { id: 781, en: 'farm', ko: '농장' },
+  { id: 782, en: 'field', ko: '밭' },
+  { id: 783, en: 'cowboy', ko: '카우보이, 목동' },
+  { id: 784, en: 'horse', ko: '말' },
+  { id: 785, en: 'bull', ko: '황소' },
+  { id: 786, en: 'chicken', ko: '닭' },
+  { id: 787, en: 'goat', ko: '염소' },
+  { id: 788, en: 'pig', ko: '돼지' },
+  { id: 789, en: 'buffalo', ko: '버팔로, 물소' },
+  { id: 790, en: 'crop', ko: '(농)작물, 수확량' },
+  { id: 791, en: 'meadow', ko: '목초지, 초원' },
+  { id: 792, en: 'barn', ko: '헛간' },
+  { id: 793, en: 'hay', ko: '건초' },
+  { id: 794, en: 'harvest', ko: '수확하다' },
+  { id: 795, en: 'calf', ko: '송아지' },
+  { id: 796, en: 'cattle', ko: '소' },
+  { id: 797, en: 'lay', ko: '알을 낳다, ~을 …에 두다' },
+  { id: 798, en: 'cotton', ko: '면' },
+  { id: 799, en: 'shepherd', ko: '양치기' },
+  { id: 800, en: 'farmhouse', ko: '농가, 농가에 딸린 집' },
+  { id: 801, en: 'cultivate', ko: '경작하다, 재배하다' },
+  { id: 802, en: 'orchard', ko: '과수원' },
+  { id: 803, en: 'shed', ko: '(작은) 헛간, 오두막' },
+  { id: 804, en: 'ranch', ko: '농장, 목축장' },
+  { id: 805, en: 'pasture', ko: '목장, 방목하다' },
+  { id: 806, en: 'scarecrow', ko: '허수아비' },
+  { id: 807, en: 'livestock', ko: '가축류' },
+  { id: 808, en: 'vineyard', ko: '포도밭, 포도원' },
+  { id: 809, en: 'take care of', ko: '~을 돌보다' },
+  { id: 810, en: 'run away', ko: '도망치다, 달아나다' },
+  { id: 811, en: 'bloom', ko: '꽃, 개화' },
+  { id: 812, en: 'fruit', ko: '열매, 과일' },
+  { id: 813, en: 'grass', ko: '풀, 잔디' },
+  { id: 814, en: 'weed', ko: '잡초, ~의 잡초를 뽑다' },
+  { id: 815, en: 'seed', ko: '씨앗, 종자' },
+  { id: 816, en: 'sprout', ko: '새싹, 싹이 나다' },
+  { id: 817, en: 'bud', ko: '(식물의) 눈, 봉오리' },
+  { id: 818, en: 'petal', ko: '꽃잎' },
+  { id: 819, en: 'root (out)', ko: '뿌리, 뿌리 뽑다' },
+  { id: 820, en: 'stem', ko: '(식물의) 줄기, 대' },
+  { id: 821, en: 'thorn', ko: '가시' },
+  { id: 822, en: 'branch', ko: '나뭇가지, 분점' },
+  { id: 823, en: 'bough', ko: '(나무의) 큰 가지' },
+  { id: 824, en: 'maple', ko: '단풍나무' },
+  { id: 825, en: 'bamboo', ko: '대나무' },
+  { id: 826, en: 'needle', ko: '(침엽수의) 바늘처럼 뾰족한 잎, 바늘' },
+  { id: 827, en: 'pine tree', ko: '소나무' },
+  { id: 828, en: 'cherry tree', ko: '벚나무' },
+  { id: 829, en: 'cactus', ko: '선인장' },
+  { id: 830, en: 'trunk', ko: '나무의 몸통 부분, 코끼리의 코' },
+  { id: 831, en: 'bark (at)', ko: '나무껍질, (개가) 짖다' },
+  { id: 832, en: 'fertilizer', ko: '비료' },
+  { id: 833, en: 'bush', ko: '관목, 작은 나무들이 우거진 관목 숲' },
+  { id: 834, en: 'palm', ko: '야자수, 손바닥' },
+  { id: 835, en: 'bulb', ko: '구근, 알뿌리' },
+  { id: 836, en: 'poisonous', ko: '독이 있는' },
+  { id: 837, en: 'herb', ko: '약초, 허브' },
+  { id: 838, en: 'cut off', ko: '잘라내다, 차단하다' },
+  { id: 839, en: 'little by little', ko: '조금씩, 천천히' },
+  { id: 840, en: 'day by day', ko: '나날이, 서서히' },
+  { id: 841, en: 'lion', ko: '사자' },
+  { id: 842, en: 'rat', ko: '쥐' },
+  { id: 843, en: 'bat', ko: '박쥐' },
+  { id: 844, en: 'snake', ko: '뱀' },
+  { id: 845, en: 'fox', ko: '여우' },
+  { id: 846, en: 'tiger', ko: '호랑이' },
+  { id: 847, en: 'whale', ko: '고래' },
+  { id: 848, en: 'bear', ko: '곰' },
+  { id: 849, en: 'deer', ko: '사슴' },
+  { id: 850, en: 'turtle', ko: '거북' },
+  { id: 851, en: 'kangaroo', ko: '캥거루' },
+  { id: 852, en: 'giraffe', ko: '기린' },
+  { id: 853, en: 'zebra', ko: '얼룩말' },
+  { id: 854, en: 'camel', ko: '낙타, 낙타색' },
+  { id: 855, en: 'dolphin', ko: '돌고래' },
+  { id: 856, en: 'shark', ko: '상어' },
+  { id: 857, en: 'leopard', ko: '표범' },
+  { id: 858, en: 'frog', ko: '개구리' },
+  { id: 859, en: 'dinosaur', ko: '공룡' },
+  { id: 860, en: 'bird cage', ko: '새장' },
+  { id: 861, en: 'fish tank', ko: '어항' },
+  { id: 862, en: 'octopus', ko: '문어, 낙지' },
+  { id: 863, en: 'jellyfish', ko: '해파리' },
+  { id: 864, en: 'sea horse', ko: '해마' },
+  { id: 865, en: 'hippo', ko: '하마' },
+  { id: 866, en: 'rhino', ko: '코뿔소' },
+  { id: 867, en: 'crocodile', ko: '악어' },
+  { id: 868, en: 'lizard', ko: '도마뱀' },
+  { id: 869, en: 'make friends (with)', ko: '친구를 사귀다, ~와 친해지다' },
+  { id: 870, en: 'on one’s own', ko: '혼자, 혼자 힘으로' },
+  { id: 871, en: 'insect', ko: '곤충' },
+  { id: 872, en: 'bee', ko: '벌' },
+  { id: 873, en: 'wing', ko: '날개' },
+  { id: 874, en: 'hen', ko: '암탉' },
+  { id: 875, en: 'spider', ko: '거미' },
+  { id: 876, en: 'butterfly', ko: '나비' },
+  { id: 877, en: 'beetle', ko: '딱정벌레' },
+  { id: 878, en: 'ladybug', ko: '무당벌레' },
+  { id: 879, en: 'flea', ko: '벼룩' },
+  { id: 880, en: 'mosquito', ko: '모기' },
+  { id: 881, en: 'swan', ko: '백조' },
+  { id: 882, en: 'penguin', ko: '펭귄' },
+  { id: 883, en: 'eagle', ko: '독수리' },
+  { id: 884, en: 'beak', ko: '부리' },
+  { id: 885, en: 'crow', ko: '까마귀' },
+  { id: 886, en: 'pigeon', ko: '비둘기' },
+  { id: 887, en: 'parrot', ko: '앵무새' },
+  { id: 888, en: 'goose', ko: '거위' },
+  { id: 889, en: 'cuckoo', ko: '뻐꾸기' },
+  { id: 890, en: 'owl', ko: '올빼미' },
+  { id: 891, en: 'peacock', ko: '공작새' },
+  { id: 892, en: 'ostrich', ko: '타조' },
+  { id: 893, en: 'swallow', ko: '제비, 삼키다' },
+  { id: 894, en: 'moth', ko: '나방, 좀벌레' },
+  { id: 895, en: 'cricket', ko: '귀뚜라미' },
+  { id: 896, en: 'caterpillar', ko: '애벌레, 유충' },
+  { id: 897, en: 'hummingbird', ko: '벌새' },
+  { id: 898, en: 'such as', ko: '~와 같은' },
+  { id: 899, en: 'all the time', ko: '내내, 줄곧' },
+  { id: 900, en: 'thanks to ~', ko: '~덕분에, 때문에' },
+  { id: 901, en: 'pollution', ko: '오염' },
+  { id: 902, en: 'protect', ko: '보호하다' },
+  { id: 903, en: 'separate', ko: '분리하다' },
+  { id: 904, en: 'environment', ko: '환경' },
+  { id: 905, en: 'effect', ko: '영향, 효과' },
+  { id: 906, en: 'resource', ko: '자원' },
+  { id: 907, en: 'destroy', ko: '파괴하다, 부수다' },
+  { id: 908, en: 'global warming', ko: '지구 온난화' },
+  { id: 909, en: 'damage', ko: '손상, 피해' },
+  { id: 910, en: 'garbage', ko: '쓰레기' },
+  { id: 911, en: 'share', ko: '공유하다' },
+  { id: 912, en: 'cause', ko: '야기하다' },
+  { id: 913, en: 'ruin', ko: '파괴, 유적' },
+  { id: 914, en: 'raw', ko: '날것의, 가공하지 않은' },
+  { id: 915, en: 'electricity', ko: '전기' },
+  { id: 916, en: 'pure', ko: '순수한' },
+  { id: 917, en: 'smog', ko: '스모그, 연무' },
+  { id: 918, en: 'fuel', ko: '연료' },
+  { id: 919, en: 'fossil', ko: '화석' },
+  { id: 920, en: 'acid', ko: '산, 산성의' },
+  { id: 921, en: 'toxic', ko: '유독한' },
+  { id: 922, en: 'exhaust', ko: '배기가스, 다 써버리다' },
+  { id: 923, en: 'shortage', ko: '부족, 결핍' },
+  { id: 924, en: 'reduce', ko: '줄이다' },
+  { id: 925, en: 'endangered', ko: '멸종 위기의, 위험에 처한' },
+  { id: 926, en: 'leak', ko: '누출, 새다' },
+  { id: 927, en: 'overuse', ko: '남용, 남용하다' },
+  { id: 928, en: 'greenhouse', ko: '온실' },
+  { id: 929, en: 'be worried about', ko: '~에 대해 걱정하다' },
+  { id: 930, en: 'back and forth', ko: '앞뒤로, 왔다갔다' },
+  { id: 931, en: 'electric', ko: '전기의' },
+  { id: 932, en: 'invent', ko: '발명하다' },
+  { id: 933, en: 'machine', ko: '기계' },
+  { id: 934, en: 'data', ko: '자료, 정보' },
+  { id: 935, en: 'important', ko: '중요한' },
+  { id: 936, en: 'cell', ko: '세포' },
+  { id: 937, en: 'prove', ko: '증명하다' },
+  { id: 938, en: 'inform', ko: '알리다, 통지하다' },
+  { id: 939, en: 'experiment', ko: '실험, 실험하다' },
+  { id: 940, en: 'method', ko: '방법' },
+  { id: 941, en: 'chemical', ko: '화학의, 화학 약품' },
+  { id: 942, en: 'measure', ko: '측정하다' },
+  { id: 943, en: 'technology', ko: '기술' },
+  { id: 944, en: 'inspect', ko: '조사하다' },
+  { id: 945, en: 'imagine', ko: '상상하다' },
+  { id: 946, en: 'visible', ko: '눈에 보이는' },
+  { id: 947, en: 'vacuum', ko: '진공, 공백' },
+  { id: 948, en: 'react', ko: '반응하다' },
+  { id: 949, en: 'mobile', ko: '이동성의, 휴대 전화' },
+  { id: 950, en: 'charge', ko: '충전하다' },
+  { id: 951, en: 'multiply', ko: '곱하다, 증가시키다' },
+  { id: 952, en: 'gravity', ko: '중력' },
+  { id: 953, en: 'browse', ko: '검색하다' },
+  { id: 954, en: 'device', ko: '장치' },
+  { id: 955, en: 'delete', ko: '삭제하다' },
+  { id: 956, en: 'wireless', ko: '무선의' },
+  { id: 957, en: 'transmit', ko: '보내다, 전송하다' },
+  { id: 958, en: 'formula', ko: '공식' },
+  { id: 959, en: 'lead to', ko: '~로 이어지다, ~을 초래하다' },
+  { id: 960, en: 'come up with', ko: '~을 찾아내다, 생각해 내다' },
+  { id: 961, en: 'earth', ko: '지구' },
+  { id: 962, en: 'planet', ko: '행성' },
+  { id: 963, en: 'universe', ko: '우주' },
+  { id: 964, en: 'solar', ko: '태양의' },
+  { id: 965, en: 'lunar', ko: '달의' },
+  { id: 966, en: 'crew', ko: '(비행기나 배의) 승무원' },
+  { id: 967, en: 'rocket', ko: '로켓, 로켓으로 쏘아 올리다' },
+  { id: 968, en: 'outer', ko: '외부의, 외곽의' },
+  { id: 969, en: 'surface', ko: '표면' },
+  { id: 970, en: 'Mercury', ko: '수성, 수은' },
+  { id: 971, en: 'Venus', ko: '금성' },
+  { id: 972, en: 'Mars', ko: '화성' },
+  { id: 973, en: 'Jupiter', ko: '목성' },
+  { id: 974, en: 'Saturn', ko: '토성' },
+  { id: 975, en: 'ring', ko: '고리, 반지' },
+  { id: 976, en: 'comet', ko: '혜성' },
+  { id: 977, en: 'telescope', ko: '망원경' },
+  { id: 978, en: 'Milky Way', ko: '은하수' },
+  { id: 979, en: 'space shuttle', ko: '우주 왕복선' },
+  { id: 980, en: 'space station', ko: '우주 정거장' },
+  { id: 981, en: 'eclipse', ko: '식(蝕)' },
+  { id: 982, en: 'satellite', ko: '위성' },
+  { id: 983, en: 'orbit', ko: '궤도, 궤도를 그리며 돌다' },
+  { id: 984, en: 'galaxy', ko: '은하' },
+  { id: 985, en: 'astronomy', ko: '천문학' },
+  { id: 986, en: 'astronomer', ko: '천문학자' },
+  { id: 987, en: 'Big Bang', ko: '빅뱅(우주 생성의 시발이 된 것으로 여겨지는 대폭발)' },
+  { id: 988, en: 'light year', ko: '광년(빛이 1년에 나아가는 거리로 약 9조 4670억 킬로미터)' },
+  { id: 989, en: 'far from', ko: '~에서 멀리, 전혀 ~이 아닌' },
+  { id: 990, en: 'by chance', ko: '우연히, 뜻밖에' },
+  { id: 991, en: 'power', ko: '힘, 권력' },
+  { id: 992, en: 'produce', ko: '생산하다, 만들어 내다' },
+  { id: 993, en: 'wind', ko: '바람' },
+  { id: 994, en: 'coal', ko: '석탄' },
+  { id: 995, en: 'mine', ko: '광산, 지뢰' },
+  { id: 996, en: 'factory', ko: '공장' },
+  { id: 997, en: 'dam', ko: '댐' },
+  { id: 998, en: 'heat', ko: '열, 가열하다' },
+  { id: 999, en: 'battery', ko: '배터리' },
+  { id: 1000, en: 'consume', ko: '(특히 연료·에너지·시간을) 소모하다' },
+  { id: 1001, en: 'generate', ko: '생성하다, 발생시키다' },
+  { id: 1002, en: 'nuclear', ko: '원자핵의' },
+  { id: 1003, en: 'windmill', ko: '풍차' },
+  { id: 1004, en: 'tidal', ko: '조수의' },
+  { id: 1005, en: 'careless', ko: '부주의한' },
+  { id: 1006, en: 'transform', ko: '바꾸다, 변형시키다' },
+  { id: 1007, en: 'natural gas', ko: '천연가스' },
+  { id: 1008, en: 'abundant', ko: '풍부한, 풍족한' },
+  { id: 1009, en: 'utility pole', ko: '전신주' },
+  { id: 1010, en: 'solar collector', ko: '태양열 집열기' },
+  { id: 1011, en: 'transmission tower', ko: '송전탑' },
+  { id: 1012, en: 'radioactive', ko: '방사능을 가진' },
+  { id: 1013, en: 'power line', ko: '송전선' },
+  { id: 1014, en: 'conserve', ko: '보전하다, 아끼다' },
+  { id: 1015, en: 'efficiency', ko: '효율' },
+  { id: 1016, en: 'crisis', ko: '위기' },
+  { id: 1017, en: 'authorized', ko: '권한이 부여된' },
+  { id: 1018, en: 'be made up of', ko: '~로 구성되다, 이루어지다' },
+  { id: 1019, en: 'turn into', ko: '~로 변하다, 바뀌다' },
+  { id: 1020, en: 'and so on', ko: '(기타) 등등' },
+  { id: 1021, en: 'exam', ko: '시험' },
+  { id: 1022, en: 'college', ko: '단과대학' },
+  { id: 1023, en: 'university', ko: '종합대학' },
+  { id: 1024, en: 'elementary', ko: '기초의, 기본이 되는' },
+  { id: 1025, en: 'tutor', ko: '가정교사, 개인 지도 교사' },
+  { id: 1026, en: 'discuss', ko: '토론하다' },
+  { id: 1027, en: 'explain', ko: '설명하다' },
+  { id: 1028, en: 'memorize', ko: '암기하다' },
+  { id: 1029, en: 'entrance', ko: '입장, 입학' },
+  { id: 1030, en: 'educate', ko: '교육하다, 육성하다' },
+  { id: 1031, en: 'kindergarten', ko: '유치원' },
+  { id: 1032, en: 'graduate', ko: '졸업하다' },
+  { id: 1033, en: 'knowledge', ko: '지식' },
+  { id: 1034, en: 'counsel', ko: '상담, 상담하다' },
+  { id: 1035, en: 'admit', ko: '받아들이다, 인정하다' },
+  { id: 1036, en: 'evaluate', ko: '평가하다' },
+  { id: 1037, en: 'submit', ko: '제출하다' },
+  { id: 1038, en: 'lecture', ko: '강의' },
+  { id: 1039, en: 'instruct', ko: '교수하다, 가르치다' },
+  { id: 1040, en: 'absent', ko: '결석한' },
+  { id: 1041, en: 'attend', ko: '출석하다, 참석하다' },
+  { id: 1042, en: 'semester', ko: '학기' },
+  { id: 1043, en: 'alternative', ko: '대안, 대안의' },
+  { id: 1044, en: 'academic', ko: '학술적인, 학문적인' },
+  { id: 1045, en: 'pupil', ko: '학생' },
+  { id: 1046, en: 'intelligence', ko: '지성, 지능' },
+  { id: 1047, en: 'scholarship', ko: '장학금' },
+  { id: 1048, en: 'encourage', ko: '용기를 북돋우다, 격려하다' },
+  { id: 1049, en: 'pay attention to', ko: '~에 주의하다, 주목하다' },
+  { id: 1050, en: 'play a role (in)', ko: '(~에서) 역할을 하다' },
+  { id: 1051, en: 'classroom', ko: '교실' },
+  { id: 1052, en: 'chalk', ko: '분필' },
+  { id: 1053, en: 'textbook', ko: '교과서' },
+  { id: 1054, en: 'partner', ko: '짝, 동료' },
+  { id: 1055, en: 'homework', ko: '숙제' },
+  { id: 1056, en: 'math', ko: '수학' },
+  { id: 1057, en: 'conversation', ko: '대화, 회화' },
+  { id: 1058, en: 'classmate', ko: '급우, 학급 친구' },
+  { id: 1059, en: 'senior', ko: '선배, 손위의' },
+  { id: 1060, en: 'locker', ko: '(자물쇠가 달린) 사물함, 로커' },
+  { id: 1061, en: 'chalk board', ko: '칠판' },
+  { id: 1062, en: 'marker', ko: '마커펜' },
+  { id: 1063, en: 'club', ko: '동아리' },
+  { id: 1064, en: 'hall', ko: '강당, 부속 회관' },
+  { id: 1065, en: 'subject', ko: '과목, 주제' },
+  { id: 1066, en: 'project', ko: '계획, 기획' },
+  { id: 1067, en: 'library', ko: '도서관' },
+  { id: 1068, en: 'P.E.', ko: '체육' },
+  { id: 1069, en: 'hallway', ko: '복도' },
+  { id: 1070, en: 'principal', ko: '교장' },
+  { id: 1071, en: 'schoolmate', ko: '학교 친구, 동창생' },
+  { id: 1072, en: 'homeroom teacher', ko: '담임 선생님' },
+  { id: 1073, en: 'auditorium', ko: '강당' },
+  { id: 1074, en: 'cafeteria', ko: '식당, 간이식당' },
+  { id: 1075, en: 'assignment', ko: '과제, 숙제' },
+  { id: 1076, en: 'laboratory', ko: '실습실, 연습실' },
+  { id: 1077, en: 'bulletin board', ko: '게시판' },
+  { id: 1078, en: 'ask ~ a favor', ko: '~에게 부탁을 하다' },
+  { id: 1079, en: 'get along with', ko: '~와 잘 지내다, 어울리다' },
+  { id: 1080, en: 'take part in', ko: '~에 참여[참가]하다' },
+  { id: 1081, en: 'value', ko: '가치, 값' },
+  { id: 1082, en: 'local', ko: '지역의, 현지의' },
+  { id: 1083, en: 'crowd', ko: '군중' },
+  { id: 1084, en: 'debt', ko: '빚, 부채' },
+  { id: 1085, en: 'salary', ko: '급여' },
+  { id: 1086, en: 'invest', ko: '투자하다' },
+  { id: 1087, en: 'duty', ko: '의무, 임무' },
+  { id: 1088, en: 'status', ko: '지위, 상태' },
+  { id: 1089, en: 'culture', ko: '문화' },
+  { id: 1090, en: 'citizen', ko: '시민, 국민' },
+  { id: 1091, en: 'public', ko: '대중의, 공공의' },
+  { id: 1092, en: 'supply', ko: '공급, 공급하다' },
+  { id: 1093, en: 'demand', ko: '수요, 요구하다' },
+  { id: 1094, en: 'import', ko: '수입, 수입하다' },
+  { id: 1095, en: 'export', ko: '수출, 수출하다' },
+  { id: 1096, en: 'account', ko: '계좌' },
+  { id: 1097, en: 'employ', ko: '고용하다' },
+  { id: 1098, en: 'individual', ko: '개인, 개인의' },
+  { id: 1099, en: 'relationship', ko: '관계, 사이' },
+  { id: 1100, en: 'tradition', ko: '전통' },
+  { id: 1101, en: 'consumer', ko: '소비자' },
+  { id: 1102, en: 'responsibility', ko: '책임' },
+  { id: 1103, en: 'influence', ko: '영향, 영향을 미치다' },
+  { id: 1104, en: 'obstacle', ko: '장애, 장애물' },
+  { id: 1105, en: 'property', ko: '재산, 소유물' },
+  { id: 1106, en: 'moral', ko: '도덕, 윤리' },
+  { id: 1107, en: 'donate', ko: '기부하다' },
+  { id: 1108, en: 'predict', ko: '예측하다, 예언하다' },
+  { id: 1109, en: 'show off', ko: '자랑하다, 내세우다' },
+  { id: 1110, en: 'look for', ko: '~을 찾다, 구하다' },
+  { id: 1111, en: 'vote', ko: '투표, 투표하다' },
+  { id: 1112, en: 'party', ko: '정당' },
+  { id: 1113, en: 'gap', ko: '차이, 격차' },
+  { id: 1114, en: 'justice', ko: '정의' },
+  { id: 1115, en: 'crime', ko: '범죄' },
+  { id: 1116, en: 'murder', ko: '살인' },
+  { id: 1117, en: 'victim', ko: '희생자' },
+  { id: 1118, en: 'argue', ko: '논하다, 주장하다' },
+  { id: 1119, en: 'punish', ko: '처벌하다, 벌주다' },
+  { id: 1120, en: 'policy', ko: '정책' },
+  { id: 1121, en: 'illegal', ko: '불법적인' },
+  { id: 1122, en: 'guilty', ko: '유죄의, 죄책감의' },
+  { id: 1123, en: 'innocent', ko: '무죄의, 결백한' },
+  { id: 1124, en: 'majority', ko: '대다수, 과반수' },
+  { id: 1125, en: 'minority', ko: '소수, 소수의' },
+  { id: 1126, en: 'suspect', ko: '용의자, 의심하다' },
+  { id: 1127, en: 'witness', ko: '목격자, 증인' },
+  { id: 1128, en: 'arrest', ko: '체포, 체포하다' },
+  { id: 1129, en: 'candidate', ko: '후보자' },
+  { id: 1130, en: 'government', ko: '정부, 통치' },
+  { id: 1131, en: 'elect', ko: '선출하다' },
+  { id: 1132, en: 'trial', ko: '재판, 시행' },
+  { id: 1133, en: 'sentence', ko: '형벌, 문장' },
+  { id: 1134, en: 'protest', ko: '항의, 항의하다' },
+  { id: 1135, en: 'compensate', ko: '보상하다, 변상하다' },
+  { id: 1136, en: 'diplomat', ko: '외교관' },
+  { id: 1137, en: 'represent', ko: '대표하다, 나타내다' },
+  { id: 1138, en: 'democracy', ko: '민주주의' },
+  { id: 1139, en: 'be supposed to', ko: '~하기로 되어 있다, ~해야 한다' },
+  { id: 1140, en: 'look into', ko: '~을 조사하다, 살펴보다' },
+  { id: 1141, en: 'peace', ko: '평화' },
+  { id: 1142, en: 'war', ko: '전쟁' },
+  { id: 1143, en: 'century', ko: '세기, 100년' },
+  { id: 1144, en: 'age', ko: '나이, 시대' },
+  { id: 1145, en: 'battle', ko: '싸움, 전투' },
+  { id: 1146, en: 'pray', ko: '기도하다, 기원하다' },
+  { id: 1147, en: 'soul', ko: '정신, 영혼' },
+  { id: 1148, en: 'belief', ko: '믿음, 신념' },
+  { id: 1149, en: 'invade', ko: '침입하다, 침략하다' },
+  { id: 1150, en: 'attack', ko: '공격, 공격하다' },
+  { id: 1151, en: 'weapon', ko: '무기' },
+  { id: 1152, en: 'empire', ko: '제국' },
+  { id: 1153, en: 'rule', ko: '지배, 통치' },
+  { id: 1154, en: 'religious', ko: '종교의' },
+  { id: 1155, en: 'charity', ko: '자선, 자애' },
+  { id: 1156, en: 'faithful', ko: '신실한, 성실한' },
+  { id: 1157, en: 'independence', ko: '독립' },
+  { id: 1158, en: 'revolution', ko: '혁명' },
+  { id: 1159, en: 'ancient', ko: '고대의, 구식의' },
+  { id: 1160, en: 'Buddhism', ko: '불교' },
+  { id: 1161, en: 'Christianity', ko: '기독교' },
+  { id: 1162, en: 'Hinduism', ko: '힌두교' },
+  { id: 1163, en: 'Islam', ko: '이슬람교' },
+  { id: 1164, en: 'Judaism', ko: '유대교' },
+  { id: 1165, en: 'colony', ko: '식민지' },
+  { id: 1166, en: 'civilization', ko: '문명' },
+  { id: 1167, en: 'spiritual', ko: '정신적인, 영적인' },
+  { id: 1168, en: 'ceremony', ko: '의식, 예식' },
+  { id: 1169, en: 'date back', ko: '~까지 거슬러 올라가다' },
+  { id: 1170, en: 'be based on', ko: '~에 기초하다, 근거하다' },
+  { id: 1171, en: 'different', ko: '다른' },
+  { id: 1172, en: 'global', ko: '세계적인' },
+  { id: 1173, en: 'race', ko: '인종, 민족' },
+  { id: 1174, en: 'national', ko: '국가의' },
+  { id: 1175, en: 'fund', ko: '기금' },
+  { id: 1176, en: 'foreign', ko: '외국의' },
+  { id: 1177, en: 'international', ko: '국제적인' },
+  { id: 1178, en: 'community', ko: '주민, 지역 사회' },
+  { id: 1179, en: 'population', ko: '인구' },
+  { id: 1180, en: 'increase', ko: '증가, 증가하다' },
+  { id: 1181, en: 'decrease', ko: '감소, 감소하다' },
+  { id: 1182, en: 'urban', ko: '도시의' },
+  { id: 1183, en: 'rural', ko: '시골의' },
+  { id: 1184, en: 'region', ko: '지역, 지방' },
+  { id: 1185, en: 'border', ko: '국경, 경계' },
+  { id: 1186, en: 'aid', ko: '원조, 지원' },
+  { id: 1187, en: 'suffer (from)', ko: '(고통 등을) 겪다, 당하다' },
+  { id: 1188, en: 'native', ko: '~출신자, 토착민' },
+  { id: 1189, en: 'orphan', ko: '고아' },
+  { id: 1190, en: 'support', ko: '원조, 지원' },
+  { id: 1191, en: 'rescue', ko: '구하다' },
+  { id: 1192, en: 'immigrate', ko: '(타국에서) 이민을 오다' },
+  { id: 1193, en: 'hunger', ko: '배고픔, 기아' },
+  { id: 1194, en: 'ethnic', ko: '민족의, 인종의' },
+  { id: 1195, en: 'organization', ko: '기구' },
+  { id: 1196, en: 'statistic', ko: '통계치' },
+  { id: 1197, en: 'agreement', ko: '협정, 계약' },
+  { id: 1198, en: 'mutual', ko: '서로의, 상호의' },
+  { id: 1199, en: 'break out', ko: '발발하다, 발생하다' },
+  { id: 1200, en: 'consist of', ko: '~으로 이루어지다, 구성되다' },
+  { id: 1201, en: 'wisdom', ko: '지혜' },
+  { id: 1202, en: 'stupid', ko: '바보 같은, 어리석은' },
+  { id: 1203, en: 'be proud of', ko: '~을 자랑스럽게 여기다' },
+  { id: 1204, en: 'dishonest', ko: '부정직한' },
+  { id: 1205, en: 'honesty', ko: '정직, 솔직함' },
+  { id: 1206, en: 'bold', ko: '용감한' },
+  { id: 1207, en: 'diligent', ko: '부지런한' },
+  { id: 1208, en: 'impolite', ko: '무례한, 예의 없는' },
+  { id: 1209, en: 'personality', ko: '성격, 기질' },
+  { id: 1210, en: 'easygoing', ko: '느긋한, 너그러운' },
+  { id: 1211, en: 'unselfish, altruistic', ko: '이타적인' },
+  { id: 1212, en: 'bad, wicked', ko: '나쁜, 사악한' },
+  { id: 1213, en: 'wickedness', ko: '악' },
+  { id: 1214, en: 'good and evil', ko: '선과 악' },
+  { id: 1215, en: 'unfriendly', ko: '적대적인' },
+  { id: 1216, en: 'humble', ko: '겸손한, 신중한' },
+  { id: 1217, en: 'modesty', ko: '겸손, 소박함' },
+  { id: 1218, en: 'be sensitive to', ko: '~에 민감하다' },
+  { id: 1219, en: 'be confident of', ko: '~을 확신하다' },
+  { id: 1220, en: 'pessimistic', ko: '비관적인' },
+  { id: 1221, en: 'very', ko: '매우, 아주' },
+  { id: 1222, en: 'beauty', ko: '아름다움, 미녀' },
+  { id: 1223, en: 'underweight', ko: '표준 체중 이하의' },
+  { id: 1224, en: 'old', ko: '나이가 든' },
+  { id: 1225, en: 'fat', ko: '살찐' },
+  { id: 1226, en: 'muscle', ko: '근육' },
+  { id: 1227, en: 'thick', ko: '두꺼운, 숱이 많은' },
+  { id: 1228, en: 'attract', ko: '(마음을) 끌다' },
+  { id: 1229, en: 'figure', ko: '이미지, 상' },
+  { id: 1230, en: 'laugh at', ko: '~을 비웃다' },
+  { id: 1231, en: 'regretful', ko: '유감인, 후회하는' },
+  { id: 1232, en: 'surprise', ko: '놀라운 일, 놀람' },
+  { id: 1233, en: 'be pleased with', ko: '~에 기쁘다' },
+  { id: 1234, en: 'thankful', ko: '감사하는, 고맙게 여기는' },
+  { id: 1235, en: 'be anxious about', ko: '~에 대해 걱정하다' },
+  { id: 1236, en: 'delight', ko: '기쁘게 하다' },
+  { id: 1237, en: 'discouraged', ko: '의기소침한, 낙담한' },
+  { id: 1238, en: 'depress', ko: '낙담하게 하다, 우울하게 하다' },
+  { id: 1239, en: 'frighten', ko: '놀라게 하다, 겁먹게 만들다' },
+  { id: 1240, en: 'be ashamed of', ko: '~에 대해 부끄러워하다' },
+  { id: 1241, en: 'sympathetic', ko: '동정심 있는, 동정어린' },
+  { id: 1242, en: 'satisfaction', ko: '만족' },
+  { id: 1243, en: 'be satisfied with', ko: '~에 만족하다' },
+  { id: 1244, en: 'disappointment', ko: '실망' },
+  { id: 1245, en: 'be disappointed at', ko: '~에 실망하다' },
+  { id: 1246, en: 'amuse', ko: '즐겁게 하다' },
+  { id: 1247, en: 'journalist', ko: '기자, 통신원' },
+  { id: 1248, en: 'report', ko: '알리다, 보고하다' },
+  { id: 1249, en: 'computer engineer', ko: '컴퓨터 기술자' },
+  { id: 1250, en: 'attorney', ko: '변호사' },
+  { id: 1251, en: 'dental clinic', ko: '치과 병원' },
+  { id: 1252, en: 'architecture', ko: '건축학, 건축 양식' },
+  { id: 1253, en: 'public officer', ko: '공무원' },
+  { id: 1254, en: 'photograph', ko: '사진, 사진을 찍다' },
+  { id: 1255, en: 'announce', ko: '발표하다, 알리다' },
+  { id: 1256, en: 'novel', ko: '소설' },
+  { id: 1257, en: 'private detective', ko: '사립 탐정' },
+  { id: 1258, en: 'illustrate', ko: '(책 등에) 삽화를 넣다' },
+  { id: 1259, en: 'illustration', ko: '삽화' },
+  { id: 1260, en: 'trousers', ko: '바지' },
+  { id: 1261, en: 'knit a sweater', ko: '스웨터를 짜다' },
+  { id: 1262, en: 'seat belt', ko: '안전벨트' },
+  { id: 1263, en: 'school uniform', ko: '교복' },
+  { id: 1264, en: 'clothing, costume', ko: '옷, 의복' },
+  { id: 1265, en: 'muffler', ko: '스카프, 목도리' },
+  { id: 1266, en: 'pocket money', ko: '용돈' },
+  { id: 1267, en: 'high heels', ko: '굽 높은 구두' },
+  { id: 1268, en: 'waistcoat', ko: '조끼' },
+  { id: 1269, en: 'life vest', ko: '구명조끼' },
+  { id: 1270, en: 'wear', ko: '(옷을) 입다, (모자' },
+  { id: 1271, en: 'bread and butter', ko: '버터를 바른 빵' },
+  { id: 1272, en: 'sugar cube', ko: '각설탕' },
+  { id: 1273, en: 'salty', ko: '짠, 소금기가 있는' },
+  { id: 1274, en: 'grab a bite to eat', ko: '간단히 요기하다' },
+  { id: 1275, en: 'pork cutlet', ko: '돈가스' },
+  { id: 1276, en: 'red pepper paste', ko: '고추장' },
+  { id: 1277, en: 'have a snack', ko: '간식을 먹다' },
+  { id: 1278, en: 'honeybee', ko: '꿀벌' },
+  { id: 1279, en: 'light meal', ko: '가벼운 식사' },
+  { id: 1280, en: 'frying pan', ko: '프라이팬' },
+  { id: 1281, en: 'roll out', ko: '(반죽 같은 것을) 밀어서 펴다' },
+  { id: 1282, en: 'potholder', ko: '냄비 집게' },
+  { id: 1283, en: 'mixing bowl', ko: '믹싱 볼(음식 재료를 섞을 때 쓰는 그릇)' },
+  { id: 1284, en: 'soup plate', ko: '수프 접시' },
+  { id: 1285, en: 'whisk', ko: '휘저어 섞다' },
+  { id: 1286, en: 'ladle', ko: '주걱, 국자' },
+  { id: 1287, en: 'ice cream scoop', ko: '아이스크림용 주걱' },
+  { id: 1288, en: 'liquidizer', ko: '부엌용 믹서기' },
+  { id: 1289, en: 'front yard', ko: '앞마당' },
+  { id: 1290, en: 'a bar[cake] of soap', ko: '비누 한 개' },
+  { id: 1291, en: 'look into a mirror', ko: '거울을 보다' },
+  { id: 1292, en: 'make the bed', ko: '잠자리를 정돈하다' },
+  { id: 1293, en: 'bath', ko: '목욕' },
+  { id: 1294, en: 'bathe', ko: '목욕하다' },
+  { id: 1295, en: 'bed sheet', ko: '침대보' },
+  { id: 1296, en: 'go upstairs', ko: '위층으로 올라가다' },
+  { id: 1297, en: 'go downstairs', ko: '아래층으로 내려가다' },
+  { id: 1298, en: 'tap water', ko: '수돗물' },
+  { id: 1299, en: 'parking lot', ko: '주차장' },
+  { id: 1300, en: 'tube, underground', ko: '지하철' },
+  { id: 1301, en: 'bus fare', ko: '버스 요금' },
+  { id: 1302, en: 'bike', ko: '자전거' },
+  { id: 1303, en: 'a time[speed/age] limit', ko: '시간[속도/연령] 제한' },
+  { id: 1304, en: 'railway, railroad', ko: '철로' },
+  { id: 1305, en: 'traffic sign', ko: '교통 표지판' },
+  { id: 1306, en: 'sign up', ko: '가입하다' },
+  { id: 1307, en: 'car accident', ko: '자동차 사고' },
+  { id: 1308, en: 'backward', ko: '뒤로' },
+  { id: 1309, en: 'petrol', ko: '휘발유, 가솔린' },
+  { id: 1310, en: 'out of gas', ko: '기름이 떨어진' },
+  { id: 1311, en: 'transportation', ko: '수송, 운송' },
+  { id: 1312, en: 'conference room', ko: '회의실' },
+  { id: 1313, en: 'interviewer', ko: '면접관' },
+  { id: 1314, en: 'interviewee', ko: '면접 받는 사람' },
+  { id: 1315, en: 'print', ko: '인쇄[출판]하다, 프린트하다' },
+  { id: 1316, en: 'address an envelope', ko: '봉투에 주소를 쓰다' },
+  { id: 1317, en: 'make a call', ko: '전화를 걸다' },
+  { id: 1318, en: 'receive a call', ko: '전화를 받다' },
+  { id: 1319, en: 'take a message', ko: '메시지를 전하다[받다]' },
+  { id: 1320, en: 'leave a message', ko: '메시지를 남기다' },
+  { id: 1321, en: 'manage', ko: '관리하다, 다루다' },
+  { id: 1322, en: 'calculate', ko: '계산하다, 추정하다' },
+  { id: 1323, en: 'stationery store', ko: '문구점' },
+  { id: 1324, en: 'stapler', ko: '스테이플러' },
+  { id: 1325, en: 'highlight', ko: '가장 중요한 점, 강조하다' },
+  { id: 1326, en: 'in (the) hospital', ko: '병원에 입원하여' },
+  { id: 1327, en: 'police officer', ko: '경찰관' },
+  { id: 1328, en: 'right', ko: '오른쪽' },
+  { id: 1329, en: 'trash bin', ko: '쓰레기통' },
+  { id: 1330, en: 'blockbuster', ko: '(영화 등) 엄청난 히트작' },
+  { id: 1331, en: 'winding', ko: '구불구불한' },
+  { id: 1332, en: 'turn right, make a right turn', ko: '오른쪽[왼쪽]으로 돌다' },
+  { id: 1333, en: 'pharmacy', ko: '약국' },
+  { id: 1334, en: 'pedestrian walkway', ko: '보행자 전용 도로' },
+  { id: 1335, en: 'sideway', ko: '인도, 보도' },
+  { id: 1336, en: 'driveway', ko: '차도' },
+  { id: 1337, en: 'traffic signal', ko: '교통 신호' },
+  { id: 1338, en: 'freeway', ko: '고속도로' },
+  { id: 1339, en: 'daily life', ko: '일상생활' },
+  { id: 1340, en: 'hang out the wash', ko: '빨래를 널다' },
+  { id: 1341, en: 'turn on (off) the switch', ko: '스위치를 켜다[끄다]' },
+  { id: 1342, en: 'climb up (down) a ladder', ko: '사다리를 올라가다[내려가다]' },
+  { id: 1343, en: 'tighten (loosen) a screw', ko: '나사를 죄다[풀다]' },
+  { id: 1344, en: 'spanner', ko: '렌치(너트를 죄는 기구)' },
+  { id: 1345, en: 'put a plug into an outlet', ko: '플러그를 콘센트에 끼우다' },
+  { id: 1346, en: 'tin', ko: '깡통, 통조림' },
+  { id: 1347, en: 'canned', ko: '통조림한' },
+  { id: 1348, en: 'smoke', ko: '연기를 내다, 훈제하다' },
+  { id: 1349, en: 'freeze', ko: '얼리다, 냉동하다' },
+  { id: 1350, en: 'contain', ko: '담고 있다, 포함하다' },
+  { id: 1351, en: 'dairy products', ko: '유제품' },
+  { id: 1352, en: 'dirty', ko: '더러운' },
+  { id: 1353, en: 'height', ko: '높이' },
+  { id: 1354, en: 'closed', ko: '닫힌' },
+  { id: 1355, en: 'heavy rain', ko: '폭우' },
+  { id: 1356, en: 'heavy snow', ko: '폭설' },
+  { id: 1357, en: 'hungry', ko: '배고픈' },
+  { id: 1358, en: 'be full of', ko: '~로 가득 차 있다' },
+  { id: 1359, en: 'bright', ko: '밝은' },
+  { id: 1360, en: 'take a deep breath', ko: '깊은 숨을 쉬다' },
+  { id: 1361, en: 'depth', ko: '깊이' },
+  { id: 1362, en: 'deepen', ko: '깊게 하다' },
+  { id: 1363, en: 'round trip', ko: '왕복 여행' },
+  { id: 1364, en: 'well-known', ko: '유명한' },
+  { id: 1365, en: 'be famous for', ko: '~로 유명하다' },
+  { id: 1366, en: 'fame', ko: '명성' },
+  { id: 1367, en: 'emptiness', ko: '텅 빔, 공허함' },
+  { id: 1368, en: 'plastic surgery', ko: '성형 수술' },
+  { id: 1369, en: 'narrow', ko: '좁은' },
+  { id: 1370, en: 'width', ko: '넓이, 폭' },
+  { id: 1371, en: 'widen', ko: '넓히다' },
+  { id: 1372, en: 'tighten', ko: '꽉 조이게 하다' },
+  { id: 1373, en: 'loosen', ko: '헐렁하게 하다' },
+  { id: 1374, en: 'as sharp as a needle', ko: '매우 날카로운, 눈치가 빠른' },
+  { id: 1375, en: 'triangular', ko: '삼각형의' },
+  { id: 1376, en: 'shine', ko: '빛나다' },
+  { id: 1377, en: 'watch out', ko: '조심하다, 주의하다' },
+  { id: 1378, en: 'look at', ko: '~을 보다' },
+  { id: 1379, en: 'look forward to', ko: '~을 고대하다' },
+  { id: 1380, en: 'hear', ko: '(주의해서) 듣다' },
+  { id: 1381, en: 'listen to', ko: '~을 듣다' },
+  { id: 1382, en: 'noisy', ko: '(소리가) 큰, 시끄러운' },
+  { id: 1383, en: 'feel like ~ing', ko: '~하고 싶다' },
+  { id: 1384, en: 'difficult', ko: '어려운' },
+  { id: 1385, en: 'make (a) noise', ko: '시끄럽게 하다' },
+  { id: 1386, en: 'keep in touch with', ko: '~와 연락하고 지내다' },
+  { id: 1387, en: 'hard, tough', ko: '딱딱한, 거친' },
+  { id: 1388, en: 'soften', ko: '부드럽게 하다' },
+  { id: 1389, en: 'sense of humor', ko: '유머 감각' },
+  { id: 1390, en: 'subjective', ko: '주관적인' },
+  { id: 1391, en: 'vision', ko: '시각, 시력' },
+  { id: 1392, en: 'at first sight', ko: '첫눈에' },
+  { id: 1393, en: 'stare at', ko: '~을 빤히 보다' },
+  { id: 1394, en: 'taste', ko: '맛, 풍미' },
+  { id: 1395, en: 'observation', ko: '관찰' },
+  { id: 1396, en: 'run[have] a fever', ko: '열이 나다' },
+  { id: 1397, en: 'have a sore throat', ko: '목이 아프다' },
+  { id: 1398, en: 'take a medicine', ko: '약을 복용하다' },
+  { id: 1399, en: 'illness', ko: '병, 질병' },
+  { id: 1400, en: 'mad cow disease', ko: '광우병' },
+  { id: 1401, en: 'die of cancer', ko: '암으로 죽다' },
+  { id: 1402, en: 'go blind', ko: '시각 장애인이 되다, 시력을 잃다' },
+  { id: 1403, en: '(as) blind as a bat', ko: '전혀 눈이 보이지 않는' },
+  { id: 1404, en: 'a cure for', ko: '~에 대한 치료법' },
+  { id: 1405, en: 'relaxation', ko: '휴식' },
+  { id: 1406, en: 'injury', ko: '상처' },
+  { id: 1407, en: 'injure', ko: '상처를 내다' },
+  { id: 1408, en: 'examination', ko: '진찰, 검사' },
+  { id: 1409, en: 'get over', ko: '회복하다' },
+  { id: 1410, en: 'recovery', ko: '회복' },
+  { id: 1411, en: 'prevention', ko: '예방' },
+  { id: 1412, en: 'preventive', ko: '예방의, 예방약' },
+  { id: 1413, en: 'prevent disaster', ko: '재해를 방지하다' },
+  { id: 1414, en: 'have a medical checkup', ko: '건강 검진을 받다' },
+  { id: 1415, en: 'operation', ko: '수술' },
+  { id: 1416, en: 'operating room', ko: '수술실' },
+  { id: 1417, en: 'emergency room', ko: '응급실' },
+  { id: 1418, en: 'sightseer', ko: '관광객' },
+  { id: 1419, en: 'city sightseeing', ko: '도시 관광' },
+  { id: 1420, en: 'book', ko: '예약하다' },
+  { id: 1421, en: 'reservation', ko: '예약' },
+  { id: 1422, en: 'make a reservation', ko: '예약하다' },
+  { id: 1423, en: 'passport number', ko: '여권 번호' },
+  { id: 1424, en: 'flight attendant', ko: '승무원' },
+  { id: 1425, en: 'boarding pass', ko: '탑승권' },
+  { id: 1426, en: 'departure', ko: '출발' },
+  { id: 1427, en: 'arrival', ko: '도착' },
+  { id: 1428, en: 'departure time', ko: '출발 시각' },
+  { id: 1429, en: 'arrival time', ko: '도착 시각' },
+  { id: 1430, en: 'landing', ko: '착륙' },
+  { id: 1431, en: 'taking off', ko: '이륙' },
+  { id: 1432, en: 'luggage', ko: '짐, 수하물' },
+  { id: 1433, en: 'baggage claim', ko: '(공항의) 수하물 찾는 곳' },
+  { id: 1434, en: 'check in', ko: '입실[탑승] 수속을 밟다, 체크인하다' },
+  { id: 1435, en: 'check-in counter', ko: '탑승이나 입실 수속을 하는 곳' },
+  { id: 1436, en: 'security check', ko: '보안 검사(탑승 전에 실시하는 수하물 및 신체 검사)' },
+  { id: 1437, en: 'riddle', ko: '수수께끼, 퍼즐' },
+  { id: 1438, en: 'crossword puzzle', ko: '십자말풀이 퍼즐' },
+  { id: 1439, en: 'interesting', ko: '흥미로운' },
+  { id: 1440, en: 'be interested in', ko: '~에 흥미가 있다' },
+  { id: 1441, en: 'take a picture', ko: '사진을 찍다' },
+  { id: 1442, en: 'musical instrument', ko: '악기' },
+  { id: 1443, en: 'comic book, comics', ko: '만화책' },
+  { id: 1444, en: 'go camping', ko: '캠핑을 가다' },
+  { id: 1445, en: 'postage stamp', ko: '우표' },
+  { id: 1446, en: 'magic trick', ko: '마술의 기술, 속임수' },
+  { id: 1447, en: 'repair', ko: '고치다' },
+  { id: 1448, en: 'maniac', ko: '~광, 미치광이' },
+  { id: 1449, en: 'internet chatting', ko: '인터넷 채팅' },
+  { id: 1450, en: 'model airplane', ko: '모형 비행기' },
+  { id: 1451, en: 'stretch one’s arm out', ko: '팔을 쭉 뻗다' },
+  { id: 1452, en: 'swimmer', ko: '수영 선수, 수영하는 사람' },
+  { id: 1453, en: 'swimming goggles', ko: '물안경' },
+  { id: 1454, en: 'indoor', ko: '실내의, 집안의' },
+  { id: 1455, en: 'go bowling', ko: '볼링 치러 가다' },
+  { id: 1456, en: 'award', ko: '상, 상품' },
+  { id: 1457, en: 'win (the) first prize', ko: '1등을 하다, 1등 상을 타다' },
+  { id: 1458, en: 'score a goal', ko: '득점하다' },
+  { id: 1459, en: 'basketball court', ko: '농구장' },
+  { id: 1460, en: 'baseball glove', ko: '야구 글러브' },
+  { id: 1461, en: 'baseball park', ko: '야구 경기장' },
+  { id: 1462, en: 'pitcher', ko: '투수' },
+  { id: 1463, en: 'pitch', ko: '공을 던지다' },
+  { id: 1464, en: 'catcher', ko: '포수' },
+  { id: 1465, en: 'athletic', ko: '운동 경기의, 건장한' },
+  { id: 1466, en: 'defend', ko: '방어하다' },
+  { id: 1467, en: 'scoreboard', ko: '득점 게시판' },
+  { id: 1468, en: 'umpire', ko: '(운동 경기) 심판' },
+  { id: 1469, en: 'championship', ko: '챔피언의 지위, 선수권' },
+  { id: 1470, en: 'go skating', ko: '스케이트를 타러 가다' },
+  { id: 1471, en: 'surfer', ko: '서핑하는 사람' },
+  { id: 1472, en: 'surfing board', ko: '서핑 보드' },
+  { id: 1473, en: 'shop', ko: '가게, 상점' },
+  { id: 1474, en: 'present', ko: '선물' },
+  { id: 1475, en: 'for (on) sale', ko: '팔려고 내놓은' },
+  { id: 1476, en: 'clearance sale', ko: '재고 정리 세일' },
+  { id: 1477, en: 'buy', ko: '사다' },
+  { id: 1478, en: 'seller', ko: '판매자' },
+  { id: 1479, en: 'choice', ko: '선택, 선택된 것[사람]' },
+  { id: 1480, en: 'payment', ko: '지불, 납입' },
+  { id: 1481, en: 'business trip', ko: '출장' },
+  { id: 1482, en: 'business hour', ko: '영업시간' },
+  { id: 1483, en: 'selection', ko: '선발, 선발된 것[사람들]' },
+  { id: 1484, en: 'cash card', ko: '현금 인출 카드' },
+  { id: 1485, en: 'ATM card', ko: '현금 인출 카드' },
+  { id: 1486, en: 'clerk', ko: '점원' },
+  { id: 1487, en: 'newspaper stand', ko: '신문 가판대' },
+  { id: 1488, en: 'wholesale', ko: '도매' },
+  { id: 1489, en: 'reason', ko: '이유, 이성' },
+  { id: 1490, en: 'take an order', ko: '주문을 받다' },
+  { id: 1491, en: 'waitress', ko: '웨이트리스(여성종업원)' },
+  { id: 1492, en: 'delivery', ko: '배달' },
+  { id: 1493, en: 'a delivery person', ko: '배달원' },
+  { id: 1494, en: 'have (one’s) lunch delivered', ko: '점심을 배달시켜 먹다' },
+  { id: 1495, en: 'spilt (spilled)', ko: '엎질러진' },
+  { id: 1496, en: 'spilt (spilled) water', ko: '엎질러진 물' },
+  { id: 1497, en: 'low-calorie', ko: '저열량의' },
+  { id: 1498, en: 'service charge', ko: '(호텔, 음식점 등의) 서비스 요금' },
+  { id: 1499, en: 'drink', ko: '음료' },
+  { id: 1500, en: 'the total cost', ko: '전체 비용' },
+  { id: 1501, en: 'lose (one’s) appetite', ko: '식욕을 잃다' },
+  { id: 1502, en: 'sand castle', ko: '모래성' },
+  { id: 1503, en: 'Korean wave', ko: '한류' },
+  { id: 1504, en: 'seashell', ko: '조개' },
+  { id: 1505, en: 'suntan lotion', ko: '선탠로션' },
+  { id: 1506, en: 'white water rafting', ko: '급류 래프팅(고무 보트를 타고 계곡의 급류를헤쳐 나가는 레포츠)' },
+  { id: 1507, en: 'by yacht', ko: '요트로' },
+  { id: 1508, en: 'sunshade', ko: '파라솔, 양산' },
+  { id: 1509, en: 'scuba diving', ko: '스쿠버 다이빙' },
+  { id: 1510, en: 'bathing suit', ko: '수영복' },
+  { id: 1511, en: 'sunscreen', ko: '자외선 차단제' },
+  { id: 1512, en: 'apply sunblock', ko: '자외선 차단제를 바르다' },
+  { id: 1513, en: 'take a sunbath', ko: '일광욕을 하다' },
+  { id: 1514, en: 'fin', ko: '물갈퀴, 오리발' },
+  { id: 1515, en: 'swim in flippers', ko: '오리발을 신고 수영하다' },
+  { id: 1516, en: 'exposure', ko: '노출' },
+  { id: 1517, en: 'hold a festival', ko: '축제를 열다' },
+  { id: 1518, en: '(Saint) Valentine’s Day', ko: '(성) 밸런타인데이' },
+  { id: 1519, en: 'blow out', ko: '~을 불어 끄다' },
+  { id: 1520, en: 'New Year’s Day', ko: '새해 첫날' },
+  { id: 1521, en: 'make a wish', ko: '소원을 빌다' },
+  { id: 1522, en: 'celebration', ko: '기념[축하] 행사' },
+  { id: 1523, en: 'Easter egg', ko: '부활절 달걀' },
+  { id: 1524, en: 'conceal', ko: '숨기다' },
+  { id: 1525, en: 'invite', ko: '초대하다' },
+  { id: 1526, en: 'decoration', ko: '장식' },
+  { id: 1527, en: 'wizard', ko: '(주로 남자) 마법사, 주술사' },
+  { id: 1528, en: 'trick or treat', ko: '아이들이 핼러윈에 집집마다 다니며 하는 말' },
+  { id: 1529, en: 'costume party', ko: '변장 파티' },
+  { id: 1530, en: 'congratulation', ko: '축하 (인사)' },
+  { id: 1531, en: 'Thanksgiving dinner', ko: '추수 감사절 저녁 식사' },
+  { id: 1532, en: 'Jack-o’-lantern', ko: '호박등' },
+  { id: 1533, en: 'event coordinator', ko: '행사 책임자' },
+  { id: 1534, en: 'go on a picnic', ko: '소풍을 가다' },
+  { id: 1535, en: 'fountain pen', ko: '만년필' },
+  { id: 1536, en: 'bonfire', ko: '모닥불' },
+  { id: 1537, en: 'fishing pole', ko: '낚싯대' },
+  { id: 1538, en: 'recreation', ko: '놀이, 즐거움' },
+  { id: 1539, en: 'amusement park', ko: '놀이공원' },
+  { id: 1540, en: 'ride on a merry-go-round', ko: '회전목마를 타다' },
+  { id: 1541, en: 'top', ko: '꼭대기' },
+  { id: 1542, en: 'shoot the rapids', ko: '급류를 타다' },
+  { id: 1543, en: 'floods of rain', ko: '마구 쏟아지는 비' },
+  { id: 1544, en: 'thunderous', ko: '우레 같은, 벼락을 칠 듯한' },
+  { id: 1545, en: 'at a lightning speed', ko: '번개같이 빠른 속도로' },
+  { id: 1546, en: 'polar bear', ko: '북극곰' },
+  { id: 1547, en: 'artificial', ko: '인공적인' },
+  { id: 1548, en: 'wood(s)', ko: '숲, 삼림' },
+  { id: 1549, en: 'rain forest', ko: '열대 우림' },
+  { id: 1550, en: 'riverbank', ko: '강둑' },
+  { id: 1551, en: 'sea', ko: '바다, 대양' },
+  { id: 1552, en: 'the Pacific Ocean', ko: '태평양' },
+  { id: 1553, en: 'the Atlantic Ocean', ko: '대서양' },
+  { id: 1554, en: 'seashore, seaside', ko: '해안, 연안' },
+  { id: 1555, en: 'show up', ko: '나타나다' },
+  { id: 1556, en: 'disappear', ko: '사라지다' },
+  { id: 1557, en: 'natural disaster', ko: '자연 재해' },
+  { id: 1558, en: 'man-made disaster', ko: '인재(인간이 일으키는 재난)' },
+  { id: 1559, en: 'fine', ko: '청명한' },
+  { id: 1560, en: 'cloud', ko: '구름' },
+  { id: 1561, en: 'cloudless', ko: '구름 한 점 없는' },
+  { id: 1562, en: 'rain', ko: '비, 비가 오다' },
+  { id: 1563, en: 'raindrop', ko: '빗방울' },
+  { id: 1564, en: 'still', ko: '바람이 없는' },
+  { id: 1565, en: 'snow', ko: '눈, 눈이 내리다' },
+  { id: 1566, en: 'snowflake', ko: '눈송이' },
+  { id: 1567, en: 'fog', ko: '안개' },
+  { id: 1568, en: 'Freeze!', ko: '꼼짝 마!' },
+  { id: 1569, en: 'iceberg', ko: '빙산' },
+  { id: 1570, en: 'wet', ko: '젖은' },
+  { id: 1571, en: 'moisture', ko: '습기' },
+  { id: 1572, en: 'stormy', ko: '폭풍의, 비바람이 몰아치는' },
+  { id: 1573, en: 'body temperature', ko: '체온' },
+  { id: 1574, en: 'humidity', ko: '습기, 습도' },
+  { id: 1575, en: 'muggy', ko: '무더운' },
+  { id: 1576, en: 'farmer', ko: '농부' },
+  { id: 1577, en: 'horseback riding', ko: '승마' },
+  { id: 1578, en: 'piglet', ko: '새끼 돼지' },
+  { id: 1579, en: 'a cattle shed', ko: '가축우리' },
+  { id: 1580, en: 'put ~ out to pasture', ko: '~을 목장에 풀어 놓다' },
+  { id: 1581, en: 'livestock farming', ko: '목축' },
+  { id: 1582, en: 'fruitful', ko: '열매를 많이 맺는, 효과적인' },
+  { id: 1583, en: 'fruitless', ko: '보람 없는' },
+  { id: 1584, en: 'rosebud', ko: '장미꽃봉오리' },
+  { id: 1585, en: 'root out (up)', ko: '근절하다' },
+  { id: 1586, en: 'stem cell', ko: '줄기 세포' },
+  { id: 1587, en: 'maple syrup', ko: '메이플 시럽(핫케이크 등에 뿌려 먹는 시럽)' },
+  { id: 1588, en: 'bamboo shoot', ko: '죽순' },
+  { id: 1589, en: 'a needle and thread', ko: '바늘과 실' },
+  { id: 1590, en: 'cherry blossom', ko: '벚꽃' },
+  { id: 1591, en: 'poison', ko: '독' },
+  { id: 1592, en: 'food poisoning', ko: '식중독' },
+  { id: 1593, en: 'herbal', ko: '약초의, 풀의' },
+  { id: 1594, en: 'herbal medicine', ko: '한방약' },
+  { id: 1595, en: 'rattlesnake', ko: '방울뱀' },
+  { id: 1596, en: 'tigress', ko: '암호랑이' },
+  { id: 1597, en: 'tadpole', ko: '올챙이' },
+  { id: 1598, en: 'toad', ko: '두꺼비' },
+  { id: 1599, en: 'jellyfish sting', ko: '해파리에 쏘이는 것 또는 쏘인 상처' },
+  { id: 1600, en: 'hippopotamus', ko: '하마' },
+  { id: 1601, en: 'rhinoceros', ko: '코뿔소' },
+  { id: 1602, en: 'as busy as a bee', ko: '(벌처럼) 매우 바쁜' },
+  { id: 1603, en: 'beehive', ko: '벌집' },
+  { id: 1604, en: 'winged', ko: '날개가 달린' },
+  { id: 1605, en: 'cock, rooster', ko: '수탉' },
+  { id: 1606, en: 'spider web', ko: '거미집[줄]' },
+  { id: 1607, en: 'have butterflies in one’s stomach', ko: '가슴이 두근거리다' },
+  { id: 1608, en: 'ladybird', ko: '무당벌레' },
+  { id: 1609, en: 'mosquito bite', ko: '모기에 물린 곳[상처]' },
+  { id: 1610, en: 'eagle-eyed', ko: '시력이 좋은' },
+  { id: 1611, en: 'goose bumps', ko: '소름' },
+  { id: 1612, en: 'wild goose', ko: '기러기' },
+  { id: 1613, en: 'as proud as a peacock', ko: '잘난 척하는, 우쭐대는' },
+  { id: 1614, en: 'clothes moth', ko: '나방, 좀벌레' },
+  { id: 1615, en: 'moth-eaten', ko: '(옷이) 좀먹은, 낡아빠진' },
+  { id: 1616, en: 'pollute', ko: '오염시키다' },
+  { id: 1617, en: 'polluted', ko: '오염된' },
+  { id: 1618, en: 'protection', ko: '보호' },
+  { id: 1619, en: 'protective', ko: '보호의' },
+  { id: 1620, en: 'environmental', ko: '환경의' },
+  { id: 1621, en: 'have an effect on', ko: '~에 영향을 미치다' },
+  { id: 1622, en: 'affect', ko: '~에 영향을 미치다' },
+  { id: 1623, en: 'construct, build', ko: '세우다, 짓다' },
+  { id: 1624, en: 'do damage', ko: '피해를 입히다' },
+  { id: 1625, en: 'serious damage', ko: '심각한 피해' },
+  { id: 1626, en: 'rubbish', ko: '쓰레기' },
+  { id: 1627, en: 'processed', ko: '가공된' },
+  { id: 1628, en: 'raw material', ko: '원료, 원자재(석유' },
+  { id: 1629, en: 'mixed', ko: '혼합의, 섞인' },
+  { id: 1630, en: 'smoggy', ko: '스모그가 낀' },
+  { id: 1631, en: 'fossil fuel', ko: '화석 연료 (석탄, 석유 등)' },
+  { id: 1632, en: 'alkali', ko: '알칼리, 알칼리성의' },
+  { id: 1633, en: 'acid rain', ko: '산성비' },
+  { id: 1634, en: 'non-toxic', ko: '독성이 없는' },
+  { id: 1635, en: 'toxic gas', ko: '유독 가스' },
+  { id: 1636, en: 'exhausted', ko: '기진맥진한' },
+  { id: 1637, en: 'water shortage', ko: '물 부족' },
+  { id: 1638, en: 'food shortage', ko: '식량 부족' },
+  { id: 1639, en: 'lessen', ko: '줄이다' },
+  { id: 1640, en: 'reduction', ko: '감소' },
+  { id: 1641, en: 'endangered species', ko: '멸종 위기종' },
+  { id: 1642, en: 'greenhouse effect', ko: '온실 효과' },
+  { id: 1643, en: 'invention', ko: '발명, 발명품' },
+  { id: 1644, en: 'inventor', ko: '발명가' },
+  { id: 1645, en: 'importance', ko: '중요성' },
+  { id: 1646, en: 'proof', ko: '증거, 근거' },
+  { id: 1647, en: 'information', ko: '정보, 통지' },
+  { id: 1648, en: 'chemistry', ko: '화학' },
+  { id: 1649, en: 'measurement', ko: '치수, 측량' },
+  { id: 1650, en: 'information technology (= IT)', ko: '정보 기술' },
+  { id: 1651, en: 'technological', ko: '기술적인' },
+  { id: 1652, en: 'invisible', ko: '보이지 않는' },
+  { id: 1653, en: 'vacuum cleaner', ko: '진공청소기' },
+  { id: 1654, en: 'reaction', ko: '반응' },
+  { id: 1655, en: 'chemical reaction', ko: '화학 반응' },
+  { id: 1656, en: 'mobile phone', ko: '휴대 전화' },
+  { id: 1657, en: 'mobility', ko: '이동성, 변동성' },
+  { id: 1658, en: 'discharge', ko: '방전하다' },
+  { id: 1659, en: 'input device', ko: '입력 장치' },
+  { id: 1660, en: 'electronic device', ko: '전자 장치' },
+  { id: 1661, en: 'deletion', ko: '삭제' },
+  { id: 1662, en: 'wire', ko: '철사, 전선' },
+  { id: 1663, en: 'transmission', ko: '전달, 전염' },
+  { id: 1664, en: 'earth science', ko: '지구 과학' },
+  { id: 1665, en: 'cosmos, space', ko: '우주' },
+  { id: 1666, en: 'universal', ko: '우주의' },
+  { id: 1667, en: 'the solar system', ko: '태양계' },
+  { id: 1668, en: 'solar panel', ko: '태양 전지판' },
+  { id: 1669, en: 'cabin crew', ko: '객실 승무원' },
+  { id: 1670, en: 'inner', ko: '내부의' },
+  { id: 1671, en: 'spaceship, spacecraft', ko: '우주선' },
+  { id: 1672, en: 'solar eclipse', ko: '일식' },
+  { id: 1673, en: 'lunar eclipse', ko: '월식' },
+  { id: 1674, en: 'artificial satellite', ko: '인공위성' },
+  { id: 1675, en: 'in orbit', ko: '궤도에 있는' },
+  { id: 1676, en: 'Big Bang theory', ko: '빅뱅 이론' },
+  { id: 1677, en: 'power plant (station)', ko: '발전소' },
+  { id: 1678, en: 'powerful', ko: '힘 있는' },
+  { id: 1679, en: 'production', ko: '생산' },
+  { id: 1680, en: 'hydroelectric dam', ko: '수력 발전용 댐' },
+  { id: 1681, en: 'heating system', ko: '난방 장치' },
+  { id: 1682, en: 'consumption', ko: '(에너지·식품·물질의) 소비[소모](량)' },
+  { id: 1683, en: 'generation', ko: '생성, 발생' },
+  { id: 1684, en: 'electric generator', ko: '전기 발전기' },
+  { id: 1685, en: 'tidal energy', ko: '조력' },
+  { id: 1686, en: 'transformation', ko: '변형' },
+  { id: 1687, en: 'transformer', ko: '변압기' },
+  { id: 1688, en: 'natural resources', ko: '천연자원' },
+  { id: 1689, en: 'abundance', ko: '풍족' },
+  { id: 1690, en: 'save', ko: '아끼다, 절약하다' },
+  { id: 1691, en: 'energy efficiency', ko: '에너지 효율' },
+  { id: 1692, en: 'efficient', ko: '효율적인' },
+  { id: 1693, en: 'authorize', ko: '권한을 부여하다' },
+  { id: 1694, en: 'authority', ko: '권한' },
+  { id: 1695, en: 'test, examination', ko: '시험' },
+  { id: 1696, en: 'college student', ko: '대학생' },
+  { id: 1697, en: 'introductory', ko: '기초의, 기본이 되는' },
+  { id: 1698, en: 'elementary school', ko: '초등학교' },
+  { id: 1699, en: 'discussion', ko: '토론, 논의' },
+  { id: 1700, en: 'memorization', ko: '암기' },
+  { id: 1701, en: 'enter', ko: '들어가다, 입장하다' },
+  { id: 1702, en: 'entrance exam', ko: '입학시험' },
+  { id: 1703, en: 'education', ko: '교육' },
+  { id: 1704, en: 'preschool', ko: '유치원' },
+  { id: 1705, en: 'graduation', ko: '졸업' },
+  { id: 1706, en: 'graduation ceremony', ko: '졸업식' },
+  { id: 1707, en: 'counselor', ko: '상담자' },
+  { id: 1708, en: 'admission', ko: '입장, 인정' },
+  { id: 1709, en: 'evaluation', ko: '평가' },
+  { id: 1710, en: 'hand in', ko: '제출하다' },
+  { id: 1711, en: 'submission', ko: '제출' },
+  { id: 1712, en: 'learn', ko: '배우다' },
+  { id: 1713, en: 'instruction', ko: '교육, 지시' },
+  { id: 1714, en: 'instructive', ko: '교훈적인' },
+  { id: 1715, en: 'be absent from', ko: '~에 결석하다' },
+  { id: 1716, en: 'absence', ko: '결석' },
+  { id: 1717, en: 'attendance', ko: '출석' },
+  { id: 1718, en: 'alternative school', ko: '대안 학교' },
+  { id: 1719, en: 'academy', ko: '학원, 전문 학교' },
+  { id: 1720, en: 'student', ko: '학생' },
+  { id: 1721, en: 'intelligence quotient (= IQ)', ko: '지능 지수' },
+  { id: 1722, en: 'receive (get) a scholarship', ko: '장학금을 받다' },
+  { id: 1723, en: 'discourage', ko: '낙담시키다' },
+  { id: 1724, en: 'encouragement', ko: '격려' },
+  { id: 1725, en: 'a piece (stick) of chalk', ko: '분필 한 자루' },
+  { id: 1726, en: 'do (one’s) homework', ko: '숙제를 하다' },
+  { id: 1727, en: 'mathematics', ko: '수학' },
+  { id: 1728, en: 'have a conversation', ko: '대화를 나누다' },
+  { id: 1729, en: 'junior', ko: '후배, 손아래의' },
+  { id: 1730, en: 'senior citizen', ko: '노인' },
+  { id: 1731, en: 'lock', ko: '자물쇠, 잠그다' },
+  { id: 1732, en: 'locker room', ko: '탈의실' },
+  { id: 1733, en: 'blackboard', ko: '칠판' },
+  { id: 1734, en: 'whiteboard', ko: '흰색 보드판(마커를 이용해서 쓰는 흰색 칠판)' },
+  { id: 1735, en: 'board marker', ko: '마커펜' },
+  { id: 1736, en: 'mark', ko: '표시하다' },
+  { id: 1737, en: 'club activity', ko: '동아리 활동' },
+  { id: 1738, en: 'students’ hall', ko: '학생회관' },
+  { id: 1739, en: 'topic', ko: '주제' },
+  { id: 1740, en: 'librarian', ko: '도서관원, 사서' },
+  { id: 1741, en: 'Physical Education', ko: '체육' },
+  { id: 1742, en: 'vice principal', ko: '교감' },
+  { id: 1743, en: 'school cafeteria', ko: '학교 구내식당' },
+  { id: 1744, en: 'lab', ko: '실습실, 연습실' },
+  { id: 1745, en: 'language laboratory', ko: '어학 실습실' },
+  { id: 1746, en: 'put ~ on the bulletin board', ko: '게시판에 ~을 붙이다' },
+  { id: 1747, en: 'be of great value', ko: '대단한 가치가 있다' },
+  { id: 1748, en: 'valuable', ko: '가치 있는, 귀중한' },
+  { id: 1749, en: 'valueless', ko: '가치 없는' },
+  { id: 1750, en: 'invaluable', ko: '값을 헤아릴 수 없이 귀중한' },
+  { id: 1751, en: 'local time', ko: '현지 시간' },
+  { id: 1752, en: 'investment', ko: '투자' },
+  { id: 1753, en: 'social status', ko: '사회적 지위' },
+  { id: 1754, en: 'cultural', ko: '문화적인' },
+  { id: 1755, en: 'cultural difference', ko: '문화 차이' },
+  { id: 1756, en: 'private', ko: '개인의, 사적인' },
+  { id: 1757, en: 'in short supply', ko: '공급이 부족한' },
+  { id: 1758, en: 'meet the demand', ko: '수요를 충족시키다' },
+  { id: 1759, en: 'bank account', ko: '계좌' },
+  { id: 1760, en: 'group', ko: '집단' },
+  { id: 1761, en: 'traditional', ko: '전통적인' },
+  { id: 1762, en: 'responsible', ko: '책임 있는' },
+  { id: 1763, en: 'have a good (bad) influence on', ko: '~에 좋은[나쁜] 영향을 미치다' },
+  { id: 1764, en: 'private property', ko: '사유 재산' },
+  { id: 1765, en: 'a man of property', ko: '자산가' },
+  { id: 1766, en: 'intellectual property', ko: '지적 재산' },
+  { id: 1767, en: 'immoral', ko: '부도덕한' },
+  { id: 1768, en: 'moral problem', ko: '윤리 문제' },
+  { id: 1769, en: 'moral standard', ko: '윤리 기준' },
+  { id: 1770, en: 'donation', ko: '기부' },
+  { id: 1771, en: 'donator', ko: '기부자' },
+  { id: 1772, en: 'donor', ko: '기부자' },
+  { id: 1773, en: 'prediction', ko: '예측' },
+  { id: 1774, en: 'predictable', ko: '예측할 수 있는' },
+  { id: 1775, en: 'voter', ko: '투표자' },
+  { id: 1776, en: 'generation gap', ko: '세대 차이' },
+  { id: 1777, en: 'sin', ko: '범죄' },
+  { id: 1778, en: 'commit a crime', ko: '범죄를 저지르다' },
+  { id: 1779, en: 'criminal', ko: '범죄자' },
+  { id: 1780, en: 'killing', ko: '살인' },
+  { id: 1781, en: 'murderer, killer', ko: '살인자' },
+  { id: 1782, en: 'punishment', ko: '처벌, 형벌' },
+  { id: 1783, en: 'legal', ko: '합법적인' },
+  { id: 1784, en: 'illegal parking', ko: '불법 주차' },
+  { id: 1785, en: 'guilt', ko: '죄, 유죄' },
+  { id: 1786, en: 'innocence', ko: '무죄, 결백' },
+  { id: 1787, en: 'majority rule', ko: '다수결 원칙' },
+  { id: 1788, en: 'major', ko: '대다수의, 주요한' },
+  { id: 1789, en: 'minority opinion', ko: '소수 의견' },
+  { id: 1790, en: 'minor', ko: '사소한, 작은 쪽의' },
+  { id: 1791, en: 'doubt', ko: '의심하다' },
+  { id: 1792, en: 'prime suspect', ko: '주요 용의자' },
+  { id: 1793, en: 'suspicious', ko: '수상한' },
+  { id: 1794, en: 'question a witness', ko: '증인을 심문하다' },
+  { id: 1795, en: 'free', ko: '석방하다' },
+  { id: 1796, en: 'under arrest', ko: '구금 중인' },
+  { id: 1797, en: 'govern', ko: '통치하다' },
+  { id: 1798, en: 'governor', ko: '통치자, 주지사' },
+  { id: 1799, en: 'election', ko: '선거' },
+  { id: 1800, en: 'trial and error', ko: '시행착오' },
+  { id: 1801, en: 'life sentence', ko: '종신형' },
+  { id: 1802, en: 'compensate for', ko: '~을 보상하다, 배상하다' },
+  { id: 1803, en: 'compensation', ko: '보상, 변상' },
+  { id: 1804, en: 'diplomacy', ko: '외교(술)' },
+  { id: 1805, en: 'representative', ko: '대표자, 대표적인' },
+  { id: 1806, en: 'peaceful', ko: '평화로운' },
+  { id: 1807, en: 'fight', ko: '싸움, 전투' },
+  { id: 1808, en: 'prayer', ko: '기도, 기원' },
+  { id: 1809, en: 'body', ko: '신체' },
+  { id: 1810, en: 'disbelief', ko: '불신' },
+  { id: 1811, en: 'believe', ko: '믿다' },
+  { id: 1812, en: 'believe in', ko: '~의 존재를 믿다' },
+  { id: 1813, en: 'invasion', ko: '침략, 침입' },
+  { id: 1814, en: 'invader', ko: '침략군[국]' },
+  { id: 1815, en: 'defense', ko: '방어' },
+  { id: 1816, en: 'launch an attack', ko: '공격을 개시하다' },
+  { id: 1817, en: 'nuclear weapon', ko: '핵무기' },
+  { id: 1818, en: 'ruler', ko: '지배자, (길이 측정·줄긋기에 쓰는) 자' },
+  { id: 1819, en: 'religion', ko: '종교' },
+  { id: 1820, en: 'charity pot', ko: '자선냄비' },
+  { id: 1821, en: 'faithless', ko: '믿을 수 없는, 불성실한' },
+  { id: 1822, en: 'faith', ko: '믿음, 신앙' },
+  { id: 1823, en: 'independence movement', ko: '독립 운동' },
+  { id: 1824, en: 'modern', ko: '현대의' },
+  { id: 1825, en: 'Buddhist', ko: '불교를 믿는 사람, 불교의' },
+  { id: 1826, en: 'Christian', ko: '기독교를 믿는 사람, 기독교의' },
+  { id: 1827, en: 'Hindu', ko: '힌두교를 믿는 사람, 힌두교의' },
+  { id: 1828, en: 'Muslim', ko: '이슬람교를 믿는 사람' },
+  { id: 1829, en: 'Islamic', ko: '이슬람교의' },
+  { id: 1830, en: 'Jew', ko: '유대교를 믿는 사람' },
+  { id: 1831, en: 'Jewish', ko: '유대인의, 유대교의' },
+  { id: 1832, en: 'colonial', ko: '식민지의' },
+  { id: 1833, en: 'colonize', ko: '식민지로 만들다' },
+  { id: 1834, en: 'unspiritual', ko: '비정신적인, 세속적인' },
+  { id: 1835, en: 'spirit', ko: '정신, 영혼' },
+  { id: 1836, en: 'same', ko: '같은' },
+  { id: 1837, en: 'difference', ko: '차이, 다름' },
+  { id: 1838, en: 'globe', ko: '지구' },
+  { id: 1839, en: 'nation', ko: '국가, 국민' },
+  { id: 1840, en: 'population growth', ko: '인구 성장' },
+  { id: 1841, en: 'first aid kit', ko: '구급 상자' },
+  { id: 1842, en: 'native language', ko: '모국어' },
+  { id: 1843, en: 'orphanage', ko: '고아원' },
+  { id: 1844, en: 'supportive', ko: '지원하는' },
+  { id: 1845, en: 'supporter', ko: '후원자' },
+  { id: 1846, en: 'emigrate', ko: '(다른 나라로) 이민을 가다' },
+  { id: 1847, en: 'immigration', ko: '(다른 나라에 살러 오는) 이민' },
+  { id: 1848, en: 'ethnic food (music)', ko: '민속 음식[음악]' },
+  { id: 1849, en: 'organize', ko: '구성하다, 조직하다' },
+  { id: 1850, en: 'disagreement', ko: '불일치, 위배' },
+  { id: 1851, en: 'agree', ko: '동의하다' },
+  { id: 1852, en: 'mutual aid[support]', ko: '상호 원조[지원]' },
+];
+
+let wordsPerDay = (function(){ var v=parseInt(localStorage.getItem('bomnal_mid_sil_wpd')||'20',10); return (v>=10 && v%10===0 && v<=100)?v:20; })();
+function totalDays(){ return Math.ceil(WORDS.length / wordsPerDay); }
+const MEMO_REPEAT = 3;
+
+// bn_name / bn_school : 봄날 허브에서 localStorage 로 전달
+let studentName  = (localStorage.getItem('bn_name')   || sessionStorage.getItem('bn_name')   || '').trim();
+let studentSchool= (localStorage.getItem('bn_school') || sessionStorage.getItem('bn_school') || '').trim();
+
+// ── 상태 변수 ──
+let chosenDay = 1;
+let sessionWords = [];
+// 암기 상태
+let memoIdx = 0;
+let memoTimer = null;
+let memoToken = 0;       // 단어 바뀔 때마다 증가 → 이전 재생 세션 무효화
+let memoAudio = null;    // 현재 암기 Audio 컨트롤러
+// 퀴즈 상태
+let queue = [], currentIdx = 0, currentWord = null, answered = false;
+let wrongWords = [], allWrong = [], round = 1, startTime = null;
+let quizAudio = null;
+
+/* ===== 화면 전환 ===== */
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+/* ===== 인트로 ===== */
+function initIntro(){
+  const hello=document.getElementById('helloBox');
+  const input=document.getElementById('nameInput');
+  if(studentName){
+    hello.innerHTML=studentName+' 학생'+(studentSchool?' <span class="sch">('+studentSchool+')</span>':'')+' 안녕! 👋';
+    input.style.display='none';
+  }else{
+    hello.textContent='👤 이름을 입력하세요';
+    input.style.display='block';
+    document.getElementById('introDesc').textContent='이름을 정확히 입력해주세요. 결과가 선생님께 전송돼요.';
+  }
+}
+function startFromIntro(){
+  if(!studentName){
+    const val=document.getElementById('nameInput').value.trim();
+    if(!val){
+      const el=document.getElementById('nameInput');
+      el.classList.add('err'); el.placeholder='이름을 입력해주세요!';
+      setTimeout(()=>{el.classList.remove('err');el.placeholder='이름을 입력하세요';},1400);
+      return;
+    }
+    studentName=val;
+    try{localStorage.setItem('bn_name',val);}catch(e){}
+  }
+  showDayScreen();
+}
+
+/* ===== 학습 이력 (localStorage) ===== */
+function progressKey(){ return 'bomnal_mid_sil_진행_wpd'+wordsPerDay+'_' + (studentName || '익명'); }
+function loadDoneDays(){
+  try{ const a=JSON.parse(localStorage.getItem(progressKey())||'[]'); return Array.isArray(a)?a:[]; }catch(e){ return []; }
+}
+function saveDoneDays(a){ try{ localStorage.setItem(progressKey(),JSON.stringify(a)); }catch(e){} }
+function markDayDone(d){ const a=loadDoneDays(); if(!a.includes(d)){ a.push(d); a.sort((x,y)=>x-y); saveDoneDays(a); } }
+function resetProgress(){
+  if(!confirm('학습 이력을 모두 초기화할까요?')) return;
+  try{ localStorage.removeItem(progressKey()); }catch(e){}
+  renderDayGrid();
+}
+
+/* ===== Day 선택 ===== */
+function showDayScreen(){
+  stopAllAudio();
+  renderWpd();
+  renderDayGrid();
+  showScreen('screen-day');
+}
+// 하루 단어 수 선택 (10단위)
+const WPD_OPTIONS=[10,20,30,40,50];
+function renderWpd(){
+  const box=document.getElementById('wpdBtns');
+  box.innerHTML='';
+  WPD_OPTIONS.forEach(n=>{
+    const b=document.createElement('button');
+    b.className='wpd-btn'+(n===wordsPerDay?' on':'');
+    b.textContent=n+'개';
+    b.onclick=()=>setWordsPerDay(n);
+    box.appendChild(b);
+  });
+}
+function setWordsPerDay(n){
+  if(n===wordsPerDay) return;
+  wordsPerDay=n;
+  try{ localStorage.setItem('bomnal_mid_sil_wpd',String(n)); }catch(e){}
+  renderWpd();
+  renderDayGrid();
+}
+function renderDayGrid(){
+  const done=loadDoneDays();
+  const grid=document.getElementById('dayGrid');
+  grid.innerHTML='';
+  for(let d=1; d<=totalDays(); d++){
+    const isDone=done.includes(d);
+    const s=(d-1)*wordsPerDay+1, e=Math.min(d*wordsPerDay,WORDS.length);
+    const btn=document.createElement('button');
+    btn.className='day-btn'+(isDone?' done':'');
+    btn.innerHTML='Day '+d+'<span class="db-n">'+s+'~'+e+'</span>';
+    btn.onclick=()=>selectDay(d);
+    grid.appendChild(btn);
+  }
+  const n=done.length, pct=Math.round(n/totalDays()*100);
+  document.getElementById('dayProgFill').style.width=pct+'%';
+  document.getElementById('dayProgText').textContent=totalDays()+'일 중 '+n+'일 완료 ('+pct+'%)';
+  document.getElementById('daySub').textContent='Day마다 단어 '+wordsPerDay+'개씩 · 총 '+totalDays()+'일 🌟';
+}
+
+// Day N = words[(N-1)*10] ~ words[(N-1)*10+9]
+function selectDay(d){
+  resetAllState();                 // 이전 Day 상태 완전 초기화
+  chosenDay = d;
+  const startIndex = (d-1)*wordsPerDay;
+  const endIndex   = startIndex + wordsPerDay - 1;
+  sessionWords = WORDS.slice(startIndex, endIndex+1);
+  startTime = new Date();
+  console.log('[Day 선택] Day '+d+' | idx '+startIndex+'~'+endIndex
+    +' | 첫 단어='+(sessionWords[0]?sessionWords[0].en+'('+sessionWords[0].ko+')':'없음')
+    +' | 단어수='+sessionWords.length);
+  startQuizStage();
+}
+function dayLabel(){ return 'Day '+chosenDay; }
+
+/* ===== 상태/오디오 초기화 ===== */
+function stopAllAudio(){
+  memoToken++;                     // 진행 중 재생 세션 무효화
+  if(memoTimer){ clearTimeout(memoTimer); memoTimer=null; }
+  if(memoAudio){ try{ memoAudio.stop(); }catch(e){} memoAudio=null; }
+  if(quizAudio){ try{ quizAudio.stop(); }catch(e){} quizAudio=null; }
+}
+function resetAllState(){
+  stopAllAudio();
+  memoIdx=0;
+  queue=[]; currentIdx=0; currentWord=null; answered=false;
+  wrongWords=[]; allWrong=[]; round=1;
+}
+
+/* ===== 발음 재생 (new Audio + Youdao, 5초 타임아웃 fallback) ===== */
+function youdaoUrl(word){
+  return 'https://dict.youdao.com/dictvoice?audio=' + encodeURIComponent(String(word||'').toLowerCase()) + '&type=2';
+}
+// 한 번 재생. onDone은 (ended/error/timeout 중 먼저) 정확히 한 번 호출. .stop()으로 정지.
+function playOnce(word, onDone){
+  let audio=null, done=false, stopped=false, timer=null;
+  function cleanup(){ if(audio){ try{audio.pause();}catch(e){} audio.onended=audio.onerror=null; audio=null; } if(timer){ clearTimeout(timer); timer=null; } }
+  function finish(){ if(done||stopped) return; done=true; cleanup(); onDone(); }
+  timer=setTimeout(finish, 5000);            // 5초 타임아웃 fallback
+  try{ audio=new Audio(youdaoUrl(word)); }catch(e){ finish(); return { stop:function(){ stopped=true; cleanup(); } }; }
+  audio.onended=finish;
+  audio.onerror=finish;                       // 재생 실패 → 그냥 넘어감
+  const p=audio.play();
+  if(p&&p.catch) p.catch(function(){ finish(); });
+  return { stop:function(){ stopped=true; cleanup(); } };
+}
+
+/* ===== STAGE 1 : 암기 ===== */
+const DAY_COLORS=[
+  '#EADCFB','#D6EAFF','#D6F5E0','#FFF3C7','#FFE0EC',
+  '#E0F7F4','#FDE4CF','#E7E0FF','#DFF2D0','#FCE0F5',
+  '#FFEAD6','#D9EEFF','#EDE0FB','#D8F3E6','#FFF6D0',
+  '#FFE2E2','#DFF0FA','#E5F5D6','#F5E0EE','#E0EEFF',
+  '#FCEBD2','#E2E4FB','#D6F0E4','#FFE7CF','#EFE2F7',
+  '#DCEEFF','#FFF0E0','#DEF6D9','#FDDFE8','#E8E1FA'
+];
+const POS_CLASS={'n.':'pos-n','v.':'pos-v','adj.':'pos-adj','adv.':'pos-adv','num.':'pos-num'};
+const POS_KO={'n.':'명사','v.':'동사','adj.':'형용사','adv.':'부사','num.':'수사'};
+function dayColor(d){ return DAY_COLORS[(d-1)%DAY_COLORS.length]; }
+
+function setMemoPos(pos){
+  const el=document.getElementById('memoPos');
+  el.className='memo-pos '+(POS_CLASS[pos]||'');
+  el.textContent=pos?(pos+(POS_KO[pos]?' '+POS_KO[pos]:'')):'';
+  el.style.display=pos?'inline-block':'none';
+}
+// 재생 표시: cur=0 전부 끔 / 1~3 해당 번호만 채움 ●○○ ○●○ ○○● / 4 전부 채움 ●●●
+function setDots(cur){
+  document.querySelectorAll('#memoDots .memo-dot').forEach(function(dot){
+    const i=+dot.dataset.i;
+    const on = (cur>=4) ? true : (i===cur);
+    dot.classList.toggle('on', on);
+    dot.classList.toggle('pulse', i===cur && cur<4);
+  });
+}
+
+function startMemorize(){ memoIdx=0; showScreen('screen-memo'); loadMemo(); }
+
+function loadMemo(){
+  const w=sessionWords[memoIdx];
+  document.getElementById('memoCard').style.background=dayColor(chosenDay);   // Day별 배경
+  document.getElementById('memoNum').textContent=(memoIdx+1)+' / '+sessionWords.length;
+
+  // 카드 상단 진행바 (현재 단어 기준)
+  document.getElementById('memoCardFill').style.width=Math.round((memoIdx+1)/sessionWords.length*100)+'%';
+
+  // 영어: 위에서 내려오기 (애니메이션 재시작)
+  const en=document.getElementById('memoEn');
+  en.textContent=w.en;
+  en.classList.remove('drop','pop'); void en.offsetWidth; en.classList.add('drop');
+
+  setMemoPos(w.pos);
+
+  // 한글 뜻: 0.8초 뒤 아래에서 올라오기 (애니메이션 재시작)
+  const ko=document.getElementById('memoKo');
+  ko.textContent=w.ko;
+  ko.classList.remove('rise'); void ko.offsetWidth; ko.classList.add('rise');
+
+  const pct=Math.round(memoIdx/sessionWords.length*100);
+  document.getElementById('memoFill').style.width=pct+'%';
+  document.getElementById('memoText').textContent='Day '+chosenDay+' · '+(memoIdx+1)+' / '+sessionWords.length;
+  document.getElementById('memoPrev').disabled=(memoIdx===0);
+  const last=(memoIdx===sessionWords.length-1);
+  document.getElementById('memoNext').style.display=last?'none':'block';
+  document.getElementById('memoToQuiz').style.display=last?'block':'none';
+  setDots(0);
+  autoSpeak3(w.en);
+}
+
+// TTS 재생마다 영어 단어 통통 튀기 (drop 애니메이션과 겹치지 않게 pop 재적용)
+function bounceEn(){
+  const en=document.getElementById('memoEn');
+  if(!en) return;
+  en.classList.remove('drop','pop'); void en.offsetWidth; en.classList.add('pop');
+}
+
+function setMemoNavEnabled(on){
+  document.getElementById('memoNext').disabled=!on;
+  document.getElementById('memoToQuiz').disabled=!on;
+}
+
+// 1번→2번→3번 재생, 각 재생 5초 타임아웃, 3번 완료 후에만 다음 버튼 활성화
+function autoSpeak3(text){
+  const token=++memoToken;
+  if(memoTimer){ clearTimeout(memoTimer); memoTimer=null; }
+  if(memoAudio){ try{ memoAudio.stop(); }catch(e){} memoAudio=null; }
+  setMemoNavEnabled(false);
+  const cnt=document.getElementById('memoCount');
+  const btn=document.getElementById('memoSound');
+
+  function playN(n){
+    if(token!==memoToken) return;             // 단어 바뀜 → 중단
+    cnt.textContent='🔊 발음 '+n+' / 3';
+    setDots(n);
+    btn.classList.add('playing');
+    if(n>=2) bounceEn();                        // 1번째는 내려오기(drop), 2·3번째는 통통(pop)
+    memoAudio = playOnce(text, function(){
+      if(token!==memoToken) return;
+      btn.classList.remove('playing');
+      if(n>=MEMO_REPEAT){
+        cnt.textContent='✅ 3번 듣기 완료!';
+        setDots(4);
+        setMemoNavEnabled(true);              // 3번 완료 후에만 활성화
+      }else{
+        memoTimer=setTimeout(function(){ playN(n+1); }, 700);  // 0.7초 후 다음
+      }
+    });
+  }
+  playN(1);
+}
+function replayMemo(){ autoSpeak3(sessionWords[memoIdx].en); }
+function memoNext(){ if(memoIdx<sessionWords.length-1){ memoIdx++; loadMemo(); } }
+function memoPrev(){ if(memoIdx>0){ memoIdx--; loadMemo(); } }
+
+/* ===== STAGE 2 & 3 : 퀴즈 + 오답 반복 ===== */
+function startQuizStage(){
+  stopAllAudio();
+  queue=shuffle([...sessionWords]);
+  wrongWords=[]; allWrong=[]; round=1; currentIdx=0;
+  showScreen('screen-quiz');
+  loadWord();
+}
+function loadWord(){
+  if(currentIdx>=queue.length){ showRoundResult(); return; }
+  answered=false;
+  currentWord=queue[currentIdx];
+  const total=queue.length, pct=Math.round(currentIdx/total*100);
+  document.getElementById('progressFill').style.width=pct+'%';
+  document.getElementById('progressText').textContent=(currentIdx+1)+' / '+total;
+  document.getElementById('roundBadge').textContent=round+'라운드';
+  document.getElementById('quizStageTag').textContent=round===1?'STEP 2 · 4지선다 퀴즈':'STEP 3 · 오답 반복 ('+round+'라운드)';
+  document.getElementById('wordEn').textContent=currentWord.en;
+  document.getElementById('feedback').textContent=''; document.getElementById('feedback').className='feedback';
+  document.getElementById('nextBtn').classList.remove('show');
+  buildChoices();
+  setTimeout(speakWord,300);
+}
+function speakWord(){
+  if(quizAudio){ try{ quizAudio.stop(); }catch(e){} quizAudio=null; }
+  const btn=document.getElementById('soundBtn');
+  btn.classList.add('playing');
+  quizAudio=playOnce(currentWord.en, function(){ btn.classList.remove('playing'); });
+}
+// 정답은 id로 판정, 보기는 뜻(ko) 중복 없이
+function buildChoices(){
+  const container=document.getElementById('choices');
+  container.innerHTML='';
+  const pool=[]; const seen=new Set([currentWord.ko]);
+  for(const w of shuffle(WORDS.filter(w=>w.id!==currentWord.id))){
+    if(seen.has(w.ko)) continue;
+    seen.add(w.ko); pool.push(w);
+    if(pool.length===3) break;
+  }
+  shuffle([currentWord,...pool]).forEach(opt=>{
+    const btn=document.createElement('button');
+    btn.className='choice-btn'; btn.textContent=opt.ko;
+    btn.onclick=()=>selectAnswer(btn,opt.id===currentWord.id);
+    container.appendChild(btn);
+  });
+}
+function selectAnswer(btn,isCorrect){
+  if(answered) return; answered=true;
+  document.querySelectorAll('.choice-btn').forEach(b=>{
+    b.disabled=true;
+    if(b.textContent===currentWord.ko) b.classList.add('correct');
+  });
+  const fb=document.getElementById('feedback');
+  if(isCorrect){ btn.classList.add('correct'); fb.textContent='✅ 정답!'; fb.className='feedback ok'; }
+  else{
+    btn.classList.add('wrong');
+    fb.textContent='❌ 내 답: '+btn.textContent+' / 정답: '+currentWord.ko;
+    fb.className='feedback bad';
+    if(!wrongWords.find(w=>w.id===currentWord.id)) wrongWords.push(currentWord);
+    if(!allWrong.find(w=>w.id===currentWord.id)) allWrong.push(currentWord);
+  }
+  document.getElementById('nextBtn').classList.add('show');
+}
+function nextWord(){ currentIdx++; loadWord(); }
+function showRoundResult(){
+  const correct=queue.length-wrongWords.length, pct=Math.round(correct/queue.length*100);
+  if(wrongWords.length===0){ showDone(true); return; }   // 오답 0개 → 완료
+  document.getElementById('roundEmoji').textContent=pct>=80?'😊':'💪';
+  document.getElementById('roundTitle').textContent=round+'라운드 완료!';
+  document.getElementById('roundScore').textContent=correct+' / '+queue.length;
+  document.getElementById('roundScoreLabel').textContent=pct+'점 · 오답 '+wrongWords.length+'개';
+  document.getElementById('roundSub').textContent='오답 '+wrongWords.length+'개가 남았어요.\n다시 풀어서 완벽하게! 💪';
+  showScreen('screen-round');
+  saveResult(false);
+}
+// 오답만 다음 라운드로
+function startRetry(){
+  round++;
+  queue=shuffle([...wrongWords]); wrongWords=[]; currentIdx=0;
+  showScreen('screen-quiz'); loadWord();
+}
+function finishEarly(){ showDone(false); }
+function showDone(full){
+  const elapsed=Math.max(1,Math.round((new Date()-startTime)/60000));
+  if(full){ markDayDone(chosenDay); }             // 3단계까지 끝내면 Day 완료 기록
+  const msg=full
+    ? studentName+' 학생, '+dayLabel()+' 단어를 완벽하게 외웠어요! 🎉'
+    : studentName+' 학생, '+dayLabel()+' 학습을 마쳤어요.';
+  document.getElementById('doneTitle').textContent=full?'완벽해요!':'수고했어요!';
+  document.getElementById('doneSub').textContent=msg+'\n총 '+round+'라운드 · 약 '+elapsed+'분 소요';
+  document.getElementById('statRounds').textContent=round;
+  document.getElementById('statWords').textContent=sessionWords.length;
+  document.getElementById('statWrong').textContent=allWrong.length;
+  document.getElementById('doneSameCount').textContent=dayLabel();
+  showScreen('screen-done');
+  saveResult(full);
+}
+function restartSame(){ resetAllState(); startTime=new Date(); startQuizStage(); }
+function chooseAnother(){ showDayScreen(); }
+
+/* ===== Firebase 저장 ===== */
+function saveResult(completed){
+  const data={
+    studentName, school:studentSchool,
+    quizType:LEVEL_INFO.quizType, level:LEVEL_INFO.name,
+    score:completed?100:Math.round((sessionWords.length-allWrong.length)/sessionWords.length*100),
+    correct:sessionWords.length-allWrong.length, wrong:allWrong.length, total:sessionWords.length,
+    day:chosenDay, round, completed,
+    wrongWords:allWrong.map(w=>({eng:w.en,kor:w.ko})),
+    userAgent:navigator.userAgent.substring(0,100)
+  };
+  let w=0;
+  const t=setInterval(()=>{ w+=200; if(window._saveResult){ clearInterval(t); window._saveResult(data); } else if(w>=6000) clearInterval(t); },200);
+}
+
+function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]]; } return arr; }
+
+initIntro();
+</script>
+
+</body>
+</html>
