@@ -264,7 +264,7 @@ footer{text-align:center;padding:24px;color:#d9b8c8;font-size:.78rem;font-family
   </div>
 </div>
 
-<footer>🌸 봄날 BOMNAL ENGLISH · 워드마스터 중등 BASIC 800 <b style="color:#f26d97">v5 ✨</b></footer>
+<footer>🌸 봄날 BOMNAL ENGLISH · 워드마스터 중등 BASIC 800 <b style="color:#f26d97">v6 ✨</b></footer>
 
 <!-- Firebase (bomnalvaca) -->
 <script type="module">
@@ -1108,6 +1108,7 @@ let memoAudio = null;    // 현재 암기 Audio 컨트롤러
 // 퀴즈 상태
 let queue = [], currentIdx = 0, currentWord = null, answered = false;
 let selectedBtn = null, selectedIsCorrect = false;
+let quizActive = false, answeredCount = 0;
 let wrongWords = [], allWrong = [], round = 1, startTime = null;
 let quizAudio = null;
 
@@ -1162,7 +1163,8 @@ function resetProgress(){
 /* ===== Day 선택 ===== */
 // 테스트 중 Day 선택 화면으로 돌아가기
 function backToDayFromQuiz(){
-  if(!confirm('테스트를 그만두고 Day 선택으로 돌아갈까요?\n(현재 진행 상황은 저장되지 않아요)')) return;
+  if(!confirm('테스트를 그만두고 Day 선택으로 돌아갈까요?\n(지금까지 푼 결과는 저장돼요.)')) return;
+  saveMidway();
   resetAllState();
   showDayScreen();
 }
@@ -1348,6 +1350,7 @@ function startQuizStage(){
   stopAllAudio();
   queue=shuffle([...sessionWords]);
   wrongWords=[]; allWrong=[]; round=1; currentIdx=0;
+  quizActive=true; answeredCount=0;
   showScreen('screen-quiz');
   loadWord();
 }
@@ -1402,6 +1405,7 @@ function selectChoice(btn,isCorrect){
 // 확인 버튼 → 채점 확정
 function confirmAnswer(){
   if(answered||!selectedBtn) return; answered=true;
+  answeredCount++;
   document.getElementById('confirmBtn').classList.remove('show');
   const btn=selectedBtn, isCorrect=selectedIsCorrect;
   document.querySelectorAll('.choice-btn').forEach(b=>{
@@ -1430,11 +1434,13 @@ function showRoundResult(){
   document.getElementById('roundSub').textContent='오답 '+wrongWords.length+'개가 남았어요.\n다시 풀어서 완벽하게! 💪';
   showScreen('screen-round');
   saveResult(false);
+  quizActive=false;
 }
 // 오답만 다음 라운드로
 function startRetry(){
   round++;
   queue=shuffle([...wrongWords]); wrongWords=[]; currentIdx=0;
+  quizActive=true;
   showScreen('screen-quiz'); loadWord();
 }
 function finishEarly(){ showDone(false); }
@@ -1452,6 +1458,7 @@ function showDone(full){
   document.getElementById('doneSameCount').textContent=dayLabel();
   showScreen('screen-done');
   saveResult(full);
+  quizActive=false;
 }
 function restartSame(){ resetAllState(); startTime=new Date(); startMemorize(); }
 function chooseAnother(){ showDayScreen(); }
@@ -1470,6 +1477,25 @@ function saveResult(completed){
   let w=0;
   const t=setInterval(()=>{ w+=200; if(window._saveResult){ clearInterval(t); window._saveResult(data); } else if(w>=6000) clearInterval(t); },200);
 }
+
+// 중간에 그만두거나 창을 닫아도 지금까지 푼 결과 저장 (best-effort)
+function saveMidway(){
+  if(!quizActive || answeredCount<=0) return;
+  quizActive=false;                       // 중복 저장 방지
+  const correct=Math.max(0, answeredCount-allWrong.length);
+  const data={
+    studentName, school:studentSchool,
+    quizType:LEVEL_INFO.quizType, level:LEVEL_INFO.name,
+    score: answeredCount>0?Math.round(correct/answeredCount*100):0,
+    correct, wrong:allWrong.length, total:sessionWords.length, answered:answeredCount,
+    day:chosenDay, round, completed:false, quitMidway:true,
+    wrongWords:allWrong.map(w=>({eng:w.en,kor:w.ko})),
+    userAgent:navigator.userAgent.substring(0,100)
+  };
+  try{ if(window._saveResult) window._saveResult(data); }catch(e){}
+}
+window.addEventListener('pagehide', saveMidway);
+window.addEventListener('beforeunload', saveMidway);
 
 function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]]; } return arr; }
 
