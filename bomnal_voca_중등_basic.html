@@ -117,6 +117,8 @@ header{background:linear-gradient(135deg,#ffe3ef,#e5f1ff);padding:30px 24px 24px
 .choice-btn:disabled{cursor:default;}
 .choice-btn.selected{border-color:var(--primary);background:#ffeaf3;box-shadow:0 0 0 3px rgba(242,109,151,.28);transform:translateY(-1px);}
 .confirm-btn{background:linear-gradient(135deg,#9bd4ff,#5aa9e6) !important;box-shadow:0 5px 14px rgba(90,169,230,.4) !important;margin-bottom:8px;}
+.quiz-back{display:inline-block;background:none;border:2px solid var(--bdr);color:var(--soft);font-size:.8rem;font-weight:700;padding:6px 14px;border-radius:14px;cursor:pointer;font-family:'Jua',sans-serif;margin-bottom:10px;transition:all .15s;}
+.quiz-back:hover{border-color:var(--primary);color:var(--primary-d);background:#fff3f8;}
 .feedback{text-align:center;font-size:.95rem;font-weight:700;min-height:24px;margin-bottom:14px;font-family:'Jua',sans-serif;}
 .feedback.ok{color:var(--green);}
 .feedback.bad{color:var(--red);}
@@ -214,6 +216,7 @@ footer{text-align:center;padding:24px;color:#d9b8c8;font-size:.78rem;font-family
 <!-- STAGE 2 & 3: 퀴즈 -->
 <div id="screen-quiz" class="screen">
   <div class="quiz-wrap">
+    <button class="quiz-back" onclick="backToDayFromQuiz()">← Day 선택으로</button>
     <div class="stage-tag" id="quizStageTag">STEP 2 · 4지선다 퀴즈</div>
     <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
     <div class="progress-text" id="progressText"></div>
@@ -261,7 +264,7 @@ footer{text-align:center;padding:24px;color:#d9b8c8;font-size:.78rem;font-family
   </div>
 </div>
 
-<footer>🌸 봄날 BOMNAL ENGLISH · 워드마스터 중등 BASIC 800 <b style="color:#f26d97">v4 ✨</b></footer>
+<footer>🌸 봄날 BOMNAL ENGLISH · 워드마스터 중등 BASIC 800 <b style="color:#f26d97">v5 ✨</b></footer>
 
 <!-- Firebase (bomnalvaca) -->
 <script type="module">
@@ -1157,6 +1160,12 @@ function resetProgress(){
 }
 
 /* ===== Day 선택 ===== */
+// 테스트 중 Day 선택 화면으로 돌아가기
+function backToDayFromQuiz(){
+  if(!confirm('테스트를 그만두고 Day 선택으로 돌아갈까요?\n(현재 진행 상황은 저장되지 않아요)')) return;
+  resetAllState();
+  showDayScreen();
+}
 function showDayScreen(){
   stopAllAudio();
   renderDayGrid();
