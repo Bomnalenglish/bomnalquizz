@@ -60,6 +60,10 @@ main { max-width: 960px; margin: 0 auto; padding: 36px 20px 80px; }
 
 .back-btn { display: inline-flex; align-items: center; gap: 6px; background: white; border: 1.5px solid #d0dde8; border-radius: 10px; padding: 8px 16px; font-family: inherit; font-size: .84rem; color: var(--soft); cursor: pointer; margin-bottom: 22px; transition: border-color .15s, color .15s; }
 .back-btn:hover { border-color: #3d3d3d; color: #3d3d3d; }
+.nav-back-btn { display: inline-flex; align-items: center; gap: 8px; background: var(--primary); border: none; border-radius: 12px; padding: 13px 22px; font-family: inherit; font-size: 1rem; font-weight: 800; color: #fff; cursor: pointer; margin-bottom: 18px; box-shadow: 0 4px 12px rgba(74,103,65,.32); transition: transform .12s, box-shadow .12s; }
+.nav-back-btn:hover { transform: translateY(-2px); box-shadow: 0 7px 18px rgba(74,103,65,.42); }
+.nav-back-btn:active { transform: translateY(0); }
+.nav-back-btn .nb-ico { font-size: 1.1rem; }
 .school-banner { background: #fdf8f2; border-radius: 16px; padding: 18px 22px; margin-bottom: 26px; box-shadow: 0 2px 8px rgba(0,0,0,.05); display: flex; align-items: center; gap: 14px; border: 1px solid #e8e3dd; }
 .banner-emoji { font-size: 2.4rem; }
 .banner-name { font-family: "Black Han Sans", sans-serif; font-size: 1.25rem; color: var(--ink); }
@@ -685,10 +689,10 @@ function renderSchoolGrid() {
 function openFolder(folder, sectionTitle) {
   const container = document.getElementById("quiz-sections");
   container.innerHTML = "";
-  // 뒤로가기 버튼 → 학교 목록으로
+  // 뒤로가기 버튼 → 학년(섹션) 목록으로
   const back = document.createElement("button");
-  back.style.cssText = "margin-bottom:16px;background:none;border:none;font-size:.85rem;color:var(--soft);cursor:pointer;display:flex;align-items:center;gap:6px;padding:0;font-family:inherit;";
-  back.innerHTML = "← " + sectionTitle + " 목록으로";
+  back.className = "nav-back-btn";
+  back.innerHTML = '<span class="nb-ico">←</span> ' + sectionTitle + " 목록으로";
   back.onclick = () => { openSchool(currentSchool); };
   container.appendChild(back);
 
@@ -718,10 +722,10 @@ function openFolder(folder, sectionTitle) {
 function openGroup(group, sectionTitle, parentFolder) {
   const container = document.getElementById("quiz-sections");
   container.innerHTML = "";
-  // 뒤로가기 버튼 (폴더에서 왔으면 폴더로, 아니면 학교 목록으로)
+  // 뒤로가기 버튼 (폴더에서 왔으면 폴더로, 아니면 학년 목록으로)
   const back = document.createElement("button");
-  back.style.cssText = "margin-bottom:16px;background:none;border:none;font-size:.85rem;color:var(--soft);cursor:pointer;display:flex;align-items:center;gap:6px;padding:0;font-family:inherit;";
-  back.innerHTML = parentFolder ? ("← " + parentFolder.label + " 목록으로") : ("← " + sectionTitle + " 목록으로");
+  back.className = "nav-back-btn";
+  back.innerHTML = '<span class="nb-ico">←</span> ' + (parentFolder ? (parentFolder.label + " 목록으로") : (sectionTitle + " 목록으로"));
   back.onclick = () => { parentFolder ? openFolder(parentFolder, sectionTitle) : openSchool(currentSchool); };
   container.appendChild(back);
 
