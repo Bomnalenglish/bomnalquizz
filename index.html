@@ -170,6 +170,7 @@ footer { text-align: center; padding: 28px; color: #aabbc8; font-size: .8rem; fo
 
 <div id="screen-home" class="screen">
   <main>
+    <button class="back-btn" onclick="goHome()">← 전체 메뉴 (모의고사 · 보카 · 부교재)</button>
     <div style="text-align:right;margin-bottom:16px">
       <span id="home-user-badge" class="user-badge" style="font-size:.8rem;padding:4px 14px"></span>
       <button onclick="doLogout()" style="background:none;border:none;color:var(--soft);font-size:.78rem;cursor:pointer;margin-left:8px;text-decoration:underline;font-family:inherit">로그아웃</button>
@@ -631,10 +632,19 @@ function submitSchool() {
   openHub();
 }
 
-function openHub() {
+function openHub(toPicker) {
   renderSchoolGrid();
   renderVoca();
+  // 어느 경로로 들어와도 학교 선택 화면이 비어 있지 않도록 미리 구성
+  renderSchoolPicker();
+  preselectMySchool(studentSchool);
   document.getElementById("home-user-badge").textContent = `👤 ${studentName} (${studentSchool})`;
+  // 재진입(자동 로그인)은 모의고사·보카·부교재가 모두 보이는 전체 메뉴로 보낸다
+  if (toPicker) {
+    document.getElementById("subtitle").textContent = "학교를 선택하세요";
+    goStep("screen-pick");
+    return;
+  }
   const mySchool = SCHOOLS.find(s => s.name === studentSchool);
   if (mySchool) { openSchool(mySchool); }
   else { document.getElementById("subtitle").textContent = "학교를 선택하세요"; goStep("screen-home"); }
@@ -946,7 +956,14 @@ function selectMockMonth(month){
   goStep('screen-mock-type');
 }
 
-function goHome() { goStep("screen-pick"); document.getElementById("subtitle").textContent = "학교를 선택하세요"; }
+function goHome() {
+  // 자동 로그인으로 들어온 경우 picker가 비어 있을 수 있으므로 항상 다시 그린다
+  // (모의고사·부교재·보카 버튼이 모두 이 목록 안에 있음)
+  renderSchoolPicker();
+  preselectMySchool(studentSchool);
+  goStep("screen-pick");
+  document.getElementById("subtitle").textContent = "학교를 선택하세요";
+}
 function doLogout() {
   ["bn_name","bn_school","bn_auth","bn_id"].forEach(k=>{sessionStorage.removeItem(k);localStorage.removeItem(k);});
   studentName = ""; studentSchool = "";
@@ -1022,7 +1039,7 @@ window.addEventListener("load", () => {
   if (localStorage.getItem("bn_auth") === "1" && authName && authSchool) {
     studentName = authName;
     studentSchool = authSchool;
-    try { openHub(); } catch (e) { console.log("자동 로그인 실패", e); }
+    try { openHub(true); } catch (e) { console.log("자동 로그인 실패", e); }
     return;
   }
   // 미로그인 상태: 이전에 입력한 코드/이름은 input에 자동으로 채워 다시 입력하지 않게 도와줌
