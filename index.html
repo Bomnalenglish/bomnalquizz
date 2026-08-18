@@ -890,6 +890,9 @@ const MOCK_FILES_AVAILABLE = new Set([
   'mock_go2_2026_06_memory',
 ]);
 
+// 모의고사 파일 갱신 시 이 값을 올리면 학생 폰의 캐시가 무시되고 새 버전이 열립니다.
+const MOCK_VER = '20260819';
+
 function selectMockMonth(month){
   mockMonth = month;
   const gradeKey = MOCK_GRADE_MAP[mockGrade];
@@ -902,7 +905,8 @@ function selectMockMonth(month){
     // 기존 "준비 중" 배지 제거
     el.querySelectorAll('.cs-badge').forEach(b=>b.remove());
     if (exists) {
-      el.href = BASE + filename + '.html';
+      // ?v=날짜 : 아이폰 사파리 등에서 옛 버전이 캐시되어 그대로 뜨는 문제 방지
+      el.href = BASE + filename + '.html?v=' + MOCK_VER;
       el.style.opacity = '1';
       el.style.pointerEvents = 'auto';
       el.classList.remove('coming-soon');
