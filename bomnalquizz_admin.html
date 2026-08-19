@@ -754,7 +754,7 @@ function renderTable(data){
 
     return `<tbody class="row-group">
       <tr class="data-row${isIncomplete?' incomplete-row':''}">
-        <td class="td-check"><input type="checkbox" class="row-chk" data-id="${d.id}" style="cursor:pointer"></td>
+        <td class="td-check"><input type="checkbox" class="row-chk" data-id="${d.id}" data-ids="${attempts.map(a=>a.id).join(',')}" title="${total>1?`이 그룹의 ${total}회 응시가 모두 삭제됩니다`:''}" style="cursor:pointer"></td>
         <td class="td-expand">${expandable?`<button class="expand-btn" onclick="toggleRowDetail(this)" title="상세 보기">▶</button>`:'<span style="color:#cbd5e1">·</span>'}</td>
         <td class="td-idx">${i+1}</td>
         <td class="td-class">${d.school}</td>
@@ -817,7 +817,7 @@ function parseQuizMeta(d){
   else if (/^어진중3/.test(qt)) textbook='어진중 3학년';
   else if (/^종촌고1/.test(qt)) textbook='종촌고 1학년';
   else if (/^종촌고2/.test(qt)) textbook='종촌고 2학년';
-  else if (/^종촌고3/.test(qt)) textbook='종촌고 3학년';
+  else if (/^종촌고3/.test(qt) || /^종촌고_수특/.test(qt)) textbook='종촌고 3학년';
   else if (/^고운고1/.test(qt)) textbook='고운고 1학년';
   else if (/^고운고2/.test(qt)) textbook='고운고 2학년';
   else if (/^고운고3/.test(qt)) textbook='고운고 3학년';
@@ -1399,10 +1399,13 @@ async function deleteSingle(id){
 async function confirmDeleteAll(){
   const checked=[...document.querySelectorAll('.row-chk:checked')];
   if(!checked.length){alert('삭제할 항목을 체크해주세요!');return;}
-  if(!confirm(`체크한 ${checked.length}개 기록을 삭제할까요?
+  // 한 줄이 '같은 학생·같은 시험·같은 날'의 여러 시도를 묶은 그룹이므로
+  // 그룹에 속한 모든 시도(data-ids)를 함께 지운다. (기존에는 최신 1건만 지워짐)
+  const ids=[...new Set(checked.flatMap(c=>(c.dataset.ids||c.dataset.id||'').split(',').filter(Boolean)))];
+  if(!confirm(`체크한 ${checked.length}줄 (응시 기록 ${ids.length}건)을 삭제할까요?
 이 작업은 되돌릴 수 없습니다.`)) return;
   let w=0;while(!window._fbReady&&w<15000){await new Promise(r=>setTimeout(r,200));w+=200;}
-  const ids=checked.map(c=>c.dataset.id);let done=0,fail=0;
+  let done=0,fail=0;
   for(const id of ids){try{await window._deleteDoc(window._doc(window._db,'quiz_results',id));done++;}catch(e){fail++;}}
   allData=allData.filter(d=>!ids.includes(d.id));applyFilter();renderSectionView();
   document.getElementById('lastRefresh').textContent=`✅ ${done}건 삭제 완료${fail>0?' ('+fail+'건 실패)':''} · `+new Date().toLocaleTimeString('ko-KR');
