@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-  <title>종촌중학교 1학년 5과 영어 시험</title>
+  <title>중1 5과 영어 시험 (종촌중·어진중 공통)</title>
 <script type="module" src="bn_tracker.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -14,8 +14,9 @@
     .header .datetime { font-size: 12px; opacity: 0.75; margin-top: 8px; background: rgba(255,255,255,0.15); display: inline-block; padding: 4px 12px; border-radius: 20px; }
     .name-section { background: white; margin: 14px 14px 0; border-radius: 14px; padding: 16px 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); display: flex; align-items: center; gap: 12px; }
     .name-section label { font-size: 15px; font-weight: 600; white-space: nowrap; }
-    .name-section input { flex: 1; border: 2px solid #CBD5E1; border-radius: 8px; padding: 9px 12px; font-size: 16px; outline: none; }
-    .name-section input:focus { border-color: #3B82F6; }
+    .name-section input, .name-section select { flex: 1; border: 2px solid #CBD5E1; border-radius: 8px; padding: 9px 12px; font-size: 16px; outline: none; font-family: inherit; background: white; }
+    .name-section input:focus, .name-section select:focus { border-color: #3B82F6; }
+    .name-section + .name-section { margin-top: 10px; }
 
     /* 두 큰 메인 탭 (본문 / 대화문) */
     .main-tabs { padding: 18px 14px 0; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -99,9 +100,17 @@
 <!-- ====== 시작 화면 (본문/대화문 두 탭) ====== -->
 <div id="start-screen" class="active">
   <div class="header">
-    <h1>📚 종촌중학교 1학년 5과</h1>
-    <div class="subtitle">영어 빈칸 시험</div>
+    <h1>📚 중학교 1학년 5과</h1>
+    <div class="subtitle">영어 빈칸 시험 · 종촌중 / 어진중 공통</div>
     <div class="datetime" id="start-datetime"></div>
+  </div>
+  <div class="name-section">
+    <label for="student-school">학교</label>
+    <select id="student-school">
+      <option value="">학교를 선택하세요</option>
+      <option value="종촌중학교">종촌중 1학년</option>
+      <option value="어진중학교">어진중 1학년</option>
+    </select>
   </div>
   <div class="name-section">
     <label for="student-name">이름</label>
@@ -139,7 +148,7 @@
 <!-- ====== 시험 화면 ====== -->
 <div id="test-screen">
   <div class="header">
-    <h1>📚 종촌중학교 1학년 5과</h1>
+    <h1 id="test-title">📚 중학교 1학년 5과</h1>
     <div class="subtitle" id="test-subtitle">영어 빈칸 시험</div>
     <div class="datetime" id="test-datetime"></div>
   </div>
@@ -403,6 +412,19 @@ function renderProgressBadges() {
 
 // ===== 시험 시작 =====
 function startTestForSection(key) {
+  // 종촌중·어진중 1학년이 같은 교과서를 쓰므로 학교를 골라 기록한다
+  const schoolSel = document.getElementById('student-school');
+  const school = schoolSel ? schoolSel.value : '';
+  if (!school) {
+    alert('학교를 먼저 선택해 주세요!');
+    if (schoolSel) schoolSel.focus();
+    return;
+  }
+  QUIZ_INFO.school = school;
+  try { localStorage.setItem('bn_school', school); } catch(e) {}
+  var tt = document.getElementById('test-title');
+  if (tt) tt.textContent = '📚 ' + school + ' 1학년 5과';
+
   const name = document.getElementById('student-name').value.trim();
   if (!name) {
     alert('이름을 먼저 입력해 주세요!');
@@ -796,6 +818,20 @@ function incrementTabExitToday() {
   renderProgressBadges();
   var nameInput = document.getElementById('student-name');
   if (nameInput) nameInput.addEventListener('input', function() { saveAnswers(); });
+
+  // 이전에 고른 학교 자동 선택 (허브에서 저장한 값도 인식)
+  try {
+    var savedSchool = localStorage.getItem('bn_school') || '';
+    var sel = document.getElementById('student-school');
+    if (sel && savedSchool) {
+      for (var i = 0; i < sel.options.length; i++) {
+        var v = sel.options[i].value;
+        if (v && (v === savedSchool || savedSchool.indexOf(v.replace('학교','')) === 0)) {
+          sel.value = v; QUIZ_INFO.school = v; break;
+        }
+      }
+    }
+  } catch(e) {}
 
   // 탭 이탈 감지 - 시험 화면에서만 카운트 + 누적 저장
   document.addEventListener('visibilitychange', function() {
