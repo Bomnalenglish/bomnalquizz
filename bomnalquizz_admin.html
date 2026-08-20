@@ -686,9 +686,8 @@ function groupAttempts(data){
   for(const d of data){
     const meta=parseQuizMeta(d);
     const dt=d.time?d.time.toLocaleDateString('ko-KR'):'unk';
-    // 보카는 같은 날 여러 Day를 풀 수 있으므로 Day별로 행을 나눈다 (한 줄로 합치면 몇 일차인지 안 보임)
-    const dayKey=(d.day!==undefined&&d.day!==null&&d.day!=='')?`|Day${d.day}`:'';
-    const key=`${d.school||''}|${d.name||''}|${meta.textbook}|${dt}${dayKey}`;
+    // 같은 날 응시는 한 줄로 묶는다. 몇 일차였는지는 '차시' 칸에 Day 1, Day 2 … 로 모두 표시된다.
+    const key=`${d.school||''}|${d.name||''}|${meta.textbook}|${dt}`;
     if(!m.has(key)) m.set(key,[]);
     m.get(key).push(d);
   }
@@ -782,7 +781,10 @@ function renderTable(data){
     // 그룹 안에 여러 유형/차시가 섞여 있는지 집계
     const allMetas=attempts.map(parseQuizMeta);
     const typeSet=[...new Set(allMetas.map(m=>(m.type||'').replace(/[✓↻]/g,'')).filter(Boolean))];
-    const lessonSet=[...new Set(allMetas.map(m=>m.lesson).filter(Boolean))];
+    // Day/Lesson 번호는 숫자순으로 (Day 1, Day 2, Day 3 …)
+    const lessonSet=[...new Set(allMetas.map(m=>m.lesson).filter(Boolean))]
+      .sort((a,b)=>{const na=parseInt((a.match(/\d+/)||[])[0]),nb=parseInt((b.match(/\d+/)||[])[0]);
+        return (isNaN(na)||isNaN(nb))?a.localeCompare(b,'ko'):na-nb;});
     const passageInfo=meta.passages?`<span class="passage-info">${meta.passages}</span>`:'';
     const roundBadge=d.round>1?`<span class="round-badge">${d.round}라운드</span>`:'';
     const attemptBadge=total>1?`<span class="attempt-count" title="같은 날 ${total}회 응시">${total}회</span>`:'';
@@ -1176,7 +1178,10 @@ function renderSectionView(){
     // 동반의어 (포함: 동반의어 OR 유의어·반의어, Reading Lab 제외)
     const isSynanmType = qt => qt && !isReadingLab(qt) && (qt.includes('동반의어') || qt.includes('유의어·반의어') || qt.includes('TEST'));
     const synanmRecords=nonSecRecords.filter(d=>isSynanmType(d.quizType));
-    const otherRecords=nonSecRecords.filter(d=>!isSynanmType(d.quizType) && !isReadingLab(d.quizType));
+    // 봄날 보카(day 필드 보유)는 따로 뽑아서 '같은 날' 단위로 묶어 보여준다
+    const isVocaRec = d => d.day!==undefined && d.day!==null && d.day!=='';
+    const otherRecords=nonSecRecords.filter(d=>!isSynanmType(d.quizType) && !isReadingLab(d.quizType) && !isVocaRec(d));
+    const vocaRecords=nonSecRecords.filter(d=>!isSynanmType(d.quizType) && !isReadingLab(d.quizType) && isVocaRec(d));
 
     // Reading Lab 렌더링
     const rlMap = {}; // key = kang_section_stage
@@ -1278,6 +1283,51 @@ function renderSectionView(){
     }).join('');
 
     // 기타
+    // ── 봄날 보카: 교재 + 같은 날짜 = 카드 1개, 그 안에 Day 1·2·3을 나란히 ──
+    const vocaSessions={};   // key: 교재|날짜
+    vocaRecords.forEach(d=>{
+      const lvl=d.level||(d.quizType||'').replace(/^봄날보카_?/,'')||'봄날 보카';
+      const dt=d.time?d.time.toLocaleDateString('ko-KR'):'unk';
+      const key=lvl+'|'+dt;
+      if(!vocaSessions[key]) vocaSessions[key]={level:lvl, dt, time:d.time, days:{}};
+      const s=vocaSessions[key];
+      if(d.time&&(!s.time||d.time>s.time)) s.time=d.time;
+      // Day별로는 '마지막 라운드'(=최종 상태)만 대표로 남기고, 응시 횟수는 세어 둔다
+      const cur=s.days[d.day];
+      if(!cur){ s.days[d.day]={rec:d, tries:1}; }
+      else{
+        cur.tries++;
+        const better=(d.round||1)>(cur.rec.round||1) || ((d.round||1)===(cur.rec.round||1)&&d.time&&cur.rec.time&&d.time>cur.rec.time);
+        if(better) cur.rec=d;
+      }
+    });
+    const vocaHtml=Object.keys(vocaSessions).length>0?`<div style="margin-bottom:10px;">
+      <div style="font-size:11px;font-weight:800;color:var(--muted);margin-bottom:8px;letter-spacing:.5px;">📖 봄날 보카 (같은 날 응시는 한 카드)</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;">
+      ${Object.values(vocaSessions).sort((a,b)=>(b.time||0)-(a.time||0)).map(s=>{
+        const dayNums=Object.keys(s.days).map(Number).sort((a,b)=>a-b);
+        const allClear=dayNums.every(n=>s.days[n].rec.wrong===0);
+        const chips=dayNums.map(n=>{
+          const {rec,tries}=s.days[n];
+          const clear=rec.wrong===0;
+          return `<div style="display:flex;align-items:center;gap:6px;padding:3px 0;border-top:1px dashed #e6ddd4;">
+            <span style="font-weight:900;color:#1565c0;min-width:46px;">Day ${n}</span>
+            <span style="font-weight:800;color:${clear?'#2e7d32':'#e65100'};">${rec.score}점</span>
+            ${clear?'<span style="color:#2e7d32;font-weight:800;">✅</span>'
+                   :`<span style="color:#c62828;">오답 ${rec.wrong}개</span>`}
+            ${tries>1?`<span style="font-size:9px;font-weight:800;color:#e65100;background:#fff3e0;border-radius:6px;padding:1px 5px;">${tries}회</span>`:''}
+          </div>`;
+        }).join('');
+        const timeStr=s.time?s.time.toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}):'';
+        return `<div class="sec-cell ${allClear?'perfect':'has-wrong'}" style="min-width:210px;text-align:left;"${_cellAttrs(st.name,st.school,s.level)}>
+          <div style="font-size:10px;font-weight:800;color:var(--muted);margin-bottom:2px;">${s.level}</div>
+          <div style="font-size:11px;font-weight:900;color:#6a4a20;margin-bottom:2px;">Day ${dayNums.join(' · ')} <span style="font-weight:700;color:#9a8f8a;">(${dayNums.length}일차)</span></div>
+          ${chips}
+          <div class="sec-time" style="margin-top:3px;">${timeStr}</div>
+        </div>`;
+      }).join('')}
+      </div></div>`:'';
+
     const nonSecMap={};
     otherRecords.forEach(d=>{
       const qtBase=d.quizType?d.quizType.replace('_오답완료',''):d.quizType;
@@ -1440,6 +1490,7 @@ function renderSectionView(){
         ${reviewHtml}
         ${readingLabHtml}
         ${synanmHtml}
+        ${vocaHtml}
         ${nonSecHtml}
         ${st.records.length>0?`<div style="margin-bottom:10px;"><button onclick="toggleStudentDetail('${detailId}',this);event.stopPropagation();" style="padding:5px 14px;border-radius:14px;border:none;background:#1565c0;color:white;font-size:11px;font-weight:800;cursor:pointer;font-family:inherit;">📋 전체 응시 기록 펼치기</button></div>`:''}
         ${allRecordsHtml}
