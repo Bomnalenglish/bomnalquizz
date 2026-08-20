@@ -712,6 +712,12 @@ function passagesStr(d){
 }
 function nonSecLabel(qt, d){
   if(!qt) return '-';
+  // 봄날 보카: day 필드에 몇 일차인지 들어 있음 → "Day 5 · R2 / 교재명"
+  if(d && d.day!==undefined && d.day!==null && d.day!==''){
+    const lvl = d.level || qt.replace(/^봄날보카_?/,'');
+    const r = (d.round||1)>1 ? ` <span style="color:#e65100">R${d.round}</span>` : '';
+    return `Day ${d.day}${r}` + (lvl?`<div style="font-weight:600;color:#9a8f8a;font-size:9px;margin-top:1px;">${lvl}</div>`:'');
+  }
   if(qt.includes('동반의어')){
     let lbl='';
     const lesson=qt.match(/교과서(\d+)과/);
@@ -1276,7 +1282,9 @@ function renderSectionView(){
     otherRecords.forEach(d=>{
       const qtBase=d.quizType?d.quizType.replace('_오답완료',''):d.quizType;
       const pKey=(d.passages&&d.passages.length>0)?'|p'+[...d.passages].sort((a,b)=>parseInt(a)-parseInt(b)).join(','):'';
-      const baseKey=qtBase+pKey;
+      // 보카는 Day별로 카드를 나눈다 (안 나누면 Day 1만 계속 봐도 구분이 안 됨)
+      const dKey=(d.day!==undefined&&d.day!==null&&d.day!=='')?'|d'+d.day:'';
+      const baseKey=qtBase+pKey+dKey;
       if(!nonSecMap[baseKey]||(d.quizType&&d.quizType.includes('오답완료'))){nonSecMap[baseKey]=d;}
       else if(d.time&&nonSecMap[baseKey].time&&d.time>nonSecMap[baseKey].time&&!nonSecMap[baseKey].quizType?.includes('오답완료')){nonSecMap[baseKey]=d;}
     });
@@ -1294,8 +1302,8 @@ function renderSectionView(){
       return `<div style="margin-bottom:14px;"><div style="font-size:11px;font-weight:800;color:var(--muted);margin-bottom:8px;letter-spacing:.5px;">📋 어진중3 1학기 총정리${allClear?'<span style="color:var(--green);margin-left:8px;">🏆 전 탭 클리어!</span>':''}</div><div style="display:flex;flex-wrap:wrap;gap:8px;">${cells}</div></div>`;
     })():'';
 
-    const totalDone=st.records.filter(d=>categorize(d.quizType)!=='other').length;
-    const avgScore=totalDone>0?Math.round(st.records.reduce((a,b)=>a+b.score,0)/st.records.length):0;
+    // 평균 점수: 예전에는 '기타 퀴즈'만 푼 학생(보카 등)이 0점으로 표시되던 버그가 있었음
+    const avgScore=st.records.length>0?Math.round(st.records.reduce((a,b)=>a+(b.score||0),0)/st.records.length):0;
     // 최근 응시일 계산 (records의 time 중 최대)
     const latestTime = st.records.length > 0 ? Math.max(...st.records.map(d=>d.time||0)) : 0;
     const latestDate = latestTime > 0 ? new Date(latestTime).toLocaleDateString('ko-KR',{year:'2-digit',month:'2-digit',day:'2-digit'}).replace(/\.\s/g,'.').replace(/\.$/,'') : '-';
@@ -1342,6 +1350,7 @@ function renderSectionView(){
             <tr style="background:#e3f2fd;color:#1565c0;font-weight:800;">
               <th style="padding:6px 8px;text-align:left;">시작/종료 시각</th>
               <th style="padding:6px 8px;text-align:left;">퀴즈 유형</th>
+              <th style="padding:6px 8px;text-align:left;">차시 · 라운드</th>
               <th style="padding:6px 8px;text-align:left;">선택 지문</th>
               <th style="padding:6px 8px;text-align:center;">점수</th>
               <th style="padding:6px 8px;text-align:center;">정답/총</th>
@@ -1376,12 +1385,25 @@ function renderSectionView(){
                 if(d.elapsed < 1) elapsedStr = '<1분';
                 else elapsedStr = d.elapsed+'분';
               } else if(d.elapsed===0){ elapsedStr = '<1분'; }
+              // 교재 · 차시(Day) · 라운드 — 보카는 오답 재시험마다 round가 올라간다
+              const rMeta = parseQuizMeta(d);
+              const roundStr = (d.round||1)>1
+                ? `<span style="margin-left:5px;font-size:9px;font-weight:800;color:#e65100;background:#fff3e0;border-radius:6px;padding:1px 5px;">${d.round}라운드</span>` : '';
+              const completeStr = (d.quizType&&d.quizType.includes('오답완료'))||(d.completed===true&&d.wrong===0)
+                ? `<span style="margin-left:4px;font-size:9px;font-weight:800;color:#2e7d32;">✅완료</span>` : '';
               return `<tr style="border-bottom:1px solid #f0f4ff;">
                 <td style="padding:6px 8px;color:var(--muted);white-space:nowrap;font-size:10px;">
                   <div>🏁 ${endTime}</div>
                   <div style="color:#aaa;">▶ ${startTime}</div>
                 </td>
-                <td style="padding:6px 8px;font-weight:700;max-width:200px;">${d.quizType||'-'}</td>
+                <td style="padding:6px 8px;font-weight:700;max-width:200px;" title="${(d.quizType||'').replace(/"/g,'&quot;')}">
+                  ${rMeta.textbook&&rMeta.textbook!=='-'?rMeta.textbook:(d.quizType||'-')}
+                  ${rMeta.type?`<span style="font-size:9px;color:#7a7570;font-weight:600;"> · ${rMeta.type}</span>`:''}
+                </td>
+                <td style="padding:6px 8px;text-align:left;white-space:nowrap;">
+                  ${rMeta.lesson?`<span style="font-weight:800;color:#1565c0;">${rMeta.lesson}</span>`:'<span style="color:#cbd5e1">-</span>'}
+                  ${roundStr}${completeStr}
+                </td>
                 <td style="padding:6px 8px;color:#1565c0;font-weight:700;max-width:160px;word-break:keep-all;">${passageStr}</td>
                 <td style="padding:6px 8px;text-align:center;font-weight:800;color:${scoreCol};">${d.score}점</td>
                 <td style="padding:6px 8px;text-align:center;">${d.correct||0}/${d.total||0}</td>
