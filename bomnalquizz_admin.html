@@ -272,6 +272,14 @@ tr:hover td{background:#f8f9ff;}
           <div class="chart-card"><h3>❌ 자주 틀린 단어 TOP 10</h3><div id="wrongWords"></div></div>
         </div>
         <div class="controls">
+          <span class="ctrl-label">기간</span>
+          <select class="ctrl-sel" id="fPeriod" onchange="loadData(true)" title="불러올 기간이 짧을수록 훨씬 빠릅니다">
+            <option value="7">최근 7일</option>
+            <option value="30" selected>최근 30일</option>
+            <option value="90">최근 90일</option>
+            <option value="365">최근 1년</option>
+            <option value="0">전체 (느림)</option>
+          </select>
           <span class="ctrl-label">학교</span>
           <select class="ctrl-sel" id="fSchool" onchange="applyFilter()">
             <option value="">전체</option>
@@ -298,7 +306,7 @@ tr:hover td{background:#f8f9ff;}
           <div class="spacer"></div>
           <button class="btn-delete-all" onclick="confirmDeleteAll()">🗑️ 선택 삭제</button>
           <button class="btn-export" onclick="exportCSV()">📥 CSV</button>
-          <button class="btn-refresh" onclick="loadData()">🔄 새로고침</button>
+          <button class="btn-refresh" onclick="loadData(true)">🔄 새로고침</button>
         </div>
         <div class="tbl-wrap">
           <div class="tbl-head"><span class="tbl-title">응시 기록</span><span class="cnt-badge" id="cntBadge">0건</span></div>
@@ -323,7 +331,7 @@ tr:hover td{background:#f8f9ff;}
           <span class="ctrl-label">이름</span>
           <input type="text" class="ctrl-inp" id="secName" placeholder="검색..." oninput="renderSectionView()">
           <div class="spacer"></div>
-          <button class="btn-refresh" onclick="loadData()">🔄 새로고침</button>
+          <button class="btn-refresh" onclick="loadData(true)">🔄 새로고침</button>
         </div>
         <div id="sectionArea"><div class="no-data-msg">데이터 불러오는 중...</div></div>
       </div>
@@ -408,11 +416,11 @@ tr:hover td{background:#f8f9ff;}
 
 <script type="module">
 import{initializeApp}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import{getFirestore,collection,getDocs,query,orderBy,deleteDoc,doc,addDoc,updateDoc,where,serverTimestamp}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import{getFirestore,collection,getDocs,query,orderBy,limit,deleteDoc,doc,addDoc,updateDoc,where,serverTimestamp}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 const cfg={apiKey:"AIzaSyCxS524S8KAaF87DomPtl9sJdF-eqes404",authDomain:"bomnalvaca.firebaseapp.com",projectId:"bomnalvaca",storageBucket:"bomnalvaca.firebasestorage.app",messagingSenderId:"115868052300",appId:"1:115868052300:web:765c08867b6f1ce0987de9"};
 const app=initializeApp(cfg);const db=getFirestore(app);
 window._db=db;window._col=collection;window._getDocs=getDocs;
-window._query=query;window._orderBy=orderBy;window._where=where;window._fbReady=true;
+window._query=query;window._orderBy=orderBy;window._where=where;window._limit=limit;window._fbReady=true;
 window._deleteDoc=deleteDoc;window._doc=doc;window._addDoc=addDoc;window._updateDoc=updateDoc;window._serverTs=serverTimestamp;
 </script>
 
@@ -458,17 +466,85 @@ function switchTab(tab){
 let allData = [];
 let allAccessData = [];  // ★ hub_access 데이터
 
-async function loadData(){
-  document.getElementById('tblArea').innerHTML='<div class="loading-msg">⏳ 전체 데이터 불러오는 중...<br><small style="color:#999">데이터가 많으면 잠시 걸릴 수 있어요</small></div>';
+// ── 로딩 성능 ────────────────────────────────────────────
+// 예전에는 열 때마다 quiz_results·hub_access 컬렉션 '전체'를 읽어서 느렸고,
+// Firestore 무료 할당량(하루 5만 읽기)도 빠르게 소진됐다.
+// ① 기간 제한 쿼리(서버에서 잘라서 가져오기) ② 병렬 로드 ③ 10분 캐시 로 개선.
+const CACHE_KEY='bn_admin_cache_v1';
+const CACHE_TTL_MS=10*60*1000;   // 10분
+const MAX_DOCS=5000;             // 안전장치
+
+function _getPeriodDays(){
+  const el=document.getElementById('fPeriod');
+  return el?parseInt(el.value,10):30;
+}
+function _readCache(days){
+  try{
+    const raw=localStorage.getItem(CACHE_KEY); if(!raw) return null;
+    const c=JSON.parse(raw);
+    if(c.days!==days) return null;
+    if(Date.now()-c.savedAt>CACHE_TTL_MS) return null;
+    // Date 복원
+    c.quiz.forEach(d=>{d.time=d.time?new Date(d.time):null;});
+    c.access.forEach(a=>{a.time=a.time?new Date(a.time):null;});
+    return c;
+  }catch(e){ return null; }
+}
+function _writeCache(days){
+  try{
+    const payload=JSON.stringify({savedAt:Date.now(),days,quiz:allData,access:allAccessData});
+    if(payload.length>3_500_000) return;   // localStorage 한도(약 5MB) 초과 방지
+    localStorage.setItem(CACHE_KEY,payload);
+  }catch(e){ try{localStorage.removeItem(CACHE_KEY);}catch(e2){} }
+}
+
+// 기간 제한 스냅샷 가져오기.
+// 퀴즈마다 서버 시각을 timestamp 또는 submittedAt 에 저장하므로 두 필드 모두 조회 후 합친다.
+async function _fetchSnaps(colName, fields, cutoff){
+  const col=window._col(window._db,colName);
+  if(!cutoff) return [await window._getDocs(col)];   // '전체'는 기존 방식 그대로
+  const qs=fields.map(f=>window._query(col,
+    window._where(f,'>=',cutoff), window._orderBy(f,'desc'), window._limit(MAX_DOCS)));
+  const results=await Promise.all(qs.map(q=>window._getDocs(q).catch(()=>null)));
+  return results.filter(Boolean);
+}
+
+async function loadData(force){
+  const days=_getPeriodDays();
+  const periodLabel=days?`최근 ${days}일`:'전체 기간';
+
+  // 1) 캐시가 살아 있으면 읽기 0회로 즉시 표시
+  if(!force){
+    const c=_readCache(days);
+    if(c){
+      allData=c.quiz; allAccessData=c.access;
+      document.getElementById('lastRefresh').textContent=
+        `⚡ 캐시 (${periodLabel} · ${allData.length}건) · ${new Date(c.savedAt).toLocaleTimeString('ko-KR')} 기준 — 최신 데이터는 🔄 새로고침`;
+      buildHistoryMap();populateTextbookFilter();
+      renderSummary();renderCharts();applyFilter();renderSectionView();
+      return;
+    }
+  }
+
+  document.getElementById('tblArea').innerHTML=
+    `<div class="loading-msg">⏳ ${periodLabel} 데이터 불러오는 중...<br><small style="color:#999">기간을 줄이면 훨씬 빨라집니다</small></div>`;
   try{
     let w=0;
     while(!window._fbReady&&w<15000){await new Promise(r=>setTimeout(r,200));w+=200;}
     if(!window._fbReady){throw new Error('Firebase 로드 시간 초과');}
 
-    // quiz_results 로드
-    const snap=await window._getDocs(window._col(window._db,'quiz_results'));
+    const cutoff=days?new Date(Date.now()-days*86400000):null;
+    // quiz_results 와 hub_access 를 동시에 (예전에는 순차 로드라 두 배로 기다렸음)
+    const [quizSnaps,accSnaps]=await Promise.all([
+      _fetchSnaps('quiz_results',['timestamp','submittedAt'],cutoff),
+      _fetchSnaps('hub_access',['timestamp'],cutoff).catch(()=>[])
+    ]);
+
     allData=[];
-    snap.forEach(doc=>{
+    const seen=new Set();
+    quizSnaps.forEach(snap=>snap.forEach(doc=>{
+      if(seen.has(doc.id)) return;   // 두 쿼리에 겹쳐 잡힌 문서 제거
+      seen.add(doc.id);
       const d=doc.data();
       // per-문제 이벤트 레코드 숨김 (q 필드가 있거나, result가 ok/fail인 한 문제 단위 로그)
       if(d.q!==undefined || d.result==='ok' || d.result==='fail') return;
@@ -500,37 +576,41 @@ async function loadData(){
           ?(typeof d.timestamp.toDate==='function'?d.timestamp.toDate():new Date(d.timestamp))
           :(d.submittedAt?(typeof d.submittedAt.toDate==='function'?d.submittedAt.toDate():new Date(d.submittedAt)):null),
       });
-    });
+    }));
     allData.sort((a,b)=>(b.time||0)-(a.time||0));
 
-    // ★ hub_access 동시 로드
-    try{
-      const accSnap=await window._getDocs(window._col(window._db,'hub_access'));
-      allAccessData=[];
-      accSnap.forEach(docA=>{
-        const d=docA.data();
-        allAccessData.push({
-          id:docA.id,
-          type:d.type||'-',
-          name:d.name||'',
-          school:d.school||'-',
-          targetSchool:d.targetSchool||'',
-          quiz:d.quiz||'',
-          file:d.file||'',
-          time:d.timestamp?(typeof d.timestamp.toDate==='function'?d.timestamp.toDate():new Date(d.timestamp)):null,
-        });
+    // ★ hub_access (위에서 병렬로 이미 받아옴)
+    allAccessData=[];
+    const seenAcc=new Set();
+    accSnaps.forEach(snap=>snap.forEach(docA=>{
+      if(seenAcc.has(docA.id)) return;
+      seenAcc.add(docA.id);
+      const d=docA.data();
+      allAccessData.push({
+        id:docA.id,
+        type:d.type||'-',
+        name:d.name||'',
+        school:d.school||'-',
+        targetSchool:d.targetSchool||'',
+        quiz:d.quiz||'',
+        file:d.file||'',
+        time:d.timestamp?(typeof d.timestamp.toDate==='function'?d.timestamp.toDate():new Date(d.timestamp)):null,
       });
-      allAccessData.sort((a,b)=>(b.time||0)-(a.time||0));
-    }catch(e2){console.log('hub_access load fail',e2);}
+    }));
+    allAccessData.sort((a,b)=>(b.time||0)-(a.time||0));
 
+    _writeCache(days);
     document.getElementById('lastRefresh').textContent=
-      '갱신: '+new Date().toLocaleTimeString('ko-KR')+' (총 '+allData.length+'건)';
+      `갱신: ${new Date().toLocaleTimeString('ko-KR')} · ${periodLabel} ${allData.length}건`;
     buildHistoryMap();
     populateTextbookFilter();
     renderSummary();renderCharts();applyFilter();renderSectionView();
   }catch(e){
-    document.getElementById('tblArea').innerHTML=
-      `<div class="empty-msg">⚠️ 오류: ${e.message}<br><small>잠시 후 새로고침 해보세요</small></div>`;
+    const quota=/quota|RESOURCE_EXHAUSTED|429/i.test(e.message||'');
+    document.getElementById('tblArea').innerHTML=quota
+      ? `<div class="empty-msg">⚠️ Firestore 일일 무료 할당량(하루 5만 읽기)을 초과했습니다.<br>
+         <small>기간을 '최근 7일'로 줄여서 다시 시도하거나, 태평양 표준시 자정(한국시간 오후 4~5시)에 초기화된 뒤 사용하세요.</small></div>`
+      : `<div class="empty-msg">⚠️ 오류: ${e.message}<br><small>잠시 후 새로고침 해보세요</small></div>`;
   }
 }
 
