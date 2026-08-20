@@ -470,7 +470,7 @@ let allAccessData = [];  // ★ hub_access 데이터
 // 예전에는 열 때마다 quiz_results·hub_access 컬렉션 '전체'를 읽어서 느렸고,
 // Firestore 무료 할당량(하루 5만 읽기)도 빠르게 소진됐다.
 // ① 기간 제한 쿼리(서버에서 잘라서 가져오기) ② 병렬 로드 ③ 10분 캐시 로 개선.
-const CACHE_KEY='bn_admin_cache_v1';
+const CACHE_KEY='bn_admin_cache_v2';   // v2: day·level 필드 추가로 기존 캐시 무효화
 const CACHE_TTL_MS=10*60*1000;   // 10분
 const MAX_DOCS=5000;             // 안전장치
 
@@ -571,6 +571,8 @@ async function loadData(force){
         attemptCount:d.attemptCount||1,
         passages:d.passages||[],
         details:d.details||[],
+        day:(d.day!==undefined&&d.day!==null?d.day:''),   // 봄날 보카 Day 차시
+        level:d.level||'',                                 // 봄날 보카 교재명(워드마스터 중등 BASIC 등)
         submittedAt:d.submittedAt||null,
         time:d.timestamp
           ?(typeof d.timestamp.toDate==='function'?d.timestamp.toDate():new Date(d.timestamp))
@@ -684,7 +686,9 @@ function groupAttempts(data){
   for(const d of data){
     const meta=parseQuizMeta(d);
     const dt=d.time?d.time.toLocaleDateString('ko-KR'):'unk';
-    const key=`${d.school||''}|${d.name||''}|${meta.textbook}|${dt}`;
+    // 보카는 같은 날 여러 Day를 풀 수 있으므로 Day별로 행을 나눈다 (한 줄로 합치면 몇 일차인지 안 보임)
+    const dayKey=(d.day!==undefined&&d.day!==null&&d.day!=='')?`|Day${d.day}`:'';
+    const key=`${d.school||''}|${d.name||''}|${meta.textbook}|${dt}${dayKey}`;
     if(!m.has(key)) m.set(key,[]);
     m.get(key).push(d);
   }
@@ -877,7 +881,7 @@ function parseQuizMeta(d){
   let textbook = '-', type = '', typeClass = 'default', lesson = '';
   let passages = passagesStr(d) || '';
   // 유형 분류
-  if (/단어|어휘|voca|동반의어|synanm/i.test(qt)) { type='어휘'; typeClass='voca'; }
+  if (/단어|어휘|보카|voca|동반의어|synanm/i.test(qt)) { type='어휘'; typeClass='voca'; }
   if (/본문암기|memory/i.test(qt)) { type='본문'; typeClass='memory'; }
   if (/어법|grammar/i.test(qt)) { type='어법'; typeClass='grammar'; }
   if (/총괄|total/i.test(qt)) { type='총괄'; typeClass='total'; }
@@ -916,6 +920,8 @@ function parseQuizMeta(d){
     const m=qt.match(/^(.+중학교)_(\d학년)_(\d+과)_/);
     textbook=m[1].replace('학교','')+' '+m[2];
   }
+  // 봄날 보카: 교재를 레벨별로 구분 (전부 '봄날보카'로 뭉치지 않게)
+  else if (/^봄날보카/.test(qt)) textbook = d.level || qt.replace(/^봄날보카_?/, '') || '봄날 보카';
   else if (qt) textbook = qt.split('_')[0] || qt.slice(0, 20);
   // 차시 (Lesson/Unit/번호/과/섹션) 추출
   const isOlym=/^올림포스/.test(qt);
@@ -935,6 +941,8 @@ function parseQuizMeta(d){
     const rm=qt.match(/_단어_([^_]+)/);
     if (rm) type = '어휘·'+rm[1].replace(/_오답완료|_오답재시도/g,'');
   }
+  // 봄날 보카는 quizType에 차시가 없고 day 필드에 들어 있음 → 'Day N'으로 표시
+  if (d.day !== undefined && d.day !== null && d.day !== '') lesson = 'Day ' + d.day;
   return { textbook, type, typeClass, lesson, passages };
 }
 
@@ -1662,8 +1670,8 @@ function exportStudentsCSV(){
 }
 
 function exportCSV(){
-  const hdr=['이름','학교','퀴즈유형','점수','정답','오답','시간초과','총문제','라운드','제출시간','오답단어'];
-  const rows=allData.map(d=>[d.name,d.school,d.quizType,d.score,d.correct,d.wrong,d.timedOut,d.total,d.round||1,d.time?d.time.toLocaleString('ko-KR'):'-',d.wrongWords.map(w=>typeof w==='string'?w:(w.eng||w)).join('|')]);
+  const hdr=['이름','학교','퀴즈유형','교재','차시','점수','정답','오답','시간초과','총문제','라운드','제출시간','오답단어'];
+  const rows=allData.map(d=>{const m=parseQuizMeta(d);return [d.name,d.school,d.quizType,m.textbook,m.lesson||'-',d.score,d.correct,d.wrong,d.timedOut,d.total,d.round||1,d.time?d.time.toLocaleString('ko-KR'):'-',d.wrongWords.map(w=>typeof w==='string'?w:(w.eng||w)).join('|')];});
   const csv=[hdr,...rows].map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8;'}));a.download=`봄날퀴즈_결과_${new Date().toISOString().slice(0,10)}.csv`;a.click();
 }
