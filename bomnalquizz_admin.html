@@ -470,7 +470,7 @@ let allAccessData = [];  // ★ hub_access 데이터
 // 예전에는 열 때마다 quiz_results·hub_access 컬렉션 '전체'를 읽어서 느렸고,
 // Firestore 무료 할당량(하루 5만 읽기)도 빠르게 소진됐다.
 // ① 기간 제한 쿼리(서버에서 잘라서 가져오기) ② 병렬 로드 ③ 10분 캐시 로 개선.
-const CACHE_KEY='bn_admin_cache_v3';   // v3: day·level 추가 + 학교 표기 통일
+const CACHE_KEY='bn_admin_cache_v4';   // v3: day·level 추가 + 학교 표기 통일
 
 // 챕터 시험은 학교를 '종촌중학교'로, 어휘 퀴즈는 '종촌중1'로 저장한다.
 // 표기가 갈리면 같은 학생이 두 명으로 잡히므로 '종촌중1' 형태로 통일한다.
@@ -563,6 +563,8 @@ async function loadData(force){
         id:doc.id,
         name:d.studentName||d.name||'(이름없음)',
         school:normSchool(d.school, d.grade),
+        sectionKey:d.sectionKey||'',
+        dialogueTotal:(d.dialogueTotal!==undefined?d.dialogueTotal:null),  // 챕터 빈칸시험 대화문 총 개수
         score:d.score||0,
         correct:d.correct||0,
         wrong:d.wrongCount||d.wrong||0,
@@ -1132,6 +1134,18 @@ function renderSectionView(){
   if(sq) data=data.filter(d=>d.school&&d.school.startsWith(sq));
   if(nq) data=data.filter(d=>d.name.toLowerCase().includes(nq));
 
+  // 과별 대화문 총 개수: 한 명이라도 총개수를 저장한 기록이 있으면 모든 학생에게 적용.
+  // (옛 기록에는 총개수가 없어 '본 번호 중 최댓값'으로 보완)
+  const CHAP_TOTAL={};
+  allData.forEach(d=>{
+    if(categorize(d.quizType)!=='chapter') return;
+    const base=(d.quizType||'').replace(/_오답완료|_오답재시도|_재시도/g,'').replace(/_빈칸시험_.*$/,'');
+    let t=d.dialogueTotal||0;
+    const m=sectionTag(d.quizType).match(/대화문\s*(\d+)/);
+    if(m) t=Math.max(t, parseInt(m[1]));
+    if(t) CHAP_TOTAL[base]=Math.max(CHAP_TOTAL[base]||0, t);
+  });
+
   const students={};
   data.forEach(d=>{
     const key=`${d.name}||${d.school}`;
@@ -1191,8 +1205,11 @@ function renderSectionView(){
     const synanmRecords=nonSecRecords.filter(d=>isSynanmType(d.quizType));
     // 봄날 보카(day 필드 보유)는 따로 뽑아서 '같은 날' 단위로 묶어 보여준다
     const isVocaRec = d => d.day!==undefined && d.day!==null && d.day!=='';
-    const otherRecords=nonSecRecords.filter(d=>!isSynanmType(d.quizType) && !isReadingLab(d.quizType) && !isVocaRec(d));
+    // 챕터 빈칸시험(본문·대화문)은 '몇 개 중 몇 개 완성'이 보이도록 따로 뽑는다
+    const isChapterRec = d => categorize(d.quizType)==='chapter' && sectionTag(d.quizType);
+    const otherRecords=nonSecRecords.filter(d=>!isSynanmType(d.quizType) && !isReadingLab(d.quizType) && !isVocaRec(d) && !isChapterRec(d));
     const vocaRecords=nonSecRecords.filter(d=>!isSynanmType(d.quizType) && !isReadingLab(d.quizType) && isVocaRec(d));
+    const chapterRecords=nonSecRecords.filter(d=>!isSynanmType(d.quizType) && !isReadingLab(d.quizType) && !isVocaRec(d) && isChapterRec(d));
 
     // Reading Lab 렌더링
     const rlMap = {}; // key = kang_section_stage
@@ -1294,6 +1311,56 @@ function renderSectionView(){
     }).join('');
 
     // 기타
+    // ── 챕터 빈칸시험: 과별로 '본문 + 대화문 N개 중 몇 개 완성' ──
+    // quizType 예) 종촌중학교_2학년_5과_빈칸시험_대화문 1  → 과 = 종촌중학교_2학년_5과, 파트 = 대화문 1
+    const chapters={};
+    chapterRecords.forEach(d=>{
+      const qt=(d.quizType||'').replace(/_오답완료|_오답재시도|_재시도/g,'');
+      const base=qt.replace(/_빈칸시험_.*$/,'');
+      const tag=sectionTag(d.quizType);
+      if(!chapters[base]) chapters[base]={base, parts:{}, dialogueTotal:0, time:null};
+      const c=chapters[base];
+      if(d.dialogueTotal) c.dialogueTotal=Math.max(c.dialogueTotal, d.dialogueTotal);
+      const dm=tag.match(/대화문\s*(\d+)/);
+      if(dm) c.dialogueTotal=Math.max(c.dialogueTotal, parseInt(dm[1]));   // 옛 기록엔 총개수가 없어 본 번호로 추정
+      if(d.time&&(!c.time||d.time>c.time)) c.time=d.time;
+      const cur=c.parts[tag];
+      // 파트별로 '가장 잘한 기록'(오답 최소 → 최신)을 대표로
+      if(!cur || d.wrong<cur.wrong || (d.wrong===cur.wrong && d.time && cur.time && d.time>cur.time)) c.parts[tag]=d;
+    });
+    const chapterHtml=Object.keys(chapters).length>0?`<div style="margin-bottom:14px;">
+      <div style="font-size:11px;font-weight:800;color:var(--muted);margin-bottom:8px;letter-spacing:.5px;">📖 본문·대화문 빈칸시험</div>
+      ${Object.values(chapters).sort((a,b)=>(b.time||0)-(a.time||0)).map(c=>{
+        const label=c.base.replace(/_/g,' ');
+        const total=Math.max(c.dialogueTotal||0, CHAP_TOTAL[c.base]||0);
+        const dl=[];
+        for(let n=1;n<=total;n++) dl.push('대화문 '+n);
+        const doneD=dl.filter(t=>c.parts[t]&&c.parts[t].wrong===0).length;
+        const triedD=dl.filter(t=>c.parts[t]).length;
+        const cell=(tag,short)=>{
+          const r=c.parts[tag];
+          if(!r) return `<div class="sec-cell not-done" style="min-width:76px;"><div class="sec-num">${short}</div><div class="sec-score" style="font-size:11px">미응시</div></div>`;
+          const clear=r.wrong===0;
+          return `<div class="sec-cell ${clear?'perfect':'has-wrong'}" style="min-width:76px;"${_cellAttrs(st.name,st.school,r.quizType)}>
+            <div class="sec-num">${short}</div><div class="sec-score">${r.score}점</div>
+            ${clear?'<div style="font-size:10px;color:#2e7d32;font-weight:900;">✅ 완성</div>':`<div class="sec-wrong">오답 ${r.wrong}개</div>`}
+          </div>`;
+        };
+        const mainCell=c.parts['본문']?cell('본문','본문'):'';
+        const dCells=dl.map((t,i)=>cell(t,(i+1)+'번')).join('');
+        const mainState=c.parts['본문']?(c.parts['본문'].wrong===0?'✅ 완성':`⚠️ 오답 ${c.parts['본문'].wrong}개`):'미응시';
+        return `<div style="margin-bottom:10px;padding:10px 12px;background:#f8faff;border:1px solid #dbeafe;border-radius:10px;">
+          <div style="font-size:11.5px;font-weight:800;color:#1565c0;margin-bottom:6px;">
+            ${label}
+            <span style="margin-left:8px;color:#334155;">본문 ${mainState}</span>
+            ${total>0?`<span style="margin-left:8px;color:${doneD===total?'#2e7d32':'#e65100'};">대화문 ${total}개 중 <b>${doneD}개 완성</b>${triedD>doneD?` (풀었지만 오답 ${triedD-doneD}개)`:''}</span>`:''}
+            ${total>0&&doneD===total&&c.parts['본문']&&c.parts['본문'].wrong===0?'<span style="color:var(--green);margin-left:8px;">🏆 전체 클리어!</span>':''}
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;">${mainCell}${dCells}</div>
+        </div>`;
+      }).join('')}
+    </div>`:'';
+
     // ── 봄날 보카: 교재 + 같은 날짜 = 카드 1개, 그 안에 Day 1·2·3을 나란히 ──
     const vocaSessions={};   // key: 교재|날짜
     vocaRecords.forEach(d=>{
@@ -1501,6 +1568,7 @@ function renderSectionView(){
         ${reviewHtml}
         ${readingLabHtml}
         ${synanmHtml}
+        ${chapterHtml}
         ${vocaHtml}
         ${nonSecHtml}
         ${st.records.length>0?`<div style="margin-bottom:10px;"><button onclick="toggleStudentDetail('${detailId}',this);event.stopPropagation();" style="padding:5px 14px;border-radius:14px;border:none;background:#1565c0;color:white;font-size:11px;font-weight:800;cursor:pointer;font-family:inherit;">📋 전체 응시 기록 펼치기</button></div>`:''}
