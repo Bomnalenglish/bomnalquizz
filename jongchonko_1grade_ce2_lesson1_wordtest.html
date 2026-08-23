@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>봄날 퀴즈 | 종촌고 1학년 공통영어2 1과 어휘 TEST</title>
+<script type="module" src="bn_tracker.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700;900&family=Fredoka+One&display=swap');
+:root{--primary:#5b2d8e;--secondary:#9b59b6;--accent:#f39c12;--accent2:#e67e22;--bg:#f8f4ff;--card:#fff;--text:#1b1b2f;--muted:#6b7280;--correct:#27ae60;--wrong:#c0392b;--border:#d9c4f0;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+.info-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
+.info-card{background:var(--card);border-radius:24px;padding:36px 28px;width:100%;max-width:380px;box-shadow:0 8px 32px rgba(91,45,142,.15);}
+.info-card .top-icon{font-size:48px;text-align:center;margin-bottom:12px;}
+.info-card h1{font-family:'Fredoka One',cursive;font-size:22px;color:var(--primary);text-align:center;margin-bottom:4px;}
+.info-card .sub{font-size:12px;color:var(--muted);text-align:center;margin-bottom:28px;line-height:1.6;}
+.form-label{font-size:12px;font-weight:700;color:var(--primary);margin-bottom:6px;display:block;}
+.form-select,.form-input{width:100%;padding:13px 14px;border:2px solid var(--border);border-radius:12px;font-family:'Noto Sans KR',sans-serif;font-size:14px;outline:none;transition:border-color .2s;margin-bottom:16px;background:white;color:var(--text);}
+.form-select:focus,.form-input:focus{border-color:var(--secondary);}
+.form-select.err,.form-input.err{border-color:var(--wrong);}
+.start-btn{width:100%;padding:15px;background:linear-gradient(135deg,var(--primary),#3d1a6e);color:white;border:none;border-radius:14px;font-family:'Noto Sans KR',sans-serif;font-size:16px;font-weight:700;cursor:pointer;transition:opacity .2s;box-shadow:0 4px 16px rgba(91,45,142,.3);}
+.start-btn:hover{opacity:.88;}
+.quiz-wrap{display:none;}
+.quiz-header{background:linear-gradient(135deg,var(--primary),#3d1a6e);color:white;padding:20px 16px 16px;text-align:center;position:relative;overflow:hidden;}
+.quiz-header::before{content:'';position:absolute;top:-40px;right:-40px;width:160px;height:160px;background:rgba(255,255,255,.05);border-radius:50%;}
+.lesson-badge{display:inline-block;background:var(--accent);color:white;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;letter-spacing:1px;margin-bottom:6px;}
+.quiz-header h1{font-family:'Fredoka One',cursive;font-size:24px;letter-spacing:1px;margin-bottom:2px;}
+.quiz-header .student-info{font-size:12px;opacity:.85;margin-top:2px;}
+.attempt-badge{display:inline-block;background:rgba(255,255,255,.18);border-radius:8px;padding:3px 10px;font-size:11px;margin-top:5px;}
+.section-tabs{display:flex;overflow-x:auto;gap:8px;padding:12px 14px 0;background:var(--primary);scrollbar-width:none;}
+.section-tabs::-webkit-scrollbar{display:none;}
+.tab-btn{flex-shrink:0;padding:7px 14px;border-radius:10px 10px 0 0;border:none;background:rgba(255,255,255,.13);color:rgba(255,255,255,.65);font-family:'Noto Sans KR',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;}
+.tab-btn.active{background:var(--bg);color:var(--primary);}
+.progress-wrap{padding:10px 14px 0;background:var(--bg);}
+.progress-info{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:5px;}
+.progress-bar{height:5px;background:var(--border);border-radius:10px;overflow:hidden;}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--secondary),var(--primary));border-radius:10px;transition:width .4s ease;}
+.quiz-section{display:none;padding:14px 14px 80px;}
+.quiz-section.active{display:block;}
+.section-title{font-size:14px;font-weight:700;color:var(--primary);margin-bottom:3px;display:flex;align-items:center;gap:6px;}
+.section-title .icon{width:26px;height:26px;background:var(--primary);color:white;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;}
+.section-desc{font-size:11px;color:var(--muted);margin-bottom:14px;}
+.q-card{background:var(--card);border-radius:14px;padding:18px;margin-bottom:12px;border:1.5px solid var(--border);box-shadow:0 2px 6px rgba(0,0,0,.04);}
+.q-card.correct-card{border-color:var(--correct);background:#f0fdf4;}
+.q-card.wrong-card{border-color:var(--wrong);background:#fff5f5;}
+.q-num{font-size:10px;font-weight:700;color:var(--muted);margin-bottom:5px;}
+.q-word{font-size:20px;font-weight:900;color:var(--text);margin-bottom:3px;font-family:'Fredoka One',cursive;}
+.q-word.ko{font-family:'Noto Sans KR',sans-serif;font-size:16px;font-weight:700;}
+.q-sub{font-size:11px;color:var(--muted);margin-bottom:12px;}
+.lesson-tag{display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:5px;margin-bottom:3px;}
+.lesson-tag.l1{background:#ede9fe;color:#5b2d8e;}
+.lesson-tag.l2{background:#fef3c7;color:#92400e;}
+.lesson-tag.l3{background:#dcfce7;color:#166534;}
+.lesson-tag.l4{background:#fce7f3;color:#9f1239;}
+.lesson-tag.l5{background:#cffafe;color:#155e75;}
+.options{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+.opt-btn{padding:9px 11px;border:2px solid var(--border);border-radius:9px;background:white;font-family:'Noto Sans KR',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;text-align:center;color:var(--text);line-height:1.4;}
+.opt-btn:hover:not(:disabled){border-color:var(--secondary);background:#f5f0ff;}
+.opt-btn.selected-correct{background:#d1fae5;border-color:var(--correct);color:var(--correct);}
+.opt-btn.selected-wrong{background:#fee2e2;border-color:var(--wrong);color:var(--wrong);}
+.opt-btn.show-correct{background:#d1fae5;border-color:var(--correct);color:var(--correct);}
+.opt-btn:disabled{cursor:default;}
+.opt-btn.multi.selected{background:#ede9fe;border-color:var(--secondary);color:var(--primary);}
+.multi-confirm{margin-top:10px;width:100%;padding:10px;background:#f3f4f6;color:#9ca3af;border:none;border-radius:9px;font-size:12px;font-weight:700;cursor:not-allowed;transition:all .15s;}
+.multi-confirm.ready{background:var(--secondary);color:white;cursor:pointer;}
+.multi-confirm.ready:hover{background:var(--primary);}
+.opt-btn.multi.correct-sel{background:#d1fae5;border-color:var(--correct);color:var(--correct);}
+.opt-btn.multi.wrong-sel{background:#fee2e2;border-color:var(--wrong);color:var(--wrong);}
+.feedback{font-size:12px;font-weight:700;margin-top:7px;padding:5px 9px;border-radius:7px;display:none;}
+.feedback.show{display:block;}
+.feedback.ok{background:#d1fae5;color:var(--correct);}
+.feedback.no{background:#fee2e2;color:var(--wrong);}
+.float-submit{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);z-index:100;width:calc(100% - 28px);max-width:480px;padding:13px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:white;border:none;border-radius:14px;font-family:'Noto Sans KR',sans-serif;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 4px 18px rgba(243,156,18,.4);}
+.float-submit:active{transform:translateX(-50%) scale(.97);}
+.float-submit.hidden{display:none;}
+.result-screen{display:none;padding:28px 18px;text-align:center;}
+.result-screen.show{display:block;}
+.result-emoji{font-size:56px;margin-bottom:10px;}
+.result-score{font-size:44px;font-weight:900;font-family:'Fredoka One',cursive;color:var(--primary);margin-bottom:3px;}
+.result-label{font-size:13px;color:var(--muted);margin-bottom:20px;}
+.result-detail{background:white;border-radius:14px;padding:14px;margin-bottom:18px;text-align:left;}
+.result-row{display:flex;justify-content:space-between;padding:5px 0;font-size:12px;border-bottom:1px solid #f0f0f0;}
+.result-row:last-child{border-bottom:none;}
+.result-row .label{color:var(--muted);}
+.result-row .val{font-weight:700;}
+.sending-msg{font-size:13px;color:var(--muted);margin-bottom:14px;}
+.sending-msg.ok{color:var(--correct);font-weight:700;}
+.sending-msg.err{color:var(--wrong);}
+.retry-btn{width:100%;padding:13px;background:var(--primary);color:white;border:none;border-radius:14px;font-family:'Noto Sans KR',sans-serif;font-size:14px;font-weight:700;cursor:pointer;}
+</style>
+
+<script>
+// 봄날 허브에서 전달된 학생 이름 자동 적용
+(function(){
+  var saved = sessionStorage.getItem('bn_name') || localStorage.getItem('bn_name');
+  if(saved){
+    window._hubStudentName = saved;
+    // 이름 입력란이 있으면 자동 입력
+    window.addEventListener('DOMContentLoaded', function(){
+      var inputs = document.querySelectorAll('input#student-name, input#nameInput, .name-input');
+      inputs.forEach(function(el){ if(!el.value) el.value = saved; });
+    });
+  }
+})();
+</script>
+</head>
+<body>
+<div class="info-wrap" id="infoWrap">
+  <div class="info-card">
+    <div class="top-icon">🏫</div>
+    <h1>공통영어2 1과 어휘 TEST</h1>
+    <p class="sub">YBM(김은형) 공통영어2 · 종촌고 1학년<br>퀴즈 결과가 선생님께 자동 전달돼요!</p>
+    <label class="form-label">🏫 학교 / 학년</label>
+    <select class="form-select" id="schoolSel">
+      <option value="">학교를 선택하세요</option>
+      <option value="종촌고1">종촌고 1학년</option>
+    </select>
+    <label class="form-label">✏️ 이름</label>
+    <input type="text" class="form-input" id="nameInput" placeholder="이름을 입력하세요" maxlength="10">
+    <button class="start-btn" onclick="startQuiz()">퀴즈 시작 →</button>
+  </div>
+</div>
+<div class="quiz-wrap" id="quizWrap">
+  <div class="quiz-header">
+    <div class="lesson-badge">종촌중 · 2학년</div>
+    <h1>📚 Vocabulary Quiz</h1>
+    <div class="student-info" id="studentInfoDisplay"></div>
+    <div class="attempt-badge" id="attemptDisplay">첫 번째 도전!</div>
+  </div>
+  <div class="section-tabs">
+    <button class="tab-btn active" onclick="switchSection(0)">① 유의어</button>
+    <button class="tab-btn" onclick="switchSection(1)">② 반의어</button>
+    <button class="tab-btn" onclick="switchSection(2)">③ 뜻 찾기</button>
+    <button class="tab-btn" onclick="switchSection(3)">④ 다의어</button>
+    <button class="tab-btn" onclick="switchSection(4)">⑤ Phrases</button>
+    <button class="tab-btn" onclick="switchSection(5)">⑥ 영영풀이</button>
+  </div>
+  <div class="progress-wrap">
+    <div class="progress-info"><span id="progressText">0 / 0 완료</span><span id="scoreText">점수: 0</span></div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+  </div>
+  <div class="quiz-section active" id="section-0"><div class="section-title"><div class="icon">①</div> 유의어 고르기</div><div class="section-desc">주어진 단어와 의미가 가장 가까운 것을 고르세요.</div><div id="synonymQuestions"></div></div>
+  <div class="quiz-section" id="section-1"><div class="section-title"><div class="icon">②</div> 반의어 고르기</div><div class="section-desc">주어진 단어의 반의어를 고르세요.</div><div id="antonymQuestions"></div></div>
+  <div class="quiz-section" id="section-2"><div class="section-title"><div class="icon">③</div> 영단어 뜻 찾기</div><div class="section-desc">다음 영어 단어의 우리말 뜻을 고르세요.</div><div id="formQuestions"></div></div>
+  <div class="quiz-section" id="section-3"><div class="section-title"><div class="icon">④</div> 다의어 뜻 모두 선택</div><div class="section-desc">단어의 뜻을 모두 골라보세요.</div><div id="polyQuestions"></div></div>
+  <div class="quiz-section" id="section-4"><div class="section-title"><div class="icon">⑤</div> Phrases</div><div class="section-desc">주어진 표현의 올바른 뜻을 고르세요.</div><div id="phraseQuestions"></div></div>
+  <div class="quiz-section" id="section-5"><div class="section-title"><div class="icon">⑥</div> 영영풀이</div><div class="section-desc">영어 풀이를 읽고 알맞은 단어를 고르세요.</div><div id="engEngQuestions"></div></div>
+  <div class="result-screen" id="resultScreen">
+    <div class="result-emoji" id="resultEmoji">🎉</div>
+    <div class="result-score" id="resultScore">0점</div>
+    <div class="result-label" id="resultLabel"></div>
+    <div class="result-detail" id="resultDetail"></div>
+    <div class="sending-msg" id="sendingMsg">📡 결과 전송 중...</div>
+    <button id="retryWrongBtn" onclick="startRetry()" style="display:none;width:100%;padding:13px;background:var(--wrong);color:white;border:none;border-radius:14px;font-family:'Noto Sans KR',sans-serif;font-size:15px;font-weight:700;cursor:pointer;margin-bottom:10px;">❌ 오답 다시 풀기 (<span id="wrongCount">0</span>개)</button>
+    <button class="retry-btn" onclick="retryQuiz()">🔄 처음부터 다시</button>
+  </div>
+  
+  <!-- 오답 재풀이 화면 -->
+  <div id="retryScreen" style="display:none;padding:14px 14px 80px;">
+    <div style="background:var(--wrong);color:white;border-radius:14px;padding:14px 18px;margin-bottom:16px;text-align:center;">
+      <div style="font-size:12px;font-weight:700;opacity:.85">오답 재풀이 모드 · <span id="retryRoundLabel">1라운드</span></div>
+      <div style="font-family:'Fredoka One',cursive;font-size:20px;margin-top:2px">❌ → ✅ 전부 맞힐 때까지!</div>
+      <div style="font-size:11px;opacity:.75;margin-top:4px" id="retryCountLabel"></div>
+    </div>
+    <div id="retryQuestions"></div>
+  </div>
+  <button class="float-submit hidden" id="retrySubmitBtn" onclick="submitRetry()">✅ 오답 확인하기</button>
+  <button class="float-submit" id="floatSubmit" onclick="submitAll()">🎯 최종 제출하기</button>
+</div>
+<script type="module">
+import{initializeApp}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import{getFirestore,collection,addDoc,serverTimestamp}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+const cfg={apiKey:"AIzaSyCxS524S8KAaF87DomPtl9sJdF-eqes404",authDomain:"bomnalvaca.firebaseapp.com",projectId:"bomnalvaca",storageBucket:"bomnalvaca.firebasestorage.app",messagingSenderId:"115868052300",appId:"1:115868052300:web:765c08867b6f1ce0987de9"};
+const app=initializeApp(cfg);const db=getFirestore(app);
+window._saveResult=async function(data){await addDoc(collection(db,'quiz_results'),{...data,submittedAt:serverTimestamp()});};
+window._fbReady=true;
+</script>
+<script>
+const SYNONYM_DATA=[{"lesson": 1, "word": "accountable (책임이 있는)", "answer": "responsible", "distractors": ["cool", "regular", "volunteer"]}, {"lesson": 1, "word": "nonprofit (비영리의)", "answer": "non-profit-making", "distractors": ["appropriate", "volunteer", "host"]}, {"lesson": 1, "word": "be committed to ~ (~에 헌신하다[전념하다])", "answer": "be devoted", "distractors": ["affordable", "regular", "effective"]}, {"lesson": 1, "word": "detect (감지하다, 탐지하다)", "answer": "notice", "distractors": ["foundation", "action", "invent"]}, {"lesson": 1, "word": "hurtful (마음을 상하게[아프게] 하는)", "answer": "wounding", "distractors": ["strength", "initiative", "invaluable"]}, {"lesson": 1, "word": "offensive (공격적인, 모욕적인)", "answer": "insulting", "distractors": ["affordable", "directly", "awareness"]}, {"lesson": 1, "word": "tragic (비극적인)", "answer": "disastrous", "distractors": ["cyberbully", "host", "affordable"]}, {"lesson": 1, "word": "shocked (깜짝 놀란)", "answer": "amazed", "distractors": ["solve", "discard", "pot"]}, {"lesson": 1, "word": "prevent (막다, 예방하다)", "answer": "avoid", "distractors": ["resident", "celebrate", "solve"]}, {"lesson": 1, "word": "awareness (의식, 인식)", "answer": "consciousness", "distractors": ["self-taught", "outbreak", "adolescent"]}, {"lesson": 1, "word": "make a decision (결정하다)", "answer": "decide", "distractors": ["essential", "undoubtedly", "worthy"]}, {"lesson": 1, "word": "adolescent (청소년)", "answer": "teenager", "distractors": ["directly", "settle", "meaningful"]}, {"lesson": 1, "word": "fascinated (매료된)", "answer": "charmed", "distractors": ["organization", "effective", "base"]}, {"lesson": 1, "word": "affect (~에 영향을 주다)", "answer": "influence", "distractors": ["detect", "maintain", "cyberbully"]}, {"lesson": 1, "word": "especially (특히)", "answer": "particularly", "distractors": ["resident", "affordable", "lead"]}, {"lesson": 1, "word": "improve (향상시키다)", "answer": "enhance", "distractors": ["meaningful", "windmill", "mentor"]}, {"lesson": 1, "word": "affordable ((가격이) 알맞은, 저렴한)", "answer": "inexpensive", "distractors": ["host", "specialized", "combat"]}, {"lesson": 1, "word": "essential (필수품)", "answer": "necessity", "distractors": ["organization", "prompt", "combat"]}, {"lesson": 1, "word": "transition (전환하다)", "answer": "change", "distractors": ["solution", "affordable", "found"]}, {"lesson": 1, "word": "triumph (승리)", "answer": "victory", "distractors": ["volunteer", "settle", "power"]}, {"lesson": 1, "word": "celebrate (기념하다)", "answer": "commemorate", "distractors": ["housing", "innovative", "knowledge"]}, {"lesson": 1, "word": "impact (영향)", "answer": "influence", "distractors": ["adolescent", "base", "organization"]}, {"lesson": 1, "word": "dignity (존엄성)", "answer": "self-esteem", "distractors": ["directly", "power", "volunteer"]}, {"lesson": 1, "word": "individual (개인의)", "answer": "personal", "distractors": ["furnish", "housing", "face"]}, {"lesson": 1, "word": "passion (열정)", "answer": "enthusiasm", "distractors": ["complete", "fascinated", "resource"]}, {"lesson": 1, "word": "undoubtedly (의심의 여지없이)", "answer": "undeniably", "distractors": ["collect", "adolescent", "action"]}, {"lesson": 1, "word": "appropriate (적절한)", "answer": "proper", "distractors": ["solve", "invaluable", "consider"]}, {"lesson": 1, "word": "suitably (적합하게)", "answer": "properly", "distractors": ["individual", "virtual", "outbreak"]}, {"lesson": 1, "word": "specific (특정한, 구체적인)", "answer": "particular", "distractors": ["host", "material", "complete"]}, {"lesson": 1, "word": "rely on ~ (~에 의존하다)", "answer": "depend on", "distractors": ["material", "invention", "electronic"]}, {"lesson": 1, "word": "employ (이용하다)", "answer": "use", "distractors": ["triumph", "nonprofit", "meaningful"]}, {"lesson": 1, "word": "gather (모으다)", "answer": "collect", "distractors": ["outbreak", "cool", "specialized"]}, {"lesson": 1, "word": "collect (모이다)", "answer": "gather", "distractors": ["suitably", "affordable", "commitment"]}, {"lesson": 1, "word": "strength (강점, 장점)", "answer": "advantage", "distractors": ["host", "outbreak", "reconsider"]}, {"lesson": 1, "word": "demonstrate (보여주다)", "answer": "show", "distractors": ["donation", "resource", "suitably"]}, {"lesson": 1, "word": "effective (효과적인)", "answer": "effectual", "distractors": ["solve", "offensive", "volunteer"]}];
+const ANTONYM_DATA=[{"lesson": 1, "word": "accountable (책임이 있는)", "answer": "unaccountable", "distractors": ["volunteer", "share", "generator"]}, {"lesson": 1, "word": "nonprofit (비영리의)", "answer": "profit-making", "distractors": ["reconsider", "undoubtedly", "accountable"]}, {"lesson": 1, "word": "tragic (비극적인)", "answer": "lucky", "distractors": ["host", "meaningful", "affordable"]}, {"lesson": 1, "word": "awareness (의식, 인식)", "answer": "ignorance", "distractors": ["electronic", "application", "cyberbully"]}, {"lesson": 1, "word": "improve (향상시키다)", "answer": "worsen", "distractors": ["knowledge", "device", "sustainable"]}, {"lesson": 1, "word": "affordable ((가격이) 알맞은, 저렴한)", "answer": "expensive", "distractors": ["undoubtedly", "contribution", "meaningful"]}, {"lesson": 1, "word": "triumph (승리)", "answer": "defeat", "distractors": ["promote", "specific", "resident"]}, {"lesson": 1, "word": "significant (중요한, 상당한)", "answer": "insignificant", "distractors": ["inspirational", "invention", "essential"]}, {"lesson": 1, "word": "individual (개인의)", "answer": "collective", "distractors": ["self-taught", "couch", "housing"]}, {"lesson": 1, "word": "appropriate (적절한)", "answer": "inappropriate", "distractors": ["offensive", "consider", "fiber"]}, {"lesson": 1, "word": "suitably (적합하게)", "answer": "unsuitably", "distractors": ["specialized", "couch", "definitely"]}, {"lesson": 1, "word": "specific (특정한, 구체적인)", "answer": "general", "distractors": ["contribution", "inspirational", "device"]}, {"lesson": 1, "word": "sustainable (지속 가능한)", "answer": "unsustainable", "distractors": ["hurtful", "outbreak", "initiative"]}, {"lesson": 1, "word": "strength (강점, 장점)", "answer": "weakness", "distractors": ["invention", "offensive", "mentor"]}, {"lesson": 1, "word": "effective (효과적인)", "answer": "ineffective", "distractors": ["innovative", "fiber", "windmill"]}];
+const FORM_DATA=[{"lesson": 1, "word": "application", "pos": "명사", "answer": "애플리케이션, 응용  프로그램; 지원서", "distractors": ["확실히, 틀림없이", "전자의, 전자 기기의", "지식"]}, {"lesson": 1, "word": "blind", "pos": "형용사", "answer": "눈이 먼, 맹인인", "distractors": ["발전기", "~에 헌신하다[전념하다]", "대의명분, 이상"]}, {"lesson": 1, "word": "sighted", "pos": "형용사", "answer": "앞을 볼 수 있는", "distractors": ["정착하다", "~에 전력을 공급하다", "긴 의자"]}, {"lesson": 1, "word": "volunteer", "pos": "명사", "answer": "자원봉사자", "distractors": ["의심의 여지없이", "기여, 공헌", "이용하다"]}, {"lesson": 1, "word": "task", "pos": "명사", "answer": "일, 임무, 과제", "distractors": ["~에 가구를 비치하다", "발전기", "모이다"]}, {"lesson": 1, "word": "meaningful", "pos": "형용사", "answer": "의미 있는", "distractors": ["밑바닥, 밑받침", "거주자", "영감을 주는"]}, {"lesson": 1, "word": "worthy", "pos": "형용사", "answer": "가치 있는, 훌륭한", "distractors": ["~을 주최하다", "촉구하다;자극하다", "필수품; a. 필수적인"]}, {"lesson": 1, "word": "cause", "pos": "명사", "answer": "대의명분, 이상", "distractors": ["풍차", "재생 가능한", "발명품"]}, {"lesson": 1, "word": "documentary", "pos": "명사", "answer": "다큐멘터리, 기록물", "distractors": ["책임이 있는", "쉼터, 보호소", "일, 임무, 과제"]}, {"lesson": 1, "word": "action", "pos": "명사", "answer": "대처, 행동, 조치", "distractors": ["온라인에서 괴롭히다", "풍차", "정기적인"]}, {"lesson": 1, "word": "solve", "pos": "동사", "answer": "해결하다", "distractors": ["비영리의", "~을 완료하다", "~의 역할을 하다"]}, {"lesson": 1, "word": "device", "pos": "명사", "answer": "장치", "distractors": ["특정한", "(깊은) 냄비", "재고하다"]}, {"lesson": 1, "word": "material", "pos": "명사", "answer": "물질", "distractors": ["도움이 필요한", "버리다, 폐기하다", "비영리의"]}, {"lesson": 1, "word": "lead", "pos": "명사", "answer": "납", "distractors": ["전환하다", "창궐, 발병", "~에 지원하다"]}, {"lesson": 1, "word": "directly", "pos": "부사", "answer": "직접적으로", "distractors": ["재생 가능한", "매료된", "~를 나타내다, ~를 의미하다"]}, {"lesson": 1, "word": "definitely", "pos": "부사", "answer": "확실히, 틀림없이", "distractors": ["기부 물품, 기부금", "눈이 먼, 맹인인", "재고하다"]}, {"lesson": 1, "word": "cool", "pos": "형용사", "answer": "멋진, 끝내주는", "distractors": ["책임이 있는", "비극적인", "자원봉사자"]}, {"lesson": 1, "word": "foundation", "pos": "명사", "answer": "재단", "distractors": ["~을 완료하다", "단체", "정착하다"]}, {"lesson": 1, "word": "mentoring", "pos": "명사", "answer": "멘토링 (제도)", "distractors": ["재생 가능한", "~을 요청하다", "~을 촉진하다, ~을 증진시키다"]}, {"lesson": 1, "word": "contest", "pos": "명사", "answer": "대회", "distractors": ["~을 신중히 생각[검토]하다", "매료된", "해결하다"]}, {"lesson": 1, "word": "host", "pos": "동사", "answer": "~을 주최하다", "distractors": ["비영리의", "지속 가능한", "주도(권)"]}, {"lesson": 1, "word": "mentor", "pos": "동사", "answer": "~에게 상담[조언] 하다; n. 멘토, 조언자", "distractors": ["대의명분, 이상", "중대한 변화[효과]를가져오다", "주거"]}, {"lesson": 1, "word": "share", "pos": "동사", "answer": "공유하다", "distractors": ["대의명분, 이상", "공격적인, 모욕적인", "~을 촉진하다, ~을 증진시키다"]}, {"lesson": 1, "word": "knowledge", "pos": "명사", "answer": "지식", "distractors": ["적절한", "공격적인, 모욕적인", "해결하다"]}, {"lesson": 1, "word": "design", "pos": "동사", "answer": "~을 설계하다", "distractors": ["기여, 공헌", "(가격이) 알맞은, 저렴한", "앞을 볼 수 있는"]}, {"lesson": 1, "word": "complete", "pos": "동사", "answer": "~을 완료하다", "distractors": ["비영리의", "존엄성", "~에게 상담[조언] 하다; n. 멘토, 조언자"]}, {"lesson": 1, "word": "regular", "pos": "형용사", "answer": "정기적인", "distractors": ["설립하다", "열정", "가상의, 인터넷상의"]}, {"lesson": 1, "word": "consider", "pos": "동사", "answer": "~을 신중히 생각[검토]하다", "distractors": ["정착하다", "강점, 장점", "의식, 인식"]}, {"lesson": 1, "word": "shape", "pos": "동사", "answer": "~을 형성하다, 결정짓다", "distractors": ["발전기", "버리다, 폐기하다", "~에 영향을 주다"]}, {"lesson": 1, "word": "accountable", "pos": "형용사", "answer": "책임이 있는", "distractors": ["일, 임무, 과제", "설립하다", "~을 추구하다, ~을 계속 해 나가다"]}, {"lesson": 1, "word": "nonprofit", "pos": "형용사", "answer": "비영리의", "distractors": ["눈이 먼, 맹인인", "자원봉사자", "단체"]}, {"lesson": 1, "word": "solution", "pos": "명사", "answer": "해결(책)", "distractors": ["전자의, 전자 기기의", "다큐멘터리, 기록물", "영상 통화"]}, {"lesson": 1, "word": "community", "pos": "명사", "answer": "공동체", "distractors": ["특정한", "다큐멘터리, 기록물", "멘토링 (제도)"]}, {"lesson": 1, "word": "face", "pos": "동사", "answer": "~에 직면하다", "distractors": ["존엄성", "설립하다", "앞을 볼 수 있는"]}, {"lesson": 1, "word": "inspirational", "pos": "형용사", "answer": "영감을 주는", "distractors": ["~을 고대하다", "전자 기기", "인공 지능"]}, {"lesson": 1, "word": "combat", "pos": "동사", "answer": "~과 싸우다, ~을 막다", "distractors": ["필수품; a. 필수적인", "전문적인, 특화된", "~을 형성하다, 결정짓다"]}, {"lesson": 1, "word": "innovative", "pos": "형용사", "answer": "혁신적인", "distractors": ["비극적인", "단체", "독학한"]}, {"lesson": 1, "word": "virtual", "pos": "형용사", "answer": "가상의, 인터넷상의", "distractors": ["적절한", "재고하다", "중대한 변화[효과]를가져오다"]}, {"lesson": 1, "word": "detect", "pos": "동사", "answer": "감지하다, 탐지하다", "distractors": ["발명하다", "풍차", "재단"]}, {"lesson": 1, "word": "potentially", "pos": "부사", "answer": "잠재적으로", "distractors": ["(실·면 등의) 섬유", "~에게 도움을 청하다", "기부 물품, 기부금"]}, {"lesson": 1, "word": "hurtful", "pos": "형용사", "answer": "마음을 상하게[아프게] 하는", "distractors": ["열정", "(가격이) 알맞은, 저렴한", "재고하다"]}, {"lesson": 1, "word": "prompt", "pos": "동사", "answer": "촉구하다;자극하다", "distractors": ["해결(책)", "~을 촉진하다, ~을 증진시키다", "~에 가구를 비치하다"]}, {"lesson": 1, "word": "pause", "pos": "동사", "answer": "잠깐 멈추다", "distractors": ["보여주다", "대처, 행동, 조치", "앞을 볼 수 있는"]}, {"lesson": 1, "word": "reconsider", "pos": "동사", "answer": "재고하다", "distractors": ["독학한", "멋진, 끝내주는", "풍차"]}, {"lesson": 1, "word": "offensive", "pos": "형용사", "answer": "공격적인, 모욕적인", "distractors": ["유지하다", "공동체", "재료"]}, {"lesson": 1, "word": "tragic", "pos": "형용사", "answer": "비극적인", "distractors": ["개인의", "~에게 도움을 청하다", "의심의 여지없이"]}, {"lesson": 1, "word": "cyberbully", "pos": "동사", "answer": "온라인에서 괴롭히다", "distractors": ["존엄성", "효과적인", "자원봉사자"]}, {"lesson": 1, "word": "organization", "pos": "명사", "answer": "단체", "distractors": ["혁신적인", "~을 촉진하다, ~을 증진시키다", "자원봉사를 하다"]}, {"lesson": 1, "word": "raise", "pos": "동사", "answer": "(양·수준 등)을 높이다", "distractors": ["승리", "다큐멘터리, 기록물", "중대한 변화[효과]를가져오다"]}, {"lesson": 1, "word": "awareness", "pos": "명사", "answer": "의식, 인식", "distractors": ["가정의, 가정용의", "발명하다", "정착하다"]}, {"lesson": 1, "word": "adolescent", "pos": "명사", "answer": "청소년", "distractors": ["전자의, 전자 기기의", "재단", "~을 촉진하다, ~을 증진시키다"]}, {"lesson": 1, "word": "invent", "pos": "동사", "answer": "발명하다", "distractors": ["~에 가구를 비치하다", "~을 형성하다, 결정짓다", "도움이 필요한"]}, {"lesson": 1, "word": "discard", "pos": "동사", "answer": "버리다, 폐기하다", "distractors": ["~을 추구하다, ~을 계속 해 나가다", "자원봉사를 하다", "거주자"]}, {"lesson": 1, "word": "electronic", "pos": "형용사", "answer": "전자의, 전자 기기의", "distractors": ["적합하게", "납", "마음을 상하게[아프게] 하는"]}, {"lesson": 1, "word": "self-taught", "pos": "형용사", "answer": "독학한", "distractors": ["발명품", "재고하다", "창궐, 발병"]}, {"lesson": 1, "word": "inventor", "pos": "명사", "answer": "발명가", "distractors": ["멘토링 (제도)", "애플리케이션, 응용  프로그램; 지원서", "영상 통화"]}, {"lesson": 1, "word": "electronics", "pos": "명사", "answer": "전자 기기", "distractors": ["온라인에서 괴롭히다", "강점, 장점", "정착하다"]}, {"lesson": 1, "word": "fascinated", "pos": "형용사", "answer": "매료된", "distractors": ["~에 전력을 공급하다", "~을 주최하다", "가치 있는, 훌륭한"]}, {"lesson": 1, "word": "invention", "pos": "명사", "answer": "발명품", "distractors": ["개인의", "~을 요청하다", "승리"]}, {"lesson": 1, "word": "transmitter", "pos": "명사", "answer": "송신기", "distractors": ["헌신, 전념", "책임이 있는", "가상의, 인터넷상의"]}, {"lesson": 1, "word": "outbreak", "pos": "명사", "answer": "창궐, 발병", "distractors": ["공격적인, 모욕적인", "인공 지능", "(가격이) 알맞은, 저렴한"]}, {"lesson": 1, "word": "affect", "pos": "동사", "answer": "~에 영향을 주다", "distractors": ["송신기", "청소년", "정기적인"]}, {"lesson": 1, "word": "invaluable", "pos": "형용사", "answer": "대단히 귀중한", "distractors": ["~에 헌신하다[전념하다]", "지속 가능한", "적합하게"]}, {"lesson": 1, "word": "affordable", "pos": "형용사", "answer": "(가격이) 알맞은, 저렴한", "distractors": ["앞을 볼 수 있는", "(실·면 등의) 섬유", "재료"]}, {"lesson": 1, "word": "power", "pos": "동사", "answer": "~에 전력을 공급하다", "distractors": ["매료된", "~을 추구하다, ~을 계속 해 나가다", "~를 나타내다, ~를 의미하다"]}, {"lesson": 1, "word": "generator", "pos": "명사", "answer": "발전기", "distractors": ["청소년", "공유하다", "쉼터, 보호소"]}, {"lesson": 1, "word": "windmill", "pos": "명사", "answer": "풍차", "distractors": ["재생 가능한", "~에 직면하다", "보여주다"]}, {"lesson": 1, "word": "found", "pos": "동사", "answer": "설립하다", "distractors": ["긴 의자", "~과 싸우다, ~을 막다", "~에 지원하다"]}, {"lesson": 1, "word": "household", "pos": "형용사", "answer": "가정의, 가정용의", "distractors": ["감지하다, 탐지하다", "비영리의", "기부 물품, 기부금"]}, {"lesson": 1, "word": "essential", "pos": "명사", "answer": "필수품; a. 필수적인", "distractors": ["도움이 필요한", "물질", "풍차"]}, {"lesson": 1, "word": "transition", "pos": "동사", "answer": "전환하다", "distractors": ["버리다, 폐기하다", "(깊은) 냄비", "발전기"]}, {"lesson": 1, "word": "housing", "pos": "명사", "answer": "주거", "distractors": ["자원봉사를 하다", "~에 지원하다", "공격적인, 모욕적인"]}, {"lesson": 1, "word": "shelter", "pos": "명사", "answer": "쉼터, 보호소", "distractors": ["효과적인", "~을 추구하다, ~을 계속 해 나가다", "중대한 변화[효과]를가져오다"]}, {"lesson": 1, "word": "triumph", "pos": "명사", "answer": "승리", "distractors": ["지식", "~를 나타내다, ~를 의미하다", "밑바닥, 밑받침"]}, {"lesson": 1, "word": "celebrate", "pos": "동사", "answer": "기념하다", "distractors": ["의미 있는", "멋진, 끝내주는", "가치 있는, 훌륭한"]}, {"lesson": 1, "word": "volunteer", "pos": "동사", "answer": "자원봉사를 하다", "distractors": ["(실·면 등의) 섬유", "공동체", "이용하다"]}, {"lesson": 1, "word": "resident", "pos": "명사", "answer": "거주자", "distractors": ["감지하다, 탐지하다", "자원봉사자", "가상의, 인터넷상의"]}, {"lesson": 1, "word": "furnish", "pos": "동사", "answer": "~에 가구를 비치하다", "distractors": ["(깊은) 냄비", "도움이 필요한", "적절한"]}, {"lesson": 1, "word": "donation", "pos": "명사", "answer": "기부 물품, 기부금", "distractors": ["장치", "~를 나타내다, ~를 의미하다", "~을 추구하다, ~을 계속 해 나가다"]}, {"lesson": 1, "word": "settle", "pos": "동사", "answer": "정착하다", "distractors": ["버리다, 폐기하다", "~을 신중히 생각[검토]하다", "다큐멘터리, 기록물"]}, {"lesson": 1, "word": "couch", "pos": "명사", "answer": "긴 의자", "distractors": ["전환하다", "(실·면 등의) 섬유", "기여, 공헌"]}, {"lesson": 1, "word": "dignity", "pos": "명사", "answer": "존엄성", "distractors": ["도움이 필요한", "정기적인", "가정의, 가정용의"]}, {"lesson": 1, "word": "significant", "pos": "형용사", "answer": "중요한, 상당한", "distractors": ["열정", "강점, 장점", "공격적인, 모욕적인"]}, {"lesson": 1, "word": "contribution", "pos": "명사", "answer": "기여, 공헌", "distractors": ["발명가", "대처, 행동, 조치", "밑바닥, 밑받침"]}, {"lesson": 1, "word": "commitment", "pos": "명사", "answer": "헌신, 전념", "distractors": ["재료", "~에게 도움을 청하다", "전자의, 전자 기기의"]}, {"lesson": 1, "word": "individual", "pos": "형용사", "answer": "개인의", "distractors": ["해결(책)", "(깊은) 냄비", "~을 신중히 생각[검토]하다"]}, {"lesson": 1, "word": "initiative", "pos": "명사", "answer": "주도(권)", "distractors": ["~을 살펴보다", "~을 추구하다, ~을 계속 해 나가다", "다큐멘터리, 기록물"]}, {"lesson": 1, "word": "pursue", "pos": "동사", "answer": "~을 추구하다, ~을 계속 해 나가다", "distractors": ["전환하다", "마음을 상하게[아프게] 하는", "필수품; a. 필수적인"]}, {"lesson": 1, "word": "passion", "pos": "명사", "answer": "열정", "distractors": ["지속 가능한", "(가격이) 알맞은, 저렴한", "송신기"]}, {"lesson": 1, "word": "undoubtedly", "pos": "부사", "answer": "의심의 여지없이", "distractors": ["도움이 필요한", "정기적인", "~을 신중히 생각[검토]하다"]}, {"lesson": 1, "word": "appropriate", "pos": "형용사", "answer": "적절한", "distractors": ["다큐멘터리, 기록물", "해결(책)", "재료"]}, {"lesson": 1, "word": "suitably", "pos": "부사", "answer": "적합하게", "distractors": ["발명품", "마음을 상하게[아프게] 하는", "지식"]}, {"lesson": 1, "word": "specific", "pos": "형용사", "answer": "특정한", "distractors": ["(가격이) 알맞은, 저렴한", "주거", "~을 형성하다, 결정짓다"]}, {"lesson": 1, "word": "promote", "pos": "동사", "answer": "~을 촉진하다, ~을 증진시키다", "distractors": ["~에 전력을 공급하다", "영상 통화", "해결(책)"]}, {"lesson": 1, "word": "sustainable", "pos": "형용사", "answer": "지속 가능한", "distractors": ["(깊은) 냄비", "재료", "효과적인"]}, {"lesson": 1, "word": "renewable", "pos": "형용사", "answer": "재생 가능한", "distractors": ["중요한, 상당한", "재료", "자원"]}, {"lesson": 1, "word": "resource", "pos": "명사", "answer": "자원", "distractors": ["기여, 공헌", "포집하다", "앞을 볼 수 있는"]}, {"lesson": 1, "word": "maintain", "pos": "동사", "answer": "유지하다", "distractors": ["정기적인", "재단", "주도(권)"]}, {"lesson": 1, "word": "specialized", "pos": "형용사", "answer": "전문적인, 특화된", "distractors": ["긴 의자", "혁신적인", "설립하다"]}, {"lesson": 1, "word": "employ", "pos": "동사", "answer": "이용하다", "distractors": ["적합하게", "밑바닥, 밑받침", "~에게 상담[조언] 하다; n. 멘토, 조언자"]}, {"lesson": 1, "word": "pot", "pos": "명사", "answer": "(깊은) 냄비", "distractors": ["전자의, 전자 기기의", "책임이 있는", "~을 고대하다"]}, {"lesson": 1, "word": "base", "pos": "명사", "answer": "밑바닥, 밑받침", "distractors": ["~에 지원하다", "거주자", "발명가"]}, {"lesson": 1, "word": "capture", "pos": "동사", "answer": "포집하다", "distractors": ["장치", "자원봉사자", "대단히 귀중한"]}, {"lesson": 1, "word": "collect", "pos": "동사", "answer": "모이다", "distractors": ["기여, 공헌", "의미 있는", "도움이 필요한"]}, {"lesson": 1, "word": "strength", "pos": "명사", "answer": "강점, 장점", "distractors": ["공유하다", "잠깐 멈추다", "설립하다"]}, {"lesson": 1, "word": "material", "pos": "명사", "answer": "재료", "distractors": ["(양·수준 등)을 높이다", "~을 형성하다, 결정짓다", "물질"]}, {"lesson": 1, "word": "fiber", "pos": "명사", "answer": "(실·면 등의) 섬유", "distractors": ["기부 물품, 기부금", "재단", "모이다"]}, {"lesson": 1, "word": "demonstrate", "pos": "동사", "answer": "보여주다", "distractors": ["멋진, 끝내주는", "재고하다", "~에 가구를 비치하다"]}, {"lesson": 1, "word": "affordable", "pos": "형용사", "answer": "(가격이) 알맞은, 저렴한", "distractors": ["단체", "필수품; a. 필수적인", "적절한"]}, {"lesson": 1, "word": "effective", "pos": "형용사", "answer": "효과적인", "distractors": ["장치", "잠깐 멈추다", "책임이 있는"]}];
+const POLY_DATA=[{"lesson": 1, "word": "shape", "answers": ["(명) 모양, 형태", "(동) ~을 형성하다, 결정짓다", "(동) ~을 형태로 만들다"], "all6": ["(명) 모양, 형태", "(동) ~을 형성하다, 결정짓다", "(동) ~을 형태로 만들다", "(동) 발명하다", "(형) 사회의, 사회적인", "(명) 얼굴"]}, {"lesson": 1, "word": "face", "answers": ["(명) 얼굴", "(명) 외관", "(동) ~을 향하다", "(동) (어려운 사람)을 대면하다"], "all6": ["(명) 얼굴", "(명) 외관", "(동) ~을 향하다", "(동) (어려운 사람)을 대면하다", "(형) (한) 가구의, (한) 세대의", "(형) 효과적인"]}, {"lesson": 1, "word": "virtual", "answers": ["(형) 사실상의", "(형) 가상의, 인터넷상의"], "all6": ["(형) 사실상의", "(형) 가상의, 인터넷상의", "(동) ~을 향하다", "(동) 자극하다", "(동) (어려운 사람)을 대면하다", "(동) 자원봉사를 하다"]}, {"lesson": 1, "word": "prompt", "answers": ["(동) 촉구하다", "(동) ~라는 메시지를 표시하다", "(동) 자극하다", "(형) 신속한"], "all6": ["(동) 촉구하다", "(동) ~라는 메시지를 표시하다", "(동) 자극하다", "(형) 신속한", "(동) ~을 형성하다, 결정짓다", "(동) ~을 붙잡다, 생포하다"]}, {"lesson": 1, "word": "pause", "answers": ["(동) 잠깐 멈추다", "(명) (일시적인) 멈춤"], "all6": ["(동) 잠깐 멈추다", "(명) (일시적인) 멈춤", "(명) 의무, 책임", "(형) 사실상의", "(동) ~을 촉진하다, ~을 증진시키다", "(형) 사회의, 사회적인"]}, {"lesson": 1, "word": "raise", "answers": ["(동) ~을 들어 올리다", "(동) 키우다", "(동) 모금하다", "(동) (양·수준 등)을 높이다"], "all6": ["(동) ~을 들어 올리다", "(동) 키우다", "(동) 모금하다", "(동) (양·수준 등)을 높이다", "(형) 사회의, 사회적인", "(형) 신속한"]}, {"lesson": 1, "word": "invent", "answers": ["(동) 발명하다", "(동) 지어내다"], "all6": ["(동) 발명하다", "(동) 지어내다", "(동) ~을 들어 올리다", "(명) 주도(권)", "(동) 홍보하다", "(형) 사실상의"]}, {"lesson": 1, "word": "electronics", "answers": ["(명) 전자 공학", "(명) 전자 기기"], "all6": ["(명) 전자 공학", "(명) 전자 기기", "(동) ~라는 메시지를 표시하다", "(동) 포집하다", "(명) 기반, 기초", "(형) 사실상의"]}, {"lesson": 1, "word": "invention", "answers": ["(명) 발명", "(명) 발명품"], "all6": ["(명) 발명", "(명) 발명품", "(동) ~을 입증하다", "(동) 제공하다", "(동) 촉구하다", "(명) 전자 기기"]}, {"lesson": 1, "word": "social", "answers": ["(형) 사회의, 사회적인", "(형) 사교의, 친목의", "(형) 사교적인, 붙임성 좋은", "(형) 무리 지어 사는"], "all6": ["(형) 사회의, 사회적인", "(형) 사교의, 친목의", "(형) 사교적인, 붙임성 좋은", "(형) 무리 지어 사는", "(명) 발명", "(동) 잠깐 멈추다"]}, {"lesson": 1, "word": "household", "answers": ["(형) 가정의, 가정용의", "(형) (한) 가구의, (한) 세대의", "(명) 가구, 가정"], "all6": ["(형) 가정의, 가정용의", "(형) (한) 가구의, (한) 세대의", "(명) 가구, 가정", "(동) ~을 포착하다", "(명) 기반, 기초", "(명) 진취성; 결단력"]}, {"lesson": 1, "word": "volunteer", "answers": ["(명) 자원봉사자", "(명) 지원자, 자원자", "(동) 자원봉사를 하다", "(동) 자원입대를 하다"], "all6": ["(명) 자원봉사자", "(명) 지원자, 자원자", "(동) 자원봉사를 하다", "(동) 자원입대를 하다", "(동) 승진시키다", "(명) 모양, 형태"]}, {"lesson": 1, "word": "furnish", "answers": ["(동) ~에 가구를 비치하다", "(동) 제공하다"], "all6": ["(동) ~에 가구를 비치하다", "(동) 제공하다", "(명) 모양, 형태", "(명) 지원자, 자원자", "(명) 발명", "(형) 사교의, 친목의"]}, {"lesson": 1, "word": "commitment", "answers": ["(명) 약속", "(명) 헌신, 전념", "(명) 의무, 책임"], "all6": ["(명) 약속", "(명) 헌신, 전념", "(명) 의무, 책임", "(형) 효과적인", "(동) 홍보하다", "(동) 자원입대를 하다"]}, {"lesson": 1, "word": "initiative", "answers": ["(명) 계획", "(명) 진취성; 결단력", "(명) 주도(권)"], "all6": ["(명) 계획", "(명) 진취성; 결단력", "(명) 주도(권)", "(형) 시행되는", "(명) (일시적인) 멈춤", "(명) 모양, 형태"]}, {"lesson": 1, "word": "promote", "answers": ["(동) 승진시키다", "(동) 홍보하다", "(동) ~을 촉진하다, ~을 증진시키다"], "all6": ["(동) 승진시키다", "(동) 홍보하다", "(동) ~을 촉진하다, ~을 증진시키다", "(동) (어려운 사람)을 대면하다", "(명) 의무, 책임", "(명) 진취성; 결단력"]}, {"lesson": 1, "word": "maintain", "answers": ["(동) 유지하다", "(동) 주장하다", "(동) 부양하다"], "all6": ["(동) 유지하다", "(동) 주장하다", "(동) 부양하다", "(형) 사실상의", "(명) 외관", "(동) ~을 형태로 만들다"]}, {"lesson": 1, "word": "employ", "answers": ["(동) 이용하다", "(동) 고용하다"], "all6": ["(동) 이용하다", "(동) 고용하다", "(동) 발명하다", "(형) 사실상의", "(명) 발명품", "(동) (어려운 사람)을 대면하다"]}, {"lesson": 1, "word": "base", "answers": ["(명) 밑바닥, 밑받침", "(명) 본거지, 본부", "(명) 기반, 기초"], "all6": ["(명) 밑바닥, 밑받침", "(명) 본거지, 본부", "(명) 기반, 기초", "(부) 정각에", "(동) (양·수준 등)을 높이다", "(명) 얼굴"]}, {"lesson": 1, "word": "capture", "answers": ["(동) ~을 붙잡다, 생포하다", "(동) ~을 포착하다", "(동) 포집하다", "(동) ~을 사로잡다"], "all6": ["(동) ~을 붙잡다, 생포하다", "(동) ~을 포착하다", "(동) 포집하다", "(동) ~을 사로잡다", "(명) 지원자, 자원자", "(동) 시위하다"]}, {"lesson": 1, "word": "demonstrate", "answers": ["(동) ~을 입증하다", "(동) 보여주다", "(동) 시위하다"], "all6": ["(동) ~을 입증하다", "(동) 보여주다", "(동) 시위하다", "(동) ~에 직면하다", "(형) 가상의, 인터넷상의", "(형) 사교의, 친목의"]}, {"lesson": 1, "word": "effective", "answers": ["(형) 효과적인", "(형) 시행되는", "(형) 사실상의"], "all6": ["(형) 효과적인", "(형) 시행되는", "(형) 사실상의", "(동) ~을 촉진하다, ~을 증진시키다", "(동) (양·수준 등)을 높이다", "(명) 진취성; 결단력"]}];
+const PHRASE_DATA=[{"lesson": 1, "phrase": "check ~ out", "answer": "~을 살펴보다", "distractors": ["~을 요청하다", "영상 통화", "중대한 변화[효과]를가져오다"]}, {"lesson": 1, "phrase": "video call", "answer": "영상 통화", "distractors": ["~을 고대하다", "~을 살펴보다", "~의 역할을 하다"]}, {"lesson": 1, "phrase": "call for ~", "answer": "~을 요청하다", "distractors": ["~에게 도움을 청하다", "~의 역할을 하다", "도움이 필요한"]}, {"lesson": 1, "phrase": "make a difference", "answer": "중대한 변화[효과]를가져오다", "distractors": ["~에게 도움을 청하다", "~을 고대하다", "~에 헌신하다[전념하다]"]}, {"lesson": 1, "phrase": "apply for ~", "answer": "~에 지원하다", "distractors": ["~을 살펴보다", "도움이 필요한", "~을 고대하다"]}, {"lesson": 1, "phrase": "look forward to ~", "answer": "~을 고대하다", "distractors": ["인공 지능", "~을 살펴보다", "~을 요청하다"]}, {"lesson": 1, "phrase": "be committed to ~", "answer": "~에 헌신하다[전념하다]", "distractors": ["~의 역할을 하다", "중대한 변화[효과]를가져오다", "인공 지능"]}, {"lesson": 1, "phrase": "artificial intelligence", "answer": "인공 지능", "distractors": ["~에게 도움을 청하다", "~을 살펴보다", "~에 지원하다"]}, {"lesson": 1, "phrase": "in need", "answer": "도움이 필요한", "distractors": ["~에 지원하다", "~을 요청하다", "영상 통화"]}, {"lesson": 1, "phrase": "reach out to ~", "answer": "~에게 도움을 청하다", "distractors": ["인공 지능", "~에 헌신하다[전념하다]", "~에 지원하다"]}, {"lesson": 1, "phrase": "serve as ~", "answer": "~의 역할을 하다", "distractors": ["영상 통화", "~을 요청하다", "~에 지원하다"]}, {"lesson": 1, "phrase": "refer to ~", "answer": "~를 나타내다, ~를 의미하다", "distractors": ["중대한 변화[효과]를가져오다", "~을 고대하다", "도움이 필요한"]}];
+const ENG_ENG_DATA=[{"lesson": 1, "definition": "to look at someone or something because they are interesting or attractive", "answer": "check ~ out", "distractors": ["refer to ~", "look forward to ~", "serve as ~"]}, {"lesson": 1, "definition": "a computer program designed to do a particular job or activity", "answer": "application", "distractors": ["appropriate", "reconsider", "meaningful"]}, {"lesson": 1, "definition": "not able to see", "answer": "blind", "distractors": ["electronic", "strength", "mentor"]}, {"lesson": 1, "definition": "able to see and not blind", "answer": "sighted", "distractors": ["inspirational", "awareness", "definitely"]}, {"lesson": 1, "definition": "someone who offers to do something without being forced or paid", "answer": "volunteer", "distractors": ["reconsider", "affordable", "offensive"]}, {"lesson": 1, "definition": "a call made using the internet with video as well as sound", "answer": "video call", "distractors": ["apply for ~", "make a difference", "serve as ~"]}, {"lesson": 1, "definition": "to ask publicly for something to happen or be done", "answer": "call for ~", "distractors": ["reach out to ~", "in need", "artificial intelligence"]}, {"lesson": 1, "definition": "a piece of work that needs to be done", "answer": "task", "distractors": ["base", "organization", "awareness"]}, {"lesson": 1, "definition": "serious and important", "answer": "meaningful", "distractors": ["regular", "passion", "tragic"]}, {"lesson": 1, "definition": "having qualities that deserve respect, admiration, or support", "answer": "worthy", "distractors": ["material", "transmitter", "affect"]}, {"lesson": 1, "definition": "a principle, aim, or movement that you support or work for", "answer": "cause", "distractors": ["windmill", "adolescent", "mentor"]}, {"lesson": 1, "definition": "a film or television program that gives facts about real events or people", "answer": "documentary", "distractors": ["affordable", "adolescent", "specialized"]}, {"lesson": 1, "definition": "something that is done to solve a problem or deal with a situation", "answer": "action", "distractors": ["strength", "power", "affordable"]}, {"lesson": 1, "definition": "to find an answer to a problem or question", "answer": "solve", "distractors": ["task", "cool", "maintain"]}, {"lesson": 1, "definition": "a machine or tool that does a special job", "answer": "device", "distractors": ["virtual", "housing", "directly"]}, {"lesson": 1, "definition": "a substance used for making things", "answer": "material", "distractors": ["demonstrate", "nonprofit", "hurtful"]}, {"lesson": 1, "definition": "a soft, heavy, and poisonous metal used in pipes, batteries, etc.", "answer": "lead", "distractors": ["commitment", "self-taught", "host"]}, {"lesson": 1, "definition": "without anything in between", "answer": "directly", "distractors": ["celebrate", "material", "invention"]}, {"lesson": 1, "definition": "without any doubt or uncertainty", "answer": "definitely", "distractors": ["complete", "foundation", "community"]}, {"lesson": 1, "definition": "very attractive, fashionable, or impressive", "answer": "cool", "distractors": ["task", "volunteer", "undoubtedly"]}, {"lesson": 1, "definition": "a strong feeling of enthusiasm or interest in something", "answer": "passion", "distractors": ["collect", "reconsider", "affordable"]}, {"lesson": 1, "definition": "an organization that provides money for a particular purpose", "answer": "foundation", "distractors": ["transition", "share", "host"]}, {"lesson": 1, "definition": "to make a formal request for something such as a job or a place at a college", "answer": "apply for ~", "distractors": ["in need", "serve as ~", "be committed to ~"]}, {"lesson": 1, "definition": "a competition where people try to win something", "answer": "contest", "distractors": ["housing", "volunteer", "inventor"]}, {"lesson": 1, "definition": "to organize and be in charge of an event, meeting, etc.", "answer": "host", "distractors": ["directly", "nonprofit", "worthy"]}, {"lesson": 1, "definition": "to help and give advice to a less experienced person, especially at work or school", "answer": "mentor", "distractors": ["effective", "capture", "community"]}, {"lesson": 1, "definition": "to tell other people your ideas, information, feelings, or problems so they understand or can help", "answer": "share", "distractors": ["invention", "maintain", "power"]}, {"lesson": 1, "definition": "to finish doing or making something", "answer": "complete", "distractors": ["sustainable", "material", "meaningful"]}, {"lesson": 1, "definition": "happening again and again with the same amount of time between each one", "answer": "regular", "distractors": ["renewable", "volunteer", "hurtful"]}, {"lesson": 1, "definition": "to think about something carefully before making a decision", "answer": "consider", "distractors": ["maintain", "prompt", "reconsider"]}, {"lesson": 1, "definition": "to influence the way something develops or happens", "answer": "shape", "distractors": ["potentially", "blind", "invention"]}, {"lesson": 1, "definition": "responsible for the effects of your actions and willing to explain or be criticized for them", "answer": "accountable", "distractors": ["celebrate", "renewable", "affordable"]}, {"lesson": 1, "definition": "not intended to make a profit, but to make money for a social or political purpose", "answer": "nonprofit", "distractors": ["prompt", "appropriate", "directly"]}, {"lesson": 1, "definition": "a way of solving a problem or dealing with a difficult situation", "answer": "solution", "distractors": ["directly", "dignity", "nonprofit"]}, {"lesson": 1, "definition": "the people who live in the same area, town, etc.", "answer": "community", "distractors": ["base", "share", "invent"]}, {"lesson": 1, "definition": "to deal with a difficult situation", "answer": "face", "distractors": ["significant", "regular", "meaningful"]}, {"lesson": 1, "definition": "providing encouragement or new ideas for what you should do", "answer": "inspirational", "distractors": ["power", "contribution", "documentary"]}, {"lesson": 1, "definition": "to try to stop something bad from happening or getting worse", "answer": "combat", "distractors": ["initiative", "pause", "definitely"]}, {"lesson": 1, "definition": "using new ideas or methods", "answer": "innovative", "distractors": ["regular", "task", "consider"]}, {"lesson": 1, "definition": "existing or happening only online or on a computer", "answer": "virtual", "distractors": ["meaningful", "invent", "housing"]}, {"lesson": 1, "definition": "the study or creation of computer systems that can copy intelligent human behavior", "answer": "artificial intelligence", "distractors": ["video call", "in need", "call for ~"]}, {"lesson": 1, "definition": "to notice or discover something that is not easy to see, hear, etc.", "answer": "detect", "distractors": ["contest", "inspirational", "fascinated"]}, {"lesson": 1, "definition": "possibly, but not certainly", "answer": "potentially", "distractors": ["inspirational", "housing", "invent"]}, {"lesson": 1, "definition": "causing emotional pain", "answer": "hurtful", "distractors": ["individual", "volunteer", "effective"]}, {"lesson": 1, "definition": "to make someone say or do something", "answer": "prompt", "distractors": ["furnish", "electronic", "triumph"]}, {"lesson": 1, "definition": "to stop doing something for a short time before continuing", "answer": "pause", "distractors": ["cool", "cause", "fascinated"]}, {"lesson": 1, "definition": "to think again about a decision or opinion", "answer": "reconsider", "distractors": ["found", "dignity", "outbreak"]}, {"lesson": 1, "definition": "likely to make people angry or upset", "answer": "offensive", "distractors": ["material", "fascinated", "device"]}, {"lesson": 1, "definition": "making you feel very sad, often involving death or suffering", "answer": "tragic", "distractors": ["regular", "complete", "resource"]}, {"lesson": 1, "definition": "to use the internet to deliberately upset someone", "answer": "cyberbully", "distractors": ["individual", "consider", "electronics"]}, {"lesson": 1, "definition": "a group of people who work together for a particular purpose", "answer": "organization", "distractors": ["contest", "prompt", "pursue"]}, {"lesson": 1, "definition": "to increase the level or amount of something", "answer": "raise", "distractors": ["donation", "power", "household"]}, {"lesson": 1, "definition": "knowledge or understanding of a subject or situation", "answer": "awareness", "distractors": ["shelter", "passion", "initiative"]}, {"lesson": 1, "definition": "a young person who is developing into an adult", "answer": "adolescent", "distractors": ["essential", "couch", "shelter"]}, {"lesson": 1, "definition": "to design or create something that has never existed before", "answer": "invent", "distractors": ["fascinated", "effective", "prompt"]}, {"lesson": 1, "definition": "to throw something away because you no longer want or need it", "answer": "discard", "distractors": ["cyberbully", "contest", "undoubtedly"]}, {"lesson": 1, "definition": "using electricity and computer technology", "answer": "electronic", "distractors": ["offensive", "face", "regular"]}, {"lesson": 1, "definition": "having learned something by reading or practicing on your own", "answer": "self-taught", "distractors": ["discard", "material", "meaningful"]}, {"lesson": 1, "definition": "someone who has designed or created something that has never existed before", "answer": "inventor", "distractors": ["undoubtedly", "adolescent", "raise"]}, {"lesson": 1, "definition": "devices such as televisions, computers, or radios", "answer": "electronics", "distractors": ["base", "initiative", "transition"]}, {"lesson": 1, "definition": "extremely interested", "answer": "fascinated", "distractors": ["fiber", "hurtful", "employ"]}, {"lesson": 1, "definition": "something that has been designed or created for the first time", "answer": "invention", "distractors": ["prompt", "pot", "outbreak"]}, {"lesson": 1, "definition": "equipment that sends out radio or television signals", "answer": "transmitter", "distractors": ["organization", "individual", "undoubtedly"]}, {"lesson": 1, "definition": "the sudden start of something bad, such as a disease", "answer": "outbreak", "distractors": ["mentoring", "potentially", "housing"]}, {"lesson": 1, "definition": "to influence someone or something", "answer": "affect", "distractors": ["specialized", "couch", "inspirational"]}, {"lesson": 1, "definition": "extremely useful", "answer": "invaluable", "distractors": ["donation", "collect", "design"]}, {"lesson": 1, "definition": "not too expensive", "answer": "affordable", "distractors": ["donation", "maintain", "raise"]}, {"lesson": 1, "definition": "to provide electricity or another form of energy to something", "answer": "power", "distractors": ["blind", "significant", "potentially"]}, {"lesson": 1, "definition": "a machine that produces electricity", "answer": "generator", "distractors": ["discard", "promote", "contest"]}, {"lesson": 1, "definition": "a building or structure with parts that turn around in the wind, used for producing electrical power or crushing grain", "answer": "windmill", "distractors": ["raise", "innovative", "generator"]}, {"lesson": 1, "definition": "to start an organization, company, school, etc.", "answer": "found", "distractors": ["electronics", "invent", "initiative"]}, {"lesson": 1, "definition": "relating to a house or to the people living in it", "answer": "household", "distractors": ["definitely", "virtual", "settle"]}, {"lesson": 1, "definition": "something that is necessary or very important", "answer": "essential", "distractors": ["found", "initiative", "affordable"]}, {"lesson": 1, "definition": "to change from one situation, form, or state to another", "answer": "transition", "distractors": ["directly", "organization", "initiative"]}, {"lesson": 1, "definition": "the houses or conditions that people live in", "answer": "housing", "distractors": ["solution", "specialized", "organization"]}, {"lesson": 1, "definition": "a building where people or animals without homes, or in danger, can stay and receive help", "answer": "shelter", "distractors": ["device", "employ", "invent"]}, {"lesson": 1, "definition": "a great success or victory", "answer": "triumph", "distractors": ["raise", "host", "significant"]}, {"lesson": 1, "definition": "to show that an event or occasion is important by doing something special", "answer": "celebrate", "distractors": ["awareness", "capture", "nonprofit"]}, {"lesson": 1, "definition": "to do something without being forced or paid to do it", "answer": "volunteer", "distractors": ["mentor", "host", "material"]}, {"lesson": 1, "definition": "needing help, food, money, or support", "answer": "in need", "distractors": ["artificial intelligence", "video call", "look forward to ~"]}, {"lesson": 1, "definition": "someone who lives in a particular place", "answer": "resident", "distractors": ["commitment", "mentor", "appropriate"]}, {"lesson": 1, "definition": "to put furniture in a room or building", "answer": "furnish", "distractors": ["promote", "employ", "cool"]}, {"lesson": 1, "definition": "something that is given to help a person or an organization", "answer": "donation", "distractors": ["dignity", "invention", "discard"]}, {"lesson": 1, "definition": "to try to communicate with someone to ask for help", "answer": "reach out to ~", "distractors": ["serve as ~", "apply for ~", "in need"]}, {"lesson": 1, "definition": "to begin to live in a place permanently", "answer": "settle", "distractors": ["tragic", "contest", "raise"]}, {"lesson": 1, "definition": "a long comfortable seat for two or more people", "answer": "couch", "distractors": ["pursue", "lead", "demonstrate"]}, {"lesson": 1, "definition": "the quality of being worthy of respect", "answer": "dignity", "distractors": ["face", "maintain", "essential"]}, {"lesson": 1, "definition": "large or important enough to have an effect", "answer": "significant", "distractors": ["prompt", "mentor", "capture"]}, {"lesson": 1, "definition": "something that you do to help make something successful", "answer": "contribution", "distractors": ["undoubtedly", "worthy", "awareness"]}, {"lesson": 1, "definition": "a strong belief in something and willingness to give time and energy to it", "answer": "commitment", "distractors": ["donation", "raise", "demonstrate"]}, {"lesson": 1, "definition": "relating to one person rather than to a group", "answer": "individual", "distractors": ["electronics", "household", "generator"]}, {"lesson": 1, "definition": "the ability to take action before others do", "answer": "initiative", "distractors": ["knowledge", "meaningful", "power"]}, {"lesson": 1, "definition": "to have a particular use or function", "answer": "serve as ~", "distractors": ["apply for ~", "video call", "be committed to ~"]}, {"lesson": 1, "definition": "to try to achieve something over a period of time", "answer": "pursue", "distractors": ["employ", "invention", "celebrate"]}, {"lesson": 1, "definition": "a strong interest or enthusiasm for something", "answer": "passion", "distractors": ["windmill", "invention", "transition"]}, {"lesson": 1, "definition": "suitable or right for a particular situation or purpose", "answer": "appropriate", "distractors": ["offensive", "furnish", "strength"]}, {"lesson": 1, "definition": "in a way that is right or appropriate for a particular purpose", "answer": "suitably", "distractors": ["renewable", "pursue", "directly"]}, {"lesson": 1, "definition": "relating to one particular thing and not others", "answer": "specific", "distractors": ["resident", "self-taught", "discard"]}, {"lesson": 1, "definition": "to help something to develop or increase", "answer": "promote", "distractors": ["maintain", "blind", "initiative"]}, {"lesson": 1, "definition": "able to continue over a period of time without harming the environment", "answer": "sustainable", "distractors": ["fiber", "strength", "affordable"]}, {"lesson": 1, "definition": "able to be replaced naturally or controlled so that it can be used without ending", "answer": "renewable", "distractors": ["contest", "generator", "celebrate"]}, {"lesson": 1, "definition": "something such as land, water, or minerals that people use", "answer": "resource", "distractors": ["community", "prompt", "triumph"]}, {"lesson": 1, "definition": "to make something continue at the same level or standard", "answer": "maintain", "distractors": ["tragic", "cool", "documentary"]}, {"lesson": 1, "definition": "trained or developed for a particular purpose or area of knowledge", "answer": "specialized", "distractors": ["generator", "promote", "outbreak"]}, {"lesson": 1, "definition": "to use something for a particular purpose", "answer": "employ", "distractors": ["directly", "tragic", "inventor"]}, {"lesson": 1, "definition": "the bottom or lowest part of something", "answer": "base", "distractors": ["outbreak", "community", "fiber"]}, {"lesson": 1, "definition": "to catch and keep something, especially in a controlled way", "answer": "capture", "distractors": ["device", "strength", "worthy"]}, {"lesson": 1, "definition": "to gather together in one place over time, forming a noticeable amount", "answer": "collect", "distractors": ["reconsider", "nonprofit", "action"]}, {"lesson": 1, "definition": "a good quality or ability that gives someone or something an advantage", "answer": "strength", "distractors": ["cool", "hurtful", "initiative"]}, {"lesson": 1, "definition": "a substance used to make something", "answer": "material", "distractors": ["household", "organization", "employ"]}, {"lesson": 1, "definition": "material made of many long threads, used to make rope, cloth, or nets", "answer": "fiber", "distractors": ["employ", "fascinated", "inspirational"]}, {"lesson": 1, "definition": "to show something clearly by giving proof", "answer": "demonstrate", "distractors": ["invention", "detect", "transmitter"]}, {"lesson": 1, "definition": "cheap enough for most people to afford", "answer": "affordable", "distractors": ["commitment", "foundation", "cyberbully"]}, {"lesson": 1, "definition": "successful or achieving the result you want", "answer": "effective", "distractors": ["household", "individual", "power"]}];
+
+let studentName='',studentSchool='';
+let state={currentSection:0,answers:{},totalQ:0,score:0,startTime:null};
+const multiSelected={};let wrongWordsMap={};
+function recordWrong(eng,correct){wrongWordsMap[eng]={eng,kor:correct,correct};}
+function shuffle(arr){const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function opts4(answer,distractors){return shuffle([answer,...distractors.slice(0,3)]);}
+function esc(s){return String(s).replace(/'/g,"\\'").replace(/"/g,'\\"');}
+
+function startQuiz(){
+  const sel=document.getElementById('schoolSel');const inp=document.getElementById('nameInput');
+  studentSchool=sel.value.trim();studentName=inp.value.trim();
+  let ok=true;
+  if(!studentSchool){sel.classList.add('err');ok=false;}else sel.classList.remove('err');
+  if(!studentName){inp.classList.add('err');ok=false;}else inp.classList.remove('err');
+  if(!ok)return;
+  document.getElementById('infoWrap').style.display='none';document.getElementById('quizWrap').style.display='block';
+  document.getElementById('studentInfoDisplay').textContent=studentSchool+' · '+studentName;
+  const key='bomnal_jc2_L4_'+studentSchool+'_'+studentName;
+  const attempts=parseInt(localStorage.getItem(key+'_cnt')||'0');const best=localStorage.getItem(key+'_best');
+  document.getElementById('attemptDisplay').textContent=attempts>0?`${attempts}번째 도전 · 최고 ${best}점`:'첫 번째 도전!';
+  state.startTime=Date.now();buildAll();
+}
+
+function buildMC(containerId,prefix,data,subText,displayFn){
+  const c=document.getElementById(containerId);const d=shuffle(data);
+  d.forEach((q,i)=>{
+    const opts=opts4(q.answer,q.distractors);
+    const wordHtml=displayFn?displayFn(q):`<div class="q-word">${q.word}</div>`;
+    c.innerHTML+=`<div class="q-card" id="${prefix}-card-${i}"><div class="q-num">Q${i+1} · <span class="lesson-tag l${q.lesson}">L${q.lesson}</span></div>${wordHtml}<div class="q-sub">${subText}</div><div class="options">${opts.map(o=>`<button class="opt-btn" onclick="answerMC('${prefix}',${i},this,'${esc(o)}','${esc(q.answer)}')">${o}</button>`).join('')}</div><div class="feedback" id="${prefix}-fb-${i}"></div></div>`;
+  });state.totalQ+=d.length;
+  return d;
+}
+
+function buildAll(){window._builtData={};
+  window._builtData['syn']=buildMC('synonymQuestions','syn',SYNONYM_DATA,'위 단어의 유의어는?');
+  window._builtData['ant']=buildMC('antonymQuestions','ant',ANTONYM_DATA,'위 단어의 반의어는?');
+  window._builtData['form']=buildMC('formQuestions','form',FORM_DATA,'다음 영어 단어의 뜻은?',q=>`<div class="lesson-tag l${q.lesson}">L${q.lesson}</div><div class="q-word">${q.word}</div>`);
+  window._builtData['poly']=buildPoly();
+  window._builtData['phr']=buildMC('phraseQuestions','phr',PHRASE_DATA,'위 표현의 뜻은?',q=>`<div class="q-word" style="font-size:16px">${q.phrase}</div>`);
+  window._builtData['ee']=buildMC('engEngQuestions','ee',ENG_ENG_DATA,'위 영영풀이에 해당하는 단어는?',q=>`<div class="q-word ko" style="font-size:13px;font-weight:600;color:#374151;line-height:1.6">"${q.definition}"</div>`);
+  updateProgress();
+}
+
+function buildPoly(){
+  const c=document.getElementById('polyQuestions');const d=shuffle(POLY_DATA);
+  d.forEach((q,i)=>{
+    const opts=shuffle(q.all6);const cnt=q.answers.length;const aj=JSON.stringify(q.answers).replace(/"/g,'&quot;');
+    c.innerHTML+=`<div class="q-card" id="poly-card-${i}"><div class="q-num">Q${i+1} · <span class="lesson-tag l${q.lesson}">L${q.lesson}</span></div><div class="q-word">${q.word}</div><div class="q-sub">이 단어의 뜻 ${cnt}개를 모두 고르세요 (<span id="poly-count-${i}">0</span>/${cnt} 선택됨)</div><div class="options" id="poly-opts-${i}" style="grid-template-columns:1fr 1fr 1fr">${opts.map(o=>`<button class="opt-btn multi" onclick="toggleMulti('poly',${i},this,'${esc(o)}',${aj.replace(/'/g,"\\'")})">${o}</button>`).join('')}</div><button id="poly-confirm-${i}" class="multi-confirm" disabled onclick="confirmMulti('poly',${i},${aj.replace(/'/g,"\\'")})">✅ 답 확인하기</button><div class="feedback" id="poly-fb-${i}"></div></div>`;
+  });state.totalQ+=d.length;
+  return d;
+}
+
+function answerMC(prefix,idx,btn,chosen,answer){
+  const key=`${prefix}-${idx}`;if(state.answers[key]?.answered)return;
+  const card=document.getElementById(`${prefix}-card-${idx}`);const fb=document.getElementById(`${prefix}-fb-${idx}`);
+  const isCorrect=chosen===answer;
+  card.querySelectorAll('.opt-btn').forEach(b=>{b.disabled=true;if(b.textContent.trim()===answer)b.classList.add('show-correct');});
+  if(isCorrect){btn.classList.remove('show-correct');btn.classList.add('selected-correct');fb.textContent='✅ 정답입니다!';fb.className='feedback show ok';card.classList.add('correct-card');state.score++;}
+  else{btn.classList.add('selected-wrong');fb.textContent=`❌ 내 답: ${chosen} / 정답: ${answer}`;fb.className='feedback show no';card.classList.add('wrong-card');const w=card.querySelector('.q-word');recordWrong(w?w.textContent.trim().split(' ')[0]:String(idx),answer);}
+  state.answers[key]={answered:true,correct:isCorrect,chosen:chosen,answer:answer};updateProgress();_saveSession();
+}
+
+function toggleMulti(prefix,idx,btn,chosen,answers){
+  const key=`${prefix}-${idx}`;if(state.answers[key]?.answered)return;
+  if(!multiSelected[key])multiSelected[key]=new Set();const sel=multiSelected[key];
+  if(btn.classList.contains('selected')){btn.classList.remove('selected');sel.delete(chosen);}else{btn.classList.add('selected');sel.add(chosen);}
+  const ce=document.getElementById(`${prefix}-count-${idx}`);if(ce)ce.textContent=sel.size;
+  const cb=document.getElementById(`${prefix}-confirm-${idx}`);
+  if(cb){const ready=sel.size===answers.length;cb.classList.toggle('ready',ready);cb.disabled=!ready;}
+}
+
+function confirmMulti(prefix,idx,answers){
+  const key=`${prefix}-${idx}`;if(state.answers[key]?.answered)return;
+  const sel=multiSelected[key]||new Set();const card=document.getElementById(`${prefix}-card-${idx}`);const fb=document.getElementById(`${prefix}-fb-${idx}`);
+  const correctSet=new Set(answers);let allCorrect=sel.size===correctSet.size&&[...sel].every(s=>correctSet.has(s));
+  card.querySelectorAll('.opt-btn').forEach(b=>{b.disabled=true;const t=b.textContent.trim();if(sel.has(t)&&correctSet.has(t))b.className='opt-btn multi correct-sel';else if(sel.has(t)&&!correctSet.has(t))b.className='opt-btn multi wrong-sel';else if(correctSet.has(t))b.className='opt-btn multi correct-sel';else b.className='opt-btn multi';});
+  if(allCorrect){fb.textContent='✅ 정답입니다!';fb.className='feedback show ok';card.classList.add('correct-card');state.score++;}
+  else{fb.textContent=`❌ 내 답: ${[...sel].join(', ')||'(없음)'} / 정답: ${answers.join(', ')}`;fb.className='feedback show no';card.classList.add('wrong-card');const w=card.querySelector('.q-word');recordWrong(w?w.textContent.trim().split(' ')[0]:String(idx),answers.join('/'));}
+  state.answers[key]={answered:true,correct:allCorrect,chosen:[...sel],correctAnswers:[...answers]};updateProgress();_saveSession();
+}
+
+function switchSection(idx){document.querySelectorAll('.quiz-section').forEach((s,i)=>s.classList.toggle('active',i===idx));document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',i===idx));state.currentSection=idx;document.getElementById('resultScreen').classList.remove('show');document.getElementById('floatSubmit').classList.remove('hidden');}
+function updateProgress(){const answered=Object.keys(state.answers).length;const total=state.totalQ;document.getElementById('progressFill').style.width=total?(answered/total*100)+'%':'0%';document.getElementById('progressText').textContent=`${answered} / ${total} 완료`;document.getElementById('scoreText').textContent=`점수: ${state.score}`;}
+
+
+// === 같은 날 이어서 풀기 (세션 저장/복원) ===
+const QUIZ_ID='jongchonko_1grade_ce2_lesson1_wordtest';
+const _DAY_KEY=(function(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');})();
+const _SESSION_KEY='bn_session_'+QUIZ_ID;
+function _saveSession(){
+  try{
+    if(!state||!state.startTime) return;
+    if(!state.answers||Object.keys(state.answers).length===0) return;
+    localStorage.setItem(_SESSION_KEY, JSON.stringify({
+      day:_DAY_KEY,
+      name: (typeof studentName!=='undefined'?studentName:''),
+      school: (typeof studentSchool!=='undefined'?studentSchool:''),
+      answers: state.answers,
+      score: state.score||0,
+      totalQ: state.totalQ||0,
+      currentSection: state.currentSection||0,
+      startTime: state.startTime,
+      wrongWordsMap: (typeof wrongWordsMap!=='undefined'?wrongWordsMap:{})
+    }));
+  }catch(e){}
+}
+function _loadSession(){
+  try{
+    const raw=localStorage.getItem(_SESSION_KEY); if(!raw) return null;
+    const s=JSON.parse(raw);
+    if(s.day!==_DAY_KEY){localStorage.removeItem(_SESSION_KEY); return null;}
+    if(!s.answers||Object.keys(s.answers).length===0){localStorage.removeItem(_SESSION_KEY); return null;}
+    return s;
+  }catch(e){return null;}
+}
+function _clearSession(){try{localStorage.removeItem(_SESSION_KEY);}catch(e){}}
+function _cleanupOldSessions(){
+  try{
+    for(let i=localStorage.length-1;i>=0;i--){
+      const k=localStorage.key(i);
+      if(k && k.startsWith('bn_session_')){
+        try{const v=JSON.parse(localStorage.getItem(k)); if(v.day!==_DAY_KEY) localStorage.removeItem(k);}
+        catch(e){localStorage.removeItem(k);}
+      }
+    }
+  }catch(e){}
+}
+
+let _RESUMING=false;
+function _resumeFromSession(){
+  const s=_loadSession(); if(!s) return false;
+  // 인풋 채우기 후 startQuiz 호출 → 카드 렌더링
+  const sel=document.getElementById('schoolSel');
+  const ni=document.getElementById('nameInput');
+  if(sel && s.school){
+    let matched=false;
+    for(const o of sel.options){ if(o.value===s.school){sel.value=s.school; matched=true; break;} }
+    if(!matched && sel.options.length>1) sel.value=sel.options[1].value;
+  }
+  if(ni && s.name) ni.value=s.name;
+  _RESUMING=true;
+  try{ startQuiz(); }catch(e){ _RESUMING=false; return false; }
+  _RESUMING=false;
+  // 렌더링 끝난 뒤 답한 문제 재현
+  setTimeout(()=>{
+    state.startTime = s.startTime || Date.now();
+    state.answers={}; state.score=0;
+    // 마지막으로 보던 섹션으로 전환
+    if(typeof s.currentSection==='number' && typeof switchSection==='function'){
+      try{ switchSection(s.currentSection); }catch(e){}
+    }
+    if(typeof wrongWordsMap!=='undefined' && s.wrongWordsMap){
+      for(const k of Object.keys(s.wrongWordsMap)) wrongWordsMap[k]=s.wrongWordsMap[k];
+    }
+    // 카드를 ID 위치 대신 내용(정답 텍스트)으로 찾아 셔플 재섞임 문제 회피
+    const usedCards = new Set();
+    const restored=[];
+    for(const [key, ans] of Object.entries(s.answers||{})){
+      if(!ans||!ans.answered) continue;
+      const m=key.match(/^(.+)-(\d+)$/); if(!m) continue;
+      const prefix=m[1], oldIdx=m[2];
+      // 1순위: 저장된 정답으로 카드 찾기 (Single MC: ans.answer / Multi: ans.correctAnswers)
+      let target=null;
+      const allCards = Array.from(document.querySelectorAll(`[id^="${prefix}-card-"]`));
+      if (Array.isArray(ans.chosen) && Array.isArray(ans.correctAnswers)) {
+        // 다중 선택형: 카드의 모든 opt-btn 중 ans.correctAnswers를 정확히 포함하는 것 찾기
+        const wantSet = new Set(ans.correctAnswers);
+        for (const c of allCards) {
+          if (usedCards.has(c.id)) continue;
+          const btnTexts = Array.from(c.querySelectorAll('.opt-btn')).map(b=>b.textContent.trim());
+          const matchCount = ans.correctAnswers.filter(x=>btnTexts.includes(x)).length;
+          if (matchCount === ans.correctAnswers.length) { target=c; break; }
+        }
+      } else if (typeof ans.chosen==='string' && typeof ans.answer==='string') {
+        // 단일 MC: 카드 내 정답 텍스트 버튼 존재 + chosen 버튼 존재 + 미사용
+        for (const c of allCards) {
+          if (usedCards.has(c.id)) continue;
+          const btnTexts = Array.from(c.querySelectorAll('.opt-btn')).map(b=>b.textContent.trim());
+          if (btnTexts.includes(ans.answer) && btnTexts.includes(ans.chosen)) { target=c; break; }
+        }
+      }
+      // 2순위: 위치 기반 폴백 (예전 저장 데이터 호환)
+      if (!target) {
+        const positional = document.getElementById(`${prefix}-card-${oldIdx}`);
+        if (positional && !usedCards.has(positional.id)) target = positional;
+      }
+      if (!target) continue;
+      usedCards.add(target.id);
+      const optBtns=[...target.querySelectorAll('.opt-btn')];
+      if(Array.isArray(ans.chosen)){
+        for(const c of ans.chosen){
+          const b=optBtns.find(x=>x.textContent.trim()===c);
+          if(b) b.click();
+        }
+        const idMatch = target.id.match(/-card-(\d+)$/);
+        if (idMatch) {
+          const cb=document.getElementById(`${prefix}-confirm-${idMatch[1]}`);
+          if(cb) cb.click();
+        }
+        restored.push(key);
+      } else if(typeof ans.chosen==='string' && ans.chosen){
+        const b=optBtns.find(x=>x.textContent.trim()===ans.chosen);
+        if(b){ b.click(); restored.push(key); }
+      }
+    }
+    if(typeof updateProgress==='function') updateProgress();
+  }, 220);
+  return true;
+}
+
+function _checkResumePrompt(){
+  const s=_loadSession(); if(!s) return;
+  // 시작 화면에 노란 배너 삽입
+  const host = document.getElementById('infoWrap') || document.getElementById('startScreen') || document.querySelector('.start-card') || document.body;
+  if(document.getElementById('resumeBox')) return;
+  const answered=Object.keys(s.answers||{}).length;
+  const elapsedMin = Math.max(1, Math.round((Date.now()-(s.startTime||Date.now()))/60000));
+  const box=document.createElement('div');
+  box.id='resumeBox';
+  box.style.cssText='background:linear-gradient(135deg,#fff7e0,#fef3c7);border:2px solid #fcd34d;border-radius:14px;padding:14px 16px;margin:12px 0;text-align:left;';
+  box.innerHTML = `
+    <div style="font-family:'Black Han Sans',sans-serif;font-size:1rem;color:#92400e;margin-bottom:4px;">⏸️ 풀던 시험이 있어요</div>
+    <div style="font-size:.78rem;color:#a16207;line-height:1.5;margin-bottom:10px;">
+      <strong>${s.name||'학생'}</strong>님 · ${answered}문제 답함 · 진행한 시간 ${elapsedMin}분 · 누적 정답 ${s.score||0}
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button style="flex:1;min-width:120px;padding:11px 14px;font-size:.88rem;background:linear-gradient(135deg,#f59e0b,#d97706);color:white;border:none;border-radius:10px;font-weight:800;cursor:pointer;" onclick="_resumeFromSession();this.closest('#resumeBox').remove();">▶️ 이어서 풀기</button>
+      <button style="flex:1;min-width:120px;padding:11px 14px;font-size:.88rem;background:linear-gradient(135deg,#94a3b8,#64748b);color:white;border:none;border-radius:10px;font-weight:800;cursor:pointer;" onclick="_clearSession();this.closest('#resumeBox').remove();">🔄 새로 시작</button>
+    </div>`;
+  host.insertBefore(box, host.firstChild);
+}
+window._resumeFromSession=_resumeFromSession;
+window._clearSession=_clearSession;
+document.addEventListener('DOMContentLoaded',()=>{ _cleanupOldSessions(); _checkResumePrompt(); });
+
+async function submitAll(){
+  _clearSession();
+  const answered=Object.keys(state.answers).length;
+  if(answered<state.totalQ*0.5){alert(`아직 ${state.totalQ-answered}문제가 남아있어요!`);return;}
+  document.querySelectorAll('.quiz-section').forEach(s=>s.classList.remove('active'));document.getElementById('floatSubmit').classList.add('hidden');
+  const total=state.totalQ,correct=state.score,wrong=total-correct,unanswered=total-answered,pct=Math.round(correct/total*100),elapsedMin=Math.round((Date.now()-state.startTime)/60000),wrongWords=Object.values(wrongWordsMap).slice(0,50);
+  let emoji='😢',label='다시 도전해봐요!';if(pct>=90){emoji='🏆';label='최고예요!';}else if(pct>=70){emoji='🎉';label='잘했어요! 조금만 더!';}else if(pct>=50){emoji='💪';label='절반 이상!';}
+  document.getElementById('resultEmoji').textContent=emoji;document.getElementById('resultScore').textContent=`${pct}점`;document.getElementById('resultLabel').textContent=label;
+  document.getElementById('resultDetail').innerHTML=`<div class="result-row"><span class="label">이름</span><span class="val">${studentName} (${studentSchool})</span></div><div class="result-row"><span class="label">총 문제</span><span class="val">${total}문제</span></div><div class="result-row"><span class="label">정답</span><span class="val" style="color:var(--correct)">${correct}개</span></div><div class="result-row"><span class="label">오답</span><span class="val" style="color:var(--wrong)">${wrong}개</span></div><div class="result-row"><span class="label">미응답</span><span class="val">${unanswered}개</span></div><div class="result-row"><span class="label">정답률</span><span class="val">${pct}%</span></div><div class="result-row"><span class="label">소요 시간</span><span class="val">${elapsedMin}분</span></div>`;
+  document.getElementById('resultScreen').classList.add('show');
+  const key='bomnal_jc2_L4_'+studentSchool+'_'+studentName;const cnt=parseInt(localStorage.getItem(key+'_cnt')||'0')+1;localStorage.setItem(key+'_cnt',cnt);localStorage.setItem(key+'_best',Math.max(pct,parseInt(localStorage.getItem(key+'_best')||'0')));
+  const sendEl=document.getElementById('sendingMsg');sendEl.textContent='📡 결과 전송 중...';sendEl.className='sending-msg';
+  try{let w=0;while(!window._fbReady&&w<8000){await new Promise(r=>setTimeout(r,200));w+=200;}await window._saveResult({studentName,school:studentSchool,score:pct,correct,wrong,timedOut:0,total,elapsedMin,wrongWords,quizType:'종촌고1_공통영어2_L1_어휘퀴즈'});sendEl.textContent='✅ 선생님께 결과가 전달됐어요!';sendEl.className='sending-msg ok';}
+  catch(e){sendEl.textContent='⚠️ 전송 실패';sendEl.className='sending-msg err';}
+
+  retryWrongList=collectWrongItems();if(retryWrongList.length>0){document.getElementById('wrongCount').textContent=retryWrongList.length;document.getElementById('retryWrongBtn').style.display='block';}
+}
+function retryQuiz(){location.reload();}
+// ============================================================
+// 오답 재풀이
+// ============================================================
+let retryRound = 0;
+let retryWrongList = [];
+
+function startRetry() {
+  retryRound++;
+  document.getElementById('resultScreen').classList.remove('show');
+  document.getElementById('retryScreen').style.display = 'block';
+  document.getElementById('retrySubmitBtn').classList.remove('hidden');
+  document.getElementById('retryRoundLabel').textContent = retryRound + '라운드';
+  document.getElementById('retryCountLabel').textContent = retryWrongList.length + '문제 남음';
+  buildRetryQuestions();
+}
+
+function buildRetryQuestions() {
+  const container = document.getElementById('retryQuestions');
+  container.innerHTML = '';
+  const shuffled = shuffle([...retryWrongList]);
+  window._retryItems = shuffled;
+  window._retryAnswers = {};
+  Object.keys(retryMultiSelected).forEach(k => delete retryMultiSelected[k]);
+
+  shuffled.forEach((item, i) => {
+    const card = document.createElement('div');
+    card.className = 'q-card';
+    card.id = 'retry-card-' + i;
+    if (item.type === 'multi') {
+      const cnt = item.answers.length;
+      const opts = shuffle([...item.allOpts]);
+      const aj = JSON.stringify(item.answers).replace(/"/g,'&quot;');
+      card.innerHTML = `
+        <div class="q-num">오답 ${i+1} · <span class="lesson-tag">재풀이</span></div>
+        <div class="q-word">${item.word}</div>
+        <div class="q-sub">이 단어의 뜻 ${cnt}개를 모두 고르세요 (<span id="retry-count-${i}">0</span>/${cnt} 선택됨)</div>
+        <div class="options" style="grid-template-columns:1fr 1fr 1fr">
+          ${opts.map(o=>`<button class="opt-btn multi" onclick="toggleRetryMulti(${i},this,'${o.replace(/'/g,"\'").replace(/"/g,'\\"')}',${aj})">${o}</button>`).join('')}
+        </div>
+        <button id="retry-confirm-${i}" class="multi-confirm" disabled onclick="confirmRetryMulti(${i},${aj})">✅ 답 확인하기</button>
+        <div class="feedback" id="retry-fb-${i}"></div>`;
+    } else {
+      const opts = opts4(item.answer, item.distractors);
+      card.innerHTML = `
+        <div class="q-num">오답 ${i+1} · <span class="lesson-tag">재풀이</span></div>
+        <div class="q-word" style="${item.wordStyle||''}">${item.word}</div>
+        <div class="q-sub">${item.subText||'알맞은 답을 고르세요'}</div>
+        <div class="options">
+          ${opts.map(o=>`<button class="opt-btn" onclick="answerRetryMC(${i},this,'${o.replace(/'/g,"\'").replace(/"/g,'\\"')}','${item.answer.replace(/'/g,"\'").replace(/"/g,'\\"')}')">${o}</button>`).join('')}
+        </div>
+        <div class="feedback" id="retry-fb-${i}"></div>`;
+    }
+    container.appendChild(card);
+  });
+}
+
+const retryMultiSelected = {};
+
+function toggleRetryMulti(idx, btn, chosen, answers) {
+  const key = 'rm-' + idx;
+  if (window._retryAnswers[idx]?.done) return;
+  if (!retryMultiSelected[key]) retryMultiSelected[key] = new Set();
+  const sel = retryMultiSelected[key];
+  if (btn.classList.contains('selected')) { btn.classList.remove('selected'); sel.delete(chosen); }
+  else { btn.classList.add('selected'); sel.add(chosen); }
+  const ce = document.getElementById('retry-count-' + idx); if (ce) ce.textContent = sel.size;
+  const cb = document.getElementById('retry-confirm-' + idx);
+  if (cb) { const ready = sel.size === answers.length; cb.classList.toggle('ready', ready); cb.disabled = !ready; }
+}
+
+function confirmRetryMulti(idx, answers) {
+  const card = document.getElementById('retry-card-' + idx);
+  const fb = document.getElementById('retry-fb-' + idx);
+  const sel = retryMultiSelected['rm-' + idx] || new Set();
+  const correctSet = new Set(answers);
+  const allCorrect = sel.size === correctSet.size && [...sel].every(s => correctSet.has(s));
+  card.querySelectorAll('.opt-btn').forEach(b => {
+    b.disabled = true;
+    const t = b.textContent.trim();
+    if (sel.has(t) && correctSet.has(t)) b.className = 'opt-btn multi correct-sel';
+    else if (sel.has(t)) b.className = 'opt-btn multi wrong-sel';
+    else if (correctSet.has(t)) b.className = 'opt-btn multi correct-sel';
+    else b.className = 'opt-btn multi';
+  });
+  fb.textContent = allCorrect ? '✅ 정답!' : `❌ 내 답: ${[...sel].join(', ')||'(없음)'} / 정답: ${answers.join(', ')}`;
+  fb.className = 'feedback show ' + (allCorrect ? 'ok' : 'no');
+  card.classList.add(allCorrect ? 'correct-card' : 'wrong-card');
+  window._retryAnswers[idx] = { done: true, correct: allCorrect };
+  checkAllRetryDone();
+}
+
+function answerRetryMC(idx, btn, chosen, answer) {
+  if (window._retryAnswers[idx]?.done) return;
+  const card = document.getElementById('retry-card-' + idx);
+  const fb = document.getElementById('retry-fb-' + idx);
+  const isCorrect = chosen === answer;
+  card.querySelectorAll('.opt-btn').forEach(b => {
+    b.disabled = true;
+    if (b.textContent.trim() === answer) b.classList.add('show-correct');
+  });
+  if (isCorrect) { btn.classList.remove('show-correct'); btn.classList.add('selected-correct'); }
+  else btn.classList.add('selected-wrong');
+  fb.textContent = isCorrect ? '✅ 정답!' : `❌ 내 답: ${chosen} / 정답: ${answer}`;
+  fb.className = 'feedback show ' + (isCorrect ? 'ok' : 'no');
+  card.classList.add(isCorrect ? 'correct-card' : 'wrong-card');
+  window._retryAnswers[idx] = { done: true, correct: isCorrect };
+  checkAllRetryDone();
+}
+
+function checkAllRetryDone() {
+  const total = window._retryItems.length;
+  const done = Object.keys(window._retryAnswers).length;
+  if (done >= total) setTimeout(submitRetry, 600);
+}
+
+function submitRetry() {
+  const items = window._retryItems || [];
+  const answers = window._retryAnswers || {};
+  const newWrong = items.filter((_, i) => !answers[i]?.correct);
+  document.getElementById('retrySubmitBtn').classList.add('hidden');
+  document.getElementById('retryScreen').style.display = 'none';
+  if (newWrong.length === 0) {
+    showRetryComplete();
+  } else {
+    retryWrongList = newWrong;
+    document.getElementById('wrongCount').textContent = newWrong.length;
+    document.getElementById('resultScreen').classList.add('show');
+    document.getElementById('retryWrongBtn').style.display = 'block';
+  }
+}
+
+async function showRetryComplete() {
+  document.getElementById('resultScreen').classList.add('show');
+  document.getElementById('resultEmoji').textContent = '🏆';
+  document.getElementById('resultScore').textContent = '완벽!';
+  document.getElementById('resultLabel').textContent = retryRound + '라운드 만에 오답 0개 달성! 🎉';
+  document.getElementById('resultDetail').innerHTML =
+    '<div class="result-row"><span class="label">이름</span><span class="val">' + studentName + ' (' + studentSchool + ')</span></div>' +
+    '<div class="result-row"><span class="label">재도전 횟수</span><span class="val">' + retryRound + '라운드</span></div>' +
+    '<div class="result-row"><span class="label">오답</span><span class="val" style="color:var(--correct);font-weight:900">0개 🎊</span></div>';
+  document.getElementById('retryWrongBtn').style.display = 'none';
+
+  // Firebase 전송 - 오답 0개 달성 기록
+  const sendEl = document.getElementById('sendingMsg');
+  sendEl.textContent = '📡 오답 완료 기록 전송 중...';
+  sendEl.className = 'sending-msg';
+  try {
+    let w=0;
+    while(!window._fbReady && w<8000){ await new Promise(r=>setTimeout(r,200)); w+=200; }
+    await window._saveResult({
+      studentName: studentName,
+      school: studentSchool,
+      score: 100,
+      correct: state.totalQ,
+      wrong: 0,
+      timedOut: 0,
+      total: state.totalQ,
+      elapsedMin: Math.round((Date.now() - state.startTime) / 60000),
+      wrongWords: [],
+      quizType: '종촌고1_공통영어2_L1_어휘퀴즈_오답완료',
+    });
+    sendEl.textContent = '✅ 오답 0개 달성! 선생님께 전달됐어요 🎊';
+    sendEl.className = 'sending-msg ok';
+  } catch(e) {
+    sendEl.textContent = '⚠️ 전송 실패';
+    sendEl.className = 'sending-msg err';
+  }
+}
+
+function collectWrongItems() {
+  // Include both wrong-answered AND unanswered questions
+  const wrongKeys = [];
+  const _bd = window._builtData || {};
+  Object.keys(_bd).forEach(_pfx => {
+    const _arr = _bd[_pfx];
+    if (!Array.isArray(_arr)) return;
+    for (let _i = 0; _i < _arr.length; _i++) {
+      const _k = _pfx + '-' + _i;
+      const _a = state.answers[_k];
+      if (!_a || !_a.correct) wrongKeys.push(_k);
+    }
+  });
+  const list = [];
+  const multiPrefixes = new Set(['dual','poly']);
+  wrongKeys.forEach(key => {
+    const parts = key.split('-');
+    const prefix = parts[0];
+    const idx = parseInt(parts[1]);
+    const data = window._builtData && window._builtData[prefix];
+    if (!data || !data[idx]) return;
+    const q = data[idx];
+    if (multiPrefixes.has(prefix)) {
+      list.push({ type:'multi', word:q.word, answers:q.meanings||q.answers, allOpts:q.all4||q.all6, lesson:q.lesson||1 });
+    } else {
+      const wordTxt = q.word || q.phrase || ('"' + q.definition + '"') || '';
+      const subTxt = prefix==='ee'?'위 영영풀이에 해당하는 단어는?':prefix==='phr'?'위 표현의 뜻은?':prefix==='form'?('알맞은 뜻을 고르세요 · '+q.pos):'알맞은 답을 고르세요';
+      const wStyle = prefix==='ee'?'font-size:13px;font-weight:600;color:#374151;line-height:1.6':'';
+      list.push({ type:'mc', word:wordTxt, answer:q.answer, distractors:q.distractors, lesson:q.lesson||1, subText:subTxt, wordStyle:wStyle });
+    }
+  });
+  return list;
+}
+
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&document.getElementById('quizWrap').style.display!=='none'){const w=document.createElement('div');w.style.cssText='position:fixed;top:0;left:0;right:0;background:#c0392b;color:white;text-align:center;padding:10px;font-weight:700;z-index:9999;font-size:13px';w.textContent='⚠️ 화면을 벗어났습니다! 퀴즈에 집중하세요.';document.body.appendChild(w);setTimeout(()=>w.remove(),3000);}});
+document.addEventListener('copy',e=>e.preventDefault());document.addEventListener('contextmenu',e=>e.preventDefault());
+</script>
+
+<!-- === TTS 음성 지원 (Web Speech API) === -->
+<style>
+.tts-btn{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border:none;background:#e0e7ff;color:#3730a3;border-radius:50%;cursor:pointer;font-size:14px;padding:0;vertical-align:middle;margin-left:6px;transition:all .15s;flex-shrink:0;line-height:1;font-family:inherit;}
+.tts-btn:hover{background:#c7d2fe;transform:scale(1.05);}
+.tts-btn:active{transform:scale(0.95);}
+.tts-btn.speaking{background:#fbbf24;color:white;animation:tts-pulse 1s ease-in-out infinite;}
+@keyframes tts-pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.1);}}
+</style>
+<script>
+(function(){
+  if(window.__ttsInstalled) return; window.__ttsInstalled=true;
+  function speakText(text, btn){
+    if(!('speechSynthesis' in window)) return;
+    try{
+      window.speechSynthesis.cancel();
+      const u=new SpeechSynthesisUtterance(text);
+      u.lang='en-US';u.rate=0.85;u.pitch=1;
+      const voices=window.speechSynthesis.getVoices();
+      const en=voices.find(v=>v.lang && /^en/i.test(v.lang));
+      if(en) u.voice=en;
+      if(btn){
+        btn.classList.add('speaking');
+        u.onend=u.onerror=function(){btn.classList.remove('speaking');};
+      }
+      window.speechSynthesis.speak(u);
+    }catch(e){}
+  }
+  function ttsText(s){
+    s=String(s||'').replace(/^["“”'\s]+|["“”'\s]+$/g,'');
+    s=s.replace(/\s*🔊\s*$/,'');
+    const idx=s.search(/[ㄱ-힝]/);
+    if(idx!==-1) s=s.slice(0,idx);
+    return s.replace(/[\s\(\)\[\];,~]+$/,'').trim();
+  }
+  const SEL='.q-word,.word-en,.word-box,.word-card .word-en';
+  function inject(root){
+    (root||document).querySelectorAll(SEL).forEach(w=>{
+      if(w.dataset.tts==='1') return;
+      const raw=w.textContent.trim();
+      const txt=ttsText(raw);
+      if(!txt || !/[A-Za-z]/.test(txt)) return;
+      const btn=document.createElement('button');
+      btn.className='tts-btn';
+      btn.type='button';
+      btn.title='발음 듣기';
+      btn.setAttribute('aria-label','발음 듣기');
+      btn.textContent='🔊';
+      btn.addEventListener('click',function(e){e.stopPropagation();e.preventDefault();speakText(txt,btn);});
+      w.appendChild(document.createTextNode(' '));
+      w.appendChild(btn);
+      w.dataset.tts='1';
+    });
+  }
+  const _obs=new MutationObserver(muts=>{
+    let needs=false;
+    muts.forEach(m=>m.addedNodes.forEach(n=>{if(n.nodeType===1) needs=true;}));
+    if(needs) inject(document.body);
+  });
+  function start(){
+    _obs.observe(document.body,{childList:true,subtree:true});
+    inject(document.body);
+    if(window.speechSynthesis && window.speechSynthesis.getVoices){
+      window.speechSynthesis.getVoices();
+      if(window.speechSynthesis.onvoiceschanged===null){
+        window.speechSynthesis.onvoiceschanged=function(){};
+      }
+    }
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',start);
+  else start();
+})();
+</script>
+
+</body>
+</html>
