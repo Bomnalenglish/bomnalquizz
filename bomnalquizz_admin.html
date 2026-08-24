@@ -470,7 +470,7 @@ let allAccessData = [];  // ★ hub_access 데이터
 // 예전에는 열 때마다 quiz_results·hub_access 컬렉션 '전체'를 읽어서 느렸고,
 // Firestore 무료 할당량(하루 5만 읽기)도 빠르게 소진됐다.
 // ① 기간 제한 쿼리(서버에서 잘라서 가져오기) ② 병렬 로드 ③ 10분 캐시 로 개선.
-const CACHE_KEY='bn_admin_cache_v4';   // v3: day·level 추가 + 학교 표기 통일
+const CACHE_KEY='bn_admin_cache_v5';   // v5: saveId 중복 제거 반영   // v3: day·level 추가 + 학교 표기 통일
 
 // 챕터 시험은 학교를 '종촌중학교'로, 어휘 퀴즈는 '종촌중1'로 저장한다.
 // 표기가 갈리면 같은 학생이 두 명으로 잡히므로 '종촌중1' 형태로 통일한다.
@@ -484,6 +484,30 @@ function normSchool(school, grade){
 }
 const CACHE_TTL_MS=10*60*1000;   // 10분
 const MAX_DOCS=5000;             // 안전장치
+
+let dedupCount = 0;
+
+// 같은 응시가 두 번 저장되는 문제 정리.
+// ① saveId가 같으면 재전송된 같은 건 → 한 건만 남긴다.
+// ② saveId가 없던 예전 기록은 '학생·시험·점수·정답/오답·라운드'가 모두 같고
+//    2분 이내에 저장된 것만 중복으로 본다. (진짜 재응시는 점수나 라운드가 달라 살아남는다)
+function dedupeRecords(){
+  const before = allData.length;
+  const seenId = new Set(), lastSig = new Map();
+  allData = allData.filter(d=>{
+    if(d.saveId){
+      if(seenId.has(d.saveId)) return false;
+      seenId.add(d.saveId); return true;
+    }
+    const sig = [d.name, d.school, d.quizType, d.score, d.correct, d.wrong,
+                 d.total, d.round, d.day, d.answered].join('|');
+    const t = d.time ? d.time.getTime() : 0;
+    const prev = lastSig.get(sig);
+    if(prev !== undefined && Math.abs(t - prev) <= 120000) return false;
+    lastSig.set(sig, t); return true;
+  });
+  return before - allData.length;
+}
 
 function _getPeriodDays(){
   const el=document.getElementById('fPeriod');
@@ -563,6 +587,7 @@ async function loadData(force){
         id:doc.id,
         name:d.studentName||d.name||'(이름없음)',
         school:normSchool(d.school, d.grade),
+        saveId:d.saveId||'',                 // 같은 응시 1건을 가리키는 고유 번호 (중복 제거용)
         sectionKey:d.sectionKey||'',
         dialogueTotal:(d.dialogueTotal!==undefined?d.dialogueTotal:null),  // 챕터 빈칸시험 대화문 총 개수
         score:d.score||0,
@@ -593,6 +618,7 @@ async function loadData(force){
       });
     }));
     allData.sort((a,b)=>(b.time||0)-(a.time||0));
+    dedupCount = dedupeRecords();
 
     // ★ hub_access (위에서 병렬로 이미 받아옴)
     allAccessData=[];
@@ -616,7 +642,8 @@ async function loadData(force){
 
     _writeCache(days);
     document.getElementById('lastRefresh').textContent=
-      `갱신: ${new Date().toLocaleTimeString('ko-KR')} · ${periodLabel} ${allData.length}건`;
+      `갱신: ${new Date().toLocaleTimeString('ko-KR')} · ${periodLabel} ${allData.length}건`
+      + (dedupCount>0 ? ` · 중복 ${dedupCount}건 제외` : '');
     buildHistoryMap();
     populateTextbookFilter();
     renderSummary();renderCharts();applyFilter();renderSectionView();

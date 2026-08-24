@@ -195,12 +195,16 @@ function _wrapSaveSlot(slotName, collectionName){
     get(){
       return async function(data){
         const id = _newId();
-        _pushPending({ id, collection: collectionName, data, ts: Date.now() });
+        // saveId: 같은 응시 1건을 가리키는 고유 번호.
+        // 저장이 확인되지 않아 나중에 재전송되더라도 같은 번호가 붙으므로
+        // 관리자에서 중복으로 인식해 한 건만 보여줄 수 있다.
+        const payload = { ...data, saveId: id };
+        _pushPending({ id, collection: collectionName, data: payload, ts: Date.now() });
         let saved = false;
         if (_orig) {
-          try { await _orig(data); saved = true; } catch(e){ /* 실패 시 REST 폴백 */ }
+          try { await _orig(payload); saved = true; } catch(e){ /* 실패 시 REST 폴백 */ }
         }
-        if (!saved) saved = await _postOneRest(collectionName, data);
+        if (!saved) saved = await _postOneRest(collectionName, payload);
         if (saved) _dropPending(id);
         return saved;
       };
@@ -213,9 +217,15 @@ _wrapSaveSlot('_saveResult', 'quiz_results');
 // 페이지 진입 시 미전송 백업 재시도 (7일 지난 항목은 폐기)
 (async function _flushPending(){
   const now = Date.now();
-  let arr = _readPending().filter(p => now - p.ts < 7*24*3600*1000);
+  // 7일 지난 항목, 그리고 이미 5번 재전송한 항목은 폐기
+  // (결과 화면에서 바로 나가면 '전송 확인'이 남지 않아 멀쩡히 저장된 건이 계속 재전송되던 문제)
+  let arr = _readPending().filter(p => now - p.ts < 7*24*3600*1000 && (p.tries || 0) < 5);
   _writePending(arr);
   for (const p of arr) {
+    p.tries = (p.tries || 0) + 1;
+    const cur = _readPending();
+    const hit = cur.find(x => x.id === p.id);
+    if (hit) { hit.tries = p.tries; _writePending(cur); }
     const ok = await _postOneRest(p.collection || 'quiz_results', p.data);
     if (ok) _dropPending(p.id);
   }
