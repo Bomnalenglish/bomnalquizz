@@ -194,7 +194,12 @@ function pick(btn,sel,q){
   if(answered)return; answered=true;
   document.querySelectorAll('.opt').forEach(b=>b.disabled=true);
   const fb=el('fb'), CIR='①②③④⑤';
-  if(sel===q.answer){btn.classList.add('ok');fb.className='fb y';fb.textContent='✅ 정답! '+CIR[q.answer-1];cor++;}
+  if(sel===q.answer){
+    btn.classList.add('ok');fb.className='fb y';
+    fb.innerHTML='✅ 정답! <b>'+CIR[q.answer-1]+'</b>번'
+      +(q.expl?'<div class="expl" style="border-top-color:#86efac">💡 '+esc(q.expl)+'</div>':'');
+    cor++;
+  }
   else{
     btn.classList.add('no');
     document.querySelectorAll('.opt')[q.answer-1].classList.add('reveal');
@@ -203,10 +208,16 @@ function pick(btn,sel,q){
       +(q.expl?'<div class="expl">💡 '+esc(q.expl)+'</div>':'');
     wrongs.push({q:q,my:sel});
   }
-  if(sel===q.answer){ setTimeout(()=>{idx++;draw();},800); }
-  else { const nx=document.createElement('button'); nx.className='btn'; nx.style.marginTop='12px';
-         nx.textContent='해설을 읽었어요 · 다음 문제 →'; nx.onclick=()=>{idx++;draw();};
-         el('qcard').appendChild(nx); }
+  // 해설이 있으면 버튼으로 넘긴다 (자동으로 넘어가면 해설을 못 읽음)
+  if(q.expl){
+    const nx=document.createElement('button'); nx.className='btn'; nx.style.marginTop='12px';
+    nx.textContent=(idx+1>=qs.length?'해설을 읽었어요 · 결과 보기 →':'해설을 읽었어요 · 다음 문제 →');
+    nx.onclick=()=>{idx++;draw();};
+    el('qcard').appendChild(nx);
+    if(nx.scrollIntoView) nx.scrollIntoView({block:'nearest'});
+  } else {
+    setTimeout(()=>{idx++;draw();},sel===q.answer?800:2000);
+  }
 }
 let lastWrong=[];
 function result(){
