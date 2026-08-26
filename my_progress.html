@@ -71,6 +71,20 @@ main{max-width:840px;margin:18px auto;padding:0 14px 60px;}
 .streak-text{flex:1;}
 .streak-title{font-family:'Black Han Sans',sans-serif;font-size:.95rem;color:#92400e;}
 .streak-sub{font-size:.74rem;color:#a16207;margin-top:2px;}
+.note-block{border:1.5px solid #e2e8f0;border-radius:12px;margin-bottom:10px;background:#fff;overflow:hidden}
+.note-sum{cursor:pointer;padding:11px 13px;list-style:none;display:flex;flex-wrap:wrap;align-items:baseline;gap:8px}
+.note-sum::-webkit-details-marker{display:none}
+.note-sum::before{content:'▸';color:#94a3b8;font-weight:800;margin-right:2px}
+details[open] .note-sum::before{content:'▾'}
+.note-ttl{font-size:.83rem;font-weight:800;color:#1e293b}
+.note-meta{font-size:.7rem;color:#94a3b8;margin-left:auto}
+.note-item{border-top:1px dashed #e2e8f0;padding:11px 13px}
+.note-q{font-size:.78rem;font-weight:700;color:#0f172a;line-height:1.6;margin-bottom:6px}
+.note-ans{font-size:.74rem;line-height:1.6;margin:3px 0;color:#334155}
+.na-bad{display:inline-block;background:#fef2f2;color:#991b1b;border-radius:7px;padding:1px 7px;font-weight:800;margin-right:5px}
+.na-good{display:inline-block;background:#ecfdf5;color:#065f46;border-radius:7px;padding:1px 7px;font-weight:800;margin-right:5px}
+.note-expl{margin-top:6px;font-size:.72rem;color:#475569;line-height:1.8;background:#f8fafc;border-radius:8px;padding:7px 9px}
+.note-my{margin-top:6px;font-size:.72rem;color:#92400e;background:#fffbeb;border-radius:8px;padding:7px 9px;font-weight:700}
 </style>
 </head>
 <body>
@@ -185,6 +199,7 @@ async function loadAndRender(){
         wrongWords: x.wrongWords||[],
         wrongNumbers: x.wrongNumbers||'',
         wrongSentences: x.wrongSentences||'',
+        wrongDetails: x.wrongDetails||[],   // 문제풀이 라운드의 '내 답/정답/해설'
         time
       });
     });
@@ -195,13 +210,29 @@ async function loadAndRender(){
     }
 
     records.sort((a,b) => (b.time||0) - (a.time||0));
-    render(records);
+
+    // 오답노트(학생이 직접 저장한 메모) 불러오기
+    let notes = [];
+    try {
+      const q2 = query(collection(db,'wrong_notes'), where('studentName','==',studentName));
+      const snap2 = await getDocs(q2);
+      snap2.forEach(d => {
+        const x = d.data();
+        const t = x.timestamp && typeof x.timestamp.toDate==='function' ? x.timestamp.toDate() : null;
+        notes.push({ lesson:x.lesson||'', roundName:x.roundName||'', quizType:x.quizType||'',
+                     items:x.items||[], time:t });
+      });
+      notes.sort((a,b) => (b.time||0) - (a.time||0));
+    } catch(e) { console.log('오답노트 로드 실패', e); }
+
+    render(records, notes);
   } catch(e) {
     content.innerHTML = `<div class="empty">⚠️ 기록을 불러오지 못했어요<br><small>${e.message}</small></div>`;
   }
 }
 
-function render(records){
+function render(records, notes){
+  notes = notes || [];
   // ─ 요약 ─
   const total = records.length;
   const avgScore = Math.round(records.reduce((s,r)=>s+r.score,0)/total);
@@ -297,6 +328,43 @@ function render(records){
       `).join('')}</div>`
     : `<div class="empty" style="padding:24px;font-size:.8rem;">아직 충분한 데이터가 없어요. 더 풀어보면 약한 영역을 알려드릴게요!</div>`;
 
+  // ─ 오답노트: 저장한 메모 + 문제풀이 결과의 오답 상세 ─
+  const CIRC = '①②③④⑤';
+  const noteEntries = [];
+  notes.forEach(n => noteEntries.push({
+    time: n.time, title: (n.lesson? n.lesson+' · ':'') + (n.roundName||'오답노트'),
+    saved: true, items: n.items||[]
+  }));
+  records.forEach(r => {
+    if (!(r.wrongDetails||[]).length) return;
+    // 같은 시험의 저장된 노트가 있으면 그쪽을 쓴다
+    const dup = noteEntries.some(e => e.saved && Math.abs((e.time||0)-(r.time||0)) < 30*60*1000);
+    if (dup) return;
+    const m = parseQuizMeta(r);
+    noteEntries.push({ time: r.time, title: m.textbook + (m.type? ' · '+m.type : ''),
+                       saved: false, items: r.wrongDetails });
+  });
+  noteEntries.sort((a,b) => (b.time||0) - (a.time||0));
+  const noteTop = noteEntries.slice(0, 5);
+
+  const noteHtml = noteTop.length
+    ? noteTop.map(e => `
+        <details class="note-block"${e === noteTop[0] ? ' open' : ''}>
+          <summary class="note-sum">
+            <span class="note-ttl">${escHtml(e.title)}</span>
+            <span class="note-meta">${ftDate(e.time)} · 오답 ${e.items.length}개${e.saved?' · 📝 메모 있음':''}</span>
+          </summary>
+          ${e.items.map((it,i) => `
+            <div class="note-item">
+              <div class="note-q">${i+1}. ${escHtml(it.q||'')}</div>
+              <div class="note-ans"><span class="na-bad">내 답 ${CIRC[(it.my||1)-1]}</span>${escHtml(it.myText||'')}</div>
+              <div class="note-ans"><span class="na-good">정답 ${CIRC[(it.answer||1)-1]}</span>${escHtml(it.answerText||'')}</div>
+              ${it.expl?`<div class="note-expl">💡 ${escHtml(it.expl)}</div>`:''}
+              ${it.note?`<div class="note-my">✏️ 내 메모: ${escHtml(it.note)}</div>`:''}
+            </div>`).join('')}
+        </details>`).join('')
+    : `<div class="empty" style="padding:24px;font-size:.8rem;">아직 오답노트가 없어요. 문제풀이를 마치면 여기에 쌓여요!</div>`;
+
   const recentHtml = `<table class="rec-table">
     <thead><tr><th style="width:75px;">날짜</th><th>교재 · 유형</th><th style="width:60px;text-align:center;">점수</th><th style="width:60px;text-align:center;">오답</th></tr></thead>
     <tbody>${recentGroups.map(g=>`
@@ -333,6 +401,11 @@ function render(records){
     <div class="sec">
       <div class="sec-title">📜 최근 학습 <span class="sec-sub">최신 ${recentGroups.length}건</span></div>
       ${recentHtml}
+    </div>
+
+    <div class="sec">
+      <div class="sec-title">📝 오답노트 <span class="sec-sub">최근 ${noteTop.length}회</span></div>
+      ${noteHtml}
     </div>
 
     <div class="sec">
