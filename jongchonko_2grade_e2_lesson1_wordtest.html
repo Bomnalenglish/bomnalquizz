@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>봄날 퀴즈 | 종촌고 · 고운고 2학년 영어2 1과 어휘 TEST</title>
+<script type="module" src="bn_tracker.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700;900&family=Fredoka+One&display=swap');
+:root{--primary:#5b2d8e;--secondary:#9b59b6;--accent:#f39c12;--accent2:#e67e22;--bg:#f8f4ff;--card:#fff;--text:#1b1b2f;--muted:#6b7280;--correct:#27ae60;--wrong:#c0392b;--border:#d9c4f0;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+.info-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
+.info-card{background:var(--card);border-radius:24px;padding:36px 28px;width:100%;max-width:380px;box-shadow:0 8px 32px rgba(91,45,142,.15);}
+.info-card .top-icon{font-size:48px;text-align:center;margin-bottom:12px;}
+.info-card h1{font-family:'Fredoka One',cursive;font-size:22px;color:var(--primary);text-align:center;margin-bottom:4px;}
+.info-card .sub{font-size:12px;color:var(--muted);text-align:center;margin-bottom:28px;line-height:1.6;}
+.form-label{font-size:12px;font-weight:700;color:var(--primary);margin-bottom:6px;display:block;}
+.form-select,.form-input{width:100%;padding:13px 14px;border:2px solid var(--border);border-radius:12px;font-family:'Noto Sans KR',sans-serif;font-size:14px;outline:none;transition:border-color .2s;margin-bottom:16px;background:white;color:var(--text);}
+.form-select:focus,.form-input:focus{border-color:var(--secondary);}
+.form-select.err,.form-input.err{border-color:var(--wrong);}
+.start-btn{width:100%;padding:15px;background:linear-gradient(135deg,var(--primary),#3d1a6e);color:white;border:none;border-radius:14px;font-family:'Noto Sans KR',sans-serif;font-size:16px;font-weight:700;cursor:pointer;transition:opacity .2s;box-shadow:0 4px 16px rgba(91,45,142,.3);}
+.start-btn:hover{opacity:.88;}
+.quiz-wrap{display:none;}
+.quiz-header{background:linear-gradient(135deg,var(--primary),#3d1a6e);color:white;padding:20px 16px 16px;text-align:center;position:relative;overflow:hidden;}
+.quiz-header::before{content:'';position:absolute;top:-40px;right:-40px;width:160px;height:160px;background:rgba(255,255,255,.05);border-radius:50%;}
+.lesson-badge{display:inline-block;background:var(--accent);color:white;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;letter-spacing:1px;margin-bottom:6px;}
+.quiz-header h1{font-family:'Fredoka One',cursive;font-size:24px;letter-spacing:1px;margin-bottom:2px;}
+.quiz-header .student-info{font-size:12px;opacity:.85;margin-top:2px;}
+.attempt-badge{display:inline-block;background:rgba(255,255,255,.18);border-radius:8px;padding:3px 10px;font-size:11px;margin-top:5px;}
+.section-tabs{display:flex;overflow-x:auto;gap:8px;padding:12px 14px 0;background:var(--primary);scrollbar-width:none;}
+.section-tabs::-webkit-scrollbar{display:none;}
+.tab-btn{flex-shrink:0;padding:7px 14px;border-radius:10px 10px 0 0;border:none;background:rgba(255,255,255,.13);color:rgba(255,255,255,.65);font-family:'Noto Sans KR',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;}
+.tab-btn.active{background:var(--bg);color:var(--primary);}
+.progress-wrap{padding:10px 14px 0;background:var(--bg);}
+.progress-info{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:5px;}
+.progress-bar{height:5px;background:var(--border);border-radius:10px;overflow:hidden;}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--secondary),var(--primary));border-radius:10px;transition:width .4s ease;}
+.quiz-section{display:none;padding:14px 14px 80px;}
+.quiz-section.active{display:block;}
+.section-title{font-size:14px;font-weight:700;color:var(--primary);margin-bottom:3px;display:flex;align-items:center;gap:6px;}
+.section-title .icon{width:26px;height:26px;background:var(--primary);color:white;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;}
+.section-desc{font-size:11px;color:var(--muted);margin-bottom:14px;}
+.q-card{background:var(--card);border-radius:14px;padding:18px;margin-bottom:12px;border:1.5px solid var(--border);box-shadow:0 2px 6px rgba(0,0,0,.04);}
+.q-card.correct-card{border-color:var(--correct);background:#f0fdf4;}
+.q-card.wrong-card{border-color:var(--wrong);background:#fff5f5;}
+.q-num{font-size:10px;font-weight:700;color:var(--muted);margin-bottom:5px;}
+.q-word{font-size:20px;font-weight:900;color:var(--text);margin-bottom:3px;font-family:'Fredoka One',cursive;}
+.q-word.ko{font-family:'Noto Sans KR',sans-serif;font-size:16px;font-weight:700;}
+.q-sub{font-size:11px;color:var(--muted);margin-bottom:12px;}
+.lesson-tag{display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:5px;margin-bottom:3px;}
+.lesson-tag.l1{background:#ede9fe;color:#5b2d8e;}
+.lesson-tag.l2{background:#fef3c7;color:#92400e;}
+.lesson-tag.l3{background:#dcfce7;color:#166534;}
+.lesson-tag.l4{background:#fce7f3;color:#9f1239;}
+.lesson-tag.l5{background:#cffafe;color:#155e75;}
+.options{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+.opt-btn{padding:9px 11px;border:2px solid var(--border);border-radius:9px;background:white;font-family:'Noto Sans KR',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;text-align:center;color:var(--text);line-height:1.4;}
+.opt-btn:hover:not(:disabled){border-color:var(--secondary);background:#f5f0ff;}
+.opt-btn.selected-correct{background:#d1fae5;border-color:var(--correct);color:var(--correct);}
+.opt-btn.selected-wrong{background:#fee2e2;border-color:var(--wrong);color:var(--wrong);}
+.opt-btn.show-correct{background:#d1fae5;border-color:var(--correct);color:var(--correct);}
+.opt-btn:disabled{cursor:default;}
+.opt-btn.multi.selected{background:#ede9fe;border-color:var(--secondary);color:var(--primary);}
+.multi-confirm{margin-top:10px;width:100%;padding:10px;background:#f3f4f6;color:#9ca3af;border:none;border-radius:9px;font-size:12px;font-weight:700;cursor:not-allowed;transition:all .15s;}
+.multi-confirm.ready{background:var(--secondary);color:white;cursor:pointer;}
+.multi-confirm.ready:hover{background:var(--primary);}
+.opt-btn.multi.correct-sel{background:#d1fae5;border-color:var(--correct);color:var(--correct);}
+.opt-btn.multi.wrong-sel{background:#fee2e2;border-color:var(--wrong);color:var(--wrong);}
+.feedback{font-size:12px;font-weight:700;margin-top:7px;padding:5px 9px;border-radius:7px;display:none;}
+.feedback.show{display:block;}
+.feedback.ok{background:#d1fae5;color:var(--correct);}
+.feedback.no{background:#fee2e2;color:var(--wrong);}
+.float-submit{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);z-index:100;width:calc(100% - 28px);max-width:480px;padding:13px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:white;border:none;border-radius:14px;font-family:'Noto Sans KR',sans-serif;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 4px 18px rgba(243,156,18,.4);}
+.float-submit:active{transform:translateX(-50%) scale(.97);}
+.float-submit.hidden{display:none;}
+.result-screen{display:none;padding:28px 18px;text-align:center;}
+.result-screen.show{display:block;}
+.result-emoji{font-size:56px;margin-bottom:10px;}
+.result-score{font-size:44px;font-weight:900;font-family:'Fredoka One',cursive;color:var(--primary);margin-bottom:3px;}
+.result-label{font-size:13px;color:var(--muted);margin-bottom:20px;}
+.result-detail{background:white;border-radius:14px;padding:14px;margin-bottom:18px;text-align:left;}
+.result-row{display:flex;justify-content:space-between;padding:5px 0;font-size:12px;border-bottom:1px solid #f0f0f0;}
+.result-row:last-child{border-bottom:none;}
+.result-row .label{color:var(--muted);}
+.result-row .val{font-weight:700;}
+.sending-msg{font-size:13px;color:var(--muted);margin-bottom:14px;}
+.sending-msg.ok{color:var(--correct);font-weight:700;}
+.sending-msg.err{color:var(--wrong);}
+.retry-btn{width:100%;padding:13px;background:var(--primary);color:white;border:none;border-radius:14px;font-family:'Noto Sans KR',sans-serif;font-size:14px;font-weight:700;cursor:pointer;}
+</style>
+
+<script>
+// 봄날 허브에서 전달된 학생 이름 자동 적용
+(function(){
+  var saved = sessionStorage.getItem('bn_name') || localStorage.getItem('bn_name');
+  if(saved){
+    window._hubStudentName = saved;
+    // 이름 입력란이 있으면 자동 입력
+    window.addEventListener('DOMContentLoaded', function(){
+      var inputs = document.querySelectorAll('input#student-name, input#nameInput, .name-input');
+      inputs.forEach(function(el){ if(!el.value) el.value = saved; });
+    });
+  }
+})();
+</script>
+</head>
+<body>
+<div class="info-wrap" id="infoWrap">
+  <div class="info-card">
+    <div class="top-icon">🏫</div>
+    <h1>영어2 1과 어휘 TEST</h1>
+    <p class="sub">YBM(박준언) 영어2 · 종촌고 · 고운고 2학년<br>퀴즈 결과가 선생님께 자동 전달돼요!</p>
+    <label class="form-label">🏫 학교 / 학년</label>
+    <select class="form-select" id="schoolSel">
+      <option value="">학교를 선택하세요</option>
+      <option value="종촌고2">종촌고 2학년</option>
+      <option value="고운고2">고운고 2학년</option>
+    </select>
+    <label class="form-label">✏️ 이름</label>
+    <input type="text" class="form-input" id="nameInput" placeholder="이름을 입력하세요" maxlength="10">
+    <button class="start-btn" onclick="startQuiz()">퀴즈 시작 →</button>
+  </div>
+</div>
+<div class="quiz-wrap" id="quizWrap">
+  <div class="quiz-header">
+    <div class="lesson-badge">종촌고 · 고운고 2학년 · 영어2 1과</div>
+    <h1>📚 Vocabulary Quiz</h1>
+    <div class="student-info" id="studentInfoDisplay"></div>
+    <div class="attempt-badge" id="attemptDisplay">첫 번째 도전!</div>
+  </div>
+  <div class="section-tabs">
+    <button class="tab-btn active" onclick="switchSection(0)">① 유의어</button>
+    <button class="tab-btn" onclick="switchSection(1)">② 반의어</button>
+    <button class="tab-btn" onclick="switchSection(2)">③ 뜻 찾기</button>
+    <button class="tab-btn" onclick="switchSection(3)">④ 다의어</button>
+    <button class="tab-btn" onclick="switchSection(4)">⑤ Phrases</button>
+    <button class="tab-btn" onclick="switchSection(5)">⑥ 영영풀이</button>
+  </div>
+  <div class="progress-wrap">
+    <div class="progress-info"><span id="progressText">0 / 0 완료</span><span id="scoreText">점수: 0</span></div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+  </div>
+  <div class="quiz-section active" id="section-0"><div class="section-title"><div class="icon">①</div> 유의어 고르기</div><div class="section-desc">주어진 단어와 의미가 가장 가까운 것을 고르세요.</div><div id="synonymQuestions"></div></div>
+  <div class="quiz-section" id="section-1"><div class="section-title"><div class="icon">②</div> 반의어 고르기</div><div class="section-desc">주어진 단어의 반의어를 고르세요.</div><div id="antonymQuestions"></div></div>
+  <div class="quiz-section" id="section-2"><div class="section-title"><div class="icon">③</div> 영단어 뜻 찾기</div><div class="section-desc">다음 영어 단어의 우리말 뜻을 고르세요.</div><div id="formQuestions"></div></div>
+  <div class="quiz-section" id="section-3"><div class="section-title"><div class="icon">④</div> 다의어 뜻 모두 선택</div><div class="section-desc">단어의 뜻을 모두 골라보세요.</div><div id="polyQuestions"></div></div>
+  <div class="quiz-section" id="section-4"><div class="section-title"><div class="icon">⑤</div> Phrases</div><div class="section-desc">주어진 표현의 올바른 뜻을 고르세요.</div><div id="phraseQuestions"></div></div>
+  <div class="quiz-section" id="section-5"><div class="section-title"><div class="icon">⑥</div> 영영풀이</div><div class="section-desc">영어 풀이를 읽고 알맞은 단어를 고르세요.</div><div id="engEngQuestions"></div></div>
+  <div class="result-screen" id="resultScreen">
+    <div class="result-emoji" id="resultEmoji">🎉</div>
+    <div class="result-score" id="resultScore">0점</div>
+    <div class="result-label" id="resultLabel"></div>
+    <div class="result-detail" id="resultDetail"></div>
+    <div class="sending-msg" id="sendingMsg">📡 결과 전송 중...</div>
+    <button id="retryWrongBtn" onclick="startRetry()" style="display:none;width:100%;padding:13px;background:var(--wrong);color:white;border:none;border-radius:14px;font-family:'Noto Sans KR',sans-serif;font-size:15px;font-weight:700;cursor:pointer;margin-bottom:10px;">❌ 오답 다시 풀기 (<span id="wrongCount">0</span>개)</button>
+    <button class="retry-btn" onclick="retryQuiz()">🔄 처음부터 다시</button>
+  </div>
+  
+  <!-- 오답 재풀이 화면 -->
+  <div id="retryScreen" style="display:none;padding:14px 14px 80px;">
+    <div style="background:var(--wrong);color:white;border-radius:14px;padding:14px 18px;margin-bottom:16px;text-align:center;">
+      <div style="font-size:12px;font-weight:700;opacity:.85">오답 재풀이 모드 · <span id="retryRoundLabel">1라운드</span></div>
+      <div style="font-family:'Fredoka One',cursive;font-size:20px;margin-top:2px">❌ → ✅ 전부 맞힐 때까지!</div>
+      <div style="font-size:11px;opacity:.75;margin-top:4px" id="retryCountLabel"></div>
+    </div>
+    <div id="retryQuestions"></div>
+  </div>
+  <button class="float-submit hidden" id="retrySubmitBtn" onclick="submitRetry()">✅ 오답 확인하기</button>
+  <button class="float-submit" id="floatSubmit" onclick="submitAll()">🎯 최종 제출하기</button>
+</div>
+<script type="module">
+import{initializeApp}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import{getFirestore,collection,addDoc,serverTimestamp}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+const cfg={apiKey:"AIzaSyCxS524S8KAaF87DomPtl9sJdF-eqes404",authDomain:"bomnalvaca.firebaseapp.com",projectId:"bomnalvaca",storageBucket:"bomnalvaca.firebasestorage.app",messagingSenderId:"115868052300",appId:"1:115868052300:web:765c08867b6f1ce0987de9"};
+const app=initializeApp(cfg);const db=getFirestore(app);
+window._saveResult=async function(data){await addDoc(collection(db,'quiz_results'),{...data,submittedAt:serverTimestamp()});};
+window._fbReady=true;
+</script>
+<script>
+const SYNONYM_DATA=[{"lesson": 1, "word": "full of ~ (~으로 가득 찬)", "answer": "filled with ~", "distractors": ["heating", "meal", "urban"]}, {"lesson": 1, "word": "emerge (나타나다, 출현하다)", "answer": "appear", "distractors": ["exact", "single", "solve"]}, {"lesson": 1, "word": "not ~ anymore (더 이상 ~하지 않는)", "answer": "not ~ any more", "distractors": ["slum", "beat", "explore"]}, {"lesson": 1, "word": "thanks to ~ (~ 덕분에)", "answer": "because of ~", "distractors": ["document", "recorded", "shout"]}, {"lesson": 1, "word": "dominant (우세한, 지배적인)", "answer": "leading", "distractors": ["standard", "harsh", "heating"]}, {"lesson": 1, "word": "fascinating (매혹적인, 대단히 흥미로운)", "answer": "intriguing", "distractors": ["shift", "self-worth", "sign"]}, {"lesson": 1, "word": "eventually (결국, 마침내)", "answer": "finally", "distractors": ["movement", "lyric", "decline"]}, {"lesson": 1, "word": "host (~을 주최하다)", "answer": "hold", "distractors": ["slum", "care", "shout"]}, {"lesson": 1, "word": "at the same time (동시에)", "answer": "at a[one] time", "distractors": ["leave", "fascinating", "injustice"]}, {"lesson": 1, "word": "no longer (더는 ~ 아닌)", "answer": "not ~ any longer", "distractors": ["overcome", "limited", "admiration"]}, {"lesson": 1, "word": "show ~ off (~을 자랑하다, 뽐내다)", "answer": "flaunt", "distractors": ["confront", "youth", "international"]}, {"lesson": 1, "word": "exact (정확한)", "answer": "precise", "distractors": ["treaty", "single", "attitude"]}, {"lesson": 1, "word": "join (~에 들어가다, 입대하다)", "answer": "enlist in ~", "distractors": ["slum", "instead", "birthplace"]}, {"lesson": 1, "word": "decline (감소)", "answer": "reduction", "distractors": ["line", "phrase", "birthplace"]}, {"lesson": 1, "word": "typically (일반적으로, 보통)", "answer": "normally", "distractors": ["despair", "turntable", "express"]}, {"lesson": 1, "word": "focus on ~ (~에 초점을 두다)", "answer": "concentrate on ~", "distractors": ["eventually", "genre", "emphasize"]}, {"lesson": 1, "word": "significant (중요한)", "answer": "major", "distractors": ["host", "shout", "immigrant"]}, {"lesson": 1, "word": "shift (변화)", "answer": "change", "distractors": ["decline", "extend", "overcome"]}, {"lesson": 1, "word": "occur (일어나다, 발생하다)", "answer": "happen", "distractors": ["appearance", "care", "anticipated"]}, {"lesson": 1, "word": "appearance (나타남, 출현)", "answer": "advent", "distractors": ["underground", "particularly", "chant"]}, {"lesson": 1, "word": "groundbreaking (획기적인, 혁신적인)", "answer": "revolutionary", "distractors": ["mission", "success", "breakdancing"]}, {"lesson": 1, "word": "harsh (가혹한)", "answer": "brutal", "distractors": ["line", "medical", "chant"]}, {"lesson": 1, "word": "aim (목표)", "answer": "purpose", "distractors": ["emphasize", "birthplace", "party"]}, {"lesson": 1, "word": "attitude (태도, 마음가짐)", "answer": "mindset", "distractors": ["major", "injustice", "separate"]}, {"lesson": 1, "word": "gradually (점차, 서서히)", "answer": "over time", "distractors": ["care", "instead", "stage"]}, {"lesson": 1, "word": "summarize (~을 요약하다)", "answer": "sum ~ up", "distractors": ["decline", "graffiti", "join"]}, {"lesson": 1, "word": "go on+to부정사 (이어서 ~하다)", "answer": "move on+to", "distractors": ["despair", "area", "individual"]}, {"lesson": 1, "word": "cannot ~ enough (아무리 ~해도 충분하지 않다)", "answer": "cannot ~ too", "distractors": ["address", "role", "discrimination"]}, {"lesson": 1, "word": "emphasize (~을 강조하다)", "answer": "stress", "distractors": ["spread", "despite", "slum"]}, {"lesson": 1, "word": "present ~ to (~을 에 제출하다)", "answer": "submit ~ to", "distractors": ["decline", "dominant", "community"]}, {"lesson": 1, "word": "imply (~을 암시하다, 내포하다)", "answer": "suggest", "distractors": ["breakdancing", "shouting", "free"]}, {"lesson": 1, "word": "powerful (강력한)", "answer": "strong", "distractors": ["separate", "economic", "urban"]}, {"lesson": 1, "word": "bring ~ about (~을 유발하다)", "answer": "cause", "distractors": ["DJing", "LP", "importance"]}, {"lesson": 1, "word": "unique (독특한, 고유한)", "answer": "distinctive", "distractors": ["phenomenon", "immigrant", "particularly"]}, {"lesson": 1, "word": "growing (증가하는, 커지는)", "answer": "increasing", "distractors": ["limited", "detail", "instead"]}, {"lesson": 1, "word": "appeal (매력)", "answer": "attraction", "distractors": ["standard", "such", "summarize"]}];
+const ANTONYM_DATA=[{"lesson": 1, "word": "urban (도시의)", "answer": "rural", "distractors": ["resource", "care", "underground"]}, {"lesson": 1, "word": "major (주요한, 중요한)", "answer": "minor", "distractors": ["break", "strongly", "event"]}, {"lesson": 1, "word": "dominant (우세한, 지배적인)", "answer": "minor", "distractors": ["recorded", "LP", "unemployment"]}, {"lesson": 1, "word": "fascinating (매혹적인, 대단히 흥미로운)", "answer": "uninteresting", "distractors": ["immigrant", "disc", "original"]}, {"lesson": 1, "word": "exact (정확한)", "answer": "inaccurate", "distractors": ["second-class", "powerful", "leave"]}, {"lesson": 1, "word": "join (~에 들어가다, 입대하다)", "answer": "leave", "distractors": ["birthplace", "eventually", "turntable"]}, {"lesson": 1, "word": "significant (중요한)", "answer": "insignificant", "distractors": ["injustice", "spread", "reality"]}, {"lesson": 1, "word": "appearance (나타남, 출현)", "answer": "disappearance", "distractors": ["emphasize", "meal", "urban"]}, {"lesson": 1, "word": "international (국제적인)", "answer": "domestic", "distractors": ["ghetto", "vibrant", "shift"]}, {"lesson": 1, "word": "underground (언더그라운드의)", "answer": "mainstream", "distractors": ["extend", "confront", "block"]}, {"lesson": 1, "word": "unique (독특한, 고유한)", "answer": "common", "distractors": ["leave", "standard", "hardship"]}, {"lesson": 1, "word": "growing (증가하는, 커지는)", "answer": "declining", "distractors": ["section", "gangster", "medical"]}];
+const FORM_DATA=[{"lesson": 1, "word": "urban", "pos": "형용사", "answer": "도시의", "distractors": ["현상", "기대하던, 대망의", "선언"]}, {"lesson": 1, "word": "area", "pos": "명사", "answer": "지역", "distractors": ["독특한, 고유한", "매혹적인, 대단히 흥미로운", "턴테이블"]}, {"lesson": 1, "word": "slum", "pos": "명사", "answer": "빈민가", "distractors": ["독특한, 고유한", "문서", "결국, 마침내"]}, {"lesson": 1, "word": "economic", "pos": "형용사", "answer": "경제의, 경제적인", "distractors": ["그래피티(건물벽, 공공시설 등에 페인트 등으로 하는 낙서나 그림)", "자부심, 자존감", "~을 요약하다"]}, {"lesson": 1, "word": "recession", "pos": "명사", "answer": "경기 침체", "distractors": ["특히", "국제적인", "개인의"]}, {"lesson": 1, "word": "owner", "pos": "명사", "answer": "소유주, 주인", "distractors": ["브레이크댄싱(1970년대 뉴욕에서 아프리카계 미국인과 라틴계 젊은이들을 중심으로 발달한 자유롭고 곡예적인 거리 춤)", "개인의", "싱글(곡), 싱글 음반"]}, {"lesson": 1, "word": "leave", "pos": "동사", "answer": "떠나다", "distractors": ["독특한, 고유한", "평화", "일반적으로, 보통"]}, {"lesson": 1, "word": "abandoned", "pos": "형용사", "answer": "버려진", "distractors": ["엠씨잉(힙합 공연에서 마이크를 사용해 관객의 호응을 이끌고 리듬에 맞추어 말하거나 랩을 하는 활동)", "지역", "현상"]}, {"lesson": 1, "word": "heating", "pos": "명사", "answer": "난방", "distractors": ["경제의, 경제적인", "탄생지, 발생지", "돌봄"]}, {"lesson": 1, "word": "remain", "pos": "동사", "answer": "남아 있다", "distractors": ["디스크, 원형의 판", "~의 이름을 짓다, ~을 이라고 이름 짓다[부르다]", "강하게"]}, {"lesson": 1, "word": "unemployment", "pos": "명사", "answer": "실업(률)", "distractors": ["자원", "조약, 협약", "~에 들어가다, 입대하다"]}, {"lesson": 1, "word": "emerge", "pos": "동사", "answer": "나타나다, 출현하다", "distractors": ["강하게", "어려움", "기대하던, 대망의"]}, {"lesson": 1, "word": "violence", "pos": "명사", "answer": "폭력", "distractors": ["힙합인", "리듬감 있는, 리드미컬한", "절망"]}, {"lesson": 1, "word": "despair", "pos": "명사", "answer": "절망", "distractors": ["퍼지다, 확산되다", "(특정 인종의) 빈민촌", "나타나다, 출현하다"]}, {"lesson": 1, "word": "gang", "pos": "명사", "answer": "폭력 조직", "distractors": ["감소", "장르, 유형", "~을 암시하다, 내포하다"]}, {"lesson": 1, "word": "ghetto", "pos": "명사", "answer": "(특정 인종의) 빈민촌", "distractors": ["무대", "군대", "활기찬, 생기가 넘치는"]}, {"lesson": 1, "word": "respect", "pos": "동사", "answer": "~을 존경하다", "distractors": ["~에 서명하다", "떠나다", "~을 연장하다, 확대하다"]}, {"lesson": 1, "word": "free", "pos": "형용사", "answer": "무료의", "distractors": ["힙합의 n. 힙합", "폭력 조직", "현상"]}, {"lesson": 1, "word": "meal", "pos": "명사", "answer": "식사", "distractors": ["대두, 부상", "자원", "의료의"]}, {"lesson": 1, "word": "medical", "pos": "형용사", "answer": "의료의", "distractors": ["조약, 협약", "~을 반복해 외치다 n. 구호", "군사의"]}, {"lesson": 1, "word": "care", "pos": "명사", "answer": "돌봄", "distractors": ["녹음된", "독특한, 고유한", "정확한"]}, {"lesson": 1, "word": "instead", "pos": "부사", "answer": "대신에", "distractors": ["리듬감 있는, 리드미컬한", "주요한, 중요한", "특히"]}, {"lesson": 1, "word": "persuade", "pos": "동사", "answer": "~을 설득하다", "distractors": ["~에도 불구하고", "우세한, 지배적인", "대두, 부상"]}, {"lesson": 1, "word": "unite", "pos": "동사", "answer": "단결하다", "distractors": ["절망", "그러한", "~을 강조하다"]}, {"lesson": 1, "word": "community", "pos": "명사", "answer": "(같은 성향의) 공동체, 커뮤니티", "distractors": ["매력", "블록(도로로 둘러싸인 구획)", "~에도 불구하고"]}, {"lesson": 1, "word": "suggest", "pos": "동사", "answer": "~을 제안[제의]하다", "distractors": ["떠나다", "브레이크댄싱(1970년대 뉴욕에서 아프리카계 미국인과 라틴계 젊은이들을 중심으로 발달한 자유롭고 곡예적인 거리 춤)", "결국, 마침내"]}, {"lesson": 1, "word": "peace", "pos": "명사", "answer": "평화", "distractors": ["돌봄", "기대하던, 대망의", "~을 해결하다"]}, {"lesson": 1, "word": "treaty", "pos": "명사", "answer": "조약, 협약", "distractors": ["성공", "태도, 마음가짐", "싱글(곡), 싱글 음반"]}, {"lesson": 1, "word": "gangster", "pos": "명사", "answer": "갱단의 일원, 폭력조직원", "distractors": ["증가하는, 커지는", "~을 탐구하다", "인종의"]}, {"lesson": 1, "word": "sign", "pos": "동사", "answer": "~에 서명하다", "distractors": ["평화", "결국, 마침내", "엠씨잉(힙합 공연에서 마이크를 사용해 관객의 호응을 이끌고 리듬에 맞추어 말하거나 랩을 하는 활동)"]}, {"lesson": 1, "word": "solve", "pos": "동사", "answer": "~을 해결하다", "distractors": ["난방", "결국, 마침내", "~의 이름을 짓다, ~을 이라고 이름 짓다[부르다]"]}, {"lesson": 1, "word": "dispute", "pos": "명사", "answer": "분쟁, 논쟁", "distractors": ["행사, 이벤트", "매력", "탄생지, 발생지"]}, {"lesson": 1, "word": "hip-hop", "pos": "형용사", "answer": "힙합의 n. 힙합", "distractors": ["힙합인", "디제잉(DJ가 녹음된 음악을 선택해 틀고, 여러 트랙을 믹싱하는 활동)", "빈민가"]}, {"lesson": 1, "word": "major", "pos": "형용사", "answer": "주요한, 중요한", "distractors": ["~에 들어가다, 입대하다", "사명, 임무", "떠나다"]}, {"lesson": 1, "word": "immigrant", "pos": "명사", "answer": "이민자", "distractors": ["박자, 장단", "실업(률)", "~을 형성하다"]}, {"lesson": 1, "word": "dominant", "pos": "형용사", "answer": "우세한, 지배적인", "distractors": ["~에게 말을 건네다", "돌봄", "중요한"]}, {"lesson": 1, "word": "genre", "pos": "명사", "answer": "장르, 유형", "distractors": ["차별", "자원", "~에게 말을 건네다"]}, {"lesson": 1, "word": "fascinating", "pos": "형용사", "answer": "매혹적인, 대단히 흥미로운", "distractors": ["대사", "시민", "녹음된"]}, {"lesson": 1, "word": "explore", "pos": "동사", "answer": "~을 탐구하다", "distractors": ["~을 형성하다", "재미있는, 농담조의", "시민"]}, {"lesson": 1, "word": "DJing", "pos": "명사", "answer": "디제잉(DJ가 녹음된 음악을 선택해 틀고, 여러 트랙을 믹싱하는 활동)", "distractors": ["갱단의 일원, 폭력조직원", "조약, 협약", "남아 있다"]}, {"lesson": 1, "word": "breakdancing", "pos": "명사", "answer": "브레이크댄싱(1970년대 뉴욕에서 아프리카계 미국인과 라틴계 젊은이들을 중심으로 발달한 자유롭고 곡예적인 거리 춤)", "distractors": ["남아 있다", "의료의", "~을 해결하다"]}, {"lesson": 1, "word": "MCing", "pos": "명사", "answer": "엠씨잉(힙합 공연에서 마이크를 사용해 관객의 호응을 이끌고 리듬에 맞추어 말하거나 랩을 하는 활동)", "distractors": ["군사의", "~을 해결하다", "나타나다, 출현하다"]}, {"lesson": 1, "word": "party", "pos": "명사", "answer": "파티, 잔치 vi. 파티를 벌이다", "distractors": ["(같은 성향의) 공동체, 커뮤니티", "어려움", "외침"]}, {"lesson": 1, "word": "event", "pos": "명사", "answer": "행사, 이벤트", "distractors": ["활기찬, 생기가 넘치는", "큰 기쁨, 환희, 즐거움", "녹음된"]}, {"lesson": 1, "word": "block", "pos": "명사", "answer": "블록(도로로 둘러싸인 구획)", "distractors": ["일반적으로, 보통", "정확한", "남아 있다"]}, {"lesson": 1, "word": "eventually", "pos": "부사", "answer": "결국, 마침내", "distractors": ["힙합인", "~을 설득하다", "도시의"]}, {"lesson": 1, "word": "vibrant", "pos": "형용사", "answer": "활기찬, 생기가 넘치는", "distractors": ["매력", "평화", "악기의"]}, {"lesson": 1, "word": "youth", "pos": "명사", "answer": "청년, 젊은이", "distractors": ["중요성", "역할", "태도, 마음가짐"]}, {"lesson": 1, "word": "movement", "pos": "명사", "answer": "(사회적∙정치적) 운동;n. 동작", "distractors": ["변화", "떠나다", "선언"]}, {"lesson": 1, "word": "graffiti", "pos": "명사", "answer": "그래피티(건물벽, 공공시설 등에 페인트 등으로 하는 낙서나 그림)", "distractors": ["기대하던, 대망의", "독특한, 고유한", "~을 형성하다"]}, {"lesson": 1, "word": "host", "pos": "동사", "answer": "~을 주최하다", "distractors": ["버려진", "~을 제안[제의]하다", "~을 극복하다"]}, {"lesson": 1, "word": "birthplace", "pos": "명사", "answer": "탄생지, 발생지", "distractors": ["절망", "대신에", "현상"]}, {"lesson": 1, "word": "turntable", "pos": "명사", "answer": "턴테이블", "distractors": ["폭력 조직", "퍼지다, 확산되다", "대사"]}, {"lesson": 1, "word": "extend", "pos": "동사", "answer": "~을 연장하다, 확대하다", "distractors": ["사명, 임무", "표준의, 표준적인", "활기찬, 생기가 넘치는"]}, {"lesson": 1, "word": "section", "pos": "명사", "answer": "구간", "distractors": ["획기적인, 혁신적인", "돌봄", "일어나다, 발생하다"]}, {"lesson": 1, "word": "break", "pos": "명사", "answer": "[음악] 브레이크(보컬 없이 드럼 비트만 나오는 가장 신나는 구간)", "distractors": ["큰 기쁨, 환희, 즐거움", "군대", "그래피티(건물벽, 공공시설 등에 페인트 등으로 하는 낙서나 그림)"]}, {"lesson": 1, "word": "LP", "pos": "명사", "answer": "엘피 (Long Playing또는 Long Play의 약자)", "distractors": ["공식적으로", "성공", "갱단의 일원, 폭력조직원"]}, {"lesson": 1, "word": "disc", "pos": "명사", "answer": "디스크, 원형의 판", "distractors": ["~을 형성하다", "경제의, 경제적인", "의료의"]}, {"lesson": 1, "word": "influential", "pos": "형용사", "answer": "영향력 있는", "distractors": ["매혹적인, 대단히 흥미로운", "~을 존경하다", "어려움"]}, {"lesson": 1, "word": "rise", "pos": "명사", "answer": "대두, 부상", "distractors": ["~에 맞서다", "결국, 마침내", "녹음된"]}, {"lesson": 1, "word": "anticipated", "pos": "형용사", "answer": "기대하던, 대망의", "distractors": ["~을 극복하다", "(사회적∙정치적) 운동;n. 동작", "별개의, 분리된"]}, {"lesson": 1, "word": "form", "pos": "동사", "answer": "~을 형성하다", "distractors": ["장르, 유형", "공식적으로", "매력"]}, {"lesson": 1, "word": "individual", "pos": "형용사", "answer": "개인의", "distractors": ["~에 들어가다, 입대하다", "별개의, 분리된", "~을 극복하다"]}, {"lesson": 1, "word": "name", "pos": "동사", "answer": "~의 이름을 짓다, ~을 이라고 이름 짓다[부르다]", "distractors": ["태도, 마음가짐", "~을 반복해 외치다 n. 구호", "사명, 임무"]}, {"lesson": 1, "word": "instrumental", "pos": "형용사", "answer": "악기의", "distractors": ["자부심, 자존감", "파티, 잔치 vi. 파티를 벌이다", "브레이크댄싱(1970년대 뉴욕에서 아프리카계 미국인과 라틴계 젊은이들을 중심으로 발달한 자유롭고 곡예적인 거리 춤)"]}, {"lesson": 1, "word": "crowd", "pos": "명사", "answer": "군중, 관중", "distractors": ["악기의", "평화", "버려진"]}, {"lesson": 1, "word": "shout", "pos": "동사", "answer": "~을 외치다", "distractors": ["시민", "나타남, 출현", "돌봄"]}, {"lesson": 1, "word": "phrase", "pos": "명사", "answer": "문구, 구절", "distractors": ["~을 형성하다", "대사", "[음악] 브레이크(보컬 없이 드럼 비트만 나오는 가장 신나는 구간)"]}, {"lesson": 1, "word": "beat", "pos": "명사", "answer": "박자, 장단", "distractors": ["기대하던, 대망의", "탄생지, 발생지", "가혹한"]}, {"lesson": 1, "word": "rhythmic", "pos": "형용사", "answer": "리듬감 있는, 리드미컬한", "distractors": ["인종의", "~을 극복하다", "단결하다"]}, {"lesson": 1, "word": "shouting", "pos": "명사", "answer": "외침", "distractors": ["성공", "구간", "[단·복수 동형] 수단"]}, {"lesson": 1, "word": "address", "pos": "동사", "answer": "~에게 말을 건네다", "distractors": ["~을 외치다", "~을 제안[제의]하다", "~에 서명하다"]}, {"lesson": 1, "word": "separate", "pos": "형용사", "answer": "별개의, 분리된", "distractors": ["어려움", "식사", "[음악] 브레이크(보컬 없이 드럼 비트만 나오는 가장 신나는 구간)"]}, {"lesson": 1, "word": "role", "pos": "명사", "answer": "역할", "distractors": ["일어나다, 발생하다", "선구자, 개척자", "디스크, 원형의 판"]}, {"lesson": 1, "word": "origin", "pos": "명사", "answer": "기원, 유래", "distractors": ["경기 침체", "즉각적인", "떠나다"]}, {"lesson": 1, "word": "exact", "pos": "형용사", "answer": "정확한", "distractors": ["성공", "일반적으로, 보통", "~을 연장하다, 확대하다"]}, {"lesson": 1, "word": "join", "pos": "동사", "answer": "~에 들어가다, 입대하다", "distractors": ["~을 설득하다", "이류의, 열등한", "대사"]}, {"lesson": 1, "word": "army", "pos": "명사", "answer": "군대", "distractors": ["이류의, 열등한", "이민자", "~에게 말을 건네다"]}, {"lesson": 1, "word": "jokey", "pos": "형용사", "answer": "재미있는, 농담조의", "distractors": ["~을 강조하다", "평화", "차별"]}, {"lesson": 1, "word": "stage", "pos": "명사", "answer": "무대", "distractors": ["그러한", "공식적으로", "국제적인"]}, {"lesson": 1, "word": "military", "pos": "형용사", "answer": "군사의", "distractors": ["현실", "역할", "강사, 조교"]}, {"lesson": 1, "word": "instructor", "pos": "명사", "answer": "강사, 조교", "distractors": ["블록(도로로 둘러싸인 구획)", "~을 암시하다, 내포하다", "즉각적인"]}, {"lesson": 1, "word": "chant", "pos": "동사", "answer": "~을 반복해 외치다 n. 구호", "distractors": ["중요한", "외침", "나타남, 출현"]}, {"lesson": 1, "word": "line", "pos": "명사", "answer": "대사", "distractors": ["~에 서명하다", "일어나다, 발생하다", "~을 외치다"]}, {"lesson": 1, "word": "such", "pos": "형용사", "answer": "그러한", "distractors": ["~에 맞서다", "의료의", "폭력"]}, {"lesson": 1, "word": "standard", "pos": "형용사", "answer": "표준의, 표준적인", "distractors": ["경기 침체", "지역", "힙합인"]}, {"lesson": 1, "word": "lyric", "pos": "명사", "answer": "가사", "distractors": ["~을 극복하다", "장르, 유형", "~을 강조하다"]}, {"lesson": 1, "word": "recorded", "pos": "형용사", "answer": "녹음된", "distractors": ["(특정 인종의) 빈민촌", "이민자", "폭력"]}, {"lesson": 1, "word": "delight", "pos": "명사", "answer": "큰 기쁨, 환희, 즐거움", "distractors": ["기원, 유래", "폭력", "성공"]}, {"lesson": 1, "word": "immediate", "pos": "형용사", "answer": "즉각적인", "distractors": ["리듬감 있는, 리드미컬한", "대사", "~을 외치다"]}, {"lesson": 1, "word": "success", "pos": "명사", "answer": "성공", "distractors": ["독특한, 고유한", "무료의", "자부심, 자존감"]}, {"lesson": 1, "word": "decline", "pos": "명사", "answer": "감소", "distractors": ["~을 연장하다, 확대하다", "나타나다, 출현하다", "불의, 부당함, 불평등"]}, {"lesson": 1, "word": "spread", "pos": "동사", "answer": "퍼지다, 확산되다", "distractors": ["별개의, 분리된", "악기의", "식사"]}, {"lesson": 1, "word": "typically", "pos": "부사", "answer": "일반적으로, 보통", "distractors": ["강하게", "감소", "선구자, 개척자"]}, {"lesson": 1, "word": "significant", "pos": "형용사", "answer": "중요한", "distractors": ["매력", "조약, 협약", "태도, 마음가짐"]}, {"lesson": 1, "word": "shift", "pos": "명사", "answer": "변화", "distractors": ["선언", "기원, 유래", "강하게"]}, {"lesson": 1, "word": "occur", "pos": "동사", "answer": "일어나다, 발생하다", "distractors": ["현실", "나타나다, 출현하다", "그래피티(건물벽, 공공시설 등에 페인트 등으로 하는 낙서나 그림)"]}, {"lesson": 1, "word": "appearance", "pos": "명사", "answer": "나타남, 출현", "distractors": ["박자, 장단", "활기찬, 생기가 넘치는", "~을 강조하다"]}, {"lesson": 1, "word": "groundbreaking", "pos": "형용사", "answer": "획기적인, 혁신적인", "distractors": ["별개의, 분리된", "군중, 관중", "자부심, 자존감"]}, {"lesson": 1, "word": "detail", "pos": "동사", "answer": "~을 상세히 말하다", "distractors": ["목표", "경기 침체", "선언"]}, {"lesson": 1, "word": "harsh", "pos": "형용사", "answer": "가혹한", "distractors": ["개인의", "주요한, 중요한", "[단·복수 동형] 수단"]}, {"lesson": 1, "word": "reality", "pos": "명사", "answer": "현실", "distractors": ["[단·복수 동형] 수단", "그래피티(건물벽, 공공시설 등에 페인트 등으로 하는 낙서나 그림)", "일어나다, 발생하다"]}, {"lesson": 1, "word": "second-class", "pos": "형용사", "answer": "이류의, 열등한", "distractors": ["~에 맞서다", "도시의", "그래피티(건물벽, 공공시설 등에 페인트 등으로 하는 낙서나 그림)"]}, {"lesson": 1, "word": "citizen", "pos": "명사", "answer": "시민", "distractors": ["떠나다", "이류의, 열등한", "주요한, 중요한"]}, {"lesson": 1, "word": "original", "pos": "형용사", "answer": "원래의, 본래의", "distractors": ["변화", "~을 연장하다, 확대하다", "~을 설득하다"]}, {"lesson": 1, "word": "aim", "pos": "명사", "answer": "목표", "distractors": ["우세한, 지배적인", "평화", "문서"]}, {"lesson": 1, "word": "injustice", "pos": "명사", "answer": "불의, 부당함, 불평등", "distractors": ["군중, 관중", "[음악] 브레이크(보컬 없이 드럼 비트만 나오는 가장 신나는 구간)", "자부심, 자존감"]}, {"lesson": 1, "word": "single", "pos": "명사", "answer": "싱글(곡), 싱글 음반", "distractors": ["문서", "특히", "악기의"]}, {"lesson": 1, "word": "confront", "pos": "동사", "answer": "~에 맞서다", "distractors": ["구간", "목표", "결국, 마침내"]}, {"lesson": 1, "word": "racial", "pos": "형용사", "answer": "인종의", "distractors": ["감소", "자원", "나타나다, 출현하다"]}, {"lesson": 1, "word": "discrimination", "pos": "명사", "answer": "차별", "distractors": ["증가하는, 커지는", "~을 표현하다", "원래의, 본래의"]}, {"lesson": 1, "word": "attitude", "pos": "명사", "answer": "태도, 마음가짐", "distractors": ["군대", "시민", "감소"]}, {"lesson": 1, "word": "gradually", "pos": "부사", "answer": "점차, 서서히", "distractors": ["디스크, 원형의 판", "~을 표현하다", "시민"]}, {"lesson": 1, "word": "summarize", "pos": "동사", "answer": "~을 요약하다", "distractors": ["주요한, 중요한", "중요성", "나타남, 출현"]}, {"lesson": 1, "word": "express", "pos": "동사", "answer": "~을 표현하다", "distractors": ["구간", "표준의, 표준적인", "엠씨잉(힙합 공연에서 마이크를 사용해 관객의 호응을 이끌고 리듬에 맞추어 말하거나 랩을 하는 활동)"]}, {"lesson": 1, "word": "particularly", "pos": "부사", "answer": "특히", "distractors": ["싱글(곡), 싱글 음반", "현상", "분쟁, 논쟁"]}, {"lesson": 1, "word": "pioneer", "pos": "명사", "answer": "선구자, 개척자", "distractors": ["도시의", "엠씨잉(힙합 공연에서 마이크를 사용해 관객의 호응을 이끌고 리듬에 맞추어 말하거나 랩을 하는 활동)", "역할"]}, {"lesson": 1, "word": "overcome", "pos": "동사", "answer": "~을 극복하다", "distractors": ["난방", "중요성", "폭력"]}, {"lesson": 1, "word": "hardship", "pos": "명사", "answer": "어려움", "distractors": ["이민자", "점차, 서서히", "평화"]}, {"lesson": 1, "word": "hip-hopper", "pos": "명사", "answer": "힙합인", "distractors": ["도시의", "빈민가", "재미있는, 농담조의"]}, {"lesson": 1, "word": "admiration", "pos": "명사", "answer": "존경, 감탄", "distractors": ["장르, 유형", "시민", "~을 설득하다"]}, {"lesson": 1, "word": "despite", "pos": "전치사", "answer": "~에도 불구하고", "distractors": ["무료의", "자원", "독특한, 고유한"]}, {"lesson": 1, "word": "limited", "pos": "형용사", "answer": "제한된", "distractors": ["불의, 부당함, 불평등", "가혹한", "차별"]}, {"lesson": 1, "word": "resource", "pos": "명사", "answer": "자원", "distractors": ["존경, 감탄", "퍼지다, 확산되다", "디스크, 원형의 판"]}, {"lesson": 1, "word": "self-worth", "pos": "명사", "answer": "자부심, 자존감", "distractors": ["선구자, 개척자", "~을 반복해 외치다 n. 구호", "우세한, 지배적인"]}, {"lesson": 1, "word": "importance", "pos": "명사", "answer": "중요성", "distractors": ["재미있는, 농담조의", "도시의", "단결하다"]}, {"lesson": 1, "word": "emphasize", "pos": "동사", "answer": "~을 강조하다", "distractors": ["점차, 서서히", "활기찬, 생기가 넘치는", "역할"]}, {"lesson": 1, "word": "strongly", "pos": "부사", "answer": "강하게", "distractors": ["특히", "~을 표현하다", "~을 설득하다"]}, {"lesson": 1, "word": "declaration", "pos": "명사", "answer": "선언", "distractors": ["어려움", "~을 암시하다, 내포하다", "폭력"]}, {"lesson": 1, "word": "officially", "pos": "부사", "answer": "공식적으로", "distractors": ["획기적인, 혁신적인", "나타남, 출현", "태도, 마음가짐"]}, {"lesson": 1, "word": "international", "pos": "형용사", "answer": "국제적인", "distractors": ["영향력 있는", "자원", "재미있는, 농담조의"]}, {"lesson": 1, "word": "document", "pos": "명사", "answer": "문서", "distractors": ["청년, 젊은이", "행사, 이벤트", "조약, 협약"]}, {"lesson": 1, "word": "mission", "pos": "명사", "answer": "사명, 임무", "distractors": ["태도, 마음가짐", "조약, 협약", "가사"]}, {"lesson": 1, "word": "imply", "pos": "동사", "answer": "~을 암시하다, 내포하다", "distractors": ["의료의", "갱단의 일원, 폭력조직원", "난방"]}, {"lesson": 1, "word": "underground", "pos": "형용사", "answer": "언더그라운드의", "distractors": ["획기적인, 혁신적인", "중요한", "어려움"]}, {"lesson": 1, "word": "powerful", "pos": "형용사", "answer": "강력한", "distractors": ["~에도 불구하고", "평화", "빈민가"]}, {"lesson": 1, "word": "means", "pos": "명사", "answer": "[단·복수 동형] 수단", "distractors": ["엠씨잉(힙합 공연에서 마이크를 사용해 관객의 호응을 이끌고 리듬에 맞추어 말하거나 랩을 하는 활동)", "떠나다", "가혹한"]}, {"lesson": 1, "word": "unique", "pos": "형용사", "answer": "독특한, 고유한", "distractors": ["어려움", "무료의", "문구, 구절"]}, {"lesson": 1, "word": "growing", "pos": "형용사", "answer": "증가하는, 커지는", "distractors": ["원래의, 본래의", "~을 설득하다", "선언"]}, {"lesson": 1, "word": "appeal", "pos": "명사", "answer": "매력", "distractors": ["기원, 유래", "현상", "싱글(곡), 싱글 음반"]}, {"lesson": 1, "word": "global", "pos": "형용사", "answer": "전 세계적인", "distractors": ["~을 상세히 말하다", "활기찬, 생기가 넘치는", "청년, 젊은이"]}, {"lesson": 1, "word": "phenomenon", "pos": "명사", "answer": "현상", "distractors": ["기대하던, 대망의", "디제잉(DJ가 녹음된 음악을 선택해 틀고, 여러 트랙을 믹싱하는 활동)", "절망"]}];
+const POLY_DATA=[{"lesson": 1, "word": "community", "answers": ["(명) (같은 성향의) 공동체, 커뮤니티", "(명) (집합적) 지역사회, 지역 주민들"], "all6": ["(명) (같은 성향의) 공동체, 커뮤니티", "(명) (집합적) 지역사회, 지역 주민들", "(동) ~에 주소를 적다", "(명) (집)주인", "(명) 임금 인상", "(동) ~의 사회를 보다"]}, {"lesson": 1, "word": "major", "answers": ["(형) 주요한, 중요한", "(형) 장조의", "(명) 소령", "(명) 전공"], "all6": ["(형) 주요한, 중요한", "(형) 장조의", "(명) 소령", "(명) 전공", "(동) ~을 주최하다", "(형) 독창적인"]}, {"lesson": 1, "word": "party", "answers": ["(명) 파티, 잔치", "(명) 당", "(명) 일행", "(명) (협상 등의) 당사자, 측"], "all6": ["(명) 파티, 잔치", "(명) 당", "(명) 일행", "(명) (협상 등의) 당사자, 측", "(명) 대두, 부상", "(명) 태도, 입장"]}, {"lesson": 1, "word": "event", "answers": ["(명) (중요한) 사건, 사태", "(명) 행사, 이벤트", "(명) 경기, 시합"], "all6": ["(명) (중요한) 사건, 사태", "(명) 행사, 이벤트", "(명) 경기, 시합", "(명) 전공", "(명) (나무·돌 등의) 덩어리, 블록", "(명) 대두, 부상"]}, {"lesson": 1, "word": "block", "answers": ["(명) 블록(도로로 둘러싸인 구획)", "(명) (나무·돌 등의) 덩어리, 블록", "(명) 장애(물)"], "all6": ["(명) 블록(도로로 둘러싸인 구획)", "(명) (나무·돌 등의) 덩어리, 블록", "(명) 장애(물)", "(명) 감소", "(동) ~을 접대하다", "(명) 사회자"]}, {"lesson": 1, "word": "host", "answers": ["(명) (집)주인", "(명) 주최자", "(명) 사회자", "(동) ~을 접대하다", "(동) ~을 주최하다", "(동) ~의 사회를 보다"], "all6": ["(명) (집)주인", "(명) 주최자", "(명) 사회자", "(동) ~을 접대하다", "(동) ~을 주최하다", "(동) ~의 사회를 보다", "(명) 중단", "(명) 임금 인상"]}, {"lesson": 1, "word": "break", "answers": ["(명) 중단", "(명) 휴식", "(명) 휴가[방학]", "(명) 결별", "(명) 브레이크(보컬 없이 드럼 비트만 나오는 가장 신나는 구간)"], "all6": ["(명) 중단", "(명) 휴식", "(명) 휴가[방학]", "(명) 결별", "(명) 브레이크(보컬 없이 드럼 비트만 나오는 가장 신나는 구간)", "(형) 원래의, 본래의", "(명) 쇠퇴"]}, {"lesson": 1, "word": "rise", "answers": ["(명) 상승, 증가", "(명) 임금 인상", "(명) 대두, 부상"], "all6": ["(명) 상승, 증가", "(명) 임금 인상", "(명) 대두, 부상", "(명) (심장의) 박동", "(명) (중요한) 사건, 사태", "(명) (협상 등의) 당사자, 측"]}, {"lesson": 1, "word": "beat", "answers": ["(동) ~을 격파하다, 이기다", "(동) (이전 기록 등)을 깨다", "(동) ~을 치다, 두드리다", "(명) (심장의) 박동", "(명) 박자, 장단"], "all6": ["(동) ~을 격파하다, 이기다", "(동) (이전 기록 등)을 깨다", "(동) ~을 치다, 두드리다", "(명) (심장의) 박동", "(명) 박자, 장단", "(명) 감소", "(명) 일행"]}, {"lesson": 1, "word": "address", "answers": ["(동) ~에게 말을 건네다", "(동) ~을 다루다[~에 대처 하다]", "(동) ~에(게) 연설하다", "(동) ~에 주소를 적다"], "all6": ["(동) ~에게 말을 건네다", "(동) ~을 다루다[~에 대처 하다]", "(동) ~에(게) 연설하다", "(동) ~에 주소를 적다", "(명) 장애(물)", "(명) 상승, 증가"]}, {"lesson": 1, "word": "origin", "answers": ["(명) 기원, 유래", "(명) 출신, 혈통"], "all6": ["(명) 기원, 유래", "(명) 출신, 혈통", "(명) 장애(물)", "(형) 최초의", "(명) (집)주인", "(동) ~을 치다, 두드리다"]}, {"lesson": 1, "word": "stage", "answers": ["(명) 단계", "(명) 무대"], "all6": ["(명) 단계", "(명) 무대", "(명) 당", "(명) 박자, 장단", "(형) 최초의", "(명) (집합적) 지역사회, 지역 주민들"]}, {"lesson": 1, "word": "line", "answers": ["(명) 선", "(명) 태도, 입장", "(명) 전화 연결", "(명) 행, 줄", "(명) 대사"], "all6": ["(명) 선", "(명) 태도, 입장", "(명) 전화 연결", "(명) 행, 줄", "(명) 대사", "(명) 장애(물)", "(동) ~을 치다, 두드리다"]}, {"lesson": 1, "word": "decline", "answers": ["(명) 감소", "(명) 쇠퇴", "(동) ~을 거절하다"], "all6": ["(명) 감소", "(명) 쇠퇴", "(동) ~을 거절하다", "(명) 대사", "(명) 전화 연결", "(명) 주최자"]}, {"lesson": 1, "word": "original", "answers": ["(형) 원래의, 본래의", "(형) 최초의", "(형) 독창적인"], "all6": ["(형) 원래의, 본래의", "(형) 최초의", "(형) 독창적인", "(명) 주최자", "(명) 상승, 증가", "(명) 파티, 잔치"]}];
+const PHRASE_DATA=[{"lesson": 1, "phrase": "full of ~", "answer": "~으로 가득 찬", "distractors": ["유엔, 국제연합 (the United Nations)", "~의 역할을 맡다", "주차장"]}, {"lesson": 1, "phrase": "afford+to부정사 ~", "answer": "할 여유가 되다, 형편이 되다", "distractors": ["~에 초점을 두다", "역사상, 역대", "진행자, 사회자"]}, {"lesson": 1, "phrase": "move out", "answer": "이사 나가다", "distractors": ["~ 덕분에", "퓰리처상(미국에서 매년 언론, 문학, 음악 분야의 뛰어난 인물에게 주는 상)", "~에 맞선 비판"]}, {"lesson": 1, "phrase": "take ~ away", "answer": "~을 없애다, 빼앗다", "distractors": ["막 ~하려 하다", "~을 로 인정하다", "이어서 ~하다"]}, {"lesson": 1, "phrase": "not ~ anymore", "answer": "더 이상 ~하지 않는", "distractors": ["~에 초점을 두다", "~의 역할을 맡다", "~ 덕분에"]}, {"lesson": 1, "phrase": "have got+to부정사 ~", "answer": "해야 한다", "distractors": ["~와 맞서 싸우다", "~에 연결되다", "~을 유발하다"]}, {"lesson": 1, "phrase": "thanks to ~", "answer": "~ 덕분에", "distractors": ["~에 맞선 비판", "창시자", "~을 가로질러 가다"]}, {"lesson": 1, "phrase": "all over ~", "answer": "~의 전체에 걸쳐", "distractors": ["~ 덕분에", "이사 나가다", "~을 에 제출하다"]}, {"lesson": 1, "phrase": "parking lot", "answer": "주차장", "distractors": ["더는 ~ 아닌", "~을 가로질러 가다", "역사상, 역대"]}, {"lesson": 1, "phrase": "based on ~", "answer": "~에 근거한, ~을 기반으로 한", "distractors": ["즉, 다시 말해", "~에 몰입하다", "~이라고 알려지다"]}, {"lesson": 1, "phrase": "replace ~ with", "answer": "~을 으로 대체하다", "distractors": ["~을 가로질러 가다", "~와 맞서 싸우다", "~에 초점을 두다"]}, {"lesson": 1, "phrase": "regard ~ as", "answer": "~을 로 여기다[간주하다]", "distractors": ["집단으로, 무리를 지어", "~에 연결되다", "~이라고 알려지다"]}, {"lesson": 1, "phrase": "founding father", "answer": "창시자", "distractors": ["~이 뒤따르다, 뒤이어 ~이 일어나다", "~에게 하다는 것을 상기시키다", "~을 으로 대체하다"]}, {"lesson": 1, "phrase": "be known as ~", "answer": "~이라고 알려지다", "distractors": ["~ 덕분에", "~에서부터 유래하다, 비롯되다", "즉, 다시 말해"]}, {"lesson": 1, "phrase": "because of ~", "answer": "~ 때문에", "distractors": ["~이라고 알려지다", "~에게 에 관해 상기시키다", "더는 ~ 아닌"]}, {"lesson": 1, "phrase": "at the same time", "answer": "동시에", "distractors": ["~을 가로질러 가다", "역사상, 역대", "라는 것에 동의하다"]}, {"lesson": 1, "phrase": "switch between ~", "answer": "~의 사이를 넘나들다", "distractors": ["~을 없애다, 빼앗다", "~와 맞서 싸우다", "~의 줄임말인"]}, {"lesson": 1, "phrase": "no longer", "answer": "더는 ~ 아닌", "distractors": ["~을 에 포함시키다", "~의 사이를 넘나들다", "~을 없애다, 빼앗다"]}, {"lesson": 1, "phrase": "show ~ off", "answer": "~을 자랑하다, 뽐내다", "distractors": ["~의 사이를 넘나들다", "~을 없애다, 빼앗다", "끝나다"]}, {"lesson": 1, "phrase": "short for ~", "answer": "~의 줄임말인", "distractors": ["유엔, 국제연합 (the United Nations)", "~을 뽐내다", "~에 근거한, ~을 기반으로 한"]}, {"lesson": 1, "phrase": "in groups", "answer": "집단으로, 무리를 지어", "distractors": ["창시자", "더 이상 ~하지 않는", "~을 로 여기다[간주하다]"]}, {"lesson": 1, "phrase": "in rhythm", "answer": "리듬[박자]에 맞춰", "distractors": ["~을 으로 대체하다", "창시자", "~을 자랑하다, 뽐내다"]}, {"lesson": 1, "phrase": "in rhyme", "answer": "각)운[운율]에 맞춰", "distractors": ["형용사 아무리 ~해도 지나치지 않다", "아무리 ~해도 충분하지 않다", "~이라고 알려지다"]}, {"lesson": 1, "phrase": "take the role of ~", "answer": "~의 역할을 맡다", "distractors": ["에게 을 수여하다", "~의 줄임말인", "~으로 가득 찬"]}, {"lesson": 1, "phrase": "that is", "answer": "즉, 다시 말해", "distractors": ["자신을 표현하다", "끝나다", "~이 뒤따르다, 뒤이어 ~이 일어나다"]}, {"lesson": 1, "phrase": "Master of Ceremonies[MC]", "answer": "진행자, 사회자", "distractors": ["~을 없애다, 빼앗다", "~에 몰입하다", "에게 을 수여하다"]}, {"lesson": 1, "phrase": "originate from ~", "answer": "~에서부터 유래하다, 비롯되다", "distractors": ["~을 으로 대체하다", "역사상, 역대", "~와 맞서 싸우다"]}, {"lesson": 1, "phrase": "be about+to부정사", "answer": "막 ~하려 하다", "distractors": ["에게 을 수여하다", "아무리 ~해도 충분하지 않다", "~을 에 포함시키다"]}, {"lesson": 1, "phrase": "remind ~ that+완전한 절", "answer": "~에게 하다는 것을 상기시키다", "distractors": ["~을 자랑하다, 뽐내다", "~이라고 알려지다", "유엔, 국제연합 (the United Nations)"]}, {"lesson": 1, "phrase": "be over", "answer": "끝나다", "distractors": ["~을 자랑하다, 뽐내다", "~에게 에 관해 상기시키다", "~을 가로질러 가다"]}, {"lesson": 1, "phrase": "move across ~", "answer": "~을 가로질러 가다", "distractors": ["유엔, 국제연합 (the United Nations)", "더는 ~ 아닌", "리듬[박자]에 맞춰"]}, {"lesson": 1, "phrase": "try ~ out", "answer": "~을 시험해 보다", "distractors": ["~에게 하다는 것을 상기시키다", "아무리 ~해도 충분하지 않다", "즉, 다시 말해"]}, {"lesson": 1, "phrase": "include ~ in", "answer": "~을 에 포함시키다", "distractors": ["주차장", "~을 에 가져오다", "~을 으로 대체하다"]}, {"lesson": 1, "phrase": "start as ~", "answer": "~으로서 출발하다", "distractors": ["~에 연결되다", "~의 사이를 넘나들다", "~을 가로질러 가다"]}, {"lesson": 1, "phrase": "focus on ~", "answer": "~에 초점을 두다", "distractors": ["자신을 표현하다", "~와 맞서 싸우다", "~을 없애다, 빼앗다"]}, {"lesson": 1, "phrase": "boast about ~", "answer": "~을 뽐내다", "distractors": ["~에 연결되다", "에게 을 수여하다", "~으로 가득 찬"]}, {"lesson": 1, "phrase": "criticism against ~", "answer": "~에 맞선 비판", "distractors": ["에게 을 수여하다", "이어서 ~하다", "~을 시험해 보다"]}, {"lesson": 1, "phrase": "of all time", "answer": "역사상, 역대", "distractors": ["~에게 하다는 것을 상기시키다", "~을 으로 대체하다", "라는 것에 동의하다"]}, {"lesson": 1, "phrase": "be followed by ~", "answer": "~이 뒤따르다, 뒤이어 ~이 일어나다", "distractors": ["~의 사이를 넘나들다", "자신을 표현하다", "퓰리처상(미국에서 매년 언론, 문학, 음악 분야의 뛰어난 인물에게 주는 상)"]}, {"lesson": 1, "phrase": "go on+to부정사", "answer": "이어서 ~하다", "distractors": ["리듬[박자]에 맞춰", "~의 전체에 걸쳐", "퓰리처상(미국에서 매년 언론, 문학, 음악 분야의 뛰어난 인물에게 주는 상)"]}, {"lesson": 1, "phrase": "agree that+완전한 절 ~", "answer": "라는 것에 동의하다", "distractors": ["~을 로 여기다[간주하다]", "~이라고 알려지다", "해야 한다"]}, {"lesson": 1, "phrase": "cannot ~ too+", "answer": "형용사 아무리 ~해도 지나치지 않다", "distractors": ["~의 사이를 넘나들다", "~ 덕분에", "이사 나가다"]}, {"lesson": 1, "phrase": "cannot ~ enough", "answer": "아무리 ~해도 충분하지 않다", "distractors": ["동시에", "~에 몰입하다", "~에 맞선 비판"]}, {"lesson": 1, "phrase": "present ~ to", "answer": "~을 에 제출하다", "distractors": ["~에 맞선 비판", "~을 가로질러 가다", "~의 줄임말인"]}, {"lesson": 1, "phrase": "the UN", "answer": "유엔, 국제연합 (the United Nations)", "distractors": ["주차장", "~을 시험해 보다", "에게 을 수여하다"]}, {"lesson": 1, "phrase": "recognize~as...", "answer": "~을 로 인정하다", "distractors": ["~을 시험해 보다", "~에 초점을 두다", "~의 전체에 걸쳐"]}, {"lesson": 1, "phrase": "remind ~ of", "answer": "~에게 에 관해 상기시키다", "distractors": ["퓰리처상(미국에서 매년 언론, 문학, 음악 분야의 뛰어난 인물에게 주는 상)", "형용사 아무리 ~해도 지나치지 않다", "진행자, 사회자"]}, {"lesson": 1, "phrase": "bring ~ to", "answer": "~을 에 가져오다", "distractors": ["~에 근거한, ~을 기반으로 한", "주차장", "~이라고 알려지다"]}, {"lesson": 1, "phrase": "award+IO+DO ~", "answer": "에게 을 수여하다", "distractors": ["~이 뒤따르다, 뒤이어 ~이 일어나다", "~을 가로질러 가다", "~을 으로 대체하다"]}, {"lesson": 1, "phrase": "Pulitzer Prize", "answer": "퓰리처상(미국에서 매년 언론, 문학, 음악 분야의 뛰어난 인물에게 주는 상)", "distractors": ["자신을 표현하다", "~이 뒤따르다, 뒤이어 ~이 일어나다", "~에 몰입하다"]}, {"lesson": 1, "phrase": "express oneself", "answer": "자신을 표현하다", "distractors": ["~으로서 출발하다", "역사상, 역대", "~을 시험해 보다"]}, {"lesson": 1, "phrase": "fight against ~", "answer": "~와 맞서 싸우다", "distractors": ["~이라고 알려지다", "~을 없애다, 빼앗다", "퓰리처상(미국에서 매년 언론, 문학, 음악 분야의 뛰어난 인물에게 주는 상)"]}, {"lesson": 1, "phrase": "bring ~ about", "answer": "~을 유발하다", "distractors": ["~에게 하다는 것을 상기시키다", "각)운[운율]에 맞춰", "~에게 에 관해 상기시키다"]}, {"lesson": 1, "phrase": "be engaged with ~", "answer": "~에 몰입하다", "distractors": ["~ 덕분에", "~ 때문에", "~을 없애다, 빼앗다"]}, {"lesson": 1, "phrase": "be connected to ~", "answer": "~에 연결되다", "distractors": ["창시자", "~을 으로 대체하다", "~을 에 가져오다"]}];
+const ENG_ENG_DATA=[{"lesson": 1, "definition": "connected with a city", "answer": "urban", "distractors": ["influential", "officially", "mission"]}, {"lesson": 1, "definition": "particular part of a country, town, or other surface", "answer": "area", "distractors": ["military", "occur", "express"]}, {"lesson": 1, "definition": "area of a city where poor people live in very bad conditions", "answer": "slum", "distractors": ["explore", "break", "breakdancing"]}, {"lesson": 1, "definition": "connected with the trade, industry, and development of wealth of a country, an area, or a society", "answer": "economic", "distractors": ["limited", "anticipated", "phenomenon"]}, {"lesson": 1, "definition": "period of temporary economic decline during which trade and industrial activity are reduced", "answer": "recession", "distractors": ["such", "eventually", "area"]}, {"lesson": 1, "definition": "to go away from a place or person", "answer": "leave", "distractors": ["solve", "explore", "persuade"]}, {"lesson": 1, "definition": "left and no longer wanted, used, or needed", "answer": "abandoned", "distractors": ["crowd", "unique", "name"]}, {"lesson": 1, "definition": "system for making a room or building warm", "answer": "heating", "distractors": ["breakdancing", "shift", "instrumental"]}, {"lesson": 1, "definition": "to continue to be in the same state or condition", "answer": "remain", "distractors": ["slum", "gradually", "success"]}, {"lesson": 1, "definition": "fact that many people do not have jobs", "answer": "unemployment", "distractors": ["free", "chant", "occur"]}, {"lesson": 1, "definition": "to start to exist, appear, or become known", "answer": "emerge", "distractors": ["leave", "confront", "second-class"]}, {"lesson": 1, "definition": "behavior involving physical force intended to hurt, damage, or kill someone or something", "answer": "violence", "distractors": ["lyric", "hip-hop", "address"]}, {"lesson": 1, "definition": "feeling that there is no hope and that you can do nothing to improve a difficult situation", "answer": "despair", "distractors": ["pioneer", "single", "economic"]}, {"lesson": 1, "definition": "an organized group of criminals", "answer": "gang", "distractors": ["care", "influential", "means"]}, {"lesson": 1, "definition": "part of a city where members of a particular race, religion, or nationality live in poor conditions", "answer": "ghetto", "distractors": ["overcome", "lyric", "international"]}, {"lesson": 1, "definition": "to feel or show admiration and respect for someone or something", "answer": "respect", "distractors": ["persuade", "express", "treaty"]}, {"lesson": 1, "definition": "costing nothing", "answer": "free", "distractors": ["economic", "birthplace", "influential"]}, {"lesson": 1, "definition": "an occasion when you eat food, for example breakfast or dinner, or the food that you eat on that occasion", "answer": "meal", "distractors": ["event", "party", "hip-hopper"]}, {"lesson": 1, "definition": "connected with illness and injury and their treatment", "answer": "medical", "distractors": ["second-class", "unemployment", "particularly"]}, {"lesson": 1, "definition": "to make someone decide to do something, especially by giving them reasons why they should do it, or asking them many times to do it", "answer": "persuade", "distractors": ["declaration", "chant", "economic"]}, {"lesson": 1, "definition": "to join together to achieve a particular purpose", "answer": "unite", "distractors": ["declaration", "dominant", "beat"]}, {"lesson": 1, "definition": "group of people having a particular characteristic in common", "answer": "community", "distractors": ["document", "role", "jokey"]}, {"lesson": 1, "definition": "to mention an idea, possible plan, or action for other people to consider", "answer": "suggest", "distractors": ["extend", "fascinating", "dominant"]}, {"lesson": 1, "definition": "a situation in which there is no war or fighting", "answer": "peace", "distractors": ["appearance", "unemployment", "owner"]}, {"lesson": 1, "definition": "formal agreement between two or more countries", "answer": "treaty", "distractors": ["strongly", "urban", "youth"]}, {"lesson": 1, "definition": "member of a group of violent criminals", "answer": "gangster", "distractors": ["spread", "despair", "phenomenon"]}, {"lesson": 1, "definition": "to write your name on a document to show that you agree with what is written on it", "answer": "sign", "distractors": ["fascinating", "emerge", "dominant"]}, {"lesson": 1, "definition": "to find a way of dealing with a problem or disagreement", "answer": "solve", "distractors": ["crowd", "aim", "influential"]}, {"lesson": 1, "definition": "disagreement, argument, or debate", "answer": "dispute", "distractors": ["major", "success", "rhythmic"]}, {"lesson": 1, "definition": "very important, serious, or significant", "answer": "major", "distractors": ["lyric", "separate", "ghetto"]}, {"lesson": 1, "definition": "person who has come to live permanently in a different country", "answer": "immigrant", "distractors": ["dominant", "importance", "fascinating"]}, {"lesson": 1, "definition": "more important, stronger, or more noticeable than anything else", "answer": "dominant", "distractors": ["shout", "racial", "recorded"]}, {"lesson": 1, "definition": "particular type or style of literature, art, film, or music", "answer": "genre", "distractors": ["standard", "DJing", "summarize"]}, {"lesson": 1, "definition": "extremely interesting and attractive", "answer": "fascinating", "distractors": ["line", "free", "emphasize"]}, {"lesson": 1, "definition": "to discuss or think about something carefully", "answer": "explore", "distractors": ["rise", "individual", "area"]}, {"lesson": 1, "definition": "social event at which a group of people meet to talk, dance, and drink", "answer": "party", "distractors": ["explore", "occur", "immigrant"]}, {"lesson": 1, "definition": "to enjoy yourself with a group of other people by drinking alcohol, eating, dancing etc", "answer": "party", "distractors": ["fascinating", "declaration", "aim"]}, {"lesson": 1, "definition": "a performance, sports competition, party etc at which people gather together to watch or take part in something", "answer": "event", "distractors": ["hip-hopper", "reality", "hardship"]}, {"lesson": 1, "definition": "area of land surrounded by four streets in a town or city", "answer": "block", "distractors": ["military", "immigrant", "jokey"]}, {"lesson": 1, "definition": "full of energy, enthusiasm, and life", "answer": "vibrant", "distractors": ["emerge", "instrumental", "overcome"]}, {"lesson": 1, "definition": "period of time when someone is young", "answer": "youth", "distractors": ["role", "despair", "imply"]}, {"lesson": 1, "definition": "drawings or writing on a wall in a public place", "answer": "graffiti", "distractors": ["emphasize", "fascinating", "MCing"]}, {"lesson": 1, "definition": "to organize an event to which others are invited", "answer": "host", "distractors": ["growing", "unite", "aim"]}, {"lesson": 1, "definition": "person who creates an organization or system", "answer": "founding father", "distractors": ["reality", "emerge", "peace"]}, {"lesson": 1, "definition": "place where someone was born or where something started", "answer": "birthplace", "distractors": ["standard", "ghetto", "recession"]}, {"lesson": 1, "definition": "circular platform on a record player that turns a record", "answer": "turntable", "distractors": ["genre", "abandoned", "such"]}, {"lesson": 1, "definition": "to make something larger or longer", "answer": "extend", "distractors": ["treaty", "genre", "party"]}, {"lesson": 1, "definition": "one of the parts that something is divided into", "answer": "section", "distractors": ["explore", "despite", "lyric"]}, {"lesson": 1, "definition": "an increase in the power, or importance of something", "answer": "rise", "distractors": ["turntable", "remain", "summarize"]}, {"lesson": 1, "definition": "expected to happen and looked forward to", "answer": "anticipated", "distractors": ["extend", "party", "occur"]}, {"lesson": 1, "definition": "to bring together different parts to create a whole", "answer": "form", "distractors": ["care", "officially", "instead"]}, {"lesson": 1, "definition": "considered separately from other people or things in a group", "answer": "individual", "distractors": ["hip-hop", "resource", "care"]}, {"lesson": 1, "definition": "to give a name to a person, place, or thing", "answer": "name", "distractors": ["MCing", "leave", "abandoned"]}, {"lesson": 1, "definition": "to say something very loudly", "answer": "shout", "distractors": ["original", "free", "instead"]}, {"lesson": 1, "definition": "group of words that have a particular meaning", "answer": "phrase", "distractors": ["shift", "pioneer", "role"]}, {"lesson": 1, "definition": "the main rhythm that a piece of music or a poem has", "answer": "beat", "distractors": ["phenomenon", "racial", "phrase"]}, {"lesson": 1, "definition": "having a regular pattern of sounds or movements", "answer": "rhythmic", "distractors": ["persuade", "document", "block"]}, {"lesson": 1, "definition": "to speak to somebody", "answer": "address", "distractors": ["self-worth", "persuade", "block"]}, {"lesson": 1, "definition": "forming a unit by itself and not joined to others", "answer": "separate", "distractors": ["recorded", "despite", "admiration"]}, {"lesson": 1, "definition": "part that somebody plays in a particular situation or activity", "answer": "role", "distractors": ["emerge", "peace", "reality"]}, {"lesson": 1, "definition": "point or place where something begins or is created", "answer": "origin", "distractors": ["LP", "occur", "immigrant"]}, {"lesson": 1, "definition": "completely correct in every detail", "answer": "exact", "distractors": ["sign", "turntable", "individual"]}, {"lesson": 1, "definition": "to become a member of an organization, company, or club", "answer": "join", "distractors": ["address", "pioneer", "recession"]}, {"lesson": 1, "definition": "large organized group of soldiers trained to fight on land", "answer": "army", "distractors": ["solve", "limited", "appeal"]}, {"lesson": 1, "definition": "humorous and not serious", "answer": "jokey", "distractors": ["turntable", "DJing", "emphasize"]}, {"lesson": 1, "definition": "raised area in a theater, concert hall, etc. where actors, musicians, or other entertainers perform", "answer": "stage", "distractors": ["movement", "crowd", "suggest"]}, {"lesson": 1, "definition": "connected with or used by the armed forces", "answer": "military", "distractors": ["powerful", "unique", "harsh"]}, {"lesson": 1, "definition": "person whose job is to teach a practical skill or sport", "answer": "instructor", "distractors": ["persuade", "area", "attitude"]}, {"lesson": 1, "definition": "to repeat a word or phrase many times in a rhythmic chant", "answer": "chant", "distractors": ["DJing", "emphasize", "detail"]}, {"lesson": 1, "definition": "words or phrases that are repeated again and again by a group of people", "answer": "chant", "distractors": ["emphasize", "persuade", "heating"]}, {"lesson": 1, "definition": "words that an actor speaks in a play or film", "answer": "line", "distractors": ["overcome", "birthplace", "unemployment"]}, {"lesson": 1, "definition": "of the type already mentioned", "answer": "such", "distractors": ["event", "imply", "pioneer"]}, {"lesson": 1, "definition": "accepted as normal or usual, or used as a baseline", "answer": "standard", "distractors": ["name", "delight", "importance"]}, {"lesson": 1, "definition": "words of a song", "answer": "lyric", "distractors": ["ghetto", "graffiti", "self-worth"]}, {"lesson": 1, "definition": "sound or video that has been preserved on tape, disc, or digital file", "answer": "recorded", "distractors": ["unite", "reality", "birthplace"]}, {"lesson": 1, "definition": "great pleasure, satisfaction, or happiness", "answer": "delight", "distractors": ["separate", "abandoned", "strongly"]}, {"lesson": 1, "definition": "happening or done at once and without delay", "answer": "immediate", "distractors": ["instructor", "ghetto", "importance"]}, {"lesson": 1, "definition": "fact that you have achieved what you wanted", "answer": "success", "distractors": ["hip-hopper", "emerge", "means"]}, {"lesson": 1, "definition": "process of becoming smaller, fewer, or less", "answer": "decline", "distractors": ["appearance", "despite", "solve"]}, {"lesson": 1, "definition": "to cover a larger area or affect a larger number of people", "answer": "spread", "distractors": ["origin", "eventually", "officially"]}, {"lesson": 1, "definition": "important enough to have an effect or be noticed", "answer": "significant", "distractors": ["origin", "hardship", "self-worth"]}, {"lesson": 1, "definition": "a change in position, direction, or condition", "answer": "shift", "distractors": ["declaration", "party", "unique"]}, {"lesson": 1, "definition": "to happen or take place", "answer": "occur", "distractors": ["leave", "imply", "treaty"]}, {"lesson": 1, "definition": "when something new begins to exist or starts being used", "answer": "appearance", "distractors": ["lyric", "limited", "confront"]}, {"lesson": 1, "definition": "making new discoveries or using new methods", "answer": "groundbreaking", "distractors": ["heating", "slum", "immediate"]}, {"lesson": 1, "definition": "to give a description of something with many details", "answer": "detail", "distractors": ["peace", "unite", "urban"]}, {"lesson": 1, "definition": "cruel, severe, or unkind", "answer": "harsh", "distractors": ["economic", "immediate", "ghetto"]}, {"lesson": 1, "definition": "what actually happens or is true, not what is imagined or thought", "answer": "reality", "distractors": ["unite", "document", "form"]}, {"lesson": 1, "definition": "belonging to or representing a lower social, political, or economic class", "answer": "second-class", "distractors": ["extend", "overcome", "fascinating"]}, {"lesson": 1, "definition": "existing from the beginning or first made", "answer": "original", "distractors": ["ghetto", "shout", "declaration"]}, {"lesson": 1, "definition": "something that you hope to achieve", "answer": "aim", "distractors": ["turntable", "chant", "shout"]}, {"lesson": 1, "definition": "unfair treatment of a person or group", "answer": "injustice", "distractors": ["gangster", "name", "care"]}, {"lesson": 1, "definition": "a CD that has only one song on it, not a number of songs, or a song which is sold in this way", "answer": "single", "distractors": ["major", "express", "join"]}, {"lesson": 1, "definition": "to deal with or face a situation, problem, or person directly", "answer": "confront", "distractors": ["peace", "particularly", "area"]}, {"lesson": 1, "definition": "unjust or prejudicial treatment of different categories of people", "answer": "discrimination", "distractors": ["community", "typically", "role"]}, {"lesson": 1, "definition": "the way that you think and feel about somebody or something", "answer": "attitude", "distractors": ["separate", "strongly", "shouting"]}, {"lesson": 1, "definition": "to give a brief statement of the main points of something", "answer": "summarize", "distractors": ["delight", "form", "respect"]}, {"lesson": 1, "definition": "to show or make known a feeling, an opinion, or a fact", "answer": "express", "distractors": ["particularly", "genre", "treaty"]}, {"lesson": 1, "definition": "person who is one of the first people to do something", "answer": "pioneer", "distractors": ["reality", "declaration", "owner"]}, {"lesson": 1, "definition": "to succeed in dealing with or controlling a problem or difficulty", "answer": "overcome", "distractors": ["treaty", "particularly", "pioneer"]}, {"lesson": 1, "definition": "something that makes your life difficult or unpleasant, especially a lack of money, or the condition of having a difficult life", "answer": "hardship", "distractors": ["army", "occur", "origin"]}, {"lesson": 1, "definition": "feeling of respect and liking for somebody or something", "answer": "admiration", "distractors": ["despair", "respect", "movement"]}, {"lesson": 1, "definition": "kept within a particular size, amount, or area", "answer": "limited", "distractors": ["rise", "immediate", "shout"]}, {"lesson": 1, "definition": "supply of something that a country, an organization, or a person has and can use", "answer": "resource", "distractors": ["pioneer", "growing", "beat"]}, {"lesson": 1, "definition": "feeling that you are a good and useful person", "answer": "self-worth", "distractors": ["spread", "event", "birthplace"]}, {"lesson": 1, "definition": "to give special importance or attention to something", "answer": "emphasize", "distractors": ["means", "despair", "document"]}, {"lesson": 1, "definition": "an official statement or announcement", "answer": "declaration", "distractors": ["recorded", "harsh", "solve"]}, {"lesson": 1, "definition": "involving two or more countries", "answer": "international", "distractors": ["respect", "birthplace", "occur"]}, {"lesson": 1, "definition": "an important official piece of work that a person or group is given to do", "answer": "mission", "distractors": ["spread", "aim", "economic"]}, {"lesson": 1, "definition": "to suggest that something is true without saying it directly", "answer": "imply", "distractors": ["pioneer", "abandoned", "emerge"]}, {"lesson": 1, "definition": "operating or existing outside of established or mainstream society or culture", "answer": "underground", "distractors": ["host", "decline", "join"]}, {"lesson": 1, "definition": "an action, an object, or a system by which a result is achieved", "answer": "means", "distractors": ["gang", "such", "gradually"]}, {"lesson": 1, "definition": "being the only one of its kind, or very special or unusual", "answer": "unique", "distractors": ["delight", "medical", "party"]}, {"lesson": 1, "definition": "increasing in size, amount, or degree", "answer": "growing", "distractors": ["decline", "instrumental", "resource"]}, {"lesson": 1, "definition": "a quality that makes someone or something attractive or interesting", "answer": "appeal", "distractors": ["area", "mission", "international"]}, {"lesson": 1, "definition": "affecting or including the whole world", "answer": "global", "distractors": ["significant", "strongly", "phenomenon"]}, {"lesson": 1, "definition": "fact or event in nature or society, especially one that is not fully understood", "answer": "phenomenon", "distractors": ["original", "summarize", "resource"]}, {"lesson": 1, "definition": "row of words in a poem", "answer": "line", "distractors": ["extend", "hip-hop", "gang"]}];
+
+let studentName='',studentSchool='';
+let state={currentSection:0,answers:{},totalQ:0,score:0,startTime:null};
+const multiSelected={};let wrongWordsMap={};
+function recordWrong(eng,correct){wrongWordsMap[eng]={eng,kor:correct,correct};}
+function shuffle(arr){const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function opts4(answer,distractors){return shuffle([answer,...distractors.slice(0,3)]);}
+function esc(s){return String(s).replace(/'/g,"\\'").replace(/"/g,'\\"');}
+
+function startQuiz(){
+  const sel=document.getElementById('schoolSel');const inp=document.getElementById('nameInput');
+  studentSchool=sel.value.trim();studentName=inp.value.trim();
+  let ok=true;
+  if(!studentSchool){sel.classList.add('err');ok=false;}else sel.classList.remove('err');
+  if(!studentName){inp.classList.add('err');ok=false;}else inp.classList.remove('err');
+  if(!ok)return;
+  document.getElementById('infoWrap').style.display='none';document.getElementById('quizWrap').style.display='block';
+  document.getElementById('studentInfoDisplay').textContent=studentSchool+' · '+studentName;
+  const key='bomnal_jc2_L4_'+studentSchool+'_'+studentName;
+  const attempts=parseInt(localStorage.getItem(key+'_cnt')||'0');const best=localStorage.getItem(key+'_best');
+  document.getElementById('attemptDisplay').textContent=attempts>0?`${attempts}번째 도전 · 최고 ${best}점`:'첫 번째 도전!';
+  state.startTime=Date.now();buildAll();
+}
+
+function buildMC(containerId,prefix,data,subText,displayFn){
+  const c=document.getElementById(containerId);const d=shuffle(data);
+  d.forEach((q,i)=>{
+    const opts=opts4(q.answer,q.distractors);
+    const wordHtml=displayFn?displayFn(q):`<div class="q-word">${q.word}</div>`;
+    c.innerHTML+=`<div class="q-card" id="${prefix}-card-${i}"><div class="q-num">Q${i+1} · <span class="lesson-tag l${q.lesson}">L${q.lesson}</span></div>${wordHtml}<div class="q-sub">${subText}</div><div class="options">${opts.map(o=>`<button class="opt-btn" onclick="answerMC('${prefix}',${i},this,'${esc(o)}','${esc(q.answer)}')">${o}</button>`).join('')}</div><div class="feedback" id="${prefix}-fb-${i}"></div></div>`;
+  });state.totalQ+=d.length;
+  return d;
+}
+
+function buildAll(){window._builtData={};
+  window._builtData['syn']=buildMC('synonymQuestions','syn',SYNONYM_DATA,'위 단어의 유의어는?');
+  window._builtData['ant']=buildMC('antonymQuestions','ant',ANTONYM_DATA,'위 단어의 반의어는?');
+  window._builtData['form']=buildMC('formQuestions','form',FORM_DATA,'다음 영어 단어의 뜻은?',q=>`<div class="lesson-tag l${q.lesson}">L${q.lesson}</div><div class="q-word">${q.word}</div>`);
+  window._builtData['poly']=buildPoly();
+  window._builtData['phr']=buildMC('phraseQuestions','phr',PHRASE_DATA,'위 표현의 뜻은?',q=>`<div class="q-word" style="font-size:16px">${q.phrase}</div>`);
+  window._builtData['ee']=buildMC('engEngQuestions','ee',ENG_ENG_DATA,'위 영영풀이에 해당하는 단어는?',q=>`<div class="q-word ko" style="font-size:13px;font-weight:600;color:#374151;line-height:1.6">"${q.definition}"</div>`);
+  updateProgress();
+}
+
+function buildPoly(){
+  const c=document.getElementById('polyQuestions');const d=shuffle(POLY_DATA);
+  d.forEach((q,i)=>{
+    const opts=shuffle(q.all6);const cnt=q.answers.length;const aj=JSON.stringify(q.answers).replace(/"/g,'&quot;');
+    c.innerHTML+=`<div class="q-card" id="poly-card-${i}"><div class="q-num">Q${i+1} · <span class="lesson-tag l${q.lesson}">L${q.lesson}</span></div><div class="q-word">${q.word}</div><div class="q-sub">이 단어의 뜻 ${cnt}개를 모두 고르세요 (<span id="poly-count-${i}">0</span>/${cnt} 선택됨)</div><div class="options" id="poly-opts-${i}" style="grid-template-columns:1fr 1fr 1fr">${opts.map(o=>`<button class="opt-btn multi" onclick="toggleMulti('poly',${i},this,'${esc(o)}',${aj.replace(/'/g,"\\'")})">${o}</button>`).join('')}</div><button id="poly-confirm-${i}" class="multi-confirm" disabled onclick="confirmMulti('poly',${i},${aj.replace(/'/g,"\\'")})">✅ 답 확인하기</button><div class="feedback" id="poly-fb-${i}"></div></div>`;
+  });state.totalQ+=d.length;
+  return d;
+}
+
+function answerMC(prefix,idx,btn,chosen,answer){
+  const key=`${prefix}-${idx}`;if(state.answers[key]?.answered)return;
+  const card=document.getElementById(`${prefix}-card-${idx}`);const fb=document.getElementById(`${prefix}-fb-${idx}`);
+  const isCorrect=chosen===answer;
+  card.querySelectorAll('.opt-btn').forEach(b=>{b.disabled=true;if(b.textContent.trim()===answer)b.classList.add('show-correct');});
+  if(isCorrect){btn.classList.remove('show-correct');btn.classList.add('selected-correct');fb.textContent='✅ 정답입니다!';fb.className='feedback show ok';card.classList.add('correct-card');state.score++;}
+  else{btn.classList.add('selected-wrong');fb.textContent=`❌ 내 답: ${chosen} / 정답: ${answer}`;fb.className='feedback show no';card.classList.add('wrong-card');const w=card.querySelector('.q-word');recordWrong(w?w.textContent.trim().split(' ')[0]:String(idx),answer);}
+  state.answers[key]={answered:true,correct:isCorrect,chosen:chosen,answer:answer};updateProgress();_saveSession();
+}
+
+function toggleMulti(prefix,idx,btn,chosen,answers){
+  const key=`${prefix}-${idx}`;if(state.answers[key]?.answered)return;
+  if(!multiSelected[key])multiSelected[key]=new Set();const sel=multiSelected[key];
+  if(btn.classList.contains('selected')){btn.classList.remove('selected');sel.delete(chosen);}else{btn.classList.add('selected');sel.add(chosen);}
+  const ce=document.getElementById(`${prefix}-count-${idx}`);if(ce)ce.textContent=sel.size;
+  const cb=document.getElementById(`${prefix}-confirm-${idx}`);
+  if(cb){const ready=sel.size===answers.length;cb.classList.toggle('ready',ready);cb.disabled=!ready;}
+}
+
+function confirmMulti(prefix,idx,answers){
+  const key=`${prefix}-${idx}`;if(state.answers[key]?.answered)return;
+  const sel=multiSelected[key]||new Set();const card=document.getElementById(`${prefix}-card-${idx}`);const fb=document.getElementById(`${prefix}-fb-${idx}`);
+  const correctSet=new Set(answers);let allCorrect=sel.size===correctSet.size&&[...sel].every(s=>correctSet.has(s));
+  card.querySelectorAll('.opt-btn').forEach(b=>{b.disabled=true;const t=b.textContent.trim();if(sel.has(t)&&correctSet.has(t))b.className='opt-btn multi correct-sel';else if(sel.has(t)&&!correctSet.has(t))b.className='opt-btn multi wrong-sel';else if(correctSet.has(t))b.className='opt-btn multi correct-sel';else b.className='opt-btn multi';});
+  if(allCorrect){fb.textContent='✅ 정답입니다!';fb.className='feedback show ok';card.classList.add('correct-card');state.score++;}
+  else{fb.textContent=`❌ 내 답: ${[...sel].join(', ')||'(없음)'} / 정답: ${answers.join(', ')}`;fb.className='feedback show no';card.classList.add('wrong-card');const w=card.querySelector('.q-word');recordWrong(w?w.textContent.trim().split(' ')[0]:String(idx),answers.join('/'));}
+  state.answers[key]={answered:true,correct:allCorrect,chosen:[...sel],correctAnswers:[...answers]};updateProgress();_saveSession();
+}
+
+function switchSection(idx){document.querySelectorAll('.quiz-section').forEach((s,i)=>s.classList.toggle('active',i===idx));document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',i===idx));state.currentSection=idx;document.getElementById('resultScreen').classList.remove('show');document.getElementById('floatSubmit').classList.remove('hidden');}
+function updateProgress(){const answered=Object.keys(state.answers).length;const total=state.totalQ;document.getElementById('progressFill').style.width=total?(answered/total*100)+'%':'0%';document.getElementById('progressText').textContent=`${answered} / ${total} 완료`;document.getElementById('scoreText').textContent=`점수: ${state.score}`;}
+
+
+// === 같은 날 이어서 풀기 (세션 저장/복원) ===
+const QUIZ_ID='jongchonko_2grade_e2_lesson1_wordtest';
+const _DAY_KEY=(function(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');})();
+const _SESSION_KEY='bn_session_'+QUIZ_ID;
+function _saveSession(){
+  try{
+    if(!state||!state.startTime) return;
+    if(!state.answers||Object.keys(state.answers).length===0) return;
+    localStorage.setItem(_SESSION_KEY, JSON.stringify({
+      day:_DAY_KEY,
+      name: (typeof studentName!=='undefined'?studentName:''),
+      school: (typeof studentSchool!=='undefined'?studentSchool:''),
+      answers: state.answers,
+      score: state.score||0,
+      totalQ: state.totalQ||0,
+      currentSection: state.currentSection||0,
+      startTime: state.startTime,
+      wrongWordsMap: (typeof wrongWordsMap!=='undefined'?wrongWordsMap:{})
+    }));
+  }catch(e){}
+}
+function _loadSession(){
+  try{
+    const raw=localStorage.getItem(_SESSION_KEY); if(!raw) return null;
+    const s=JSON.parse(raw);
+    if(s.day!==_DAY_KEY){localStorage.removeItem(_SESSION_KEY); return null;}
+    if(!s.answers||Object.keys(s.answers).length===0){localStorage.removeItem(_SESSION_KEY); return null;}
+    return s;
+  }catch(e){return null;}
+}
+function _clearSession(){try{localStorage.removeItem(_SESSION_KEY);}catch(e){}}
+function _cleanupOldSessions(){
+  try{
+    for(let i=localStorage.length-1;i>=0;i--){
+      const k=localStorage.key(i);
+      if(k && k.startsWith('bn_session_')){
+        try{const v=JSON.parse(localStorage.getItem(k)); if(v.day!==_DAY_KEY) localStorage.removeItem(k);}
+        catch(e){localStorage.removeItem(k);}
+      }
+    }
+  }catch(e){}
+}
+
+let _RESUMING=false;
+function _resumeFromSession(){
+  const s=_loadSession(); if(!s) return false;
+  // 인풋 채우기 후 startQuiz 호출 → 카드 렌더링
+  const sel=document.getElementById('schoolSel');
+  const ni=document.getElementById('nameInput');
+  if(sel && s.school){
+    let matched=false;
+    for(const o of sel.options){ if(o.value===s.school){sel.value=s.school; matched=true; break;} }
+    if(!matched && sel.options.length>1) sel.value=sel.options[1].value;
+  }
+  if(ni && s.name) ni.value=s.name;
+  _RESUMING=true;
+  try{ startQuiz(); }catch(e){ _RESUMING=false; return false; }
+  _RESUMING=false;
+  // 렌더링 끝난 뒤 답한 문제 재현
+  setTimeout(()=>{
+    state.startTime = s.startTime || Date.now();
+    state.answers={}; state.score=0;
+    // 마지막으로 보던 섹션으로 전환
+    if(typeof s.currentSection==='number' && typeof switchSection==='function'){
+      try{ switchSection(s.currentSection); }catch(e){}
+    }
+    if(typeof wrongWordsMap!=='undefined' && s.wrongWordsMap){
+      for(const k of Object.keys(s.wrongWordsMap)) wrongWordsMap[k]=s.wrongWordsMap[k];
+    }
+    // 카드를 ID 위치 대신 내용(정답 텍스트)으로 찾아 셔플 재섞임 문제 회피
+    const usedCards = new Set();
+    const restored=[];
+    for(const [key, ans] of Object.entries(s.answers||{})){
+      if(!ans||!ans.answered) continue;
+      const m=key.match(/^(.+)-(\d+)$/); if(!m) continue;
+      const prefix=m[1], oldIdx=m[2];
+      // 1순위: 저장된 정답으로 카드 찾기 (Single MC: ans.answer / Multi: ans.correctAnswers)
+      let target=null;
+      const allCards = Array.from(document.querySelectorAll(`[id^="${prefix}-card-"]`));
+      if (Array.isArray(ans.chosen) && Array.isArray(ans.correctAnswers)) {
+        // 다중 선택형: 카드의 모든 opt-btn 중 ans.correctAnswers를 정확히 포함하는 것 찾기
+        const wantSet = new Set(ans.correctAnswers);
+        for (const c of allCards) {
+          if (usedCards.has(c.id)) continue;
+          const btnTexts = Array.from(c.querySelectorAll('.opt-btn')).map(b=>b.textContent.trim());
+          const matchCount = ans.correctAnswers.filter(x=>btnTexts.includes(x)).length;
+          if (matchCount === ans.correctAnswers.length) { target=c; break; }
+        }
+      } else if (typeof ans.chosen==='string' && typeof ans.answer==='string') {
+        // 단일 MC: 카드 내 정답 텍스트 버튼 존재 + chosen 버튼 존재 + 미사용
+        for (const c of allCards) {
+          if (usedCards.has(c.id)) continue;
+          const btnTexts = Array.from(c.querySelectorAll('.opt-btn')).map(b=>b.textContent.trim());
+          if (btnTexts.includes(ans.answer) && btnTexts.includes(ans.chosen)) { target=c; break; }
+        }
+      }
+      // 2순위: 위치 기반 폴백 (예전 저장 데이터 호환)
+      if (!target) {
+        const positional = document.getElementById(`${prefix}-card-${oldIdx}`);
+        if (positional && !usedCards.has(positional.id)) target = positional;
+      }
+      if (!target) continue;
+      usedCards.add(target.id);
+      const optBtns=[...target.querySelectorAll('.opt-btn')];
+      if(Array.isArray(ans.chosen)){
+        for(const c of ans.chosen){
+          const b=optBtns.find(x=>x.textContent.trim()===c);
+          if(b) b.click();
+        }
+        const idMatch = target.id.match(/-card-(\d+)$/);
+        if (idMatch) {
+          const cb=document.getElementById(`${prefix}-confirm-${idMatch[1]}`);
+          if(cb) cb.click();
+        }
+        restored.push(key);
+      } else if(typeof ans.chosen==='string' && ans.chosen){
+        const b=optBtns.find(x=>x.textContent.trim()===ans.chosen);
+        if(b){ b.click(); restored.push(key); }
+      }
+    }
+    if(typeof updateProgress==='function') updateProgress();
+  }, 220);
+  return true;
+}
+
+function _checkResumePrompt(){
+  const s=_loadSession(); if(!s) return;
+  // 시작 화면에 노란 배너 삽입
+  const host = document.getElementById('infoWrap') || document.getElementById('startScreen') || document.querySelector('.start-card') || document.body;
+  if(document.getElementById('resumeBox')) return;
+  const answered=Object.keys(s.answers||{}).length;
+  const elapsedMin = Math.max(1, Math.round((Date.now()-(s.startTime||Date.now()))/60000));
+  const box=document.createElement('div');
+  box.id='resumeBox';
+  box.style.cssText='background:linear-gradient(135deg,#fff7e0,#fef3c7);border:2px solid #fcd34d;border-radius:14px;padding:14px 16px;margin:12px 0;text-align:left;';
+  box.innerHTML = `
+    <div style="font-family:'Black Han Sans',sans-serif;font-size:1rem;color:#92400e;margin-bottom:4px;">⏸️ 풀던 시험이 있어요</div>
+    <div style="font-size:.78rem;color:#a16207;line-height:1.5;margin-bottom:10px;">
+      <strong>${s.name||'학생'}</strong>님 · ${answered}문제 답함 · 진행한 시간 ${elapsedMin}분 · 누적 정답 ${s.score||0}
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button style="flex:1;min-width:120px;padding:11px 14px;font-size:.88rem;background:linear-gradient(135deg,#f59e0b,#d97706);color:white;border:none;border-radius:10px;font-weight:800;cursor:pointer;" onclick="_resumeFromSession();this.closest('#resumeBox').remove();">▶️ 이어서 풀기</button>
+      <button style="flex:1;min-width:120px;padding:11px 14px;font-size:.88rem;background:linear-gradient(135deg,#94a3b8,#64748b);color:white;border:none;border-radius:10px;font-weight:800;cursor:pointer;" onclick="_clearSession();this.closest('#resumeBox').remove();">🔄 새로 시작</button>
+    </div>`;
+  host.insertBefore(box, host.firstChild);
+}
+window._resumeFromSession=_resumeFromSession;
+window._clearSession=_clearSession;
+document.addEventListener('DOMContentLoaded',()=>{ _cleanupOldSessions(); _checkResumePrompt(); });
+
+async function submitAll(){
+  _clearSession();
+  const answered=Object.keys(state.answers).length;
+  if(answered<state.totalQ*0.5){alert(`아직 ${state.totalQ-answered}문제가 남아있어요!`);return;}
+  document.querySelectorAll('.quiz-section').forEach(s=>s.classList.remove('active'));document.getElementById('floatSubmit').classList.add('hidden');
+  const total=state.totalQ,correct=state.score,wrong=total-correct,unanswered=total-answered,pct=Math.round(correct/total*100),elapsedMin=Math.round((Date.now()-state.startTime)/60000),wrongWords=Object.values(wrongWordsMap).slice(0,50);
+  let emoji='😢',label='다시 도전해봐요!';if(pct>=90){emoji='🏆';label='최고예요!';}else if(pct>=70){emoji='🎉';label='잘했어요! 조금만 더!';}else if(pct>=50){emoji='💪';label='절반 이상!';}
+  document.getElementById('resultEmoji').textContent=emoji;document.getElementById('resultScore').textContent=`${pct}점`;document.getElementById('resultLabel').textContent=label;
+  document.getElementById('resultDetail').innerHTML=`<div class="result-row"><span class="label">이름</span><span class="val">${studentName} (${studentSchool})</span></div><div class="result-row"><span class="label">총 문제</span><span class="val">${total}문제</span></div><div class="result-row"><span class="label">정답</span><span class="val" style="color:var(--correct)">${correct}개</span></div><div class="result-row"><span class="label">오답</span><span class="val" style="color:var(--wrong)">${wrong}개</span></div><div class="result-row"><span class="label">미응답</span><span class="val">${unanswered}개</span></div><div class="result-row"><span class="label">정답률</span><span class="val">${pct}%</span></div><div class="result-row"><span class="label">소요 시간</span><span class="val">${elapsedMin}분</span></div>`;
+  document.getElementById('resultScreen').classList.add('show');
+  const key='bomnal_jc2_L4_'+studentSchool+'_'+studentName;const cnt=parseInt(localStorage.getItem(key+'_cnt')||'0')+1;localStorage.setItem(key+'_cnt',cnt);localStorage.setItem(key+'_best',Math.max(pct,parseInt(localStorage.getItem(key+'_best')||'0')));
+  const sendEl=document.getElementById('sendingMsg');sendEl.textContent='📡 결과 전송 중...';sendEl.className='sending-msg';
+  try{let w=0;while(!window._fbReady&&w<8000){await new Promise(r=>setTimeout(r,200));w+=200;}await window._saveResult({studentName,school:studentSchool,score:pct,correct,wrong,timedOut:0,total,elapsedMin,wrongWords,quizType:'고2_영어2_L1_어휘TEST'});sendEl.textContent='✅ 선생님께 결과가 전달됐어요!';sendEl.className='sending-msg ok';}
+  catch(e){sendEl.textContent='⚠️ 전송 실패';sendEl.className='sending-msg err';}
+
+  retryWrongList=collectWrongItems();if(retryWrongList.length>0){document.getElementById('wrongCount').textContent=retryWrongList.length;document.getElementById('retryWrongBtn').style.display='block';}
+}
+function retryQuiz(){location.reload();}
+// ============================================================
+// 오답 재풀이
+// ============================================================
+let retryRound = 0;
+let retryWrongList = [];
+
+function startRetry() {
+  retryRound++;
+  document.getElementById('resultScreen').classList.remove('show');
+  document.getElementById('retryScreen').style.display = 'block';
+  document.getElementById('retrySubmitBtn').classList.remove('hidden');
+  document.getElementById('retryRoundLabel').textContent = retryRound + '라운드';
+  document.getElementById('retryCountLabel').textContent = retryWrongList.length + '문제 남음';
+  buildRetryQuestions();
+}
+
+function buildRetryQuestions() {
+  const container = document.getElementById('retryQuestions');
+  container.innerHTML = '';
+  const shuffled = shuffle([...retryWrongList]);
+  window._retryItems = shuffled;
+  window._retryAnswers = {};
+  Object.keys(retryMultiSelected).forEach(k => delete retryMultiSelected[k]);
+
+  shuffled.forEach((item, i) => {
+    const card = document.createElement('div');
+    card.className = 'q-card';
+    card.id = 'retry-card-' + i;
+    if (item.type === 'multi') {
+      const cnt = item.answers.length;
+      const opts = shuffle([...item.allOpts]);
+      const aj = JSON.stringify(item.answers).replace(/"/g,'&quot;');
+      card.innerHTML = `
+        <div class="q-num">오답 ${i+1} · <span class="lesson-tag">재풀이</span></div>
+        <div class="q-word">${item.word}</div>
+        <div class="q-sub">이 단어의 뜻 ${cnt}개를 모두 고르세요 (<span id="retry-count-${i}">0</span>/${cnt} 선택됨)</div>
+        <div class="options" style="grid-template-columns:1fr 1fr 1fr">
+          ${opts.map(o=>`<button class="opt-btn multi" onclick="toggleRetryMulti(${i},this,'${o.replace(/'/g,"\'").replace(/"/g,'\\"')}',${aj})">${o}</button>`).join('')}
+        </div>
+        <button id="retry-confirm-${i}" class="multi-confirm" disabled onclick="confirmRetryMulti(${i},${aj})">✅ 답 확인하기</button>
+        <div class="feedback" id="retry-fb-${i}"></div>`;
+    } else {
+      const opts = opts4(item.answer, item.distractors);
+      card.innerHTML = `
+        <div class="q-num">오답 ${i+1} · <span class="lesson-tag">재풀이</span></div>
+        <div class="q-word" style="${item.wordStyle||''}">${item.word}</div>
+        <div class="q-sub">${item.subText||'알맞은 답을 고르세요'}</div>
+        <div class="options">
+          ${opts.map(o=>`<button class="opt-btn" onclick="answerRetryMC(${i},this,'${o.replace(/'/g,"\'").replace(/"/g,'\\"')}','${item.answer.replace(/'/g,"\'").replace(/"/g,'\\"')}')">${o}</button>`).join('')}
+        </div>
+        <div class="feedback" id="retry-fb-${i}"></div>`;
+    }
+    container.appendChild(card);
+  });
+}
+
+const retryMultiSelected = {};
+
+function toggleRetryMulti(idx, btn, chosen, answers) {
+  const key = 'rm-' + idx;
+  if (window._retryAnswers[idx]?.done) return;
+  if (!retryMultiSelected[key]) retryMultiSelected[key] = new Set();
+  const sel = retryMultiSelected[key];
+  if (btn.classList.contains('selected')) { btn.classList.remove('selected'); sel.delete(chosen); }
+  else { btn.classList.add('selected'); sel.add(chosen); }
+  const ce = document.getElementById('retry-count-' + idx); if (ce) ce.textContent = sel.size;
+  const cb = document.getElementById('retry-confirm-' + idx);
+  if (cb) { const ready = sel.size === answers.length; cb.classList.toggle('ready', ready); cb.disabled = !ready; }
+}
+
+function confirmRetryMulti(idx, answers) {
+  const card = document.getElementById('retry-card-' + idx);
+  const fb = document.getElementById('retry-fb-' + idx);
+  const sel = retryMultiSelected['rm-' + idx] || new Set();
+  const correctSet = new Set(answers);
+  const allCorrect = sel.size === correctSet.size && [...sel].every(s => correctSet.has(s));
+  card.querySelectorAll('.opt-btn').forEach(b => {
+    b.disabled = true;
+    const t = b.textContent.trim();
+    if (sel.has(t) && correctSet.has(t)) b.className = 'opt-btn multi correct-sel';
+    else if (sel.has(t)) b.className = 'opt-btn multi wrong-sel';
+    else if (correctSet.has(t)) b.className = 'opt-btn multi correct-sel';
+    else b.className = 'opt-btn multi';
+  });
+  fb.textContent = allCorrect ? '✅ 정답!' : `❌ 내 답: ${[...sel].join(', ')||'(없음)'} / 정답: ${answers.join(', ')}`;
+  fb.className = 'feedback show ' + (allCorrect ? 'ok' : 'no');
+  card.classList.add(allCorrect ? 'correct-card' : 'wrong-card');
+  window._retryAnswers[idx] = { done: true, correct: allCorrect };
+  checkAllRetryDone();
+}
+
+function answerRetryMC(idx, btn, chosen, answer) {
+  if (window._retryAnswers[idx]?.done) return;
+  const card = document.getElementById('retry-card-' + idx);
+  const fb = document.getElementById('retry-fb-' + idx);
+  const isCorrect = chosen === answer;
+  card.querySelectorAll('.opt-btn').forEach(b => {
+    b.disabled = true;
+    if (b.textContent.trim() === answer) b.classList.add('show-correct');
+  });
+  if (isCorrect) { btn.classList.remove('show-correct'); btn.classList.add('selected-correct'); }
+  else btn.classList.add('selected-wrong');
+  fb.textContent = isCorrect ? '✅ 정답!' : `❌ 내 답: ${chosen} / 정답: ${answer}`;
+  fb.className = 'feedback show ' + (isCorrect ? 'ok' : 'no');
+  card.classList.add(isCorrect ? 'correct-card' : 'wrong-card');
+  window._retryAnswers[idx] = { done: true, correct: isCorrect };
+  checkAllRetryDone();
+}
+
+function checkAllRetryDone() {
+  const total = window._retryItems.length;
+  const done = Object.keys(window._retryAnswers).length;
+  if (done >= total) setTimeout(submitRetry, 600);
+}
+
+function submitRetry() {
+  const items = window._retryItems || [];
+  const answers = window._retryAnswers || {};
+  const newWrong = items.filter((_, i) => !answers[i]?.correct);
+  document.getElementById('retrySubmitBtn').classList.add('hidden');
+  document.getElementById('retryScreen').style.display = 'none';
+  if (newWrong.length === 0) {
+    showRetryComplete();
+  } else {
+    retryWrongList = newWrong;
+    document.getElementById('wrongCount').textContent = newWrong.length;
+    document.getElementById('resultScreen').classList.add('show');
+    document.getElementById('retryWrongBtn').style.display = 'block';
+  }
+}
+
+async function showRetryComplete() {
+  document.getElementById('resultScreen').classList.add('show');
+  document.getElementById('resultEmoji').textContent = '🏆';
+  document.getElementById('resultScore').textContent = '완벽!';
+  document.getElementById('resultLabel').textContent = retryRound + '라운드 만에 오답 0개 달성! 🎉';
+  document.getElementById('resultDetail').innerHTML =
+    '<div class="result-row"><span class="label">이름</span><span class="val">' + studentName + ' (' + studentSchool + ')</span></div>' +
+    '<div class="result-row"><span class="label">재도전 횟수</span><span class="val">' + retryRound + '라운드</span></div>' +
+    '<div class="result-row"><span class="label">오답</span><span class="val" style="color:var(--correct);font-weight:900">0개 🎊</span></div>';
+  document.getElementById('retryWrongBtn').style.display = 'none';
+
+  // Firebase 전송 - 오답 0개 달성 기록
+  const sendEl = document.getElementById('sendingMsg');
+  sendEl.textContent = '📡 오답 완료 기록 전송 중...';
+  sendEl.className = 'sending-msg';
+  try {
+    let w=0;
+    while(!window._fbReady && w<8000){ await new Promise(r=>setTimeout(r,200)); w+=200; }
+    await window._saveResult({
+      studentName: studentName,
+      school: studentSchool,
+      score: 100,
+      correct: state.totalQ,
+      wrong: 0,
+      timedOut: 0,
+      total: state.totalQ,
+      elapsedMin: Math.round((Date.now() - state.startTime) / 60000),
+      wrongWords: [],
+      quizType: '고2_영어2_L1_어휘TEST_오답완료',
+    });
+    sendEl.textContent = '✅ 오답 0개 달성! 선생님께 전달됐어요 🎊';
+    sendEl.className = 'sending-msg ok';
+  } catch(e) {
+    sendEl.textContent = '⚠️ 전송 실패';
+    sendEl.className = 'sending-msg err';
+  }
+}
+
+function collectWrongItems() {
+  // Include both wrong-answered AND unanswered questions
+  const wrongKeys = [];
+  const _bd = window._builtData || {};
+  Object.keys(_bd).forEach(_pfx => {
+    const _arr = _bd[_pfx];
+    if (!Array.isArray(_arr)) return;
+    for (let _i = 0; _i < _arr.length; _i++) {
+      const _k = _pfx + '-' + _i;
+      const _a = state.answers[_k];
+      if (!_a || !_a.correct) wrongKeys.push(_k);
+    }
+  });
+  const list = [];
+  const multiPrefixes = new Set(['dual','poly']);
+  wrongKeys.forEach(key => {
+    const parts = key.split('-');
+    const prefix = parts[0];
+    const idx = parseInt(parts[1]);
+    const data = window._builtData && window._builtData[prefix];
+    if (!data || !data[idx]) return;
+    const q = data[idx];
+    if (multiPrefixes.has(prefix)) {
+      list.push({ type:'multi', word:q.word, answers:q.meanings||q.answers, allOpts:q.all4||q.all6, lesson:q.lesson||1 });
+    } else {
+      const wordTxt = q.word || q.phrase || ('"' + q.definition + '"') || '';
+      const subTxt = prefix==='ee'?'위 영영풀이에 해당하는 단어는?':prefix==='phr'?'위 표현의 뜻은?':prefix==='form'?('알맞은 뜻을 고르세요 · '+q.pos):'알맞은 답을 고르세요';
+      const wStyle = prefix==='ee'?'font-size:13px;font-weight:600;color:#374151;line-height:1.6':'';
+      list.push({ type:'mc', word:wordTxt, answer:q.answer, distractors:q.distractors, lesson:q.lesson||1, subText:subTxt, wordStyle:wStyle });
+    }
+  });
+  return list;
+}
+
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&document.getElementById('quizWrap').style.display!=='none'){const w=document.createElement('div');w.style.cssText='position:fixed;top:0;left:0;right:0;background:#c0392b;color:white;text-align:center;padding:10px;font-weight:700;z-index:9999;font-size:13px';w.textContent='⚠️ 화면을 벗어났습니다! 퀴즈에 집중하세요.';document.body.appendChild(w);setTimeout(()=>w.remove(),3000);}});
+document.addEventListener('copy',e=>e.preventDefault());document.addEventListener('contextmenu',e=>e.preventDefault());
+</script>
+
+<!-- === TTS 음성 지원 (Web Speech API) === -->
+<style>
+.tts-btn{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border:none;background:#e0e7ff;color:#3730a3;border-radius:50%;cursor:pointer;font-size:14px;padding:0;vertical-align:middle;margin-left:6px;transition:all .15s;flex-shrink:0;line-height:1;font-family:inherit;}
+.tts-btn:hover{background:#c7d2fe;transform:scale(1.05);}
+.tts-btn:active{transform:scale(0.95);}
+.tts-btn.speaking{background:#fbbf24;color:white;animation:tts-pulse 1s ease-in-out infinite;}
+@keyframes tts-pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.1);}}
+</style>
+<script>
+(function(){
+  if(window.__ttsInstalled) return; window.__ttsInstalled=true;
+  function speakText(text, btn){
+    if(!('speechSynthesis' in window)) return;
+    try{
+      window.speechSynthesis.cancel();
+      const u=new SpeechSynthesisUtterance(text);
+      u.lang='en-US';u.rate=0.85;u.pitch=1;
+      const voices=window.speechSynthesis.getVoices();
+      const en=voices.find(v=>v.lang && /^en/i.test(v.lang));
+      if(en) u.voice=en;
+      if(btn){
+        btn.classList.add('speaking');
+        u.onend=u.onerror=function(){btn.classList.remove('speaking');};
+      }
+      window.speechSynthesis.speak(u);
+    }catch(e){}
+  }
+  function ttsText(s){
+    s=String(s||'').replace(/^["“”'\s]+|["“”'\s]+$/g,'');
+    s=s.replace(/\s*🔊\s*$/,'');
+    const idx=s.search(/[ㄱ-힝]/);
+    if(idx!==-1) s=s.slice(0,idx);
+    return s.replace(/[\s\(\)\[\];,~]+$/,'').trim();
+  }
+  const SEL='.q-word,.word-en,.word-box,.word-card .word-en';
+  function inject(root){
+    (root||document).querySelectorAll(SEL).forEach(w=>{
+      if(w.dataset.tts==='1') return;
+      const raw=w.textContent.trim();
+      const txt=ttsText(raw);
+      if(!txt || !/[A-Za-z]/.test(txt)) return;
+      const btn=document.createElement('button');
+      btn.className='tts-btn';
+      btn.type='button';
+      btn.title='발음 듣기';
+      btn.setAttribute('aria-label','발음 듣기');
+      btn.textContent='🔊';
+      btn.addEventListener('click',function(e){e.stopPropagation();e.preventDefault();speakText(txt,btn);});
+      w.appendChild(document.createTextNode(' '));
+      w.appendChild(btn);
+      w.dataset.tts='1';
+    });
+  }
+  const _obs=new MutationObserver(muts=>{
+    let needs=false;
+    muts.forEach(m=>m.addedNodes.forEach(n=>{if(n.nodeType===1) needs=true;}));
+    if(needs) inject(document.body);
+  });
+  function start(){
+    _obs.observe(document.body,{childList:true,subtree:true});
+    inject(document.body);
+    if(window.speechSynthesis && window.speechSynthesis.getVoices){
+      window.speechSynthesis.getVoices();
+      if(window.speechSynthesis.onvoiceschanged===null){
+        window.speechSynthesis.onvoiceschanged=function(){};
+      }
+    }
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',start);
+  else start();
+})();
+</script>
+
+</body>
+</html>

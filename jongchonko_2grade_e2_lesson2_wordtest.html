@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>봄날 퀴즈 | 종촌고 · 고운고 2학년 영어2 2과 어휘 TEST</title>
+<script type="module" src="bn_tracker.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700;900&family=Fredoka+One&display=swap');
+:root{--primary:#5b2d8e;--secondary:#9b59b6;--accent:#f39c12;--accent2:#e67e22;--bg:#f8f4ff;--card:#fff;--text:#1b1b2f;--muted:#6b7280;--correct:#27ae60;--wrong:#c0392b;--border:#d9c4f0;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+.info-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
+.info-card{background:var(--card);border-radius:24px;padding:36px 28px;width:100%;max-width:380px;box-shadow:0 8px 32px rgba(91,45,142,.15);}
+.info-card .top-icon{font-size:48px;text-align:center;margin-bottom:12px;}
+.info-card h1{font-family:'Fredoka One',cursive;font-size:22px;color:var(--primary);text-align:center;margin-bottom:4px;}
+.info-card .sub{font-size:12px;color:var(--muted);text-align:center;margin-bottom:28px;line-height:1.6;}
+.form-label{font-size:12px;font-weight:700;color:var(--primary);margin-bottom:6px;display:block;}
+.form-select,.form-input{width:100%;padding:13px 14px;border:2px solid var(--border);border-radius:12px;font-family:'Noto Sans KR',sans-serif;font-size:14px;outline:none;transition:border-color .2s;margin-bottom:16px;background:white;color:var(--text);}
+.form-select:focus,.form-input:focus{border-color:var(--secondary);}
+.form-select.err,.form-input.err{border-color:var(--wrong);}
+.start-btn{width:100%;padding:15px;background:linear-gradient(135deg,var(--primary),#3d1a6e);color:white;border:none;border-radius:14px;font-family:'Noto Sans KR',sans-serif;font-size:16px;font-weight:700;cursor:pointer;transition:opacity .2s;box-shadow:0 4px 16px rgba(91,45,142,.3);}
+.start-btn:hover{opacity:.88;}
+.quiz-wrap{display:none;}
+.quiz-header{background:linear-gradient(135deg,var(--primary),#3d1a6e);color:white;padding:20px 16px 16px;text-align:center;position:relative;overflow:hidden;}
+.quiz-header::before{content:'';position:absolute;top:-40px;right:-40px;width:160px;height:160px;background:rgba(255,255,255,.05);border-radius:50%;}
+.lesson-badge{display:inline-block;background:var(--accent);color:white;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;letter-spacing:1px;margin-bottom:6px;}
+.quiz-header h1{font-family:'Fredoka One',cursive;font-size:24px;letter-spacing:1px;margin-bottom:2px;}
+.quiz-header .student-info{font-size:12px;opacity:.85;margin-top:2px;}
+.attempt-badge{display:inline-block;background:rgba(255,255,255,.18);border-radius:8px;padding:3px 10px;font-size:11px;margin-top:5px;}
+.section-tabs{display:flex;overflow-x:auto;gap:8px;padding:12px 14px 0;background:var(--primary);scrollbar-width:none;}
+.section-tabs::-webkit-scrollbar{display:none;}
+.tab-btn{flex-shrink:0;padding:7px 14px;border-radius:10px 10px 0 0;border:none;background:rgba(255,255,255,.13);color:rgba(255,255,255,.65);font-family:'Noto Sans KR',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;}
+.tab-btn.active{background:var(--bg);color:var(--primary);}
+.progress-wrap{padding:10px 14px 0;background:var(--bg);}
+.progress-info{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:5px;}
+.progress-bar{height:5px;background:var(--border);border-radius:10px;overflow:hidden;}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--secondary),var(--primary));border-radius:10px;transition:width .4s ease;}
+.quiz-section{display:none;padding:14px 14px 80px;}
+.quiz-section.active{display:block;}
+.section-title{font-size:14px;font-weight:700;color:var(--primary);margin-bottom:3px;display:flex;align-items:center;gap:6px;}
+.section-title .icon{width:26px;height:26px;background:var(--primary);color:white;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;}
+.section-desc{font-size:11px;color:var(--muted);margin-bottom:14px;}
+.q-card{background:var(--card);border-radius:14px;padding:18px;margin-bottom:12px;border:1.5px solid var(--border);box-shadow:0 2px 6px rgba(0,0,0,.04);}
+.q-card.correct-card{border-color:var(--correct);background:#f0fdf4;}
+.q-card.wrong-card{border-color:var(--wrong);background:#fff5f5;}
+.q-num{font-size:10px;font-weight:700;color:var(--muted);margin-bottom:5px;}
+.q-word{font-size:20px;font-weight:900;color:var(--text);margin-bottom:3px;font-family:'Fredoka One',cursive;}
+.q-word.ko{font-family:'Noto Sans KR',sans-serif;font-size:16px;font-weight:700;}
+.q-sub{font-size:11px;color:var(--muted);margin-bottom:12px;}
+.lesson-tag{display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:5px;margin-bottom:3px;}
+.lesson-tag.l1{background:#ede9fe;color:#5b2d8e;}
+.lesson-tag.l2{background:#fef3c7;color:#92400e;}
+.lesson-tag.l3{background:#dcfce7;color:#166534;}
+.lesson-tag.l4{background:#fce7f3;color:#9f1239;}
+.lesson-tag.l5{background:#cffafe;color:#155e75;}
+.options{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+.opt-btn{padding:9px 11px;border:2px solid var(--border);border-radius:9px;background:white;font-family:'Noto Sans KR',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;text-align:center;color:var(--text);line-height:1.4;}
+.opt-btn:hover:not(:disabled){border-color:var(--secondary);background:#f5f0ff;}
+.opt-btn.selected-correct{background:#d1fae5;border-color:var(--correct);color:var(--correct);}
+.opt-btn.selected-wrong{background:#fee2e2;border-color:var(--wrong);color:var(--wrong);}
+.opt-btn.show-correct{background:#d1fae5;border-color:var(--correct);color:var(--correct);}
+.opt-btn:disabled{cursor:default;}
+.opt-btn.multi.selected{background:#ede9fe;border-color:var(--secondary);color:var(--primary);}
+.multi-confirm{margin-top:10px;width:100%;padding:10px;background:#f3f4f6;color:#9ca3af;border:none;border-radius:9px;font-size:12px;font-weight:700;cursor:not-allowed;transition:all .15s;}
+.multi-confirm.ready{background:var(--secondary);color:white;cursor:pointer;}
+.multi-confirm.ready:hover{background:var(--primary);}
+.opt-btn.multi.correct-sel{background:#d1fae5;border-color:var(--correct);color:var(--correct);}
+.opt-btn.multi.wrong-sel{background:#fee2e2;border-color:var(--wrong);color:var(--wrong);}
+.feedback{font-size:12px;font-weight:700;margin-top:7px;padding:5px 9px;border-radius:7px;display:none;}
+.feedback.show{display:block;}
+.feedback.ok{background:#d1fae5;color:var(--correct);}
+.feedback.no{background:#fee2e2;color:var(--wrong);}
+.float-submit{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);z-index:100;width:calc(100% - 28px);max-width:480px;padding:13px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:white;border:none;border-radius:14px;font-family:'Noto Sans KR',sans-serif;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 4px 18px rgba(243,156,18,.4);}
+.float-submit:active{transform:translateX(-50%) scale(.97);}
+.float-submit.hidden{display:none;}
+.result-screen{display:none;padding:28px 18px;text-align:center;}
+.result-screen.show{display:block;}
+.result-emoji{font-size:56px;margin-bottom:10px;}
+.result-score{font-size:44px;font-weight:900;font-family:'Fredoka One',cursive;color:var(--primary);margin-bottom:3px;}
+.result-label{font-size:13px;color:var(--muted);margin-bottom:20px;}
+.result-detail{background:white;border-radius:14px;padding:14px;margin-bottom:18px;text-align:left;}
+.result-row{display:flex;justify-content:space-between;padding:5px 0;font-size:12px;border-bottom:1px solid #f0f0f0;}
+.result-row:last-child{border-bottom:none;}
+.result-row .label{color:var(--muted);}
+.result-row .val{font-weight:700;}
+.sending-msg{font-size:13px;color:var(--muted);margin-bottom:14px;}
+.sending-msg.ok{color:var(--correct);font-weight:700;}
+.sending-msg.err{color:var(--wrong);}
+.retry-btn{width:100%;padding:13px;background:var(--primary);color:white;border:none;border-radius:14px;font-family:'Noto Sans KR',sans-serif;font-size:14px;font-weight:700;cursor:pointer;}
+</style>
+
+<script>
+// 봄날 허브에서 전달된 학생 이름 자동 적용
+(function(){
+  var saved = sessionStorage.getItem('bn_name') || localStorage.getItem('bn_name');
+  if(saved){
+    window._hubStudentName = saved;
+    // 이름 입력란이 있으면 자동 입력
+    window.addEventListener('DOMContentLoaded', function(){
+      var inputs = document.querySelectorAll('input#student-name, input#nameInput, .name-input');
+      inputs.forEach(function(el){ if(!el.value) el.value = saved; });
+    });
+  }
+})();
+</script>
+</head>
+<body>
+<div class="info-wrap" id="infoWrap">
+  <div class="info-card">
+    <div class="top-icon">🏫</div>
+    <h1>영어2 2과 어휘 TEST</h1>
+    <p class="sub">YBM(박준언) 영어2 · 종촌고 · 고운고 2학년<br>퀴즈 결과가 선생님께 자동 전달돼요!</p>
+    <label class="form-label">🏫 학교 / 학년</label>
+    <select class="form-select" id="schoolSel">
+      <option value="">학교를 선택하세요</option>
+      <option value="종촌고2">종촌고 2학년</option>
+      <option value="고운고2">고운고 2학년</option>
+    </select>
+    <label class="form-label">✏️ 이름</label>
+    <input type="text" class="form-input" id="nameInput" placeholder="이름을 입력하세요" maxlength="10">
+    <button class="start-btn" onclick="startQuiz()">퀴즈 시작 →</button>
+  </div>
+</div>
+<div class="quiz-wrap" id="quizWrap">
+  <div class="quiz-header">
+    <div class="lesson-badge">종촌고 · 고운고 2학년 · 영어2 2과</div>
+    <h1>📚 Vocabulary Quiz</h1>
+    <div class="student-info" id="studentInfoDisplay"></div>
+    <div class="attempt-badge" id="attemptDisplay">첫 번째 도전!</div>
+  </div>
+  <div class="section-tabs">
+    <button class="tab-btn active" onclick="switchSection(0)">① 유의어</button>
+    <button class="tab-btn" onclick="switchSection(1)">② 반의어</button>
+    <button class="tab-btn" onclick="switchSection(2)">③ 뜻 찾기</button>
+    <button class="tab-btn" onclick="switchSection(3)">④ 다의어</button>
+    <button class="tab-btn" onclick="switchSection(4)">⑤ Phrases</button>
+    <button class="tab-btn" onclick="switchSection(5)">⑥ 영영풀이</button>
+  </div>
+  <div class="progress-wrap">
+    <div class="progress-info"><span id="progressText">0 / 0 완료</span><span id="scoreText">점수: 0</span></div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+  </div>
+  <div class="quiz-section active" id="section-0"><div class="section-title"><div class="icon">①</div> 유의어 고르기</div><div class="section-desc">주어진 단어와 의미가 가장 가까운 것을 고르세요.</div><div id="synonymQuestions"></div></div>
+  <div class="quiz-section" id="section-1"><div class="section-title"><div class="icon">②</div> 반의어 고르기</div><div class="section-desc">주어진 단어의 반의어를 고르세요.</div><div id="antonymQuestions"></div></div>
+  <div class="quiz-section" id="section-2"><div class="section-title"><div class="icon">③</div> 영단어 뜻 찾기</div><div class="section-desc">다음 영어 단어의 우리말 뜻을 고르세요.</div><div id="formQuestions"></div></div>
+  <div class="quiz-section" id="section-3"><div class="section-title"><div class="icon">④</div> 다의어 뜻 모두 선택</div><div class="section-desc">단어의 뜻을 모두 골라보세요.</div><div id="polyQuestions"></div></div>
+  <div class="quiz-section" id="section-4"><div class="section-title"><div class="icon">⑤</div> Phrases</div><div class="section-desc">주어진 표현의 올바른 뜻을 고르세요.</div><div id="phraseQuestions"></div></div>
+  <div class="quiz-section" id="section-5"><div class="section-title"><div class="icon">⑥</div> 영영풀이</div><div class="section-desc">영어 풀이를 읽고 알맞은 단어를 고르세요.</div><div id="engEngQuestions"></div></div>
+  <div class="result-screen" id="resultScreen">
+    <div class="result-emoji" id="resultEmoji">🎉</div>
+    <div class="result-score" id="resultScore">0점</div>
+    <div class="result-label" id="resultLabel"></div>
+    <div class="result-detail" id="resultDetail"></div>
+    <div class="sending-msg" id="sendingMsg">📡 결과 전송 중...</div>
+    <button id="retryWrongBtn" onclick="startRetry()" style="display:none;width:100%;padding:13px;background:var(--wrong);color:white;border:none;border-radius:14px;font-family:'Noto Sans KR',sans-serif;font-size:15px;font-weight:700;cursor:pointer;margin-bottom:10px;">❌ 오답 다시 풀기 (<span id="wrongCount">0</span>개)</button>
+    <button class="retry-btn" onclick="retryQuiz()">🔄 처음부터 다시</button>
+  </div>
+  
+  <!-- 오답 재풀이 화면 -->
+  <div id="retryScreen" style="display:none;padding:14px 14px 80px;">
+    <div style="background:var(--wrong);color:white;border-radius:14px;padding:14px 18px;margin-bottom:16px;text-align:center;">
+      <div style="font-size:12px;font-weight:700;opacity:.85">오답 재풀이 모드 · <span id="retryRoundLabel">1라운드</span></div>
+      <div style="font-family:'Fredoka One',cursive;font-size:20px;margin-top:2px">❌ → ✅ 전부 맞힐 때까지!</div>
+      <div style="font-size:11px;opacity:.75;margin-top:4px" id="retryCountLabel"></div>
+    </div>
+    <div id="retryQuestions"></div>
+  </div>
+  <button class="float-submit hidden" id="retrySubmitBtn" onclick="submitRetry()">✅ 오답 확인하기</button>
+  <button class="float-submit" id="floatSubmit" onclick="submitAll()">🎯 최종 제출하기</button>
+</div>
+<script type="module">
+import{initializeApp}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import{getFirestore,collection,addDoc,serverTimestamp}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+const cfg={apiKey:"AIzaSyCxS524S8KAaF87DomPtl9sJdF-eqes404",authDomain:"bomnalvaca.firebaseapp.com",projectId:"bomnalvaca",storageBucket:"bomnalvaca.firebasestorage.app",messagingSenderId:"115868052300",appId:"1:115868052300:web:765c08867b6f1ce0987de9"};
+const app=initializeApp(cfg);const db=getFirestore(app);
+window._saveResult=async function(data){await addDoc(collection(db,'quiz_results'),{...data,submittedAt:serverTimestamp()});};
+window._fbReady=true;
+</script>
+<script>
+const SYNONYM_DATA=[{"lesson": 2, "word": "ownership (소유(권))", "answer": "possession", "distractors": ["convenience", "deeply", "numerous"]}, {"lesson": 2, "word": "discover (~을 발견하다)", "answer": "find", "distractors": ["burden", "concern", "drive"]}, {"lesson": 2, "word": "expand (확장되다)", "answer": "extend", "distractors": ["purchase", "select", "growth"]}, {"lesson": 2, "word": "various (다양한, 여러 가지의)", "answer": "varied", "distractors": ["excessive", "ownership", "preference"]}, {"lesson": 2, "word": "latest (최신의)", "answer": "newest", "distractors": ["carefully", "prioritize", "advantage"]}, {"lesson": 2, "word": "field (분야)", "answer": "area", "distractors": ["technology", "recommendation", "gain"]}, {"lesson": 2, "word": "initially (처음에, 초기에)", "answer": "at first", "distractors": ["ownership", "attractive", "strain"]}, {"lesson": 2, "word": "be limited to ~ (~에 국한되다, 한정되다)", "answer": "be restricted to ~", "distractors": ["concept", "limitless", "update"]}, {"lesson": 2, "word": "stable (안정적인)", "answer": "secure", "distractors": ["value", "address", "recommend"]}, {"lesson": 2, "word": "major (주요한)", "answer": "key", "distractors": ["suggest", "reusable", "chosen"]}, {"lesson": 2, "word": "rapid (빠른, 급속한)", "answer": "sudden", "distractors": ["avoid", "numerous", "recommendation"]}, {"lesson": 2, "word": "limitless (무한한, 무제한의)", "answer": "unlimited", "distractors": ["use", "much", "apply"]}, {"lesson": 2, "word": "aspect (측면)", "answer": "facet", "distractors": ["hit", "academic", "consider"]}, {"lesson": 2, "word": "address ((문제·쟁점 등)을 다루다)", "answer": "deal with ~", "distractors": ["flexibility", "harm", "embedded"]}, {"lesson": 2, "word": "fixed (정해진, 고정된)", "answer": "set", "distractors": ["suggest", "price", "pollution"]}, {"lesson": 2, "word": "select (~을 선택하다, 선발하다)", "answer": "pick", "distractors": ["receive", "identify", "drive"]}, {"lesson": 2, "word": "easily (쉽게, 간단하게)", "answer": "with ease", "distractors": ["device", "review", "convenience"]}, {"lesson": 2, "word": "enhance (~을 높이다, 향상시키다)", "answer": "improve", "distractors": ["chosen", "customization", "understanding"]}, {"lesson": 2, "word": "wish (~을 바라다, 원하다)", "answer": "desire", "distractors": ["entertainment", "consider", "burden"]}, {"lesson": 2, "word": "purchase (~을 구입하다, 구매하다)", "answer": "buy", "distractors": ["latest", "stable", "attractive"]}, {"lesson": 2, "word": "vast (방대한)", "answer": "huge", "distractors": ["uniqueness", "understanding", "customized"]}, {"lesson": 2, "word": "selection (갖춰 놓은 것)", "answer": "range (", "distractors": ["once", "strain", "rise"]}, {"lesson": 2, "word": "history (이력)", "answer": "record", "distractors": ["contract", "continue", "despite"]}, {"lesson": 2, "word": "match (~에 맞추다, 부응하다)", "answer": "suit", "distractors": ["fixed", "utilize", "apply"]}, {"lesson": 2, "word": "multiple (다수의, 여럿의)", "answer": "many", "distractors": ["entertainment", "lecture", "selection"]}, {"lesson": 2, "word": "result in ~ (~을 야기하다)", "answer": "cause", "distractors": ["continuously", "education", "platform"]}, {"lesson": 2, "word": "excessive (과도한, 지나친)", "answer": "immoderate", "distractors": ["pollution", "utilize", "stay"]}, {"lesson": 2, "word": "crucial (결정적인, 매우 중요한)", "answer": "important", "distractors": ["specialized", "discover", "environmental"]}, {"lesson": 2, "word": "truly (정말, 진심으로)", "answer": "really", "distractors": ["burden", "environmental", "understanding"]}, {"lesson": 2, "word": "avoid (~을 피하다, 회피하다)", "answer": "refrain from ~", "distractors": ["major", "burden", "furthermore"]}, {"lesson": 2, "word": "affordable (살 만한 가격의, 저렴한)", "answer": "reasonable", "distractors": ["industry", "beneficial", "identify"]}, {"lesson": 2, "word": "additionally (추가로)", "answer": "in addition", "distractors": ["access", "taste", "ownership"]}, {"lesson": 2, "word": "harm (~에 해를 끼치다)", "answer": "damage", "distractors": ["entertainment", "device", "own"]}, {"lesson": 2, "word": "reduce (~을 줄이다)", "answer": "decrease", "distractors": ["drawer", "history", "contract"]}, {"lesson": 2, "word": "despite (~에도 불구하고)", "answer": "in spite of ~", "distractors": ["carefully", "individual", "recommendation"]}, {"lesson": 2, "word": "wise (현명한)", "answer": "sensible", "distractors": ["latest", "need", "entertainment"]}];
+const ANTONYM_DATA=[{"lesson": 2, "word": "regular (정기적인)", "answer": "irregular", "distractors": ["algorithm", "requirement", "customized"]}, {"lesson": 2, "word": "stable (안정적인)", "answer": "unstable", "distractors": ["thoroughly", "streaming", "gain"]}, {"lesson": 2, "word": "flexible (융통성 있는)", "answer": "inflexible", "distractors": ["potential", "including", "cancel"]}, {"lesson": 2, "word": "rapid (빠른, 급속한)", "answer": "gradual", "distractors": ["packaging", "easily", "chosen"]}, {"lesson": 2, "word": "limitless (무한한, 무제한의)", "answer": "limited", "distractors": ["customization", "quality", "carefully"]}, {"lesson": 2, "word": "valuable (가치 있는)", "answer": "worthless", "distractors": ["closely", "flexible", "economic"]}, {"lesson": 2, "word": "specialized (전문적인)", "answer": "general", "distractors": ["economic", "concern", "actively"]}, {"lesson": 2, "word": "accessible (쉽게 얻을[이용할] 수 있는)", "answer": "inaccessible", "distractors": ["potential", "loyalty", "beneficial"]}, {"lesson": 2, "word": "enhance (~을 높이다, 향상시키다)", "answer": "diminish ~", "distractors": ["ownership", "deeply", "spend+"]}, {"lesson": 2, "word": "purchase (~을 구입하다, 구매하다)", "answer": "sell ~", "distractors": ["attention", "convenience", "cancel"]}, {"lesson": 2, "word": "satisfaction (만족(감))", "answer": "dissatisfaction", "distractors": ["uniform", "via", "education"]}, {"lesson": 2, "word": "excessive (과도한, 지나친)", "answer": "moderate", "distractors": ["major", "personalization", "generation"]}, {"lesson": 2, "word": "crucial (결정적인, 매우 중요한)", "answer": "unimportant", "distractors": ["reusable", "own", "spend+"]}, {"lesson": 2, "word": "affordable (살 만한 가격의, 저렴한)", "answer": "unreasonable", "distractors": ["customization", "stable", "driver"]}, {"lesson": 2, "word": "carefully (신중히, 조심해서)", "answer": "carelessly", "distractors": ["beneficial", "subscription", "use"]}, {"lesson": 2, "word": "regularly (정기적으로, 자주)", "answer": "irregularly", "distractors": ["satisfaction", "utilize", "offer"]}, {"lesson": 2, "word": "beneficial (유익한, 이로운)", "answer": "harmful", "distractors": ["pollution", "analyze", "satisfaction"]}, {"lesson": 2, "word": "reduce (~을 줄이다)", "answer": "increase ~", "distractors": ["analyze", "recommend", "explore"]}, {"lesson": 2, "word": "wise (현명한)", "answer": "foolish", "distractors": ["embedded", "stay", "beneficial"]}, {"lesson": 2, "word": "purchase (구입, 구매)", "answer": "sale", "distractors": ["explore", "enhance", "material"]}];
+const FORM_DATA=[{"lesson": 2, "word": "subscription", "pos": "명사", "answer": "서비스 가입 (계약)", "distractors": ["몹시, 깊이", "~을 소유하다", "제품, 상품"]}, {"lesson": 2, "word": "economy", "pos": "명사", "answer": "경제", "distractors": ["확장되다, 확대되다;vt. ~을 확장시키다, 확대하다", "(자연·생활) 환경의", "스트리밍"]}, {"lesson": 2, "word": "ownership", "pos": "명사", "answer": "소유(권)", "distractors": ["~을 제안하다, 제의하다", "화장품, 미용 제품", "관심"]}, {"lesson": 2, "word": "access", "pos": "명사", "answer": "접근 가능성, (서비스 등을 이용할 수 있는) 권리;vt. ~에 접속하다", "distractors": ["훨씬", "가치;vt. ~을 중요하게 여기다", "중압감, 압박"]}, {"lesson": 2, "word": "streaming", "pos": "명사", "answer": "스트리밍", "distractors": ["배달, 배송", "~을 고려하다", "분야"]}, {"lesson": 2, "word": "discover", "pos": "동사", "answer": "~을 발견하다", "distractors": ["~을 확인하다", "~을 고려하다", "배달, 배송"]}, {"lesson": 2, "word": "explore", "pos": "동사", "answer": "~을 탐험하다", "distractors": ["추세, 경향, 동향", "요금, 비용", "개(개)인a. 개별의"]}, {"lesson": 2, "word": "receive", "pos": "동사", "answer": "~을 받다", "distractors": ["~을 제공하다", "살 만한 가격의, 저렴한", "제공된[내놓은] 것"]}, {"lesson": 2, "word": "delivery", "pos": "명사", "answer": "배달, 배송", "distractors": ["전문적인, 전문화된", "강의, 강연", "~을 (재)검토하다;~을 복습하다"]}, {"lesson": 2, "word": "utilize", "pos": "동사", "answer": "~을 활용하다, 이용하다", "distractors": ["요건", "유일한, 고유의", "빠른, 급속한"]}, {"lesson": 2, "word": "lecture", "pos": "명사", "answer": "강의, 강연", "distractors": ["~을 포함하여", "경제의", "요건"]}, {"lesson": 2, "word": "expand", "pos": "동사", "answer": "확장되다, 확대되다;vt. ~을 확장시키다, 확대하다", "distractors": ["소비(량), 섭취(량)", "가능성, 잠재력a. 잠재적인", "융통성 있는"]}, {"lesson": 2, "word": "various", "pos": "형용사", "answer": "다양한, 여러 가지의", "distractors": ["흥미를 끄는", "요건", "가격"]}, {"lesson": 2, "word": "academic", "pos": "형용사", "answer": "학문적인", "distractors": ["다수의, 여럿의", "(구입∙생산 등의) 비용, 대가vt. ~의 비용이 들다", "동인, 추진 요인"]}, {"lesson": 2, "word": "review", "pos": "동사", "answer": "~을 (재)검토하다;~을 복습하다", "distractors": ["안정적인, 안정된", "인기 있는", "~을 포함하여"]}, {"lesson": 2, "word": "schoolwork", "pos": "명사", "answer": "학업", "distractors": ["확장되다, 확대되다;vt. ~을 확장시키다, 확대하다", "관심", "(경향) 패턴"]}, {"lesson": 2, "word": "stay", "pos": "동사", "answer": "~한 상태를 유지하다", "distractors": ["발달, 발전", "~을 조절하다", "정기적인"]}, {"lesson": 2, "word": "update", "pos": "동사", "answer": "~을 업데이트하다;n. 최신 정보[소식]", "distractors": ["~을 탐험하다", "깊이 새겨진, 뿌리 박힌", "~을 추천하다"]}, {"lesson": 2, "word": "latest", "pos": "형용사", "answer": "최신의", "distractors": ["쉽게 얻을[이용할] 수 있는", "(자연·생활) 환경의", "몹시, 깊이"]}, {"lesson": 2, "word": "chosen", "pos": "형용사", "answer": "선택된, 선발된", "distractors": ["정말, 진심으로", "오염", "밀접하게"]}, {"lesson": 2, "word": "field", "pos": "명사", "answer": "분야", "distractors": ["기기, 장치", "과소비, 과잉 섭취", "~을 구입하다, 구매하다"]}, {"lesson": 2, "word": "spend+", "pos": "단어", "answer": "시간+-ing ~하면서 (시간)을 보내다", "distractors": ["아주 좋은, 우수한", "(문제·쟁점 등)을 다루다", "권고, 추천"]}, {"lesson": 2, "word": "quality", "pos": "형용사", "answer": "아주 좋은, 우수한", "distractors": ["(학교) 교육", "~을 제공하다", "동인, 추진 요인"]}, {"lesson": 2, "word": "use", "pos": "동사", "answer": "~을 사용하다; n. 사용", "distractors": ["몹시, 깊이", "~을 고려하다", "~을 얻다"]}, {"lesson": 2, "word": "popular", "pos": "형용사", "answer": "인기 있는", "distractors": ["내용", "계속되다, 지속되다", "서비스 가입 (계약)"]}, {"lesson": 2, "word": "economic", "pos": "형용사", "answer": "경제의", "distractors": ["다수의, 여럿의", "아주 좋은, 우수한", "~을 사용하다; n. 사용"]}, {"lesson": 2, "word": "nowadays", "pos": "부사", "answer": "요즈음에는", "distractors": ["~을 (재)검토하다;~을 복습하다", "~을 받다", "(개인) 맞춤형의"]}, {"lesson": 2, "word": "actively", "pos": "부사", "answer": "적극적으로", "distractors": ["소비자", "~을 탐험하다", "다양한, 여러 가지의"]}, {"lesson": 2, "word": "concept", "pos": "명사", "answer": "개념, 생각", "distractors": ["소비(량), 섭취(량)", "~을 통해서", "한 번;한때"]}, {"lesson": 2, "word": "business", "pos": "명사", "answer": "사업", "distractors": ["밀접하게", "발달, 발전", "(컴퓨터의) 플랫폼"]}, {"lesson": 2, "word": "initially", "pos": "부사", "answer": "처음에, 초기에", "distractors": ["안정적인, 안정된", "~을 줄이다", "흥미를 끄는"]}, {"lesson": 2, "word": "product", "pos": "명사", "answer": "제품", "distractors": ["계속되다, 지속되다", "~을 추천하다", "안정적인, 안정된"]}, {"lesson": 2, "word": "industry", "pos": "명사", "answer": "산업", "distractors": ["최신의", "과소비, 과잉 섭취", "살 만한 가격의, 저렴한"]}, {"lesson": 2, "word": "including", "pos": "전치사", "answer": "~을 포함하여", "distractors": ["~을 사용하다; n. 사용", "철저하게, 꼼꼼하게", "(문제·쟁점 등)을 다루다"]}, {"lesson": 2, "word": "entertainment", "pos": "명사", "answer": "오락(물), 연예", "distractors": ["끊임없이, 지속적으로", "~을 제조하다", "포장"]}, {"lesson": 2, "word": "technology", "pos": "명사", "answer": "(과학·공학의) 기술", "distractors": ["밀접하게", "다수의, 수많은", "선택된, 선발된"]}, {"lesson": 2, "word": "education", "pos": "명사", "answer": "(학교) 교육", "distractors": ["동인, 추진 요인", "~을 업데이트하다;n. 최신 정보[소식]", "매우, 많이"]}, {"lesson": 2, "word": "much", "pos": "부사", "answer": "훨씬", "distractors": ["일회용의", "흥미를 끄는", "최신의"]}, {"lesson": 2, "word": "hit", "pos": "명사", "answer": "대성공", "distractors": ["~에 해를 끼치다, ~을 다치게 하다", "~을 발견하다", "관심"]}, {"lesson": 2, "word": "once", "pos": "부사", "answer": "한 번;한때", "distractors": ["~을 얻다", "빠른, 급속한", "가격"]}, {"lesson": 2, "word": "prioritize", "pos": "동사", "answer": "~을 최우선시하다", "distractors": ["~을 발견하다", "~에 맞추다, 부응하다", "(컴퓨터 마우스의) 클릭"]}, {"lesson": 2, "word": "continue", "pos": "동사", "answer": "계속되다, 지속되다", "distractors": ["~을 바라다, 원하다", "이점, 장점", "(컴퓨터의) 플랫폼"]}, {"lesson": 2, "word": "value", "pos": "명사", "answer": "가치;vt. ~을 중요하게 여기다", "distractors": ["처음에, 초기에", "요건", "끊임없이, 지속적으로"]}, {"lesson": 2, "word": "content", "pos": "명사", "answer": "내용", "distractors": ["(자연·생활) 환경의", "재정의", "~을 확인하다"]}, {"lesson": 2, "word": "personalization", "pos": "명사", "answer": "개인 맞춤화", "distractors": ["제한, 억제", "~에도 불구하고", "배달, 배송"]}, {"lesson": 2, "word": "customer", "pos": "명사", "answer": "고객, 손님", "distractors": ["살 만한 가격의, 저렴한", "다양한, 여러 가지의", "가능성, 잠재력a. 잠재적인"]}, {"lesson": 2, "word": "benefit", "pos": "명사", "answer": "혜택", "distractors": ["한 번;한때", "~을 조절하다", "(사람·상황에 따른) 맞춤형의"]}, {"lesson": 2, "word": "via", "pos": "전치사", "answer": "~을 통해서", "distractors": ["(구입∙생산 등의) 비용, 대가vt. ~의 비용이 들다", "이력", "지혜로운, 현명한"]}, {"lesson": 2, "word": "regular", "pos": "형용사", "answer": "정기적인", "distractors": ["안정적인, 안정된", "(자연·생활) 환경의", "고유성"]}, {"lesson": 2, "word": "advantage", "pos": "명사", "answer": "이점, 장점", "distractors": ["가치;vt. ~을 중요하게 여기다", "일회용의", "선택, 선택 사항"]}, {"lesson": 2, "word": "stable", "pos": "형용사", "answer": "안정적인, 안정된", "distractors": ["~에 해를 끼치다, ~을 다치게 하다", "정해진, 고정된", "융통성 있는"]}, {"lesson": 2, "word": "revenue", "pos": "명사", "answer": "수익, 수입", "distractors": ["~을 사용하다; n. 사용", "측면", "~을 탐험하다"]}, {"lesson": 2, "word": "build", "pos": "동사", "answer": "(자신감∙신뢰 등)을 쌓아가다", "distractors": ["소비(량), 섭취(량)", "스트리밍", "현재의, 지금의"]}, {"lesson": 2, "word": "loyalty", "pos": "명사", "answer": "충성, 충성심", "distractors": ["~을 받다", "~을 작동시키다", "무한한, 무제한의"]}, {"lesson": 2, "word": "consumer", "pos": "명사", "answer": "소비자", "distractors": ["요건", "~을 적용하다", "쉽게, 간단하게"]}, {"lesson": 2, "word": "choice", "pos": "명사", "answer": "선택할 수 있는 범위", "distractors": ["~을 최우선시하다", "(과학·공학의) 기술", "빠른, 급속한"]}, {"lesson": 2, "word": "personalized", "pos": "형용사", "answer": "(개인) 맞춤형의", "distractors": ["(과학·공학의) 기술", "경제의", "오락(물), 연예"]}, {"lesson": 2, "word": "flexible", "pos": "형용사", "answer": "융통성 있는", "distractors": ["이점, 장점", "(개인) 맞춤형의", "화장품, 미용 제품"]}, {"lesson": 2, "word": "contract", "pos": "명사", "answer": "계약(서)", "distractors": ["배달, 배송", "접근 가능성, (서비스 등을 이용할 수 있는) 권리;vt. ~에 접속하다", "가치;vt. ~을 중요하게 여기다"]}, {"lesson": 2, "word": "rise", "pos": "명사", "answer": "부상", "distractors": ["선호", "선택할 수 있는 범위", "~을 구입하다, 구매하다"]}, {"lesson": 2, "word": "closely", "pos": "부사", "answer": "밀접하게", "distractors": ["편리(함), 편의", "몹시, 깊이", "용구, 자재, 자료;a. (돈·재산 등의) 물질적인"]}, {"lesson": 2, "word": "major", "pos": "형용사", "answer": "주요한", "distractors": ["~을 발견하다", "흥미를 끄는", "재정의"]}, {"lesson": 2, "word": "driver", "pos": "명사", "answer": "동인, 추진 요인", "distractors": ["다양한, 여러 가지의", "걱정, 근심", "(컴퓨터의) 플랫폼"]}, {"lesson": 2, "word": "consumption", "pos": "명사", "answer": "소비(량), 섭취(량)", "distractors": ["일회용의", "분야", "제공된[내놓은] 것"]}, {"lesson": 2, "word": "trend", "pos": "명사", "answer": "추세, 경향, 동향", "distractors": ["소비(량), 섭취(량)", "학업", "개(개)인a. 개별의"]}, {"lesson": 2, "word": "rapid", "pos": "형용사", "answer": "빠른, 급속한", "distractors": ["(개인) 맞춤형의", "살 만한 가격의, 저렴한", "~을 제조하다"]}, {"lesson": 2, "word": "growth", "pos": "명사", "answer": "성장", "distractors": ["~을 제조하다", "~을 적용하다", "(컴퓨터의) 플랫폼"]}, {"lesson": 2, "word": "platform", "pos": "명사", "answer": "(컴퓨터의) 플랫폼", "distractors": ["일회용의", "깊이 새겨진, 뿌리 박힌", "관심"]}, {"lesson": 2, "word": "highly", "pos": "부사", "answer": "매우, 많이", "distractors": ["경제", "~을 소유하다", "취향"]}, {"lesson": 2, "word": "goods", "pos": "명사", "answer": "제품, 상품", "distractors": ["(컴퓨터 마우스의) 클릭", "필요(성); 요구;vt. ~을 필요로 하다", "제한, 억제"]}, {"lesson": 2, "word": "own", "pos": "동사", "answer": "~을 소유하다", "distractors": ["고유성", "인기 있는", "~을 업데이트하다;n. 최신 정보[소식]"]}, {"lesson": 2, "word": "attractive", "pos": "형용사", "answer": "흥미를 끄는", "distractors": ["산업", "더욱이, 게다가", "~을 사용하다; n. 사용"]}, {"lesson": 2, "word": "offer", "pos": "동사", "answer": "~을 제공하다", "distractors": ["~을 통해서", "동인, 추진 요인", "소비자"]}, {"lesson": 2, "word": "requirement", "pos": "명사", "answer": "요건", "distractors": ["~을 분석하다", "몹시, 깊이", "상태"]}, {"lesson": 2, "word": "limitless", "pos": "형용사", "answer": "무한한, 무제한의", "distractors": ["추가로", "처음에, 초기에", "제한, 억제"]}, {"lesson": 2, "word": "need", "pos": "명사", "answer": "필요(성); 요구;vt. ~을 필요로 하다", "distractors": ["시간+-ing ~하면서 (시간)을 보내다", "추가로", "고객, 손님"]}, {"lesson": 2, "word": "clothing", "pos": "명사", "answer": "(집합적) 옷, 의류", "distractors": ["~에 해를 끼치다, ~을 다치게 하다", "포장", "취향"]}, {"lesson": 2, "word": "drawer", "pos": "명사", "answer": "서랍", "distractors": ["다수의, 수많은", "~을 사용하다; n. 사용", "주의, 주목, 시선"]}, {"lesson": 2, "word": "diversity", "pos": "명사", "answer": "다양성", "distractors": ["유익한, 이로운", "수익, 수입", "(집합적) 옷, 의류"]}, {"lesson": 2, "word": "customization", "pos": "명사", "answer": "맞춤화", "distractors": ["몹시, 깊이", "스트리밍", "~을 적용하다"]}, {"lesson": 2, "word": "option", "pos": "명사", "answer": "선택, 선택 사항", "distractors": ["안정적인, 안정된", "오염", "다수의, 여럿의"]}, {"lesson": 2, "word": "individual", "pos": "명사", "answer": "개(개)인a. 개별의", "distractors": ["세대", "주의, 주목, 시선", "오염"]}, {"lesson": 2, "word": "preference", "pos": "명사", "answer": "선호", "distractors": ["접근 가능성, (서비스 등을 이용할 수 있는) 권리;vt. ~에 접속하다", "(사람·상황에 따른) 맞춤형의", "이력"]}, {"lesson": 2, "word": "interest", "pos": "명사", "answer": "관심", "distractors": ["전문적인, 전문화된", "대성공", "사업"]}, {"lesson": 2, "word": "aspect", "pos": "명사", "answer": "측면", "distractors": ["오락(물), 연예", "(자연·생활) 환경의", "필요(성); 요구;vt. ~을 필요로 하다"]}, {"lesson": 2, "word": "generation", "pos": "명사", "answer": "세대", "distractors": ["~을 적용하다", "매우, 많이", "제품, 상품"]}, {"lesson": 2, "word": "uniqueness", "pos": "명사", "answer": "고유성", "distractors": ["~을 조절하다", "(집합적) 옷, 의류", "전문적인, 전문화된"]}, {"lesson": 2, "word": "valuable", "pos": "형용사", "answer": "가치 있는", "distractors": ["(문제·쟁점 등)을 다루다", "발달, 발전", "오락(물), 연예"]}, {"lesson": 2, "word": "taste", "pos": "명사", "answer": "취향", "distractors": ["선택, 선택 사항", "요금, 비용", "~을 작동시키다"]}, {"lesson": 2, "word": "gain", "pos": "동사", "answer": "~을 얻다", "distractors": ["(학교) 교육", "권고, 추천", "추세, 경향, 동향"]}, {"lesson": 2, "word": "attention", "pos": "명사", "answer": "주의, 주목, 시선", "distractors": ["(사람·상황에 따른) 맞춤형의", "포장", "일회용의"]}, {"lesson": 2, "word": "cosmetics", "pos": "명사", "answer": "화장품, 미용 제품", "distractors": ["학문적인", "~을 조절하다", "(문제·쟁점 등)을 다루다"]}, {"lesson": 2, "word": "thoroughly", "pos": "부사", "answer": "철저하게, 꼼꼼하게", "distractors": ["~을 확인하다", "~을 발견하다", "결정적인, 매우 중요한"]}, {"lesson": 2, "word": "analyze", "pos": "동사", "answer": "~을 분석하다", "distractors": ["가치 있는", "다양한, 여러 가지의", "이점, 장점"]}, {"lesson": 2, "word": "current", "pos": "형용사", "answer": "현재의, 지금의", "distractors": ["~을 제공하다", "지혜로운, 현명한", "유익한, 이로운"]}, {"lesson": 2, "word": "condition", "pos": "명사", "answer": "상태", "distractors": ["개념, 생각", "편리(함), 편의", "~을 발견하다"]}, {"lesson": 2, "word": "specialized", "pos": "형용사", "answer": "전문적인, 전문화된", "distractors": ["소비자", "정말, 진심으로", "충성, 충성심"]}, {"lesson": 2, "word": "recommendation", "pos": "명사", "answer": "권고, 추천", "distractors": ["~을 줄이다", "오락(물), 연예", "(수학·컴퓨터 등의) 연산(법), 알고리즘"]}, {"lesson": 2, "word": "manufacture", "pos": "동사", "answer": "~을 제조하다", "distractors": ["~을 업데이트하다;n. 최신 정보[소식]", "소유(권)", "더욱이, 게다가"]}, {"lesson": 2, "word": "address", "pos": "동사", "answer": "(문제·쟁점 등)을 다루다", "distractors": ["깊이 새겨진, 뿌리 박힌", "확장되다, 확대되다;vt. ~을 확장시키다, 확대하다", "~에 맞추다, 부응하다"]}, {"lesson": 2, "word": "unique", "pos": "형용사", "answer": "유일한, 고유의", "distractors": ["몹시, 깊이", "쉽게 얻을[이용할] 수 있는", "가능성, 잠재력a. 잠재적인"]}, {"lesson": 2, "word": "concern", "pos": "명사", "answer": "걱정, 근심", "distractors": ["학문적인", "~에도 불구하고", "선택, 선택 사항"]}, {"lesson": 2, "word": "uniform", "pos": "형용사", "answer": "일관된, 획일적인", "distractors": ["(컴퓨터 마우스의) 클릭", "소비(량), 섭취(량)", "기기, 장치"]}, {"lesson": 2, "word": "furthermore", "pos": "부사", "answer": "더욱이, 게다가", "distractors": ["흥미를 끄는", "상태", "학업"]}, {"lesson": 2, "word": "flexibility", "pos": "명사", "answer": "융통성, 유연성", "distractors": ["과도한, 지나친", "(개인) 맞춤형의", "재사용이 가능한"]}, {"lesson": 2, "word": "convenience", "pos": "명사", "answer": "편리(함), 편의", "distractors": ["~을 구입하다, 구매하다", "관심", "일관된, 획일적인"]}, {"lesson": 2, "word": "fixed", "pos": "형용사", "answer": "정해진, 고정된", "distractors": ["화장품, 미용 제품", "관심", "편리(함), 편의"]}, {"lesson": 2, "word": "cost", "pos": "명사", "answer": "(구입∙생산 등의) 비용, 대가vt. ~의 비용이 들다", "distractors": ["~을 작동시키다", "오락(물), 연예", "발달, 발전"]}, {"lesson": 2, "word": "adjust", "pos": "동사", "answer": "~을 조절하다", "distractors": ["지혜로운, 현명한", "만족(감)", "~을 최우선시하다"]}, {"lesson": 2, "word": "fee", "pos": "명사", "answer": "요금, 비용", "distractors": ["~을 고려하다", "융통성, 유연성", "포장"]}, {"lesson": 2, "word": "offering", "pos": "명사", "answer": "제공된[내놓은] 것", "distractors": ["이해", "확장되다, 확대되다;vt. ~을 확장시키다, 확대하다", "거대한, 방대한"]}, {"lesson": 2, "word": "price", "pos": "명사", "answer": "가격", "distractors": ["~을 얻다", "~을 조절하다", "내용"]}, {"lesson": 2, "word": "select", "pos": "동사", "answer": "~을 선택하다, 선발하다a. 정선된, 엄선된", "distractors": ["서랍", "깊이 새겨진, 뿌리 박힌", "~에 해를 끼치다, ~을 다치게 하다"]}, {"lesson": 2, "word": "easily", "pos": "부사", "answer": "쉽게, 간단하게", "distractors": ["시청, 관람", "세대", "~을 적용하다"]}, {"lesson": 2, "word": "accessible", "pos": "형용사", "answer": "쉽게 얻을[이용할] 수 있는", "distractors": ["적극적으로", "~을 추천하다", "중압감, 압박"]}, {"lesson": 2, "word": "enhance", "pos": "동사", "answer": "~을 높이다, 향상시키다", "distractors": ["~을 포함하여", "소비자", "~을 조절하다"]}, {"lesson": 2, "word": "click", "pos": "명사", "answer": "(컴퓨터 마우스의) 클릭", "distractors": ["전문적인, 전문화된", "정기적인", "~을 탐험하다"]}, {"lesson": 2, "word": "wish", "pos": "동사", "answer": "~을 바라다, 원하다", "distractors": ["~을 통해서", "기기, 장치", "대성공"]}, {"lesson": 2, "word": "device", "pos": "명사", "answer": "기기, 장치", "distractors": ["소비(량), 섭취(량)", "빠른, 급속한", "주의, 주목, 시선"]}, {"lesson": 2, "word": "drive", "pos": "동사", "answer": "~을 작동시키다", "distractors": ["살 만한 가격의, 저렴한", "~을 분석하다", "권고, 추천"]}, {"lesson": 2, "word": "development", "pos": "명사", "answer": "발달, 발전", "distractors": ["~을 작동시키다", "(집합적) 옷, 의류", "제한, 억제"]}, {"lesson": 2, "word": "numerous", "pos": "형용사", "answer": "다수의, 수많은", "distractors": ["요즈음에는", "~에도 불구하고", "~한 상태를 유지하다"]}, {"lesson": 2, "word": "purchase", "pos": "동사", "answer": "~을 구입하다, 구매하다", "distractors": ["화장품, 미용 제품", "~한 상태를 유지하다", "가능성, 잠재력a. 잠재적인"]}, {"lesson": 2, "word": "vast", "pos": "형용사", "answer": "거대한, 방대한", "distractors": ["이점, 장점", "맞춤화", "~을 업데이트하다;n. 최신 정보[소식]"]}, {"lesson": 2, "word": "selection", "pos": "명사", "answer": "갖춰 놓은 것", "distractors": ["취향", "정기적으로, 자주", "훨씬"]}, {"lesson": 2, "word": "customized", "pos": "형용사", "answer": "(사람·상황에 따른) 맞춤형의", "distractors": ["주의, 주목, 시선", "요건", "~을 피하다, 회피하다"]}, {"lesson": 2, "word": "apply", "pos": "동사", "answer": "~을 적용하다", "distractors": ["~한 상태를 유지하다", "관심", "다수의, 수많은"]}, {"lesson": 2, "word": "algorithm", "pos": "명사", "answer": "(수학·컴퓨터 등의) 연산(법), 알고리즘", "distractors": ["필요(성); 요구;vt. ~을 필요로 하다", "~을 제공하다", "선호"]}, {"lesson": 2, "word": "identify", "pos": "동사", "answer": "~을 확인하다", "distractors": ["철저하게, 꼼꼼하게", "~을 소유하다", "서비스 가입 (계약)"]}, {"lesson": 2, "word": "pattern", "pos": "명사", "answer": "(경향) 패턴", "distractors": ["~을 조절하다", "한 번;한때", "~을 발견하다"]}, {"lesson": 2, "word": "satisfaction", "pos": "명사", "answer": "만족(감)", "distractors": ["~을 업데이트하다;n. 최신 정보[소식]", "관심", "융통성 있는"]}, {"lesson": 2, "word": "suggest", "pos": "동사", "answer": "~을 제안하다, 제의하다", "distractors": ["경제의", "(과학·공학의) 기술", "매우, 많이"]}, {"lesson": 2, "word": "history", "pos": "명사", "answer": "이력", "distractors": ["부담, 짐", "다수의, 수많은", "재사용이 가능한"]}, {"lesson": 2, "word": "recommend", "pos": "동사", "answer": "~을 추천하다", "distractors": ["거대한, 방대한", "관심", "한 번;한때"]}, {"lesson": 2, "word": "match", "pos": "동사", "answer": "~에 맞추다, 부응하다", "distractors": ["거대한, 방대한", "~을 제공하다", "(컴퓨터 마우스의) 클릭"]}, {"lesson": 2, "word": "viewing", "pos": "명사", "answer": "시청, 관람", "distractors": ["쉽게 얻을[이용할] 수 있는", "무한한, 무제한의", "제품"]}, {"lesson": 2, "word": "limitation", "pos": "명사", "answer": "제한, 억제", "distractors": ["요금, 비용", "훨씬", "(컴퓨터 마우스의) 클릭"]}, {"lesson": 2, "word": "consider", "pos": "동사", "answer": "~을 고려하다", "distractors": ["가격", "선택할 수 있는 범위", "(학교) 교육"]}, {"lesson": 2, "word": "potential", "pos": "명사", "answer": "가능성, 잠재력a. 잠재적인", "distractors": ["지혜로운, 현명한", "동인, 추진 요인", "학업"]}, {"lesson": 2, "word": "overconsumption", "pos": "명사", "answer": "과소비, 과잉 섭취", "distractors": ["개념, 생각", "(구입∙생산 등의) 비용, 대가vt. ~의 비용이 들다", "요건"]}, {"lesson": 2, "word": "multiple", "pos": "형용사", "answer": "다수의, 여럿의", "distractors": ["~을 확인하다", "다수의, 수많은", "쉽게, 간단하게"]}, {"lesson": 2, "word": "excessive", "pos": "형용사", "answer": "과도한, 지나친", "distractors": ["측면", "정말, 진심으로", "쉽게 얻을[이용할] 수 있는"]}, {"lesson": 2, "word": "crucial", "pos": "형용사", "answer": "결정적인, 매우 중요한", "distractors": ["오염", "~을 바라다, 원하다", "쉽게, 간단하게"]}, {"lesson": 2, "word": "truly", "pos": "부사", "answer": "정말, 진심으로", "distractors": ["맞춤화", "~을 제공하다", "아주 좋은, 우수한"]}, {"lesson": 2, "word": "avoid", "pos": "동사", "answer": "~을 피하다, 회피하다", "distractors": ["만족(감)", "내용", "안정적인, 안정된"]}, {"lesson": 2, "word": "financial", "pos": "형용사", "answer": "재정의", "distractors": ["다양성", "산업", "오염"]}, {"lesson": 2, "word": "burden", "pos": "명사", "answer": "부담, 짐", "distractors": ["전문적인, 전문화된", "소비(량), 섭취(량)", "~을 활용하다, 이용하다"]}, {"lesson": 2, "word": "affordable", "pos": "형용사", "answer": "살 만한 가격의, 저렴한", "distractors": ["~에 맞추다, 부응하다", "서랍", "~을 최우선시하다"]}, {"lesson": 2, "word": "carefully", "pos": "부사", "answer": "신중히, 조심해서", "distractors": ["시청, 관람", "다수의, 여럿의", "일회용의"]}, {"lesson": 2, "word": "strain", "pos": "명사", "answer": "중압감, 압박", "distractors": ["화장품, 미용 제품", "과도한, 지나친", "~한 상태를 유지하다"]}, {"lesson": 2, "word": "regularly", "pos": "부사", "answer": "정기적으로, 자주", "distractors": ["~을 분석하다", "개(개)인a. 개별의", "~을 바라다, 원하다"]}, {"lesson": 2, "word": "cancel", "pos": "동사", "answer": "~을 해지하다", "distractors": ["요금, 비용", "~에 맞추다, 부응하다", "제공된[내놓은] 것"]}, {"lesson": 2, "word": "beneficial", "pos": "형용사", "answer": "유익한, 이로운", "distractors": ["소비(량), 섭취(량)", "(자신감∙신뢰 등)을 쌓아가다", "~을 피하다, 회피하다"]}, {"lesson": 2, "word": "additionally", "pos": "부사", "answer": "추가로", "distractors": ["용구, 자재, 자료;a. (돈·재산 등의) 물질적인", "~을 제안하다, 제의하다", "개(개)인a. 개별의"]}, {"lesson": 2, "word": "environmental", "pos": "형용사", "answer": "(자연·생활) 환경의", "distractors": ["필요(성); 요구;vt. ~을 필요로 하다", "갖춰 놓은 것", "화장품, 미용 제품"]}, {"lesson": 2, "word": "pollution", "pos": "명사", "answer": "오염", "distractors": ["취향", "끊임없이, 지속적으로", "경제의"]}, {"lesson": 2, "word": "packaging", "pos": "명사", "answer": "포장", "distractors": ["~을 해지하다", "다양한, 여러 가지의", "이해"]}, {"lesson": 2, "word": "material", "pos": "명사", "answer": "용구, 자재, 자료;a. (돈·재산 등의) 물질적인", "distractors": ["요금, 비용", "제품, 상품", "화장품, 미용 제품"]}, {"lesson": 2, "word": "disposable", "pos": "형용사", "answer": "일회용의", "distractors": ["~을 소유하다", "동인, 추진 요인", "강의, 강연"]}, {"lesson": 2, "word": "harm", "pos": "동사", "answer": "~에 해를 끼치다, ~을 다치게 하다", "distractors": ["스트리밍", "~을 제공하다", "철저하게, 꼼꼼하게"]}, {"lesson": 2, "word": "reusable", "pos": "형용사", "answer": "재사용이 가능한", "distractors": ["안정적인, 안정된", "~에도 불구하고", "기기, 장치"]}, {"lesson": 2, "word": "reduce", "pos": "동사", "answer": "~을 줄이다", "distractors": ["~을 높이다, 향상시키다", "~을 확인하다", "~을 (재)검토하다;~을 복습하다"]}, {"lesson": 2, "word": "despite", "pos": "전치사", "answer": "~에도 불구하고", "distractors": ["철저하게, 꼼꼼하게", "~을 적용하다", "가치 있는"]}, {"lesson": 2, "word": "deeply", "pos": "부사", "answer": "몹시, 깊이", "distractors": ["만족(감)", "처음에, 초기에", "다수의, 여럿의"]}, {"lesson": 2, "word": "embedded", "pos": "형용사", "answer": "깊이 새겨진, 뿌리 박힌", "distractors": ["개념, 생각", "기기, 장치", "요금, 비용"]}, {"lesson": 2, "word": "continuously", "pos": "부사", "answer": "끊임없이, 지속적으로", "distractors": ["살 만한 가격의, 저렴한", "개념, 생각", "(사람·상황에 따른) 맞춤형의"]}, {"lesson": 2, "word": "understanding", "pos": "명사", "answer": "이해", "distractors": ["~을 고려하다", "걱정, 근심", "깊이 새겨진, 뿌리 박힌"]}, {"lesson": 2, "word": "wise", "pos": "형용사", "answer": "지혜로운, 현명한", "distractors": ["살 만한 가격의, 저렴한", "적극적으로", "~한 상태를 유지하다"]}];
+const POLY_DATA=[{"lesson": 2, "word": "discover", "answers": ["(동) ~을 발견하다, 찾아내다", "(동) ~을 알게 되다, 깨닫다"], "all6": ["(동) ~을 발견하다, 찾아내다", "(동) ~을 알게 되다, 깨닫다", "(명) (임금) 인상", "(동) ~에 주소를 쓰다", "(동) ~한 상태를 유지하다", "(명) 본보기"]}, {"lesson": 2, "word": "explore", "answers": ["(동) ~을 탐험하다, 탐사하다", "(동) ~을 탐구하다, 연구하다"], "all6": ["(동) ~을 탐험하다, 탐사하다", "(동) ~을 탐구하다, 연구하다", "(명) 혜택, 수당", "(동) ~을 비평하다", "(명) (경향) 패턴", "(명) 목차"]}, {"lesson": 2, "word": "review", "answers": ["(동) ~을 (재)검토하다", "(동) ~을 비평하다", "(동) ~을 복습하다"], "all6": ["(동) ~을 (재)검토하다", "(동) ~을 비평하다", "(동) ~을 복습하다", "(명) 취미", "(명) 일, 업무", "(명) 발달"]}, {"lesson": 2, "word": "stay", "answers": ["(동) (같은 장소에) 계속 있다, 머물다", "(동) ~한 상태를 유지하다", "(동) (방문객·손님으로) 묵다"], "all6": ["(동) (같은 장소에) 계속 있다, 머물다", "(동) ~한 상태를 유지하다", "(동) (방문객·손님으로) 묵다", "(동) ~을 복습하다", "(명) 사업체", "(동) ~을 탐험하다, 탐사하다"]}, {"lesson": 2, "word": "business", "answers": ["(명) (상)거래, 사업", "(명) 일, 업무", "(명) 사업체", "(명) 사건, 사정"], "all6": ["(명) (상)거래, 사업", "(명) 일, 업무", "(명) 사업체", "(명) 사건, 사정", "(명) 부상", "(동) ~에서 연설하다"]}, {"lesson": 2, "word": "product", "answers": ["(명) 제품", "(명) 산물", "(명) 성과"], "all6": ["(명) 제품", "(명) 산물", "(명) 성과", "(명) (컴퓨터의) 플랫폼", "(명) (상)거래, 사업", "(동) ~에서 연설하다"]}, {"lesson": 2, "word": "content", "answers": ["(명) 내용물", "(명) 내용", "(명) 목차"], "all6": ["(명) 내용물", "(명) 내용", "(명) 목차", "(명) (임금) 인상", "(동) ~을 비평하다", "(동) ~을 알게 되다, 깨닫다"]}, {"lesson": 2, "word": "benefit", "answers": ["(명) 이익", "(명) 혜택, 수당"], "all6": ["(명) 이익", "(명) 혜택, 수당", "(동) ~을 알게 되다, 깨닫다", "(명) (임금) 인상", "(명) 부상", "(동) (방문객·손님으로) 묵다"]}, {"lesson": 2, "word": "rise", "answers": ["(명) (임금) 인상", "(명) 부상"], "all6": ["(명) (임금) 인상", "(명) 부상", "(명) 발달", "(명) 관심", "(동) ~을 (재)검토하다", "(명) 혜택, 수당"]}, {"lesson": 2, "word": "trend", "answers": ["(명) 추세, 경향, 동향", "(명) 유행"], "all6": ["(명) 추세, 경향, 동향", "(명) 유행", "(명) 본보기", "(명) 혜택, 수당", "(명) 내용", "(명) 상태"]}, {"lesson": 2, "word": "growth", "answers": ["(명) 성장, 증가, 증대", "(명) 발육", "(명) 발달"], "all6": ["(명) 성장, 증가, 증대", "(명) 발육", "(명) 발달", "(동) (문제·쟁점 등)을 다루다", "(동) ~을 알게 되다, 깨닫다", "(명) 관심"]}, {"lesson": 2, "word": "platform", "answers": ["(명) (컴퓨터의) 플랫폼", "(명) 연단, 강단", "(명) 발판", "(명) (기차역의) 승강장"], "all6": ["(명) (컴퓨터의) 플랫폼", "(명) 연단, 강단", "(명) 발판", "(명) (기차역의) 승강장", "(동) ~을 발견하다, 찾아내다", "(명) 성장, 증가, 증대"]}, {"lesson": 2, "word": "interest", "answers": ["(명) 관심", "(명) 취미", "(명) 이자"], "all6": ["(명) 관심", "(명) 취미", "(명) 이자", "(동) (문제·쟁점 등)을 다루다", "(명) (임금) 인상", "(동) ~을 비평하다"]}, {"lesson": 2, "word": "condition", "answers": ["(명) 상태", "(명) 환경", "(명) 조건"], "all6": ["(명) 상태", "(명) 환경", "(명) 조건", "(동) ~을 (재)검토하다", "(명) 개발", "(명) 취미"]}, {"lesson": 2, "word": "address", "answers": ["(동) ~에 주소를 쓰다", "(동) (문제·쟁점 등)을 다루다", "(동) ~에서 연설하다"], "all6": ["(동) ~에 주소를 쓰다", "(동) (문제·쟁점 등)을 다루다", "(동) ~에서 연설하다", "(명) 개발", "(명) 상태", "(명) 본보기"]}, {"lesson": 2, "word": "development", "answers": ["(명) 발달", "(명) 발전", "(명) 개발"], "all6": ["(명) 발달", "(명) 발전", "(명) 개발", "(명) 사업체", "(명) (경향) 패턴", "(명) 성과"]}, {"lesson": 2, "word": "pattern", "answers": ["(명) (경향) 패턴", "(명) 무늬, 문양", "(명) 본보기"], "all6": ["(명) (경향) 패턴", "(명) 무늬, 문양", "(명) 본보기", "(동) ~에서 연설하다", "(명) 발달", "(명) 유행"]}, {"lesson": 2, "word": "suggest", "answers": ["(동) ~을 제안하다, 제의하다", "(동) ~을 시사하다"], "all6": ["(동) ~을 제안하다, 제의하다", "(동) ~을 시사하다", "(명) 사건, 사정", "(동) ~을 알게 되다, 깨닫다", "(명) 무늬, 문양", "(명) 내용물"]}];
+const PHRASE_DATA=[{"lesson": 2, "phrase": "log in to ~", "answer": "컴퓨터·시스템)에 로그인하다[접속하다]", "distractors": ["그와 동시에", "~에 중점을 두다", "~을 선택하다, 고르다"]}, {"lesson": 2, "phrase": "to be sure", "answer": "분명히, 확실히", "distractors": ["~에 기여하다", "~에 국한되다, 한정되다", "~을 야기하다"]}, {"lesson": 2, "phrase": "take part in ~", "answer": "~에 참여하다", "distractors": ["~에 가입하다, 신청하다, 등록하다", "~의 값을 지불하다", "분명히, 확실히"]}, {"lesson": 2, "phrase": "based on ~", "answer": "~에 근거해서, 기반하여", "distractors": ["결과적으로", "아주 다양한 ~", "점점 쌓여가다, 늘어나다"]}, {"lesson": 2, "phrase": "be limited to ~", "answer": "~에 국한되다, 한정되다", "distractors": ["~의 값을 지불하다", "를 B와 결부시키다", "~에 근거해서, 기반하여"]}, {"lesson": 2, "phrase": "instead of ~", "answer": "~ 대신에", "distractors": ["~에 적합하다", "할 수밖에 없다", "다양한 ~"]}, {"lesson": 2, "phrase": "pay for ~", "answer": "~의 값을 지불하다", "distractors": ["분명히, 확실히", "가 할 수 있게 하다", "~을 야기하다"]}, {"lesson": 2, "phrase": "from ones perspective ~", "answer": "의 관점[시각]에서", "distractors": ["~에 참여하다", "결과적으로", "~ 위로 뛰어오르다"]}, {"lesson": 2, "phrase": "a wide range of ~", "answer": "아주 다양한 ~", "distractors": ["두드러지다, 눈에 띄다", "~에 가입하다, 신청하다, 등록하다", "~을 선택하다, 고르다"]}, {"lesson": 2, "phrase": "connect A to B", "answer": "를 B와 결부시키다", "distractors": ["~을 선택하다, 고르다", "다양한 ~", "~에 참여하다"]}, {"lesson": 2, "phrase": "relevant to ~", "answer": "~와 관련이 있는", "distractors": ["~ 대신에", "~의 값을 지불하다", "다양한 ~"]}, {"lesson": 2, "phrase": "more and more", "answer": "점점 더 많은", "distractors": ["~에 중점을 두다", "결과적으로", "~ 위로 뛰어오르다"]}, {"lesson": 2, "phrase": "disc disk", "answer": "(음악·영상 저장용) 디스크", "distractors": ["~에 가입하다, 신청하다, 등록하다", "~에 기여하다", "요점을 말하자면"]}, {"lesson": 2, "phrase": "a variety of ~", "answer": "다양한 ~", "distractors": ["분명히, 확실히", "컴퓨터·시스템)에 로그인하다[접속하다]", "두드러지다, 눈에 띄다"]}, {"lesson": 2, "phrase": "fill ~ up", "answer": "~을 가득 채우다", "distractors": ["점점 쌓여가다, 늘어나다", "를 B와 관련짓다", "~에 기여하다"]}, {"lesson": 2, "phrase": "enable+O+to부정사 ~", "answer": "가 할 수 있게 하다", "distractors": ["결과적으로", "~ 대신에", "다양한 ~"]}, {"lesson": 2, "phrase": "fit with ~", "answer": "~에 적합하다", "distractors": ["~에 기여하다", "를 B와 결부시키다", "~에 근거해서, 기반하여"]}, {"lesson": 2, "phrase": "stand out", "answer": "두드러지다, 눈에 띄다", "distractors": ["~ 위로 뛰어오르다", "~을 야기하다", "를 B와 결부시키다"]}, {"lesson": 2, "phrase": "to come to the point", "answer": "요점을 말하자면", "distractors": ["다양한 ~", "두드러지다, 눈에 띄다", "~ 위로 뛰어오르다"]}, {"lesson": 2, "phrase": "a range of ~", "answer": "다양한 ~", "distractors": ["컴퓨터·시스템)에 로그인하다[접속하다]", "아주 다양한 ~", "할 수밖에 없다"]}, {"lesson": 2, "phrase": "be centered on ~", "answer": "~에 중점을 두다", "distractors": ["두드러지다, 눈에 띄다", "아주 다양한 ~", "~에 참여하다"]}, {"lesson": 2, "phrase": "with ease", "answer": "쉽게", "distractors": ["~에 적합하다", "분명히, 확실히", "결과적으로"]}, {"lesson": 2, "phrase": "have no choice but+to부정사 ~", "answer": "할 수밖에 없다", "distractors": ["가 할 수 있게 하다", "아주 다양한 ~", "~의 값을 지불하다"]}, {"lesson": 2, "phrase": "at the same time", "answer": "그와 동시에", "distractors": ["가 할 수 있게 하다", "~을 야기하다", "점점 더 많은"]}, {"lesson": 2, "phrase": "AIartificial intelligence", "answer": "인공지능", "distractors": ["를 B와 결부시키다", "~에 중점을 두다", "~에 국한되다, 한정되다"]}, {"lesson": 2, "phrase": "in turn", "answer": "결과적으로", "distractors": ["~에 기여하다", "할 수밖에 없다", "요점을 말하자면"]}, {"lesson": 2, "phrase": "sign up for ~", "answer": "~에 가입하다, 신청하다, 등록하다", "distractors": ["쉽게", "점점 쌓여가다, 늘어나다", "~을 야기하다"]}, {"lesson": 2, "phrase": "result in ~", "answer": "~을 야기하다", "distractors": ["~에 근거해서, 기반하여", "다양한 ~", "할 수밖에 없다"]}, {"lesson": 2, "phrase": "relate A to B", "answer": "를 B와 관련짓다", "distractors": ["가 할 수 있게 하다", "~의 값을 지불하다", "쉽게"]}, {"lesson": 2, "phrase": "add up", "answer": "점점 쌓여가다, 늘어나다", "distractors": ["결과적으로", "쉽게", "~의 값을 지불하다"]}, {"lesson": 2, "phrase": "contribute to ~", "answer": "~에 기여하다", "distractors": ["를 B와 관련짓다", "두드러지다, 눈에 띄다", "~을 야기하다"]}, {"lesson": 2, "phrase": "environmentally friendly", "answer": "환경친화적인, 친환경적인", "distractors": ["~에 근거해서, 기반하여", "~와 관련이 있는", "~을 가득 채우다"]}, {"lesson": 2, "phrase": "opt for ~", "answer": "~을 선택하다, 고르다", "distractors": ["인공지능", "다양한 ~", "~을 가득 채우다"]}, {"lesson": 2, "phrase": "jump onto ~", "answer": "~ 위로 뛰어오르다", "distractors": ["~에 국한되다, 한정되다", "~에 중점을 두다", "(음악·영상 저장용) 디스크"]}];
+const ENG_ENG_DATA=[{"lesson": 2, "definition": "an amount of money you pay, usually once a year, to receive copies of a newspaper or magazine, or receive a service, or the act of paying money for this", "answer": "subscription", "distractors": ["access", "affordable", "various"]}, {"lesson": 2, "definition": "the system by which a country produces and uses goods and services", "answer": "economy", "distractors": ["select", "education", "various"]}, {"lesson": 2, "definition": "the right or opportunity to use something or reach someone", "answer": "access", "distractors": ["choice", "once", "device"]}, {"lesson": 2, "definition": "to open a computer file, a website, etc. in order to look at or change information in it", "answer": "access", "distractors": ["contract", "economic", "cancel"]}, {"lesson": 2, "definition": "to find something or someone unexpectedly", "answer": "discover", "distractors": ["education", "uniqueness", "enhance"]}, {"lesson": 2, "definition": "to travel around a place or examine something carefully", "answer": "explore", "distractors": ["enhance", "satisfaction", "field"]}, {"lesson": 2, "definition": "to get something that someone gives or sends you", "answer": "receive", "distractors": ["ownership", "utilize", "subscription"]}, {"lesson": 2, "definition": "the process of taking goods to a person or place", "answer": "delivery", "distractors": ["history", "education", "reduce"]}, {"lesson": 2, "definition": "to use something for a particular purpose", "answer": "utilize", "distractors": ["subscription", "wish", "rise"]}, {"lesson": 2, "definition": "a talk given to a group of people about a particular subject", "answer": "lecture", "distractors": ["condition", "product", "reduce"]}, {"lesson": 2, "definition": "to become larger in size, number, or importance", "answer": "expand", "distractors": ["viewing", "delivery", "initially"]}, {"lesson": 2, "definition": "to make something become larger in size, number, or importance", "answer": "expand", "distractors": ["growth", "customization", "rise"]}, {"lesson": 2, "definition": "different or many in kind", "answer": "various", "distractors": ["field", "via", "reusable"]}, {"lesson": 2, "definition": "concerned with studying from books, as opposed to practical work", "answer": "academic", "distractors": ["popular", "offering", "financial"]}, {"lesson": 2, "definition": "to examine something again in order to consider it carefully", "answer": "review", "distractors": ["excessive", "additionally", "requirement"]}, {"lesson": 2, "definition": "to study again something you have already learned, in preparation for an exam", "answer": "update", "distractors": ["pollution", "actively", "much"]}, {"lesson": 2, "definition": "to give someone the most recent information about something", "answer": "update", "distractors": ["flexibility", "purchase", "limitation"]}, {"lesson": 2, "definition": "new or more accurate information based on new facts or conditions", "answer": "latest", "distractors": ["lecture", "unique", "fixed"]}, {"lesson": 2, "definition": "most recent in time", "answer": "chosen", "distractors": ["specialized", "popular", "personalization"]}, {"lesson": 2, "definition": "having been chosen from a group", "answer": "field", "distractors": ["nowadays", "environmental", "flexibility"]}, {"lesson": 2, "definition": "an area of study, work, or activity", "answer": "to be sure", "distractors": ["deeply", "diversity", "select"]}, {"lesson": 2, "definition": "used to say that something is certainly true", "answer": "concept", "distractors": ["need", "growth", "flexibility"]}, {"lesson": 2, "definition": "an idea or principle that is connected with something", "answer": "business", "distractors": ["attention", "multiple", "cost"]}, {"lesson": 2, "definition": "work that is done in order to produce or sell something", "answer": "initially", "distractors": ["selection", "drive", "entertainment"]}, {"lesson": 2, "definition": "at the beginning or during the early part of something", "answer": "product", "distractors": ["select", "limitless", "address"]}, {"lesson": 2, "definition": "something that is made or grown to be sold", "answer": "industry", "distractors": ["deeply", "schoolwork", "consider"]}, {"lesson": 2, "definition": "the people and activities involved in one type of business", "answer": "entertainment", "distractors": ["purchase", "preference", "access"]}, {"lesson": 2, "definition": "films, television, music, and other activities that entertain people", "answer": "education", "distractors": ["regularly", "algorithm", "individual"]}, {"lesson": 2, "definition": "the process of teaching and learning, especially at a school", "answer": "hit", "distractors": ["generation", "material", "field"]}, {"lesson": 2, "definition": "a very successful product, performance, or person", "answer": "prioritize", "distractors": ["enhance", "environmental", "option"]}, {"lesson": 2, "definition": "to decide that something is more important than other things", "answer": "continue", "distractors": ["recommendation", "choice", "apply"]}, {"lesson": 2, "definition": "to keep happening or existing", "answer": "content", "distractors": ["goods", "offering", "delivery"]}, {"lesson": 2, "definition": "the information, ideas, or subject matter contained in something", "answer": "personalization", "distractors": ["preference", "wish", "cosmetics"]}, {"lesson": 2, "definition": "the process of making something suitable for a particular person", "answer": "customer", "distractors": ["quality", "option", "unique"]}, {"lesson": 2, "definition": "a person who buys goods or services from a business", "answer": "benefit", "distractors": ["nowadays", "analyze", "streaming"]}, {"lesson": 2, "definition": "something that gives you an advantage or improves your situation", "answer": "advantage", "distractors": ["attractive", "option", "growth"]}, {"lesson": 2, "definition": "something that helps you to be more successful than others, or the state of having this", "answer": "stable", "distractors": ["valuable", "environmental", "reduce"]}, {"lesson": 2, "definition": "not likely to change or fail", "answer": "revenue", "distractors": ["receive", "financial", "identify"]}, {"lesson": 2, "definition": "money that a business receives over a period of time, especially from selling goods or services", "answer": "build", "distractors": ["access", "disposable", "driver"]}, {"lesson": 2, "definition": "to develop something gradually over a period of time", "answer": "personalized", "distractors": ["purchase", "uniform", "limitless"]}, {"lesson": 2, "definition": "made or designed for a particular person", "answer": "flexible", "distractors": ["content", "hit", "rise"]}, {"lesson": 2, "definition": "able to change or be changed easily", "answer": "contract", "distractors": ["schoolwork", "growth", "accessible"]}, {"lesson": 2, "definition": "a formal agreement between two or more people or organizations", "answer": "rise", "distractors": ["select", "review", "affordable"]}, {"lesson": 2, "definition": "the achievement of importance, success, or power", "answer": "major", "distractors": ["crucial", "latest", "interest"]}, {"lesson": 2, "definition": "important or main", "answer": "driver", "distractors": ["latest", "rise", "easily"]}, {"lesson": 2, "definition": "a person or thing that causes something to happen", "answer": "trend", "distractors": ["click", "prioritize", "value"]}, {"lesson": 2, "definition": "a general tendency in the way a situation is changing or developing", "answer": "rapid", "distractors": ["lecture", "additionally", "understanding"]}, {"lesson": 2, "definition": "happening very quickly", "answer": "growth", "distractors": ["fee", "use", "clothing"]}, {"lesson": 2, "definition": "an increase in size, amount, degree, level, etc.", "answer": "platform", "distractors": ["avoid", "benefit", "valuable"]}, {"lesson": 2, "definition": "the type of computer system or smartphone you are using, in relation to the type of software you can use on it", "answer": "goods", "distractors": ["analyze", "identify", "valuable"]}, {"lesson": 2, "definition": "things that are produced to be sold", "answer": "own", "distractors": ["industry", "highly", "value"]}, {"lesson": 2, "definition": "to have something as your property", "answer": "offer", "distractors": ["explore", "receive", "understanding"]}, {"lesson": 2, "definition": "to give someone something that they need or want", "answer": "requirement", "distractors": ["affordable", "avoid", "click"]}, {"lesson": 2, "definition": "something that is needed in order for something else to happen", "answer": "disc disk", "distractors": ["strain", "pollution", "wish"]}, {"lesson": 2, "definition": "a flat round object used for storing or playing music or video", "answer": "drawer", "distractors": ["furthermore", "customized", "academic"]}, {"lesson": 2, "definition": "part of a piece of furniture, such as a desk, that you pull out and push in and use to keep things in", "answer": "diversity", "distractors": ["enhance", "review", "taste"]}, {"lesson": 2, "definition": "the fact of there being many different types of people or things", "answer": "customization", "distractors": ["customer", "development", "advantage"]}, {"lesson": 2, "definition": "the process of making something suitable for a particular person or purpose", "answer": "option", "distractors": ["regular", "use", "cancel"]}, {"lesson": 2, "definition": "something that you can choose or take from a number of possibilities", "answer": "individual", "distractors": ["apply", "customer", "fixed"]}, {"lesson": 2, "definition": "a person considered separately from other people", "answer": "individual", "distractors": ["uniqueness", "carefully", "quality"]}, {"lesson": 2, "definition": "considered separately from other people or things in the same group", "answer": "preference", "distractors": ["personalization", "limitless", "disposable"]}, {"lesson": 2, "definition": "the fact that you like something or someone more than another thing or person", "answer": "interest", "distractors": ["deeply", "reusable", "truly"]}, {"lesson": 2, "definition": "the feeling of wanting to know or learn about something", "answer": "aspect", "distractors": ["purchase", "numerous", "platform"]}, {"lesson": 2, "definition": "one part or feature of a situation or idea", "answer": "generation", "distractors": ["clothing", "drive", "select"]}, {"lesson": 2, "definition": "all the people of about the same age within a society", "answer": "uniqueness", "distractors": ["offer", "flexible", "consumption"]}, {"lesson": 2, "definition": "the quality of being special or different from others", "answer": "valuable", "distractors": ["entertainment", "streaming", "fee"]}, {"lesson": 2, "definition": "worth a lot of money or having great importance", "answer": "taste", "distractors": ["need", "uniform", "viewing"]}, {"lesson": 2, "definition": "the particular way that someone likes to do or experience something", "answer": "attention", "distractors": ["stay", "expand", "economy"]}, {"lesson": 2, "definition": "the act of watching, listening to, or thinking carefully about something", "answer": "cosmetics", "distractors": ["wise", "cost", "clothing"]}, {"lesson": 2, "definition": "creams, powders etc that you use on your face and body in order to look more attractive", "answer": "analyze", "distractors": ["environmental", "cosmetics", "entertainment"]}, {"lesson": 2, "definition": "to examine something in detail in order to understand it", "answer": "current", "distractors": ["stay", "adjust", "generation"]}, {"lesson": 2, "definition": "belonging to the present time", "answer": "condition", "distractors": ["quality", "wish", "drive"]}, {"lesson": 2, "definition": "the particular state that something or someone is in", "answer": "specialized", "distractors": ["discover", "accessible", "select"]}, {"lesson": 2, "definition": "trained, designed, or developed for a particular purpose, type of work, place etc.", "answer": "recommendation", "distractors": ["crucial", "unique", "goods"]}, {"lesson": 2, "definition": "a suggestion about what someone should do", "answer": "manufacture", "distractors": ["choice", "platform", "history"]}, {"lesson": 2, "definition": "to make something, especially in large quantities, using machines", "answer": "address", "distractors": ["packaging", "clothing", "use"]}, {"lesson": 2, "definition": "to deal with a problem or subject", "answer": "unique", "distractors": ["fixed", "consumption", "reusable"]}, {"lesson": 2, "definition": "being the only one of its kind", "answer": "concern", "distractors": ["despite", "once", "continue"]}, {"lesson": 2, "definition": "a feeling of worry about something", "answer": "uniform", "distractors": ["spend+", "apply", "address"]}, {"lesson": 2, "definition": "always the same and not changing", "answer": "flexibility", "distractors": ["generation", "environmental", "personalization"]}, {"lesson": 2, "definition": "the quality of being able to change or adapt", "answer": "convenience", "distractors": ["highly", "analyze", "receive"]}, {"lesson": 2, "definition": "the quality of being easy or useful to use", "answer": "fixed", "distractors": ["platform", "selection", "highly"]}, {"lesson": 2, "definition": "decided or arranged and not intended to change", "answer": "adjust", "distractors": ["advantage", "accessible", "drawer"]}, {"lesson": 2, "definition": "to change something slightly in order to make it suitable for a particular purpose", "answer": "fee", "distractors": ["choice", "attractive", "interest"]}, {"lesson": 2, "definition": "an amount of money that you pay for a service", "answer": "select", "distractors": ["streaming", "use", "address"]}, {"lesson": 2, "definition": "to choose someone or something from a group", "answer": "select", "distractors": ["enhance", "expand", "multiple"]}, {"lesson": 2, "definition": "the best of its type or highest in quality", "answer": "accessible", "distractors": ["prioritize", "review", "discover"]}, {"lesson": 2, "definition": "easy to obtain or use", "answer": "enhance", "distractors": ["viewing", "fixed", "strain"]}, {"lesson": 2, "definition": "to improve something or make it more effective", "answer": "device", "distractors": ["latest", "overconsumption", "ownership"]}, {"lesson": 2, "definition": "a piece of equipment used for a particular purpose", "answer": "drive", "distractors": ["crucial", "product", "embedded"]}, {"lesson": 2, "definition": "to make a machine or piece of equipment work", "answer": "development", "distractors": ["content", "regularly", "price"]}, {"lesson": 2, "definition": "the process of growing, changing, or improving", "answer": "vast", "distractors": ["accessible", "major", "rapid"]}, {"lesson": 2, "definition": "extremely large in size or amount", "answer": "customized", "distractors": ["regular", "interest", "satisfaction"]}, {"lesson": 2, "definition": "made or changed for a particular person", "answer": "apply", "distractors": ["pollution", "concept", "customized"]}, {"lesson": 2, "definition": "to use something for a particular purpose", "answer": "AIartificial intelligence", "distractors": ["price", "generation", "unique"]}, {"lesson": 2, "definition": "the study and use of computers or machines that can think and learn like people", "answer": "algorithm", "distractors": ["uniqueness", "environmental", "purchase"]}, {"lesson": 2, "definition": "a set of rules that a computer uses to solve a problem", "answer": "identify", "distractors": ["carefully", "interest", "loyalty"]}, {"lesson": 2, "definition": "to recognize and correctly name someone or something", "answer": "pattern", "distractors": ["choice", "convenience", "drawer"]}, {"lesson": 2, "definition": "a regular way in which something happens or is done", "answer": "satisfaction", "distractors": ["spend+", "adjust", "streaming"]}, {"lesson": 2, "definition": "the feeling of being pleased or satisfied with something", "answer": "suggest", "distractors": ["manufacture", "streaming", "numerous"]}, {"lesson": 2, "definition": "to give someone an idea about what they could do", "answer": "history", "distractors": ["popular", "receive", "concept"]}, {"lesson": 2, "definition": "a record of the things that have happened in the past", "answer": "recommend", "distractors": ["spend+", "popular", "viewing"]}, {"lesson": 2, "definition": "to tell someone that something or someone is good and worth using or choosing", "answer": "viewing", "distractors": ["carefully", "vast", "furthermore"]}, {"lesson": 2, "definition": "the activity of watching something", "answer": "consider", "distractors": ["deeply", "discover", "product"]}, {"lesson": 2, "definition": "to think carefully about something before making a decision", "answer": "potential", "distractors": ["drive", "education", "truly"]}, {"lesson": 2, "definition": "the possibility that something may happen or be developed", "answer": "potential", "distractors": ["option", "chosen", "current"]}, {"lesson": 2, "definition": "possible when the necessary conditions exist", "answer": "multiple", "distractors": ["unique", "manufacture", "drive"]}, {"lesson": 2, "definition": "many or several", "answer": "excessive", "distractors": ["convenience", "specialized", "personalization"]}, {"lesson": 2, "definition": "more than is reasonable, usual, or necessary", "answer": "crucial", "distractors": ["spend+", "cost", "adjust"]}, {"lesson": 2, "definition": "extremely important because it affects what happens", "answer": "avoid", "distractors": ["choice", "closely", "deeply"]}, {"lesson": 2, "definition": "to stay away from someone or something", "answer": "financial", "distractors": ["economic", "additionally", "schoolwork"]}, {"lesson": 2, "definition": "relating to money or how money is managed", "answer": "burden", "distractors": ["stable", "history", "driver"]}, {"lesson": 2, "definition": "something that causes difficulty, worry, or hard work", "answer": "strain", "distractors": ["excessive", "gain", "lecture"]}, {"lesson": 2, "definition": "a difficult or worrying situation that puts pressure on someone", "answer": "cancel", "distractors": ["rapid", "delivery", "strain"]}, {"lesson": 2, "definition": "to end an agreement or arrangement that you have with someone", "answer": "beneficial", "distractors": ["advantage", "platform", "price"]}, {"lesson": 2, "definition": "having a good effect or useful result", "answer": "environmental", "distractors": ["customer", "interest", "utilize"]}, {"lesson": 2, "definition": "relating to the natural world and the effects of human activity on it", "answer": "pollution", "distractors": ["truly", "wise", "additionally"]}, {"lesson": 2, "definition": "damage caused to the air, water, or land by harmful substances", "answer": "packaging", "distractors": ["environmental", "thoroughly", "customization"]}, {"lesson": 2, "definition": "the materials used to wrap or protect goods", "answer": "material", "distractors": ["update", "overconsumption", "vast"]}, {"lesson": 2, "definition": "the things that are used for making or doing something", "answer": "material", "distractors": ["various", "uniqueness", "nowadays"]}, {"lesson": 2, "definition": "relating to your money, possessions, living conditions etc, rather than the needs of your mind or soul", "answer": "disposable", "distractors": ["academic", "satisfaction", "spend+"]}, {"lesson": 2, "definition": "intended to be used once and then thrown away", "answer": "harm", "distractors": ["various", "uniform", "individual"]}, {"lesson": 2, "definition": "to cause physical or emotional damage to someone or something", "answer": "reduce", "distractors": ["address", "strain", "regular"]}, {"lesson": 2, "definition": "to make something smaller in amount, size, or degree", "answer": "embedded", "distractors": ["current", "economy", "major"]}, {"lesson": 2, "definition": "firmly fixed or contained in something", "answer": "wise", "distractors": ["growth", "expand", "uniform"]}, {"lesson": 2, "definition": "something that you buy or the act of buying something", "answer": "purchase", "distractors": ["thoroughly", "growth", "consumption"]}];
+
+let studentName='',studentSchool='';
+let state={currentSection:0,answers:{},totalQ:0,score:0,startTime:null};
+const multiSelected={};let wrongWordsMap={};
+function recordWrong(eng,correct){wrongWordsMap[eng]={eng,kor:correct,correct};}
+function shuffle(arr){const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function opts4(answer,distractors){return shuffle([answer,...distractors.slice(0,3)]);}
+function esc(s){return String(s).replace(/'/g,"\\'").replace(/"/g,'\\"');}
+
+function startQuiz(){
+  const sel=document.getElementById('schoolSel');const inp=document.getElementById('nameInput');
+  studentSchool=sel.value.trim();studentName=inp.value.trim();
+  let ok=true;
+  if(!studentSchool){sel.classList.add('err');ok=false;}else sel.classList.remove('err');
+  if(!studentName){inp.classList.add('err');ok=false;}else inp.classList.remove('err');
+  if(!ok)return;
+  document.getElementById('infoWrap').style.display='none';document.getElementById('quizWrap').style.display='block';
+  document.getElementById('studentInfoDisplay').textContent=studentSchool+' · '+studentName;
+  const key='bomnal_jc2_L4_'+studentSchool+'_'+studentName;
+  const attempts=parseInt(localStorage.getItem(key+'_cnt')||'0');const best=localStorage.getItem(key+'_best');
+  document.getElementById('attemptDisplay').textContent=attempts>0?`${attempts}번째 도전 · 최고 ${best}점`:'첫 번째 도전!';
+  state.startTime=Date.now();buildAll();
+}
+
+function buildMC(containerId,prefix,data,subText,displayFn){
+  const c=document.getElementById(containerId);const d=shuffle(data);
+  d.forEach((q,i)=>{
+    const opts=opts4(q.answer,q.distractors);
+    const wordHtml=displayFn?displayFn(q):`<div class="q-word">${q.word}</div>`;
+    c.innerHTML+=`<div class="q-card" id="${prefix}-card-${i}"><div class="q-num">Q${i+1} · <span class="lesson-tag l${q.lesson}">L${q.lesson}</span></div>${wordHtml}<div class="q-sub">${subText}</div><div class="options">${opts.map(o=>`<button class="opt-btn" onclick="answerMC('${prefix}',${i},this,'${esc(o)}','${esc(q.answer)}')">${o}</button>`).join('')}</div><div class="feedback" id="${prefix}-fb-${i}"></div></div>`;
+  });state.totalQ+=d.length;
+  return d;
+}
+
+function buildAll(){window._builtData={};
+  window._builtData['syn']=buildMC('synonymQuestions','syn',SYNONYM_DATA,'위 단어의 유의어는?');
+  window._builtData['ant']=buildMC('antonymQuestions','ant',ANTONYM_DATA,'위 단어의 반의어는?');
+  window._builtData['form']=buildMC('formQuestions','form',FORM_DATA,'다음 영어 단어의 뜻은?',q=>`<div class="lesson-tag l${q.lesson}">L${q.lesson}</div><div class="q-word">${q.word}</div>`);
+  window._builtData['poly']=buildPoly();
+  window._builtData['phr']=buildMC('phraseQuestions','phr',PHRASE_DATA,'위 표현의 뜻은?',q=>`<div class="q-word" style="font-size:16px">${q.phrase}</div>`);
+  window._builtData['ee']=buildMC('engEngQuestions','ee',ENG_ENG_DATA,'위 영영풀이에 해당하는 단어는?',q=>`<div class="q-word ko" style="font-size:13px;font-weight:600;color:#374151;line-height:1.6">"${q.definition}"</div>`);
+  updateProgress();
+}
+
+function buildPoly(){
+  const c=document.getElementById('polyQuestions');const d=shuffle(POLY_DATA);
+  d.forEach((q,i)=>{
+    const opts=shuffle(q.all6);const cnt=q.answers.length;const aj=JSON.stringify(q.answers).replace(/"/g,'&quot;');
+    c.innerHTML+=`<div class="q-card" id="poly-card-${i}"><div class="q-num">Q${i+1} · <span class="lesson-tag l${q.lesson}">L${q.lesson}</span></div><div class="q-word">${q.word}</div><div class="q-sub">이 단어의 뜻 ${cnt}개를 모두 고르세요 (<span id="poly-count-${i}">0</span>/${cnt} 선택됨)</div><div class="options" id="poly-opts-${i}" style="grid-template-columns:1fr 1fr 1fr">${opts.map(o=>`<button class="opt-btn multi" onclick="toggleMulti('poly',${i},this,'${esc(o)}',${aj.replace(/'/g,"\\'")})">${o}</button>`).join('')}</div><button id="poly-confirm-${i}" class="multi-confirm" disabled onclick="confirmMulti('poly',${i},${aj.replace(/'/g,"\\'")})">✅ 답 확인하기</button><div class="feedback" id="poly-fb-${i}"></div></div>`;
+  });state.totalQ+=d.length;
+  return d;
+}
+
+function answerMC(prefix,idx,btn,chosen,answer){
+  const key=`${prefix}-${idx}`;if(state.answers[key]?.answered)return;
+  const card=document.getElementById(`${prefix}-card-${idx}`);const fb=document.getElementById(`${prefix}-fb-${idx}`);
+  const isCorrect=chosen===answer;
+  card.querySelectorAll('.opt-btn').forEach(b=>{b.disabled=true;if(b.textContent.trim()===answer)b.classList.add('show-correct');});
+  if(isCorrect){btn.classList.remove('show-correct');btn.classList.add('selected-correct');fb.textContent='✅ 정답입니다!';fb.className='feedback show ok';card.classList.add('correct-card');state.score++;}
+  else{btn.classList.add('selected-wrong');fb.textContent=`❌ 내 답: ${chosen} / 정답: ${answer}`;fb.className='feedback show no';card.classList.add('wrong-card');const w=card.querySelector('.q-word');recordWrong(w?w.textContent.trim().split(' ')[0]:String(idx),answer);}
+  state.answers[key]={answered:true,correct:isCorrect,chosen:chosen,answer:answer};updateProgress();_saveSession();
+}
+
+function toggleMulti(prefix,idx,btn,chosen,answers){
+  const key=`${prefix}-${idx}`;if(state.answers[key]?.answered)return;
+  if(!multiSelected[key])multiSelected[key]=new Set();const sel=multiSelected[key];
+  if(btn.classList.contains('selected')){btn.classList.remove('selected');sel.delete(chosen);}else{btn.classList.add('selected');sel.add(chosen);}
+  const ce=document.getElementById(`${prefix}-count-${idx}`);if(ce)ce.textContent=sel.size;
+  const cb=document.getElementById(`${prefix}-confirm-${idx}`);
+  if(cb){const ready=sel.size===answers.length;cb.classList.toggle('ready',ready);cb.disabled=!ready;}
+}
+
+function confirmMulti(prefix,idx,answers){
+  const key=`${prefix}-${idx}`;if(state.answers[key]?.answered)return;
+  const sel=multiSelected[key]||new Set();const card=document.getElementById(`${prefix}-card-${idx}`);const fb=document.getElementById(`${prefix}-fb-${idx}`);
+  const correctSet=new Set(answers);let allCorrect=sel.size===correctSet.size&&[...sel].every(s=>correctSet.has(s));
+  card.querySelectorAll('.opt-btn').forEach(b=>{b.disabled=true;const t=b.textContent.trim();if(sel.has(t)&&correctSet.has(t))b.className='opt-btn multi correct-sel';else if(sel.has(t)&&!correctSet.has(t))b.className='opt-btn multi wrong-sel';else if(correctSet.has(t))b.className='opt-btn multi correct-sel';else b.className='opt-btn multi';});
+  if(allCorrect){fb.textContent='✅ 정답입니다!';fb.className='feedback show ok';card.classList.add('correct-card');state.score++;}
+  else{fb.textContent=`❌ 내 답: ${[...sel].join(', ')||'(없음)'} / 정답: ${answers.join(', ')}`;fb.className='feedback show no';card.classList.add('wrong-card');const w=card.querySelector('.q-word');recordWrong(w?w.textContent.trim().split(' ')[0]:String(idx),answers.join('/'));}
+  state.answers[key]={answered:true,correct:allCorrect,chosen:[...sel],correctAnswers:[...answers]};updateProgress();_saveSession();
+}
+
+function switchSection(idx){document.querySelectorAll('.quiz-section').forEach((s,i)=>s.classList.toggle('active',i===idx));document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',i===idx));state.currentSection=idx;document.getElementById('resultScreen').classList.remove('show');document.getElementById('floatSubmit').classList.remove('hidden');}
+function updateProgress(){const answered=Object.keys(state.answers).length;const total=state.totalQ;document.getElementById('progressFill').style.width=total?(answered/total*100)+'%':'0%';document.getElementById('progressText').textContent=`${answered} / ${total} 완료`;document.getElementById('scoreText').textContent=`점수: ${state.score}`;}
+
+
+// === 같은 날 이어서 풀기 (세션 저장/복원) ===
+const QUIZ_ID='jongchonko_2grade_e2_lesson2_wordtest';
+const _DAY_KEY=(function(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');})();
+const _SESSION_KEY='bn_session_'+QUIZ_ID;
+function _saveSession(){
+  try{
+    if(!state||!state.startTime) return;
+    if(!state.answers||Object.keys(state.answers).length===0) return;
+    localStorage.setItem(_SESSION_KEY, JSON.stringify({
+      day:_DAY_KEY,
+      name: (typeof studentName!=='undefined'?studentName:''),
+      school: (typeof studentSchool!=='undefined'?studentSchool:''),
+      answers: state.answers,
+      score: state.score||0,
+      totalQ: state.totalQ||0,
+      currentSection: state.currentSection||0,
+      startTime: state.startTime,
+      wrongWordsMap: (typeof wrongWordsMap!=='undefined'?wrongWordsMap:{})
+    }));
+  }catch(e){}
+}
+function _loadSession(){
+  try{
+    const raw=localStorage.getItem(_SESSION_KEY); if(!raw) return null;
+    const s=JSON.parse(raw);
+    if(s.day!==_DAY_KEY){localStorage.removeItem(_SESSION_KEY); return null;}
+    if(!s.answers||Object.keys(s.answers).length===0){localStorage.removeItem(_SESSION_KEY); return null;}
+    return s;
+  }catch(e){return null;}
+}
+function _clearSession(){try{localStorage.removeItem(_SESSION_KEY);}catch(e){}}
+function _cleanupOldSessions(){
+  try{
+    for(let i=localStorage.length-1;i>=0;i--){
+      const k=localStorage.key(i);
+      if(k && k.startsWith('bn_session_')){
+        try{const v=JSON.parse(localStorage.getItem(k)); if(v.day!==_DAY_KEY) localStorage.removeItem(k);}
+        catch(e){localStorage.removeItem(k);}
+      }
+    }
+  }catch(e){}
+}
+
+let _RESUMING=false;
+function _resumeFromSession(){
+  const s=_loadSession(); if(!s) return false;
+  // 인풋 채우기 후 startQuiz 호출 → 카드 렌더링
+  const sel=document.getElementById('schoolSel');
+  const ni=document.getElementById('nameInput');
+  if(sel && s.school){
+    let matched=false;
+    for(const o of sel.options){ if(o.value===s.school){sel.value=s.school; matched=true; break;} }
+    if(!matched && sel.options.length>1) sel.value=sel.options[1].value;
+  }
+  if(ni && s.name) ni.value=s.name;
+  _RESUMING=true;
+  try{ startQuiz(); }catch(e){ _RESUMING=false; return false; }
+  _RESUMING=false;
+  // 렌더링 끝난 뒤 답한 문제 재현
+  setTimeout(()=>{
+    state.startTime = s.startTime || Date.now();
+    state.answers={}; state.score=0;
+    // 마지막으로 보던 섹션으로 전환
+    if(typeof s.currentSection==='number' && typeof switchSection==='function'){
+      try{ switchSection(s.currentSection); }catch(e){}
+    }
+    if(typeof wrongWordsMap!=='undefined' && s.wrongWordsMap){
+      for(const k of Object.keys(s.wrongWordsMap)) wrongWordsMap[k]=s.wrongWordsMap[k];
+    }
+    // 카드를 ID 위치 대신 내용(정답 텍스트)으로 찾아 셔플 재섞임 문제 회피
+    const usedCards = new Set();
+    const restored=[];
+    for(const [key, ans] of Object.entries(s.answers||{})){
+      if(!ans||!ans.answered) continue;
+      const m=key.match(/^(.+)-(\d+)$/); if(!m) continue;
+      const prefix=m[1], oldIdx=m[2];
+      // 1순위: 저장된 정답으로 카드 찾기 (Single MC: ans.answer / Multi: ans.correctAnswers)
+      let target=null;
+      const allCards = Array.from(document.querySelectorAll(`[id^="${prefix}-card-"]`));
+      if (Array.isArray(ans.chosen) && Array.isArray(ans.correctAnswers)) {
+        // 다중 선택형: 카드의 모든 opt-btn 중 ans.correctAnswers를 정확히 포함하는 것 찾기
+        const wantSet = new Set(ans.correctAnswers);
+        for (const c of allCards) {
+          if (usedCards.has(c.id)) continue;
+          const btnTexts = Array.from(c.querySelectorAll('.opt-btn')).map(b=>b.textContent.trim());
+          const matchCount = ans.correctAnswers.filter(x=>btnTexts.includes(x)).length;
+          if (matchCount === ans.correctAnswers.length) { target=c; break; }
+        }
+      } else if (typeof ans.chosen==='string' && typeof ans.answer==='string') {
+        // 단일 MC: 카드 내 정답 텍스트 버튼 존재 + chosen 버튼 존재 + 미사용
+        for (const c of allCards) {
+          if (usedCards.has(c.id)) continue;
+          const btnTexts = Array.from(c.querySelectorAll('.opt-btn')).map(b=>b.textContent.trim());
+          if (btnTexts.includes(ans.answer) && btnTexts.includes(ans.chosen)) { target=c; break; }
+        }
+      }
+      // 2순위: 위치 기반 폴백 (예전 저장 데이터 호환)
+      if (!target) {
+        const positional = document.getElementById(`${prefix}-card-${oldIdx}`);
+        if (positional && !usedCards.has(positional.id)) target = positional;
+      }
+      if (!target) continue;
+      usedCards.add(target.id);
+      const optBtns=[...target.querySelectorAll('.opt-btn')];
+      if(Array.isArray(ans.chosen)){
+        for(const c of ans.chosen){
+          const b=optBtns.find(x=>x.textContent.trim()===c);
+          if(b) b.click();
+        }
+        const idMatch = target.id.match(/-card-(\d+)$/);
+        if (idMatch) {
+          const cb=document.getElementById(`${prefix}-confirm-${idMatch[1]}`);
+          if(cb) cb.click();
+        }
+        restored.push(key);
+      } else if(typeof ans.chosen==='string' && ans.chosen){
+        const b=optBtns.find(x=>x.textContent.trim()===ans.chosen);
+        if(b){ b.click(); restored.push(key); }
+      }
+    }
+    if(typeof updateProgress==='function') updateProgress();
+  }, 220);
+  return true;
+}
+
+function _checkResumePrompt(){
+  const s=_loadSession(); if(!s) return;
+  // 시작 화면에 노란 배너 삽입
+  const host = document.getElementById('infoWrap') || document.getElementById('startScreen') || document.querySelector('.start-card') || document.body;
+  if(document.getElementById('resumeBox')) return;
+  const answered=Object.keys(s.answers||{}).length;
+  const elapsedMin = Math.max(1, Math.round((Date.now()-(s.startTime||Date.now()))/60000));
+  const box=document.createElement('div');
+  box.id='resumeBox';
+  box.style.cssText='background:linear-gradient(135deg,#fff7e0,#fef3c7);border:2px solid #fcd34d;border-radius:14px;padding:14px 16px;margin:12px 0;text-align:left;';
+  box.innerHTML = `
+    <div style="font-family:'Black Han Sans',sans-serif;font-size:1rem;color:#92400e;margin-bottom:4px;">⏸️ 풀던 시험이 있어요</div>
+    <div style="font-size:.78rem;color:#a16207;line-height:1.5;margin-bottom:10px;">
+      <strong>${s.name||'학생'}</strong>님 · ${answered}문제 답함 · 진행한 시간 ${elapsedMin}분 · 누적 정답 ${s.score||0}
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button style="flex:1;min-width:120px;padding:11px 14px;font-size:.88rem;background:linear-gradient(135deg,#f59e0b,#d97706);color:white;border:none;border-radius:10px;font-weight:800;cursor:pointer;" onclick="_resumeFromSession();this.closest('#resumeBox').remove();">▶️ 이어서 풀기</button>
+      <button style="flex:1;min-width:120px;padding:11px 14px;font-size:.88rem;background:linear-gradient(135deg,#94a3b8,#64748b);color:white;border:none;border-radius:10px;font-weight:800;cursor:pointer;" onclick="_clearSession();this.closest('#resumeBox').remove();">🔄 새로 시작</button>
+    </div>`;
+  host.insertBefore(box, host.firstChild);
+}
+window._resumeFromSession=_resumeFromSession;
+window._clearSession=_clearSession;
+document.addEventListener('DOMContentLoaded',()=>{ _cleanupOldSessions(); _checkResumePrompt(); });
+
+async function submitAll(){
+  _clearSession();
+  const answered=Object.keys(state.answers).length;
+  if(answered<state.totalQ*0.5){alert(`아직 ${state.totalQ-answered}문제가 남아있어요!`);return;}
+  document.querySelectorAll('.quiz-section').forEach(s=>s.classList.remove('active'));document.getElementById('floatSubmit').classList.add('hidden');
+  const total=state.totalQ,correct=state.score,wrong=total-correct,unanswered=total-answered,pct=Math.round(correct/total*100),elapsedMin=Math.round((Date.now()-state.startTime)/60000),wrongWords=Object.values(wrongWordsMap).slice(0,50);
+  let emoji='😢',label='다시 도전해봐요!';if(pct>=90){emoji='🏆';label='최고예요!';}else if(pct>=70){emoji='🎉';label='잘했어요! 조금만 더!';}else if(pct>=50){emoji='💪';label='절반 이상!';}
+  document.getElementById('resultEmoji').textContent=emoji;document.getElementById('resultScore').textContent=`${pct}점`;document.getElementById('resultLabel').textContent=label;
+  document.getElementById('resultDetail').innerHTML=`<div class="result-row"><span class="label">이름</span><span class="val">${studentName} (${studentSchool})</span></div><div class="result-row"><span class="label">총 문제</span><span class="val">${total}문제</span></div><div class="result-row"><span class="label">정답</span><span class="val" style="color:var(--correct)">${correct}개</span></div><div class="result-row"><span class="label">오답</span><span class="val" style="color:var(--wrong)">${wrong}개</span></div><div class="result-row"><span class="label">미응답</span><span class="val">${unanswered}개</span></div><div class="result-row"><span class="label">정답률</span><span class="val">${pct}%</span></div><div class="result-row"><span class="label">소요 시간</span><span class="val">${elapsedMin}분</span></div>`;
+  document.getElementById('resultScreen').classList.add('show');
+  const key='bomnal_jc2_L4_'+studentSchool+'_'+studentName;const cnt=parseInt(localStorage.getItem(key+'_cnt')||'0')+1;localStorage.setItem(key+'_cnt',cnt);localStorage.setItem(key+'_best',Math.max(pct,parseInt(localStorage.getItem(key+'_best')||'0')));
+  const sendEl=document.getElementById('sendingMsg');sendEl.textContent='📡 결과 전송 중...';sendEl.className='sending-msg';
+  try{let w=0;while(!window._fbReady&&w<8000){await new Promise(r=>setTimeout(r,200));w+=200;}await window._saveResult({studentName,school:studentSchool,score:pct,correct,wrong,timedOut:0,total,elapsedMin,wrongWords,quizType:'고2_영어2_L2_어휘TEST'});sendEl.textContent='✅ 선생님께 결과가 전달됐어요!';sendEl.className='sending-msg ok';}
+  catch(e){sendEl.textContent='⚠️ 전송 실패';sendEl.className='sending-msg err';}
+
+  retryWrongList=collectWrongItems();if(retryWrongList.length>0){document.getElementById('wrongCount').textContent=retryWrongList.length;document.getElementById('retryWrongBtn').style.display='block';}
+}
+function retryQuiz(){location.reload();}
+// ============================================================
+// 오답 재풀이
+// ============================================================
+let retryRound = 0;
+let retryWrongList = [];
+
+function startRetry() {
+  retryRound++;
+  document.getElementById('resultScreen').classList.remove('show');
+  document.getElementById('retryScreen').style.display = 'block';
+  document.getElementById('retrySubmitBtn').classList.remove('hidden');
+  document.getElementById('retryRoundLabel').textContent = retryRound + '라운드';
+  document.getElementById('retryCountLabel').textContent = retryWrongList.length + '문제 남음';
+  buildRetryQuestions();
+}
+
+function buildRetryQuestions() {
+  const container = document.getElementById('retryQuestions');
+  container.innerHTML = '';
+  const shuffled = shuffle([...retryWrongList]);
+  window._retryItems = shuffled;
+  window._retryAnswers = {};
+  Object.keys(retryMultiSelected).forEach(k => delete retryMultiSelected[k]);
+
+  shuffled.forEach((item, i) => {
+    const card = document.createElement('div');
+    card.className = 'q-card';
+    card.id = 'retry-card-' + i;
+    if (item.type === 'multi') {
+      const cnt = item.answers.length;
+      const opts = shuffle([...item.allOpts]);
+      const aj = JSON.stringify(item.answers).replace(/"/g,'&quot;');
+      card.innerHTML = `
+        <div class="q-num">오답 ${i+1} · <span class="lesson-tag">재풀이</span></div>
+        <div class="q-word">${item.word}</div>
+        <div class="q-sub">이 단어의 뜻 ${cnt}개를 모두 고르세요 (<span id="retry-count-${i}">0</span>/${cnt} 선택됨)</div>
+        <div class="options" style="grid-template-columns:1fr 1fr 1fr">
+          ${opts.map(o=>`<button class="opt-btn multi" onclick="toggleRetryMulti(${i},this,'${o.replace(/'/g,"\'").replace(/"/g,'\\"')}',${aj})">${o}</button>`).join('')}
+        </div>
+        <button id="retry-confirm-${i}" class="multi-confirm" disabled onclick="confirmRetryMulti(${i},${aj})">✅ 답 확인하기</button>
+        <div class="feedback" id="retry-fb-${i}"></div>`;
+    } else {
+      const opts = opts4(item.answer, item.distractors);
+      card.innerHTML = `
+        <div class="q-num">오답 ${i+1} · <span class="lesson-tag">재풀이</span></div>
+        <div class="q-word" style="${item.wordStyle||''}">${item.word}</div>
+        <div class="q-sub">${item.subText||'알맞은 답을 고르세요'}</div>
+        <div class="options">
+          ${opts.map(o=>`<button class="opt-btn" onclick="answerRetryMC(${i},this,'${o.replace(/'/g,"\'").replace(/"/g,'\\"')}','${item.answer.replace(/'/g,"\'").replace(/"/g,'\\"')}')">${o}</button>`).join('')}
+        </div>
+        <div class="feedback" id="retry-fb-${i}"></div>`;
+    }
+    container.appendChild(card);
+  });
+}
+
+const retryMultiSelected = {};
+
+function toggleRetryMulti(idx, btn, chosen, answers) {
+  const key = 'rm-' + idx;
+  if (window._retryAnswers[idx]?.done) return;
+  if (!retryMultiSelected[key]) retryMultiSelected[key] = new Set();
+  const sel = retryMultiSelected[key];
+  if (btn.classList.contains('selected')) { btn.classList.remove('selected'); sel.delete(chosen); }
+  else { btn.classList.add('selected'); sel.add(chosen); }
+  const ce = document.getElementById('retry-count-' + idx); if (ce) ce.textContent = sel.size;
+  const cb = document.getElementById('retry-confirm-' + idx);
+  if (cb) { const ready = sel.size === answers.length; cb.classList.toggle('ready', ready); cb.disabled = !ready; }
+}
+
+function confirmRetryMulti(idx, answers) {
+  const card = document.getElementById('retry-card-' + idx);
+  const fb = document.getElementById('retry-fb-' + idx);
+  const sel = retryMultiSelected['rm-' + idx] || new Set();
+  const correctSet = new Set(answers);
+  const allCorrect = sel.size === correctSet.size && [...sel].every(s => correctSet.has(s));
+  card.querySelectorAll('.opt-btn').forEach(b => {
+    b.disabled = true;
+    const t = b.textContent.trim();
+    if (sel.has(t) && correctSet.has(t)) b.className = 'opt-btn multi correct-sel';
+    else if (sel.has(t)) b.className = 'opt-btn multi wrong-sel';
+    else if (correctSet.has(t)) b.className = 'opt-btn multi correct-sel';
+    else b.className = 'opt-btn multi';
+  });
+  fb.textContent = allCorrect ? '✅ 정답!' : `❌ 내 답: ${[...sel].join(', ')||'(없음)'} / 정답: ${answers.join(', ')}`;
+  fb.className = 'feedback show ' + (allCorrect ? 'ok' : 'no');
+  card.classList.add(allCorrect ? 'correct-card' : 'wrong-card');
+  window._retryAnswers[idx] = { done: true, correct: allCorrect };
+  checkAllRetryDone();
+}
+
+function answerRetryMC(idx, btn, chosen, answer) {
+  if (window._retryAnswers[idx]?.done) return;
+  const card = document.getElementById('retry-card-' + idx);
+  const fb = document.getElementById('retry-fb-' + idx);
+  const isCorrect = chosen === answer;
+  card.querySelectorAll('.opt-btn').forEach(b => {
+    b.disabled = true;
+    if (b.textContent.trim() === answer) b.classList.add('show-correct');
+  });
+  if (isCorrect) { btn.classList.remove('show-correct'); btn.classList.add('selected-correct'); }
+  else btn.classList.add('selected-wrong');
+  fb.textContent = isCorrect ? '✅ 정답!' : `❌ 내 답: ${chosen} / 정답: ${answer}`;
+  fb.className = 'feedback show ' + (isCorrect ? 'ok' : 'no');
+  card.classList.add(isCorrect ? 'correct-card' : 'wrong-card');
+  window._retryAnswers[idx] = { done: true, correct: isCorrect };
+  checkAllRetryDone();
+}
+
+function checkAllRetryDone() {
+  const total = window._retryItems.length;
+  const done = Object.keys(window._retryAnswers).length;
+  if (done >= total) setTimeout(submitRetry, 600);
+}
+
+function submitRetry() {
+  const items = window._retryItems || [];
+  const answers = window._retryAnswers || {};
+  const newWrong = items.filter((_, i) => !answers[i]?.correct);
+  document.getElementById('retrySubmitBtn').classList.add('hidden');
+  document.getElementById('retryScreen').style.display = 'none';
+  if (newWrong.length === 0) {
+    showRetryComplete();
+  } else {
+    retryWrongList = newWrong;
+    document.getElementById('wrongCount').textContent = newWrong.length;
+    document.getElementById('resultScreen').classList.add('show');
+    document.getElementById('retryWrongBtn').style.display = 'block';
+  }
+}
+
+async function showRetryComplete() {
+  document.getElementById('resultScreen').classList.add('show');
+  document.getElementById('resultEmoji').textContent = '🏆';
+  document.getElementById('resultScore').textContent = '완벽!';
+  document.getElementById('resultLabel').textContent = retryRound + '라운드 만에 오답 0개 달성! 🎉';
+  document.getElementById('resultDetail').innerHTML =
+    '<div class="result-row"><span class="label">이름</span><span class="val">' + studentName + ' (' + studentSchool + ')</span></div>' +
+    '<div class="result-row"><span class="label">재도전 횟수</span><span class="val">' + retryRound + '라운드</span></div>' +
+    '<div class="result-row"><span class="label">오답</span><span class="val" style="color:var(--correct);font-weight:900">0개 🎊</span></div>';
+  document.getElementById('retryWrongBtn').style.display = 'none';
+
+  // Firebase 전송 - 오답 0개 달성 기록
+  const sendEl = document.getElementById('sendingMsg');
+  sendEl.textContent = '📡 오답 완료 기록 전송 중...';
+  sendEl.className = 'sending-msg';
+  try {
+    let w=0;
+    while(!window._fbReady && w<8000){ await new Promise(r=>setTimeout(r,200)); w+=200; }
+    await window._saveResult({
+      studentName: studentName,
+      school: studentSchool,
+      score: 100,
+      correct: state.totalQ,
+      wrong: 0,
+      timedOut: 0,
+      total: state.totalQ,
+      elapsedMin: Math.round((Date.now() - state.startTime) / 60000),
+      wrongWords: [],
+      quizType: '고2_영어2_L2_어휘TEST_오답완료',
+    });
+    sendEl.textContent = '✅ 오답 0개 달성! 선생님께 전달됐어요 🎊';
+    sendEl.className = 'sending-msg ok';
+  } catch(e) {
+    sendEl.textContent = '⚠️ 전송 실패';
+    sendEl.className = 'sending-msg err';
+  }
+}
+
+function collectWrongItems() {
+  // Include both wrong-answered AND unanswered questions
+  const wrongKeys = [];
+  const _bd = window._builtData || {};
+  Object.keys(_bd).forEach(_pfx => {
+    const _arr = _bd[_pfx];
+    if (!Array.isArray(_arr)) return;
+    for (let _i = 0; _i < _arr.length; _i++) {
+      const _k = _pfx + '-' + _i;
+      const _a = state.answers[_k];
+      if (!_a || !_a.correct) wrongKeys.push(_k);
+    }
+  });
+  const list = [];
+  const multiPrefixes = new Set(['dual','poly']);
+  wrongKeys.forEach(key => {
+    const parts = key.split('-');
+    const prefix = parts[0];
+    const idx = parseInt(parts[1]);
+    const data = window._builtData && window._builtData[prefix];
+    if (!data || !data[idx]) return;
+    const q = data[idx];
+    if (multiPrefixes.has(prefix)) {
+      list.push({ type:'multi', word:q.word, answers:q.meanings||q.answers, allOpts:q.all4||q.all6, lesson:q.lesson||1 });
+    } else {
+      const wordTxt = q.word || q.phrase || ('"' + q.definition + '"') || '';
+      const subTxt = prefix==='ee'?'위 영영풀이에 해당하는 단어는?':prefix==='phr'?'위 표현의 뜻은?':prefix==='form'?('알맞은 뜻을 고르세요 · '+q.pos):'알맞은 답을 고르세요';
+      const wStyle = prefix==='ee'?'font-size:13px;font-weight:600;color:#374151;line-height:1.6':'';
+      list.push({ type:'mc', word:wordTxt, answer:q.answer, distractors:q.distractors, lesson:q.lesson||1, subText:subTxt, wordStyle:wStyle });
+    }
+  });
+  return list;
+}
+
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&document.getElementById('quizWrap').style.display!=='none'){const w=document.createElement('div');w.style.cssText='position:fixed;top:0;left:0;right:0;background:#c0392b;color:white;text-align:center;padding:10px;font-weight:700;z-index:9999;font-size:13px';w.textContent='⚠️ 화면을 벗어났습니다! 퀴즈에 집중하세요.';document.body.appendChild(w);setTimeout(()=>w.remove(),3000);}});
+document.addEventListener('copy',e=>e.preventDefault());document.addEventListener('contextmenu',e=>e.preventDefault());
+</script>
+
+<!-- === TTS 음성 지원 (Web Speech API) === -->
+<style>
+.tts-btn{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border:none;background:#e0e7ff;color:#3730a3;border-radius:50%;cursor:pointer;font-size:14px;padding:0;vertical-align:middle;margin-left:6px;transition:all .15s;flex-shrink:0;line-height:1;font-family:inherit;}
+.tts-btn:hover{background:#c7d2fe;transform:scale(1.05);}
+.tts-btn:active{transform:scale(0.95);}
+.tts-btn.speaking{background:#fbbf24;color:white;animation:tts-pulse 1s ease-in-out infinite;}
+@keyframes tts-pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.1);}}
+</style>
+<script>
+(function(){
+  if(window.__ttsInstalled) return; window.__ttsInstalled=true;
+  function speakText(text, btn){
+    if(!('speechSynthesis' in window)) return;
+    try{
+      window.speechSynthesis.cancel();
+      const u=new SpeechSynthesisUtterance(text);
+      u.lang='en-US';u.rate=0.85;u.pitch=1;
+      const voices=window.speechSynthesis.getVoices();
+      const en=voices.find(v=>v.lang && /^en/i.test(v.lang));
+      if(en) u.voice=en;
+      if(btn){
+        btn.classList.add('speaking');
+        u.onend=u.onerror=function(){btn.classList.remove('speaking');};
+      }
+      window.speechSynthesis.speak(u);
+    }catch(e){}
+  }
+  function ttsText(s){
+    s=String(s||'').replace(/^["“”'\s]+|["“”'\s]+$/g,'');
+    s=s.replace(/\s*🔊\s*$/,'');
+    const idx=s.search(/[ㄱ-힝]/);
+    if(idx!==-1) s=s.slice(0,idx);
+    return s.replace(/[\s\(\)\[\];,~]+$/,'').trim();
+  }
+  const SEL='.q-word,.word-en,.word-box,.word-card .word-en';
+  function inject(root){
+    (root||document).querySelectorAll(SEL).forEach(w=>{
+      if(w.dataset.tts==='1') return;
+      const raw=w.textContent.trim();
+      const txt=ttsText(raw);
+      if(!txt || !/[A-Za-z]/.test(txt)) return;
+      const btn=document.createElement('button');
+      btn.className='tts-btn';
+      btn.type='button';
+      btn.title='발음 듣기';
+      btn.setAttribute('aria-label','발음 듣기');
+      btn.textContent='🔊';
+      btn.addEventListener('click',function(e){e.stopPropagation();e.preventDefault();speakText(txt,btn);});
+      w.appendChild(document.createTextNode(' '));
+      w.appendChild(btn);
+      w.dataset.tts='1';
+    });
+  }
+  const _obs=new MutationObserver(muts=>{
+    let needs=false;
+    muts.forEach(m=>m.addedNodes.forEach(n=>{if(n.nodeType===1) needs=true;}));
+    if(needs) inject(document.body);
+  });
+  function start(){
+    _obs.observe(document.body,{childList:true,subtree:true});
+    inject(document.body);
+    if(window.speechSynthesis && window.speechSynthesis.getVoices){
+      window.speechSynthesis.getVoices();
+      if(window.speechSynthesis.onvoiceschanged===null){
+        window.speechSynthesis.onvoiceschanged=function(){};
+      }
+    }
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',start);
+  else start();
+})();
+</script>
+
+</body>
+</html>
