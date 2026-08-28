@@ -474,14 +474,26 @@ const CACHE_KEY='bn_admin_cache_v5';   // v5: saveId 중복 제거 반영   // v
 
 // 챕터 시험은 학교를 '종촌중학교'로, 어휘 퀴즈는 '종촌중1'로 저장한다.
 // 표기가 갈리면 같은 학생이 두 명으로 잡히므로 '종촌중1' 형태로 통일한다.
-function normSchool(school, grade){
+// 모의고사 몇 개는 학교를 '종촌고'처럼 학년 없이 저장한다.
+// 학교 필터가 '종촌고2'로 걸러내므로 그런 기록이 통째로 사라져 보였다.
+// 학년이 빠졌으면 시험 이름(고2_26년6월_…)에서 학년을 채운다.
+function _gradeFromQuiz(qt){
+  const m=String(qt||'').match(/고\s*([123])\s*[_ ]/);
+  return m?m[1]:'';
+}
+function normSchool(school, grade, quizType){
   const s=String(school||'').trim();
   if(!s) return '-';
-  const m=s.match(/^(.+?)(중학교|고등학교)$/);
-  if(!m) return s;                      // 이미 '종촌중1' 같은 축약형
   const g=String(grade||'').match(/(\d)/);
-  return m[1]+(m[2]==='중학교'?'중':'고')+(g?g[1]:'');
+  const m=s.match(/^(.+?)(중학교|고등학교)$/);
+  if(m) return m[1]+(m[2]==='중학교'?'중':'고')+(g?g[1]:'');
+  if(/[중고]$/.test(s)){                 // '종촌고' 처럼 학년이 빠진 경우
+    const gg=g?g[1]:_gradeFromQuiz(quizType);
+    if(gg) return s+gg;
+  }
+  return s;                             // 이미 '종촌고1' 같은 축약형이거나 '기타'
 }
+
 const CACHE_TTL_MS=10*60*1000;   // 10분
 const MAX_DOCS=5000;             // 안전장치
 
@@ -593,7 +605,7 @@ async function loadData(force){
       allData.push({
         id:doc.id,
         name:d.studentName||d.name||'(이름없음)',
-        school:normSchool(d.school, d.grade),
+        school:normSchool(d.school, d.grade, d.quizType),
         saveId:d.saveId||'',                 // 같은 응시 1건을 가리키는 고유 번호 (중복 제거용)
         sectionKey:d.sectionKey||'',
         dialogueTotal:(d.dialogueTotal!==undefined?d.dialogueTotal:null),  // 챕터 빈칸시험 대화문 총 개수
