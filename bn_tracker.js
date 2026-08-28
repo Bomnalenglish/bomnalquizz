@@ -178,9 +178,12 @@ async function _postOneRest(collectionName, data){
       body: JSON.stringify(payload),
       keepalive: true   // 페이지 unload 후에도 요청 완료
     });
+    // 429(할당량 초과)·5xx 는 서버 사정이라 재시도 횟수에 넣지 않는다.
+    // 그래야 할당량이 회복된 뒤 학생 결과가 살아서 올라간다.
+    if (!resp.ok && (resp.status === 429 || resp.status >= 500)) return 'retry';
     return resp.ok;
   } catch(e){
-    return false;
+    return 'retry';        // 네트워크 끊김도 마찬가지
   }
 }
 
@@ -204,7 +207,7 @@ function _wrapSaveSlot(slotName, collectionName){
         if (_orig) {
           try { await _orig(payload); saved = true; } catch(e){ /* 실패 시 REST 폴백 */ }
         }
-        if (!saved) saved = await _postOneRest(collectionName, payload);
+        if (!saved) saved = (await _postOneRest(collectionName, payload)) === true;
         if (saved) _dropPending(id);
         return saved;
       };
@@ -222,11 +225,11 @@ _wrapSaveSlot('_saveResult', 'quiz_results');
   let arr = _readPending().filter(p => now - p.ts < 7*24*3600*1000 && (p.tries || 0) < 5);
   _writePending(arr);
   for (const p of arr) {
-    p.tries = (p.tries || 0) + 1;
+    const r = await _postOneRest(p.collection || 'quiz_results', p.data);
+    if (r === true) { _dropPending(p.id); continue; }
+    if (r === 'retry') continue;           // 서버 사정 — 횟수를 올리지 않는다
     const cur = _readPending();
     const hit = cur.find(x => x.id === p.id);
-    if (hit) { hit.tries = p.tries; _writePending(cur); }
-    const ok = await _postOneRest(p.collection || 'quiz_results', p.data);
-    if (ok) _dropPending(p.id);
+    if (hit) { hit.tries = (hit.tries || 0) + 1; _writePending(cur); }
   }
 })();
