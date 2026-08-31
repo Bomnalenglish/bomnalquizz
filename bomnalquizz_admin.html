@@ -823,8 +823,27 @@ function nonSecLabel(qt, d){
   return qt.slice(0,16);
 }
 
+// '기간' 밖의 기록은 아예 불러오지 않는다. 학생이 그 기간에 시험을 안 봤으면
+// 목록에서 통째로 사라져 '기록이 없다'로 보이므로, 기간을 넓혀보라고 알려준다.
+function _widenPeriod(v){
+  const sel=document.getElementById('fPeriod');
+  if(sel){ sel.value=v; loadData(true); }
+}
 function renderTable(data){
-  if(!data.length){document.getElementById('cntBadge').textContent='0건';document.getElementById('tblArea').innerHTML='<div class="empty-msg">📭 기록 없음</div>';return;}
+  if(!data.length){
+    document.getElementById('cntBadge').textContent='0건';
+    const days=_getPeriodDays();
+    const hint = days
+      ? `<div style="margin-top:10px;font-size:13px;line-height:1.9;color:#444">
+           지금 <b>최근 ${days}일</b>만 불러온 상태입니다. 그 전에 본 시험은 여기에 나오지 않습니다.<br>
+           <button class="ctrl-sel" style="cursor:pointer;margin:8px 4px 0 0" onclick="_widenPeriod('90')">최근 90일로 넓혀보기</button>
+           <button class="ctrl-sel" style="cursor:pointer;margin-top:8px" onclick="_widenPeriod('0')">전체 기간 (느림)</button>
+         </div>`
+      : '';
+    document.getElementById('tblArea').innerHTML=
+      `<div class="empty-msg">📭 이 조건에 맞는 기록이 없습니다${hint}</div>`;
+    return;
+  }
 
   // 학생·시험·날짜별로 묶기 → 같은 시험 다회 응시는 한 줄로 모이고 펼치면 이전 시도가 보임
   const groups=groupAttempts(data);
