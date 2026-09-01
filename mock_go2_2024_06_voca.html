@@ -107,7 +107,7 @@ const cfg={apiKey:"AIzaSyCxS524S8KAaF87DomPtl9sJdF-eqes404",authDomain:"bomnalva
 const app=initializeApp(cfg);const db=getFirestore(app);
 window._fbSave=async function(data){
   try{await addDoc(collection(db,'quiz_results'),{...data,timestamp:serverTimestamp()});}
-  catch(e){console.warn('FB 저장 오류:',e);}
+  catch(e){console.warn('FB 저장 오류:',e);throw e;}   // 실패를 알려야 예비 전송이 동작한다
 };
 </script>
 </head>
@@ -686,7 +686,10 @@ function showResult(){
       내답: r.my,
       정답: r.ans
     })),
-    wrongWords: wrongs.map(w=>({eng:w.en, kor:w.ko, my:w.my, correct:w.correct, mode:w.mode}))
+    // label 이 '영어 / 뜻' 형태라 여기서 갈라 쓴다 (w.en·w.ko 는 없는 필드였다)
+    wrongWords: wrongs.map(w=>({eng:String(w.label||'').split(' / ')[0]||'',
+                                kor:String(w.label||'').split(' / ')[1]||'',
+                                my:w.my||'', correct:w.correct||'', mode:w.mode||''}))
   });
 }
 
