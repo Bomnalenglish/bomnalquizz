@@ -135,8 +135,9 @@ tr:hover td{background:#f8f9ff;}
 .report-table .td-name strong{font-weight:800;}
 .report-table .td-textbook{width:155px;}
 .report-table .td-textbook .textbook-name{font-weight:700;color:#1565c0;font-size:11.5px;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-/* 개인 오답 클리닉은 교재명 대신 파일명을 보여주므로 줄바꿈을 허용한다 */
-.report-table .td-textbook .textbook-name.is-file{white-space:normal;overflow:visible;word-break:break-all;font-size:10.5px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;}
+/* 개인 오답 클리닉: 교재명이 길어서 줄바꿈을 허용하고, 파일명은 그 아래 작게 */
+.report-table .td-textbook .textbook-name.is-clinic{white-space:normal;overflow:visible;color:#c62828;}
+.report-table .td-textbook .clinic-file{margin-top:2px;font-size:9.5px;color:#9aa3ad;word-break:break-all;line-height:1.35;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;}
 .report-table .td-lesson{font-size:11.5px;color:#475569;width:88px;}
 .report-table .td-lesson .passage-info{display:inline-block;padding:0 6px;background:#fff3e0;color:#e65100;border-radius:9px;font-size:10px;font-weight:800;margin-top:2px;white-space:nowrap;}
 .report-table .td-time{white-space:nowrap;font-size:11.5px;color:#64748b;font-weight:700;width:58px;text-align:center;}
@@ -786,11 +787,10 @@ function passagesStr(d){
 }
 function nonSecLabel(qt, d){
   if(!qt) return '-';
-  // 개인 오답 클리닉: 파일명으로 보여준다 (어휘 퀴즈와 헷갈리지 않도록)
+  // 개인 오답 클리닉 (어휘 퀴즈와 헷갈리지 않도록 전용 이름으로)
   if(isClinicType(qt)){
     const complete=qt.includes('오답완료');
-    const f=clinicFileName(d)||qt.replace('_오답완료','');
-    return `📄 ${f}${complete?' ✅':''}`;
+    return (clinicLabel(d)||qt.replace('_오답완료',''))+(complete?' ✅':'');
   }
   // 봄날 보카: day 필드에 몇 일차인지 들어 있음 → "Day 5 · R2 / 교재명"
   if(d && d.day!==undefined && d.day!==null && d.day!==''){
@@ -889,7 +889,9 @@ function renderTable(data){
     const roundBadge=d.round>1?`<span class="round-badge">${d.round}라운드</span>`:'';
     const attemptBadge=total>1?`<span class="attempt-count" title="같은 날 ${total}회 응시">${total}회</span>`:'';
     // 유형 칩: 단일이면 그대로, 복수면 모두 표시
-    const typeChip=typeSet.length===0?''
+    // 오답 클리닉은 라운드마다 '진행중 → 완료'로 바뀌므로 최신 상태 하나만 보여준다
+    const typeChip=isClinicType(d.quizType)?`<span class="type-pill type-${meta.typeClass}">${meta.type}</span>`
+      :typeSet.length===0?''
       :typeSet.length===1?`<span class="type-pill type-${meta.typeClass}">${typeSet[0]}</span>`
       :typeSet.map(t=>`<span class="type-pill type-default">${t}</span>`).join(' ');
     // 차시 표시: 단일이면 그대로, 복수면 콤마로 묶음, 없으면 '-'
@@ -951,7 +953,7 @@ function renderTable(data){
         <td class="td-idx">${i+1}</td>
         <td class="td-class">${d.school}</td>
         <td class="td-name"><strong>${d.name}</strong>${incBadge}</td>
-        <td class="td-textbook"><div class="textbook-name${isClinicType(d.quizType)?' is-file':''}" title="${meta.textbook}">${isClinicType(d.quizType)?'📄 ':''}${meta.textbook}</div>${(typeChip||attemptBadge)?'<div style="margin-top:3px;display:flex;flex-wrap:wrap;gap:3px;align-items:center">'+typeChip+attemptBadge+'</div>':''}</td>
+        <td class="td-textbook"><div class="textbook-name${isClinicType(d.quizType)?' is-clinic':''}" title="${meta.textbook}">${meta.textbook}</div>${isClinicType(d.quizType)&&clinicFileName(d)?`<div class="clinic-file">📄 ${clinicFileName(d)}</div>`:''}${(typeChip||attemptBadge)?'<div style="margin-top:3px;display:flex;flex-wrap:wrap;gap:3px;align-items:center">'+typeChip+attemptBadge+'</div>':''}</td>
         <td class="td-lesson">${lessonDisplay}${passageInfo?'<br>'+passageInfo:''}${roundBadge}</td>
         <td class="td-time">${d.elapsed?d.elapsed+'분':'-'}</td>
         <td class="td-score"><span class="sp ${gc(d.score)}">${d.score}점</span><div class="score-sub">${isIncomplete?`⚠️ 중도이탈${d.answered!=null&&d.total?` (${d.answered}/${d.total})`:''}`:gl(d.score)}</div></td>
@@ -989,12 +991,27 @@ function renderTable(data){
 const CLINIC_FILES = {
   '고운고1_공통영어2_1과_일치불일치_개인오답': 'retry_gounko1_ce2_l1_match.html'
 };
+// 교재명 자리에 보여줄 이름. 퀴즈가 quizLabel을 저장하지만, 그 전에 쌓인 기록을 위해 표도 둔다.
+const CLINIC_LABELS = {
+  '고운고1_공통영어2_1과_일치불일치_개인오답': '1과 오답 일치불일치(오답클리닉)'
+};
 function isClinicType(qt){ return !!qt && qt.includes('개인오답'); }
 function clinicFileName(d){
   if(!d) return '';
   if(d.file) return String(d.file).replace(/\.html$/,'')+'.html';
   const base=String(d.quizType||'').replace('_오답완료','');
   return CLINIC_FILES[base] || '';
+}
+function clinicLabel(d){
+  if(!d) return '';
+  if(d.quizLabel) return d.quizLabel;
+  const base=String(d.quizType||'').replace('_오답완료','');
+  if(CLINIC_LABELS[base]) return CLINIC_LABELS[base];
+  // 표에 없는 새 오답지: "…_1과_일치불일치_개인오답" → "1과 오답 일치불일치(오답클리닉)"
+  const parts=base.replace(/_개인오답$/,'').split('_');
+  const i=parts.findIndex(p=>/^\d+과$/.test(p));
+  if(i>=0) return `${parts[i]} 오답 ${parts.slice(i+1).join(' ')}(오답클리닉)`.replace(' (','(');
+  return `${parts[parts.length-1]}(오답클리닉)`;
 }
 
 function parseQuizMeta(d){
@@ -1003,7 +1020,7 @@ function parseQuizMeta(d){
   // 개인 오답 클리닉은 교재명 자리에 '파일명'을 보여준다 (어휘 퀴즈로 오인되지 않도록 먼저 처리)
   if (isClinicType(qt)) {
     const done = /_오답완료/.test(qt);
-    return { textbook: clinicFileName(d) || qt, type: '오답클리닉'+(done?'✓':''),
+    return { textbook: clinicLabel(d) || qt, type: done?'완료✓':'진행중',
              typeClass: done?'ok':'warn', lesson: d.lesson || '', passages: '' };
   }
   let passages = passagesStr(d) || '';
@@ -1551,12 +1568,12 @@ function renderSectionView(){
         const d=g.last||{};
         const left=g.cleared?0:(d.remainingWrong!==undefined&&d.remainingWrong!==null?d.remainingWrong:(d.wrong||0));
         const timeStr=d.time?d.time.toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}):'';
-        // 어떤 파일인지 헷갈리지 않도록 파일명을 크게, 설명은 그 아래 작게
-        const fileName=clinicFileName(d)||clinicFileName({quizType:g.key})||g.key;
-        const label=g.key.replace('_개인오답','').replace(/_/g,' ');
+        // 교재명(=오답지 이름)을 크게, 파일명은 그 아래 작게
+        const label=clinicLabel(d)||clinicLabel({quizType:g.key})||g.key;
+        const fileName=clinicFileName(d)||clinicFileName({quizType:g.key});
         return `<div class="sec-cell ${g.cleared?'perfect':'has-wrong'}" style="min-width:215px;text-align:left;"${_cellAttrs(st.name,st.school,g.key)}>
-          <div style="font-size:10.5px;font-weight:900;color:#1565c0;margin-bottom:2px;word-break:break-all;">📄 ${fileName}</div>
-          <div style="font-size:9.5px;font-weight:700;color:var(--muted);margin-bottom:4px;">${label}</div>
+          <div style="font-size:10.5px;font-weight:900;color:#c62828;margin-bottom:2px;">${label}</div>
+          ${fileName?`<div style="font-size:9px;font-weight:600;color:#9aa3ad;margin-bottom:4px;word-break:break-all;font-family:ui-monospace,Menlo,monospace;">📄 ${fileName}</div>`:''}
           <div class="sec-score">${d.score!==undefined?d.score+'점':'-'}</div>
           <div style="font-size:10px;font-weight:800;color:#6a4a20;margin-top:2px;">총 ${g.rounds}라운드 응시</div>
           ${g.cleared
