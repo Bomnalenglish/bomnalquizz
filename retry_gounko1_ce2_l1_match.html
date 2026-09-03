@@ -134,6 +134,7 @@ window._saveResult=async function(d){try{await addDoc(collection(db,'quiz_result
 const ALLOW = ["진시훈01", "김봄날01"];
 
 const QUIZ_TYPE = "고운고1_공통영어2_1과_일치불일치_개인오답";
+const FILE_NAME = "retry_gounko1_ce2_l1_match.html";   // 관리자에 이 이름으로 표시된다
 const CIR = ["①","②","③","④","⑤"];
 const LSKEY = "bn_clinic_gounko1_l1match";   // + "_" + 학생코드
 
@@ -361,7 +362,11 @@ function endRound(){
     remainingWrong: ST.remaining.length,
     quizType: QUIZ_TYPE + (ST.cleared ? "_오답완료" : ""),
     lesson: "1과", roundName: "일치·불일치 개인 오답",
-    wrongWords: wrongs.map(w=>({ eng: "시험지 "+w.q.no+"번", kor: "정답 "+CIR[w.q.ans-1] })),
+    // 관리자에서 어떤 파일인지 바로 알아볼 수 있도록 파일명을 함께 저장
+    file: FILE_NAME,
+    // 단어 퀴즈가 아니므로 wrongWords(오답 단어)가 아니라 wrongNumbers(오답 번호)를 쓴다.
+    // wrongWords에 넣으면 관리자의 '자주 틀린 단어 TOP 10'에 문항 번호가 섞여 들어간다.
+    wrongNumbers: wrongs.map(w=>w.q.no+"번").join(", "),
     wrongDetails: wrongs.map(w=>({
       q: w.q.no + "번 " + w.q.tag + " " + w.q.stem,
       my: w.my, answer: w.q.ans,
