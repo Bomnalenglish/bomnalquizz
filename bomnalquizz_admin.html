@@ -783,6 +783,11 @@ function passagesStr(d){
 }
 function nonSecLabel(qt, d){
   if(!qt) return '-';
+  // 개인 오답 클리닉: "고운고1_공통영어2_1과_일치불일치_개인오답_오답완료" → "고운고1 공통영어2 1과 일치불일치 ✅"
+  if(qt.includes('개인오답')){
+    const complete=qt.includes('오답완료');
+    return qt.replace('_오답완료','').replace('_개인오답','').replace(/_/g,' ')+(complete?' ✅':'');
+  }
   // 봄날 보카: day 필드에 몇 일차인지 들어 있음 → "Day 5 · R2 / 교재명"
   if(d && d.day!==undefined && d.day!==null && d.day!==''){
     const lvl = d.level || qt.replace(/^봄날보카_?/,'');
@@ -1285,7 +1290,10 @@ function renderSectionView(){
     const isVocaRec = d => d.day!==undefined && d.day!==null && d.day!=='';
     // 챕터 빈칸시험(본문·대화문)은 '몇 개 중 몇 개 완성'이 보이도록 따로 뽑는다
     const isChapterRec = d => categorize(d.quizType)==='chapter' && sectionTag(d.quizType);
-    const otherRecords=nonSecRecords.filter(d=>!isSynanmType(d.quizType) && !isReadingLab(d.quizType) && !isVocaRec(d) && !isChapterRec(d));
+    // 개인 오답 클리닉(지면 시험 오답을 학생별로 다시 풀리는 퀴즈)은 따로 뽑아 맨 위에 보여준다
+    const isClinicRec = d => d.quizType && d.quizType.includes('개인오답');
+    const clinicRecords=nonSecRecords.filter(d=>isClinicRec(d));
+    const otherRecords=nonSecRecords.filter(d=>!isSynanmType(d.quizType) && !isReadingLab(d.quizType) && !isVocaRec(d) && !isChapterRec(d) && !isClinicRec(d));
     const vocaRecords=nonSecRecords.filter(d=>!isSynanmType(d.quizType) && !isReadingLab(d.quizType) && isVocaRec(d));
     const chapterRecords=nonSecRecords.filter(d=>!isSynanmType(d.quizType) && !isReadingLab(d.quizType) && !isVocaRec(d) && isChapterRec(d));
 
@@ -1496,6 +1504,43 @@ function renderSectionView(){
     });
     const nonSecHtml=Object.values(nonSecMap).length>0?`<div style="margin-bottom:10px;"><div style="font-size:11px;font-weight:800;color:var(--muted);margin-bottom:8px;letter-spacing:.5px;">🔤 기타 퀴즈</div><div style="display:flex;flex-wrap:wrap;gap:8px;">${Object.values(nonSecMap).sort((a,b)=>(b.time||0)-(a.time||0)).map(d=>{const isPerfect=d.wrong===0;const isVocabComplete=d.quizType&&d.quizType.includes('오답완료');const timeStr=d.time?d.time.toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}):'';const cellClass=isVocabComplete?'perfect':isPerfect?'perfect':'has-wrong';const badge=isVocabComplete?'<div style="font-size:10px;color:#2e7d32;font-weight:900;margin-top:2px">🏆 오답 0개 완료!</div>':'';const ps=passagesStr(d);const pBadge=ps?`<div style="font-size:9px;color:#e65100;font-weight:800;margin-top:2px;background:#fff3e0;padding:1px 4px;border-radius:6px;display:inline-block;">📄 ${ps}</div>`:'';return `<div class="sec-cell ${cellClass}" style="min-width:130px;text-align:left;"${_cellAttrs(st.name,st.school,d.quizType)}><div style="font-size:10px;font-weight:800;color:var(--muted);margin-bottom:4px;">${nonSecLabel(d.quizType,d)}</div>${pBadge}<div class="sec-score">${d.score}점</div>${d.wrong>0?`<div class="sec-wrong">오답 ${d.wrong}개</div>`:''}${badge}<div class="sec-time">${timeStr}</div></div>`;}).join('')}</div></div>`:'';
 
+    // ── 개인 오답 클리닉 ────────────────────────────────────────
+    // 지면 시험 오답을 학생별로 다시 풀리는 퀴즈. '오답 0개'가 될 때까지
+    // 라운드를 반복하므로, 라운드 수 · 마지막 남은 오답 · 클리어 여부를 함께 본다.
+    const clinicMap={};
+    clinicRecords.forEach(d=>{
+      const key=(d.quizType||'').replace('_오답완료','');
+      if(!clinicMap[key]) clinicMap[key]={key, rounds:0, cleared:false, last:null, clearedAt:null, firstWrong:null};
+      const g=clinicMap[key];
+      g.rounds++;
+      const done=(d.quizType||'').includes('오답완료')||d.completed===true||d.wrong===0;
+      if(done && (!g.clearedAt || (d.time&&d.time<g.clearedAt))) { g.cleared=true; g.clearedAt=d.time||g.clearedAt; }
+      if(!g.last||((d.time||0)>(g.last.time||0))) g.last=d;
+      if(g.firstWrong===null||((d.time||0)<(g.firstTime||Infinity))){ g.firstWrong=d.total; g.firstTime=d.time||0; }
+    });
+    const clinicGroups=Object.values(clinicMap);
+    const clinicCleared=clinicGroups.length>0&&clinicGroups.every(g=>g.cleared);
+    const clinicHtml=clinicGroups.length>0?`<div style="margin-bottom:14px;">
+      <div style="font-size:11px;font-weight:800;color:var(--muted);margin-bottom:8px;letter-spacing:.5px;">
+        ❗ 개인 오답 클리닉${clinicCleared?'<span style="color:var(--green);margin-left:8px;">🏆 전부 오답 0개 완료</span>':'<span style="color:#c62828;margin-left:8px;">⏳ 아직 진행 중</span>'}</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;">
+      ${clinicGroups.sort((a,b)=>((b.last&&b.last.time)||0)-((a.last&&a.last.time)||0)).map(g=>{
+        const d=g.last||{};
+        const left=g.cleared?0:(d.remainingWrong!==undefined&&d.remainingWrong!==null?d.remainingWrong:(d.wrong||0));
+        const timeStr=d.time?d.time.toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}):'';
+        const label=g.key.replace('_개인오답','').replace(/_/g,' ');
+        return `<div class="sec-cell ${g.cleared?'perfect':'has-wrong'}" style="min-width:190px;text-align:left;"${_cellAttrs(st.name,st.school,g.key)}>
+          <div style="font-size:10px;font-weight:800;color:var(--muted);margin-bottom:4px;">${label}</div>
+          <div class="sec-score">${d.score!==undefined?d.score+'점':'-'}</div>
+          <div style="font-size:10px;font-weight:800;color:#6a4a20;margin-top:2px;">총 ${g.rounds}라운드 응시</div>
+          ${g.cleared
+            ? '<div style="font-size:10px;color:#2e7d32;font-weight:900;margin-top:3px">🏆 오답 0개 완료!</div>'
+            : `<div class="sec-wrong" style="margin-top:3px">아직 남은 오답 ${left}개</div>`}
+          <div class="sec-time">${timeStr}</div>
+        </div>`;
+      }).join('')}
+      </div></div>`:'';
+
     // 총정리
     const reviewRecords=st.records.filter(d=>d.quizType&&d.quizType.includes('총정리'));
     const reviewTabOrder=['빈칸','OX퀴즈','문법','단어퀴즈','지각동사','SinceTho'];
@@ -1639,9 +1684,13 @@ function renderSectionView(){
                <span class="sum-pill ${avgScore>=85?'done':'warn'}">평균 ${avgScore}점</span>
                <span class="sum-pill" style="background:#ede7f6;color:#5e35b1;">📅 최근 ${latestDate}</span>`}
           ${myAccess.length>0?`<span class="sum-pill" style="background:#e3f2fd;color:#1565c0;">🔐 접속 ${myAccess.length}건</span>`:''}
+          ${clinicGroups.length>0?(clinicCleared
+            ? `<span class="sum-pill" style="background:#e8f5e9;color:#1b5e20;">🏆 오답 클리닉 완료</span>`
+            : `<span class="sum-pill" style="background:#ffebee;color:#b71c1c;">❗ 오답 클리닉 진행 중 (남은 ${(()=>{const g=clinicGroups.find(x=>!x.cleared);const d=g&&g.last;return d&&d.remainingWrong!==undefined&&d.remainingWrong!==null?d.remainingWrong:(d&&d.wrong)||0;})()}개)</span>`):''}
         </div>
       </div>
       <div id="${cardBodyId}" class="student-card-body" style="display:none;margin-top:14px;padding-top:14px;border-top:1px dashed #cbd5e1;">
+        ${clinicHtml}
         ${secBlocksHtml}
         ${reviewHtml}
         ${readingLabHtml}

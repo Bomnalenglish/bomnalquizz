@@ -90,6 +90,19 @@ main { max-width: 960px; margin: 0 auto; padding: 36px 20px 80px; }
 .c-3{background:#ece5d8}.c-4{background:#f3ede4}.c-5{background:#ede7dc}
 .c-6{background:#eae6df}.c-7{background:#f0ebe2}
 
+/* 개인 오답 클리닉 배너 — 지정된 학생에게만 보인다 */
+.clinic-b { display:block; text-decoration:none; text-align:left; border-radius:14px; padding:14px 16px; margin-bottom:16px;
+            background:linear-gradient(135deg,#c62828,#ef6c00); color:#fff; box-shadow:0 4px 14px rgba(198,40,40,.28);
+            animation: clinicPulse 1.9s ease-in-out infinite; }
+.clinic-b .cb-t { font-size:.95rem; font-weight:800; line-height:1.45; }
+.clinic-b .cb-s { font-size:.76rem; opacity:.93; margin-top:4px; line-height:1.5; }
+.clinic-b .cb-go { display:inline-block; margin-top:9px; background:rgba(255,255,255,.95); color:#c62828;
+                   font-weight:800; font-size:.78rem; border-radius:10px; padding:6px 13px; }
+.clinic-b.done { background:linear-gradient(135deg,#2e7d32,#66bb6a); box-shadow:0 4px 14px rgba(46,125,50,.22); animation:none; }
+.clinic-b.done .cb-go { color:#2e7d32; }
+@keyframes clinicPulse { 0%,100%{ transform:scale(1) } 50%{ transform:scale(1.015) } }
+@media (prefers-reduced-motion: reduce) { .clinic-b { animation:none } }
+
 footer { text-align: center; padding: 28px; color: #aabbc8; font-size: .8rem; font-family: "Gowun Dodum", serif; }
 @media(max-width:480px){ .school-grid{grid-template-columns:1fr 1fr} .cards{grid-template-columns:1fr 1fr} .school-picker{grid-template-columns:1fr 1fr} }
 </style>
@@ -141,6 +154,7 @@ footer { text-align: center; padding: 28px; color: #aabbc8; font-size: .8rem; fo
 <div id="screen-pick" class="screen">
   <div class="auth-wrap">
     <div class="auth-card">
+      <div id="clinic-banner"></div>
       <h2>🧸 학교를 선택하세요</h2>
       <p>본인이 다니는 학교를 선택해주세요.</p>
       <div class="school-picker" id="school-picker"></div>
@@ -756,10 +770,60 @@ function submitName() {
   goStep("screen-pick");
 }
 
+/* ───────────────────────────────────────────────────────────
+   개인 오답 클리닉 — 지면 시험 오답을 학생별로 다시 풀리는 배너
+   · assign 목록에 학생 코드를 적어 두면 그 학생에게만 배너가 보인다
+   · 진행 상황(남은 오답)은 퀴즈 파일이 localStorage에 남기므로
+     Firestore를 추가로 읽지 않는다 (읽기 할당량 절약)
+   · 선생님용 최종 확인은 관리자 '개인 오답 클리닉' 카드에서
+─────────────────────────────────────────────────────────── */
+const CLINICS = [
+  {
+    id: "gounko1_l1match",                       // 퀴즈 파일의 LSKEY 뒷부분과 같아야 함
+    file: "retry_gounko1_ce2_l1_match",
+    title: "고운고1 공통영어2 1과 · 일치/불일치",
+    sub: "지면 시험에서 틀린 10문제 (3·4·5·6·13·16·17·19·20·21번)",
+    total: 10,
+    allow: ["진시훈01", "김봄날01"]
+  }
+];
+
+function clinicState(c, code) {
+  try {
+    const s = JSON.parse(localStorage.getItem("bn_clinic_" + c.id + "_" + code) || "null");
+    if (s && Array.isArray(s.remaining)) return s;
+  } catch (e) {}
+  return { remaining: new Array(c.total).fill(0), cleared: false, round: 0 };
+}
+
+function renderClinicBanner() {
+  const box = document.getElementById("clinic-banner");
+  if (!box) return;
+  box.innerHTML = "";
+  const code = (localStorage.getItem("bn_id") || sessionStorage.getItem("bn_id") || "").trim();
+  if (!code) return;
+  CLINICS.filter(c => c.allow.includes(code)).forEach(c => {
+    const st = clinicState(c, code);
+    const left = st.remaining.length;
+    const a = document.createElement("a");
+    a.href = BASE + c.file + ".html?v=" + Date.now();
+    a.className = "clinic-b" + (st.cleared ? " done" : "");
+    a.innerHTML = st.cleared
+      ? '<div class="cb-t">🏆 오답 클리닉 완료!</div>'
+        + '<div class="cb-s">' + c.title + ' — 틀렸던 문제를 모두 맞혔어요. 잘했어요!</div>'
+        + '<div class="cb-go">한 번 더 복습하기 →</div>'
+      : '<div class="cb-t">❗ 다시 풀어야 할 오답이 ' + left + '문제 있어요</div>'
+        + '<div class="cb-s">' + c.title + '<br>' + c.sub + '</div>'
+        + '<div class="cb-go">지금 오답 풀러 가기 →</div>';
+    box.appendChild(a);
+  });
+}
+
 function renderSchoolPicker() {
   const picker = document.getElementById("school-picker");
   picker.innerHTML = "";
   selectedSchoolId = null;
+  renderClinicBanner();
   SCHOOL_LIST.forEach(s => {
     const btn = document.createElement("button");
     btn.className = "sp-btn";
