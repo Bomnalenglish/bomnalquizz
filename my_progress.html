@@ -330,6 +330,11 @@ function render(records, notes){
 
   // ─ 오답노트: 저장한 메모 + 문제풀이 결과의 오답 상세 ─
   const CIRC = '①②③④⑤';
+  // '모두 고르시오' 문항은 답이 "3,5"처럼 여러 개로 저장된다 → ③⑤ 로 표시
+  const circNos = v => {
+    const ns = String(v ?? '').split(',').map(s=>parseInt(s,10)).filter(n=>n>=1&&n<=CIRC.length);
+    return ns.length ? ns.map(n=>CIRC[n-1]).join('') : CIRC[0];
+  };
   const noteEntries = [];
   notes.forEach(n => noteEntries.push({
     time: n.time, title: (n.lesson? n.lesson+' · ':'') + (n.roundName||'오답노트'),
@@ -357,8 +362,8 @@ function render(records, notes){
           ${e.items.map((it,i) => `
             <div class="note-item">
               <div class="note-q">${i+1}. ${escHtml(it.q||'')}</div>
-              <div class="note-ans"><span class="na-bad">내 답 ${CIRC[(it.my||1)-1]}</span>${escHtml(it.myText||'')}</div>
-              <div class="note-ans"><span class="na-good">정답 ${CIRC[(it.answer||1)-1]}</span>${escHtml(it.answerText||'')}</div>
+              <div class="note-ans"><span class="na-bad">내 답 ${circNos(it.my)}</span>${escHtml(it.myText||'')}</div>
+              <div class="note-ans"><span class="na-good">정답 ${circNos(it.answer)}</span>${escHtml(it.answerText||'')}</div>
               ${it.expl?`<div class="note-expl">💡 ${escHtml(it.expl)}</div>`:''}
               ${it.note?`<div class="note-my">✏️ 내 메모: ${escHtml(it.note)}</div>`:''}
             </div>`).join('')}

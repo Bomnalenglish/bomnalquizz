@@ -39,6 +39,11 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--bg);min-height:100vh
 .opt.ok{border-color:var(--green);background:#ecfdf5}
 .opt.ok .cir{color:var(--green)}
 .opt.no{border-color:var(--red);background:#fef2f2}
+/* '모두 고르시오' 문항 — 고르는 중인 보기 */
+.opt.sel{border-color:#1565c0;background:#eef4fd}
+.opt.sel .cir{color:#1565c0}
+.hint{background:#eef4fd;border:1.5px solid #c3d9f5;border-radius:11px;padding:10px 13px;
+      font-size:12.6px;line-height:1.65;color:#12467e;margin-bottom:11px}
 .fb{margin-top:13px;border-radius:12px;padding:13px 15px;font-size:13.4px;line-height:1.75}
 .fb.ok{background:#ecfdf5;border:1.5px solid #a7f3d0;color:#065f46}
 .fb.no{background:#fef2f2;border:1.5px solid #fecaca;color:#7f1d1d}
@@ -110,6 +115,7 @@ window._saveResult=async function(d){try{await addDoc(collection(db,'quiz_result
       <div class="qno" id="qNo"></div>
       <div class="qstem" id="qStem"></div>
       <div class="psg" id="qPsg"></div>
+      <div class="hint hidden" id="qHint"></div>
       <div class="opts" id="qOpts"></div>
       <div id="qFb"></div>
       <div id="qNext" style="margin-top:13px"></div>
@@ -130,8 +136,14 @@ window._saveResult=async function(d){try{await addDoc(collection(db,'quiz_result
    · 오답 0개가 될 때까지 라운드를 반복하고, 매 라운드 결과를 저장한다
 ═══════════════════════════════════════════════════════════ */
 
-// 이 오답지를 받을 학생 (학생 코드 기준) — index.html의 CLINIC_ALLOW와 같아야 함
-const ALLOW = ["진시훈01", "김봄날01"];
+// 학생별 지면 시험 오답 (학생 코드 → 틀린 문항 번호)
+// 여기에 없는 코드로 들어오면 잠금 화면이 뜬다. index.html의 CLINICS.assign과 같아야 한다.
+const ASSIGN = {
+  "진시훈01": [3, 4, 5, 6, 13, 16, 17, 19, 20, 21],
+  "이시온01": [4, 14, 17],
+  "김봄날01": [3, 4, 5, 6, 13, 14, 16, 17, 19, 20, 21]   // 테스트용 — 전체 문항
+};
+const ALLOW = Object.keys(ASSIGN);
 
 const QUIZ_TYPE = "고운고1_공통영어2_1과_일치불일치_개인오답";
 const FILE_NAME = "retry_gounko1_ce2_l1_match.html";
@@ -207,6 +219,16 @@ const QUESTIONS = [
     "Confirmation bias leads people to believe news that aligns with their existing views."],
   expl:"“It is more likely for them to believe new information <b>without any proof</b>, instead of critically examining it.” — 사람들은 <b>유효성을 확인하지 않고</b> 새 정보를 받아들일 가능성이 높다고 했다. 따라서 ‘유효성이 확인되었을 때 받아들인다’는 ④는 일치하지 않는다." },
 
+// 복수 정답 문항 — 고른 것이 정답과 '정확히' 같아야 정답 처리된다
+{ no:14, tag:"[1-3]", stem:"다음 글의 내용과 일치하는 것을 모두 고르시오.", psg:P_1_3, multi:true, ans:[3,5],
+  opts:[
+    "가짜 뉴스는 보통 오프라인에서 진짜 뉴스보다 빠르게 퍼진다.",
+    "정보가 놀라운 것일 때 사람들은 그 자극적인 뉴스를 가까운 사람에게만 공유한다.",
+    "가짜 뉴스는 사람들이 일상생활에서 단순하고 쉽게 생각하는 경향이 있다.",
+    "사람들은 자신의 편견이나 경험에 비추어 정보를 비판적으로 판단한다.",
+    "선거철에는 자신이 선호하는 후보를 긍정적으로 보도하는 뉴스를 맹목적으로 믿는다."],
+  expl:"③ “fake news goes viral because people in their daily lives tend to <b>think simply and effortlessly</b>”, ⑤ “people tend to <b>blindly believe</b> any news describing their favored candidates in a positive way” — 두 가지가 글과 일치한다. ① 온라인에서 6배 빠르게 퍼진다고 했고, ② 자극적인 뉴스를 <b>널리</b> 공유한다고 했으며, ④ 사람들은 편견에 맞는 정보를 <b>비판 없이</b> 믿는다고 했다." },
+
 { no:16, tag:"[1-4]", stem:"다음 글의 내용과 일치하지 않는 것은?", psg:P_1_4, ans:3,
   opts:[
     "Provocative headlines can mislead readers into clicking without reading carefully.",
@@ -261,12 +283,18 @@ const sSchool = (localStorage.getItem("bn_school") || sessionStorage.getItem("bn
 /* ── 진행 상태 (기기 안에 저장) ─────────────────────── */
 // remaining: 아직 못 맞힌 문제 번호 / cleared: 오답 0개 달성 / round: 몇 번째 라운드인지
 const stateKey = LSKEY + "_" + (code || "guest");
+const MY_WRONG = ASSIGN[code] || [];     // 이 학생에게 배정된 오답 번호
 function loadState(){
   try{
     const s = JSON.parse(localStorage.getItem(stateKey) || "null");
-    if(s && Array.isArray(s.remaining)) return s;
+    // 배정 목록이 바뀌었을 수 있으므로 항상 교집합만 남긴다
+    if(s && Array.isArray(s.remaining)){
+      s.remaining = s.remaining.filter(n=>MY_WRONG.includes(n));
+      if(s.cleared) s.remaining = [];
+      return s;
+    }
   }catch(e){}
-  return { remaining: QUESTIONS.map(q=>q.no), cleared:false, round:0 };
+  return { remaining: MY_WRONG.slice(), cleared:false, round:0 };
 }
 function saveState(s){ try{ localStorage.setItem(stateKey, JSON.stringify(s)); }catch(e){} }
 let ST = loadState();
@@ -280,6 +308,12 @@ function show(id){
 
 /* ── 라운드 진행 상태 ───────────────────────────────── */
 let qs=[], idx=0, cor=0, wrongs=[], t0=0, answered=false;
+let sel = [];   // '모두 고르시오' 문항에서 고른 번호들
+
+// 정답을 항상 배열로 다룬다 (단일 정답도 [3] 형태로)
+const ansList = q => Array.isArray(q.ans) ? q.ans.slice().sort((a,b)=>a-b) : [q.ans];
+const numsText = ns => ns.map(n=>CIR[n-1]).join("");
+const sameSet = (a,b) => a.length===b.length && a.every((v,i)=>v===b[i]);
 
 function startRound(){
   qs = QUESTIONS.filter(q=>ST.remaining.includes(q.no));
@@ -293,7 +327,7 @@ window.startRound = startRound;
 function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
 
 function draw(){
-  answered=false;
+  answered=false; sel=[];
   const q = qs[idx];
   document.getElementById("qTop").textContent = (idx+1) + " / " + qs.length;
   document.getElementById("qRound").textContent = ST.round + "라운드 · 남은 오답 " + ST.remaining.length + "개";
@@ -309,29 +343,56 @@ function draw(){
     const b = document.createElement("button");
     b.className = "opt";
     b.innerHTML = '<span class="cir">'+CIR[i]+'</span><span>'+esc(o)+'</span>';
-    b.onclick = ()=>pick(i+1);
+    b.onclick = ()=> q.multi ? toggle(i+1) : submit([i+1]);
     box.appendChild(b);
   });
+  if(q.multi){
+    document.getElementById("qHint").innerHTML =
+      '✔️ <b>정답이 여러 개</b>인 문제예요. 맞다고 생각하는 것을 <b>모두</b> 고른 뒤 확인을 누르세요.';
+    document.getElementById("qHint").classList.remove("hidden");
+    drawSubmitBtn();
+  } else {
+    document.getElementById("qHint").classList.add("hidden");
+  }
 }
 
-function pick(my){
+// '모두 고르시오' — 선택 토글
+function toggle(n){
   if(answered) return;
+  sel = sel.includes(n) ? sel.filter(x=>x!==n) : sel.concat(n).sort((a,b)=>a-b);
+  document.querySelectorAll("#qOpts .opt").forEach((b,i)=>b.classList.toggle("sel", sel.includes(i+1)));
+  drawSubmitBtn();
+}
+window.toggle = toggle;
+
+function drawSubmitBtn(){
+  document.getElementById("qNext").innerHTML =
+    '<button class="btn" onclick="submit(sel)"'+(sel.length?'':' disabled')+'>'
+    + (sel.length ? '확인하기 ('+numsText(sel)+')' : '고른 답이 없어요') + '</button>';
+}
+
+function submit(my){
+  if(answered || !my.length) return;
   answered = true;
   const q = qs[idx];
-  const btns = document.querySelectorAll("#qOpts .opt");
-  btns.forEach((b,i)=>{
+  const ans = ansList(q);
+  const picked = my.slice().sort((a,b)=>a-b);
+  document.querySelectorAll("#qOpts .opt").forEach((b,i)=>{
     b.disabled = true;
-    if(i+1 === q.ans) b.classList.add("ok");
-    else if(i+1 === my) b.classList.add("no");
+    b.classList.remove("sel");
+    if(ans.includes(i+1)) b.classList.add("ok");
+    else if(picked.includes(i+1)) b.classList.add("no");
   });
-  const ok = (my === q.ans);
-  if(ok) cor++; else wrongs.push({q, my});
+  const ok = sameSet(picked, ans);
+  if(ok) cor++; else wrongs.push({q, my:picked});
   document.getElementById("qFb").innerHTML =
-    '<div class="fb '+(ok?"ok":"no")+'"><b>'+(ok?"⭕ 정답이에요!":"❌ 아쉬워요 — 정답은 "+CIR[q.ans-1]+"번")+'</b>'+q.expl+'</div>';
+    '<div class="fb '+(ok?"ok":"no")+'"><b>'
+    + (ok ? "⭕ 정답이에요!" : "❌ 아쉬워요 — 정답은 "+numsText(ans)+(ans.length>1?" 두 개예요":"번"))
+    + '</b>'+q.expl+'</div>';
   document.getElementById("qNext").innerHTML =
     '<button class="btn" onclick="nextQ()">'+(idx===qs.length-1 ? "결과 보기 →" : "다음 문제 →")+'</button>';
 }
-window.pick = pick;
+window.submit = submit;
 
 function nextQ(){
   if(idx < qs.length-1){ idx++; draw(); }
@@ -369,13 +430,21 @@ function endRound(){
     // 단어 퀴즈가 아니므로 wrongWords(오답 단어)가 아니라 wrongNumbers(오답 번호)를 쓴다.
     // wrongWords에 넣으면 관리자의 '자주 틀린 단어 TOP 10'에 문항 번호가 섞여 들어간다.
     wrongNumbers: wrongs.map(w=>w.q.no+"번").join(", "),
-    wrongDetails: wrongs.map(w=>({
-      q: w.q.no + "번 " + w.q.tag + " " + w.q.stem,
-      my: w.my, answer: w.q.ans,
-      myText: CIR[w.my-1] + " " + w.q.opts[w.my-1],
-      answerText: CIR[w.q.ans-1] + " " + w.q.opts[w.q.ans-1],
-      expl: w.q.expl.replace(/<[^>]+>/g,"")
-    }))
+    // 복수 정답 문항(14번)은 my·answer가 배열이므로 보기 글도 여러 줄로 합친다
+    wrongDetails: wrongs.map(w=>{
+      const my = Array.isArray(w.my) ? w.my : [w.my];
+      const an = ansList(w.q);
+      const txt = ns => ns.map(n=>CIR[n-1] + " " + w.q.opts[n-1]).join(" / ");
+      return {
+        q: w.q.no + "번 " + w.q.tag + " " + w.q.stem,
+        // 정답이 하나면 숫자 그대로 (기존 기록·화면과 호환), 여러 개면 "3,5" 형태
+        my: my.length===1 ? my[0] : my.join(","),
+        answer: an.length===1 ? an[0] : an.join(","),
+        myText: txt(my),
+        answerText: txt(an),
+        expl: w.q.expl.replace(/<[^>]+>/g,"")
+      };
+    })
   });
 
   if(ST.cleared){ finishAll(); return; }
@@ -402,7 +471,7 @@ function finishAll(){
     +'<div class="big">오답 0개 클리어!</div>'
     +'<p class="note" style="text-align:center">'
     + (sName ? '<b>'+esc(sName)+'</b> 학생, ' : '')
-    + '틀렸던 <b>10문제</b>를 모두 맞혔어요.<br>'
+    + '틀렸던 <b>'+MY_WRONG.length+'문제</b>를 모두 맞혔어요.<br>'
     + '총 <b>'+ST.round+'라운드</b> 만에 끝냈습니다. 정말 잘했어요! 👏</p>'
     +'<div style="margin-top:16px"><button class="btn sec" onclick="reopen()">다시 한 번 복습하기</button></div>'
     +'<div style="margin-top:8px"><a class="btn" style="display:block;text-decoration:none;text-align:center;padding:13px" href="index.html">허브로 돌아가기 →</a></div>'
@@ -412,7 +481,7 @@ function finishAll(){
 
 // 이미 클리어했어도 원하면 다시 복습 (완료 기록은 그대로 남는다)
 function reopen(){
-  ST.remaining = QUESTIONS.map(q=>q.no);
+  ST.remaining = MY_WRONG.slice();
   saveState(ST);
   startRound();
 }

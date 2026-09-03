@@ -782,18 +782,24 @@ const CLINICS = [
     id: "gounko1_l1match",                       // 퀴즈 파일의 LSKEY 뒷부분과 같아야 함
     file: "retry_gounko1_ce2_l1_match",
     title: "고운고1 공통영어2 1과 · 일치/불일치",
-    sub: "지면 시험에서 틀린 10문제 (3·4·5·6·13·16·17·19·20·21번)",
-    total: 10,
-    allow: ["진시훈01", "김봄날01"]
+    // 학생 코드 → 지면 시험에서 틀린 문항 번호 (퀴즈 파일의 ASSIGN과 같아야 함)
+    assign: {
+      "진시훈01": [3, 4, 5, 6, 13, 16, 17, 19, 20, 21],
+      "이시온01": [4, 14, 17],
+      "김봄날01": [3, 4, 5, 6, 13, 14, 16, 17, 19, 20, 21]
+    }
   }
 ];
 
 function clinicState(c, code) {
+  const mine = c.assign[code] || [];
   try {
     const s = JSON.parse(localStorage.getItem("bn_clinic_" + c.id + "_" + code) || "null");
-    if (s && Array.isArray(s.remaining)) return s;
+    if (s && Array.isArray(s.remaining)) {
+      return { ...s, remaining: s.cleared ? [] : s.remaining.filter(n => mine.includes(n)) };
+    }
   } catch (e) {}
-  return { remaining: new Array(c.total).fill(0), cleared: false, round: 0 };
+  return { remaining: mine.slice(), cleared: false, round: 0 };
 }
 
 function renderClinicBanner() {
@@ -802,7 +808,8 @@ function renderClinicBanner() {
   box.innerHTML = "";
   const code = (localStorage.getItem("bn_id") || sessionStorage.getItem("bn_id") || "").trim();
   if (!code) return;
-  CLINICS.filter(c => c.allow.includes(code)).forEach(c => {
+  CLINICS.filter(c => c.assign[code] && c.assign[code].length).forEach(c => {
+    const mine = c.assign[code];
     const st = clinicState(c, code);
     const left = st.remaining.length;
     const a = document.createElement("a");
@@ -813,7 +820,8 @@ function renderClinicBanner() {
         + '<div class="cb-s">' + c.title + ' — 틀렸던 문제를 모두 맞혔어요. 잘했어요!</div>'
         + '<div class="cb-go">한 번 더 복습하기 →</div>'
       : '<div class="cb-t">❗ 다시 풀어야 할 오답이 ' + left + '문제 있어요</div>'
-        + '<div class="cb-s">' + c.title + '<br>' + c.sub + '</div>'
+        + '<div class="cb-s">' + c.title + '<br>'
+        + '지면 시험에서 틀린 ' + mine.length + '문제 (' + mine.join('·') + '번)</div>'
         + '<div class="cb-go">지금 오답 풀러 가기 →</div>';
     box.appendChild(a);
   });
