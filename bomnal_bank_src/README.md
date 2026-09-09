@@ -86,10 +86,20 @@ git add ../bomnal_bank.html . && git commit -m "자료 추가" && git push
 
 ## 폴더
 
-- 화면의 **폴더 만들기** 로 빈 폴더를 먼저 만들어 둘 수 있습니다 (`store.folders`)
-- 자료마다 **폴더** 버튼으로 옮길 수 있습니다 (`store.folder[code]`)
-- 다만 이 둘은 **그 브라우저에만** 남습니다. 모두에게 같게 보이려면
-  `bank.json` 의 `group` 값을 고쳐야 합니다
+**두 단계까지** 됩니다. 경로는 `"종촌고1"` 또는 `"종촌고1/교과서"` 처럼 `/` 로 잇습니다.
+화면에는 `종촌고1 › 교과서` 로 보입니다. 폴더 이름 자체에는 `/` 를 못 씁니다(자동으로 공백이 됨).
+
+- **폴더 만들기** — 상위 폴더를 고르고 이름을 적으면 그 아래에 생깁니다 (`store.folders`)
+- **이름 수정** — 폴더 제목이 곧 입력칸입니다. 고쳐 쓰고 Enter.
+  상위를 바꾸면 그 아래 하위 경로도 함께 따라갑니다 (`renameFolder` 의 `remap`).
+  이미 있는 이름으로 바꾸면 두 폴더가 합쳐집니다.
+- **자료 이동** — 자료 옆 드롭다운 (`store.folder[code]`)
+- **폴더 지우기** — 비어 있는 폴더에만 버튼이 나옵니다
+
+관련 함수: `topOf` / `subOf` / `showPath` / `allFolders` / `renameFolder` / `folderHead`
+
+이 셋(`folders`·`folder`·`closed`)은 모두 **그 브라우저에만** 남습니다.
+모두에게 같게 보이려면 `bank.json` 의 `group` 값에 경로를 넣어야 합니다.
 
 ## 대화상자(alert·confirm·prompt)를 쓰지 않는다
 

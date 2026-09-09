@@ -60,8 +60,20 @@ button:disabled{opacity:.4;cursor:not-allowed}
 .grp .gsel{margin-left:6px;font-size:12px;color:var(--pick);background:var(--pickbg);
            border-radius:5px;padding:2px 7px}
 .grpbody{display:flex;flex-wrap:wrap;gap:6px;padding-left:18px;margin-bottom:6px}
+.grpbody.deep{padding-left:38px}
+.grp.deep{margin-left:20px;font-size:12.5px}
+.grp.deep b{font-weight:600;color:var(--sub)}
+.grp.deep.has b{color:var(--pick)}
 .emptyhint{color:var(--sub);font-size:13px;padding:8px 2px}
-.srcgrp{flex:0 0 100%;font-size:12px;color:var(--sub);margin:10px 0 0;font-weight:700}
+.srcgrp{flex:0 0 100%;display:flex;align-items:center;gap:7px;margin:12px 0 0}
+.fname{border:1px solid transparent;border-radius:6px;background:none;font-size:12px;
+       font-weight:700;color:var(--sub);padding:3px 6px;font-family:inherit}
+.fname:hover{border-color:var(--line);background:#fff}
+.fname:focus{border-color:var(--pick);background:#fff;color:var(--ink);outline:none}
+.fcnt{font-size:12px;color:var(--sub);font-weight:400}
+.srcgrp.deep{margin-left:24px}
+.srcgrp.deep .fname{font-weight:400}
+.fdel{border:0;background:none;color:var(--warn);font-size:12px;cursor:pointer;padding:0 4px}
 
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(46px,1fr));gap:5px}
 .cell{
@@ -164,7 +176,7 @@ textarea{
 <div class="noprint">
   <h1>봄날 문제은행 <span style="font-size:13px;font-weight:400;color:var(--sub)">오답노트</span></h1>
   <p class="lead">학생을 고르고 → 자료별로 틀린 번호를 누르면 → 오답노트가 만들어집니다. 저장은 이 브라우저에 남습니다.</p>
-  <p class="lead" style="font-size:12px;color:var(--sub);margin-top:-4px">빌드 2026-09-10 01:51 · 자료 4개 · 문항 250개</p>
+  <p class="lead" style="font-size:12px;color:var(--sub);margin-top:-4px">빌드 2026-09-10 02:00 · 자료 4개 · 문항 250개</p>
 
   <div class="panel">
     <h2>학생</h2>
@@ -189,7 +201,8 @@ textarea{
     <h2>폴더 · 자료 관리</h2>
     <p class="fld">새 문제는 채팅으로 파일을 올려 주시면 들어갑니다. 여기서는 <b>폴더를 만들고 자료를 옮기거나 지웁니다.</b></p>
     <div class="row">
-      <input type="text" id="newFolder" placeholder="새 폴더 이름 (예: 종촌고1)" size="24">
+      <select id="parentFolder" title="어느 폴더 아래에 만들지 고릅니다"></select>
+      <input type="text" id="newFolder" placeholder="새 폴더 이름 (예: 교과서)" size="20">
       <button class="primary" id="addFolder">폴더 만들기</button>
       <span class="hint" id="srcMsg"></span>
     </div>
@@ -4358,6 +4371,10 @@ function drawStudents(){
   });
 }
 // 폴더 이름. store.folder 로 덮어쓸 수 있어서 기본 자료도 옮길 수 있다.
+const topOf = g => (g || '').split('/')[0].trim();
+const subOf = g => ((g || '').split('/')[1] || '').trim();
+const showPath = g => subOf(g) ? topOf(g) + ' › ' + subOf(g) : topOf(g);
+
 const allFolders = () => [...new Set(
   BASE.concat(store.custom||[]).map(groupOf).concat(store.folders||[])
 )];
@@ -4368,39 +4385,29 @@ function drawSources(){
   const box = $('srcbtns'); box.innerHTML = '';
   store.closed = store.closed || [];
 
-  // 폴더 순서는 BANK에 처음 나온 순서를 따르고, 빈 폴더는 뒤에 붙인다
-  const order = [], byGroup = {};
+  // 경로별 자료 (경로 = "종촌고1" 또는 "종촌고1/교과서")
+  const paths = [], byPath = {};
   BANK.forEach(f => {
     const g = groupOf(f);
-    if(!byGroup[g]){ byGroup[g] = []; order.push(g); }
-    byGroup[g].push(f);
+    if(!byPath[g]){ byPath[g] = []; paths.push(g); }
+    byPath[g].push(f);
   });
-  (store.folders||[]).forEach(g => {
-    if(!byGroup[g]){ byGroup[g] = []; order.push(g); }
+  (store.folders||[]).forEach(g => { if(!byPath[g]){ byPath[g] = []; paths.push(g); } });
+
+  // 상위 폴더별로 다시 묶는다. 하위 없는 경로가 먼저 오도록 정렬한다.
+  const tops = [], byTop = {};
+  paths.forEach(pth => {
+    const t = topOf(pth);
+    if(!byTop[t]){ byTop[t] = []; tops.push(t); }
+    byTop[t].push(pth);
   });
+  tops.forEach(t => byTop[t].sort((x,y) => (subOf(x) ? 1 : 0) - (subOf(y) ? 1 : 0)));
 
-  order.forEach(g => {
-    const list = byGroup[g];
-    const shut = store.closed.includes(g);
-    const picked = list.find(f => f.code === curSrc);      // 접어도 뭘 골랐는지는 보여준다
-    const marked = cur ? list.reduce((a,f) => a + marksOf(cur, f.code).length, 0) : 0;
+  const countOf = list => cur ? list.reduce((a,f) => a + marksOf(cur, f.code).length, 0) : 0;
 
-    const head = document.createElement('div');
-    head.className = 'grp' + (picked ? ' has' : '');
-    head.innerHTML = '<span class="arw">' + (shut ? '▸' : '▾') + '</span>' +
-                     '<b>' + esc(g) + '</b>' +
-                     '<span class="gn">자료 ' + list.length + '개' +
-                     (marked ? ' · 체크 ' + marked : '') + '</span>' +
-                     (shut && picked ? '<span class="gsel">' + esc(picked.title) + '</span>' : '');
-    head.onclick = () => {
-      store.closed = shut ? store.closed.filter(x => x !== g) : store.closed.concat([g]);
-      save(); drawSources();
-    };
-    box.appendChild(head);
-
-    if(shut) return;
+  const drawItems = (list, indent) => {
     const wrap = document.createElement('div');
-    wrap.className = 'grpbody';
+    wrap.className = 'grpbody' + (indent ? ' deep' : '');
     if(!list.length){
       wrap.innerHTML = '<span class="emptyhint">비어 있습니다. 이 폴더에 넣을 파일을 채팅으로 올려 주세요.</span>';
     }
@@ -4413,6 +4420,42 @@ function drawSources(){
       wrap.appendChild(b);
     });
     box.appendChild(wrap);
+  };
+
+  const header = (key, label, list, opt) => {
+    const shut = store.closed.includes(key);
+    const picked = list.find(f => f.code === curSrc);
+    const marked = countOf(list);
+    const h = document.createElement('div');
+    h.className = 'grp' + (opt.deep ? ' deep' : '') + (picked ? ' has' : '');
+    h.innerHTML = '<span class="arw">' + (shut ? '▸' : '▾') + '</span>' +
+                  '<b>' + esc(label) + '</b>' +
+                  '<span class="gn">' + opt.note + '</span>' +
+                  (shut && picked ? '<span class="gsel">' + esc(picked.title) + '</span>' : '');
+    h.onclick = () => {
+      store.closed = shut ? store.closed.filter(x => x !== key) : store.closed.concat([key]);
+      save(); drawSources();
+    };
+    box.appendChild(h);
+    return shut;
+  };
+
+  tops.forEach(t => {
+    const under = byTop[t];
+    const allIn = under.reduce((a,pth) => a.concat(byPath[pth]), []);
+    const subs  = under.filter(pth => subOf(pth));
+    const note  = '자료 ' + allIn.length + '개'
+                + (subs.length ? ' · 하위 ' + subs.length + '개' : '')
+                + (countOf(allIn) ? ' · 체크 ' + countOf(allIn) : '');
+    if(header(t, t, allIn, {note, deep:false})) return;
+
+    under.forEach(pth => {
+      const sub = subOf(pth), list = byPath[pth];
+      if(!sub){ if(list.length) drawItems(list, false); return; }
+      const note2 = '자료 ' + list.length + '개' + (countOf(list) ? ' · 체크 ' + countOf(list) : '');
+      if(header(pth, sub, list, {note: note2, deep:true})) return;
+      drawItems(list, true);
+    });
   });
 }
 function shortType(stem){
@@ -4494,23 +4537,116 @@ $('clearStu').onclick = () => {
   store.marks[cur] = {}; save(); drawAll();
 };
 
+// 폴더 이름 바꾸기. 상위 폴더를 바꾸면 그 아래 하위 폴더 경로도 함께 따라간다.
+function renameFolder(from, to){
+  const name = (to || '').trim();                 // 완성된 경로가 들어온다
+  if(!name || name === from) return false;
+  const remap = g => g === from ? name
+                   : (topOf(g) === from && subOf(g)) ? name + '/' + subOf(g)
+                   : g;
+  BASE.concat(store.custom || []).forEach(f => {
+    const g = groupOf(f), n = remap(g);
+    if(n !== g) store.folder[f.code] = n;
+  });
+  store.folders = [...new Set((store.folders || []).map(remap))];
+  store.closed  = [...new Set((store.closed  || []).map(remap))];
+  save(); rebuild(); drawAll(); drawSrcList();
+  return true;
+}
+
+// 폴더 제목 줄 — 이름칸 + 개수 + (비었으면) 지우기
+function folderHead(box, path, count, deep){
+  const shown = deep ? subOf(path) : topOf(path);
+  const h = document.createElement('div');
+  h.className = 'srcgrp' + (deep ? ' deep' : '');
+
+  const inp = document.createElement('input');
+  inp.className = 'fname';
+  inp.value = shown;
+  inp.title = '폴더 이름을 고쳐 쓰고 Enter';
+  // 한글은 size(글자수)로 잡으면 잘린다. em 으로 넉넉히 준다.
+  const fit = el => { el.style.width = Math.max(6, el.value.length * 1.05 + 2) + 'em'; };
+  fit(inp);
+  inp.oninput = () => fit(inp);
+  inp.onkeydown = e => {
+    if(e.key === 'Enter'){ e.preventDefault(); inp.blur(); }
+    if(e.key === 'Escape'){ inp.value = shown; inp.blur(); }
+  };
+  inp.onblur = () => {
+    const v = inp.value.trim().replace(/\//g, ' ');   // 이름에 / 는 못 쓴다
+    if(!v){ inp.value = shown; return; }
+    if(v === shown) return;
+    const target = deep ? topOf(path) + '/' + v : v;   // 하위면 상위를 유지한다
+    const merging = allFolders().includes(target);
+    if(renameFolder(path, target)){
+      $('srcMsg').textContent = merging
+        ? '"' + shown + '" 를 "' + v + '" 에 합쳤습니다.'
+        : '폴더 이름을 "' + v + '" 로 바꿨습니다.';
+    }
+  };
+  h.appendChild(inp);
+
+  const n = document.createElement('span');
+  n.className = 'fcnt';
+  n.textContent = '자료 ' + count + '개';
+  h.appendChild(n);
+
+  if(!count){
+    const del = document.createElement('button');
+    del.className = 'fdel';
+    del.textContent = '폴더 지우기';
+    del.onclick = () => {
+      store.folders = (store.folders || []).filter(x => x !== path);
+      save(); drawAll(); drawSrcList();
+      $('srcMsg').textContent = '"' + showPath(path) + '" 폴더를 지웠습니다.';
+    };
+    h.appendChild(del);
+  }
+  box.appendChild(h);
+}
+
+function drawParentPicker(){
+  const sel = $('parentFolder'), keep = sel.value;
+  sel.innerHTML = '<option value="">맨 위에 만들기</option>';
+  [...new Set(allFolders().map(topOf))].forEach(t => {
+    const o = document.createElement('option');
+    o.value = t; o.textContent = t + ' 안에';
+    sel.appendChild(o);
+  });
+  if([...sel.options].some(o => o.value === keep)) sel.value = keep;
+}
+
 function drawSrcList(){
+  drawParentPicker();
   const box = $('srclist'); box.innerHTML = '';
   const all = BASE.concat(store.custom || []);
 
-  // 폴더별로 나눠서 그린다
-  const order = [], byGroup = {};
+  const paths = [], byPath = {};
   all.forEach(f => {
     const g = groupOf(f);
-    if(!byGroup[g]){ byGroup[g] = []; order.push(g); }
-    byGroup[g].push(f);
+    if(!byPath[g]){ byPath[g] = []; paths.push(g); }
+    byPath[g].push(f);
   });
-  order.forEach(g => {
-    const h = document.createElement('div');
-    h.className = 'srcgrp';
-    h.textContent = g + ' (' + byGroup[g].length + ')';
-    box.appendChild(h);
-    drawSrcRows(box, byGroup[g]);
+  (store.folders || []).forEach(g => { if(!byPath[g]){ byPath[g] = []; paths.push(g); } });
+
+  const tops = [], byTop = {};
+  paths.forEach(pth => {
+    const t = topOf(pth);
+    if(!byTop[t]){ byTop[t] = []; tops.push(t); }
+    byTop[t].push(pth);
+  });
+  tops.forEach(t => byTop[t].sort((x,y) => (subOf(x) ? 1 : 0) - (subOf(y) ? 1 : 0)));
+
+  tops.forEach(t => {
+    const under = byTop[t];
+    const direct = under.find(pth => !subOf(pth));
+    const total = under.reduce((a,pth) => a + byPath[pth].length, 0);
+    folderHead(box, t, total, false);
+    if(direct && byPath[direct].length) drawSrcRows(box, byPath[direct]);
+    under.filter(pth => subOf(pth)).forEach(pth => {
+      folderHead(box, pth, byPath[pth].length, true);
+      drawSrcRows(box, byPath[pth]);
+    });
   });
 }
 
@@ -4528,9 +4664,9 @@ function drawSrcRows(box, list){
     const mv = document.createElement('select');
     mv.className = 'fsel';
     mv.title = '이 자료를 다른 폴더로 옮깁니다';
-    allFolders().forEach(g => {
+    allFolders().sort().forEach(g => {
       const o = document.createElement('option');
-      o.value = g; o.textContent = g;
+      o.value = g; o.textContent = showPath(g);
       if(g === now) o.selected = true;
       mv.appendChild(o);
     });
@@ -4576,15 +4712,17 @@ function drawSrcRows(box, list){
 /* ========= folders ========= */
 $('addFolder').onclick = () => {
   const el = $('newFolder');
-  const name = el.value.trim();
+  const name = el.value.trim().replace(/\//g, ' ');       // 이름에 / 는 못 쓴다 (경로 구분자)
   if(!name){ el.focus(); return; }
-  const all = BASE.concat(store.custom||[]).map(groupOf).concat(store.folders||[]);
-  if(all.includes(name)){ $('srcMsg').textContent = '"' + name + '" 폴더는 이미 있습니다.'; return; }
-  store.folders.push(name);
-  store.closed = (store.closed||[]).filter(x => x !== name);
+  const parent = $('parentFolder').value;
+  if(parent && subOf(parent)){ $('srcMsg').textContent = '폴더는 두 단계까지만 됩니다.'; return; }
+  const path = parent ? parent + '/' + name : name;
+  if(allFolders().includes(path)){ $('srcMsg').textContent = '"' + showPath(path) + '" 폴더는 이미 있습니다.'; return; }
+  store.folders.push(path);
+  store.closed = (store.closed||[]).filter(x => x !== path && x !== topOf(path));
   save(); drawAll(); drawSrcList();
   el.value = '';
-  $('srcMsg').textContent = '"' + name + '" 폴더를 만들었습니다.';
+  $('srcMsg').textContent = '"' + showPath(path) + '" 폴더를 만들었습니다.';
 };
 $('newFolder').onkeydown = e => { if(e.key === 'Enter') $('addFolder').click(); };
 
