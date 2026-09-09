@@ -72,9 +72,15 @@ git add ../bomnal_bank.html . && git commit -m "자료 추가" && git push
 - PDF 단 나누기 → `findGutter` (글자가 비어 있는 세로 여백을 찾아 단을 나눔)
 - 오답노트 조판 → `buildSheet`
 
-## PDF 에서 문제를 뽑는 법 (parse.py)
+## PDF 에서 문제를 뽑는 법 (pdf2bank.py)
 
-`parse.py` 는 이 출판사(APEX) 형식의 PDF 를 문항으로 바꾸는 스크립트입니다.
+```bash
+python3 pdf2bank.py "문제지.pdf" out.json     # 문항 수·정답 수·이상한 곳을 찍어준다
+```
+
+`pdf2bank.py` 는 이 출판사(APEX) 형식의 PDF 를 문항으로 바꿉니다.
+쪽 구성(문제/정답지)과 낱말 사전을 파일마다 알아서 잡습니다.
+`parse.py` 는 너른터 1과 어법을 처리하던 초판이라 남겨만 둔 것입니다.
 새 자료를 넣을 때 손볼 곳이 있으면 여기입니다. 겪었던 함정들:
 
 - **2단 편집** — `pdftotext -x/-W` 로 좌·우 단을 따로 뽑아 이어붙인다. 한 번에 뽑으면 줄이 섞인다.
