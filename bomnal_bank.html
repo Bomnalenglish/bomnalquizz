@@ -87,6 +87,8 @@ textarea{
 .tagx{border:1px solid var(--line);border-radius:999px;padding:5px 10px;font-size:12.5px;background:#fff}
 .tagx b{font-weight:600}
 .tagx button{border:0;background:none;padding:0 0 0 7px;color:var(--warn);cursor:pointer;font-size:13px}
+.fsel{margin-left:8px;border:1px solid var(--line);border-radius:6px;background:#fff;
+      font-size:12px;padding:2px 4px;color:var(--sub);cursor:pointer;max-width:130px}
 .summary{font-size:13.5px;color:var(--sub);margin-top:10px}
 .summary b{color:var(--ink)}
 .bar{position:sticky;bottom:0;background:var(--paper);padding:12px 0 6px;margin-top:6px;
@@ -162,7 +164,7 @@ textarea{
 <div class="noprint">
   <h1>봄날 문제은행 <span style="font-size:13px;font-weight:400;color:var(--sub)">오답노트</span></h1>
   <p class="lead">학생을 고르고 → 자료별로 틀린 번호를 누르면 → 오답노트가 만들어집니다. 저장은 이 브라우저에 남습니다.</p>
-  <p class="lead" style="font-size:12px;color:var(--sub);margin-top:-4px">빌드 2026-09-10 01:45 · 자료 4개 · 문항 250개</p>
+  <p class="lead" style="font-size:12px;color:var(--sub);margin-top:-4px">빌드 2026-09-10 01:51 · 자료 4개 · 문항 250개</p>
 
   <div class="panel">
     <h2>학생</h2>
@@ -172,6 +174,7 @@ textarea{
       <button id="addStu">추가</button>
       <button id="renStu">이름 바꾸기</button>
       <button id="clearStu" class="danger">이 학생 오답 전체 지우기</button>
+      <span class="hint" id="stuMsg"></span>
     </div>
   </div>
 
@@ -211,6 +214,7 @@ textarea{
     <button id="back" disabled>편집으로 돌아가기</button>
     <button id="exportBtn">백업 내보내기</button>
     <button id="importBtn">백업 불러오기</button>
+    <span class="hint" id="printMsg"></span>
     <input type="file" id="importFile" accept="application/json" style="display:none">
     <span class="hint">인쇄 창에서 <b>대상 → PDF로 저장</b>을 고르면 PDF가 됩니다.</span>
   </div>
@@ -4354,6 +4358,10 @@ function drawStudents(){
   });
 }
 // 폴더 이름. store.folder 로 덮어쓸 수 있어서 기본 자료도 옮길 수 있다.
+const allFolders = () => [...new Set(
+  BASE.concat(store.custom||[]).map(groupOf).concat(store.folders||[])
+)];
+
 const groupOf = f => (((store.folder||{})[f.code] || f.group || '기타') + '').trim() || '기타';
 
 function drawSources(){
@@ -4431,7 +4439,7 @@ function drawGrid(){
     b.innerHTML = q.no + '<span class="t">' + shortType(q.stem) + '</span>';
     b.title = q.stem;
     b.onclick = () => {
-      if(!cur){ alert('먼저 학생을 선택하세요.'); return; }
+      if(!cur){ $('stuMsg').textContent = '먼저 위에서 학생을 고르세요.'; return; }
       const arr = marksOf(cur, curSrc);
       const i = arr.indexOf(q.no);
       if(i>=0) arr.splice(i,1); else arr.push(q.no);
@@ -4456,19 +4464,33 @@ function drawAll(){ drawStudents(); drawSources(); drawGrid(); drawSummary(); }
 $('addStu').onclick = () => {
   const v = $('newName').value.trim();
   if(!v) return;
-  if(store.students.includes(v)){ alert('같은 이름이 이미 있습니다.'); return; }
+  if(store.students.includes(v)){ $('stuMsg').textContent = '같은 이름이 이미 있습니다.'; return; }
   store.students.push(v); $('newName').value=''; cur = v; save(); drawAll();
+  $('stuMsg').textContent = '"' + v + '" 추가됨';
 };
+// prompt() 가 막히는 환경이 있어, 위의 이름칸에 적은 값으로 바꾼다
 $('renStu').onclick = () => {
-  if(!cur) return;
-  const v = prompt('새 이름', cur); if(!v || v===cur) return;
+  if(!cur){ $('stuMsg').textContent = '바꿀 학생을 먼저 고르세요.'; return; }
+  const v = $('newName').value.trim();
+  if(!v){ $('newName').focus(); $('stuMsg').textContent = '왼쪽 칸에 새 이름을 적고 다시 누르세요.'; return; }
+  if(v === cur){ $('stuMsg').textContent = '같은 이름입니다.'; return; }
+  if(store.students.includes(v)){ $('stuMsg').textContent = '"' + v + '" 은(는) 이미 있습니다.'; return; }
+  const old = cur;
   store.students[store.students.indexOf(cur)] = v;
   store.marks[v] = store.marks[cur] || {}; delete store.marks[cur];
-  cur = v; save(); drawAll();
+  cur = v; $('newName').value = ''; save(); drawAll();
+  $('stuMsg').textContent = '"' + old + '" → "' + v + '" 으로 바꿨습니다.';
 };
 $('clearStu').onclick = () => {
-  if(!cur) return;
-  if(!confirm(cur + ' 학생의 체크를 모두 지울까요?')) return;
+  if(!cur){ $('stuMsg').textContent = '학생을 먼저 고르세요.'; return; }
+  const b = $('clearStu');
+  if(b.dataset.armed !== '1'){
+    b.dataset.armed = '1'; b.textContent = '정말 지울까요? 한 번 더';
+    clearTimeout(b._t);
+    b._t = setTimeout(() => { b.dataset.armed=''; b.textContent='이 학생 오답 전체 지우기'; }, 4000);
+    return;
+  }
+  b.dataset.armed = ''; b.textContent = '이 학생 오답 전체 지우기'; clearTimeout(b._t);
   store.marks[cur] = {}; save(); drawAll();
 };
 
@@ -4501,15 +4523,19 @@ function drawSrcRows(box, list){
     if(hidden) d.style.opacity = '.5';
     d.innerHTML = '<b>' + f.title + '</b> · ' + f.questions.length + '문항' +
                   (mine ? ' · 추가함' : '') + (hidden ? ' · 숨김' : '');
-    const mv = document.createElement('button');
-    mv.textContent = '폴더';
+    // 폴더 이동은 드롭다운으로. prompt() 는 막히는 환경이 있어 쓰지 않는다.
+    const now = groupOf(f);
+    const mv = document.createElement('select');
+    mv.className = 'fsel';
     mv.title = '이 자료를 다른 폴더로 옮깁니다';
-    mv.style.color = 'var(--sub)';
-    mv.onclick = () => {
-      const now = groupOf(f);
-      const to = prompt('"' + f.title + '" 을(를) 어느 폴더로 옮길까요?\n\n지금 폴더: ' + now, now);
-      if(to === null) return;
-      const name = to.trim() || '기타';
+    allFolders().forEach(g => {
+      const o = document.createElement('option');
+      o.value = g; o.textContent = g;
+      if(g === now) o.selected = true;
+      mv.appendChild(o);
+    });
+    mv.onchange = () => {
+      const name = mv.value;
       if(name === now) return;
       if(!store.folders.includes(now)) store.folders.push(now);   // 비게 되는 폴더도 남긴다
       store.folder[f.code] = name;
@@ -4521,15 +4547,24 @@ function drawSrcRows(box, list){
     const b = document.createElement('button');
     b.textContent = hidden ? '되돌리기' : '삭제';
     if(hidden) b.style.color = 'var(--pick)';
+    // confirm() 이 막히는 환경이 있어서, 한 번 더 누르게 하는 방식으로 확인받는다
     b.onclick = () => {
+      if(!hidden && b.dataset.armed !== '1'){
+        b.dataset.armed = '1';
+        b.textContent = mine ? '정말 지울까요?' : '정말 뺄까요?';
+        b.style.fontWeight = '700';
+        clearTimeout(b._t);
+        b._t = setTimeout(() => {
+          b.dataset.armed = ''; b.textContent = '삭제'; b.style.fontWeight = '';
+        }, 4000);
+        return;
+      }
       if(hidden){
         store.hidden = store.hidden.filter(c => c !== f.code);
       } else if(mine){
-        if(!confirm('"' + f.title + '" 자료를 지울까요?\n\n추가한 자료라서 되돌릴 수 없고, 학생 체크 기록도 함께 사라집니다.')) return;
         store.custom = store.custom.filter(x => x.code !== f.code);
         Object.values(store.marks).forEach(m => delete m[f.code]);
       } else {
-        if(!confirm('"' + f.title + '" 자료를 목록에서 뺄까요?\n\n기본 자료라서 언제든 "되돌리기"로 다시 꺼낼 수 있고, 학생 체크 기록도 남아 있습니다.')) return;
         store.hidden.push(f.code);
       }
       save(); rebuild(); drawAll(); drawSrcList();
@@ -4567,8 +4602,8 @@ $('importFile').onchange = e => {
   const r = new FileReader();
   r.onload = () => {
     try{ store = JSON.parse(r.result); if(!store.custom) store.custom=[];
-         cur = store.students[0]; save(); rebuild(); drawAll(); drawSrcList(); alert('불러왔습니다.'); }
-    catch(err){ alert('파일을 읽지 못했습니다.'); }
+         cur = store.students[0]; save(); rebuild(); drawAll(); drawSrcList(); $('printMsg').textContent = '백업을 불러왔습니다.'; }
+    catch(err){ $('printMsg').textContent = '파일을 읽지 못했습니다.'; }
   };
   r.readAsText(f);
 };
@@ -4578,11 +4613,11 @@ const esc = s => (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g
 const ROMAN = ['Ⅰ','Ⅱ','Ⅲ','Ⅳ','Ⅴ','Ⅵ','Ⅶ','Ⅷ'];
 
 function buildSheet(){
-  if(!cur){ alert('학생을 선택하세요.'); return false; }
+  if(!cur){ $('printMsg').textContent = '학생을 먼저 고르세요.'; return false; }
   const withKey = $('optKey').checked, group = $('optGroup').checked, wr = $('optWrite').checked;
   const picked = BANK.map(f => ({f, list: f.questions.filter(q => marksOf(cur,f.code).includes(q.no))}))
                      .filter(x => x.list.length);
-  if(!picked.length){ alert('체크된 번호가 없습니다.'); return false; }
+  if(!picked.length){ $('printMsg').textContent = '틀린 번호를 하나도 안 눌렀습니다.'; return false; }
 
   const total = picked.reduce((a,x)=>a+x.list.length,0);
   let h = '<div class="head"><h2>오답노트 — ' + esc(cur) + '</h2><div class="m">봄날영어수학학원 · 총 ' + total + '문항 · ' +
@@ -4681,13 +4716,11 @@ $('dl').onclick = () => {
 };
 
 $('print').onclick = () => {
+  // 다른 앱 안에 끼어 있으면 인쇄 창이 막힌다. 묻지 말고 파일로 내려받는다.
   const framed = (function(){ try{ return window.self !== window.top; }catch(e){ return true; } })();
-  if(framed){
-    if(confirm('지금 화면이 다른 앱 안에 들어있어서 인쇄 창이 막혀 있습니다.\n\n오답노트를 파일로 내려받을까요? 내려받은 파일을 열면 인쇄 창이 바로 뜹니다.')) $('dl').click();
-    return;
-  }
+  if(framed){ $('printMsg').textContent = '인쇄 창이 막혀 있어 파일로 내려받았습니다. 그 파일을 열면 인쇄 창이 바로 뜹니다.'; $('dl').click(); return; }
   try{ window.print(); }
-  catch(e){ alert('인쇄 창을 열지 못했습니다. "오답노트 파일로 내려받기"를 사용해 주세요.'); }
+  catch(e){ $('printMsg').textContent = '인쇄 창을 열지 못했습니다. "오답노트 파일로 내려받기"를 눌러 주세요.'; }
 };
 
 $('quick').onclick = () => {
