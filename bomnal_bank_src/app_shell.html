@@ -47,10 +47,21 @@ button.danger{color:var(--warn)}
 button:disabled{opacity:.4;cursor:not-allowed}
 
 /* sources + grid */
-.srcbtns{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.srcbtns{margin-bottom:12px}
 .src{border:1px solid var(--line);background:#fff;border-radius:7px;padding:7px 12px;font-size:13.5px;cursor:pointer;text-align:left}
 .src.on{background:var(--pickbg);border-color:var(--pick);color:#1e4c3e;font-weight:600}
 .src .n{color:var(--sub);font-weight:400;font-size:12px;margin-left:5px}
+.grp{display:flex;align-items:center;gap:7px;cursor:pointer;user-select:none;
+     padding:6px 8px;margin:8px 0 4px;border-radius:6px;font-size:13px;color:var(--ink)}
+.grp:hover{background:#f2eee5}
+.grp .arw{color:var(--sub);font-size:11px;width:10px}
+.grp .gn{color:var(--sub);font-weight:400;font-size:12px}
+.grp.has b{color:var(--pick)}
+.grp .gsel{margin-left:6px;font-size:12px;color:var(--pick);background:var(--pickbg);
+           border-radius:5px;padding:2px 7px}
+.grpbody{display:flex;flex-wrap:wrap;gap:6px;padding-left:18px;margin-bottom:6px}
+.emptyhint{color:var(--sub);font-size:13px;padding:8px 2px}
+.srcgrp{flex:0 0 100%;font-size:12px;color:var(--sub);margin:10px 0 0;font-weight:700}
 
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(46px,1fr));gap:5px}
 .cell{
@@ -175,6 +186,8 @@ textarea{
     <h2>자료 추가 · 삭제</h2>
     <p class="fld">PDF·한글 문제지의 <b>글자를 복사해서</b> 아래에 붙여넣으세요. <code>1.</code> 로 시작하는 줄을 문항으로, <code>①~⑤</code> 를 선택지로 읽습니다.</p>
     <div class="row">
+      <input type="text" id="newSrcGroup" placeholder="폴더 (예: 종촌고1)" size="18" list="grouplist">
+      <datalist id="grouplist"></datalist>
       <input type="text" id="newSrcTitle" placeholder="자료 이름 (예: 3과 기출 80제)" size="30">
       <button id="pickPdf">PDF에서 불러오기</button>
       <input type="file" id="pdfFile" accept="application/pdf,.pdf" style="display:none">
@@ -200,7 +213,7 @@ textarea{
       <span class="hint" id="srcMsg"></span>
     </div>
     <div id="prevbox" style="display:none;background:#fff;border:1px solid var(--line);border-radius:8px;padding:12px;margin-top:10px;max-height:340px;overflow:auto;font-size:12.5px"></div>
-    <p class="fld" style="margin-top:16px;border-top:1px solid var(--line);padding-top:12px">지금 들어있는 자료 — 이름 옆 버튼으로 지웁니다</p>
+    <p class="fld" style="margin-top:16px;border-top:1px solid var(--line);padding-top:12px">지금 들어있는 자료 — <b>폴더</b>로 옮기거나 <b>삭제</b>할 수 있습니다</p>
     <div class="srclist" id="srclist"></div>
   </div>
 
@@ -254,25 +267,24 @@ function rebuild(){
 /* ========= storage ========= */
 const KEY = 'bomnal_wrongnote_v1';
 let store = { students: [], marks: {}, custom: [], hidden: [] };   // marks[student][code] = [nos]
+// 예전 판에 들어 있던 예시 학생. 한 번만 걷어낸다.
+const OLDSEED = ['주현우','학생2','학생3','학생4','학생5','학생6','학생7',
+                 '학생8','학생9','학생10','학생11','학생12','학생13'];
 function load(){
   try{ const r = localStorage.getItem(KEY); if(r) store = JSON.parse(r); }catch(e){}
-  if(!store.students || !store.students.length) store = seed();
+  if(!store.students) store.students = [];
+  if(!store.marks)  store.marks  = {};
   if(!store.custom) store.custom = [];
   if(!store.hidden) store.hidden = [];
+  if(!store.folder) store.folder = {};
+  if(!store.seedCleared){                       // 예시 학생 제거 (최초 1회)
+    store.students = store.students.filter(n => !OLDSEED.includes(n));
+    OLDSEED.forEach(n => delete store.marks[n]);
+    store.seedCleared = true;
+  }
   save();
 }
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(store)); }catch(e){} }
-function seed(){
-  const s = { students:['주현우'], marks:{}, custom:[], hidden:[] };
-  for(let i=2;i<=13;i++) s.students.push('학생'+i);
-  s.marks['주현우'] = {
-    'MOCK2409':[1,2,4,10,11,12,16,17,19,20,21,22],
-    'YBM2-NT':[3,10,15,16,18,19,22,23,25,26,31],
-    'YBM1-KI':[5,8,11],
-    'YBM2-KI':[4,9,11,16]
-  };
-  return s;
-}
 
 /* ========= state ========= */
 let cur = null, curSrc = BANK[0].code;
@@ -294,6 +306,10 @@ function totalOf(name){
 
 function drawStudents(){
   $('students').innerHTML = '';
+  if(!store.students.length){
+    $('students').innerHTML = '<div class="emptyhint">아래 칸에 이름을 적고 <b>추가</b>를 누르세요.</div>';
+    return;
+  }
   store.students.forEach(n => {
     const b = document.createElement('button');
     b.className = 'stu' + (n===cur?' on':'');
@@ -302,15 +318,52 @@ function drawStudents(){
     $('students').appendChild(b);
   });
 }
+// 폴더 이름. store.folder 로 덮어쓸 수 있어서 기본 자료도 옮길 수 있다.
+const groupOf = f => (((store.folder||{})[f.code] || f.group || '기타') + '').trim() || '기타';
+
 function drawSources(){
-  $('srcbtns').innerHTML = '';
+  const box = $('srcbtns'); box.innerHTML = '';
+  store.closed = store.closed || [];
+
+  // 폴더 순서는 BANK에 처음 나온 순서를 따른다
+  const order = [], byGroup = {};
   BANK.forEach(f => {
-    const b = document.createElement('button');
-    b.className = 'src' + (f.code===curSrc?' on':'');
-    const c = cur ? marksOf(cur, f.code).length : 0;
-    b.innerHTML = f.title + '<span class="n">' + f.questions.length + '문항' + (c?' · 체크 '+c:'') + '</span>';
-    b.onclick = () => { curSrc = f.code; drawAll(); };
-    $('srcbtns').appendChild(b);
+    const g = groupOf(f);
+    if(!byGroup[g]){ byGroup[g] = []; order.push(g); }
+    byGroup[g].push(f);
+  });
+
+  order.forEach(g => {
+    const list = byGroup[g];
+    const shut = store.closed.includes(g);
+    const picked = list.find(f => f.code === curSrc);      // 접어도 뭘 골랐는지는 보여준다
+    const marked = cur ? list.reduce((a,f) => a + marksOf(cur, f.code).length, 0) : 0;
+
+    const head = document.createElement('div');
+    head.className = 'grp' + (picked ? ' has' : '');
+    head.innerHTML = '<span class="arw">' + (shut ? '▸' : '▾') + '</span>' +
+                     '<b>' + esc(g) + '</b>' +
+                     '<span class="gn">자료 ' + list.length + '개' +
+                     (marked ? ' · 체크 ' + marked : '') + '</span>' +
+                     (shut && picked ? '<span class="gsel">' + esc(picked.title) + '</span>' : '');
+    head.onclick = () => {
+      store.closed = shut ? store.closed.filter(x => x !== g) : store.closed.concat([g]);
+      save(); drawSources();
+    };
+    box.appendChild(head);
+
+    if(shut) return;
+    const wrap = document.createElement('div');
+    wrap.className = 'grpbody';
+    list.forEach(f => {
+      const b = document.createElement('button');
+      b.className = 'src' + (f.code===curSrc?' on':'');
+      const c = cur ? marksOf(cur, f.code).length : 0;
+      b.innerHTML = esc(f.title) + '<span class="n">' + f.questions.length + '문항' + (c?' · 체크 '+c:'') + '</span>';
+      b.onclick = () => { curSrc = f.code; drawAll(); };
+      wrap.appendChild(b);
+    });
+    box.appendChild(wrap);
   });
 }
 function shortType(stem){
@@ -496,7 +549,29 @@ function parseKey(text){
 function drawSrcList(){
   const box = $('srclist'); box.innerHTML = '';
   const all = BASE.concat(store.custom || []);
+
+  // 폴더 이름 자동완성 목록 채우기
+  const gs = [...new Set(all.map(groupOf))];
+  $('grouplist').innerHTML = gs.map(g => '<option value="' + esc(g) + '">').join('');
+
+  // 폴더별로 나눠서 그린다
+  const order = [], byGroup = {};
   all.forEach(f => {
+    const g = groupOf(f);
+    if(!byGroup[g]){ byGroup[g] = []; order.push(g); }
+    byGroup[g].push(f);
+  });
+  order.forEach(g => {
+    const h = document.createElement('div');
+    h.className = 'srcgrp';
+    h.textContent = g + ' (' + byGroup[g].length + ')';
+    box.appendChild(h);
+    drawSrcRows(box, byGroup[g]);
+  });
+}
+
+function drawSrcRows(box, list){
+  list.forEach(f => {
     const hidden = (store.hidden||[]).includes(f.code);
     const mine = (store.custom||[]).some(c => c.code === f.code);
     const d = document.createElement('span');
@@ -504,6 +579,22 @@ function drawSrcList(){
     if(hidden) d.style.opacity = '.5';
     d.innerHTML = '<b>' + f.title + '</b> · ' + f.questions.length + '문항' +
                   (mine ? ' · 추가함' : '') + (hidden ? ' · 숨김' : '');
+    const mv = document.createElement('button');
+    mv.textContent = '폴더';
+    mv.title = '이 자료를 다른 폴더로 옮깁니다';
+    mv.style.color = 'var(--sub)';
+    mv.onclick = () => {
+      const now = groupOf(f);
+      const to = prompt('"' + f.title + '" 을(를) 어느 폴더로 옮길까요?\n\n지금 폴더: ' + now, now);
+      if(to === null) return;
+      const name = to.trim() || '기타';
+      if(name === now) return;
+      store.folder[f.code] = name;
+      store.closed = (store.closed||[]).filter(x => x !== name);
+      save(); rebuild(); drawAll(); drawSrcList();
+    };
+    d.appendChild(mv);
+
     const b = document.createElement('button');
     b.textContent = hidden ? '되돌리기' : '삭제';
     if(hidden) b.style.color = 'var(--pick)';
@@ -684,13 +775,15 @@ $('addSrc').onclick = () => {
   qs.forEach(q => { const k = keys[q.no]; if(k){ q.answer = k.answer; q.explain = k.explain; } });
   const code = 'USER-' + Date.now().toString(36);
   qs.forEach(q => q.id = code + '-' + q.no);
-  store.custom.push({ code, title, questions: qs });
+  const grp = ($('newSrcGroup').value || '').trim() || '기타';
+  store.custom.push({ code, title, group: grp, questions: qs });
   const noOpt = qs.filter(q => !q.options.length).length;
   const noAns = qs.filter(q => !q.answer).length;
   try{ save(); }
   catch(e){ alert('저장 공간이 부족합니다. 쓰지 않는 자료를 지우고 다시 시도해 주세요.'); store.custom.pop(); return; }
   rebuild(); curSrc = code; drawAll(); drawSrcList();
   $('newSrcTitle').value=''; $('srcBody').value=''; $('srcKey').value='';
+  store.closed = (store.closed||[]).filter(x => x !== grp);   // 방금 넣은 폴더는 펴둔다
   $('srcMsg').textContent = qs.length + '문항 추가됨' +
       (noOpt ? ' · 선택지 없는 문항 ' + noOpt + '개' : '') +
       (noAns ? ' · 정답 없는 문항 ' + noAns + '개' : '');
