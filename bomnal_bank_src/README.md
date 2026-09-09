@@ -122,6 +122,8 @@ python3 pdf2bank.py "문제지.pdf" out.json     # 문항 수·정답 수·이�
   이미 있는 이름으로 바꾸면 두 폴더가 합쳐집니다.
 - **자료 이동** — 자료 옆 드롭다운 (`store.folder[code]`)
 - **폴더 지우기** — 비어 있는 폴더에만 버튼이 나옵니다
+- **기본 폴더로 되돌리기** — 이 브라우저에 남은 이동 기록을 지우고
+  `bank.json` 의 `group` 대로 돌립니다. 이동 기록이 있을 때만 버튼이 나옵니다
 
 관련 함수: `topOf` / `subOf` / `showPath` / `allFolders` / `renameFolder` / `folderHead`
 

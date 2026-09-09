@@ -206,6 +206,7 @@ textarea{
       <select id="parentFolder" title="어느 폴더 아래에 만들지 고릅니다"></select>
       <input type="text" id="newFolder" placeholder="새 폴더 이름 (예: 교과서)" size="20">
       <button class="primary" id="addFolder">폴더 만들기</button>
+      <button id="resetFolder" style="display:none">기본 폴더로 되돌리기</button>
       <span class="hint" id="srcMsg"></span>
     </div>
     <p class="fld" style="margin-top:16px;border-top:1px solid var(--line);padding-top:12px">지금 들어있는 자료 — <b>폴더</b>로 옮기거나 <b>삭제</b>할 수 있습니다</p>
@@ -568,6 +569,8 @@ function drawParentPicker(){
 
 function drawSrcList(){
   drawParentPicker();
+  const moved = Object.keys(store.folder || {}).length + (store.folders || []).length;
+  $('resetFolder').style.display = moved ? '' : 'none';
   const box = $('srclist'); box.innerHTML = '';
   const all = BASE.concat(store.custom || []);
 
@@ -675,6 +678,21 @@ $('addFolder').onclick = () => {
   $('srcMsg').textContent = '"' + showPath(path) + '" 폴더를 만들었습니다.';
 };
 $('newFolder').onkeydown = e => { if(e.key === 'Enter') $('addFolder').click(); };
+
+// 자료를 옮긴 기록은 이 브라우저에만 남는다. 자료 쪽 기본 폴더와 어긋나면
+// 다른 선생님 화면과 달라 보이므로, 되돌릴 수 있게 해둔다.
+$('resetFolder').onclick = () => {
+  const b = $('resetFolder');
+  if(b.dataset.armed !== '1'){
+    b.dataset.armed = '1'; b.textContent = '되돌릴까요? 한 번 더';
+    clearTimeout(b._t);
+    b._t = setTimeout(() => { b.dataset.armed=''; b.textContent='기본 폴더로 되돌리기'; }, 4000);
+    return;
+  }
+  store.folder = {}; store.folders = [];
+  save(); rebuild(); drawAll(); drawSrcList();
+  $('srcMsg').textContent = '자료에 정해진 폴더로 되돌렸습니다.';
+};
 
 /* ========= backup ========= */
 $('exportBtn').onclick = () => {
