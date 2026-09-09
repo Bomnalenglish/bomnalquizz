@@ -123,19 +123,32 @@ def parse(pdf):
                    'passage': para(rest if oi is None else rest[:oi]),
                    'extra': '', 'options': opts, 'answer': '', 'explain': ''})
 
-    pat = r'(?:(?<=\n)|^)\s*(\d{1,3})\s*(?:번\s*[-–—]|\)\s*)\s*([①②③④⑤])\s*[:：]?'
+    # "12 번 - ③", "1번-④" (객관식) 과 "1 번 - reminded her of ..." (서술형),
+    # 그리고 각주형 "1) ⑤:" 를 모두 받는다.
+    pat = (r'(?:(?<=\n)|^)\s*(\d{1,3})\s*'
+           r'(?:번\s*[-–—]\s*|\)\s*(?=[①②③④⑤]))')
     hits = list(re.finditer(pat, key))
     keys = {}
     for n, m in enumerate(hits):
         stop = hits[n+1].start() if n+1 < len(hits) else len(key)
         seg = key[m.end():stop]
-        cut2 = seg.find('\n     ①')
-        if cut2 < 0:
-            mm = re.search(r'\n\s*①', seg)
-            cut2 = mm.start() if mm else -1
-        if cut2 > 0: seg = seg[:cut2]        # 뒤따르는 선택지 번역은 뺀다
-        keys[int(m.group(1))] = (m.group(2),
-            joinall([x.strip() for x in seg.split('\n') if x.strip()]))
+
+        mark = ''
+        head = seg.lstrip()
+        if head[:1] in CIRC and head[:1]:          # 객관식: 동그라미 번호
+            mark = head[0]
+            seg = head[1:].lstrip(':： ')
+            cut2 = re.search(r'\n\s*①', seg)      # 각주형은 선택지 번역이 뒤에 붙는다
+            if cut2: seg = seg[:cut2.start()]
+            body = joinall([x.strip() for x in seg.split('\n') if x.strip()])
+        else:                                      # 서술형: 답 자체가 글이다
+            body = joinall([x.strip() for x in seg.split('\n') if x.strip()])
+            parts = re.split(r'\s{3,}', body, 1)   # 답과 해설은 넓은 공백으로 갈린다
+            if len(parts) == 2 and 0 < len(parts[0]) <= 200:
+                mark, body = parts[0].strip(), parts[1].strip()
+            else:
+                mark, body = body.strip(), ''
+        keys[int(m.group(1))] = (mark, body)
     for q in qs:
         if q['no'] in keys:
             q['answer'], q['explain'] = keys[q['no']]

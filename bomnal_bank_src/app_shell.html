@@ -767,11 +767,17 @@ function buildSheet(){
     picked.forEach((x,pi) => {
       h += '<div class="kg"><h4>' + ROMAN[pi] + '. ' + esc(x.f.title) + '</h4><dl>';
       x.list.forEach(q => {
-        const long = q.answer.length > 2;             // 서술형 답은 해설 자리에 넣는다
+        // 서술형 답은 동그라미 자리에 못 넣으니 해설 칸 맨 앞에 굵게 적는다.
+        // (예전엔 해설이 있으면 답이 통째로 사라졌다)
+        const long = (q.answer || '').length > 2;
         h += '<dt>' + q.no + '. ' + esc(long ? '' : q.answer) + '</dt>';
-        let body = q.explain || (long ? q.answer : '');
-        if(!q.answer && !body) body = '(정답 미입력)';   // 빈칸으로 두지 않는다
-        h += '<dd>' + (body ? esc(body) : '') + '</dd>';
+        const bits = [];
+        if(long) bits.push('<b>' + esc(q.answer) + '</b>');
+        if(q.explain) bits.push(esc(q.explain));
+        // 정답은 있는데 해설만 없는 경우(원본에 해설이 없는 자료)는 빈칸으로 둔다.
+        // 정답 자체가 없을 때만 알린다.
+        if(!bits.length && !(q.answer || '').trim()) bits.push('(정답 미입력)');
+        h += '<dd>' + bits.join('<br>') + '</dd>';
       });
       h += '</dl></div>';
     });
