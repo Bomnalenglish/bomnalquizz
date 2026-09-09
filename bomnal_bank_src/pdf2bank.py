@@ -62,14 +62,21 @@ def parse(pdf):
     rd = PdfReader(str(pdf))
     width = float(rd.pages[0].mediabox.width)
     pages = [columns(pdf, i, width) for i in range(1, len(rd.pages) + 1)]
-    keyfrom = next((i for i, t in enumerate(pages) if '(정답지)' in t.replace(' ', '')), len(pages))
 
     words  = build_vocab(pdf)
     joinln = make_join(words)
     joinall = lambda ps: __import__('functools').reduce(joinln, ps, '')
 
-    lines = clean('\n'.join(pages[:keyfrom]))
-    key   = '\n'.join(clean('\n'.join(pages[keyfrom:])))
+    # 정답지 시작 지점. 두 가지 형식을 본다.
+    #   (가) 따로 쪽을 잡는 "(정답지)"          (나) 문서 끝 각주  "1) ⑤: 해설..."
+    # clean() 이 "(정답지)" 줄을 지우므로 경계는 반드시 손대기 전 원문에서 찾는다.
+    raw = '\n'.join(pages).replace('\r', '').split('\n')
+    cut = next((i for i, l in enumerate(raw) if '(정답지)' in l.replace(' ', '')), None)
+    if cut is None:
+        cut = next((i for i, l in enumerate(raw)
+                    if re.match(r'^\s*1\s*\)\s*[①②③④⑤]\s*[:：]', l)), len(raw))
+    lines = clean('\n'.join(raw[:cut]))
+    key   = '\n'.join(clean('\n'.join(raw[cut:])))
 
     starts, want = [], 1
     for i, ln in enumerate(lines):
@@ -90,12 +97,14 @@ def parse(pdf):
     for k, (i, no, head) in enumerate(starts):
         end = starts[k+1][0] if k+1 < len(starts) else len(lines)
         chunk = lines[i+1:end]
+        done = lambda t: ']' in t or re.search(r'[?？]\s*\d*\s*\)?\s*$', t)
         stem, j = head, 0
-        while ']' not in stem and j < len(chunk) and j < 3:
+        while not done(stem) and j < len(chunk) and j < 3:
             t = chunk[j].strip()
             if not t: break
             stem = joinln(stem, t); j += 1
-        stem = re.sub(r'\s*\[[^\]]*\]?\s*$', '', stem).strip()
+        stem = re.sub(r'\s*\[[^\]]*\]?\s*$', '', stem)      # [1-1] 꼬리표
+        stem = re.sub(r'\s*\d+\s*\)\s*$', '', stem).strip()  # 각주 번호 1)
 
         rest = chunk[j:]
         underline = '밑줄 친 부분 중' in stem     # ①~⑤ 가 지문 안에 박힌 유형
@@ -114,12 +123,19 @@ def parse(pdf):
                    'passage': para(rest if oi is None else rest[:oi]),
                    'extra': '', 'options': opts, 'answer': '', 'explain': ''})
 
-    hits = list(re.finditer(r'(\d{1,3})\s*번\s*[-–—]\s*([①②③④⑤])', key))
+    pat = r'(?:(?<=\n)|^)\s*(\d{1,3})\s*(?:번\s*[-–—]|\)\s*)\s*([①②③④⑤])\s*[:：]?'
+    hits = list(re.finditer(pat, key))
     keys = {}
     for n, m in enumerate(hits):
         stop = hits[n+1].start() if n+1 < len(hits) else len(key)
+        seg = key[m.end():stop]
+        cut2 = seg.find('\n     ①')
+        if cut2 < 0:
+            mm = re.search(r'\n\s*①', seg)
+            cut2 = mm.start() if mm else -1
+        if cut2 > 0: seg = seg[:cut2]        # 뒤따르는 선택지 번역은 뺀다
         keys[int(m.group(1))] = (m.group(2),
-            joinall([x.strip() for x in key[m.end():stop].split('\n') if x.strip()]))
+            joinall([x.strip() for x in seg.split('\n') if x.strip()]))
     for q in qs:
         if q['no'] in keys:
             q['answer'], q['explain'] = keys[q['no']]
