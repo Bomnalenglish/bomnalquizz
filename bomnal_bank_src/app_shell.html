@@ -183,36 +183,13 @@ textarea{
   </div>
 
   <div class="panel">
-    <h2>자료 추가 · 삭제</h2>
-    <p class="fld">PDF·한글 문제지의 <b>글자를 복사해서</b> 아래에 붙여넣으세요. <code>1.</code> 로 시작하는 줄을 문항으로, <code>①~⑤</code> 를 선택지로 읽습니다.</p>
+    <h2>폴더 · 자료 관리</h2>
+    <p class="fld">새 문제는 채팅으로 파일을 올려 주시면 들어갑니다. 여기서는 <b>폴더를 만들고 자료를 옮기거나 지웁니다.</b></p>
     <div class="row">
-      <input type="text" id="newSrcGroup" placeholder="폴더 (예: 종촌고1)" size="18" list="grouplist">
-      <datalist id="grouplist"></datalist>
-      <input type="text" id="newSrcTitle" placeholder="자료 이름 (예: 3과 기출 80제)" size="30">
-      <button id="pickPdf">PDF에서 불러오기</button>
-      <input type="file" id="pdfFile" accept="application/pdf,.pdf" style="display:none">
-      <button id="pickTxt">txt 파일에서 불러오기</button>
-      <input type="file" id="txtFile" accept=".txt,text/plain" style="display:none">
-    </div>
-    <p class="fld" id="dropzone" style="border:1px dashed var(--line);border-radius:8px;padding:14px;text-align:center;margin-top:10px">
-      PDF 파일을 여기로 끌어다 놓아도 됩니다. 2단 편집도 자동으로 읽고, <b>(정답지)</b> 부분이 있으면 정답·해설로 나눠 넣습니다.
-    </p>
-    <div class="two" style="margin-top:10px">
-      <div>
-        <p class="fld">문제 본문</p>
-        <textarea id="srcBody" rows="7" placeholder="1. 다음 글의 내용과 일치하는 것은?&#10;As the guardian of ...&#10;① ...&#10;② ...&#10;&#10;2. 다음 글의 ..."></textarea>
-      </div>
-      <div>
-        <p class="fld">정답지 (없으면 비워두세요)</p>
-        <textarea id="srcKey" rows="7" placeholder="1 번 - ⑤ 본문은 ~ 이므로 ⑤가 일치한다.&#10;2 번 - ③ ..."></textarea>
-      </div>
-    </div>
-    <div class="row">
-      <button class="primary" id="addSrc">자료 추가</button>
-      <button id="preview">읽은 내용 미리보기</button>
+      <input type="text" id="newFolder" placeholder="새 폴더 이름 (예: 종촌고1)" size="24">
+      <button class="primary" id="addFolder">폴더 만들기</button>
       <span class="hint" id="srcMsg"></span>
     </div>
-    <div id="prevbox" style="display:none;background:#fff;border:1px solid var(--line);border-radius:8px;padding:12px;margin-top:10px;max-height:340px;overflow:auto;font-size:12.5px"></div>
     <p class="fld" style="margin-top:16px;border-top:1px solid var(--line);padding-top:12px">지금 들어있는 자료 — <b>폴더</b>로 옮기거나 <b>삭제</b>할 수 있습니다</p>
     <div class="srclist" id="srclist"></div>
   </div>
@@ -243,14 +220,6 @@ textarea{
 
 </div>
 
-<script>__PDFJS__</script>
-<script id="pdfworkersrc" type="text/plain">__PDFWORKER__</script>
-<script>
-try{
-  const wsrc = document.getElementById('pdfworkersrc').textContent;
-  pdfjsLib.GlobalWorkerOptions.workerSrc = URL.createObjectURL(new Blob([wsrc], {type:'text/javascript'}));
-}catch(e){ console.warn('pdf worker init failed', e); }
-</script>
 <script>
 /* ========= data ========= */
 const BASE = __BANK__;
@@ -277,6 +246,7 @@ function load(){
   if(!store.custom) store.custom = [];
   if(!store.hidden) store.hidden = [];
   if(!store.folder) store.folder = {};
+  if(!store.folders) store.folders = [];
   if(!store.seedCleared){                       // 예시 학생 제거 (최초 1회)
     store.students = store.students.filter(n => !OLDSEED.includes(n));
     OLDSEED.forEach(n => delete store.marks[n]);
@@ -325,12 +295,15 @@ function drawSources(){
   const box = $('srcbtns'); box.innerHTML = '';
   store.closed = store.closed || [];
 
-  // 폴더 순서는 BANK에 처음 나온 순서를 따른다
+  // 폴더 순서는 BANK에 처음 나온 순서를 따르고, 빈 폴더는 뒤에 붙인다
   const order = [], byGroup = {};
   BANK.forEach(f => {
     const g = groupOf(f);
     if(!byGroup[g]){ byGroup[g] = []; order.push(g); }
     byGroup[g].push(f);
+  });
+  (store.folders||[]).forEach(g => {
+    if(!byGroup[g]){ byGroup[g] = []; order.push(g); }
   });
 
   order.forEach(g => {
@@ -355,6 +328,9 @@ function drawSources(){
     if(shut) return;
     const wrap = document.createElement('div');
     wrap.className = 'grpbody';
+    if(!list.length){
+      wrap.innerHTML = '<span class="emptyhint">비어 있습니다. 이 폴더에 넣을 파일을 채팅으로 올려 주세요.</span>';
+    }
     list.forEach(f => {
       const b = document.createElement('button');
       b.className = 'src' + (f.code===curSrc?' on':'');
@@ -431,128 +407,9 @@ $('clearStu').onclick = () => {
   store.marks[cur] = {}; save(); drawAll();
 };
 
-/* ========= adding a source ========= */
-const CIRC = '①②③④⑤';
-
-function stripJunk(t){
-  return t.replace(/\r/g,'')
-          .split('\n')
-          .filter(l => !/^\s*-\s*\d+\s*-\s*$/.test(l))          // - 3 -
-          .filter(l => !/^\s*(프리미엄고등관|APEX|봄날 FX PREP)\s*$/.test(l))
-          .join('\n');
-}
-
-function parseBody(text){
-  const lines = stripJunk(text).split('\n');
-  const paraOf = arr => {
-    const out=[]; let cur=[];
-    arr.forEach(l => {
-      const t=l.trim();
-      if(t && !/^\s*(\[[^\]]*\]\s*)+$/.test(t)) cur.push(t);
-      else if(cur.length){ out.push(cur.join(' ')); cur=[]; }
-    });
-    if(cur.length) out.push(cur.join(' '));
-    return out.join('\n\n');
-  };
-  const SETHDR = /(물음에\s*답하시오|다음을?\s*읽고)/;
-
-  const starts = [];
-  lines.forEach((l,i) => {
-    const m = l.match(/^\s*(\d{1,3})\s*[.)]\s*(\S.*)?$/);
-    if(m) starts.push([i, +m[1], (m[2]||'').trim()]);
-  });
-  if(!starts.length) return [];
-
-  // 첫 번호 앞에 놓인 글은 세트 지문으로 본다
-  let setPas = paraOf(lines.slice(0, starts[0][0]).filter(l => !SETHDR.test(l)));
-  if(setPas.length < 150) setPas = '';
-  let carry = '';
-
-  const out = [];
-  starts.forEach((s0, k) => {
-    const end = k+1 < starts.length ? starts[k+1][0] : lines.length;
-    const chunk = lines.slice(s0[0]+1, end);
-
-    // 1) 발문
-    let stem = s0[2], j = 0;
-    const done = t => { const c = t.replace(/\s*(\[[^\]]*\]\s*)+$/,'').trim();
-      return /[?？]$/.test(c) || /(것은|개수는|곳은|것인가|고르시오\.?|쓰시오\.?|하시오\.?|답하시오\.?)$/.test(c); };
-    while(j < chunk.length && !done(stem)){
-      const l = chunk[j].trim(); j++;
-      if(!l){ if(stem) break; else continue; }
-      if(CIRC.includes(l[0])){ j--; break; }
-      if(stem && /^[A-Z]/.test(l) && stem.length > 12) { j--; break; }   // 영어 지문 시작
-      stem += (stem ? ' ' : '') + l;
-      if(stem.length > 300) break;
-    }
-    stem = stem.replace(/\s*(\[[^\]]*\]\s*)+$/,'').trim();
-
-    // 2) 선택지 구간 찾기
-    const rest = chunk.slice(j);
-    const oi = rest.findIndex(l => CIRC.includes((l.trim()[0]||'')));
-    let preLines = oi < 0 ? rest : rest.slice(0, oi);
-    const optLines = oi < 0 ? [] : rest.slice(oi);
-    let lastOpt = -1;
-    optLines.forEach((l,idx) => { if(/[①②③④⑤]/.test(l)) lastOpt = idx; });
-    const otext = optLines.slice(0, lastOpt+1).join('\n');
-    const tailRaw = optLines.slice(lastOpt+1);
-    const tailHdr = tailRaw.findIndex(l => SETHDR.test(l));
-    const tail = paraOf(tailHdr >= 0 ? tailRaw.slice(tailHdr+1) : tailRaw);
-    const tailIsSet = tailHdr >= 0 && tail.length >= 120;
-
-    // 3) 세트 안내문이 문제 안에 들어있으면 그 뒤가 세트 지문
-    const hdr = preLines.findIndex(l => SETHDR.test(l));
-    let own = '';
-    if(hdr >= 0){
-      setPas = paraOf(preLines.slice(hdr+1));
-      own = setPas;
-    } else {
-      own = paraOf(preLines);
-    }
-
-    // 4) 지문 결정: 자기 지문 > 앞 문제 뒤에 붙어 있던 글 > 세트 지문
-    let passage = '', extra = '';
-    if(own.length >= 150){ passage = own; if(hdr < 0) setPas = setPas || ''; }
-    else if(carry.length >= 120){ passage = carry; extra = own; }
-    else { passage = setPas; extra = own; }
-    carry = tail.length >= 120 ? tail : '';
-    if(tailIsSet) setPas = tail;
-
-    // 5) 선택지
-    const opts = [];
-    const pos = [];
-    for(let i=0;i<otext.length;i++) if(CIRC.includes(otext[i])) pos.push(i);
-    pos.forEach((p,i) => {
-      const e = i+1 < pos.length ? pos[i+1] : otext.length;
-      opts.push(otext.slice(p,e).replace(/\s+/g,' ').trim());
-    });
-
-    out.push({ no: s0[1], stem, passage, extra, options: opts, answer:'', explain:'' });
-  });
-  return out;
-}
-
-function parseKey(text){
-  const t = stripJunk(text);
-  const map = {};
-  const re = /(?:^|\n)\s*(\d{1,3})\s*(?:번\s*[-–—]?|[.)])\s*([①②③④⑤])?\s*/g;
-  const hits = [];
-  let m;
-  while((m = re.exec(t)) !== null) hits.push({no:+m[1], ans:m[2]||'', at:m.index, end:re.lastIndex});
-  hits.forEach((h,i) => {
-    const stop = i+1 < hits.length ? hits[i+1].at : t.length;
-    map[h.no] = { answer: h.ans, explain: t.slice(h.end, stop).replace(/\s+/g,' ').trim() };
-  });
-  return map;
-}
-
 function drawSrcList(){
   const box = $('srclist'); box.innerHTML = '';
   const all = BASE.concat(store.custom || []);
-
-  // 폴더 이름 자동완성 목록 채우기
-  const gs = [...new Set(all.map(groupOf))];
-  $('grouplist').innerHTML = gs.map(g => '<option value="' + esc(g) + '">').join('');
 
   // 폴더별로 나눠서 그린다
   const order = [], byGroup = {};
@@ -589,6 +446,7 @@ function drawSrcRows(box, list){
       if(to === null) return;
       const name = to.trim() || '기타';
       if(name === now) return;
+      if(!store.folders.includes(now)) store.folders.push(now);   // 비게 되는 폴더도 남긴다
       store.folder[f.code] = name;
       store.closed = (store.closed||[]).filter(x => x !== name);
       save(); rebuild(); drawAll(); drawSrcList();
@@ -615,179 +473,20 @@ function drawSrcRows(box, list){
   });
 }
 
-/* ========= PDF reading ========= */
-function findGutter(items, vw){
-  const bins = new Int32Array(Math.ceil(vw));
-  items.forEach(i => {
-    const a = Math.max(0, Math.floor(i.x)), b = Math.min(bins.length-1, Math.ceil(i.x + (i.w||0)));
-    for(let k=a;k<=b;k++) bins[k]++;
-  });
-  const thresh = Math.max(3, Math.round(items.length*0.01));   // ignore headers/footers crossing the middle
-  const lo = Math.floor(vw*0.30), hi = Math.ceil(vw*0.70);
-  let best = null, run = 0;
-  for(let k=lo;k<=hi;k++){
-    if(bins[k] <= thresh) run++;
-    else { if(run && (!best || run > best.len)) best = {len:run, end:k}; run = 0; }
-  }
-  if(run && (!best || run > best.len)) best = {len:run, end:hi+1};
-  if(!best || best.len < 8) return null;
-  const centre = best.end - best.len/2;
-  const rightCount = items.filter(i => i.x >= centre).length;
-  if(rightCount < items.length*0.15) return null;
-  return centre;
-}
-
-async function pdfToText(buf){
-  const pdf = await pdfjsLib.getDocument({data: buf}).promise;
-  const pages = [];
-  for(let p=1; p<=pdf.numPages; p++){
-    const page = await pdf.getPage(p);
-    const vp = page.getViewport({scale:1});
-    const vw = vp.width, vh = vp.height;
-    const tc = await page.getTextContent();
-    const items = tc.items.filter(i => i.str && i.str.trim())
-                          .map(i => ({s:i.str, x:i.transform[4], y:i.transform[5],
-                                      w:i.width||0, h:Math.abs(i.transform[3])||10}))
-                          .filter(i => i.y > vh*0.055 && i.y < vh*0.945);   // 머리글/꼬리말 영역 제외
-    if(!items.length){ pages.push(''); continue; }
-    const mid = findGutter(items, vw);
-    const right = mid === null ? [] : items.filter(i => i.x >= mid);
-    const cols = right.length ? [items.filter(i => i.x < mid), right] : [items];
-    const parts = cols.map(col => {
-      col.sort((a,b) => (Math.abs(a.y-b.y) > 3 ? b.y-a.y : a.x-b.x));
-      const lines = []; let cy = null, cur = [];
-      col.forEach(i => {
-        if(cy === null || Math.abs(i.y-cy) <= 3){ cur.push(i); if(cy===null) cy = i.y; }
-        else { lines.push(cur); cur = [i]; cy = i.y; }
-      });
-      if(cur.length) lines.push(cur);
-      return lines.map(ln => {
-        let s = '';
-        ln.forEach((i, k) => {
-          if(k){
-            const prev = ln[k-1];
-            const gap = i.x - (prev.x + prev.w);
-            if(gap > Math.max(0.8, i.h*0.18) && !/\s$/.test(s) && !/^\s/.test(i.s)) s += ' ';
-          }
-          s += i.s;
-        });
-        return s.replace(/\s+/g,' ').trim();
-      }).join('\n');
-    });
-    pages.push(parts.join('\n'));
-  }
-  return pages.join('\n');
-}
-
-async function loadPdf(file){
-  if(!file) return;
-  $('srcMsg').textContent = 'PDF를 읽는 중…';
-  try{
-    const buf = await file.arrayBuffer();
-    const text = await pdfToText(buf);
-    const i = text.indexOf('(정답지)');
-    if(i > 0){ $('srcBody').value = text.slice(0,i); $('srcKey').value = text.slice(i); }
-    else { $('srcBody').value = text; $('srcKey').value = ''; }
-    if(!$('newSrcTitle').value) $('newSrcTitle').value = file.name.replace(/\.pdf$/i,'');
-    const n = ((text.match(/(?:^|\n)\s*\d{1,3}\s*[.)]\s/g))||[]).length;
-    $('srcMsg').textContent = '읽었습니다 — 문항 ' + n + '개로 보입니다' +
-        (i>0 ? ' (정답지 분리됨)' : ' (정답지 없음)') + '. "읽은 내용 미리보기"로 확인해 보세요.';
-    $('preview').click();
-  }catch(e){
-    $('srcMsg').textContent = '';
-    alert('PDF를 읽지 못했습니다. 스캔한 이미지 PDF라면 글자를 뽑을 수 없습니다.\n\n' + e.message);
-  }
-}
-
-['dragenter','dragover'].forEach(ev => document.addEventListener(ev, e => {
-  if(e.dataTransfer && [...e.dataTransfer.types].includes('Files')){ e.preventDefault(); $('dropzone').style.borderColor = 'var(--pick)'; }
-}));
-document.addEventListener('dragleave', () => { $('dropzone').style.borderColor = 'var(--line)'; });
-document.addEventListener('drop', e => {
-  const f = e.dataTransfer && e.dataTransfer.files[0];
-  if(!f) return;
-  e.preventDefault(); $('dropzone').style.borderColor = 'var(--line)';
-  if(/\.pdf$/i.test(f.name)) loadPdf(f);
-  else if(/\.txt$/i.test(f.name)){ const r=new FileReader(); r.onload=()=>{ $('srcBody').value=r.result; if(!$('newSrcTitle').value) $('newSrcTitle').value=f.name.replace(/\.txt$/i,''); }; r.readAsText(f,'utf-8'); }
-  else alert('PDF 또는 txt 파일만 됩니다.');
-});
-
-$('pickPdf').onclick = () => $('pdfFile').click();
-$('pdfFile').onchange = e => loadPdf(e.target.files[0]);
-['dragenter','dragover'].forEach(ev => document.addEventListener(ev, e => {
-  if(e.dataTransfer && [...e.dataTransfer.types].includes('Files')){ e.preventDefault(); $('dropzone').style.borderColor = 'var(--pick)'; }
-}));
-document.addEventListener('dragleave', () => { $('dropzone').style.borderColor = 'var(--line)'; });
-document.addEventListener('drop', e => {
-  const f = e.dataTransfer && e.dataTransfer.files[0];
-  if(!f) return;
-  e.preventDefault(); $('dropzone').style.borderColor = 'var(--line)';
-  if(/\.pdf$/i.test(f.name)) loadPdf(f);
-  else if(/\.txt$/i.test(f.name)){ const r=new FileReader(); r.onload=()=>{ $('srcBody').value=r.result; if(!$('newSrcTitle').value) $('newSrcTitle').value=f.name.replace(/\.txt$/i,''); }; r.readAsText(f,'utf-8'); }
-  else alert('PDF 또는 txt 파일만 됩니다.');
-});
-
-$('pickTxt').onclick = () => $('txtFile').click();
-$('txtFile').onchange = e => {
-  const f = e.target.files[0]; if(!f) return;
-  const r = new FileReader();
-  r.onload = () => {
-    $('srcBody').value = r.result;
-    if(!$('newSrcTitle').value) $('newSrcTitle').value = f.name.replace(/\.txt$/i,'');
-    $('srcMsg').textContent = '파일을 읽었습니다. 내용을 확인하고 "자료 추가"를 누르세요.';
-  };
-  r.readAsText(f, 'utf-8');
+/* ========= folders ========= */
+$('addFolder').onclick = () => {
+  const el = $('newFolder');
+  const name = el.value.trim();
+  if(!name){ el.focus(); return; }
+  const all = BASE.concat(store.custom||[]).map(groupOf).concat(store.folders||[]);
+  if(all.includes(name)){ $('srcMsg').textContent = '"' + name + '" 폴더는 이미 있습니다.'; return; }
+  store.folders.push(name);
+  store.closed = (store.closed||[]).filter(x => x !== name);
+  save(); drawAll(); drawSrcList();
+  el.value = '';
+  $('srcMsg').textContent = '"' + name + '" 폴더를 만들었습니다.';
 };
-
-$('preview').onclick = () => {
-  const qs = parseBody($('srcBody').value);
-  const keys = parseKey($('srcKey').value);
-  const box = $('prevbox');
-  if(!qs.length){ box.style.display='block'; box.innerHTML = '문항을 찾지 못했습니다. 각 문제가 "1." 처럼 번호로 시작하는지 확인해 주세요.'; return; }
-  box.style.display = 'block';
-  box.innerHTML = qs.map(q => {
-    const a = keys[q.no] ? keys[q.no].answer : '';
-    const warn = [];
-    if(q.options.length < 3) warn.push('선택지 ' + q.options.length + '개');
-    if(q.passage.length < 100) warn.push('지문 짧음');
-    if(!a) warn.push('정답 없음');
-    return '<div style="padding:6px 0;border-bottom:1px solid #eee">' +
-      '<b>' + q.no + '. ' + esc(q.stem.slice(0,60)) + '</b> ' +
-      (a ? '<span style="color:#2f6f5a">정답 ' + esc(a) + '</span>' : '') +
-      (warn.length ? ' <span style="color:#8c2f22">⚠ ' + warn.join(' · ') + '</span>' : '') +
-      '<div style="color:#6f675c;margin-top:2px">지문: ' + esc(q.passage.slice(0,90) || '(없음)') + '…</div>' +
-      (q.options.length ? '<div style="color:#6f675c">' + esc(q.options.map(o=>o.slice(0,24)).join(' / ')) + '</div>' : '') +
-      '</div>';
-  }).join('');
-  const bad = qs.filter(q => q.options.length<3 || q.passage.length<100).length;
-  $('srcMsg').textContent = '문항 ' + qs.length + '개 · 정답 ' + Object.keys(keys).length + '개' +
-      (bad ? ' · 확인 필요 ' + bad + '개' : ' · 이상 없음');
-};
-
-$('addSrc').onclick = () => {
-  const title = $('newSrcTitle').value.trim();
-  const body = $('srcBody').value;
-  if(!title){ alert('자료 이름을 적어주세요.'); return; }
-  if(!body.trim()){ alert('문제 본문을 붙여넣어 주세요.'); return; }
-  const qs = parseBody(body);
-  if(!qs.length){ alert('문항을 찾지 못했습니다. 각 문제가 "1." 처럼 번호로 시작하는지 확인해 주세요.'); return; }
-  const keys = parseKey($('srcKey').value);
-  qs.forEach(q => { const k = keys[q.no]; if(k){ q.answer = k.answer; q.explain = k.explain; } });
-  const code = 'USER-' + Date.now().toString(36);
-  qs.forEach(q => q.id = code + '-' + q.no);
-  const grp = ($('newSrcGroup').value || '').trim() || '기타';
-  store.custom.push({ code, title, group: grp, questions: qs });
-  const noOpt = qs.filter(q => !q.options.length).length;
-  const noAns = qs.filter(q => !q.answer).length;
-  try{ save(); }
-  catch(e){ alert('저장 공간이 부족합니다. 쓰지 않는 자료를 지우고 다시 시도해 주세요.'); store.custom.pop(); return; }
-  rebuild(); curSrc = code; drawAll(); drawSrcList();
-  $('newSrcTitle').value=''; $('srcBody').value=''; $('srcKey').value='';
-  store.closed = (store.closed||[]).filter(x => x !== grp);   // 방금 넣은 폴더는 펴둔다
-  $('srcMsg').textContent = qs.length + '문항 추가됨' +
-      (noOpt ? ' · 선택지 없는 문항 ' + noOpt + '개' : '') +
-      (noAns ? ' · 정답 없는 문항 ' + noAns + '개' : '');
-};
+$('newFolder').onkeydown = e => { if(e.key === 'Enter') $('addFolder').click(); };
 
 /* ========= backup ========= */
 $('exportBtn').onclick = () => {
