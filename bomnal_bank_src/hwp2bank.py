@@ -16,7 +16,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 from hwp2txt import extract
 
 CIRC = '①②③④⑤'
-SETHDR = re.compile(r'^\s*다음 글을 읽고,?\s*물음에 답하시오')
+SETHDR = re.compile(r'^\s*다음(\s*글)?을\s*읽고,?\s*물음에 답하시오')
 STEMEND = re.compile(r'(\?|시오\.|것은|것인가|고르시오|쓰시오|하시오)\s*$')
 BLANK  = re.compile(r'^\s*정답\s*[:：]\s*_+\s*$')
 TITLE  = re.compile(r'(내신기출문제|기출\s*-?\s*\d+제|[–—-]\s*\d+문항)')   # 문서 제목 줄
@@ -66,19 +66,31 @@ def parse(path):
             stem = TAGS.sub('', L.strip())
             j = i + 1
             answer = ''
+            while j < len(lines) and TITLE.search(lines[j].strip()):
+                j += 1                       # 발문과 정답 사이에 낀 문서 제목 줄
             # 정답은 발문 바로 다음의 들여쓴 줄이다 (선택지는 열 0 에서 시작한다)
             if j < len(lines) and lines[j][:1] == ' ' and not BLANK.match(lines[j]):
                 answer = lines[j].strip(); j += 1
 
-            opts, extra = [], []
+            # 세트 머리말 없이 지문이 정답 바로 뒤에 붙는 문서도 있다.
+            # 선택지가 나오기 전의 글은 그 문항의 지문으로 본다.
+            opts, pre, post = [], [], []
             while j < len(lines) and not is_stem(lines[j]) and not SETHDR.match(lines[j]):
                 t = lines[j].strip()
-                if BLANK.match(t): j += 1; continue
-                if any(c in t for c in CIRC): opts += split_opts(t)
-                else: extra.append(t)
+                if BLANK.match(t) or TITLE.search(t): j += 1; continue
+                if any(c in t for c in CIRC):
+                    opts += split_opts(t)
+                elif opts: post.append(t)
+                else: pre.append(t)
                 j += 1
 
-            qs.append({'no': no, 'stem': stem, 'passage': passage,
+            own = '\n\n'.join(pre)
+            if len(own) >= 150:                    # 자기 지문이 있으면 그것을 쓴다
+                use, extra = own, post
+            else:
+                use, extra = passage, pre + post
+
+            qs.append({'no': no, 'stem': stem, 'passage': use,
                        'extra': '\n'.join(extra), 'options': opts,
                        'answer': answer, 'explain': ''})
             i = j; continue

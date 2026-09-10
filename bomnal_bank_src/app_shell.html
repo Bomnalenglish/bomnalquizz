@@ -276,6 +276,15 @@ function load(){
   if(!store.hidden) store.hidden = [];
   if(!store.folder) store.folder = {};
   if(!store.folders) store.folders = [];
+
+  // YBM1-KI 는 예전 자료에 97번 문항이 통째로 빠져 있어 97~99 가 한 칸씩 밀려 있었다.
+  // 원본에서 다시 뽑아 100문항으로 바로잡았으므로, 체크 기록도 같이 옮긴다. (최초 1회)
+  if(!store.fixKI1){
+    Object.values(store.marks).forEach(m => {
+      if(m['YBM1-KI']) m['YBM1-KI'] = m['YBM1-KI'].map(n => n >= 97 ? n + 1 : n);
+    });
+    store.fixKI1 = true;
+  }
   if(!store.seedCleared){                       // 예시 학생 제거 (최초 1회)
     store.students = store.students.filter(n => !OLDSEED.includes(n));
     OLDSEED.forEach(n => delete store.marks[n]);
