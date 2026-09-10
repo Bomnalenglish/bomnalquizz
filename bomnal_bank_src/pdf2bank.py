@@ -12,7 +12,9 @@ from pypdf import PdfReader
 
 CIRC = '①②③④⑤'
 HAN  = r'[가-힣]'
-JUNK = re.compile(r'^\s*(프리미엄고등관|APEX|-\s*\d+\s*-|\d+\s*-\s*$|\(정답지\).*)\s*$')
+JUNK = re.compile(r'^\s*(프리미엄고등관|APEX|-\s*\d+\s*-|\d+\s*-\s*$|\(정답지\).*'
+                  r'|타 사이트에 무단 게시.*|.*무단 게시, ?복제를 금지합니다\.?.*'
+                  r'|\d{4}년 고\d .*기출.*|<출제 범위>|교과서\s*:|모의고사\s*:|부교재\s*:|정답)\s*$')
 STRIP= re.compile(r'[0-9\s\-–—]|프리미엄고등관|APEX|[()]|\d단원|\(정답지\)')
 
 def columns(pdf, page, width):
@@ -58,10 +60,27 @@ def clean(txt):
         out.append(ln.rstrip())
     return out
 
+def strip_running(pages):
+    """쪽마다 되풀이되는 줄(머리말·꼬리말)을 걷어낸다. 학교마다 문구가 달라 패턴으로는 못 잡는다."""
+    if len(pages) < 3:
+        return pages
+    from collections import Counter
+    cnt = Counter()
+    for pg in pages:
+        for l in {x.strip() for x in pg.split('\n') if 1 < len(x.strip()) < 60}:
+            cnt[l] += 1
+    need = max(3, int(len(pages) * 0.6))
+    running = {l for l, n in cnt.items() if n >= need and not l[:1] in CIRC}
+    if not running:
+        return pages
+    return ['\n'.join('' if x.strip() in running else x for x in pg.split('\n'))
+            for pg in pages]
+
 def parse(pdf):
     rd = PdfReader(str(pdf))
     width = float(rd.pages[0].mediabox.width)
     pages = [columns(pdf, i, width) for i in range(1, len(rd.pages) + 1)]
+    pages = strip_running(pages)
 
     words  = build_vocab(pdf)
     joinln = make_join(words)
@@ -72,9 +91,13 @@ def parse(pdf):
     # clean() 이 "(정답지)" 줄을 지우므로 경계는 반드시 손대기 전 원문에서 찾는다.
     raw = '\n'.join(pages).replace('\r', '').split('\n')
     cut = next((i for i, l in enumerate(raw) if '(정답지)' in l.replace(' ', '')), None)
+    if cut is None:                                   # 시험지: 마지막의 단독 "정답" 제목 줄
+        title = [i for i, l in enumerate(raw) if re.match(r'^\s*정답\s*$', l)]
+        cut = title[-1] if title else None
     if cut is None:
         cut = next((i for i, l in enumerate(raw)
-                    if re.match(r'^\s*1\s*\)\s*[①②③④⑤]\s*[:：]', l)), len(raw))
+                    if re.match(r'^\s*1\s*\)\s*[①②③④⑤]\s*[:：]?\s*$', l)
+                       or re.match(r'^\s*1\s*\)\s*[①②③④⑤]\s*[:：]', l)), len(raw))
     lines = clean('\n'.join(raw[:cut]))
     key   = '\n'.join(clean('\n'.join(raw[cut:])))
 
@@ -126,7 +149,7 @@ def parse(pdf):
     # "12 번 - ③", "1번-④" (객관식) 과 "1 번 - reminded her of ..." (서술형),
     # 그리고 각주형 "1) ⑤:" 를 모두 받는다.
     pat = (r'(?:(?<=\n)|^)\s*(\d{1,3})\s*'
-           r'(?:번\s*[-–—]\s*|\)\s*(?=[①②③④⑤]))')
+           r'(?:번\s*[-–—]\s*|\)\s+|\)\s*(?=[①②③④⑤]))')
     hits = list(re.finditer(pat, key))
     keys = {}
     for n, m in enumerate(hits):
@@ -135,9 +158,10 @@ def parse(pdf):
 
         mark = ''
         head = seg.lstrip()
-        if head[:1] in CIRC and head[:1]:          # 객관식: 동그라미 번호
-            mark = head[0]
-            seg = head[1:].lstrip(':： ')
+        multi = re.match(r'^([①②③④⑤](?:\s*[,·/]\s*[①②③④⑤])*)', head)
+        if multi:                                  # 객관식 (복수정답 "③,⑤" 포함)
+            mark = re.sub(r'\s*', '', multi.group(1))
+            seg = head[multi.end():].lstrip(':： ')
             cut2 = re.search(r'\n\s*①', seg)      # 각주형은 선택지 번역이 뒤에 붙는다
             if cut2: seg = seg[:cut2.start()]
             body = joinall([x.strip() for x in seg.split('\n') if x.strip()])
