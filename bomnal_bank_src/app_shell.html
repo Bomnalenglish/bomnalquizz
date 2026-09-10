@@ -368,6 +368,25 @@ function drawSources(){
   const box = $('srcbtns'); box.innerHTML = '';
   store.closed = store.closed || [];
 
+  // 숨긴 자료가 있으면 맨 위에 알린다. 관리 칸이 접혀 있어 숨긴 줄 모르고 지나치기 쉽다.
+  const hid = BASE.concat(store.custom || []).filter(f => (store.hidden || []).includes(f.code));
+  if(hid.length){
+    const bar = document.createElement('div');
+    bar.className = 'warnbox';
+    bar.innerHTML = '숨긴 자료 <b>' + hid.length + '개</b> — 오답노트에 안 나옵니다. 누르면 되돌립니다: ';
+    hid.forEach(f => {
+      const b = document.createElement('button');
+      b.textContent = '↺ ' + f.title.split(' — ')[0];
+      b.style.cssText = 'margin:3px 4px 0 0;font-size:12px;padding:3px 8px';
+      b.onclick = () => {
+        store.hidden = store.hidden.filter(c => c !== f.code);
+        save(); rebuild(); drawAll(); drawSrcList();
+      };
+      bar.appendChild(b);
+    });
+    box.appendChild(bar);
+  }
+
   // 경로별 자료 (경로 = "종촌고1" 또는 "종촌고1/교과서")
   const paths = [], byPath = {};
   BANK.forEach(f => {
