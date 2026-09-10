@@ -14,7 +14,13 @@ CIRC = '①②③④⑤'
 HAN  = r'[가-힣]'
 JUNK = re.compile(r'^\s*(프리미엄고등관|APEX|-\s*\d+\s*-|\d+\s*-\s*$|\(정답지\).*'
                   r'|타 사이트에 무단 게시.*|.*무단 게시, ?복제를 금지합니다\.?.*'
-                  r'|\d{4}년 고\d .*기출.*|<출제 범위>|교과서\s*:|모의고사\s*:|부교재\s*:|정답)\s*$')
+                  r'|\d{4}년 고\d .*기출.*|<출제 범위>|교과서\s*:|모의고사\s*:|부교재\s*:|정답'
+                  r'|.*봄날 ?FX ?PREP.*|.*BOMANL ?FX ?PREP.*'
+                  r'|공통영어\d?\s*YBM.*|.*내신기출문제.*|\d+단원'
+                  r'|.{0,12}(고등학교|여자고|사범대학부[설]?고|학교)\s*[A-Z]*.{0,14}\(.{1,6}\)\s*'
+                  r'|\d{4}년\s*고\d.*(기말|중간)(고사|기출).*'
+                  r'|학교|고등학교'                       # 머리말이 줄바꿈으로 쪼개진 조각
+                  r'|[A-Za-z가-힣]{2,10}\([^)]{1,8}\))\s*$')   # YBM(박준언) · 비상(홍민표) 등 출판사
 STRIP= re.compile(r'[0-9\s\-–—]|프리미엄고등관|APEX|[()]|\d단원|\(정답지\)')
 
 def columns(pdf, page, width):
@@ -65,16 +71,30 @@ def strip_running(pages):
     if len(pages) < 3:
         return pages
     from collections import Counter
+    # 쪽 번호가 섞여 있어도 같은 줄로 보도록, 숫자·기호를 뺀 모양으로 센다
+    key = lambda l: re.sub(r'[\d\s\-–—_.]', '', l)
+    # 발문은 쪽마다 되풀이돼도 머리말이 아니다. 물음표나 문항 번호가 있으면 뺀다.
+    isq = lambda t: ('?' in t or '？' in t or re.match(r'^\s*\d{1,3}\s*[.)]\s', t)
+                     or re.search(r'(것은|시오|하시오)\s*$', t))
     cnt = Counter()
     for pg in pages:
+        # 한 쪽에서 같은 모양이 여러 번 나와도 1로 센다.
+        # (예: "2번-②" 와 "7번-②" 는 숫자를 빼면 같은 모양이 된다)
+        ks = set()
         for l in {x.strip() for x in pg.split('\n') if 1 < len(x.strip()) < 60}:
-            cnt[l] += 1
-    need = max(3, int(len(pages) * 0.6))
-    running = {l for l, n in cnt.items() if n >= need and not l[:1] in CIRC}
+            if isq(l): continue
+            k = key(l)
+            if len(k) >= 2: ks.add(k)
+        cnt.update(ks)
+    need = max(3, int(len(pages) * 0.6))    # 넉넉히 잡아야 지문을 안 지운다
+    running = {k for k, n in cnt.items() if n >= need}
     if not running:
         return pages
-    return ['\n'.join('' if x.strip() in running else x for x in pg.split('\n'))
-            for pg in pages]
+    def keep(x):
+        t = x.strip()
+        if not t or t[:1] in CIRC or isq(t): return True
+        return key(t) not in running
+    return ['\n'.join(x if keep(x) else '' for x in pg.split('\n')) for pg in pages]
 
 def parse(pdf):
     rd = PdfReader(str(pdf))
@@ -116,7 +136,7 @@ def parse(pdf):
         if buf: out.append(joinall(buf))
         return '\n\n'.join(out)
 
-    qs = []
+    qs, carry = [], ''
     for k, (i, no, head) in enumerate(starts):
         end = starts[k+1][0] if k+1 < len(starts) else len(lines)
         chunk = lines[i+1:end]
@@ -142,8 +162,13 @@ def parse(pdf):
             pos = [p for p, ch in enumerate(blob) if ch in CIRC]
             opts = [re.sub(r'\s+', ' ', blob[p:(pos[n+1] if n+1 < len(pos) else len(blob))]).strip()
                     for n, p in enumerate(pos)]
-        qs.append({'no': no, 'stem': stem,
-                   'passage': para(rest if oi is None else rest[:oi]),
+        own = para(rest if oi is None else rest[:oi])
+        # "윗글의 …" 처럼 앞 문제의 지문을 가리키는 문항은 지문이 비어 있다. 물려받는다.
+        if len(own) < 60 and carry:
+            own = carry
+        elif len(own) >= 60:
+            carry = own
+        qs.append({'no': no, 'stem': stem, 'passage': own,
                    'extra': '', 'options': opts, 'answer': '', 'explain': ''})
 
     # "12 번 - ③", "1번-④" (객관식) 과 "1 번 - reminded her of ..." (서술형),

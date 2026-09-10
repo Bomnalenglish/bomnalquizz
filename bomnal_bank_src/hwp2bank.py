@@ -19,7 +19,9 @@ CIRC = '①②③④⑤'
 SETHDR = re.compile(r'^\s*다음(\s*글)?을\s*읽고,?\s*물음에 답하시오')
 STEMEND = re.compile(r'(\?|시오\.|것은|것인가|고르시오|쓰시오|하시오)\s*$')
 BLANK  = re.compile(r'^\s*정답\s*[:：]\s*_+\s*$')
-TITLE  = re.compile(r'(내신기출문제|기출\s*-?\s*\d+제|[–—-]\s*\d+문항)')   # 문서 제목 줄
+TITLE  = re.compile(r'(내신기출문제|기출\s*-?\s*\d+제|[–—-]\s*\d+문항'
+                    r'|^공통영어\d?\s*YBM\s*\([^)]*\)\s*\d*과?\s*[^가-힣]*$'
+                    r'|^공통영어\d?\s*YBM)')   # 문서 제목·머리말 줄
 
 TAGS = re.compile(r'\s*(\[[^\]]*\]\s*)+$')       # 끝의 [1과][영신고]
 TAIL = re.compile(r'\s*\([^)]*\)\s*$')            # 끝의 (단, ...) 설명
