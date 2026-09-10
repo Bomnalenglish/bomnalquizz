@@ -67,6 +67,11 @@ button:disabled{opacity:.4;cursor:not-allowed}
 .emptyhint{color:var(--sub);font-size:13px;padding:8px 2px}
 .warnbox{margin-top:8px;padding:7px 10px;border-radius:7px;font-size:12.5px;
          background:#f7e9e6;color:var(--warn);border:1px solid #e6cdc8}
+.who{font-weight:400;font-size:8.5pt;color:#8c2f22;margin-left:6px}
+#sheet .secthead, .secthead{font-size:11.5pt;font-weight:700;margin:26px 0 8px;
+  border-bottom:1.5px solid #1c1a17;padding-bottom:5px;page-break-after:avoid}
+.secthead small{font-weight:400;font-size:8.5pt;color:#6f675c;margin-left:8px}
+.stu.pick{background:var(--pickbg);border-color:var(--pick);color:#1e4c3e;font-weight:600}
 .srcgrp{flex:0 0 100%;display:flex;align-items:center;gap:7px;margin:12px 0 0}
 .fname{border:1px solid transparent;border-radius:6px;background:none;font-size:12px;
        font-weight:700;color:var(--sub);padding:3px 6px;font-family:inherit}
@@ -186,7 +191,7 @@ textarea{
 <div class="noprint">
   <h1>봄날 문제은행 <span style="font-size:13px;font-weight:400;color:var(--sub)">오답노트</span></h1>
   <p class="lead">학생을 고르고 → 자료별로 틀린 번호를 누르면 → 오답노트가 만들어집니다. 저장은 이 브라우저에 남습니다.</p>
-  <p class="lead" style="font-size:12px;color:var(--sub);margin-top:-4px">빌드 2026-09-10 15:00 · 자료 40개 · 문항 859개</p>
+  <p class="lead" style="font-size:12px;color:var(--sub);margin-top:-4px">빌드 2026-09-10 15:36 · 자료 40개 · 문항 859개</p>
 
   <div class="panel">
     <h2>학생</h2>
@@ -219,6 +224,28 @@ textarea{
     </div>
     <p class="fld" style="margin-top:16px;border-top:1px solid var(--line);padding-top:12px">지금 들어있는 자료 — <b>폴더</b>로 옮기거나 <b>삭제</b>할 수 있습니다</p>
     <div class="srclist" id="srclist"></div>
+  </div>
+
+  <div class="panel">
+    <h2>수업용 오답노트</h2>
+    <p class="fld">여러 학생의 오답을 한 장으로 묶습니다. 문제 옆에 <b>틀린 학생 이름</b>이 붙고,
+       <b>함께 틀린 문제</b>와 <b>혼자 틀린 문제</b>로 나뉩니다.</p>
+    <div class="row">
+      <button id="pickAll">전체 선택</button>
+      <button id="pickNone">전체 해제</button>
+      <span class="hint">함께 틀린 기준
+        <select id="classMin">
+          <option value="2">2명 이상</option>
+          <option value="3">3명 이상</option>
+          <option value="4">4명 이상</option>
+        </select>
+      </span>
+    </div>
+    <div class="students" id="classPick" style="margin-top:8px"></div>
+    <div class="row">
+      <button class="primary" id="classMake">수업용으로 만들기</button>
+      <span class="hint" id="classMsg"></span>
+    </div>
   </div>
 
   <div class="panel">
@@ -13373,7 +13400,7 @@ function drawSummary(){
   $('summary').innerHTML = '<b>' + cur + '</b> — 총 <b>' + totalOf(cur) + '문항</b>' +
     (parts.length ? '<br>' + parts.join('<br>') : ' (아직 체크된 번호가 없습니다)') + warn;
 }
-function drawAll(){ drawStudents(); drawSources(); drawGrid(); drawSummary(); }
+function drawAll(){ drawStudents(); drawSources(); drawGrid(); drawSummary(); drawClassPick(); }
 
 /* ========= student buttons ========= */
 $('addStu').onclick = () => {
@@ -13686,6 +13713,113 @@ $('importFile').onchange = e => {
   e.target.value = '';                 // 같은 파일을 다시 골라도 동작하게
 };
 
+/* ========= 수업용 오답노트 ========= */
+// 여러 학생의 오답을 한 장으로. 문제 옆에 틀린 학생 이름을 적고
+// 함께 틀린 문제와 혼자 틀린 문제로 나눈다.
+function drawClassPick(){
+  const box = $('classPick'); box.innerHTML = '';
+  store.classPick = store.classPick || [];
+  if(!store.students.length){
+    box.innerHTML = '<div class="emptyhint">학생을 먼저 추가하세요.</div>'; return;
+  }
+  store.students.forEach(n => {
+    const on = store.classPick.includes(n);
+    const b = document.createElement('button');
+    b.className = 'stu' + (on ? ' pick' : '');
+    b.innerHTML = n + '<span class="cnt">' + totalOf(n) + '</span>';
+    b.onclick = () => {
+      store.classPick = on ? store.classPick.filter(x => x !== n) : store.classPick.concat([n]);
+      save(); drawClassPick();
+    };
+    box.appendChild(b);
+  });
+}
+
+function buildClassSheet(){
+  const who = (store.classPick || []).filter(n => store.students.includes(n));
+  if(!who.length){ $('classMsg').textContent = '학생을 한 명 이상 고르세요.'; return false; }
+  const minN = +$('classMin').value || 2;
+  const withKey = $('optKey').checked, wr = $('optWrite').checked;
+
+  // 문항별로 틀린 학생을 모은다
+  const hit = {};      // code|no -> [이름]
+  who.forEach(n => BANK.forEach(f => marksOf(n, f.code).forEach(no => {
+    const k = f.code + '|' + no;
+    (hit[k] = hit[k] || []).push(n);
+  })));
+  const keys = Object.keys(hit);
+  if(!keys.length){ $('classMsg').textContent = '고른 학생들에게 체크된 오답이 없습니다.'; return false; }
+
+  const rows = keys.map(k => {
+    const [code, no] = k.split('|');
+    const f = BYCODE[code];
+    const q = f && f.questions.find(x => x.no === +no);
+    return q ? {f, q, who: hit[k]} : null;
+  }).filter(Boolean);
+
+  const many = rows.filter(r => r.who.length >= minN)
+                   .sort((a,b) => b.who.length - a.who.length || a.f.title.localeCompare(b.f.title) || a.q.no - b.q.no);
+  const few  = rows.filter(r => r.who.length < minN)
+                   .sort((a,b) => a.f.title.localeCompare(b.f.title) || a.q.no - b.q.no);
+
+  const today = new Date().toLocaleDateString('ko-KR');
+  const headOf = t => '<div class="head"><h2>' + t + '</h2><div class="m">봄날영어수학학원 · 학생 ' +
+        who.length + '명 (' + who.map(esc).join(', ') + ') · 총 ' + rows.length + '문항 · ' + today + '</div></div>';
+
+  const qBlock = (r, idx) => {
+    let h = '';
+    if(r.q.passage) h += '<div class="pas">' + r.q.passage.split(/\n\n+/).map(p=>'<p>'+esc(p)+'</p>').join('') + '</div>';
+    if(r.q.extra && r.q.extra.trim() && r.q.extra !== r.q.passage)
+      h += '<div class="pas">' + r.q.extra.split(/\n\n+/).map(p=>'<p>'+esc(p)+'</p>').join('') + '</div>';
+    h += '<div class="q"><p class="st"><span class="no">' + idx + '.</span>' + esc(r.q.stem) +
+         '<span class="who">[' + r.who.map(esc).join(' · ') + ' · ' + r.who.length + '명]</span></p>';
+    if(r.q.options.length) h += '<ul>' + r.q.options.map(o=>'<li>'+esc(o)+'</li>').join('') + '</ul>';
+    else if(wr || !r.q.options.length) h += '<div class="wr"></div><div class="wr"></div>';
+    h += '<p class="m" style="font-size:8pt;color:#6f675c;margin:3px 0 0">' +
+         esc(r.f.title) + ' ' + r.q.no + '번</p></div>';
+    return h;
+  };
+
+  let h = headOf('수업용 오답노트'), n = 0;
+  const nums = [];                              // 답지에서 같은 번호를 쓰려고 순서를 적어둔다
+  if(many.length){
+    h += '<div class="secthead">Ⅰ. 함께 틀린 문제<small>' + minN + '명 이상 · ' + many.length + '문항</small></div>';
+    many.forEach(r => { n++; nums.push(r); h += qBlock(r, n); });
+  }
+  if(few.length){
+    h += '<div class="secthead">Ⅱ. 혼자 틀린 문제<small>' + few.length + '문항</small></div>';
+    few.forEach(r => { n++; nums.push(r); h += qBlock(r, n); });
+  }
+
+  if(withKey){
+    h += '<div class="keys">' + headOf('정답 및 해설') + '<div class="kg"><dl>';
+    nums.forEach((r, i) => {
+      const long = (r.q.answer || '').length > 2;
+      h += '<dt>' + (i+1) + '. ' + esc(long ? '' : r.q.answer) + '</dt>';
+      const bits = [];
+      if(long) bits.push('<b>' + esc(r.q.answer) + '</b>');
+      if(r.q.explain) bits.push(esc(r.q.explain));
+      if(!bits.length && !(r.q.answer || '').trim()) bits.push('(정답 미입력)');
+      bits.push('<span style="color:#6f675c">' + esc(r.f.title) + ' ' + r.q.no + '번 · ' +
+                r.who.map(esc).join(' · ') + '</span>');
+      h += '<dd>' + bits.join('<br>') + '</dd>';
+    });
+    h += '</dl></div></div>';
+  }
+  $('sheet').innerHTML = h;
+  $('classMsg').textContent = '함께 틀린 ' + many.length + '문항 · 혼자 틀린 ' + few.length + '문항';
+  return true;
+}
+
+$('pickAll').onclick  = () => { store.classPick = store.students.slice(); save(); drawClassPick(); };
+$('pickNone').onclick = () => { store.classPick = []; save(); drawClassPick(); };
+$('classMake').onclick = () => {
+  if(!buildClassSheet()) return;
+  $('sheet').classList.add('show');
+  $('print').disabled = false; $('back').disabled = false; $('dl').disabled = false;
+  $('sheet').scrollIntoView({behavior:'smooth'});
+};
+
 /* ========= sheet ========= */
 const esc = s => (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 const ROMAN = ['Ⅰ','Ⅱ','Ⅲ','Ⅳ','Ⅴ','Ⅵ','Ⅶ','Ⅷ'];
@@ -13785,7 +13919,7 @@ const SHEETCSS = `body{font-family:"Malgun Gothic","맑은 고딕","Apple SD Got
 .kg{margin-bottom:14px;page-break-inside:avoid}.kg h4{font-size:9.5pt;margin:0 0 5px;color:#8c2f22}
 .kg dl{margin:0}.kg dt{float:left;clear:left;width:5.6em;font-weight:700}
 .kg dd{margin:0 0 5px 5.8em;font-size:8.6pt}
-.brand{display:none}\n@page{size:A4;margin:14mm}\n@media print{body{padding:0}\n .brand{display:block;position:fixed;left:0;right:0;bottom:-9mm;\n        text-align:center;font-size:8pt;letter-spacing:1.4px;color:#9a9287}}`;
+.who{font-weight:400;font-size:8.5pt;color:#8c2f22;margin-left:6px}\n.secthead{font-size:11.5pt;font-weight:700;margin:26px 0 8px;border-bottom:1.5px solid #1c1a17;padding-bottom:5px;page-break-after:avoid}\n.secthead small{font-weight:400;font-size:8.5pt;color:#6f675c;margin-left:8px}\n.brand{display:none}\n@page{size:A4;margin:14mm}\n@media print{body{padding:0}\n .brand{display:block;position:fixed;left:0;right:0;bottom:-9mm;\n        text-align:center;font-size:8pt;letter-spacing:1.4px;color:#9a9287}}`;
 
 function noteHtml(){
   return '<!DOCTYPE html><html lang="ko"><head><meta charset="utf-8">' +
