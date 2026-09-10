@@ -131,7 +131,7 @@ textarea{
 #sheet .q ul{list-style:none;margin:0;padding:0 0 0 2.1em}
 #sheet .q li{margin:0 0 3px;text-indent:-1.4em;padding-left:1.4em}
 #sheet .wr{border-bottom:1px solid #ded7c9;height:20px;margin:6px 0 0 2.1em}
-#sheet .keys{margin-top:34px;border-top:2px solid #1c1a17;padding-top:12px;page-break-before:always}
+#sheet .keys{margin-top:34px;page-break-before:always}
 #sheet .keys h3{font-size:11pt;margin:0 0 10px}
 #sheet .kg{margin-bottom:14px;page-break-inside:avoid}
 #sheet .kg h4{font-size:9.5pt;margin:0 0 5px;color:#8c2f22}
@@ -786,8 +786,10 @@ function buildSheet(){
   if(!picked.length){ $('printMsg').textContent = '틀린 번호를 하나도 안 눌렀습니다.'; return false; }
 
   const total = picked.reduce((a,x)=>a+x.list.length,0);
-  let h = '<div class="head"><h2>오답노트 — ' + esc(cur) + '</h2><div class="m">봄날영어수학학원 · 총 ' + total + '문항 · ' +
-          new Date().toLocaleDateString('ko-KR') + '</div></div>';
+  const today = new Date().toLocaleDateString('ko-KR');
+  const headOf = t => '<div class="head"><h2>' + t + ' — ' + esc(cur) + '</h2>' +
+                      '<div class="m">봄날영어수학학원 · 총 ' + total + '문항 · ' + today + '</div></div>';
+  let h = headOf('오답노트');
 
   picked.forEach((x,pi) => {
     h += '<div class="part">' + ROMAN[pi] + '. ' + esc(x.f.title) +
@@ -823,7 +825,7 @@ function buildSheet(){
   });
 
   if(withKey){
-    h += '<div class="keys"><h3>정답 및 해설</h3>';
+    h += '<div class="keys">' + headOf('정답 및 해설');
     picked.forEach((x,pi) => {
       h += '<div class="kg"><h4>' + ROMAN[pi] + '. ' + esc(x.f.title) + '</h4><dl>';
       x.list.forEach(q => {
@@ -866,7 +868,7 @@ const SHEETCSS = `body{font-family:"Malgun Gothic","맑은 고딕","Apple SD Got
 .q ul{list-style:none;margin:0;padding:0 0 0 2.1em}
 .q li{margin:0 0 3px;text-indent:-1.4em;padding-left:1.4em}
 .wr{border-bottom:1px solid #ded7c9;height:20px;margin:6px 0 0 2.1em}
-.keys{margin-top:34px;border-top:2px solid #1c1a17;padding-top:12px;page-break-before:always}
+.keys{margin-top:34px;page-break-before:always}
 .keys h3{font-size:11pt;margin:0 0 10px}
 .kg{margin-bottom:14px;page-break-inside:avoid}.kg h4{font-size:9.5pt;margin:0 0 5px;color:#8c2f22}
 .kg dl{margin:0}.kg dt{float:left;clear:left;width:5.6em;font-weight:700}
