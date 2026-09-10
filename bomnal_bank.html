@@ -76,6 +76,9 @@ button:disabled{opacity:.4;cursor:not-allowed}
 .srcgrp.deep{margin-left:24px}
 .srcgrp.deep .fname{font-weight:400}
 .fdel{border:0;background:none;color:var(--warn);font-size:12px;cursor:pointer;padding:0 4px}
+.farw{border:0;background:none;color:var(--sub);font-size:11px;cursor:pointer;
+      padding:2px 4px;width:20px}
+.farw:hover{color:var(--ink)}
 
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(46px,1fr));gap:5px}
 .cell{
@@ -178,7 +181,7 @@ textarea{
 <div class="noprint">
   <h1>봄날 문제은행 <span style="font-size:13px;font-weight:400;color:var(--sub)">오답노트</span></h1>
   <p class="lead">학생을 고르고 → 자료별로 틀린 번호를 누르면 → 오답노트가 만들어집니다. 저장은 이 브라우저에 남습니다.</p>
-  <p class="lead" style="font-size:12px;color:var(--sub);margin-top:-4px">빌드 2026-09-10 12:01 · 자료 39개 · 문항 808개</p>
+  <p class="lead" style="font-size:12px;color:var(--sub);margin-top:-4px">빌드 2026-09-10 12:13 · 자료 39개 · 문항 808개</p>
 
   <div class="panel">
     <h2>학생</h2>
@@ -12784,10 +12787,19 @@ function renameFolder(from, to){
 }
 
 // 폴더 제목 줄 — 이름칸 + 개수 + (비었으면) 지우기
-function folderHead(box, path, count, deep){
+function folderHead(box, path, count, deep, qn, open_, toggle){
   const shown = deep ? subOf(path) : topOf(path);
   const h = document.createElement('div');
   h.className = 'srcgrp' + (deep ? ' deep' : '');
+
+  if(toggle){                                   // 상위 폴더는 접었다 펼 수 있다
+    const arw = document.createElement('button');
+    arw.className = 'farw';
+    arw.textContent = open_ ? '▾' : '▸';
+    arw.title = open_ ? '접기' : '펼치기';
+    arw.onclick = toggle;
+    h.appendChild(arw);
+  }
 
   const inp = document.createElement('input');
   inp.className = 'fname';
@@ -12817,7 +12829,7 @@ function folderHead(box, path, count, deep){
 
   const n = document.createElement('span');
   n.className = 'fcnt';
-  n.textContent = '자료 ' + count + '개';
+  n.textContent = '자료 ' + count + '개' + (qn ? ' · ' + qn + '문항' : '');
   h.appendChild(n);
 
   if(!count){
@@ -12868,14 +12880,22 @@ function drawSrcList(){
   });
   tops.forEach(t => byTop[t].sort((x,y) => (subOf(x) ? 1 : 0) - (subOf(y) ? 1 : 0)));
 
+  store.mopen = store.mopen || [];              // 관리 칸에서 펼쳐둔 상위 폴더
   tops.forEach(t => {
     const under = byTop[t];
     const direct = under.find(pth => !subOf(pth));
     const total = under.reduce((a,pth) => a + byPath[pth].length, 0);
-    folderHead(box, t, total, false);
+    const qn = under.reduce((a,pth) => a + byPath[pth].reduce((x,f)=>x+f.questions.length,0), 0);
+    const open_ = store.mopen.includes(t);
+    folderHead(box, t, total, false, qn, open_, () => {
+      store.mopen = open_ ? store.mopen.filter(x => x !== t) : store.mopen.concat([t]);
+      save(); drawSrcList();
+    });
+    if(!open_) return;                          // 접혀 있으면 자료를 그리지 않는다
     if(direct && byPath[direct].length) drawSrcRows(box, byPath[direct]);
     under.filter(pth => subOf(pth)).forEach(pth => {
-      folderHead(box, pth, byPath[pth].length, true);
+      const sqn = byPath[pth].reduce((x,f)=>x+f.questions.length,0);
+      folderHead(box, pth, byPath[pth].length, true, sqn);
       drawSrcRows(box, byPath[pth]);
     });
   });
@@ -13164,6 +13184,15 @@ $('back').onclick = () => {
 /* ========= go ========= */
 load();
 rebuild();
+
+// 자료가 많아지면 목록이 길어진다. 처음 한 번, 지금 보는 폴더만 펴둔다.
+if(!store.foldedOnce){
+  const here = topOf(groupOf(BYCODE[curSrc] || BANK[0]));
+  store.closed = [...new Set(BANK.map(f => topOf(groupOf(f))))].filter(t => t !== here);
+  store.foldedOnce = true;
+  save();
+}
+
 cur = store.students[0];
 drawAll();
 drawSrcList();
