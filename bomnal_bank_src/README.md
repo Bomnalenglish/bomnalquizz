@@ -181,6 +181,15 @@ hwp 는 OLE 복합문서다. `hwp2txt.py` 가 BodyText/SectionN 을 zlib 로 풀
 - 이름 바꾸기 → 위의 이름칸에 적고 버튼
 - 안내문 → `#stuMsg`, `#srcMsg`, `#printMsg` 에 글자로 표시
 
+## 인쇄 머리글·바닥글
+
+브라우저가 찍는 **날짜(위)와 주소(아래)는 페이지가 지울 수 없다.** CSS 로도 안 된다.
+인쇄 창의 **옵션 더보기 → 머리글/바닥글** 을 꺼야 사라진다.
+
+대신 쪽마다 `BOMNAL FX PREP` 이 찍히도록 해두었다. `.brand` 를 `position:fixed` 로
+두면 인쇄에서 쪽마다 되풀이된다 (Chrome). 화면에서는 `display:none`.
+미리보기와 내려받는 파일 양쪽 모두에 들어간다.
+
 ## 알아둘 제약
 
 - **인쇄는 새 탭에서.** 관리자 사이트에 iframe 으로 끼워 넣으면 `app_shell.html` 이

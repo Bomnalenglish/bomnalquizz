@@ -139,11 +139,16 @@ textarea{
 #sheet .kg dd{margin:0 0 5px 5.8em;font-size:8.6pt}
 #sheet .kg dl{margin:0}
 
+/* 인쇄할 때 쪽마다 찍히는 봄날 표시. position:fixed 는 인쇄에서 쪽마다 되풀이된다.
+   브라우저가 넣는 날짜·주소는 페이지가 못 지운다 — 인쇄 설정의 "머리글/바닥글" 을 꺼야 한다. */
+.brand{display:none}
 @media print{
   body{background:#fff}
   .noprint{display:none !important}
   .wrap{max-width:none;padding:0}
   #sheet{display:block !important;padding:0;border:0}
+  .brand{display:block;position:fixed;left:0;right:0;bottom:-9mm;
+         text-align:center;font-size:8pt;letter-spacing:1.4px;color:#9a9287}
   @page{size:A4;margin:14mm}
 }
 </style>
@@ -181,7 +186,7 @@ textarea{
 <div class="noprint">
   <h1>봄날 문제은행 <span style="font-size:13px;font-weight:400;color:var(--sub)">오답노트</span></h1>
   <p class="lead">학생을 고르고 → 자료별로 틀린 번호를 누르면 → 오답노트가 만들어집니다. 저장은 이 브라우저에 남습니다.</p>
-  <p class="lead" style="font-size:12px;color:var(--sub);margin-top:-4px">빌드 2026-09-10 12:13 · 자료 39개 · 문항 808개</p>
+  <p class="lead" style="font-size:12px;color:var(--sub);margin-top:-4px">빌드 2026-09-10 13:53 · 자료 39개 · 문항 808개</p>
 
   <div class="panel">
     <h2>학생</h2>
@@ -240,6 +245,7 @@ textarea{
 </div>
 
 <div id="sheet"></div>
+<div class="brand">BOMNAL FX PREP</div>
 
 </div>
 
@@ -13143,12 +13149,13 @@ const SHEETCSS = `body{font-family:"Malgun Gothic","맑은 고딕","Apple SD Got
 .kg{margin-bottom:14px;page-break-inside:avoid}.kg h4{font-size:9.5pt;margin:0 0 5px;color:#8c2f22}
 .kg dl{margin:0}.kg dt{float:left;clear:left;width:5.6em;font-weight:700}
 .kg dd{margin:0 0 5px 5.8em;font-size:8.6pt}
-@page{size:A4;margin:14mm}@media print{body{padding:0}}`;
+.brand{display:none}\n@page{size:A4;margin:14mm}\n@media print{body{padding:0}\n .brand{display:block;position:fixed;left:0;right:0;bottom:-9mm;\n        text-align:center;font-size:8pt;letter-spacing:1.4px;color:#9a9287}}`;
 
 function noteHtml(){
   return '<!DOCTYPE html><html lang="ko"><head><meta charset="utf-8">' +
     '<title>오답노트 — ' + esc(cur) + '</title><style>' + SHEETCSS + '</style></head><body>' +
     $('sheet').innerHTML +
+    '<div class="brand">BOMNAL FX PREP</div>' +
     '<scr'+'ipt>window.onload=function(){setTimeout(function(){window.print()},400)}<\/scr'+'ipt>' +
     '</body></html>';
 }
