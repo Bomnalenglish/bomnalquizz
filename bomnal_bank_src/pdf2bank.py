@@ -20,6 +20,7 @@ JUNK = re.compile(r'^\s*(프리미엄고등관|APEX|-\s*\d+\s*-|\d+\s*-\s*$|\(�
                   r'|.{0,12}(고등학교|여자고|사범대학부[설]?고|학교)\s*[A-Z]*.{0,14}\(.{1,6}\)\s*'
                   r'|\d{4}년\s*고\d.*(기말|중간)(고사|기출).*'
                   r'|학교|고등학교'                       # 머리말이 줄바꿈으로 쪼개진 조각
+                  r'|.{0,120}\d\s*단원'                  # "…YBM(김은형)      2단원" (가운데 공백 많음)
                   r'|[A-Za-z가-힣]{2,10}\([^)]{1,8}\))\s*$')   # YBM(박준언) · 비상(홍민표) 등 출판사
 STRIP= re.compile(r'[0-9\s\-–—]|프리미엄고등관|APEX|[()]|\d단원|\(정답지\)')
 
@@ -81,7 +82,8 @@ def strip_running(pages):
         # 한 쪽에서 같은 모양이 여러 번 나와도 1로 센다.
         # (예: "2번-②" 와 "7번-②" 는 숫자를 빼면 같은 모양이 된다)
         ks = set()
-        for l in {x.strip() for x in pg.split('\n') if 1 < len(x.strip()) < 60}:
+        squeeze = lambda x: re.sub(r'\s+', ' ', x).strip()
+        for l in {squeeze(x) for x in pg.split('\n') if 1 < len(squeeze(x)) < 60}:
             if isq(l): continue
             k = key(l)
             if len(k) >= 2: ks.add(k)
@@ -91,7 +93,7 @@ def strip_running(pages):
     if not running:
         return pages
     def keep(x):
-        t = x.strip()
+        t = re.sub(r'\s+', ' ', x).strip()
         if not t or t[:1] in CIRC or isq(t): return True
         return key(t) not in running
     return ['\n'.join(x if keep(x) else '' for x in pg.split('\n')) for pg in pages]
