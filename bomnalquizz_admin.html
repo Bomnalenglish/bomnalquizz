@@ -420,11 +420,11 @@ tr:hover td{background:#f8f9ff;}
 
 <script type="module">
 import{initializeApp}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import{getFirestore,collection,getDocs,query,orderBy,limit,deleteDoc,doc,addDoc,updateDoc,where,serverTimestamp}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import{getFirestore,collection,getDocs,query,orderBy,limit,startAfter,deleteDoc,doc,addDoc,updateDoc,where,serverTimestamp}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 const cfg={apiKey:"AIzaSyCxS524S8KAaF87DomPtl9sJdF-eqes404",authDomain:"bomnalvaca.firebaseapp.com",projectId:"bomnalvaca",storageBucket:"bomnalvaca.firebasestorage.app",messagingSenderId:"115868052300",appId:"1:115868052300:web:765c08867b6f1ce0987de9"};
 const app=initializeApp(cfg);const db=getFirestore(app);
 window._db=db;window._col=collection;window._getDocs=getDocs;
-window._query=query;window._orderBy=orderBy;window._where=where;window._limit=limit;window._fbReady=true;
+window._query=query;window._orderBy=orderBy;window._where=where;window._limit=limit;window._startAfter=startAfter;window._fbReady=true;
 window._deleteDoc=deleteDoc;window._doc=doc;window._addDoc=addDoc;window._updateDoc=updateDoc;window._serverTs=serverTimestamp;
 </script>
 
@@ -499,7 +499,8 @@ function normSchool(school, grade, quizType){
 }
 
 const CACHE_TTL_MS=10*60*1000;   // 10분
-const MAX_DOCS=5000;             // 안전장치
+const PAGE_SIZE=2000;            // 한 번에 받아오는 문서 수 (여러 번 나눠 끝까지 읽는다)
+const MAX_DOCS=30000;            // 안전장치 (기간 전체 합계)
 
 let dedupCount = 0;
 
@@ -553,17 +554,37 @@ function _writeCache(days){
 // 퀴즈마다 서버 시각을 timestamp 또는 submittedAt 에 저장하므로 두 필드 모두 조회 후 합친다.
 // 조회가 하나라도 실패하면(할당량 초과 등) 목록이 조용히 비게 되므로 실패를 기록해 둔다.
 let _fetchFailed=0, _fetchFailMsg='';
+// 한 필드를 startAfter 커서로 끝까지(또는 MAX_DOCS까지) 나눠 읽는다.
+// 예전에는 limit(5000) 한 번이라 기록이 5000건을 넘으면 나머지가 통째로 빠졌다.
+async function _fetchPaged(col, field, cutoff){
+  const snaps=[]; let cursor=null, got=0;
+  while(got<MAX_DOCS){
+    const parts=[window._where(field,'>=',cutoff), window._orderBy(field,'desc')];
+    if(cursor) parts.push(window._startAfter(cursor));
+    parts.push(window._limit(PAGE_SIZE));
+    const snap=await window._getDocs(window._query(col, ...parts));
+    snaps.push(snap);
+    got+=snap.size;
+    if(snap.size<PAGE_SIZE) return {snaps, complete:true};   // 마지막 페이지
+    cursor=snap.docs[snap.docs.length-1];
+  }
+  return {snaps, complete:false};   // MAX_DOCS 한도에 걸림
+}
+
 async function _fetchSnaps(colName, fields, cutoff){
   const col=window._col(window._db,colName);
   if(!cutoff) return [await window._getDocs(col)];   // '전체'는 기존 방식 그대로
-  const qs=fields.map(f=>window._query(col,
-    window._where(f,'>=',cutoff), window._orderBy(f,'desc'), window._limit(MAX_DOCS)));
-  const results=await Promise.all(qs.map(q=>window._getDocs(q).catch(e=>{
+  const results=await Promise.all(fields.map(f=>_fetchPaged(col,f,cutoff).catch(e=>{
     _fetchFailed++; _fetchFailMsg=(e&&e.message)||String(e); return null;
   })));
-  results.forEach(r=>{ if(r&&r.size>=MAX_DOCS){ _fetchFailed++;
-    _fetchFailMsg='한 번에 불러올 수 있는 '+MAX_DOCS+'건을 넘었습니다'; } });
-  return results.filter(Boolean);
+  const out=[];
+  results.forEach(r=>{
+    if(!r) return;
+    if(!r.complete){ _fetchFailed++;
+      _fetchFailMsg='기간 내 기록이 '+MAX_DOCS+'건을 넘습니다. 기간을 줄여서 보세요'; }
+    out.push(...r.snaps);
+  });
+  return out;
 }
 
 async function loadData(force){
