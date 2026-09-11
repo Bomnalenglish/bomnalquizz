@@ -530,25 +530,47 @@ function _getPeriodDays(){
   const el=document.getElementById('fPeriod');
   return el?parseInt(el.value,10):30;
 }
-function _readCache(days){
+// ── 캐시 ─────────────────────────────────────────────
+// 예전엔 localStorage 에 두었는데 브라우저 한계(약 5MB) 때문에 3.5MB 가 넘으면 저장을 포기했다.
+// 최근 30일치가 약 5.8MB 라 캐시가 한 번도 저장되지 않아, 열 때마다 9천 건을 새로 받았다.
+// IndexedDB 는 그런 한계가 없다. 담는 모양(JSON)은 예전 그대로다.
+const IDB_NAME='bn_admin', IDB_STORE='kv', IDB_KEY='cache_v6';
+const FULL_EVERY_MS=6*60*60*1000;   // 6시간마다 한 번은 통째로 다시 받는다 (다른 곳에서 지운 기록 반영)
+let _cacheFullAt=0;                  // 마지막으로 통째로 받은 시각
+function _idb(){
+  return new Promise((res,rej)=>{
+    const r=indexedDB.open(IDB_NAME,1);
+    r.onupgradeneeded=()=>r.result.createObjectStore(IDB_STORE);
+    r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error);
+  });
+}
+async function _idbGet(k){
+  const db=await _idb();
+  return new Promise((res,rej)=>{ const q=db.transaction(IDB_STORE).objectStore(IDB_STORE).get(k);
+    q.onsuccess=()=>res(q.result); q.onerror=()=>rej(q.error); });
+}
+async function _idbSet(k,v){
+  const db=await _idb();
+  return new Promise((res,rej)=>{ const t=db.transaction(IDB_STORE,'readwrite');
+    t.objectStore(IDB_STORE).put(v,k); t.oncomplete=()=>res(); t.onerror=()=>rej(t.error); });
+}
+async function _readCache(days){
   try{
-    const raw=localStorage.getItem(CACHE_KEY); if(!raw) return null;
+    const raw=await _idbGet(IDB_KEY); if(!raw) return null;
     const c=JSON.parse(raw);
     if(c.days!==days) return null;
-    if(Date.now()-c.savedAt>CACHE_TTL_MS) return null;
-    // Date 복원
     c.quiz.forEach(d=>{d.time=d.time?new Date(d.time):null;});
     c.access.forEach(a=>{a.time=a.time?new Date(a.time):null;});
     return c;
   }catch(e){ return null; }
 }
-function _writeCache(days){
+async function _writeCache(days){
   try{
-    const payload=JSON.stringify({savedAt:Date.now(),days,quiz:allData,access:allAccessData});
-    if(payload.length>3_500_000) return;   // localStorage 한도(약 5MB) 초과 방지
-    localStorage.setItem(CACHE_KEY,payload);
-  }catch(e){ try{localStorage.removeItem(CACHE_KEY);}catch(e2){} }
+    await _idbSet(IDB_KEY, JSON.stringify({savedAt:Date.now(), fullAt:_cacheFullAt, days,
+                                           quiz:allData, access:allAccessData}));
+  }catch(e){ console.warn('[admin cache]', e); }
 }
+try{ localStorage.removeItem('bn_admin_cache_v5'); }catch(e){}   // 한 번도 못 쓰던 옛 캐시 자리 비우기
 
 // 기간 제한 스냅샷 가져오기.
 // 퀴즈마다 서버 시각을 timestamp 또는 submittedAt 에 저장하므로 두 필드 모두 조회 후 합친다.
@@ -587,47 +609,12 @@ async function _fetchSnaps(colName, fields, cutoff){
   return out;
 }
 
-async function loadData(force){
-  const days=_getPeriodDays();
-  const periodLabel=days?`최근 ${days}일`:'전체 기간';
-
-  // 1) 캐시가 살아 있으면 읽기 0회로 즉시 표시
-  if(!force){
-    const c=_readCache(days);
-    if(c){
-      allData=c.quiz; allAccessData=c.access;
-      document.getElementById('lastRefresh').textContent=
-        `⚡ 캐시 (${periodLabel} · ${allData.length}건) · ${new Date(c.savedAt).toLocaleTimeString('ko-KR')} 기준 — 최신 데이터는 🔄 새로고침`;
-      buildHistoryMap();populateTextbookFilter();
-      renderSummary();renderCharts();applyFilter();renderSectionView();
-      return;
-    }
-  }
-
-  document.getElementById('tblArea').innerHTML=
-    `<div class="loading-msg">⏳ ${periodLabel} 데이터 불러오는 중...<br><small style="color:#999">기간을 줄이면 훨씬 빨라집니다</small></div>`;
-  _fetchFailed=0; _fetchFailMsg='';
-  try{
-    let w=0;
-    while(!window._fbReady&&w<15000){await new Promise(r=>setTimeout(r,200));w+=200;}
-    if(!window._fbReady){throw new Error('Firebase 로드 시간 초과');}
-
-    const cutoff=days?new Date(Date.now()-days*86400000):null;
-    // quiz_results 와 hub_access 를 동시에 (예전에는 순차 로드라 두 배로 기다렸음)
-    const [quizSnaps,accSnaps]=await Promise.all([
-      _fetchSnaps('quiz_results',['timestamp','submittedAt'],cutoff),
-      _fetchSnaps('hub_access',['timestamp'],cutoff).catch(()=>[])
-    ]);
-
-    allData=[];
-    const seen=new Set();
-    quizSnaps.forEach(snap=>snap.forEach(doc=>{
-      if(seen.has(doc.id)) return;   // 두 쿼리에 겹쳐 잡힌 문서 제거
-      seen.add(doc.id);
+// 문서 한 건 → 화면용 기록 한 건 (옛 loadData 안에 있던 코드를 그대로 떼어냈다)
+function _toQuiz(doc){
       const d=doc.data();
       // per-문제 이벤트 레코드 숨김 (q 필드가 있거나, result가 ok/fail인 한 문제 단위 로그)
-      if(d.q!==undefined || d.result==='ok' || d.result==='fail') return;
-      allData.push({
+      if(d.q!==undefined || d.result==='ok' || d.result==='fail') return null;
+      return ({
         id:doc.id,
         name:d.studentName||d.name||'(이름없음)',
         school:normSchool(d.school, d.grade, d.quizType),
@@ -660,18 +647,11 @@ async function loadData(force){
           ?(typeof d.timestamp.toDate==='function'?d.timestamp.toDate():new Date(d.timestamp))
           :(d.submittedAt?(typeof d.submittedAt.toDate==='function'?d.submittedAt.toDate():new Date(d.submittedAt)):null),
       });
-    }));
-    allData.sort((a,b)=>(b.time||0)-(a.time||0));
-    dedupCount = dedupeRecords();
+}
 
-    // ★ hub_access (위에서 병렬로 이미 받아옴)
-    allAccessData=[];
-    const seenAcc=new Set();
-    accSnaps.forEach(snap=>snap.forEach(docA=>{
-      if(seenAcc.has(docA.id)) return;
-      seenAcc.add(docA.id);
+function _toAcc(docA){
       const d=docA.data();
-      allAccessData.push({
+      return ({
         id:docA.id,
         type:d.type||'-',
         name:d.name||'',
@@ -681,18 +661,125 @@ async function loadData(force){
         file:d.file||'',
         time:d.timestamp?(typeof d.timestamp.toDate==='function'?d.timestamp.toDate():new Date(d.timestamp)):null,
       });
-    }));
-    allAccessData.sort((a,b)=>(b.time||0)-(a.time||0));
+}
 
+function _renderAll(status){
+  document.getElementById('lastRefresh').textContent=status;
+  buildHistoryMap(); populateTextbookFilter();
+  renderSummary(); renderCharts(); applyFilter();
+  // 학생별 현황은 그 탭을 누를 때 switchTab 이 그린다. 보이지도 않는 탭을 미리 그리느라 1.3초를 썼다.
+  const sec=document.getElementById('panel-section');
+  if(sec && sec.classList.contains('active')) renderSectionView();
+}
+function _statusLine(prefix, periodLabel){
+  return prefix + ` · ${periodLabel} ${allData.length}건` + (dedupCount>0 ? ` · 중복 ${dedupCount}건 제외` : '');
+}
+async function _waitFb(){
+  let w=0;
+  while(!window._fbReady&&w<15000){await new Promise(r=>setTimeout(r,200));w+=200;}
+  if(!window._fbReady) throw new Error('Firebase 로드 시간 초과');
+}
+// Firestore 는 같은 문서라도 map 안의 키 순서를 매번 다르게 돌려준다.
+// 그대로 비교하면 안 바뀐 기록을 '바뀜' 으로 오인해 쓸데없이 다시 그린다 → 키를 정렬해 비교한다.
+function _canon(v){
+  return JSON.stringify(v, (k,x) => (x && typeof x==='object' && !Array.isArray(x))
+    ? Object.keys(x).sort().reduce((o,kk)=>(o[kk]=x[kk],o),{}) : x);
+}
+// 받아온 스냅샷을 기존 목록에 id 기준으로 합친다 (새 것은 더하고 바뀐 것은 바꾼다)
+function _mergeSnaps(list, snaps, conv){
+  const byId=new Map(list.map(r=>[r.id,r]));
+  let changed=0;
+  snaps.forEach(snap=>snap.forEach(doc=>{
+    const r=conv(doc); if(!r) return;
+    const prev=byId.get(r.id);
+    if(!prev || _canon(prev)!==_canon(r)){ byId.set(r.id,r); changed++; }
+  }));
+  return {list:[...byId.values()], changed};
+}
+function _trimToPeriod(days){
+  if(!days) return;
+  const cut=Date.now()-days*86400000;
+  allData=allData.filter(d=>!d.time || d.time.getTime()>=cut);
+  allAccessData=allAccessData.filter(a=>!a.time || a.time.getTime()>=cut);
+}
+
+let _bgBusy=false;
+// 저장본을 먼저 보여준 뒤, 뒤에서 새로 생긴 기록만 받아온다.
+// 6시간이 지났으면 뒤에서 통째로 다시 받는다 (다른 곳에서 지운 기록까지 반영).
+async function _refreshInBackground(days, periodLabel){
+  if(_bgBusy) return; _bgBusy=true;
+  const full = !_cacheFullAt || Date.now()-_cacheFullAt > FULL_EVERY_MS;
+  try{
+    await _waitFb();
+    _fetchFailed=0; _fetchFailMsg='';
+    if(full){
+      await _fetchAll(days);
+      if(!_fetchFailed){ _cacheFullAt=Date.now(); await _writeCache(days); }
+      _renderAll(_statusLine((_fetchFailed?'⚠️ 일부만 불러옴 · ':'')+'갱신: '+new Date().toLocaleTimeString('ko-KR'), periodLabel));
+    }else{
+      const newest=arr=>arr.reduce((m,r)=>Math.max(m, r.time?r.time.getTime():0), 0);
+      const since=new Date(Math.min(newest(allData)||Date.now(), newest(allAccessData)||Date.now()) - 10*60*1000);
+      const [qs, as]=await Promise.all([
+        _fetchSnaps('quiz_results',['timestamp','submittedAt'],since),
+        _fetchSnaps('hub_access',['timestamp'],since).catch(()=>[])
+      ]);
+      const q=_mergeSnaps(allData, qs, _toQuiz), a=_mergeSnaps(allAccessData, as, _toAcc);
+      allData=q.list; allAccessData=a.list;
+      _trimToPeriod(days);
+      allData.sort((x,y)=>(y.time||0)-(x.time||0));
+      allAccessData.sort((x,y)=>(y.time||0)-(x.time||0));
+      dedupCount=dedupeRecords();
+      if(!_fetchFailed) await _writeCache(days);
+      const st=_statusLine((_fetchFailed?'⚠️ 새 기록 일부만 받음 · ':'')+'갱신: '+new Date().toLocaleTimeString('ko-KR')
+                           +(q.changed+a.changed?` (새 기록 ${q.changed+a.changed}건)`:''), periodLabel);
+      if(q.changed+a.changed) _renderAll(st);                       // 바뀐 게 있을 때만 다시 그린다
+      else document.getElementById('lastRefresh').textContent=st;
+    }
+  }catch(e){
+    document.getElementById('lastRefresh').textContent+=' · ⚠️ 새 기록을 못 받음 ('+(e.message||e)+')';
+  }finally{ _bgBusy=false; }
+}
+
+// 기간 전체를 통째로 받아 allData / allAccessData 를 새로 만든다
+async function _fetchAll(days){
+  const cutoff=days?new Date(Date.now()-days*86400000):null;
+  // quiz_results 와 hub_access 를 동시에 (예전에는 순차 로드라 두 배로 기다렸음)
+  const [quizSnaps,accSnaps]=await Promise.all([
+    _fetchSnaps('quiz_results',['timestamp','submittedAt'],cutoff),
+    _fetchSnaps('hub_access',['timestamp'],cutoff).catch(()=>[])
+  ]);
+  allData=_mergeSnaps([], quizSnaps, _toQuiz).list;      // 두 쿼리에 겹쳐 잡힌 문서는 id 로 한 건
+  allData.sort((a,b)=>(b.time||0)-(a.time||0));
+  dedupCount = dedupeRecords();
+  allAccessData=_mergeSnaps([], accSnaps, _toAcc).list;
+  allAccessData.sort((a,b)=>(b.time||0)-(a.time||0));
+}
+
+async function loadData(force){
+  const days=_getPeriodDays();
+  const periodLabel=days?`최근 ${days}일`:'전체 기간';
+
+  // 1) 저장본이 있으면 곧바로 보여주고, 새 기록은 뒤에서 받아온다
+  if(!force){
+    const c=await _readCache(days);
+    if(c){
+      allData=c.quiz; allAccessData=c.access; _cacheFullAt=c.fullAt||0;
+      _renderAll(`⚡ 저장본 (${periodLabel} · ${allData.length}건) · ${new Date(c.savedAt).toLocaleTimeString('ko-KR')} 기준 · 새 기록 받는 중…`);
+      _refreshInBackground(days, periodLabel);
+      return;
+    }
+  }
+
+  // 2) 저장본이 없거나 🔄 새로고침 → 통째로 받는다
+  document.getElementById('tblArea').innerHTML=
+    `<div class="loading-msg">⏳ ${periodLabel} 데이터 불러오는 중...<br><small style="color:#999">처음 한 번만 오래 걸리고, 다음부터는 바로 열립니다</small></div>`;
+  _fetchFailed=0; _fetchFailMsg='';
+  try{
+    await _waitFb();
+    await _fetchAll(days);
     // 일부라도 못 불러왔다면 반쪽짜리 목록을 캐시에 남기지 않는다
-    if(!_fetchFailed) _writeCache(days);
-    document.getElementById('lastRefresh').textContent=
-      (_fetchFailed ? '⚠️ 일부만 불러옴 · ' : '')
-      + `갱신: ${new Date().toLocaleTimeString('ko-KR')} · ${periodLabel} ${allData.length}건`
-      + (dedupCount>0 ? ` · 중복 ${dedupCount}건 제외` : '');
-    buildHistoryMap();
-    populateTextbookFilter();
-    renderSummary();renderCharts();applyFilter();renderSectionView();
+    if(!_fetchFailed){ _cacheFullAt=Date.now(); await _writeCache(days); }
+    _renderAll(_statusLine((_fetchFailed ? '⚠️ 일부만 불러옴 · ' : '')+`갱신: ${new Date().toLocaleTimeString('ko-KR')}`, periodLabel));
     if(_fetchFailed){
       const q=/quota|RESOURCE_EXHAUSTED|429/i.test(_fetchFailMsg);
       const box=document.createElement('div');
@@ -1824,6 +1911,7 @@ async function deleteSingle(id){
     let w=0;while(!window._fbReady&&w<15000){await new Promise(r=>setTimeout(r,200));w+=200;}
     await window._deleteDoc(window._doc(window._db,'quiz_results',id));
     allData=allData.filter(d=>d.id!==id);applyFilter();renderSectionView();
+    _writeCache(_getPeriodDays());   // 저장본에서도 지운다 (안 그러면 다음에 열 때 되살아난다)
     document.getElementById('lastRefresh').textContent='✅ 삭제 완료 · '+new Date().toLocaleTimeString('ko-KR');
   }catch(e){alert('삭제 실패: '+e.message);}
 }
@@ -1840,6 +1928,7 @@ async function confirmDeleteAll(){
   let done=0,fail=0;
   for(const id of ids){try{await window._deleteDoc(window._doc(window._db,'quiz_results',id));done++;}catch(e){fail++;}}
   allData=allData.filter(d=>!ids.includes(d.id));applyFilter();renderSectionView();
+  _writeCache(_getPeriodDays());   // 저장본에서도 지운다
   document.getElementById('lastRefresh').textContent=`✅ ${done}건 삭제 완료${fail>0?' ('+fail+'건 실패)':''} · `+new Date().toLocaleTimeString('ko-KR');
 }
 
