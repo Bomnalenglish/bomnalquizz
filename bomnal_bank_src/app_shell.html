@@ -191,7 +191,8 @@ textarea{
 <div class="noprint">
   <h1>봄날 문제은행 <span style="font-size:13px;font-weight:400;color:var(--sub)">오답노트</span></h1>
   <p class="lead">학생을 고르고 → 자료별로 틀린 번호를 누르면 → 오답노트가 만들어집니다. 저장은 이 브라우저에 남습니다.</p>
-  <p class="lead" style="font-size:12px;color:var(--sub);margin-top:-4px">__BUILDSTAMP__</p>
+  <p class="lead" style="font-size:12px;color:var(--sub);margin-top:-4px">__BUILDSTAMP__
+    <span id="syncMsg" style="margin-left:10px"></span></p>
 
   <div class="panel">
     <h2>학생</h2>
@@ -319,7 +320,10 @@ function load(){
   }
   save();
 }
-function save(){ try{ localStorage.setItem(KEY, JSON.stringify(store)); }catch(e){} }
+function save(){
+  try{ localStorage.setItem(KEY, JSON.stringify(store)); }catch(e){}
+  if(window.__bankSyncQueue) window.__bankSyncQueue();   // 공유 저장소(Firebase)로 올리기 예약
+}
 
 /* ========= state ========= */
 let cur = null, curSrc = BANK[0].code;
@@ -820,6 +824,10 @@ $('importFile').onchange = e => {
     store.closed   = store.closed   || [];
     store.seedCleared = true;
     cur = store.students[0] || null;
+    // 공유 저장소와의 기준점을 지운다. 그러면 다음 맞추기가 '처음 붙는 컴퓨터' 처럼
+    // 합치기만 하고 아무것도 지우지 않는다. (안 그러면 옛 백업에 없는 학생을
+    // '지운 것' 으로 보고 모든 컴퓨터에서 지워 버린다)
+    try{ localStorage.removeItem('bomnal_wrongnote_syncbase'); }catch(e){}
     save(); rebuild(); drawAll(); drawSrcList();
     const marked = Object.values(store.marks).reduce(
       (a,m) => a + Object.values(m).reduce((x,y)=>x+y.length,0), 0);
@@ -1089,6 +1097,124 @@ if(!store.foldedOnce){
 cur = store.students[0];
 drawAll();
 drawSrcList();
+</script>
+<script type="module">
+/* ========= 공유 저장소 (Firebase) =========
+   이 컴퓨터 기록(localStorage)이 늘 기준이다. Firebase 는 컴퓨터끼리 나누는 통로일 뿐이라
+   한도가 차거나 끊겨도 오답노트는 멈추지 않는다.
+   합칠 때는 "마지막으로 맞춘 상태(base)" 와 비교하는 3자 비교로, 한쪽에서 지운 것은
+   지워지고 추가한 것은 합쳐진다. 학생 목록과 오답 체크만 나눈다 (폴더 접힘 같은 화면
+   설정은 컴퓨터마다 따로 둔다). */
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import {getFirestore, doc, getDoc, setDoc, serverTimestamp}
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const cfg = {apiKey:"AIzaSyCxS524S8KAaF87DomPtl9sJdF-eqes404",authDomain:"bomnalvaca.firebaseapp.com",
+  projectId:"bomnalvaca",storageBucket:"bomnalvaca.firebasestorage.app",
+  messagingSenderId:"115868052300",appId:"1:115868052300:web:765c08867b6f1ce0987de9"};
+const db  = getFirestore(initializeApp(cfg, 'bank'));
+const REF = doc(db, 'bank_marks', 'main');
+const BASEKEY = 'bomnal_wrongnote_syncbase';
+
+const msg = (t, bad) => { const el = document.getElementById('syncMsg');
+  if(el){ el.textContent = t; el.style.color = bad ? 'var(--warn)' : 'var(--pick)'; } };
+
+// 체크는 숫자 배열만, 빈 자료는 뺀다 (undefined 필드가 있으면 Firestore 가 문서를 통째로 거부한다)
+function clean(students, marks){
+  const S = [...new Set((students || []).filter(n => typeof n === 'string' && n.trim()))];
+  const M = {};
+  S.forEach(n => {
+    const src = (marks || {})[n] || {}, out = {};
+    Object.keys(src).forEach(c => {
+      const a = [...new Set((src[c] || []).map(Number).filter(Number.isFinite))].sort((x,y)=>x-y);
+      if(a.length) out[c] = a;
+    });
+    M[n] = out;
+  });
+  return {students: S, marks: M};
+}
+const same = (a, b) => JSON.stringify(a || {}) === JSON.stringify(b || {});
+const readBase = () => { try{ return JSON.parse(localStorage.getItem(BASEKEY) || 'null'); }catch(e){ return null; } };
+const writeBase = v => { try{ localStorage.setItem(BASEKEY, JSON.stringify(v)); }catch(e){} };
+
+// 학생 한 명의 체크를 3자 비교로 합친다
+function mergeOne(l, b, r){
+  if(same(l, b)) return r;                     // 여기선 안 고침 → 저쪽 것
+  if(same(r, b)) return l;                     // 저쪽은 안 고침 → 이쪽 것
+  const out = {};                              // 둘 다 고침 → 체크를 합친다
+  new Set([...Object.keys(l||{}), ...Object.keys(r||{})]).forEach(c => {
+    out[c] = [...new Set([...((l||{})[c]||[]), ...((r||{})[c]||[])])].sort((x,y)=>x-y);
+  });
+  return out;
+}
+
+function merge(local, base, remote){
+  if(!base){                                   // 이 컴퓨터가 처음 붙는다 → 아무것도 버리지 않고 합친다
+    const S = [...remote.students, ...local.students.filter(n => !remote.students.includes(n))];
+    const M = {};
+    S.forEach(n => M[n] = mergeOne(local.marks[n], {}, remote.marks[n]));
+    return clean(S, M);
+  }
+  const S = [], M = {};
+  remote.students.forEach(n => {
+    const inL = local.students.includes(n), inB = base.students.includes(n);
+    if(!inL && inB) return;                    // 여기서 지웠다
+    S.push(n);
+    M[n] = inL ? mergeOne(local.marks[n], base.marks[n], remote.marks[n]) : remote.marks[n];
+  });
+  local.students.forEach(n => {
+    if(S.includes(n)) return;
+    if(base.students.includes(n) && same(local.marks[n], base.marks[n])) return;  // 저쪽에서 지웠고 여기선 안 고침
+    S.push(n); M[n] = local.marks[n];          // 여기서 새로 넣었다
+  });
+  return clean(S, M);
+}
+
+let busy = false, again = false, timer = null;
+
+async function sync(){
+  if(busy){ again = true; return; }
+  busy = true;
+  try{
+    msg('☁ 맞추는 중…');
+    const local = clean(store.students, store.marks);
+    const snap = await getDoc(REF);
+    const remote = snap.exists() ? clean(snap.data().students, snap.data().marks) : null;
+    const merged = remote ? merge(local, readBase(), remote) : local;
+
+    if(!remote || !same(merged, remote)){
+      await setDoc(REF, {students: merged.students, marks: merged.marks, updated: serverTimestamp()});
+    }
+    writeBase(merged);
+    if(!same(merged, local)){                  // 다른 컴퓨터에서 온 것이 있으면 화면에 반영
+      store.students = merged.students;
+      store.marks = Object.assign({}, store.marks, merged.marks);
+      Object.keys(store.marks).forEach(n => { if(!merged.students.includes(n)) delete store.marks[n]; });
+      if(!store.students.includes(cur)) cur = store.students[0] || null;
+      try{ localStorage.setItem(KEY, JSON.stringify(store)); }catch(e){}
+      rebuild(); drawAll(); drawSrcList();
+    }
+    msg('☁ 모든 컴퓨터와 맞춤 ' + new Date().toLocaleTimeString('ko-KR', {hour:'2-digit', minute:'2-digit'}));
+  }catch(e){
+    const code = (e && (e.code || e.message)) || '';
+    msg(/resource-exhausted|quota|429/.test(code)
+          ? '⚠ 공유 저장소 한도 초과 — 이 컴퓨터에만 저장 중'
+          : /permission/.test(code)
+          ? '⚠ 공유 저장소 권한 없음 — 이 컴퓨터에만 저장 중'
+          : '⚠ 공유 저장소 연결 안 됨 — 이 컴퓨터에만 저장 중', true);
+    console.warn('[bank sync]', e);
+  }finally{
+    busy = false;
+    if(again){ again = false; setTimeout(sync, 300); }
+  }
+}
+
+// 고칠 때마다 1초 모았다가 올린다 (연달아 누르면 한 번만 쓴다)
+window.__bankSyncQueue = () => { clearTimeout(timer); timer = setTimeout(sync, 1000); };
+// 창으로 돌아오면 다른 컴퓨터에서 고친 것을 받아온다
+document.addEventListener('visibilitychange', () => { if(!document.hidden) sync(); });
+window.__bankSync = sync;
+sync();
 </script>
 </body>
 </html>
