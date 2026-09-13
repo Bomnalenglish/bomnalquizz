@@ -181,6 +181,24 @@ hwp 는 OLE 복합문서다. `hwp2txt.py` 가 BodyText/SectionN 을 zlib 로 풀
 
 관련 함수: `folderTree` / `allItems` / `allFolders` / `ancestors` / `isMine` / `renameFolder` / `folderHead`
 
+## 자료 이름 바꾸기
+
+폴더·자료 관리 칸에서 자료 이름을 **바로 고쳐 쓰고 Enter**. 비우거나 원래대로 쓰면 원래 이름,
+`↺ 원래 이름` 버튼으로도 되돌린다.
+
+- 바꾼 이름은 `store.titles` (자료 code → 이름) 에 두고, **공유 저장소로 모든 컴퓨터에 나눈다**
+  (학생 기록과 같은 문서의 `titles` 칸, 같은 3자 비교. 같은 자료를 동시에 고치면 이 컴퓨터 것).
+- `rebuild()` 가 `f.title` 에 끼워 넣고 원래 이름은 `f._orig` 에 둔다. 오답노트·답지·수업용이
+  모두 `f.title` 을 읽으므로 따로 손볼 곳이 없다.
+- `bank.json` 의 원래 이름은 그대로다. 제가 새로 넣는 파일의 이름도 여기서 바꿀 수 있다.
+
+## 합치기 시험
+
+```bash
+node bomnal_bank_src/test_sync.js      # 23개 — 체크·학생·자료 이름의 3자 비교
+```
+`app_shell.html` 안의 합치기 함수를 그대로 떼어 와서 돌리니, 공유 저장소 코드를 고치면 꼭 돌린다.
+
 ## 학생 고르기
 
 학생은 **ㄱ~ㅎ 로 묶은 드롭다운**(`<optgroup>`)으로 고른다. 묶음 안은 가나다 순.

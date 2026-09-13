@@ -69,6 +69,10 @@ button:disabled{opacity:.4;cursor:not-allowed}
         background:#fff;min-width:240px;margin-right:10px;font-family:inherit}
 .grp.empty{cursor:default;color:var(--sub);opacity:.6;font-size:12px}
 .grp.empty:hover{background:none}
+.tname{border:1px solid transparent;border-radius:6px;background:none;font:inherit;
+       font-weight:600;font-size:12.5px;color:var(--ink);padding:2px 5px}
+.tname:hover{border-color:var(--line);background:#fff}
+.tname:focus{border-color:var(--pick);background:#fff;outline:none}
 .fname.fixed{border:0;padding:3px 6px;font-size:12px;color:var(--ink)}
 .warnbox{margin-top:8px;padding:7px 10px;border-radius:7px;font-size:12.5px;
          background:#f7e9e6;color:var(--warn);border:1px solid #e6cdc8}
@@ -289,6 +293,11 @@ const BASE = __BANK__;
 let BANK = BASE.slice();
 const BYCODE = {};
 function rebuild(){
+  // 화면에서 바꾼 자료 이름(store.titles)을 끼운다. 오답노트·답지·수업용 모두 f.title 을 읽는다.
+  BASE.concat(store.custom || []).forEach(f => {
+    if(f._orig === undefined) f._orig = f.title;
+    f.title = ((store.titles || {})[f.code] || '').trim() || f._orig;
+  });
   BANK = BASE.concat(store.custom || []).filter(f => !(store.hidden||[]).includes(f.code));
   if(!BANK.length) BANK = BASE.slice();
   Object.keys(BYCODE).forEach(k => delete BYCODE[k]);
@@ -310,6 +319,7 @@ function load(){
   if(!store.hidden) store.hidden = [];
   if(!store.folder) store.folder = {};
   if(!store.folders) store.folders = [];
+  if(!store.titles) store.titles = {};
 
   // YBM1-KI 는 예전 자료에 97번 문항이 통째로 빠져 있어 97~99 가 한 칸씩 밀려 있었다.
   // 원본에서 다시 뽑아 100문항으로 바로잡았으므로, 체크 기록도 같이 옮긴다. (최초 1회)
@@ -741,8 +751,35 @@ function drawSrcRows(box, list, depth){
     d.className = 'tagx';
     d.style.marginLeft = ((depth || 0) * 22) + 'px';
     if(hidden) d.style.opacity = '.5';
-    d.innerHTML = '<b>' + f.title + '</b> · ' + f.questions.length + '문항' +
-                  (mine ? ' · 추가함' : '') + (hidden ? ' · 숨김' : '');
+    // 이름은 바로 고쳐 쓴다. 모든 컴퓨터에 같이 바뀐다(공유 저장소의 titles).
+    const tn = document.createElement('input');
+    tn.className = 'tname'; tn.value = f.title; tn.title = '자료 이름을 고쳐 쓰고 Enter';
+    const fitT = () => { tn.style.width = Math.min(34, Math.max(8, tn.value.length * 0.95 + 1)) + 'em'; };
+    fitT(); tn.oninput = fitT;
+    tn.onkeydown = e => {
+      if(e.key === 'Enter'){ e.preventDefault(); tn.blur(); }
+      if(e.key === 'Escape'){ tn.value = f.title; tn.blur(); }
+    };
+    tn.onblur = () => {
+      const v = tn.value.replace(/\s+/g, ' ').trim().slice(0, 120);
+      if(v === f.title) return;
+      store.titles = store.titles || {};
+      if(!v || v === f._orig) delete store.titles[f.code];     // 비우거나 원래대로 쓰면 원래 이름
+      else store.titles[f.code] = v;
+      save(); rebuild(); drawAll(); drawSrcList();
+      $('srcMsg').textContent = v && v !== f._orig ? '이름을 "' + v + '" 로 바꿨습니다.' : '원래 이름으로 되돌렸습니다.';
+    };
+    d.appendChild(tn);
+    const meta = document.createElement('span');
+    meta.textContent = ' · ' + f.questions.length + '문항' + (mine ? ' · 추가함' : '') + (hidden ? ' · 숨김' : '');
+    d.appendChild(meta);
+    if((store.titles || {})[f.code]){
+      const rs = document.createElement('button');
+      rs.textContent = '↺ 원래 이름'; rs.title = f._orig; rs.style.color = 'var(--sub)';
+      rs.onclick = () => { delete store.titles[f.code]; save(); rebuild(); drawAll(); drawSrcList();
+                           $('srcMsg').textContent = '원래 이름으로 되돌렸습니다.'; };
+      d.appendChild(rs);
+    }
     // 폴더 이동은 드롭다운으로. prompt() 는 막히는 환경이 있어 쓰지 않는다.
     const now = groupOf(f);
     const mv = document.createElement('select');
@@ -1167,7 +1204,7 @@ const msg = (t, bad) => { const el = document.getElementById('syncMsg');
   if(el){ el.textContent = t; el.style.color = bad ? 'var(--warn)' : 'var(--pick)'; } };
 
 // 체크는 숫자 배열만, 빈 자료는 뺀다 (undefined 필드가 있으면 Firestore 가 문서를 통째로 거부한다)
-function clean(students, marks){
+function clean(students, marks, titles){
   const S = [...new Set((students || []).filter(n => typeof n === 'string' && n.trim()))];
   const M = {};
   S.forEach(n => {
@@ -1178,7 +1215,22 @@ function clean(students, marks){
     });
     M[n] = out;
   });
-  return {students: S, marks: M};
+  const T = {};                                // 화면에서 바꾼 자료 이름 (자료 code → 이름)
+  Object.keys(titles || {}).forEach(c => {
+    const v = typeof titles[c] === 'string' ? titles[c].replace(/\s+/g, ' ').trim().slice(0, 120) : '';
+    if(v) T[c] = v;
+  });
+  return {students: S, marks: M, titles: T};
+}
+// 자료 이름도 3자 비교. 둘 다 바꿨으면 이 컴퓨터 것을 쓴다(방금 고친 쪽).
+function mergeTitles(l, b, r){
+  const out = {};
+  new Set([...Object.keys(l||{}), ...Object.keys(b||{}), ...Object.keys(r||{})]).forEach(k => {
+    const lv = (l||{})[k], bv = (b||{})[k], rv = (r||{})[k];
+    const v = lv === bv ? rv : lv;
+    if(v) out[k] = v;
+  });
+  return out;
 }
 const same = (a, b) => JSON.stringify(a || {}) === JSON.stringify(b || {});
 const readBase = () => { try{ return JSON.parse(localStorage.getItem(BASEKEY) || 'null'); }catch(e){ return null; } };
@@ -1200,7 +1252,7 @@ function merge(local, base, remote){
     const S = [...remote.students, ...local.students.filter(n => !remote.students.includes(n))];
     const M = {};
     S.forEach(n => M[n] = mergeOne(local.marks[n], {}, remote.marks[n]));
-    return clean(S, M);
+    return clean(S, M, Object.assign({}, remote.titles, local.titles));
   }
   const S = [], M = {};
   remote.students.forEach(n => {
@@ -1214,7 +1266,7 @@ function merge(local, base, remote){
     if(base.students.includes(n) && same(local.marks[n], base.marks[n])) return;  // 저쪽에서 지웠고 여기선 안 고침
     S.push(n); M[n] = local.marks[n];          // 여기서 새로 넣었다
   });
-  return clean(S, M);
+  return clean(S, M, mergeTitles(local.titles, base.titles || {}, remote.titles));
 }
 
 let busy = false, again = false, timer = null;
@@ -1224,17 +1276,18 @@ async function sync(){
   busy = true;
   try{
     msg('☁ 맞추는 중…');
-    const local = clean(store.students, store.marks);
+    const local = clean(store.students, store.marks, store.titles);
     const snap = await getDoc(REF);
-    const remote = snap.exists() ? clean(snap.data().students, snap.data().marks) : null;
+    const remote = snap.exists() ? clean(snap.data().students, snap.data().marks, snap.data().titles) : null;
     const merged = remote ? merge(local, readBase(), remote) : local;
 
     if(!remote || !same(merged, remote)){
-      await setDoc(REF, {students: merged.students, marks: merged.marks, updated: serverTimestamp()});
+      await setDoc(REF, {students: merged.students, marks: merged.marks, titles: merged.titles, updated: serverTimestamp()});
     }
     writeBase(merged);
     if(!same(merged, local)){                  // 다른 컴퓨터에서 온 것이 있으면 화면에 반영
       store.students = merged.students;
+      store.titles = merged.titles;
       store.marks = Object.assign({}, store.marks, merged.marks);
       Object.keys(store.marks).forEach(n => { if(!merged.students.includes(n)) delete store.marks[n]; });
       if(!store.students.includes(cur)) cur = store.students[0] || null;
