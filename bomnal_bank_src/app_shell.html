@@ -65,6 +65,11 @@ button:disabled{opacity:.4;cursor:not-allowed}
 .grp.deep b{font-weight:600;color:var(--sub)}
 .grp.deep.has b{color:var(--pick)}
 .emptyhint{color:var(--sub);font-size:13px;padding:8px 2px}
+.stusel{font-size:15px;padding:8px 12px;border:1px solid var(--line);border-radius:8px;
+        background:#fff;min-width:240px;margin-right:10px;font-family:inherit}
+.grp.empty{cursor:default;color:var(--sub);opacity:.6;font-size:12px}
+.grp.empty:hover{background:none}
+.fname.fixed{border:0;padding:3px 6px;font-size:12px;color:var(--ink)}
 .warnbox{margin-top:8px;padding:7px 10px;border-radius:7px;font-size:12.5px;
          background:#f7e9e6;color:var(--warn);border:1px solid #e6cdc8}
 .who{font-weight:400;font-size:8.5pt;color:#8c2f22;margin-left:6px}
@@ -344,34 +349,96 @@ function totalOf(name){
   return Object.values(m).reduce((a,b)=>a+b.length,0);
 }
 
+// 이름 첫 글자의 초성 (ㄲ·ㄸ·ㅃ·ㅆ·ㅉ 은 ㄱ·ㄷ·ㅂ·ㅅ·ㅈ 에 넣는다)
+const CHO = 'ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ'.split('');
+const CHO_BASE = {'ㄲ':'ㄱ','ㄸ':'ㄷ','ㅃ':'ㅂ','ㅆ':'ㅅ','ㅉ':'ㅈ'};
+const CHO_ORDER = 'ㄱㄴㄷㄹㅁㅂㅅㅇㅈㅊㅋㅌㅍㅎ'.split('').concat(['기타']);
+function choOf(name){
+  const c = (name || '').charCodeAt(0);
+  if(c >= 0xAC00 && c <= 0xD7A3){ const k = CHO[Math.floor((c - 0xAC00) / 588)]; return CHO_BASE[k] || k; }
+  return '기타';
+}
+const byName = (a, b) => a.localeCompare(b, 'ko');
+
+// 학생은 ㄱ~ㅎ 로 묶은 드롭다운으로 고른다 (학생이 늘어도 한 줄로 유지된다)
 function drawStudents(){
-  $('students').innerHTML = '';
+  const box = $('students'); box.innerHTML = '';
   if(!store.students.length){
-    $('students').innerHTML = '<div class="emptyhint">아래 칸에 이름을 적고 <b>추가</b>를 누르세요.</div>';
+    box.innerHTML = '<div class="emptyhint">아래 칸에 이름을 적고 <b>추가</b>를 누르세요.</div>';
     return;
   }
-  store.students.forEach(n => {
-    const b = document.createElement('button');
-    b.className = 'stu' + (n===cur?' on':'');
-    b.innerHTML = n + '<span class="cnt">' + totalOf(n) + '</span>';
-    b.onclick = () => { cur = n; drawAll(); };
-    $('students').appendChild(b);
+  const sel = document.createElement('select');
+  sel.id = 'stuSel'; sel.className = 'stusel';
+  if(!cur || !store.students.includes(cur)){
+    const o = document.createElement('option');
+    o.value = ''; o.textContent = '학생을 고르세요'; o.selected = true; sel.appendChild(o);
+  }
+  const groups = {};
+  store.students.forEach(n => (groups[choOf(n)] = groups[choOf(n)] || []).push(n));
+  CHO_ORDER.forEach(k => {
+    if(!groups[k]) return;
+    const og = document.createElement('optgroup');
+    og.label = k + '  (' + groups[k].length + '명)';
+    groups[k].sort(byName).forEach(n => {
+      const o = document.createElement('option');
+      const t = totalOf(n);
+      o.value = n; o.textContent = n + (t ? '  · 오답 ' + t : '');
+      if(n === cur) o.selected = true;
+      og.appendChild(o);
+    });
+    sel.appendChild(og);
   });
+  sel.onchange = () => { if(sel.value){ cur = sel.value; drawAll(); } };
+  box.appendChild(sel);
+  const info = document.createElement('span');
+  info.className = 'hint';
+  info.textContent = '전체 ' + store.students.length + '명' + (cur ? ' · 지금 ' + cur + ' (오답 ' + totalOf(cur) + ')' : '');
+  box.appendChild(info);
 }
 // 폴더 이름. store.folder 로 덮어쓸 수 있어서 기본 자료도 옮길 수 있다.
-const topOf = g => (g || '').split('/')[0].trim();
-const subOf = g => ((g || '').split('/')[1] || '').trim();
-const showPath = g => subOf(g) ? topOf(g) + ' › ' + subOf(g) : topOf(g);
-
-const allFolders = () => [...new Set(
-  BASE.concat(store.custom||[]).map(groupOf).concat(store.folders||[])
-)];
-
+/* ========= 폴더 =========
+   경로는 "고1/모의고사/2024년/9월" 처럼 / 로 잇고, 단계 수에 제한이 없다.
+   뼈대(FOLDERS, folders.json)는 모든 컴퓨터가 같고, 여기서 만든 폴더(store.folders)와
+   자료를 옮긴 기록(store.folder)은 이 브라우저에만 있다. */
+const FOLDERS = __FOLDERS__;
+const showPath = g => (g || '').split('/').join(' › ');
 const groupOf = f => (((store.folder||{})[f.code] || f.group || '기타') + '').trim() || '기타';
+const ancestors = p => (p || '').split('/').map((_, i, a) => a.slice(0, i + 1).join('/'));
+// 모든 폴더 경로. 뼈대 순서를 먼저 따른다 (글자 순으로 두면 11월이 3월보다 앞에 온다).
+const allFolders = () => {
+  const out = [], seen = new Set();
+  const add = g => ancestors(g).forEach(x => { if(!seen.has(x)){ seen.add(x); out.push(x); } });
+  FOLDERS.forEach(add);
+  BASE.concat(store.custom || []).forEach(f => add(groupOf(f)));
+  (store.folders || []).forEach(add);
+  return out;
+};
+// 여기서 만든 폴더인가 (뼈대 폴더는 모든 컴퓨터 공통이라 이름을 바꾸거나 지우지 않는다)
+const isMine = p => !FOLDERS.some(g => g === p || g.startsWith(p + '/'));
+function folderTree(list){
+  const root = {name: '', path: '', kids: [], map: {}, items: []};
+  const node = path => {
+    let n = root;
+    path.split('/').forEach((seg, i, a) => {
+      if(!n.map[seg]){
+        const c = {name: seg, path: a.slice(0, i + 1).join('/'), kids: [], map: {}, items: []};
+        n.map[seg] = c; n.kids.push(c);
+      }
+      n = n.map[seg];
+    });
+    return n;
+  };
+  allFolders().forEach(node);
+  list.forEach(f => node(groupOf(f)).items.push(f));
+  return root;
+}
+const allItems = n => n.items.concat(...n.kids.map(allItems));
+const isOpen = p => (store.open || []).includes(p);
+const setOpen = (p, v) => { store.open = (store.open || []).filter(x => x !== p); if(v) store.open.push(p); };
 
 function drawSources(){
   const box = $('srcbtns'); box.innerHTML = '';
-  store.closed = store.closed || [];
+  store.open = store.open || [];
 
   // 숨긴 자료가 있으면 맨 위에 알린다. 관리 칸이 접혀 있어 숨긴 줄 모르고 지나치기 쉽다.
   const hid = BASE.concat(store.custom || []).filter(f => (store.hidden || []).includes(f.code));
@@ -392,78 +459,43 @@ function drawSources(){
     box.appendChild(bar);
   }
 
-  // 경로별 자료 (경로 = "종촌고1" 또는 "종촌고1/교과서")
-  const paths = [], byPath = {};
-  BANK.forEach(f => {
-    const g = groupOf(f);
-    if(!byPath[g]){ byPath[g] = []; paths.push(g); }
-    byPath[g].push(f);
-  });
-  (store.folders||[]).forEach(g => { if(!byPath[g]){ byPath[g] = []; paths.push(g); } });
-
-  // 상위 폴더별로 다시 묶는다. 하위 없는 경로가 먼저 오도록 정렬한다.
-  const tops = [], byTop = {};
-  paths.forEach(pth => {
-    const t = topOf(pth);
-    if(!byTop[t]){ byTop[t] = []; tops.push(t); }
-    byTop[t].push(pth);
-  });
-  tops.forEach(t => byTop[t].sort((x,y) => (subOf(x) ? 1 : 0) - (subOf(y) ? 1 : 0)));
-
-  const countOf = list => cur ? list.reduce((a,f) => a + marksOf(cur, f.code).length, 0) : 0;
-
-  const drawItems = (list, indent) => {
-    const wrap = document.createElement('div');
-    wrap.className = 'grpbody' + (indent ? ' deep' : '');
-    if(!list.length){
-      wrap.innerHTML = '<span class="emptyhint">비어 있습니다. 이 폴더에 넣을 파일을 채팅으로 올려 주세요.</span>';
-    }
-    list.forEach(f => {
-      const b = document.createElement('button');
-      b.className = 'src' + (f.code===curSrc?' on':'');
-      const c = cur ? marksOf(cur, f.code).length : 0;
-      b.innerHTML = esc(f.title) + '<span class="n">' + f.questions.length + '문항' + (c?' · 체크 '+c:'') + '</span>';
-      b.onclick = () => { curSrc = f.code; drawAll(); };
-      wrap.appendChild(b);
-    });
-    box.appendChild(wrap);
-  };
-
-  const header = (key, label, list, opt) => {
-    const shut = store.closed.includes(key);
-    const picked = list.find(f => f.code === curSrc);
-    const marked = countOf(list);
+  const countOf = list => cur ? list.reduce((a, f) => a + marksOf(cur, f.code).length, 0) : 0;
+  const walk = (n, depth) => n.kids.forEach(k => {
+    const items = allItems(k);
     const h = document.createElement('div');
-    h.className = 'grp' + (opt.deep ? ' deep' : '') + (picked ? ' has' : '');
-    h.innerHTML = '<span class="arw">' + (shut ? '▸' : '▾') + '</span>' +
-                  '<b>' + esc(label) + '</b>' +
-                  '<span class="gn">' + opt.note + '</span>' +
-                  (shut && picked ? '<span class="gsel">' + esc(picked.title) + '</span>' : '');
-    h.onclick = () => {
-      store.closed = shut ? store.closed.filter(x => x !== key) : store.closed.concat([key]);
-      save(); drawSources();
-    };
+    h.style.marginLeft = (depth * 18) + 'px';
+    if(!items.length){                                   // 빈 폴더는 이름만 흐리게
+      h.className = 'grp empty';
+      h.innerHTML = '<span class="arw">·</span><span>' + esc(k.name) + '</span><span class="gn">비어 있음</span>';
+      box.appendChild(h); return;
+    }
+    const open_ = isOpen(k.path);
+    const picked = items.find(f => f.code === curSrc);  // 접어도 뭘 골랐는지는 보여준다
+    const marked = countOf(items);
+    h.className = 'grp' + (depth ? ' deep' : '') + (picked ? ' has' : '');
+    h.innerHTML = '<span class="arw">' + (open_ ? '▾' : '▸') + '</span><b>' + esc(k.name) + '</b>' +
+                  '<span class="gn">자료 ' + items.length + '개' + (marked ? ' · 체크 ' + marked : '') + '</span>' +
+                  (!open_ && picked ? '<span class="gsel">' + esc(picked.title) + '</span>' : '');
+    h.onclick = () => { setOpen(k.path, !open_); save(); drawSources(); };
     box.appendChild(h);
-    return shut;
-  };
-
-  tops.forEach(t => {
-    const under = byTop[t];
-    const allIn = under.reduce((a,pth) => a.concat(byPath[pth]), []);
-    const subs  = under.filter(pth => subOf(pth));
-    const note  = '자료 ' + allIn.length + '개'
-                + (subs.length ? ' · 하위 ' + subs.length + '개' : '')
-                + (countOf(allIn) ? ' · 체크 ' + countOf(allIn) : '');
-    if(header(t, t, allIn, {note, deep:false})) return;
-
-    under.forEach(pth => {
-      const sub = subOf(pth), list = byPath[pth];
-      if(!sub){ if(list.length) drawItems(list, false); return; }
-      const note2 = '자료 ' + list.length + '개' + (countOf(list) ? ' · 체크 ' + countOf(list) : '');
-      if(header(pth, sub, list, {note: note2, deep:true})) return;
-      drawItems(list, true);
-    });
+    if(!open_) return;
+    if(k.items.length){
+      const wrap = document.createElement('div');
+      wrap.className = 'grpbody';
+      wrap.style.paddingLeft = (depth * 18 + 18) + 'px';
+      k.items.forEach(f => {
+        const b = document.createElement('button');
+        b.className = 'src' + (f.code === curSrc ? ' on' : '');
+        const c = cur ? marksOf(cur, f.code).length : 0;
+        b.innerHTML = esc(f.title) + '<span class="n">' + f.questions.length + '문항' + (c ? ' · 체크 ' + c : '') + '</span>';
+        b.onclick = () => { curSrc = f.code; drawAll(); };
+        wrap.appendChild(b);
+      });
+      box.appendChild(wrap);
+    }
+    walk(k, depth + 1);
   });
+  walk(folderTree(BANK), 0);
 }
 function shortType(stem){
   if(/일치하지/.test(stem)) return '불일치';
@@ -599,77 +631,71 @@ $('clearStu').onclick = () => {
   store.marks[cur] = {}; save(); drawAll();
 };
 
-// 폴더 이름 바꾸기. 상위 폴더를 바꾸면 그 아래 하위 폴더 경로도 함께 따라간다.
+// 폴더 이름 바꾸기. 그 아래 경로도 함께 따라간다. (여기서 만든 폴더만)
 function renameFolder(from, to){
-  const name = (to || '').trim();                 // 완성된 경로가 들어온다
+  const name = (to || '').trim();
   if(!name || name === from) return false;
-  const remap = g => g === from ? name
-                   : (topOf(g) === from && subOf(g)) ? name + '/' + subOf(g)
-                   : g;
+  const remap = g => g === from ? name : (g.startsWith(from + '/') ? name + g.slice(from.length) : g);
   BASE.concat(store.custom || []).forEach(f => {
     const g = groupOf(f), n = remap(g);
     if(n !== g) store.folder[f.code] = n;
   });
   store.folders = [...new Set((store.folders || []).map(remap))];
-  store.closed  = [...new Set((store.closed  || []).map(remap))];
+  store.open    = [...new Set((store.open    || []).map(remap))];
+  store.mopen   = [...new Set((store.mopen   || []).map(remap))];
   save(); rebuild(); drawAll(); drawSrcList();
   return true;
 }
 
-// 폴더 제목 줄 — 이름칸 + 개수 + (비었으면) 지우기
-function folderHead(box, path, count, deep, qn, open_, toggle){
-  const shown = deep ? subOf(path) : topOf(path);
+// 관리 칸의 폴더 한 줄: 접기 · 이름 · 개수 · (여기서 만든 빈 폴더면) 지우기
+function folderHead(box, k, depth, count, qn, open_, toggle){
   const h = document.createElement('div');
-  h.className = 'srcgrp' + (deep ? ' deep' : '');
+  h.className = 'srcgrp';
+  h.style.marginLeft = (depth * 22) + 'px';
+  const arw = document.createElement('button');
+  arw.className = 'farw';
+  arw.textContent = (count || k.kids.length) ? (open_ ? '▾' : '▸') : '·';
+  if(count || k.kids.length) arw.onclick = toggle;
+  h.appendChild(arw);
 
-  if(toggle){                                   // 상위 폴더는 접었다 펼 수 있다
-    const arw = document.createElement('button');
-    arw.className = 'farw';
-    arw.textContent = open_ ? '▾' : '▸';
-    arw.title = open_ ? '접기' : '펼치기';
-    arw.onclick = toggle;
-    h.appendChild(arw);
+  if(isMine(k.path)){                               // 여기서 만든 폴더는 이름을 고칠 수 있다
+    const inp = document.createElement('input');
+    inp.className = 'fname'; inp.value = k.name; inp.title = '폴더 이름을 고쳐 쓰고 Enter';
+    const fit = el => { el.style.width = Math.max(6, el.value.length * 1.05 + 2) + 'em'; };
+    fit(inp); inp.oninput = () => fit(inp);
+    inp.onkeydown = e => {
+      if(e.key === 'Enter'){ e.preventDefault(); inp.blur(); }
+      if(e.key === 'Escape'){ inp.value = k.name; inp.blur(); }
+    };
+    inp.onblur = () => {
+      const v = inp.value.trim().replace(/\//g, ' ');
+      if(!v){ inp.value = k.name; return; }
+      if(v === k.name) return;
+      const parent = k.path.split('/').slice(0, -1).join('/');
+      const target = parent ? parent + '/' + v : v;
+      const merging = allFolders().includes(target);
+      if(renameFolder(k.path, target))
+        $('srcMsg').textContent = merging ? '"' + k.name + '" 를 "' + v + '" 에 합쳤습니다.' : '폴더 이름을 "' + v + '" 로 바꿨습니다.';
+    };
+    h.appendChild(inp);
+  } else {
+    const nm = document.createElement('b');
+    nm.className = 'fname fixed'; nm.textContent = k.name;
+    h.appendChild(nm);
   }
-
-  const inp = document.createElement('input');
-  inp.className = 'fname';
-  inp.value = shown;
-  inp.title = '폴더 이름을 고쳐 쓰고 Enter';
-  // 한글은 size(글자수)로 잡으면 잘린다. em 으로 넉넉히 준다.
-  const fit = el => { el.style.width = Math.max(6, el.value.length * 1.05 + 2) + 'em'; };
-  fit(inp);
-  inp.oninput = () => fit(inp);
-  inp.onkeydown = e => {
-    if(e.key === 'Enter'){ e.preventDefault(); inp.blur(); }
-    if(e.key === 'Escape'){ inp.value = shown; inp.blur(); }
-  };
-  inp.onblur = () => {
-    const v = inp.value.trim().replace(/\//g, ' ');   // 이름에 / 는 못 쓴다
-    if(!v){ inp.value = shown; return; }
-    if(v === shown) return;
-    const target = deep ? topOf(path) + '/' + v : v;   // 하위면 상위를 유지한다
-    const merging = allFolders().includes(target);
-    if(renameFolder(path, target)){
-      $('srcMsg').textContent = merging
-        ? '"' + shown + '" 를 "' + v + '" 에 합쳤습니다.'
-        : '폴더 이름을 "' + v + '" 로 바꿨습니다.';
-    }
-  };
-  h.appendChild(inp);
 
   const n = document.createElement('span');
   n.className = 'fcnt';
-  n.textContent = '자료 ' + count + '개' + (qn ? ' · ' + qn + '문항' : '');
+  n.textContent = count ? '자료 ' + count + '개 · ' + qn + '문항' : '비어 있음';
   h.appendChild(n);
 
-  if(!count){
+  if(!count && !k.kids.length && isMine(k.path)){
     const del = document.createElement('button');
-    del.className = 'fdel';
-    del.textContent = '폴더 지우기';
+    del.className = 'fdel'; del.textContent = '폴더 지우기';
     del.onclick = () => {
-      store.folders = (store.folders || []).filter(x => x !== path);
+      store.folders = (store.folders || []).filter(x => x !== k.path);
       save(); drawAll(); drawSrcList();
-      $('srcMsg').textContent = '"' + showPath(path) + '" 폴더를 지웠습니다.';
+      $('srcMsg').textContent = '"' + showPath(k.path) + '" 폴더를 지웠습니다.';
     };
     h.appendChild(del);
   }
@@ -679,9 +705,9 @@ function folderHead(box, path, count, deep, qn, open_, toggle){
 function drawParentPicker(){
   const sel = $('parentFolder'), keep = sel.value;
   sel.innerHTML = '<option value="">맨 위에 만들기</option>';
-  [...new Set(allFolders().map(topOf))].forEach(t => {
+  allFolders().forEach(g => {
     const o = document.createElement('option');
-    o.value = t; o.textContent = t + ' 안에';
+    o.value = g; o.textContent = showPath(g) + ' 안에';
     sel.appendChild(o);
   });
   if([...sel.options].some(o => o.value === keep)) sel.value = keep;
@@ -689,54 +715,31 @@ function drawParentPicker(){
 
 function drawSrcList(){
   drawParentPicker();
+  const box = $('srclist'); box.innerHTML = '';
   const moved = Object.keys(store.folder || {}).length + (store.folders || []).length;
   $('resetFolder').style.display = moved ? '' : 'none';
-  const box = $('srclist'); box.innerHTML = '';
-  const all = BASE.concat(store.custom || []);
-
-  const paths = [], byPath = {};
-  all.forEach(f => {
-    const g = groupOf(f);
-    if(!byPath[g]){ byPath[g] = []; paths.push(g); }
-    byPath[g].push(f);
-  });
-  (store.folders || []).forEach(g => { if(!byPath[g]){ byPath[g] = []; paths.push(g); } });
-
-  const tops = [], byTop = {};
-  paths.forEach(pth => {
-    const t = topOf(pth);
-    if(!byTop[t]){ byTop[t] = []; tops.push(t); }
-    byTop[t].push(pth);
-  });
-  tops.forEach(t => byTop[t].sort((x,y) => (subOf(x) ? 1 : 0) - (subOf(y) ? 1 : 0)));
-
-  store.mopen = store.mopen || [];              // 관리 칸에서 펼쳐둔 상위 폴더
-  tops.forEach(t => {
-    const under = byTop[t];
-    const direct = under.find(pth => !subOf(pth));
-    const total = under.reduce((a,pth) => a + byPath[pth].length, 0);
-    const qn = under.reduce((a,pth) => a + byPath[pth].reduce((x,f)=>x+f.questions.length,0), 0);
-    const open_ = store.mopen.includes(t);
-    folderHead(box, t, total, false, qn, open_, () => {
-      store.mopen = open_ ? store.mopen.filter(x => x !== t) : store.mopen.concat([t]);
+  store.mopen = store.mopen || [];                 // 관리 칸에서 펼쳐둔 폴더 (기본은 접힘)
+  const walk = (n, depth) => n.kids.forEach(k => {
+    const items = allItems(k);
+    const open_ = store.mopen.includes(k.path);
+    folderHead(box, k, depth, items.length, items.reduce((x, f) => x + f.questions.length, 0), open_, () => {
+      store.mopen = open_ ? store.mopen.filter(x => x !== k.path) : store.mopen.concat([k.path]);
       save(); drawSrcList();
     });
-    if(!open_) return;                          // 접혀 있으면 자료를 그리지 않는다
-    if(direct && byPath[direct].length) drawSrcRows(box, byPath[direct]);
-    under.filter(pth => subOf(pth)).forEach(pth => {
-      const sqn = byPath[pth].reduce((x,f)=>x+f.questions.length,0);
-      folderHead(box, pth, byPath[pth].length, true, sqn);
-      drawSrcRows(box, byPath[pth]);
-    });
+    if(!open_) return;
+    if(k.items.length) drawSrcRows(box, k.items, depth + 1);
+    walk(k, depth + 1);
   });
+  walk(folderTree(BASE.concat(store.custom || [])), 0);
 }
 
-function drawSrcRows(box, list){
+function drawSrcRows(box, list, depth){
   list.forEach(f => {
     const hidden = (store.hidden||[]).includes(f.code);
     const mine = (store.custom||[]).some(c => c.code === f.code);
     const d = document.createElement('span');
     d.className = 'tagx';
+    d.style.marginLeft = ((depth || 0) * 22) + 'px';
     if(hidden) d.style.opacity = '.5';
     d.innerHTML = '<b>' + f.title + '</b> · ' + f.questions.length + '문항' +
                   (mine ? ' · 추가함' : '') + (hidden ? ' · 숨김' : '');
@@ -745,7 +748,7 @@ function drawSrcRows(box, list){
     const mv = document.createElement('select');
     mv.className = 'fsel';
     mv.title = '이 자료를 다른 폴더로 옮깁니다';
-    allFolders().sort().forEach(g => {
+    allFolders().forEach(g => {
       const o = document.createElement('option');
       o.value = g; o.textContent = showPath(g);
       if(g === now) o.selected = true;
@@ -757,7 +760,7 @@ function drawSrcRows(box, list){
       store.folders = store.folders || [];
       if(!store.folders.includes(now)) store.folders.push(now);   // 비게 되는 폴더도 남긴다
       store.folder[f.code] = name;
-      store.closed = (store.closed||[]).filter(x => x !== name);
+      ancestors(name).forEach(x => setOpen(x, true));       // 옮긴 곳을 펴둔다
       save(); rebuild(); drawAll(); drawSrcList();
     };
     d.appendChild(mv);
@@ -797,12 +800,11 @@ $('addFolder').onclick = () => {
   const name = el.value.trim().replace(/\//g, ' ');       // 이름에 / 는 못 쓴다 (경로 구분자)
   if(!name){ el.focus(); return; }
   const parent = $('parentFolder').value;
-  if(parent && subOf(parent)){ $('srcMsg').textContent = '폴더는 두 단계까지만 됩니다.'; return; }
   const path = parent ? parent + '/' + name : name;
   if(allFolders().includes(path)){ $('srcMsg').textContent = '"' + showPath(path) + '" 폴더는 이미 있습니다.'; return; }
   store.folders = store.folders || [];
   store.folders.push(path);
-  store.closed = (store.closed||[]).filter(x => x !== path && x !== topOf(path));
+  ancestors(path).forEach(x => { setOpen(x, true); if(!store.mopen.includes(x)) store.mopen.push(x); });
   save(); drawAll(); drawSrcList();
   el.value = '';
   $('srcMsg').textContent = '"' + showPath(path) + '" 폴더를 만들었습니다.';
@@ -889,7 +891,7 @@ function drawClassPick(){
   if(!store.students.length){
     box.innerHTML = '<div class="emptyhint">학생을 먼저 추가하세요.</div>'; return;
   }
-  store.students.forEach(n => {
+  store.students.slice().sort(byName).forEach(n => {
     const on = store.classPick.includes(n);
     const b = document.createElement('button');
     b.className = 'stu' + (on ? ' pick' : '');
@@ -1130,10 +1132,12 @@ load();
 rebuild();
 
 // 자료가 많아지면 목록이 길어진다. 처음 한 번, 지금 보는 폴더만 펴둔다.
-if(!store.foldedOnce){
-  const here = topOf(groupOf(BYCODE[curSrc] || BANK[0]));
-  store.closed = [...new Set(BANK.map(f => topOf(groupOf(f))))].filter(t => t !== here);
-  store.foldedOnce = true;
+// 폴더를 학년·교과서·모의고사 여러 단계로 바꾸면서(2026-09-13) 예전 폴더 기록
+// (이 브라우저에서 옮긴 것·만든 것·접힘)은 새 구조와 맞지 않아 한 번 비운다.
+if(!store.tree2){
+  store.folder = {}; store.folders = []; store.closed = []; store.mopen = [];
+  store.open = ancestors(groupOf(BYCODE[curSrc] || BANK[0]));
+  store.tree2 = true;
   save();
 }
 
