@@ -191,7 +191,7 @@ textarea{
 <div class="noprint">
   <h1>봄날 문제은행 <span style="font-size:13px;font-weight:400;color:var(--sub)">오답노트</span></h1>
   <p class="lead">학생을 고르고 → 자료별로 틀린 번호를 누르면 → 오답노트가 만들어집니다. 저장은 이 브라우저에 남습니다.</p>
-  <p class="lead" style="font-size:12px;color:var(--sub);margin-top:-4px">빌드 2026-09-11 13:50 · 자료 40개 · 문항 859개
+  <p class="lead" style="font-size:12px;color:var(--sub);margin-top:-4px">빌드 2026-09-13 13:39 · 자료 40개 · 문항 859개
     <span id="syncMsg" style="margin-left:10px"></span></p>
 
   <div class="panel">
@@ -202,6 +202,7 @@ textarea{
       <button id="addStu">추가</button>
       <button id="renStu">이름 바꾸기</button>
       <button id="clearStu" class="danger">이 학생 오답 전체 지우기</button>
+      <button id="delStu" class="danger">학생 삭제</button>
       <span class="hint" id="stuMsg"></span>
     </div>
   </div>
@@ -13446,6 +13447,48 @@ $('renStu').onclick = () => {
   cur = v; $('newName').value = ''; save(); drawAll();
   $('stuMsg').textContent = '"' + old + '" → "' + v + '" 으로 바꿨습니다.';
 };
+// 학생 삭제. 실수로 지워 기록을 잃은 적이 있어서(구자현) 두 번 눌러 확인하고,
+// 지운 뒤 15초 동안 되돌리기를 띄운다. 지우면 공유 저장소(Firebase)에서도 지워진다.
+let _undoStu = null;
+$('delStu').onclick = () => {
+  if(!cur){ $('stuMsg').textContent = '지울 학생을 먼저 고르세요.'; return; }
+  const b = $('delStu');
+  const n = totalOf(cur);
+  if(b.dataset.armed !== '1'){
+    b.dataset.armed = '1';
+    b.textContent = '"' + cur + '" 삭제' + (n ? ' (오답 ' + n + '개도)' : '') + ' · 한 번 더';
+    clearTimeout(b._t);
+    b._t = setTimeout(() => { b.dataset.armed=''; b.textContent='학생 삭제'; }, 4000);
+    return;
+  }
+  b.dataset.armed = ''; b.textContent = '학생 삭제'; clearTimeout(b._t);
+
+  const name = cur, at = store.students.indexOf(name);
+  _undoStu = { name, at, marks: JSON.parse(JSON.stringify(store.marks[name] || {})),
+               pick: (store.classPick || []).includes(name) };
+  store.students.splice(at, 1);
+  delete store.marks[name];
+  store.classPick = (store.classPick || []).filter(x => x !== name);
+  cur = store.students[Math.min(at, store.students.length - 1)] || null;
+  save(); drawAll();
+
+  const msg = $('stuMsg'); msg.innerHTML = '';
+  msg.append('"' + name + '" 을(를) 지웠습니다. ');
+  const u = document.createElement('button');
+  u.textContent = '되돌리기'; u.style.cssText = 'font-size:12px;padding:2px 8px;margin-left:4px';
+  u.onclick = () => {
+    const x = _undoStu; if(!x || x.name !== name) return;
+    if(!store.students.includes(x.name)) store.students.splice(Math.min(x.at, store.students.length), 0, x.name);
+    store.marks[x.name] = x.marks;
+    if(x.pick) store.classPick = (store.classPick || []).concat([x.name]);
+    cur = x.name; _undoStu = null; save(); drawAll();
+    msg.textContent = '"' + x.name + '" 을(를) 되돌렸습니다.';
+  };
+  msg.appendChild(u);
+  clearTimeout(msg._t);
+  msg._t = setTimeout(() => { if(_undoStu && _undoStu.name === name){ _undoStu = null; msg.textContent = ''; } }, 15000);
+};
+
 $('clearStu').onclick = () => {
   if(!cur){ $('stuMsg').textContent = '학생을 먼저 고르세요.'; return; }
   const b = $('clearStu');
