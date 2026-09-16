@@ -200,7 +200,7 @@ textarea{
 <div class="noprint">
   <h1>봄날 문제은행 <span style="font-size:13px;font-weight:400;color:var(--sub)">오답노트</span></h1>
   <p class="lead">학생을 고르고 → 자료별로 틀린 번호를 누르면 → 오답노트가 만들어집니다. 저장은 이 브라우저에 남습니다.</p>
-  <p class="lead" style="font-size:12px;color:var(--sub);margin-top:-4px">빌드 2026-09-15 16:29 · 자료 44개 · 문항 1101개
+  <p class="lead" style="font-size:12px;color:var(--sub);margin-top:-4px">빌드 2026-09-16 16:21 · 자료 44개 · 문항 1101개
     <span id="syncMsg" style="margin-left:10px"></span></p>
 
   <div class="panel">
@@ -17835,9 +17835,16 @@ const writeBase = v => { try{ localStorage.setItem(BASEKEY, JSON.stringify(v)); 
 function mergeOne(l, b, r){
   if(same(l, b)) return r;                     // 여기선 안 고침 → 저쪽 것
   if(same(r, b)) return l;                     // 저쪽은 안 고침 → 이쪽 것
-  const out = {};                              // 둘 다 고침 → 체크를 합친다
-  new Set([...Object.keys(l||{}), ...Object.keys(r||{})]).forEach(c => {
-    out[c] = [...new Set([...((l||{})[c]||[]), ...((r||{})[c]||[])])].sort((x,y)=>x-y);
+  // 둘 다 고침 → 번호 단위로 3자 비교.
+  // 그냥 합치면(예전 방식) 한쪽에서 뺀 번호가 저쪽 것에 남아 되살아났다.
+  // 잘못 누른 번호를 지워도 자꾸 다시 잡히던 것이 이 자리다.
+  const L = l || {}, B = b || {}, R = r || {}, out = {};
+  new Set([...Object.keys(L), ...Object.keys(R)]).forEach(c => {
+    const lv = L[c] || [], rv = R[c] || [], bv = B[c] || [];
+    const keep = [...new Set([...lv, ...rv])].filter(n =>
+      bv.includes(n) ? (lv.includes(n) && rv.includes(n))   // 기준점에 있던 번호 → 한쪽에서 뺐으면 뺀다
+                     : true);                               // 기준점에 없던 번호 → 새로 넣은 것이니 살린다
+    out[c] = keep.sort((x, y) => x - y);
   });
   return out;
 }
