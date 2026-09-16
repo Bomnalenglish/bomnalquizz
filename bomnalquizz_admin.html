@@ -29,6 +29,28 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--bg);color:#1a1a2e;mi
 .tab-btn{background:none;border:none;color:rgba(255,255,255,.55);padding:11px 22px;font-family:'Nanum Gothic',sans-serif;font-size:14px;font-weight:700;cursor:pointer;border-bottom:3px solid transparent;transition:all .15s;display:flex;align-items:center;gap:6px;white-space:nowrap;}
 .tab-btn:hover{color:rgba(255,255,255,.9);}
 .tab-btn.active{color:white;border-bottom-color:var(--accent);}
+.mk-note{font-size:11px;color:var(--muted);}
+.mk-legend{font-size:12px;color:#475569;margin:0 0 12px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;}
+.mk-chip{display:inline-block;padding:2px 8px;border-radius:8px;font-size:11px;font-weight:700;}
+.mk-c0{background:#f1f5f9;color:#94a3b8;}
+.mk-c1{background:#ffebee;color:#c62828;}
+.mk-c2{background:#fff8e1;color:#e65100;}
+.mk-c3{background:#e8f5e9;color:#2e7d32;}
+.mk-wrap{background:var(--card);border-radius:14px;box-shadow:0 2px 10px rgba(26,35,126,.07);overflow-x:auto;}
+.mk-tbl{border-collapse:collapse;width:100%;font-size:12px;}
+.mk-tbl th{background:#f8fafc;color:#475569;font-weight:800;padding:8px 4px;border-bottom:2px solid #e2e8f0;white-space:nowrap;text-align:center;position:sticky;top:0;}
+.mk-tbl th.l,.mk-tbl td.l{text-align:left;padding-left:12px;}
+.mk-tbl td{padding:6px 3px;border-bottom:1px solid #f1f5f9;text-align:center;white-space:nowrap;font-variant-numeric:tabular-nums;}
+.mk-tbl td.cell span{display:inline-block;min-width:38px;padding:3px 2px;border-radius:6px;font-size:11px;font-weight:700;}
+.mk-name{font-weight:800;color:var(--primary);cursor:pointer;background:none;border:none;font-family:inherit;font-size:12px;padding:0;}
+.mk-name:hover{text-decoration:underline;}
+.mk-detail td{background:#fafbff;text-align:left;padding:10px 14px;white-space:normal;}
+.mk-ref{margin-bottom:10px;}
+.mk-ref-h{font-weight:800;color:var(--primary);font-size:12px;margin-bottom:4px;}
+.mk-q{display:inline-flex;align-items:center;gap:4px;margin:2px 4px 2px 0;padding:3px 8px;border-radius:8px;font-size:11px;border:1px solid #e2e8f0;background:white;}
+.mk-q.ok{border-color:#a5d6a7;}
+.mk-q.no{border-color:#ef9a9a;background:#fff5f5;}
+.mk-q small{color:#94a3b8;}
 .panels{flex:1;overflow:hidden;position:relative;}
 .panel{position:absolute;inset:0;display:none;overflow-y:auto;}
 .panel.active{display:block;}
@@ -256,6 +278,7 @@ tr:hover td{background:#f8f9ff;}
   <div class="tab-bar">
     <button class="tab-btn active" onclick="switchTab('quiz')"    id="tab-quiz">📊 퀴즈 결과</button>
     <button class="tab-btn"        onclick="switchTab('section')" id="tab-section">📋 학생별 현황</button>
+    <button class="tab-btn"        onclick="switchTab('mock')"    id="tab-mock">🗂️ 모의고사 총괄</button>
     <button class="tab-btn"        onclick="switchTab('access')"  id="tab-access">🔐 접속 기록</button>
     <button class="tab-btn"        onclick="switchTab('students')" id="tab-students">👥 학생 코드 발급</button>
     <button class="tab-btn"        onclick="switchTab('vaca')"    id="tab-vaca">📚 단어장 · 학생 관리</button>
@@ -338,6 +361,26 @@ tr:hover td{background:#f8f9ff;}
           <button class="btn-refresh" onclick="loadData(true)">🔄 새로고침</button>
         </div>
         <div id="sectionArea"><div class="no-data-msg">데이터 불러오는 중...</div></div>
+      </div>
+    </div>
+
+    <div class="panel" id="panel-mock">
+      <div class="quiz-inner">
+        <div class="controls">
+          <span class="ctrl-label">시험</span>
+          <select class="ctrl-sel" id="mkExam" onchange="renderMockView()"></select>
+          <span class="ctrl-label">학교</span>
+          <select class="ctrl-sel" id="mkSchool" onchange="renderMockView()"><option value="">전체</option></select>
+          <span class="ctrl-label">이름</span>
+          <input type="text" class="ctrl-inp" id="mkName" placeholder="검색..." oninput="renderMockView()">
+          <div class="spacer"></div>
+          <span class="mk-note">기간은 '퀴즈 결과' 탭의 기간 설정을 따릅니다</span>
+          <button class="btn-refresh" onclick="loadData(true)">🔄 새로고침</button>
+        </div>
+        <div class="mk-legend">칸 안 숫자 = <b>푼 문제 수 / 전체 문제 수</b> · 색 = 정답률
+          <span class="mk-chip mk-c0">안 풂</span><span class="mk-chip mk-c1">60% 미만</span><span class="mk-chip mk-c2">60~84%</span><span class="mk-chip mk-c3">85% 이상</span>
+          · 학생 이름을 누르면 문제별 기록이 펼쳐집니다</div>
+        <div id="mockArea"><div class="no-data-msg">데이터 불러오는 중...</div></div>
       </div>
     </div>
 
@@ -457,12 +500,13 @@ window.addEventListener('load',function(){
 
 let vacaLoaded=false;
 function switchTab(tab){
-  ['quiz','section','access','students','vaca'].forEach(t=>{
+  ['quiz','section','mock','access','students','vaca'].forEach(t=>{
     document.getElementById('tab-'+t).classList.toggle('active',t===tab);
     document.getElementById('panel-'+t).classList.toggle('active',t===tab);
   });
   if(tab==='vaca'&&!vacaLoaded){document.getElementById('vacaFrame').src=VACA_URL;vacaLoaded=true;}
   if(tab==='section') renderSectionView();
+  if(tab==='mock') renderMockView();
   if(tab==='access') loadAccess();
   if(tab==='students') loadStudents();
 }
@@ -670,6 +714,8 @@ function _renderAll(status){
   // 학생별 현황은 그 탭을 누를 때 switchTab 이 그린다. 보이지도 않는 탭을 미리 그리느라 1.3초를 썼다.
   const sec=document.getElementById('panel-section');
   if(sec && sec.classList.contains('active')) renderSectionView();
+  const mk=document.getElementById('panel-mock');
+  if(mk && mk.classList.contains('active')) renderMockView();
 }
 function _statusLine(prefix, periodLabel){
   return prefix + ` · ${periodLabel} ${allData.length}건` + (dedupCount>0 ? ` · 중복 ${dedupCount}건 제외` : '');
@@ -1356,6 +1402,85 @@ function _cellAttrs(stName, stSchool, qt){
   const rounds = window.histCount ? window.histCount(stName, stSchool, qt) : 1;
   return ` data-st="${_attrEsc(stName)}||${_attrEsc(stSchool)}" data-qt="${_attrEsc(qt)}" data-rounds="${rounds}" onclick="(function(el){var p=el.dataset.st.split('||');window.showHistory(p[0],p[1]||'',el.dataset.qt);})(this)"`;
 }
+
+
+// ════════════════════════════════════════════════════════════
+// 🗂️ 모의고사 총괄 학습현황 — 학생별로 몇 번 문항의 어떤 문제(Q번호)를 풀었는지
+//   · quiz_results 의 details[].문제('Q001'…)·지문('31번')·결과 를 모아 집계
+//   · 새 총괄 시험을 추가하면 MOCK_TOTAL_META 에 한 줄 추가
+// ════════════════════════════════════════════════════════════
+const MOCK_TOTAL_META = {"고1_22년9월_총괄_학교기출": {"label": "고1 2022년 9월 총괄 (학교기출 1~5차)", "total": 416, "refs": {"18": 3, "19": 4, "20": 15, "21": 19, "22": 19, "23": 15, "24": 20, "25": 4, "26": 2, "28": 2, "29": 29, "30": 31, "31": 35, "32": 22, "33": 32, "34": 15, "35": 13, "36": 25, "37": 31, "38": 21, "39": 25, "40": 16, "42": 15, "45": 3}}};
+const _mkOpen = new Set();
+function _mkRecords(examKey){
+  return allData.filter(d=>d.quizType && d.quizType.indexOf(examKey)===0 && Array.isArray(d.details) && d.details.length);
+}
+function renderMockView(){
+  const area=document.getElementById('mockArea'); if(!area) return;
+  const exSel=document.getElementById('mkExam');
+  if(!exSel.options.length){
+    Object.entries(MOCK_TOTAL_META).forEach(([k,m])=>{const o=document.createElement('option');o.value=k;o.textContent=m.label;exSel.appendChild(o);});
+  }
+  const examKey=exSel.value, meta=MOCK_TOTAL_META[examKey];
+  const recs=_mkRecords(examKey);
+  // 학교 목록 채우기
+  const scSel=document.getElementById('mkSchool'); const curSc=scSel.value;
+  const schools=[...new Set(recs.map(r=>r.school))].sort();
+  scSel.innerHTML='<option value="">전체</option>'+schools.map(s=>`<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`).join('');
+  if(schools.includes(curSc)) scSel.value=curSc;
+  const fSc=scSel.value, fNm=(document.getElementById('mkName').value||'').trim();
+  // 학생별 집계
+  const byStu=new Map();
+  recs.forEach(r=>{
+    if(fSc && r.school!==fSc) return;
+    if(fNm && r.name.indexOf(fNm)<0) return;
+    const key=r.school+'|'+r.name;
+    if(!byStu.has(key)) byStu.set(key,{name:r.name,school:r.school,qs:new Map(),last:null,sessions:0});
+    const s=byStu.get(key); s.sessions++;
+    if(r.time && (!s.last || r.time>s.last)) s.last=r.time;
+    r.details.forEach(x=>{
+      const qid=String(x.문제||''); if(!/^Q\d+/.test(qid)) return;
+      const ref=String(x.지문||'').replace('번','');
+      const ok=String(x.결과||'').indexOf('정답')>=0 && String(x.결과||'').indexOf('오답')<0;
+      let q=s.qs.get(qid);
+      if(!q){q={qid,ref,type:x.유형||'',src:x.학교기출||'',tries:0,okN:0,lastOk:null,lastT:0};s.qs.set(qid,q);}
+      q.tries++; if(ok) q.okN++;
+      const tt=r.time?r.time.getTime():0;
+      if(tt>=q.lastT){q.lastT=tt;q.lastOk=ok;}
+    });
+  });
+  const refs=Object.keys(meta.refs);
+  const rows=[...byStu.values()].sort((a,b)=>(b.last||0)-(a.last||0));
+  if(!rows.length){area.innerHTML='<div class="no-data-msg">이 기간에 이 시험을 푼 기록이 없습니다.</div>';return;}
+  const head=`<tr><th class="l">학생</th><th>학교</th><th>푼 문제</th><th>정답률</th><th>최근 학습</th>${refs.map(r=>`<th>${r}번</th>`).join('')}</tr>`;
+  const body=rows.map((s,i)=>{
+    const qs=[...s.qs.values()];
+    const solved=qs.length, okN=qs.filter(q=>q.lastOk).length;
+    const rate=solved?Math.round(okN/solved*100):0;
+    const cells=refs.map(r=>{
+      const list=qs.filter(q=>q.ref===r); const n=list.length, tot=meta.refs[r];
+      if(!n) return `<td class="cell"><span class="mk-c0">0/${tot}</span></td>`;
+      const pr=list.filter(q=>q.lastOk).length/n*100;
+      const c=pr>=85?'mk-c3':pr>=60?'mk-c2':'mk-c1';
+      return `<td class="cell" title="${r}번: ${n}문제 풂 · 최근 정답 ${list.filter(q=>q.lastOk).length}개"><span class="${c}">${n}/${tot}</span></td>`;
+    }).join('');
+    const key=s.school+'|'+s.name;
+    const open=_mkOpen.has(key);
+    const last=s.last?s.last.toLocaleDateString('ko-KR',{month:'numeric',day:'numeric'})+' '+s.last.toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'}):'-';
+    let detail='';
+    if(open){
+      detail=`<tr class="mk-detail"><td colspan="${5+refs.length}">`+refs.map(r=>{
+        const list=qs.filter(q=>q.ref===r).sort((a,b)=>a.qid.localeCompare(b.qid));
+        if(!list.length) return '';
+        return `<div class="mk-ref"><div class="mk-ref-h">${r}번 · ${list.length}/${meta.refs[r]}문제</div>`+list.map(q=>
+          `<span class="mk-q ${q.lastOk?'ok':'no'}" title="${escapeHtml(q.src)} · 시도 ${q.tries}회 중 정답 ${q.okN}회">${q.lastOk?'✅':'❌'} <b>${q.qid}</b> ${escapeHtml(q.type)} <small>${escapeHtml(q.src)}${q.tries>1?' · '+q.tries+'회':''}</small></span>`
+        ).join('')+'</div>';
+      }).join('')+`</td></tr>`;
+    }
+    return `<tr><td class="l"><button class="mk-name" onclick="toggleMockStudent('${escapeAttr(key)}')">${open?'▾':'▸'} ${escapeHtml(s.name)}</button></td><td>${escapeHtml(s.school)}</td><td><b>${solved}</b>/${meta.total}</td><td>${rate}%</td><td>${last}</td>${cells}</tr>${detail}`;
+  }).join('');
+  area.innerHTML=`<div class="mk-wrap"><table class="mk-tbl"><thead>${head}</thead><tbody>${body}</tbody></table></div>`;
+}
+function toggleMockStudent(key){ if(_mkOpen.has(key)) _mkOpen.delete(key); else _mkOpen.add(key); renderMockView(); }
 
 function renderSectionView(){
   const sq=document.getElementById('secSchool')?.value||'';
