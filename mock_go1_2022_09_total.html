@@ -43,6 +43,11 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--bg);min-height:100vh
 .p-badge{position:absolute;top:6px;right:6px;font-size:9px;padding:2px 6px;border-radius:8px;font-weight:700;}
 .done-badge{background:#e8f5e9;color:#2e7d32;}
 .sel-all-btn{width:100%;padding:12px;border-radius:12px;border:2px solid var(--pri);background:white;color:var(--pri);font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;margin-bottom:10px;}
+.type-box{background:white;border-radius:12px;padding:12px 14px;margin-bottom:14px;border:2px solid #e0e0e0;}
+.type-row{display:flex;gap:6px;flex-wrap:wrap;}
+.type-row .fb{padding:6px 12px;font-size:12.5px;}
+.type-row .fb small{font-weight:400;opacity:.75;margin-left:3px;}
+.p-card.off{opacity:.35;pointer-events:none;}
 .cnt-box{background:white;border-radius:12px;padding:12px 14px;margin-bottom:10px;border:2px solid #e0e0e0;}
 .cnt-lbl{font-size:13px;font-weight:800;color:var(--pri);margin-bottom:8px;}
 .cnt-lbl span{font-weight:400;color:var(--muted);font-size:12px;}
@@ -152,11 +157,16 @@ window._fbSave=async function(data){
 <div id="passageScreen" class="hidden">
   <div class="ps-header">
     <div>
-      <div class="ps-title">📖 지문 선택</div>
-      <div class="ps-sub">풀고 싶은 지문(번호)을 선택하세요 (복수 선택 가능)</div>
+      <div class="ps-title">📖 유형 · 번호 선택</div>
+      <div class="ps-sub">유형을 고르고, 풀 번호를 선택하세요 (복수 선택 가능)</div>
     </div>
     <div class="user-info" id="userInfo"></div>
   </div>
+  <div class="type-box">
+    <div class="cnt-lbl">① 유형 선택 <span>· 여러 개 고를 수 있어요</span></div>
+    <div class="type-row" id="typeRow"></div>
+  </div>
+  <div class="cnt-lbl" style="margin:4px 2px 8px;">② 번호 선택 <span>· 숫자는 고른 유형의 문제 수</span></div>
   <div class="filter-bar">
     <button class="fb on" onclick="filterPassage('all',this)">전체</button>
     <button class="fb" onclick="filterPassage('18-28',this)">18~28번</button>
@@ -662,6 +672,43 @@ function _saveHist(){
   try{localStorage.setItem(_histKey(), JSON.stringify({solved:[..._solved], wrong:[..._wrongSet]}));}catch(e){}
 }
 function _shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+// 유형 묶음 (세부 유형 → 선택 버튼)
+const TYPE_GROUPS=[
+  ['빈칸',['빈칸','빈칸(공통)','빈칸연결어']],
+  ['어휘',['어휘','어휘괄호','어휘(바꿔쓰기)','영영풀이']],
+  ['어법',['어법','어법괄호','어법(복수)','어법·의미']],
+  ['순서',['순서','순서(6단계)']],
+  ['문장삽입',['문장삽입']],
+  ['요약',['요약']],
+  ['무관문장',['무관문장']],
+  ['제목',['제목']],
+  ['주제',['주제']],
+  ['요지·주장',['요지','주장','목적','속담']],
+  ['내용일치',['내용일치','내용불일치','내용일치(도표)','내용불일치(도표)','내용불일치(개수)','내용일치(수)']],
+  ['밑줄의미·지칭',['밑줄의미','지칭','대명사']],
+];
+const TYPE_OF={}; TYPE_GROUPS.forEach(([g,list])=>list.forEach(t=>TYPE_OF[t]=g));
+QUESTIONS.forEach(q=>{q.tg=TYPE_OF[q.type]||'기타';});
+let selectedTypes=new Set();   // 비어 있으면 전체 유형
+function typeOk(q){return selectedTypes.size===0||selectedTypes.has(q.tg);}
+function renderTypeRow(){
+  const row=document.getElementById('typeRow'); if(!row) return;
+  row.innerHTML='';
+  const all=document.createElement('button');
+  all.className='fb'+(selectedTypes.size===0?' on':'');
+  all.innerHTML='전체 유형<small>'+QUESTIONS.length+'</small>';
+  all.onclick=()=>{selectedTypes.clear();renderTypeRow();renderPassageGrid();};
+  row.appendChild(all);
+  const groups=[...TYPE_GROUPS.map(g=>g[0])]; if(QUESTIONS.some(q=>q.tg==='기타')) groups.push('기타');
+  groups.forEach(g=>{
+    const n=QUESTIONS.filter(q=>q.tg===g).length; if(!n) return;
+    const b=document.createElement('button');
+    b.className='fb'+(selectedTypes.has(g)?' on':'');
+    b.innerHTML=g+'<small>'+n+'</small>';
+    b.onclick=()=>{ if(selectedTypes.has(g)) selectedTypes.delete(g); else selectedTypes.add(g); renderTypeRow(); renderPassageGrid(); };
+    row.appendChild(b);
+  });
+}
 function setPerRef(n,btn){perRef=n;document.querySelectorAll('#cntRow .fb').forEach(b=>b.classList.remove('on'));btn.classList.add('on');}
 
 // ── START ──────────────────────────────────────────
@@ -674,6 +721,7 @@ function goPassageSelect(){
   document.getElementById('startScreen').classList.add('hidden');
   document.getElementById('userInfo').textContent = userName + ' · ' + userSchool;
   _loadHist();
+  renderTypeRow();
   renderPassageGrid();
   document.getElementById('passageScreen').classList.remove('hidden');
 }
@@ -692,11 +740,12 @@ function renderPassageGrid(){
   PASSAGE_ORDER.forEach(ref=>{
     if(!refInRange(ref, filterMode)) return;
     if(!PASSAGES_BY_REF[ref]) return;
-    const count = PASSAGES_BY_REF[ref].length;
+    const list = PASSAGES_BY_REF[ref].filter(typeOk);
+    const count = list.length;
     const d = document.createElement('div');
-    d.className='p-card'+(selectedRefs.has(ref)?' sel':'')+(doneRefs.has(ref)?' done':'');
+    d.className='p-card'+(selectedRefs.has(ref)?' sel':'')+(doneRefs.has(ref)?' done':'')+(count===0?' off':'');
     d.onclick=()=>togglePassage(ref, d);
-    const solvedN = PASSAGES_BY_REF[ref].filter(q=>_solved.has(q.no)).length;
+    const solvedN = list.filter(q=>_solved.has(q.no)).length;
     d.innerHTML=`<div class="p-no">${ref}번</div><div class="p-count">${count}문제</div><div class="p-solved">푼 문제 ${solvedN}/${count}</div>`
       +(doneRefs.has(ref)?'<span class="p-badge done-badge">완료✓</span>':'')
       +(selectedRefs.has(ref)&&!doneRefs.has(ref)?'<span class="p-badge" style="background:#e3f2fd;color:#1565c0;">선택</span>':'');
@@ -718,7 +767,7 @@ function filterPassage(mode, btn){
 }
 
 function selectAll(){
-  const visible = PASSAGE_ORDER.filter(r=>refInRange(r, filterMode) && PASSAGES_BY_REF[r]);
+  const visible = PASSAGE_ORDER.filter(r=>refInRange(r, filterMode) && PASSAGES_BY_REF[r] && PASSAGES_BY_REF[r].some(typeOk));
   const allSel = visible.every(r=>selectedRefs.has(r));
   visible.forEach(r=>{ if(allSel) selectedRefs.delete(r); else selectedRefs.add(r); });
   renderPassageGrid();
@@ -729,19 +778,20 @@ function startQuiz(){
   qs=[];
   PASSAGE_ORDER.forEach(ref=>{
     if(selectedRefs.has(ref) && PASSAGES_BY_REF[ref]){
-      const pool=_shuffle(PASSAGES_BY_REF[ref]);
+      const pool=_shuffle(PASSAGES_BY_REF[ref].filter(typeOk));
       // 안 푼 문제 → 틀렸던 문제 → 맞힌 문제 순
       const rank=q=>!_solved.has(q.no)?0:(_wrongSet.has(q.no)?1:2);
       pool.sort((a,b)=>rank(a)-rank(b));
       (perRef>0?pool.slice(0,perRef):pool).forEach(q=>qs.push(q));
     }
   });
+  if(qs.length===0){alert('고른 번호에 해당 유형 문제가 없어요. 유형이나 번호를 다시 골라주세요.');return;}
   idx=0; cor=0; wrn=0; wrongs=[]; allResults=[]; answered=false; t0=Date.now();
   document.getElementById('passageScreen').classList.add('hidden');
   document.getElementById('hdr').classList.remove('hidden');
   document.getElementById('pw').classList.remove('hidden');
   document.getElementById('quizArea').classList.remove('hidden');
-  document.getElementById('hs').textContent=userName+' · '+selectedRefs.size+'개 지문 · '+qs.length+'문제';
+  document.getElementById('hs').textContent=userName+' · '+(selectedTypes.size?[...selectedTypes].join('·')+' · ':'')+selectedRefs.size+'개 번호 · '+qs.length+'문제';
   showQ();
 }
 
@@ -958,6 +1008,7 @@ function showResult(){
     mockId: QUIZ_ID,
     qids: allResults.map(r=>r.no),
     passages: [...selectedRefs].sort(),
+    types: [...selectedTypes],
     details: allResults.map(r=>({
       문제: 'Q'+String(r.no).padStart(3,'0'),
       지문: r.pref+'번',
