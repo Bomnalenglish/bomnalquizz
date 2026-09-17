@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>봄날 퀴즈 | 고1 22년 9월 지문 완전정복</title>
+<script type="module" src="bn_tracker.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Black+Han+Sans&display=swap');
+:root{
+  --bg:#f5efe6; --card:#fffdf9; --ink:#2a2a2a; --soft:#7a7570; --line:#e4dccf;
+  --pri:#4a6741; --pri2:#6b8f60; --priBg:#eaf0e6;
+  --acc:#c47f3b; --accBg:#fbf0e3;
+  --red:#c0392b; --redBg:#fbeceb; --green:#2e7d32; --greenBg:#e8f3e9;
+  --blue:#3d6a8f; --blueBg:#e8eff5;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;line-height:1.6}
+.hidden{display:none!important}
+button{font-family:inherit;cursor:pointer}
+.wrap{max-width:720px;margin:0 auto;padding:16px 16px 60px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;margin-bottom:14px;box-shadow:0 2px 10px rgba(80,60,30,.05)}
+h1,.bh{font-family:'Black Han Sans',sans-serif;font-weight:400;letter-spacing:.3px}
+.btn{border:none;border-radius:12px;padding:13px 20px;font-size:15px;font-weight:700;background:var(--pri);color:#fff;transition:transform .1s,opacity .15s}
+.btn:active{transform:scale(.97)}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+.btn.sub{background:#fff;color:var(--pri);border:2px solid var(--pri)}
+.btn.warn{background:var(--red)}
+.btn.full{width:100%}
+.muted{color:var(--soft);font-size:13px}
+.chip{display:inline-block;font-size:11.5px;font-weight:700;border-radius:20px;padding:2px 10px;background:var(--priBg);color:var(--pri)}
+
+/* 시작 */
+#startScreen .card{max-width:440px;margin:40px auto;text-align:center}
+#startScreen h1{font-size:24px;color:var(--pri);margin-bottom:4px}
+.inp{width:100%;padding:12px 14px;border:2px solid var(--line);border-radius:12px;font-size:15px;font-family:inherit;margin-bottom:10px;outline:none;background:#fff}
+.inp:focus{border-color:var(--pri)}
+.flow{display:flex;justify-content:center;gap:6px;flex-wrap:wrap;margin:16px 0 20px}
+.flow span{background:var(--priBg);color:var(--pri);border-radius:10px;padding:6px 10px;font-size:12.5px;font-weight:700}
+
+/* 헤더 */
+.top{position:sticky;top:0;z-index:20;background:rgba(245,239,230,.94);backdrop-filter:blur(6px);border-bottom:1px solid var(--line)}
+.top-in{max-width:720px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:10px}
+.top .back{background:#fff;border:1px solid var(--line);border-radius:10px;padding:6px 10px;font-size:13px;font-weight:700;color:var(--ink)}
+.top .ttl{font-weight:900;font-size:15px;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top .who{font-size:12px;color:var(--soft);white-space:nowrap}
+.steps{max-width:720px;margin:0 auto;padding:0 16px 10px;display:flex;gap:6px}
+.steps div{flex:1;text-align:center;font-size:12px;font-weight:700;padding:6px 0;border-radius:10px;background:#fff;color:#b8b0a5;border:1px solid var(--line)}
+.steps div.on{background:var(--pri);color:#fff;border-color:var(--pri)}
+.steps div.done{background:var(--priBg);color:var(--pri);border-color:var(--priBg)}
+
+/* 지문 선택 */
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.pcard{background:var(--card);border:2px solid var(--line);border-radius:16px;padding:16px 12px;text-align:left;transition:border-color .15s,transform .15s}
+.pcard:hover{border-color:var(--pri);transform:translateY(-2px)}
+.pcard .no{font-family:'Black Han Sans',sans-serif;font-size:28px;color:var(--pri);line-height:1}
+.pcard .kd{font-size:12px;color:var(--acc);font-weight:700;margin:4px 0 2px}
+.pcard .tt{font-size:13px;font-weight:700;color:var(--ink);min-height:40px}
+.pcard .pr{display:flex;gap:4px;margin-top:10px;flex-wrap:wrap}
+.pcard .pr i{font-style:normal;font-size:11px;padding:1px 7px;border-radius:8px;background:#f0ebe3;color:#b8b0a5;font-weight:700}
+.pcard .pr i.ok{background:var(--greenBg);color:var(--green)}
+.pcard.done{border-color:var(--pri2);background:#fbfdf9}
+
+/* 단어 */
+.wbox{text-align:center;padding:28px 18px}
+.wen{font-size:30px;font-weight:900;letter-spacing:.3px;word-break:break-word}
+.wcount{font-size:13px;color:var(--soft);margin-bottom:10px}
+.opts{display:flex;flex-direction:column;gap:9px;margin-top:18px}
+.opt{text-align:left;background:#fff;border:2px solid var(--line);border-radius:12px;padding:12px 14px;font-size:15px;color:var(--ink);line-height:1.5;display:flex;gap:10px;align-items:flex-start}
+.opt .n{font-weight:900;color:var(--pri);flex:none}
+.opt:hover:not(:disabled){border-color:var(--pri2)}
+.opt.right{border-color:var(--green);background:var(--greenBg)}
+.opt.wrong{border-color:var(--red);background:var(--redBg)}
+.opt:disabled{cursor:default}
+.tip{margin-top:14px;background:var(--accBg);border-radius:12px;padding:10px 14px;font-size:13.5px;text-align:left;color:#7a4a1a}
+.say{background:none;border:1px solid var(--line);border-radius:50%;width:34px;height:34px;font-size:15px;vertical-align:middle;flex:none;background:#fff}
+.bar{height:6px;background:#ebe4d8;border-radius:6px;overflow:hidden;margin-bottom:14px}
+.bar i{display:block;height:100%;background:var(--pri2);width:0;transition:width .3s}
+
+/* 해석 */
+.toolbar{display:flex;gap:8px;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap}
+.tog{display:flex;background:#fff;border:1px solid var(--line);border-radius:12px;padding:3px}
+.tog button{border:none;background:none;padding:6px 12px;border-radius:9px;font-size:13px;font-weight:700;color:var(--soft)}
+.tog button.on{background:var(--pri);color:#fff}
+.sent{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px;margin-bottom:10px;transition:border-color .2s,background .2s}
+.sent.ok{border-color:#b9d1b1;background:#fafcf8}
+.sent .row{display:flex;gap:10px;align-items:flex-start}
+.sent .num{flex:none;width:26px;height:26px;border-radius:50%;background:var(--priBg);color:var(--pri);font-weight:900;font-size:13px;display:flex;align-items:center;justify-content:center;margin-top:2px}
+.sent .en{font-size:16.5px;font-weight:500;line-height:1.65;flex:1}
+.kw{border-bottom:2px solid #e3c79f;cursor:pointer;font-weight:700}
+.sent .ko{margin:8px 0 0 36px;font-size:15px;color:#3f5a37;background:var(--priBg);border-radius:10px;padding:8px 12px;line-height:1.6}
+.sent .ko.cover{color:transparent;background:repeating-linear-gradient(45deg,#e7e0d4,#e7e0d4 8px,#efe9df 8px,#efe9df 16px);cursor:pointer;position:relative;user-select:none}
+.sent .ko.cover::after{content:'👆 눌러서 해석 보기';position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);text-align:center;color:#8b7f6f;font-size:13px;font-weight:700}
+.sent .gp{margin:8px 0 0 36px;font-size:13px;color:#6b4a1f;background:var(--accBg);border-radius:10px;padding:7px 12px}
+.sent .gp b{color:var(--acc)}
+.sent .chk{margin:10px 0 0 36px;border:2px solid var(--line);background:#fff;border-radius:10px;padding:5px 12px;font-size:13px;font-weight:700;color:var(--soft)}
+.sent.ok .chk{border-color:var(--green);background:var(--greenBg);color:var(--green)}
+.topic{background:linear-gradient(135deg,#4a6741,#6b8f60);color:#fff;border-radius:18px;padding:18px 20px;margin:16px 0}
+.topic .lb{font-size:12px;font-weight:700;opacity:.85;margin-bottom:4px}
+.topic .tx{font-size:16px;font-weight:700;line-height:1.55}
+.topic .ez{margin-top:10px;background:rgba(255,255,255,.16);border-radius:12px;padding:10px 12px;font-size:14.5px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#2a2a2a;color:#fff;padding:10px 16px;border-radius:12px;font-size:14px;z-index:99;max-width:90vw;text-align:center;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.show{opacity:1}
+
+/* 문제 */
+.qhead{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap}
+.qtype{font-size:12px;font-weight:900;border-radius:8px;padding:2px 10px;background:var(--blueBg);color:var(--blue)}
+.qround{font-size:12px;font-weight:900;border-radius:8px;padding:2px 10px;background:var(--redBg);color:var(--red)}
+.qstem{font-size:16px;font-weight:700;line-height:1.55}
+.qbox{margin-top:12px;border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;font-size:14.5px;line-height:1.75;background:#fff}
+.qbox b{color:var(--blue)}
+.qbox u{text-decoration-thickness:2px;text-underline-offset:3px}
+.fb{margin-top:14px;border-radius:14px;padding:12px 14px;font-size:14.5px;line-height:1.7}
+.fb.ok{background:var(--greenBg);color:#1f5a23}
+.fb h4{font-size:15px;margin-bottom:4px}
+
+/* 오답노트 */
+.note{margin-top:16px;border:3px solid var(--red);border-radius:18px;overflow:hidden;background:#fff}
+.note-h{background:var(--red);color:#fff;padding:12px 16px;display:flex;align-items:center;gap:8px}
+.note-h .bh{font-size:20px}
+.note-b{padding:14px 16px}
+.nsec{margin-bottom:16px}
+.nsec>.lb{font-size:13px;font-weight:900;color:var(--red);margin-bottom:6px}
+.expl{background:#fff8f0;border-radius:12px;padding:10px 14px;font-size:14.5px;line-height:1.75}
+.expl b{color:#a3471b}
+.ans{font-weight:900;color:var(--green)}
+.ev{background:var(--blueBg);border-radius:12px;padding:10px 14px}
+.ev .e{font-size:15.5px;font-weight:700;color:#1e3d57;line-height:1.6}
+.ev .k{font-size:14px;color:#3d5a73;margin-top:4px}
+.rs{display:flex;flex-wrap:wrap;gap:6px}
+.rs button{border:2px solid var(--line);background:#fff;border-radius:20px;padding:6px 12px;font-size:13.5px;font-weight:700;color:var(--ink)}
+.rs button.on{border-color:var(--red);background:var(--redBg);color:var(--red)}
+.copy{width:100%;padding:11px 12px;border:2px solid var(--line);border-radius:12px;font-size:15px;font-family:inherit;outline:none;resize:vertical;min-height:70px;line-height:1.5}
+.copy.good{border-color:var(--green);background:#f6fbf6}
+.copy.bad{border-color:#e2a39b}
+.cstat{font-size:12.5px;margin-top:4px;color:var(--soft)}
+.cstat.good{color:var(--green);font-weight:700}
+.cstat.bad{color:var(--red);font-weight:700}
+.full-tr{margin-top:8px;border-top:1px dashed var(--line);padding-top:8px}
+.full-tr p{font-size:13.5px;margin-bottom:8px}
+.full-tr p .k{display:block;color:#3f5a37}
+.linkbtn{background:none;border:none;color:var(--blue);font-weight:700;font-size:13.5px;padding:4px 0;text-decoration:underline}
+
+/* 결과 */
+.big{font-family:'Black Han Sans',sans-serif;font-size:54px;color:var(--pri);line-height:1}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:16px 0}
+.stats div{background:var(--priBg);border-radius:12px;padding:10px 4px;text-align:center}
+.stats b{display:block;font-size:20px;color:var(--pri)}
+.stats span{font-size:12px;color:var(--soft)}
+.nlist .ni{border-left:4px solid var(--red);background:#fff;border-radius:10px;padding:10px 12px;margin-bottom:8px;font-size:13.5px}
+.nlist .ni .t{font-weight:900;color:var(--red)}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.btnrow .btn{flex:1;min-width:140px}
+@media(max-width:480px){
+  .wen{font-size:26px}
+  .sent .en{font-size:16px}
+  .sent .ko,.sent .gp,.sent .chk{margin-left:0}
+  .stats b{font-size:18px}
+}
+@media print{.top,.steps,.btnrow,.btn{display:none!important}body{background:#fff}}
+</style>
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getFirestore,collection,addDoc,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+const cfg={apiKey:"AIzaSyCxS524S8KAaF87DomPtl9sJdF-eqes404",authDomain:"bomnalvaca.firebaseapp.com",projectId:"bomnalvaca",storageBucket:"bomnalvaca.firebasestorage.app",messagingSenderId:"115868052300",appId:"1:115868052300:web:765c08867b6f1ce0987de9"};
+const app=initializeApp(cfg);
+const db=getFirestore(app);
+window._fbSave=async function(data){
+  await addDoc(collection(db,'quiz_results'),{...data,timestamp:serverTimestamp()});
+};
+</script>
+</head>
+<body>
+
+<!-- 시작 -->
+<div id="startScreen" class="wrap hidden">
+  <div class="card">
+    <div class="chip" style="margin-bottom:10px">봄날 ENGLISH</div>
+    <h1 id="stTitle"></h1>
+    <p class="muted" id="stSub"></p>
+    <div class="flow"><span>① 단어 체크</span><span>② 한 줄 해석</span><span>③ 문제 풀기</span><span>🚨 오답노트</span></div>
+    <input class="inp" id="nameInput" placeholder="이름" autocomplete="off">
+    <select class="inp" id="schoolInput">
+      <option value="">학교 선택</option>
+      <option>종촌고</option><option>고운고</option><option>대성고</option><option>기타</option>
+    </select>
+    <button class="btn full" onclick="startApp()">시작하기</button>
+  </div>
+</div>
+
+<!-- 상단바 -->
+<div id="topBar" class="top hidden">
+  <div class="top-in">
+    <button class="back" id="backBtn" onclick="goHome()">← 지문</button>
+    <div class="ttl" id="topTitle"></div>
+    <div class="who" id="who"></div>
+  </div>
+  <div class="steps" id="steps">
+    <div data-s="word">① 단어</div><div data-s="read">② 해석</div><div data-s="quiz">③ 문제</div>
+  </div>
+</div>
+
+<div class="wrap" id="main"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const EXAM = {
+  file: 'mock_go1_2022_09_deep',
+  title: '고1 22년 9월 · 지문 완전정복',
+  sub: '단어 체크 → 한 줄 해석 → 문제 풀기 → 오답노트',
+  quizType: '고1_22년9월_지문완전정복_독해'
+};
+
+const PASSAGES = [
+/* ───────────────────────── 20번 ───────────────────────── */
+{
+  id: '20', kind: '주장', title: '말할 때는 단어가 더 필요해!',
+  words: [
+    {en:'get rid of', ko:'~을 없애다', m:['get rid of']},
+    {en:'introduce', ko:'소개하다', m:['introduce']},
+    {en:'express', ko:'표현하다', m:['express']},
+    {en:'adequately', ko:'충분히, 적절히', m:['adequately']},
+    {en:'elaborate', ko:'자세히 설명하다', m:['elaborate'], tip:'eliminate(없애다)와 헷갈리지 않기! e-la-bo-rate = 살을 붙여 자세히 말하다'},
+    {en:'reread', ko:'다시 읽다', m:['reread'], tip:'re- = 다시 → reread 다시 읽다, rehear 다시 듣다'},
+    {en:'equipped with', ko:'~을 갖춘', m:['equipped with']},
+    {en:'distracted', ko:'주의가 산만해진', m:['distracted'], tip:'attracted(마음이 끌린)와 헷갈리지 않기!'},
+    {en:'crucial', ko:'매우 중요한', m:['crucial'], tip:'반대말 느낌: trivial(사소한)'},
+    {en:'catch up', ko:'따라잡다', m:['catch up']},
+    {en:'necessary', ko:'필요한', m:['necessary']}
+  ],
+  sents: [
+    {en:'Experts on writing say, "Get rid of as many words as possible."',
+     ko:'글쓰기 전문가들은 "단어를 최대한 많이 없애라."라고 말해요.',
+     g:'get rid of = ~을 없애다 · as many + 복수명사 + as possible = 가능한 한 많은 ~'},
+    {en:'Each word must do something important.',
+     ko:'단어 하나하나가 모두 중요한 역할을 해야 한다는 거예요.',
+     g:'each + 단수명사 (each word ⭕ / each words ❌)'},
+    {en:'If it doesn\'t, get rid of it.',
+     ko:'만약 중요한 역할을 안 한다면, 그 단어는 빼 버리라는 거죠.',
+     g:'doesn\'t 뒤에 do something important가 생략됨 (반복 피하기)'},
+    {en:'Well, this doesn\'t work for speaking.',
+     ko:'그런데 이 방법은 말하기에는 통하지 않아요.',
+     g:'work = (방법이) 효과가 있다, 통하다 · this = 앞의 "단어를 없애라"는 조언'},
+    {en:'It takes more words to introduce, express, and adequately elaborate an idea in speech than it takes in writing.',
+     ko:'말로 생각을 소개하고, 표현하고, 충분히 자세히 설명하려면, 글로 할 때보다 더 많은 단어가 필요해요.',
+     g:'It takes + 명사 + to V = ~하는 데 …이 필요하다 · more ~ than 비교급 · to introduce, express, elaborate 병렬'},
+    {en:'Why is this so?',
+     ko:'왜 그럴까요?',
+     g:''},
+    {en:'While the reader can reread, the listener cannot rehear.',
+     ko:'글을 읽는 사람은 다시 읽을 수 있지만, 말을 듣는 사람은 다시 들을 수 없어요.',
+     g:'while = ~인 반면에 (앞뒤 내용이 반대일 때) · re- = 다시'},
+    {en:'Speakers do not come equipped with a replay button.',
+     ko:'말하는 사람에게는 "다시 듣기" 버튼이 달려 있지 않잖아요.',
+     g:'come + 과거분사 = ~된 상태로 나오다 (말하는 사람이 버튼을 "갖추게 되는" 것 → 수동 equipped)'},
+    {en:'Because listeners are easily distracted, they will miss many pieces of what a speaker says.',
+     ko:'듣는 사람은 쉽게 딴생각을 하기 때문에, 말하는 사람이 하는 말의 많은 부분을 놓치게 돼요.',
+     g:'be distracted = 주의가 흐트러지다 (수동) · what = ~하는 것 (앞에 꾸밀 명사 없음 + 뒤에 목적어 빠짐)'},
+    {en:'If they miss the crucial sentence, they may never catch up.',
+     ko:'만약 아주 중요한 문장을 놓치면, 끝까지 내용을 못 따라갈 수도 있어요.',
+     g:'catch up = 따라잡다 · may = ~일 수도 있다'},
+    {en:'This makes it necessary for speakers to talk longer about their points, using more words on them than would be used to express the same idea in writing.',
+     ko:'그래서 말하는 사람은, 같은 생각을 글로 쓸 때보다 더 많은 단어를 써서, 자기 요점을 더 길게 이야기해야 해요.',
+     g:'make it necessary for A to V: it은 가목적어, 진짜 목적어는 to talk · using ~ = 분사구문(~하면서) · for speakers = to talk의 의미상 주어'}
+  ],
+  topic: '말할 때는 글을 쓸 때보다 더 많은 단어를 써서 요점을 길게 설명해야 한다.',
+  easy: '글은 다시 읽을 수 있지만, 말은 다시 들을 수 없어요. 그래서 말할 때는 더 많이, 더 길게 설명해 줘야 해요!',
+  qs: [
+    {t:'주장', q:'다음 글에서 필자가 주장하는 바로 가장 적절한 것은?', shuffle:true,
+     o:['글을 쓸 때는 최대한 짧고 간결하게 써야 한다.',
+        '말할 때는 글을 쓸 때보다 더 많은 단어로 요점을 설명해야 한다.',
+        '청중이 딴생각을 하지 않도록 발표 시간을 줄여야 한다.',
+        '중요한 문장은 글에서든 말에서든 한 번만 말해야 한다.',
+        '발표하기 전에 원고를 청중에게 미리 나누어 주어야 한다.'],
+     a:2,
+     why:'글 앞부분(1~3문장)의 "단어를 최대한 없애라"는 <b>글쓰기 전문가의 말</b>이지 필자의 주장이 아니에요. ①이 바로 그 함정! 필자는 "Well, this doesn\'t work for speaking.(그런데 말하기엔 안 통한다)"으로 방향을 바꾸고, 듣는 사람은 다시 들을 수 없으니 <b>말할 때는 더 많은 단어로 더 길게</b> 말해야 한다고 마지막 문장에서 결론을 내려요.',
+     ev:'This makes it necessary for speakers to talk longer about their points.',
+     evKo:'그래서 말하는 사람은 자기 요점에 대해 더 길게 이야기할 필요가 있다.'},
+    {t:'어휘', q:'(A), (B), (C)의 각 네모 안에서 문맥에 맞는 낱말로 가장 적절한 것은?',
+     box:'It takes more words to introduce, express, and adequately <b>(A) [elaborate / eliminate]</b> an idea in speech than it takes in writing. … Because listeners are easily <b>(B) [distracted / attracted]</b>, they will miss many pieces of what a speaker says. If they miss the <b>(C) [crucial / trivial]</b> sentence, they may never catch up.',
+     o:['elaborate — distracted — crucial','elaborate — attracted — crucial','elaborate — distracted — trivial','eliminate — attracted — trivial','eliminate — distracted — crucial'],
+     a:1,
+     why:'(A) 말로 생각을 전할 땐 단어가 더 필요하다 → 생각을 <b>자세히 설명하다(elaborate)</b>. eliminate는 "없애다"라서 반대 흐름.<br>(B) 듣는 사람이 말을 놓치는 이유 → 쉽게 <b>산만해지니까(distracted)</b>. attracted는 "끌린"이라 말을 놓칠 이유가 안 돼요.<br>(C) 놓치면 못 따라잡는 문장 → <b>매우 중요한(crucial)</b> 문장. trivial은 "사소한".',
+     ev:'Because listeners are easily distracted, they will miss many pieces of what a speaker says.',
+     evKo:'듣는 사람은 쉽게 산만해지기 때문에, 말하는 사람이 하는 말의 많은 부분을 놓칠 것이다.'},
+    {t:'어법', q:'(A), (B), (C)의 각 네모 안에서 어법에 맞는 표현으로 가장 적절한 것은?',
+     box:'Speakers do not come <b>(A) [equipping / equipped]</b> with a replay button. Because listeners are easily distracted, they will miss many pieces of <b>(B) [what / which]</b> a speaker says. … This makes <b>(C) [it / that]</b> necessary for speakers to talk longer about their points.',
+     o:['equipping — what — it','equipping — which — that','equipped — what — it','equipped — which — it','equipped — what — that'],
+     a:3,
+     why:'(A) 말하는 사람이 버튼을 "갖추게 되는" 것 → 수동의 의미 <b>equipped</b> (come + 과거분사 = ~된 상태로 오다).<br>(B) 앞에 꾸밀 명사가 없고(of 바로 뒤), says 뒤에 목적어가 빠져 있어요 → "~하는 것" <b>what</b>. which는 앞에 명사(선행사)가 있어야 해요.<br>(C) 뒤에 진짜 목적어 to talk가 있으니 가목적어 <b>it</b>. (make it + 형용사 + to V)',
+     ev:'Speakers do not come equipped with a replay button.',
+     evKo:'말하는 사람은 다시 듣기 버튼을 갖춘 채로 나오지 않는다.'},
+    {t:'내용일치', q:'다음 글의 내용과 일치하지 <u>않는</u> 것은?', shuffle:true,
+     o:['글쓰기 전문가들은 가능한 한 많은 단어를 없애라고 한다.',
+        '말로 생각을 전할 때는 글보다 더 많은 단어가 필요하다.',
+        '읽는 사람은 다시 읽을 수 있지만 듣는 사람은 다시 들을 수 없다.',
+        '듣는 사람은 쉽게 집중하기 때문에 중요한 문장을 거의 놓치지 않는다.',
+        '중요한 문장을 놓친 청자는 내용을 따라잡지 못할 수도 있다.'],
+     a:4,
+     why:'본문은 "listeners are <b>easily distracted</b>(쉽게 산만해진다)"라고 했어요. 그래서 말의 많은 부분을 <b>놓친다</b>고 했죠. "쉽게 집중한다, 거의 놓치지 않는다"는 정반대예요.',
+     ev:'Because listeners are easily distracted, they will miss many pieces of what a speaker says.',
+     evKo:'듣는 사람은 쉽게 산만해지기 때문에, 말하는 사람이 하는 말의 많은 부분을 놓칠 것이다.'},
+    {t:'순서', q:'주어진 글 다음에 이어질 글의 순서로 가장 적절한 것은?',
+     box:'Experts on writing say, "Get rid of as many words as possible." Each word must do something important. If it doesn\'t, get rid of it.<br><br><b>(A)</b> While the reader can reread, the listener cannot rehear. Speakers do not come equipped with a replay button. Because listeners are easily distracted, they will miss many pieces of what a speaker says.<br><br><b>(B)</b> Well, this doesn\'t work for speaking. It takes more words to introduce, express, and adequately elaborate an idea in speech than it takes in writing. Why is this so?<br><br><b>(C)</b> If they miss the crucial sentence, they may never catch up. This makes it necessary for speakers to talk longer about their points, using more words on them than would be used to express the same idea in writing.',
+     o:['(A) - (C) - (B)','(B) - (A) - (C)','(B) - (C) - (A)','(C) - (A) - (B)','(C) - (B) - (A)'],
+     a:2,
+     why:'① 주어진 글: 글쓰기에선 단어를 없애라.<br>② <b>(B)</b> "this(그 조언)는 말하기엔 안 통한다" → 마지막에 "왜 그럴까?" 질문.<br>③ <b>(A)</b> 질문에 대한 답: 듣는 사람은 다시 들을 수 없고 쉽게 놓친다.<br>④ <b>(C)</b> (A)의 listeners를 <b>they</b>로 받아 "중요한 문장을 놓치면…" → 그래서 길게 말해야 한다는 결론.<br>👉 연결고리: <b>this</b>(B) · <b>Why is this so?</b> → 답(A) · <b>they</b>(C)',
+     ev:'Well, this doesn\'t work for speaking.',
+     evKo:'그런데 이것(단어를 없애라는 조언)은 말하기에는 통하지 않는다.'},
+    {t:'빈칸', q:'다음 빈칸에 들어갈 말로 가장 적절한 것은?', shuffle:true,
+     box:'While the reader can reread, the listener cannot rehear. … If they miss the crucial sentence, they may never catch up. This makes it necessary for speakers to talk <b>__________</b> about their points, using more words on them than would be used to express the same idea in writing.',
+     o:['longer','shorter','faster','less','more quietly'],
+     a:1,
+     why:'빈칸 바로 뒤에 "using <b>more words</b>(더 많은 단어를 쓰면서)"가 있어요. 더 많은 단어를 쓴다는 건 <b>더 길게(longer)</b> 말한다는 뜻! shorter·less는 정반대, faster·more quietly는 글의 내용과 상관없어요.',
+     ev:'using more words on them than would be used to express the same idea in writing',
+     evKo:'같은 생각을 글로 표현할 때 쓰이는 것보다 더 많은 단어를 쓰면서'}
+  ]
+},
+
+/* ───────────────────────── 23번 ───────────────────────── */
+{
+  id: '23', kind: '주제', title: '무리에 속하고 싶은 마음의 비밀',
+  words: [
+    {en:'creature', ko:'생물, 동물', m:['creatures']},
+    {en:'evolution', ko:'진화', m:['evolution']},
+    {en:'belong', ko:'속하다, 소속되다', m:['belong']},
+    {en:'survival', ko:'생존', m:['survival']},
+    {en:'reproduction', ko:'번식, 자손 남기기', m:['reproduction']},
+    {en:'criteria', ko:'기준들', m:['criteria'], tip:'criteria는 복수형! 단수형은 criterion. critic(비평가)과 헷갈리지 않기'},
+    {en:'resource', ko:'자원', m:['resources','resource']},
+    {en:'predator', ko:'포식자, 사냥하는 동물', m:['predators']},
+    {en:'efficiency', ko:'효율(성)', m:['efficiency']},
+    {en:'contribute to', ko:'~에 기여하다, 도움이 되다', m:['contribute to']},
+    {en:'prevail', ko:'이기다, 우세하다', m:['prevail'], tip:'prevent(막다)와 헷갈리지 않기!'},
+    {en:'favor', ko:'~에 유리하다, 호의를 보이다', m:['favor']},
+    {en:'likewise', ko:'마찬가지로', m:['likewise']},
+    {en:'promote', ko:'촉진하다, 늘리다', m:['promote'], tip:'반대 느낌: prohibit(금지하다), hinder(방해하다)'},
+    {en:'potential', ko:'잠재적인, 가능성 있는', m:['potential'], tip:'24번에서는 명사 "잠재력"으로 나와요!'},
+    {en:'mate', ko:'짝', m:['mates']}
+  ],
+  sents: [
+    {en:'For creatures like us, evolution smiled upon those with a strong need to belong.',
+     ko:'우리 인간 같은 생물에게, 진화는 "어딘가에 속하고 싶은 마음"이 강한 이들의 편을 들어 주었어요.',
+     g:'smile upon = ~에게 호의를 보이다(편을 들다) · those with ~ = ~을 가진 사람들 · to belong = need를 꾸며 주는 to부정사'},
+    {en:'Survival and reproduction are the criteria of success by natural selection, and forming relationships with other people can be useful for both survival and reproduction.',
+     ko:'자연 선택에서 "성공했다"의 기준은 살아남기와 자손 남기기인데, 다른 사람과 관계를 맺는 것은 이 두 가지 모두에 도움이 돼요.',
+     g:'A and B 주어 → 복수 동사 are · criteria(복수) ← criterion(단수) · forming ~ = 동명사 주어 · both A and B = A와 B 둘 다'},
+    {en:'Groups can share resources, care for sick members, scare off predators, fight together against enemies, divide tasks so as to improve efficiency, and contribute to survival in many other ways.',
+     ko:'무리는 먹을 것을 나누고, 아픈 친구를 돌보고, 사나운 동물을 쫓아내고, 함께 적과 싸우고, 일을 나눠서 더 효율적으로 하고, 그 밖에도 여러 방법으로 살아남는 데 도움이 돼요.',
+     g:'can 뒤에 동사원형 6개가 나란히(병렬): share, care, scare, fight, divide, contribute · so as to V = ~하기 위해서'},
+    {en:'In particular, if an individual and a group want the same resource, the group will generally prevail, so competition for resources would especially favor a need to belong.',
+     ko:'특히, 혼자인 사람과 무리가 같은 것을 원하면 보통 무리가 이겨요. 그래서 자원을 두고 경쟁할 때는 "무리에 속하고 싶은 마음"이 특히 유리했어요.',
+     g:'prevail = 이기다 · favor = ~에 유리하게 작용하다 · so = 그래서 (결과)'},
+    {en:'Belongingness will likewise promote reproduction, such as by bringing potential mates into contact with each other, and in particular by keeping parents together to care for their children.',
+     ko:'소속감은 마찬가지로 자손을 남기는 데에도 도움이 돼요. 짝이 될 만한 사람들끼리 만나게 해 주고, 특히 부모가 함께 지내며 아이를 돌보게 해 주거든요.',
+     g:'likewise = 마찬가지로 (앞 내용과 같은 방향) · by + -ing = ~함으로써 · bring A into contact with B = A를 B와 만나게 하다'}
+  ],
+  topic: '소속 욕구는 생존과 번식에 유리했기 때문에 진화 과정에서 살아남았다. (evolutionary advantages of the need to belong)',
+  easy: '사람은 무리 지어 살 때 더 잘 살아남고, 가족도 잘 꾸렸어요. 그래서 "어딘가에 속하고 싶은 마음"이 강한 사람들이 살아남았어요!',
+  qs: [
+    {t:'주제', q:'다음 글의 주제로 가장 적절한 것은?', shuffle:true,
+     o:['evolutionary advantages of the need to belong',
+        'reasons why humans compete with each other',
+        'dangers of depending too much on groups',
+        'the role of parents in children\'s development',
+        'ways to share resources fairly in a group'],
+     a:1,
+     why:'첫 문장에서 "진화는 소속 욕구가 강한 이들의 편을 들었다"고 하고, 그 이유로 <b>생존(무리가 자원 공유·적과 싸움)</b>과 <b>번식(짝을 만나게 함·부모가 함께 아이를 돌봄)</b>에 유리하다는 걸 설명해요. → <b>소속 욕구의 진화적 이점</b>.<br>②는 경쟁 얘기가 일부 나오지만 핵심이 아니고, ④는 마지막에 살짝 나오는 예시일 뿐이에요.<br>📌 해석: ① 소속 욕구의 진화적 이점 ② 인간이 서로 경쟁하는 이유 ③ 집단에 너무 의존하는 것의 위험 ④ 아이 발달에서 부모의 역할 ⑤ 집단에서 자원을 공평하게 나누는 방법',
+     ev:'For creatures like us, evolution smiled upon those with a strong need to belong.',
+     evKo:'우리 같은 생물에게, 진화는 소속하려는 욕구가 강한 이들에게 호의를 보였다.'},
+    {t:'어휘', q:'(A), (B), (C)의 각 네모 안에서 문맥에 맞는 낱말로 가장 적절한 것은?',
+     box:'Survival and reproduction are the <b>(A) [criteria / critics]</b> of success by natural selection. … In particular, if an individual and a group want the same resource, the group will generally <b>(B) [prevail / prevent]</b>. … Belongingness will likewise <b>(C) [promote / prohibit]</b> reproduction.',
+     o:['criteria — prevail — promote','criteria — prevent — promote','criteria — prevail — prohibit','critics — prevent — prohibit','critics — prevail — promote'],
+     a:1,
+     why:'(A) 생존과 번식은 성공의 <b>기준(criteria)</b>. critics는 "비평가들".<br>(B) 혼자 vs 무리 → 무리가 <b>이긴다(prevail)</b>. prevent는 "막다"라서 뒤에 목적어가 필요하고 뜻도 안 맞아요.<br>(C) likewise(마찬가지로) → 앞에서 생존에 도움 되었듯이 번식도 <b>촉진한다(promote)</b>. prohibit는 "금지하다"로 정반대.',
+     ev:'the group will generally prevail',
+     evKo:'대개 무리가 이길 것이다'},
+    {t:'어법', q:'(A), (B), (C)의 각 네모 안에서 어법에 맞는 표현으로 가장 적절한 것은?',
+     box:'Survival and reproduction <b>(A) [is / are]</b> the criteria of success by natural selection. … Groups can share resources, … divide tasks so as to <b>(B) [improve / improving]</b> efficiency, … Belongingness will likewise promote reproduction, such as by <b>(C) [bring / bringing]</b> potential mates into contact with each other.',
+     o:['is — improve — bringing','are — improving — bring','are — improve — bringing','are — improve — bring','is — improving — bringing'],
+     a:3,
+     why:'(A) 주어가 Survival <b>and</b> reproduction (두 개) → 복수 동사 <b>are</b>.<br>(B) so as to + <b>동사원형</b> → improve.<br>(C) 전치사 by 뒤에는 명사나 <b>동명사(-ing)</b> → bringing.',
+     ev:'Survival and reproduction are the criteria of success by natural selection.',
+     evKo:'생존과 번식은 자연 선택에 의한 성공의 기준이다.'},
+    {t:'내용일치', q:'다음 글의 내용과 일치하는 것은?', shuffle:true,
+     o:['진화는 혼자 지내기를 좋아하는 생물에게 유리했다.',
+        '자연 선택에서 성공의 기준은 힘과 속도이다.',
+        '개인과 집단이 같은 자원을 원하면 대개 집단이 이긴다.',
+        '집단은 공평함을 위해서만 일을 나눈다.',
+        '소속감은 번식에는 별 영향을 주지 않는다.'],
+     a:3,
+     why:'"if an individual and a group want the same resource, the group will generally <b>prevail</b>" = 개인과 집단이 같은 자원을 원하면 대개 <b>집단이 이긴다</b>.<br>① 소속 욕구가 <b>강한</b> 이들에게 유리 ② 기준은 <b>생존과 번식</b> ④ <b>효율성</b>을 높이려고 일을 나눔 ⑤ 소속감은 번식을 <b>촉진</b>함.',
+     ev:'If an individual and a group want the same resource, the group will generally prevail.',
+     evKo:'개인과 집단이 같은 자원을 원하면, 대개 집단이 이길 것이다.'},
+    {t:'순서', q:'주어진 글 다음에 이어질 글의 순서로 가장 적절한 것은?',
+     box:'For creatures like us, evolution smiled upon those with a strong need to belong.<br><br><b>(A)</b> In particular, if an individual and a group want the same resource, the group will generally prevail, so competition for resources would especially favor a need to belong.<br><br><b>(B)</b> Belongingness will likewise promote reproduction, such as by bringing potential mates into contact with each other, and in particular by keeping parents together to care for their children.<br><br><b>(C)</b> Survival and reproduction are the criteria of success by natural selection, and forming relationships with other people can be useful for both survival and reproduction. Groups can share resources, care for sick members, scare off predators, fight together against enemies, divide tasks so as to improve efficiency, and contribute to survival in many other ways.',
+     o:['(A) - (C) - (B)','(B) - (A) - (C)','(B) - (C) - (A)','(C) - (A) - (B)','(C) - (B) - (A)'],
+     a:4,
+     why:'① 주어진 글: 진화는 소속 욕구가 강한 이들 편.<br>② <b>(C)</b> 성공 기준 = 생존과 번식 → 무리가 <b>생존</b>에 도움 되는 여러 방법.<br>③ <b>(A)</b> <b>In particular(특히)</b> → 생존 이야기 중 자원 경쟁을 콕 집어 설명.<br>④ <b>(B)</b> <b>likewise(마찬가지로)</b> → 생존에 이어 이번엔 <b>번식</b>에도 도움.<br>👉 생존 먼저, 번식 나중! (C)에서 "survival and reproduction" 순서로 예고했어요.',
+     ev:'Belongingness will likewise promote reproduction.',
+     evKo:'소속감은 마찬가지로 번식을 촉진할 것이다.'},
+    {t:'빈칸', q:'다음 빈칸에 들어갈 말로 가장 적절한 것은?', shuffle:true,
+     box:'For creatures like us, evolution smiled upon those with a strong need to <b>__________</b>. Survival and reproduction are the criteria of success by natural selection, and forming relationships with other people can be useful for both survival and reproduction.',
+     o:['belong','compete','escape','travel','rest'],
+     a:1,
+     why:'바로 뒤에서 "<b>다른 사람과 관계를 맺는 것(forming relationships)</b>"이 생존과 번식에 유리하다고 하죠. 뒤에 나오는 Belongingness(소속감)도 힌트! → a strong need to <b>belong(속하려는 강한 욕구)</b>.',
+     ev:'forming relationships with other people can be useful for both survival and reproduction',
+     evKo:'다른 사람들과 관계를 맺는 것은 생존과 번식 둘 다에 유용할 수 있다'}
+  ]
+},
+
+/* ───────────────────────── 24번 ───────────────────────── */
+{
+  id: '24', kind: '요지', title: '안전지대를 벗어나야 성공한다',
+  words: [
+    {en:'operate', ko:'움직이다, 활동하다', m:['operating']},
+    {en:'opportunity', ko:'기회', m:['opportunity']},
+    {en:'achieve', ko:'이루다, 성취하다', m:['achieve']},
+    {en:'the unknown', ko:'알려지지 않은 것, 미지의 것', m:['the unknown']},
+    {en:'tread', ko:'(길을) 걷다, 밟다', m:['treading']},
+    {en:'return', ko:'보상, 수익', m:['returns']},
+    {en:'derive', ko:'얻다, 끌어내다', m:['derive']},
+    {en:'satisfaction', ko:'만족(감)', m:['satisfaction']},
+    {en:'courageous', ko:'용감한', m:['courageous']},
+    {en:'overcautious', ko:'지나치게 조심하는', m:['overcautious'], tip:'over-(지나치게) + cautious(조심하는)'},
+    {en:'attain', ko:'달성하다, 이루다', m:['attaining']},
+    {en:'potential', ko:'잠재력', m:['potential'], tip:'23번에서는 형용사 "잠재적인"으로 나왔어요!'},
+    {en:'bold', ko:'대담한, 과감한', m:['bold'], tip:'반대말: timid(소심한)'}
+  ],
+  sents: [
+    {en:'Many people make a mistake of only operating along the safe zones, and in the process they miss the opportunity to achieve greater things.',
+     ko:'많은 사람들이 안전한 곳에서만 움직이는 실수를 해요. 그러다 보니 더 큰 일을 해낼 기회를 놓쳐요.',
+     g:'make a mistake of + -ing = ~하는 실수를 하다 (전치사 of 뒤 동명사) · the opportunity to V = ~할 기회 (to부정사가 명사 꾸밈)'},
+    {en:'They do so because of a fear of the unknown and a fear of treading the unknown paths of life.',
+     ko:'그 사람들이 그러는 이유는, 모르는 것이 무섭고 인생에서 가 보지 않은 길을 걷는 것이 무섭기 때문이에요.',
+     g:'do so = 앞 문장의 "안전지대에서만 움직이다"를 대신함 · because of + 명사(구) / because + 주어+동사 · the unknown = 미지의 것 (the + 형용사)'},
+    {en:'Those that are brave enough to take those roads less travelled are able to get great returns and derive major satisfaction out of their courageous moves.',
+     ko:'사람들이 잘 안 가는 길을 선택할 만큼 용감한 사람들은, 그 용기 있는 행동으로 큰 보상을 얻고 큰 만족감도 얻어요.',
+     g:'Those that ~ = ~한 사람들 (주어가 복수 → are) · 형용사 + enough to V = ~할 만큼 충분히 … · roads less travelled = 사람들이 덜 다닌 길 (과거분사가 뒤에서 꾸밈)'},
+    {en:'Being overcautious will mean that you will miss attaining the greatest levels of your potential.',
+     ko:'너무 조심하기만 하면, 내가 가진 능력을 최고로 발휘할 기회를 놓치게 될 거예요.',
+     g:'Being ~ = 동명사 주어 · miss + -ing (miss는 동명사를 목적어로! miss to attain ❌)'},
+    {en:'You must learn to take those chances that many people around you will not take, because your success will flow from those bold decisions that you will take along the way.',
+     ko:'주변의 많은 사람들이 잡지 않는 기회를 잡는 법을 배워야 해요. 여러분의 성공은 살아가며 내리는 과감한 결정에서 나오기 때문이에요.',
+     g:'learn to V = ~하는 법을 배우다 · chances that ~ take (take 뒤 목적어 빠짐 → 목적격 관계대명사 that) · flow from = ~에서 나오다'}
+  ],
+  topic: '성공하려면 두려움을 넘어, 남들이 가지 않는 길에 과감하게 도전해야 한다.',
+  easy: '안전한 길만 가면 큰 기회를 놓쳐요. 무서워도 남들이 안 가는 길에 용기 내서 도전해야 성공할 수 있어요!',
+  qs: [
+    {t:'요지', q:'다음 글의 요지로 가장 적절한 것은?', shuffle:true,
+     o:['실패를 줄이려면 항상 신중하게 행동해야 한다.',
+        '성공하려면 두려움을 이겨내고 과감하게 도전해야 한다.',
+        '다른 사람들이 많이 선택하는 길이 가장 안전하다.',
+        '큰일을 이루려면 먼저 작은 목표부터 세워야 한다.',
+        '용기 있는 결정은 주변 사람들과 상의해서 내려야 한다.'],
+     a:2,
+     why:'안전지대에서만 움직이면 기회를 놓치고, <b>지나친 신중함(overcautious)</b>은 잠재력을 막는다고 해요. 마지막 문장 "성공은 <b>과감한 결정(bold decisions)</b>에서 나온다"가 핵심! ①은 필자가 비판하는 태도이고, ③은 정반대예요.',
+     ev:'Your success will flow from those bold decisions that you will take along the way.',
+     evKo:'여러분의 성공은 도중에 내리게 될 과감한 결정들에서 나올 것이다.'},
+    {t:'어휘', q:'(A), (B), (C)의 각 네모 안에서 문맥에 맞는 낱말로 가장 적절한 것은?',
+     box:'Those that are brave enough to take those roads <b>(A) [less / more]</b> travelled are able to get great returns … Being <b>(B) [overcautious / adventurous]</b> will mean that you will miss attaining the greatest levels of your potential. … your success will flow from those <b>(C) [bold / timid]</b> decisions that you will take along the way.',
+     o:['more — overcautious — bold','less — adventurous — timid','less — overcautious — timid','less — overcautious — bold','more — adventurous — bold'],
+     a:4,
+     why:'(A) <b>용감한</b> 사람들이 가는 길 → 사람들이 <b>덜(less)</b> 다닌 길.<br>(B) 잠재력을 발휘하지 <b>못하게</b> 만드는 것 → <b>지나친 조심(overcautious)</b>. adventurous(모험적인)는 필자가 권하는 태도!<br>(C) 성공이 나오는 결정 → <b>과감한(bold)</b> 결정. timid는 "소심한".',
+     ev:'Being overcautious will mean that you will miss attaining the greatest levels of your potential.',
+     evKo:'지나치게 신중한 것은 여러분이 잠재력의 최고 수준에 도달하는 것을 놓치게 된다는 것을 의미할 것이다.'},
+    {t:'어법', q:'(A), (B), (C)의 각 네모 안에서 어법에 맞는 표현으로 가장 적절한 것은?',
+     box:'Many people make a mistake of only <b>(A) [operating / operate]</b> along the safe zones. … Those that are brave enough to take those roads less travelled <b>(B) [is / are]</b> able to get great returns. … Being overcautious will mean that you will miss <b>(C) [attaining / to attain]</b> the greatest levels of your potential.',
+     o:['operating — are — attaining','operating — is — attaining','operate — are — to attain','operating — are — to attain','operate — is — attaining'],
+     a:1,
+     why:'(A) 전치사 of 뒤 → 동명사 <b>operating</b>.<br>(B) 진짜 주어는 <b>Those</b>(사람들, 복수) → <b>are</b>. 중간의 travelled 같은 수식어에 속지 말기!<br>(C) <b>miss</b>는 동명사를 목적어로 → <b>attaining</b>. (miss, enjoy, avoid, finish, mind + -ing)',
+     ev:'Those that are brave enough to take those roads less travelled are able to get great returns.',
+     evKo:'사람들이 덜 다닌 길을 택할 만큼 충분히 용감한 사람들은 큰 보상을 얻을 수 있다.'},
+    {t:'내용일치', q:'다음 글의 내용과 일치하지 <u>않는</u> 것은?', shuffle:true,
+     o:['많은 사람들이 안전한 영역에서만 활동하는 실수를 한다.',
+        '사람들은 미지의 것에 대한 두려움 때문에 안전한 길을 택한다.',
+        '남들이 잘 가지 않는 길을 택한 사람은 큰 보상을 얻을 수 있다.',
+        '지나치게 신중하면 자신의 잠재력을 최대로 발휘하지 못한다.',
+        '성공은 주변 사람들이 많이 선택하는 기회를 잡는 데서 나온다.'],
+     a:5,
+     why:'본문은 "many people around you <b>will not take</b>(주변 많은 사람들이 잡지 <b>않을</b>) 기회를 잡아라"라고 했어요. "많이 선택하는 기회"는 반대! not 하나로 뜻이 뒤집히는 전형적인 함정이에요.',
+     ev:'You must learn to take those chances that many people around you will not take.',
+     evKo:'여러분은 주변의 많은 사람들이 잡지 않을 기회를 잡는 법을 배워야 한다.'},
+    {t:'순서', q:'주어진 글 다음에 이어질 글의 순서로 가장 적절한 것은?',
+     box:'Many people make a mistake of only operating along the safe zones, and in the process they miss the opportunity to achieve greater things.<br><br><b>(A)</b> Being overcautious will mean that you will miss attaining the greatest levels of your potential. You must learn to take those chances that many people around you will not take, because your success will flow from those bold decisions that you will take along the way.<br><br><b>(B)</b> They do so because of a fear of the unknown and a fear of treading the unknown paths of life.<br><br><b>(C)</b> Those that are brave enough to take those roads less travelled are able to get great returns and derive major satisfaction out of their courageous moves.',
+     o:['(A) - (C) - (B)','(B) - (A) - (C)','(B) - (C) - (A)','(C) - (A) - (B)','(C) - (B) - (A)'],
+     a:3,
+     why:'① 주어진 글: 많은 사람들이 안전지대에서만 움직인다.<br>② <b>(B)</b> <b>They do so</b> = "그 사람들이 그렇게 하는 것(안전지대에서만 움직이는 것)" → 이유: 두려움.<br>③ <b>(C)</b> 반대로 <b>용감한 사람들</b>은 큰 보상을 얻는다.<br>④ <b>(A)</b> 결론: 지나치게 조심하지 말고 과감히 도전하라(You must ~).<br>👉 대명사 <b>They</b>와 대동사 <b>do so</b>가 주어진 글 바로 뒤에 붙는 신호!',
+     ev:'They do so because of a fear of the unknown.',
+     evKo:'그들은 미지의 것에 대한 두려움 때문에 그렇게 한다.'},
+    {t:'빈칸', q:'다음 빈칸에 들어갈 말로 가장 적절한 것은?', shuffle:true,
+     box:'Many people make a mistake of only operating along the safe zones. … Those that are brave enough to take those roads <b>__________</b> are able to get great returns and derive major satisfaction out of their courageous moves.',
+     o:['less travelled','most people choose','already paved','others recommend','safely marked'],
+     a:1,
+     why:'"<b>brave enough</b>(충분히 용감한)" 사람들이 가는 길이니까, 남들이 잘 안 가는 길 = <b>less travelled(덜 다닌)</b>. 많은 사람이 고르는 길·이미 닦인 길·안전 표시된 길은 용기가 필요 없죠!',
+     ev:'Those that are brave enough to take those roads less travelled are able to get great returns.',
+     evKo:'사람들이 덜 다닌 길을 택할 만큼 충분히 용감한 사람들은 큰 보상을 얻을 수 있다.'}
+  ]
+},
+
+/* ───────────────────────── 29번 ───────────────────────── */
+{
+  id: '29', kind: '어법', title: '인간의 뇌가 작아졌다고?',
+  words: [
+    {en:'shrink (-shrank-shrunk)', ko:'줄어들다', m:['shrunk']},
+    {en:'mass', ko:'질량, 무게', m:['mass']},
+    {en:'peak', ko:'최고조에 달하다', m:['peaked']},
+    {en:'predator', ko:'포식자, 사냥하는 동물', m:['predators']},
+    {en:'have one\'s wits about one', ko:'정신을 바짝 차리다', m:['have their wits about them']},
+    {en:'domesticate', ko:'길들이다', m:['domesticated'], tip:'dominate(지배하다)와 헷갈리지 않기!'},
+    {en:'outsource', ko:'외부에 맡기다', m:['outsourced']},
+    {en:'ancestor', ko:'조상', m:['ancestors']},
+    {en:'characteristic', ko:'특징', m:['characteristic']},
+    {en:'domestic', ko:'길들여진, 가정의', m:['domestic'], tip:'domestic animals = 가축 ↔ wild animals = 야생동물'},
+    {en:'indicator', ko:'지표, 나타내는 것', m:['indicator']},
+    {en:'intelligence', ko:'지능', m:['intelligence']},
+    {en:'efficiently', ko:'효율적으로', m:['efficiently']}
+  ],
+  sents: [
+    {en:'The human brain, it turns out, has shrunk in mass by about 10 percent since it peaked in size 15,000-30,000 years ago.',
+     ko:'알고 보니, 사람의 뇌는 1만 5천~3만 년 전에 가장 컸다가, 그 뒤로 무게가 약 10퍼센트 줄어들었대요.',
+     g:'it turns out = 알고 보니 (문장 중간에 끼어든 말) · has shrunk (현재완료) + since + 과거 시점 · by = 차이(~만큼)'},
+    {en:'One possible reason is that many thousands of years ago humans lived in a world of dangerous predators where they had to have their wits about them at all times to avoid being killed.',
+     ko:'한 가지 이유는 이거예요. 아주 오래전 사람들은 무서운 맹수가 가득한 세상에 살아서, 잡아먹히지 않으려면 항상 정신을 바짝 차리고 있어야 했어요.',
+     g:'is that ~ = ~라는 것이다 (보어 that절) · a world where + 완전한 문장 (장소 + 관계부사 where) · avoid + being killed (동명사 수동: 죽임을 당하는 것)'},
+    {en:'Today, we have effectively domesticated ourselves and many of the tasks of survival have been outsourced to the wider society.',
+     ko:'오늘날 우리는 사실상 스스로를 "길들인" 셈이고, 살아남는 데 필요한 많은 일들은 사회가 대신 해 주고 있어요.',
+     g:'ourselves = 재귀대명사 (주어 we = 목적어) · have been outsourced = 현재완료 수동 (일들이 "맡겨진" 것) · many of the tasks → 복수 동사 have'},
+    {en:'We are smaller than our ancestors too, and it is a characteristic of domestic animals that they are generally smaller than their wild cousins.',
+     ko:'우리는 조상들보다 몸집도 작아요. 그런데 가축(길들여진 동물)은 원래 야생의 친척 동물보다 대체로 작다는 특징이 있어요.',
+     g:'it(가주어) ~ that(진주어) : "~라는 것은 …이다" · domestic(길들여진) ↔ wild(야생의)'},
+    {en:'None of this may mean we are dumber – brain size is not necessarily an indicator of human intelligence – but it may mean that our brains today are wired up differently, and perhaps more efficiently, than those of our ancestors.',
+     ko:'그렇다고 우리가 더 멍청해졌다는 뜻은 아닐 수 있어요. 뇌 크기가 꼭 지능을 알려 주는 건 아니거든요. 오히려 오늘날 우리의 뇌가 조상들의 뇌와는 다르게, 어쩌면 더 효율적으로 연결되어 있다는 뜻일 수 있어요.',
+     g:'not necessarily = 꼭 ~인 것은 아닌 (부분 부정) · those = the brains (비교하는 대상을 맞춰 주는 대명사) · be wired up = 연결되어 있다 (수동)'}
+  ],
+  topic: '인간의 뇌는 작아졌지만, 그것이 지능이 낮아졌다는 뜻은 아니고 더 효율적으로 바뀌었을 수 있다.',
+  easy: '옛날엔 맹수를 피하려고 늘 긴장해야 했지만, 지금은 사회가 많은 일을 대신 해 줘서 뇌가 작아졌을 수 있어요. 하지만 작아졌다고 멍청해진 건 아니고, 더 효율적으로 바뀌었을 수도 있어요!',
+  qs: [
+    {t:'주제', q:'다음 글의 주제로 가장 적절한 것은?', shuffle:true,
+     o:['why the human brain has become smaller and what it means',
+        'how dangerous predators made humans smarter',
+        'the difference between wild animals and domestic animals',
+        'ways to make our brains work more efficiently',
+        'the close link between body size and intelligence'],
+     a:1,
+     why:'뇌가 10% <b>줄어든 사실</b> → 그 <b>이유</b>(스스로 길들임, 사회에 일을 맡김) → 그게 <b>무슨 의미</b>인지(멍청해진 게 아니라 더 효율적일 수도) 순서로 설명해요.<br>③ 가축 이야기는 비유로 잠깐 나온 것, ④ 뇌를 효율적으로 만드는 "방법"은 나오지 않아요.<br>📌 해석: ① 인간의 뇌가 작아진 이유와 그 의미 ② 위험한 포식자가 인간을 더 똑똑하게 만든 방법 ③ 야생동물과 가축의 차이 ④ 뇌를 더 효율적으로 작동시키는 방법 ⑤ 몸 크기와 지능의 밀접한 관련성',
+     ev:'The human brain, it turns out, has shrunk in mass by about 10 percent.',
+     evKo:'알고 보니, 인간의 뇌는 질량이 약 10퍼센트 줄어들었다.'},
+    {t:'어휘', q:'(A), (B), (C)의 각 네모 안에서 문맥에 맞는 낱말로 가장 적절한 것은?',
+     box:'The human brain, it turns out, has <b>(A) [shrunk / expanded]</b> in mass by about 10 percent since it peaked in size 15,000-30,000 years ago. … Today, we have effectively <b>(B) [domesticated / dominated]</b> ourselves. … it may mean that our brains today are wired up differently, and perhaps more <b>(C) [efficiently / inefficiently]</b>, than those of our ancestors.',
+     o:['expanded — domesticated — efficiently','shrunk — dominated — efficiently','shrunk — domesticated — inefficiently','shrunk — domesticated — efficiently','expanded — dominated — inefficiently'],
+     a:4,
+     why:'(A) 크기가 <b>최고였던(peaked)</b> 때 이후로 → <b>줄어들었다(shrunk)</b>. 최고점 이후에 커질 수는 없죠!<br>(B) 뒤에 가축(domestic animals)과 비교하는 내용 → 스스로를 <b>길들였다(domesticated)</b>. dominated는 "지배했다".<br>(C) "멍청해진 게 아니다(None of this may mean we are dumber)"라는 흐름 → <b>더 효율적으로(more efficiently)</b>.',
+     ev:'Today, we have effectively domesticated ourselves.',
+     evKo:'오늘날 우리는 사실상 스스로를 길들였다.'},
+    {t:'어법', q:'다음 글의 밑줄 친 부분 중, 어법상 <u>틀린</u> 것은?',
+     box:'The human brain, it turns out, has <u>ⓐ shrunk</u> in mass by about 10 percent since it peaked in size 15,000-30,000 years ago. One possible reason is <u>ⓑ that</u> many thousands of years ago humans lived in a world of dangerous predators <u>ⓒ which</u> they had to have their wits about them at all times to avoid <u>ⓓ being killed</u>. … it may mean that our brains today are wired up differently, and perhaps more efficiently, than <u>ⓔ those</u> of our ancestors.',
+     o:['ⓐ shrunk','ⓑ that','ⓒ which','ⓓ being killed','ⓔ those'],
+     a:3,
+     why:'ⓒ 뒤 문장 "they had to have their wits about them"은 주어·동사·목적어가 다 있는 <b>완전한 문장</b>이에요. 관계대명사 which 뒤에는 뭔가 빠진 문장이 와야 하죠. 앞에 장소(a world)가 있고 뒤가 완전하니 관계부사 <b>where</b>가 맞아요. (a world <b>where</b> ~ = ~하는 세상)<br>ⓐ has + 과거분사 shrunk ⭕ ⓑ is의 보어 that절 ⭕ ⓓ 죽임을 "당하는" 것 → 수동 being killed ⭕ ⓔ 복수 brains를 받는 those ⭕',
+     ev:'humans lived in a world of dangerous predators where they had to have their wits about them at all times',
+     evKo:'인간은 항상 정신을 바짝 차려야 하는, 위험한 포식자들이 있는 세상에서 살았다'},
+    {t:'내용일치', q:'다음 글의 내용과 일치하는 것은?', shuffle:true,
+     o:['인간의 뇌는 1만 5천~3만 년 전 이후 약 10% 커졌다.',
+        '옛날 인간은 위험한 포식자가 거의 없는 환경에서 살았다.',
+        '오늘날 생존에 필요한 많은 일이 더 넓은 사회에 맡겨졌다.',
+        '가축은 대체로 야생의 친척 동물보다 몸집이 크다.',
+        '뇌 크기는 인간 지능을 판단하는 확실한 기준이다.'],
+     a:3,
+     why:'"many of the tasks of survival have been <b>outsourced to the wider society</b>" = 생존에 필요한 많은 일이 <b>더 넓은 사회에 맡겨졌다</b>.<br>① 10% <b>줄었다</b> ② 위험한 포식자가 <b>많은</b> 세상 ④ 가축이 <b>더 작다</b> ⑤ 뇌 크기가 <b>꼭</b> 지능의 지표는 <b>아니다</b>(not necessarily).',
+     ev:'Many of the tasks of survival have been outsourced to the wider society.',
+     evKo:'생존의 많은 과업이 더 넓은 사회에 맡겨졌다.'},
+    {t:'순서', q:'주어진 글 다음에 이어질 글의 순서로 가장 적절한 것은?',
+     box:'The human brain, it turns out, has shrunk in mass by about 10 percent since it peaked in size 15,000-30,000 years ago.<br><br><b>(A)</b> None of this may mean we are dumber – brain size is not necessarily an indicator of human intelligence – but it may mean that our brains today are wired up differently, and perhaps more efficiently, than those of our ancestors.<br><br><b>(B)</b> We are smaller than our ancestors too, and it is a characteristic of domestic animals that they are generally smaller than their wild cousins.<br><br><b>(C)</b> One possible reason is that many thousands of years ago humans lived in a world of dangerous predators where they had to have their wits about them at all times to avoid being killed. Today, we have effectively domesticated ourselves and many of the tasks of survival have been outsourced to the wider society.',
+     o:['(A) - (C) - (B)','(B) - (A) - (C)','(B) - (C) - (A)','(C) - (A) - (B)','(C) - (B) - (A)'],
+     a:5,
+     why:'① 주어진 글: 뇌가 10% 줄었다.<br>② <b>(C)</b> <b>One possible reason</b> → 줄어든 이유: 스스로를 <b>길들였다(domesticated)</b>.<br>③ <b>(B)</b> 길들여진 동물(<b>domestic</b> animals)은 몸집이 작다 → 우리도 조상보다 작다. (C)의 domesticated와 연결!<br>④ <b>(A)</b> <b>None of this</b>(지금까지 말한 이 모든 것) → 그렇다고 멍청해진 건 아니다. "이 모든 것"을 받으니 맨 마지막!',
+     ev:'It is a characteristic of domestic animals that they are generally smaller than their wild cousins.',
+     evKo:'가축은 대체로 야생의 사촌들보다 작다는 것이 가축의 특징이다.'},
+    {t:'빈칸', q:'다음 빈칸에 들어갈 말로 가장 적절한 것은?', shuffle:true,
+     box:'None of this may mean we are dumber – brain size is not necessarily an indicator of human <b>__________</b> – but it may mean that our brains today are wired up differently, and perhaps more efficiently, than those of our ancestors.',
+     o:['intelligence','survival','height','society','danger'],
+     a:1,
+     why:'빈칸 앞에 "우리가 더 <b>멍청해졌다(dumber)</b>는 뜻은 아닐 수 있다"가 있어요. 뇌 크기가 작아도 멍청한 게 아닌 이유 → 뇌 크기가 꼭 <b>지능(intelligence)</b>의 지표는 아니니까!',
+     ev:'brain size is not necessarily an indicator of human intelligence',
+     evKo:'뇌 크기가 반드시 인간 지능의 지표인 것은 아니다'}
+  ]
+}
+];
+
+
+/* ═════════ 공통 ═════════ */
+const CIRC=['①','②','③','④','⑤'];
+const REASONS=['📖 단어를 몰랐어요','✏️ 문법을 몰랐어요','🔍 해석을 잘못했어요','🎯 근거를 못 찾았어요','🎲 찍었어요','⏩ 급하게 풀었어요'];
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const strip=h=>String(h).replace(/<[^>]+>/g,'');
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function lsGet(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}}
+function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
+function lsRaw(k){try{return localStorage.getItem(k)||sessionStorage.getItem(k)||'';}catch(e){return '';}}
+function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.remove('show'),1800);}
+function speak(txt){
+  try{
+    if(!('speechSynthesis' in window)) return toast('이 기기는 읽어주기를 지원하지 않아요');
+    speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(txt.replace(/\(-.*?\)/g,''));
+    u.lang='en-US';u.rate=0.9;
+    const v=speechSynthesis.getVoices().find(v=>/^en(-|_)US/i.test(v.lang));
+    if(v) u.voice=v;
+    speechSynthesis.speak(u);
+  }catch(e){}
+}
+function norm(s){return String(s).toLowerCase().replace(/[’‘`]/g,"'").replace(/[–—]/g,'-').replace(/[^a-z0-9]/g,'');}
+function fixWhy(why,order){
+  // 선택지를 섞은 문제: 해설 속 ①~⑤ 번호를 학생 화면 번호로 바꾸고, '📌 해석' 목록은 번호순으로 다시 정렬
+  if(!order || order.every((k,j)=>k===j)) return why;
+  let w=String(why).replace(/[①②③④⑤]/g,c=>CIRC[order.indexOf(CIRC.indexOf(c))]);
+  const at=w.indexOf('📌 해석:');
+  if(at>=0){
+    const head=w.slice(0,at+'📌 해석:'.length), tail=w.slice(at+'📌 해석:'.length);
+    const items=tail.match(/[①②③④⑤][^①②③④⑤]*/g);
+    if(items) w=head+' '+items.map(x=>x.trim()).sort((x,y)=>CIRC.indexOf(x[0])-CIRC.indexOf(y[0])).join(' ');
+  }
+  return w;
+}
+function toTop(){window.scrollTo({top:0,behavior:'smooth'});}
+
+let USER={name:'',school:''};
+let P=null;          // 현재 지문
+let S={};            // 현재 지문 학습 상태
+const progKey=()=>'bn_deep_'+EXAM.file+'_'+USER.name;
+
+/* ═════════ 시작 ═════════ */
+function init(){
+  document.title='봄날 퀴즈 | '+EXAM.title;
+  $('#stTitle').textContent=EXAM.title;
+  $('#stSub').textContent=EXAM.sub;
+  const n=lsRaw('bn_name'), sc=lsRaw('bn_school');
+  if(n){USER={name:n,school:sc||'미입력'};enter();}
+  else $('#startScreen').classList.remove('hidden');
+}
+function startApp(){
+  const n=$('#nameInput').value.trim(), sc=$('#schoolInput').value;
+  if(!n) return toast('이름을 입력하세요');
+  if(!sc) return toast('학교를 선택하세요');
+  USER={name:n,school:sc};
+  try{localStorage.setItem('bn_name',n);localStorage.setItem('bn_school',sc);}catch(e){}
+  $('#startScreen').classList.add('hidden');
+  enter();
+}
+function enter(){
+  $('#topBar').classList.remove('hidden');
+  $('#who').textContent='👤 '+USER.name;
+  goHome();
+}
+function setSteps(cur){
+  const order=['word','read','quiz'];
+  const ci=order.indexOf(cur);
+  $('#steps').classList.toggle('hidden',ci<0);
+  document.querySelectorAll('#steps div').forEach((d,i)=>{
+    d.className=i===ci?'on':(i<ci?'done':'');
+  });
+}
+
+/* ═════════ 지문 선택 ═════════ */
+function goHome(){
+  if(S.dirty && !confirm('지금 나가면 이 지문 학습 기록이 저장되지 않아요. 나갈까요?')) return;
+  S={};P=null;
+  $('#backBtn').classList.add('hidden');
+  $('#topTitle').textContent=EXAM.title;
+  setSteps('');
+  const prog=lsGet(progKey(),{});
+  let h=`<div class="card" style="text-align:center">
+    <div class="bh" style="font-size:20px;color:var(--pri)">어떤 지문을 공부할까요?</div>
+    <p class="muted" style="margin-top:4px">한 지문씩 <b>단어 → 한 줄 해석 → 문제</b> 순서로 완전정복! 틀리면 오답노트를 써야 넘어갈 수 있어요.</p>
+  </div><div class="pgrid">`;
+  PASSAGES.forEach(p=>{
+    const g=prog[p.id]||{};
+    const done=g.quiz;
+    h+=`<button class="pcard${done?' done':''}" onclick="openPassage('${p.id}')">
+      <div class="no">${p.id}번</div>
+      <div class="kd">${esc(p.kind)}</div>
+      <div class="tt">${esc(p.title)}</div>
+      <div class="pr"><i class="${g.word?'ok':''}">단어</i><i class="${g.read?'ok':''}">해석</i><i class="${g.quiz?'ok':''}">${g.quiz?'문제 '+g.score+'점':'문제'}</i></div>
+    </button>`;
+  });
+  h+='</div>';
+  $('#main').innerHTML=h;
+  toTop();
+}
+function markProg(key,val){
+  const prog=lsGet(progKey(),{});
+  prog[P.id]=Object.assign(prog[P.id]||{},{[key]:val===undefined?true:val});
+  lsSet(progKey(),prog);
+}
+function openPassage(id){
+  P=PASSAGES.find(p=>p.id===id);
+  S={t0:Date.now(),wrongWords:[],wordFirst:{},notes:[],results:{},dirty:false};
+  $('#backBtn').classList.remove('hidden');
+  $('#topTitle').textContent=P.id+'번 · '+P.kind+' — '+P.title;
+  startWords();
+}
+
+/* ═════════ ① 단어 체크 ═════════ */
+function startWords(){
+  setSteps('word');
+  S.dirty=true;
+  S.wq=shuffle(P.words.map((w,i)=>i));
+  S.wTotal=P.words.length; S.wDone=0; S.wOk=0;
+  S.wPool=[...new Set(PASSAGES.flatMap(p=>p.words.map(w=>w.ko)))];
+  nextWord();
+}
+function nextWord(){
+  if(!S.wq.length) return wordsDone();
+  const i=S.wq[0], w=P.words[i];
+  const same=P.words.map(x=>x.ko).filter(k=>k!==w.ko);
+  const others=S.wPool.filter(k=>k!==w.ko && !same.includes(k));
+  const distract=shuffle(same).slice(0,2).concat(shuffle(others)).filter((v,j,a)=>a.indexOf(v)===j).slice(0,3);
+  const opts=shuffle([w.ko,...distract]);
+  S.wCur={i,opts};
+  const retry=S.wordFirst[i]===false;
+  $('#main').innerHTML=`
+    <div class="bar"><i style="width:${Math.round(S.wDone/S.wTotal*100)}%"></i></div>
+    <div class="card wbox">
+      <div class="wcount">${retry?'<span class="qround">다시 도전</span> ':''}단어 ${S.wDone+1} / ${S.wTotal} · 알맞은 뜻을 고르세요</div>
+      <div style="display:flex;align-items:center;justify-content:center;gap:10px">
+        <div class="wen">${esc(w.en)}</div><button class="say" onclick="speak(${esc(JSON.stringify(w.en))})">🔊</button>
+      </div>
+      <div class="opts">${opts.map((o,k)=>`<button class="opt" onclick="pickWord(${k})"><span class="n">${CIRC[k]}</span><span>${esc(o)}</span></button>`).join('')}</div>
+      <div id="wfb"></div>
+    </div>`;
+}
+function pickWord(k){
+  const {i,opts}=S.wCur, w=P.words[i];
+  const ok=opts[k]===w.ko;
+  const btns=document.querySelectorAll('.opt');
+  btns.forEach((b,j)=>{b.disabled=true;if(opts[j]===w.ko)b.classList.add('right');});
+  if(!ok) btns[k].classList.add('wrong');
+  if(S.wordFirst[i]===undefined){
+    S.wordFirst[i]=ok;
+    if(ok) S.wOk++; else S.wrongWords.push(w.en+'('+w.ko+')');
+  }
+  S.wq.shift();
+  if(ok){S.wDone++;}
+  else {S.wq.push(i);}
+  const tip=w.tip?`<div class="tip">💡 ${esc(w.tip)}</div>`:'';
+  $('#wfb').innerHTML=(ok?`<div class="fb ok"><h4>⭕ 정답!</h4></div>`:`<div class="fb" style="background:var(--redBg);color:var(--red)"><h4>❌ 정답은 "${esc(w.ko)}"</h4><div style="font-size:13px">이 단어는 뒤에 한 번 더 나와요.</div></div>`)
+    +tip+`<button class="btn full" style="margin-top:14px" onclick="nextWord()">다음 →</button>`;
+  if(ok && !w.tip) setTimeout(()=>{if(S.wCur&&S.wCur.i===i&&document.getElementById('wfb'))nextWord();},650);
+}
+function wordsDone(){
+  S.wCur=null;
+  markProg('word');
+  $('#main').innerHTML=`<div class="card" style="text-align:center">
+    <div style="font-size:40px">📖</div>
+    <div class="bh" style="font-size:22px;color:var(--pri);margin:6px 0">단어 체크 완료!</div>
+    <p>처음에 바로 맞힌 단어 <b style="color:var(--pri)">${S.wOk} / ${S.wTotal}</b>개</p>
+    ${S.wrongWords.length?`<div class="tip" style="margin-top:12px"><b>헷갈렸던 단어</b><br>${S.wrongWords.map(esc).join('<br>')}</div>`:'<p class="muted" style="margin-top:6px">완벽해요! 👏</p>'}
+    <button class="btn full" style="margin-top:18px" onclick="startRead()">② 한 줄 해석 읽기 →</button>
+  </div>`;
+  toTop();
+}
+
+/* ═════════ ② 한 줄 해석 ═════════ */
+function hlWords(en){
+  let out=esc(en);
+  const list=[];
+  P.words.forEach(w=>(w.m||[]).forEach(f=>list.push({f,ko:w.ko})));
+  list.sort((a,b)=>b.f.length-a.f.length);
+  const used=[];
+  list.forEach(({f,ko},n)=>{
+    const re=new RegExp('\\b('+f.replace(/[.*+?^${}()|[\]\\]/g,'\\$&').replace(/'/g,"(?:'|&#39;)")+')\\b','i');
+    if(re.test(out)&&!used.includes(f)){
+      out=out.replace(re,m=>`\u0001${n}\u0002${m}\u0003`);used.push(f);
+    }
+  });
+  return out.replace(/\u0001(\d+)\u0002(.*?)\u0003/g,(_,n,m)=>`<span class="kw" onclick="toast(${esc(JSON.stringify(list[n].f+' = '+list[n].ko))})">${m}</span>`);
+}
+function startRead(){
+  setSteps('read');
+  S.cover=S.cover||false;
+  S.readOk=S.readOk||P.sents.map(()=>false);
+  renderRead();
+  toTop();
+}
+function renderRead(){
+  const all=S.readOk.every(Boolean);
+  const cnt=S.readOk.filter(Boolean).length;
+  let h=`<div class="toolbar">
+    <div class="tog"><button class="${S.cover?'':'on'}" onclick="setCover(false)">해석 보이기</button><button class="${S.cover?'on':''}" onclick="setCover(true)">해석 가리기</button></div>
+    <div class="muted">밑줄 단어를 누르면 뜻이 나와요 · <b style="color:var(--pri)">${cnt}/${P.sents.length}</b></div>
+  </div>`;
+  P.sents.forEach((s,i)=>{
+    h+=`<div class="sent${S.readOk[i]?' ok':''}" id="s${i}">
+      <div class="row"><div class="num">${i+1}</div><div class="en">${hlWords(s.en)}</div><button class="say" onclick="speak(P.sents[${i}].en)">🔊</button></div>
+      <div class="ko${S.cover&&!S.readOk[i]?' cover':''}" onclick="this.classList.remove('cover')">${esc(s.ko)}</div>
+      ${s.g?`<div class="gp"><b>문법</b> ${esc(s.g)}</div>`:''}
+      <button class="chk" onclick="toggleRead(${i})">${S.readOk[i]?'✔ 이해 완료':'☐ 이해했어요'}</button>
+    </div>`;
+  });
+  if(P.note) h+=`<div class="muted" style="margin:4px 4px 0;white-space:pre-line">${esc(P.note)}</div>`;
+  h+=`<div class="topic"><div class="lb">🎯 이 글의 주제</div><div class="tx">${esc(P.topic)}</div><div class="ez">🧸 쉽게 말하면… ${esc(P.easy)}</div></div>
+    <button class="btn full" ${all?'':'disabled'} onclick="startQuiz()">${all?'③ 문제 풀러 가기 →':'모든 문장에 "이해했어요"를 눌러야 넘어가요 ('+cnt+'/'+P.sents.length+')'}</button>`;
+  $('#main').innerHTML=h;
+}
+function setCover(v){S.cover=v;renderRead();}
+function toggleRead(i){
+  const y=window.scrollY;
+  const ko=document.querySelector('#s'+i+' .ko');
+  if(!S.readOk[i] && ko && ko.classList.contains('cover')){ko.classList.remove('cover');toast('해석을 확인하고 한 번 더 누르세요');return;}
+  S.readOk[i]=!S.readOk[i];renderRead();window.scrollTo(0,y);
+}
+
+/* ═════════ ③ 문제 ═════════ */
+function startQuiz(){
+  markProg('read');
+  setSteps('quiz');
+  S.round=1;
+  S.qq=P.qs.map((q,i)=>i);
+  S.qPos=0;
+  S.firstOk=0;
+  S.roundWrong=[];
+  showQ();
+}
+function showQ(){
+  if(S.qPos>=S.qq.length) return roundEnd();
+  const qi=S.qq[S.qPos], q=P.qs[qi];
+  const order=q.shuffle?shuffle(q.o.map((_,k)=>k)):q.o.map((_,k)=>k);
+  S.cur={qi,order,answered:false};
+  $('#main').innerHTML=`
+    <div class="bar"><i style="width:${Math.round(S.qPos/S.qq.length*100)}%"></i></div>
+    <div class="card">
+      <div class="qhead"><span class="qtype">${esc(q.t)}</span>${S.round>1?`<span class="qround">틀린 문제 다시 풀기 ${S.round-1}회차</span>`:''}<span class="muted">${S.qPos+1} / ${S.qq.length}</span></div>
+      <div class="qstem">${q.q}</div>
+      ${q.box?`<div class="qbox">${q.box}</div>`:''}
+      <div class="opts">${order.map((k,j)=>`<button class="opt" onclick="pickQ(${j})"><span class="n">${CIRC[j]}</span><span>${esc(q.o[k])}</span></button>`).join('')}</div>
+      <div id="qfb"></div>
+    </div>`;
+  toTop();
+}
+function pickQ(j){
+  if(S.cur.answered) return;
+  S.cur.answered=true;
+  const {qi,order}=S.cur, q=P.qs[qi];
+  const pickedK=order[j], ansK=q.a-1, ansJ=order.indexOf(ansK);
+  const ok=pickedK===ansK;
+  const btns=document.querySelectorAll('.opt');
+  btns.forEach((b,x)=>{b.disabled=true;if(x===ansJ)b.classList.add('right');});
+  if(!ok) btns[j].classList.add('wrong');
+  if(S.round===1){
+    S.results[qi]={ok,my:CIRC[j]+' '+strip(q.o[pickedK]),ans:CIRC[ansJ]+' '+strip(q.o[ansK])};
+    if(ok) S.firstOk++;
+  }
+  if(ok){
+    $('#qfb').innerHTML=`<div class="fb ok"><h4>⭕ 정답이에요!</h4>${fixWhy(q.why,order)}</div>
+      <button class="btn full" style="margin-top:14px" onclick="S.qPos++;showQ()">다음 문제 →</button>`;
+    return;
+  }
+  S.roundWrong.push(qi);
+  S.note={qi,my:CIRC[j],myText:strip(q.o[pickedK]),ans:CIRC[ansJ],ansText:strip(q.o[ansK]),reasons:[],copyOk:false,memo:''};
+  const tr=P.sents.map((s,i)=>`<p><b>${i+1}.</b> ${esc(s.en)}<span class="k">→ ${esc(s.ko)}</span></p>`).join('');
+  $('#qfb').innerHTML=`
+  <div class="note" id="noteBox">
+    <div class="note-h"><span style="font-size:24px">🚨</span><span class="bh">오답노트 써!</span></div>
+    <div class="note-b">
+      <div class="nsec">
+        <div class="lb">✅ 정답과 자세한 해설</div>
+        <div class="expl">내 답 <b style="color:var(--red)">${CIRC[j]}</b> → 정답 <span class="ans">${CIRC[ansJ]} ${esc(strip(q.o[ansK]))}</span><br><br>${fixWhy(q.why,order)}</div>
+      </div>
+      <div class="nsec">
+        <div class="lb">📌 근거 문장과 해석</div>
+        <div class="ev"><div class="e">${esc(q.ev)}</div><div class="k">→ ${esc(q.evKo)}</div></div>
+        <button class="linkbtn" onclick="const f=this.nextElementSibling;f.classList.toggle('hidden');this.textContent=f.classList.contains('hidden')?'📖 전체 해석 펼치기':'📖 전체 해석 접기'">📖 전체 해석 펼치기</button>
+        <div class="full-tr hidden">${tr}</div>
+      </div>
+      <div class="nsec">
+        <div class="lb">1️⃣ 왜 틀렸나요? (여러 개 골라도 돼요)</div>
+        <div class="rs">${REASONS.map((r,k)=>`<button onclick="toggleReason(${k},this)">${r}</button>`).join('')}</div>
+      </div>
+      <div class="nsec">
+        <div class="lb">2️⃣ 근거 문장을 그대로 따라 쓰세요 (복사·붙여넣기 금지)</div>
+        <textarea class="copy" id="copyIn" rows="2" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="위의 파란 영어 문장을 보고 직접 입력" oninput="checkCopy()" onpaste="event.preventDefault();toast('직접 써야 기억에 남아요 ✍️')" ondrop="event.preventDefault()"></textarea>
+        <div class="cstat" id="copyStat">대소문자·문장부호는 조금 달라도 괜찮아요</div>
+      </div>
+      <div class="nsec">
+        <div class="lb">3️⃣ 한 줄 정리 — 다음엔 어떻게 풀까?</div>
+        <textarea class="copy" id="memoIn" rows="2" placeholder="예) miss 뒤에는 -ing! / While은 '~인 반면에' → 앞뒤가 반대 내용" oninput="checkNote()"></textarea>
+        <div class="cstat" id="memoStat">8글자 이상 써 주세요</div>
+      </div>
+      <button class="btn full warn" id="noteSave" disabled onclick="saveNote()">오답노트 저장하고 다음 →</button>
+    </div>
+  </div>`;
+  setTimeout(()=>{const nb=$('#noteBox');if(nb)nb.scrollIntoView({behavior:'smooth',block:'start'});},120);
+}
+function toggleReason(k,btn){
+  const r=S.note.reasons, at=r.indexOf(REASONS[k]);
+  if(at<0) r.push(REASONS[k]); else r.splice(at,1);
+  btn.classList.toggle('on',at<0);
+  checkNote();
+}
+function checkCopy(){
+  const el=$('#copyIn'), st=$('#copyStat');
+  const target=norm(P.qs[S.note.qi].ev), typed=norm(el.value);
+  el.classList.remove('good','bad');st.classList.remove('good','bad');
+  if(!typed){st.textContent='대소문자·문장부호는 조금 달라도 괜찮아요';S.note.copyOk=false;return checkNote();}
+  if(typed===target){
+    S.note.copyOk=true;el.classList.add('good');st.classList.add('good');st.textContent='✔ 완벽하게 따라 썼어요!';
+  }else if(target.startsWith(typed)){
+    S.note.copyOk=false;st.textContent='좋아요, 계속 쓰세요… ('+Math.round(typed.length/target.length*100)+'%)';
+  }else{
+    S.note.copyOk=false;el.classList.add('bad');st.classList.add('bad');
+    let k=0;while(k<typed.length&&typed[k]===target[k])k++;
+    st.textContent='✖ 철자가 다른 곳이 있어요 — 앞에서부터 '+Math.round(k/target.length*100)+'%까지 맞아요';
+  }
+  checkNote();
+}
+function checkNote(){
+  const m=($('#memoIn')||{}).value||'';
+  const mOk=m.replace(/\s/g,'').length>=8;
+  const ms=$('#memoStat');
+  if(ms){ms.classList.toggle('good',mOk);ms.textContent=mOk?'✔ 좋아요':'8글자 이상 써 주세요 ('+m.replace(/\s/g,'').length+'/8)';}
+  S.note.memo=m.trim();
+  const ready=S.note.reasons.length>0 && S.note.copyOk && mOk;
+  const b=$('#noteSave');
+  if(b){b.disabled=!ready;b.textContent=ready?'오답노트 저장하고 다음 →':'1️⃣ 이유 · 2️⃣ 따라쓰기 · 3️⃣ 한 줄 정리를 모두 해야 넘어가요';}
+}
+function saveNote(){
+  const n=S.note, q=P.qs[n.qi];
+  S.notes.push({pid:P.id,type:q.t,round:S.round,my:n.my+' '+n.myText,ans:n.ans+' '+n.ansText,reasons:n.reasons.slice(),memo:n.memo});
+  S.note=null;
+  S.qPos++;showQ();
+}
+function roundEnd(){
+  if(S.roundWrong.length){
+    const w=S.roundWrong.slice();
+    $('#main').innerHTML=`<div class="card" style="text-align:center">
+      <div style="font-size:40px">💪</div>
+      <div class="bh" style="font-size:21px;color:var(--red);margin:6px 0">틀린 문제 ${w.length}개 다시 풀기</div>
+      <p class="muted">오답노트에 쓴 내용을 떠올리면서 다시 풀어 보세요.<br>모두 맞혀야 이 지문이 끝나요!</p>
+      <button class="btn full" style="margin-top:16px" onclick="startRetry()">다시 풀기 →</button>
+    </div>`;
+    S.nextQ=w;
+    toTop();
+    return;
+  }
+  finishPassage();
+}
+function startRetry(){
+  S.round++;
+  S.qq=shuffle(S.nextQ);S.qPos=0;S.roundWrong=[];
+  showQ();
+}
+
+/* ═════════ 결과 · 저장 ═════════ */
+function finishPassage(){
+  const total=P.qs.length;
+  const score=Math.round(S.firstOk/total*100);
+  const el=Math.max(1,Math.round((Date.now()-S.t0)/60000));
+  markProg('quiz');markProg('score',score);
+  S.dirty=false;
+  const lines=[];
+  if(S.wrongWords.length) lines.push('[단어] '+S.wrongWords.join(', '));
+  S.notes.forEach(n=>lines.push(`[${n.pid}번 ${n.type}${n.round>1?' 재도전':''}] 내답 ${n.my.slice(0,2)}→정답 ${n.ans.slice(0,2)} · ${n.reasons.map(r=>r.replace(/^\S+\s/,'')).join(', ')} · "${n.memo}"`));
+  const payload={
+    submittedAt:new Date().toISOString(),
+    studentName:USER.name, school:USER.school,
+    quizType:EXAM.quizType, file:EXAM.file, quizLabel:EXAM.title+' '+P.id+'번',
+    passages:[P.id+'번'],
+    score, correct:S.firstOk, wrong:total-S.firstOk, total,
+    elapsedMin:el,
+    wordTotal:S.wTotal, wordCorrect:S.wOk,
+    rounds:S.round,
+    details:P.qs.map((q,i)=>{const r=S.results[i]||{};return{문제:P.id+'-'+q.t,지문:P.id+'번',유형:q.t,결과:r.ok?'✅정답':'❌오답',내답:r.my||'',정답:r.ans||''};}),
+    wrongNotes:S.notes,
+    wrongSentences:lines.join(' / ')
+  };
+  let saveMsg='기록 저장 중…';
+  (async()=>{
+    let ok=false;
+    try{ if(window._fbSave){ ok=(await window._fbSave(payload))!==false; } }catch(e){ok=false;}
+    const s=document.getElementById('saveMsg');
+    if(s) s.textContent=ok?'✔ 선생님께 기록이 전송됐어요':'⚠ 인터넷이 불안정해요 — 다음에 접속할 때 자동으로 다시 보내요';
+  })();
+
+  const nextP=PASSAGES[PASSAGES.findIndex(p=>p.id===P.id)+1];
+  $('#main').innerHTML=`<div class="card" style="text-align:center">
+      <div class="muted">${P.id}번 · ${esc(P.kind)} 완전정복 완료</div>
+      <div class="big" style="margin-top:8px">${score}<span style="font-size:24px">점</span></div>
+      <div class="muted">처음에 바로 맞힌 문제 기준</div>
+      <div class="stats">
+        <div><b>${S.wOk}/${S.wTotal}</b><span>단어</span></div>
+        <div><b>${S.firstOk}/${total}</b><span>문제</span></div>
+        <div><b>${S.notes.length}</b><span>오답노트</span></div>
+      </div>
+      <div class="muted" id="saveMsg">${saveMsg}</div>
+    </div>
+    ${S.notes.length?`<div class="card"><div class="bh" style="font-size:18px;color:var(--red);margin-bottom:10px">📝 내 오답노트</div><div class="nlist">${S.notes.map(n=>`
+      <div class="ni"><div class="t">${n.pid}번 ${esc(n.type)}${n.round>1?' (재도전)':''}</div>
+      <div>내 답 ${esc(n.my)}<br>정답 <b style="color:var(--green)">${esc(n.ans)}</b></div>
+      <div class="muted">이유: ${n.reasons.map(esc).join(', ')}</div>
+      <div style="margin-top:4px">✍️ ${esc(n.memo)}</div></div>`).join('')}</div></div>`:'<div class="card" style="text-align:center">🎉 한 번도 안 틀렸어요! 오답노트 없음</div>'}
+    <div class="btnrow">
+      ${nextP?`<button class="btn" onclick="openPassage('${nextP.id}')">다음: ${nextP.id}번 →</button>`:''}
+      <button class="btn sub" onclick="goHome()">지문 목록</button>
+      <button class="btn sub" onclick="openPassage('${P.id}')">이 지문 다시</button>
+    </div>`;
+  setSteps('');
+  toTop();
+}
+
+window.addEventListener('beforeunload',e=>{if(S.dirty){e.preventDefault();e.returnValue='';}});
+if('speechSynthesis' in window){try{speechSynthesis.getVoices();}catch(e){}}
+init();
+</script>
+</body>
+</html>

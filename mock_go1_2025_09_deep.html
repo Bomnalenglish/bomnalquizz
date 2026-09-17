@@ -1,0 +1,3368 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>봄날 퀴즈 | 고1 25년 9월 지문 완전정복</title>
+<script type="module" src="bn_tracker.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Black+Han+Sans&display=swap');
+:root{
+  --bg:#f5efe6; --card:#fffdf9; --ink:#2a2a2a; --soft:#7a7570; --line:#e4dccf;
+  --pri:#4a6741; --pri2:#6b8f60; --priBg:#eaf0e6;
+  --acc:#c47f3b; --accBg:#fbf0e3;
+  --red:#c0392b; --redBg:#fbeceb; --green:#2e7d32; --greenBg:#e8f3e9;
+  --blue:#3d6a8f; --blueBg:#e8eff5;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;line-height:1.6}
+.hidden{display:none!important}
+button{font-family:inherit;cursor:pointer}
+.wrap{max-width:720px;margin:0 auto;padding:16px 16px 60px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;margin-bottom:14px;box-shadow:0 2px 10px rgba(80,60,30,.05)}
+h1,.bh{font-family:'Black Han Sans',sans-serif;font-weight:400;letter-spacing:.3px}
+.btn{border:none;border-radius:12px;padding:13px 20px;font-size:15px;font-weight:700;background:var(--pri);color:#fff;transition:transform .1s,opacity .15s}
+.btn:active{transform:scale(.97)}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+.btn.sub{background:#fff;color:var(--pri);border:2px solid var(--pri)}
+.btn.warn{background:var(--red)}
+.btn.full{width:100%}
+.muted{color:var(--soft);font-size:13px}
+.chip{display:inline-block;font-size:11.5px;font-weight:700;border-radius:20px;padding:2px 10px;background:var(--priBg);color:var(--pri)}
+
+/* 시작 */
+#startScreen .card{max-width:440px;margin:40px auto;text-align:center}
+#startScreen h1{font-size:24px;color:var(--pri);margin-bottom:4px}
+.inp{width:100%;padding:12px 14px;border:2px solid var(--line);border-radius:12px;font-size:15px;font-family:inherit;margin-bottom:10px;outline:none;background:#fff}
+.inp:focus{border-color:var(--pri)}
+.flow{display:flex;justify-content:center;gap:6px;flex-wrap:wrap;margin:16px 0 20px}
+.flow span{background:var(--priBg);color:var(--pri);border-radius:10px;padding:6px 10px;font-size:12.5px;font-weight:700}
+
+/* 헤더 */
+.top{position:sticky;top:0;z-index:20;background:rgba(245,239,230,.94);backdrop-filter:blur(6px);border-bottom:1px solid var(--line)}
+.top-in{max-width:720px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:10px}
+.top .back{background:#fff;border:1px solid var(--line);border-radius:10px;padding:6px 10px;font-size:13px;font-weight:700;color:var(--ink)}
+.top .ttl{font-weight:900;font-size:15px;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top .who{font-size:12px;color:var(--soft);white-space:nowrap}
+.steps{max-width:720px;margin:0 auto;padding:0 16px 10px;display:flex;gap:6px}
+.steps div{flex:1;text-align:center;font-size:12px;font-weight:700;padding:6px 0;border-radius:10px;background:#fff;color:#b8b0a5;border:1px solid var(--line)}
+.steps div.on{background:var(--pri);color:#fff;border-color:var(--pri)}
+.steps div.done{background:var(--priBg);color:var(--pri);border-color:var(--priBg)}
+
+/* 지문 선택 */
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.pcard{background:var(--card);border:2px solid var(--line);border-radius:16px;padding:16px 12px;text-align:left;transition:border-color .15s,transform .15s}
+.pcard:hover{border-color:var(--pri);transform:translateY(-2px)}
+.pcard .no{font-family:'Black Han Sans',sans-serif;font-size:28px;color:var(--pri);line-height:1}
+.pcard .kd{font-size:12px;color:var(--acc);font-weight:700;margin:4px 0 2px}
+.pcard .tt{font-size:13px;font-weight:700;color:var(--ink);min-height:40px}
+.pcard .pr{display:flex;gap:4px;margin-top:10px;flex-wrap:wrap}
+.pcard .pr i{font-style:normal;font-size:11px;padding:1px 7px;border-radius:8px;background:#f0ebe3;color:#b8b0a5;font-weight:700}
+.pcard .pr i.ok{background:var(--greenBg);color:var(--green)}
+.pcard.done{border-color:var(--pri2);background:#fbfdf9}
+
+/* 단어 */
+.wbox{text-align:center;padding:28px 18px}
+.wen{font-size:30px;font-weight:900;letter-spacing:.3px;word-break:break-word}
+.wcount{font-size:13px;color:var(--soft);margin-bottom:10px}
+.opts{display:flex;flex-direction:column;gap:9px;margin-top:18px}
+.opt{text-align:left;background:#fff;border:2px solid var(--line);border-radius:12px;padding:12px 14px;font-size:15px;color:var(--ink);line-height:1.5;display:flex;gap:10px;align-items:flex-start}
+.opt .n{font-weight:900;color:var(--pri);flex:none}
+.opt:hover:not(:disabled){border-color:var(--pri2)}
+.opt.right{border-color:var(--green);background:var(--greenBg)}
+.opt.wrong{border-color:var(--red);background:var(--redBg)}
+.opt:disabled{cursor:default}
+.tip{margin-top:14px;background:var(--accBg);border-radius:12px;padding:10px 14px;font-size:13.5px;text-align:left;color:#7a4a1a}
+.say{background:none;border:1px solid var(--line);border-radius:50%;width:34px;height:34px;font-size:15px;vertical-align:middle;flex:none;background:#fff}
+.bar{height:6px;background:#ebe4d8;border-radius:6px;overflow:hidden;margin-bottom:14px}
+.bar i{display:block;height:100%;background:var(--pri2);width:0;transition:width .3s}
+
+/* 해석 */
+.toolbar{display:flex;gap:8px;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap}
+.tog{display:flex;background:#fff;border:1px solid var(--line);border-radius:12px;padding:3px}
+.tog button{border:none;background:none;padding:6px 12px;border-radius:9px;font-size:13px;font-weight:700;color:var(--soft)}
+.tog button.on{background:var(--pri);color:#fff}
+.sent{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px;margin-bottom:10px;transition:border-color .2s,background .2s}
+.sent.ok{border-color:#b9d1b1;background:#fafcf8}
+.sent .row{display:flex;gap:10px;align-items:flex-start}
+.sent .num{flex:none;width:26px;height:26px;border-radius:50%;background:var(--priBg);color:var(--pri);font-weight:900;font-size:13px;display:flex;align-items:center;justify-content:center;margin-top:2px}
+.sent .en{font-size:16.5px;font-weight:500;line-height:1.65;flex:1}
+.kw{border-bottom:2px solid #e3c79f;cursor:pointer;font-weight:700}
+.sent .ko{margin:8px 0 0 36px;font-size:15px;color:#3f5a37;background:var(--priBg);border-radius:10px;padding:8px 12px;line-height:1.6}
+.sent .ko.cover{color:transparent;background:repeating-linear-gradient(45deg,#e7e0d4,#e7e0d4 8px,#efe9df 8px,#efe9df 16px);cursor:pointer;position:relative;user-select:none}
+.sent .ko.cover::after{content:'👆 눌러서 해석 보기';position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);text-align:center;color:#8b7f6f;font-size:13px;font-weight:700}
+.sent .gp{margin:8px 0 0 36px;font-size:13px;color:#6b4a1f;background:var(--accBg);border-radius:10px;padding:7px 12px}
+.sent .gp b{color:var(--acc)}
+.sent .chk{margin:10px 0 0 36px;border:2px solid var(--line);background:#fff;border-radius:10px;padding:5px 12px;font-size:13px;font-weight:700;color:var(--soft)}
+.sent.ok .chk{border-color:var(--green);background:var(--greenBg);color:var(--green)}
+.topic{background:linear-gradient(135deg,#4a6741,#6b8f60);color:#fff;border-radius:18px;padding:18px 20px;margin:16px 0}
+.topic .lb{font-size:12px;font-weight:700;opacity:.85;margin-bottom:4px}
+.topic .tx{font-size:16px;font-weight:700;line-height:1.55}
+.topic .ez{margin-top:10px;background:rgba(255,255,255,.16);border-radius:12px;padding:10px 12px;font-size:14.5px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#2a2a2a;color:#fff;padding:10px 16px;border-radius:12px;font-size:14px;z-index:99;max-width:90vw;text-align:center;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.show{opacity:1}
+
+/* 문제 */
+.qhead{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap}
+.qtype{font-size:12px;font-weight:900;border-radius:8px;padding:2px 10px;background:var(--blueBg);color:var(--blue)}
+.qround{font-size:12px;font-weight:900;border-radius:8px;padding:2px 10px;background:var(--redBg);color:var(--red)}
+.qstem{font-size:16px;font-weight:700;line-height:1.55}
+.qbox{margin-top:12px;border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;font-size:14.5px;line-height:1.75;background:#fff}
+.qbox b{color:var(--blue)}
+.qbox u{text-decoration-thickness:2px;text-underline-offset:3px}
+.fb{margin-top:14px;border-radius:14px;padding:12px 14px;font-size:14.5px;line-height:1.7}
+.fb.ok{background:var(--greenBg);color:#1f5a23}
+.fb h4{font-size:15px;margin-bottom:4px}
+
+/* 오답노트 */
+.note{margin-top:16px;border:3px solid var(--red);border-radius:18px;overflow:hidden;background:#fff}
+.note-h{background:var(--red);color:#fff;padding:12px 16px;display:flex;align-items:center;gap:8px}
+.note-h .bh{font-size:20px}
+.note-b{padding:14px 16px}
+.nsec{margin-bottom:16px}
+.nsec>.lb{font-size:13px;font-weight:900;color:var(--red);margin-bottom:6px}
+.expl{background:#fff8f0;border-radius:12px;padding:10px 14px;font-size:14.5px;line-height:1.75}
+.expl b{color:#a3471b}
+.ans{font-weight:900;color:var(--green)}
+.ev{background:var(--blueBg);border-radius:12px;padding:10px 14px}
+.ev .e{font-size:15.5px;font-weight:700;color:#1e3d57;line-height:1.6}
+.ev .k{font-size:14px;color:#3d5a73;margin-top:4px}
+.rs{display:flex;flex-wrap:wrap;gap:6px}
+.rs button{border:2px solid var(--line);background:#fff;border-radius:20px;padding:6px 12px;font-size:13.5px;font-weight:700;color:var(--ink)}
+.rs button.on{border-color:var(--red);background:var(--redBg);color:var(--red)}
+.copy{width:100%;padding:11px 12px;border:2px solid var(--line);border-radius:12px;font-size:15px;font-family:inherit;outline:none;resize:vertical;min-height:70px;line-height:1.5}
+.copy.good{border-color:var(--green);background:#f6fbf6}
+.copy.bad{border-color:#e2a39b}
+.cstat{font-size:12.5px;margin-top:4px;color:var(--soft)}
+.cstat.good{color:var(--green);font-weight:700}
+.cstat.bad{color:var(--red);font-weight:700}
+.full-tr{margin-top:8px;border-top:1px dashed var(--line);padding-top:8px}
+.full-tr p{font-size:13.5px;margin-bottom:8px}
+.full-tr p .k{display:block;color:#3f5a37}
+.linkbtn{background:none;border:none;color:var(--blue);font-weight:700;font-size:13.5px;padding:4px 0;text-decoration:underline}
+
+/* 결과 */
+.big{font-family:'Black Han Sans',sans-serif;font-size:54px;color:var(--pri);line-height:1}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:16px 0}
+.stats div{background:var(--priBg);border-radius:12px;padding:10px 4px;text-align:center}
+.stats b{display:block;font-size:20px;color:var(--pri)}
+.stats span{font-size:12px;color:var(--soft)}
+.nlist .ni{border-left:4px solid var(--red);background:#fff;border-radius:10px;padding:10px 12px;margin-bottom:8px;font-size:13.5px}
+.nlist .ni .t{font-weight:900;color:var(--red)}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.btnrow .btn{flex:1;min-width:140px}
+@media(max-width:480px){
+  .wen{font-size:26px}
+  .sent .en{font-size:16px}
+  .sent .ko,.sent .gp,.sent .chk{margin-left:0}
+  .stats b{font-size:18px}
+}
+@media print{.top,.steps,.btnrow,.btn{display:none!important}body{background:#fff}}
+</style>
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getFirestore,collection,addDoc,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+const cfg={apiKey:"AIzaSyCxS524S8KAaF87DomPtl9sJdF-eqes404",authDomain:"bomnalvaca.firebaseapp.com",projectId:"bomnalvaca",storageBucket:"bomnalvaca.firebasestorage.app",messagingSenderId:"115868052300",appId:"1:115868052300:web:765c08867b6f1ce0987de9"};
+const app=initializeApp(cfg);
+const db=getFirestore(app);
+window._fbSave=async function(data){
+  await addDoc(collection(db,'quiz_results'),{...data,timestamp:serverTimestamp()});
+};
+</script>
+</head>
+<body>
+
+<!-- 시작 -->
+<div id="startScreen" class="wrap hidden">
+  <div class="card">
+    <div class="chip" style="margin-bottom:10px">봄날 ENGLISH</div>
+    <h1 id="stTitle"></h1>
+    <p class="muted" id="stSub"></p>
+    <div class="flow"><span>① 단어 체크</span><span>② 한 줄 해석</span><span>③ 문제 풀기</span><span>🚨 오답노트</span></div>
+    <input class="inp" id="nameInput" placeholder="이름" autocomplete="off">
+    <select class="inp" id="schoolInput">
+      <option value="">학교 선택</option>
+      <option>종촌고</option><option>고운고</option><option>대성고</option><option>기타</option>
+    </select>
+    <button class="btn full" onclick="startApp()">시작하기</button>
+  </div>
+</div>
+
+<!-- 상단바 -->
+<div id="topBar" class="top hidden">
+  <div class="top-in">
+    <button class="back" id="backBtn" onclick="goHome()">← 지문</button>
+    <div class="ttl" id="topTitle"></div>
+    <div class="who" id="who"></div>
+  </div>
+  <div class="steps" id="steps">
+    <div data-s="word">① 단어</div><div data-s="read">② 해석</div><div data-s="quiz">③ 문제</div>
+  </div>
+</div>
+
+<div class="wrap" id="main"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const EXAM = {
+  "file": "mock_go1_2025_09_deep",
+  "title": "고1 25년 9월 · 지문 완전정복",
+  "sub": "단어 체크 → 한 줄 해석 → 문제 풀기 → 오답노트",
+  "quizType": "고1_25년9월_지문완전정복_독해"
+};
+
+const PASSAGES = [
+/* ───────── 21번 ───────── */
+{
+ "id": "21",
+ "kind": "밑줄의미",
+ "title": "내 몸의 원자는 빌린 거예요",
+ "words": [
+  {
+   "en": "atom",
+   "ko": "원자",
+   "m": [
+    "atoms"
+   ],
+   "tip": "물질을 이루는 아주아주 작은 알갱이"
+  },
+  {
+   "en": "universe",
+   "ko": "우주",
+   "m": [
+    "universe"
+   ]
+  },
+  {
+   "en": "inhale",
+   "ko": "(숨을) 들이마시다",
+   "m": [
+    "inhale"
+   ],
+   "tip": "반대말: exhale(내쉬다) · in = 안으로, ex = 밖으로"
+  },
+  {
+   "en": "exhale",
+   "ko": "(숨을) 내쉬다",
+   "m": [
+    "exhaled"
+   ]
+  },
+  {
+   "en": "remaining",
+   "ko": "남아 있는",
+   "m": [
+    "remaining"
+   ],
+   "tip": "remain(남다)은 자동사 → \"남아 있는\"은 remaining (remained ❌)"
+  },
+  {
+   "en": "various",
+   "ko": "다양한",
+   "m": [
+    "various"
+   ],
+   "tip": "명사형: variety(다양성)"
+  },
+  {
+   "en": "means",
+   "ko": "수단, 방법",
+   "m": [
+    "means"
+   ],
+   "tip": "means는 단수·복수 모양이 같아요"
+  },
+  {
+   "en": "borrow",
+   "ko": "빌리다",
+   "m": [
+    "borrow"
+   ],
+   "tip": "lend(빌려주다)와 헷갈리지 않기!"
+  },
+  {
+   "en": "pool",
+   "ko": "(함께 쓰는) 저장소",
+   "m": [
+    "pool"
+   ],
+   "tip": "수영장 말고 \"여럿이 같이 쓰는 모음\"이라는 뜻도 있어요"
+  },
+  {
+   "en": "cycle",
+   "ko": "순환하다, 돌다",
+   "m": [
+    "cycle"
+   ],
+   "tip": "recycle = 재활용하다, 다시 순환시키다"
+  },
+  {
+   "en": "sweat",
+   "ko": "땀",
+   "m": [
+    "sweat"
+   ]
+  },
+  {
+   "en": "evaporate",
+   "ko": "증발하다",
+   "m": [
+    "evaporated"
+   ]
+  },
+  {
+   "en": "on a grand scale",
+   "ko": "대규모로",
+   "m": [
+    "on a grand scale"
+   ]
+  },
+  {
+   "en": "origin",
+   "ko": "기원, 시작",
+   "m": [
+    "origin"
+   ]
+  },
+  {
+   "en": "limitless",
+   "ko": "끝없는, 무한한",
+   "m": [
+    "limitless"
+   ],
+   "tip": "-less = ~이 없는 → limit(한계)이 없는"
+  },
+  {
+   "en": "caretaker",
+   "ko": "돌보는 사람, 관리인",
+   "m": [
+    "caretaker"
+   ]
+  }
+ ],
+ "sents": [
+  {
+   "en": "Many atoms in your body are nearly as old as the universe itself.",
+   "ko": "여러분 몸속의 많은 원자들은 거의 우주만큼이나 나이가 많아요.",
+   "g": "as + 원급 + as = ~만큼 …한 · itself = 강조 재귀대명사(바로 그 우주)"
+  },
+  {
+   "en": "When you breathe, for example, only some of the atoms that you inhale are exhaled in your next breath.",
+   "ko": "예를 들어 숨을 쉴 때, 들이마신 원자들 중 일부만 다음 숨에 밖으로 나가요.",
+   "g": "some of + 복수명사 → 복수동사 are · that you inhale = 목적격 관계대명사절(atoms를 꾸밈) · are exhaled = 수동태(내쉬어지다)"
+  },
+  {
+   "en": "The remaining atoms are taken into your body to become part of you, and they later leave your body by various means.",
+   "ko": "나머지 원자들은 몸속으로 들어가 여러분의 일부가 되고, 나중에 여러 가지 방법으로 몸 밖으로 나가요.",
+   "g": "remaining = \"남아 있는\"(현재분사, remain은 자동사) · to become = 결과를 나타내는 to부정사(~해서 …이 되다) · by various means = 다양한 방법으로"
+  },
+  {
+   "en": "You don't \"own\" the atoms that make up your body; you borrow them.",
+   "ko": "여러분은 몸을 이루는 원자들을 \"가지고\" 있는 게 아니라, 잠시 빌려 쓰고 있는 거예요.",
+   "g": "that make up = 주격 관계대명사절, 선행사 atoms(복수) → make · make up = ~을 이루다 · 세미콜론(;)은 앞뒤 문장을 이어 줘요 · them = the atoms"
+  },
+  {
+   "en": "We all share from the same atom pool because atoms forever travel around, within, and among us.",
+   "ko": "원자들은 우리 주변, 우리 몸속, 우리들 사이를 끝없이 돌아다니기 때문에, 우리는 모두 같은 원자 창고를 함께 쓰고 있어요.",
+   "g": "because + 주어 + 동사(이유) · around, within, and among 전치사 3개 병렬 → 모두 us에 연결"
+  },
+  {
+   "en": "Atoms cycle from person to person as we breathe and as our sweat is evaporated.",
+   "ko": "우리가 숨을 쉬고 땀이 날아갈 때, 원자들은 이 사람에게서 저 사람에게로 옮겨 다녀요.",
+   "g": "from A to B = A에서 B로 · as = ~할 때 · as we breathe and as ~ 병렬 · is evaporated = 수동태"
+  },
+  {
+   "en": "We recycle atoms on a grand scale.",
+   "ko": "우리는 아주 큰 규모로 원자를 다시 쓰고 있는 셈이에요.",
+   "g": "on a grand scale = 대규모로 · re- = 다시"
+  },
+  {
+   "en": "The origin of the lightest atoms goes back to the origin of the universe, and most heavier atoms are older than the Sun and Earth.",
+   "ko": "가장 가벼운 원자들은 우주가 처음 생길 때 만들어졌고, 더 무거운 원자들도 대부분 태양이나 지구보다 나이가 많아요.",
+   "g": "주어 The origin(단수) → 동사 goes · go back to = ~로 거슬러 올라가다 · the lightest(최상급) / heavier, older than(비교급)"
+  },
+  {
+   "en": "There are atoms in your body that have existed since the first moments of time, recycling throughout the universe among limitless forms, both nonliving and living.",
+   "ko": "여러분 몸에는 시간이 처음 시작된 순간부터 있었던 원자들이 있어요. 그 원자들은 살아 있지 않은 것과 살아 있는 것, 끝없이 많은 모습으로 우주 곳곳을 돌고 돌았어요.",
+   "g": "There are + 복수명사(atoms) · that have existed since ~ = 주격 관계대명사 + 현재완료(계속) · recycling ~ = 분사구문(~하면서) · both A and B = A와 B 둘 다"
+  },
+  {
+   "en": "You're the present caretaker of the atoms in your body.",
+   "ko": "여러분은 지금 잠깐 몸속 원자들을 맡아서 돌보는 사람이에요.",
+   "g": "present = (명사 앞에서) 현재의, 지금의 · You're = You are"
+  },
+  {
+   "en": "There will be many who will follow you.",
+   "ko": "여러분 다음에도 그 원자들을 맡을 사람이 많이 있을 거예요.",
+   "g": "many = many people(대명사) · who will follow you = 주격 관계대명사절(사람 → who)"
+  }
+ ],
+ "topic": "우리 몸의 원자는 우주만큼 오래되었고, 우리는 그것을 소유하는 것이 아니라 잠시 빌려 쓰며 서로 나누고 있다.",
+ "easy": "내 몸을 이루는 아주 작은 알갱이(원자)는 사실 내 것이 아니라 잠깐 빌린 거예요. 숨 쉬고 땀 흘리면서 다른 사람, 다른 생물과 계속 주고받아요!",
+ "qs": [
+  {
+   "t": "요지",
+   "q": "다음 글의 요지로 가장 적절한 것은?",
+   "shuffle": true,
+   "o": [
+    "숨을 쉴 때 들이마신 원자는 모두 다음 숨에 그대로 내쉬어진다.",
+    "무거운 원자일수록 가벼운 원자보다 먼저 만들어졌다.",
+    "건강을 위해 땀을 흘려 몸속 원자를 자주 바꿔 주어야 한다.",
+    "우리 몸의 원자는 잠시 빌려 쓰는 것이며 우주 속에서 끝없이 순환한다.",
+    "사람마다 몸을 이루는 원자는 다른 사람의 원자와 섞이지 않는다."
+   ],
+   "a": 4,
+   "why": "필자는 \"You don't 'own' the atoms ...; you <b>borrow</b> them.\"이라고 말하고, 원자가 사람과 사람 사이, 우주 전체를 <b>계속 돌고 돈다(recycle)</b>고 설명해요. 마지막에는 우리가 원자의 \"현재 관리인\"일 뿐이라고 정리하죠.<br>① 들이마신 원자 중 <b>일부(only some)</b>만 내쉬어져요.<br>② 가장 가벼운 원자가 우주의 시작과 함께 생겼다고 했으니 반대예요.<br>③ 땀을 흘려야 한다는 말은 없어요.<br>⑤ 원자는 사람 사이를 오가니(cycle from person to person) 정반대예요.",
+   "ev": "You don't \"own\" the atoms that make up your body; you borrow them.",
+   "evKo": "여러분은 몸을 이루는 원자들을 소유하는 것이 아니라 빌리는 것이다."
+  },
+  {
+   "t": "어휘",
+   "q": "(A), (B), (C)의 각 네모 안에서 문맥에 맞는 낱말로 가장 적절한 것은?",
+   "box": "You don't \"own\" the atoms that make up your body; you <b>(A) [lend / borrow]</b> them. … The origin of the lightest atoms goes back to the origin of the universe, and most heavier atoms are <b>(B) [older / younger]</b> than the Sun and Earth. … You're the <b>(C) [permanent / present]</b> caretaker of the atoms in your body. There will be many who will follow you.",
+   "o": [
+    "lend — older — present",
+    "borrow — older — present",
+    "borrow — younger — present",
+    "borrow — older — permanent",
+    "lend — younger — permanent"
+   ],
+   "a": 2,
+   "why": "(A) 원자를 \"소유하지(own) 않는다\"고 했으니 잠시 <b>빌린다(borrow)</b>가 맞아요. lend는 \"빌려주다\"라서 흐름에 안 맞아요.<br>(B) 앞에서 원자의 기원이 우주의 시작까지 거슬러 올라간다고 했으니 태양과 지구보다 <b>나이가 많다(older)</b>. younger는 반대예요.<br>(C) 뒤에 \"여러분 다음에 올 사람이 많다\"고 했으니 <b>지금의(present)</b> 관리인이에요. permanent(영원한)는 뒤 문장과 맞지 않아요.",
+   "ev": "You're the present caretaker of the atoms in your body.",
+   "evKo": "여러분은 몸속 원자들의 현재 관리인이다."
+  },
+  {
+   "t": "어법",
+   "q": "(A), (B), (C)의 각 네모 안에서 어법에 맞는 표현으로 가장 적절한 것은?",
+   "box": "When you breathe, for example, only some of the atoms that you inhale <b>(A) [is / are]</b> exhaled in your next breath. … You don't \"own\" the atoms that <b>(B) [makes / make]</b> up your body; you borrow them. … There <b>(C) [are / is]</b> atoms in your body that have existed since the first moments of time, recycling throughout the universe among limitless forms, both nonliving and living.",
+   "o": [
+    "is — make — are",
+    "are — makes — is",
+    "is — makes — are",
+    "are — make — are",
+    "are — make — is"
+   ],
+   "a": 4,
+   "why": "(A) 주어는 some of <b>the atoms</b>예요. some of 뒤의 명사가 복수이니 복수동사 <b>are</b>. (that you inhale은 atoms를 꾸미는 말)<br>(B) 주격 관계대명사 that의 선행사가 <b>the atoms</b>(복수)이므로 <b>make</b>.<br>(C) There + be동사 뒤의 명사 <b>atoms</b>가 진짜 주어(복수) → <b>are</b>.",
+   "ev": "only some of the atoms that you inhale are exhaled in your next breath",
+   "evKo": "여러분이 들이마시는 원자들 중 일부만 다음 숨에 내쉬어진다"
+  },
+  {
+   "t": "내용일치",
+   "q": "다음 글의 내용과 일치하는 것은?",
+   "shuffle": true,
+   "o": [
+    "우리 몸의 원자 대부분은 우리가 태어날 때 새로 만들어졌다.",
+    "숨을 쉬면 들이마신 원자가 모두 다음 숨에 밖으로 나간다.",
+    "몸속에 남은 원자도 나중에 여러 방법으로 몸을 떠난다.",
+    "가장 가벼운 원자는 태양과 지구가 생긴 뒤에 만들어졌다.",
+    "땀이 증발할 때는 원자가 사람 사이를 옮겨 다니지 않는다."
+   ],
+   "a": 3,
+   "why": "본문에 \"they later leave your body by <b>various means</b>(나중에 다양한 방법으로 몸을 떠난다)\"라고 나와요.<br>① 원자는 거의 우주만큼 오래됐어요.<br>② 들이마신 원자 중 <b>일부만</b> 내쉬어져요.<br>④ 가장 가벼운 원자는 <b>우주의 시작</b>까지 거슬러 올라가요.<br>⑤ 숨 쉬고 <b>땀이 증발할 때</b> 원자가 사람 사이를 오간다고 했어요.",
+   "ev": "The remaining atoms are taken into your body to become part of you, and they later leave your body by various means.",
+   "evKo": "나머지 원자들은 몸속으로 들어가 여러분의 일부가 되고, 나중에 다양한 방법으로 몸을 떠난다."
+  },
+  {
+   "t": "순서",
+   "q": "주어진 글 다음에 이어질 글의 순서로 가장 적절한 것은?",
+   "box": "Many atoms in your body are nearly as old as the universe itself. When you breathe, for example, only some of the atoms that you inhale are exhaled in your next breath.<br><br><b>(A)</b> The origin of the lightest atoms goes back to the origin of the universe, and most heavier atoms are older than the Sun and Earth. There are atoms in your body that have existed since the first moments of time, recycling throughout the universe among limitless forms, both nonliving and living. You're the present caretaker of the atoms in your body. There will be many who will follow you.<br><br><b>(B)</b> We all share from the same atom pool because atoms forever travel around, within, and among us. Atoms cycle from person to person as we breathe and as our sweat is evaporated. We recycle atoms on a grand scale.<br><br><b>(C)</b> The remaining atoms are taken into your body to become part of you, and they later leave your body by various means. You don't \"own\" the atoms that make up your body; you borrow them.",
+   "o": [
+    "(A) - (C) - (B)",
+    "(B) - (A) - (C)",
+    "(B) - (C) - (A)",
+    "(C) - (A) - (B)",
+    "(C) - (B) - (A)"
+   ],
+   "a": 5,
+   "why": "① 주어진 글: 들이마신 원자 중 <b>일부만</b> 내쉬어진다.<br>② <b>(C)</b> \"<b>The remaining atoms</b>(나머지 원자들)\" = 내쉬어지지 않고 남은 원자 → 몸의 일부가 되었다가 떠난다 → 그러니 원자는 <b>빌린 것</b>.<br>③ <b>(B)</b> 빌린 것이니 모두 <b>같은 원자 창고</b>를 함께 쓴다 → 사람 사이를 순환 → \"대규모로 재활용한다\".<br>④ <b>(A)</b> 그 대규모 순환을 <b>우주의 시작</b>까지 넓혀 설명하고, \"우리는 현재 관리인일 뿐\"이라고 마무리.<br>👉 연결고리: <b>only some</b> → <b>The remaining</b>(C) · <b>borrow</b> → <b>share / same pool</b>(B) · <b>on a grand scale</b> → <b>universe</b>(A)",
+   "ev": "The remaining atoms are taken into your body to become part of you",
+   "evKo": "나머지 원자들은 몸속으로 들어가 여러분의 일부가 된다"
+  },
+  {
+   "t": "빈칸",
+   "q": "다음 빈칸에 들어갈 말로 가장 적절한 것은?",
+   "shuffle": true,
+   "box": "You don't \"own\" the atoms that make up your body; you borrow them. … You're the <b>__________</b> of the atoms in your body. There will be many who will follow you.",
+   "o": [
+    "permanent owner",
+    "present caretaker",
+    "first creator",
+    "only user",
+    "final destroyer"
+   ],
+   "a": 2,
+   "why": "원자는 <b>빌린 것</b>이고, 우리 뒤에 그 원자를 이어받을 사람이 <b>많다</b>고 했어요. 그러니 우리는 원자를 지금 잠깐 맡아 돌보는 <b>현재의 관리인(present caretaker)</b>이에요.<br>permanent owner(영원한 주인)는 \"own하지 않는다\"와 반대, first creator(처음 만든 사람)는 원자가 우주만큼 오래됐다는 내용과 반대, only user(유일한 사용자)는 \"같은 원자 창고를 함께 쓴다\"와 반대, final destroyer(마지막 파괴자)는 뒤에 올 사람이 많다는 내용과 맞지 않아요.",
+   "ev": "There will be many who will follow you.",
+   "evKo": "여러분 뒤를 이을 사람들이 많이 있을 것이다."
+  }
+ ]
+},
+/* ───────── 22번 ───────── */
+{
+ "id": "22",
+ "kind": "요지",
+ "title": "정원 가꾸기, 몸도 마음도 튼튼",
+ "words": [
+  {
+   "en": "involve",
+   "ko": "포함하다",
+   "m": [
+    "involves",
+    "involved"
+   ]
+  },
+  {
+   "en": "harvest",
+   "ko": "수확하다",
+   "m": [
+    "harvesting"
+   ]
+  },
+  {
+   "en": "flexibility",
+   "ko": "유연성",
+   "m": [
+    "flexibility"
+   ],
+   "tip": "형용사: flexible(유연한)"
+  },
+  {
+   "en": "endurance",
+   "ko": "지구력, 인내력",
+   "m": [
+    "endurance"
+   ],
+   "tip": "동사: endure(견디다)"
+  },
+  {
+   "en": "beneficial",
+   "ko": "이로운, 유익한",
+   "m": [
+    "beneficial"
+   ],
+   "tip": "명사: benefit(이익, 혜택) · 반대 느낌: harmful(해로운)"
+  },
+  {
+   "en": "challenging",
+   "ko": "힘든, 어려운",
+   "m": [
+    "challenging"
+   ]
+  },
+  {
+   "en": "accessible",
+   "ko": "쉽게 이용할 수 있는",
+   "m": [
+    "accessible"
+   ],
+   "tip": "반대말: inaccessible(접근하기 어려운)"
+  },
+  {
+   "en": "profound",
+   "ko": "깊은, 엄청난",
+   "m": [
+    "profound"
+   ]
+  },
+  {
+   "en": "tend to",
+   "ko": "~을 돌보다",
+   "m": [
+    "Tending to"
+   ],
+   "tip": "tend to + 동사원형은 \"~하는 경향이 있다\"! 여기선 뒤에 명사(plants)가 와서 \"돌보다\""
+  },
+  {
+   "en": "meditative",
+   "ko": "명상하는 듯한",
+   "m": [
+    "meditative"
+   ],
+   "tip": "meditation(명상)의 형용사형"
+  },
+  {
+   "en": "anxiety",
+   "ko": "불안",
+   "m": [
+    "anxiety"
+   ],
+   "tip": "형용사: anxious(불안한)"
+  },
+  {
+   "en": "repetitive",
+   "ko": "반복적인",
+   "m": [
+    "repetitive"
+   ],
+   "tip": "동사: repeat(반복하다)"
+  },
+  {
+   "en": "induce",
+   "ko": "일으키다, 유도하다",
+   "m": [
+    "induce"
+   ]
+  },
+  {
+   "en": "elevate",
+   "ko": "높이다, 끌어올리다",
+   "m": [
+    "elevate"
+   ],
+   "tip": "elevator(엘리베이터)를 떠올리면 쉬워요"
+  },
+  {
+   "en": "cognition",
+   "ko": "인지 능력",
+   "m": [
+    "cognition"
+   ]
+  },
+  {
+   "en": "thrive",
+   "ko": "무럭무럭 자라다",
+   "m": [
+    "thrive"
+   ]
+  }
+ ],
+ "sents": [
+  {
+   "en": "The act of gardening itself is a fantastic form of physical activity.",
+   "ko": "정원을 가꾸는 일 자체가 아주 멋진 신체 활동이에요.",
+   "g": "주어 The act (of gardening itself) → 단수동사 is · itself = 강조(그 자체)"
+  },
+  {
+   "en": "It involves a range of motions, from digging and planting to watering and harvesting.",
+   "ko": "정원 일에는 땅 파기, 심기부터 물 주기, 거두기까지 여러 가지 동작이 들어 있어요.",
+   "g": "a range of = 다양한 · from A to B = A부터 B까지 · digging, planting, watering, harvesting = 동명사(전치사 뒤)"
+  },
+  {
+   "en": "These activities help improve strength, flexibility, and endurance.",
+   "ko": "이런 활동들은 힘, 유연성, 지구력을 키우는 데 도움이 돼요.",
+   "g": "help + (to) 동사원형 → help improve · strength, flexibility, and endurance 명사 병렬"
+  },
+  {
+   "en": "You might not realize it, but small tasks like weeding or turning compost can burn many calories.",
+   "ko": "잘 모를 수도 있지만, 잡초 뽑기나 퇴비 뒤집기 같은 작은 일로도 칼로리가 많이 타요.",
+   "g": "might = ~일지도 모른다 · like = ~ 같은(전치사) · weeding or turning 동명사 병렬"
+  },
+  {
+   "en": "Gardening is particularly beneficial for those who find traditional exercise challenging.",
+   "ko": "정원 가꾸기는 보통의 운동이 힘들다고 느끼는 사람들에게 특히 좋아요.",
+   "g": "those who = ~하는 사람들 · find + 목적어 + 형용사 = ~이 …하다고 느끼다(5형식)"
+  },
+  {
+   "en": "It's a low-impact way to stay active and fit, making it accessible for people of all ages and physical abilities.",
+   "ko": "몸에 무리가 적으면서도 활발하고 건강하게 지낼 수 있는 방법이라서, 나이나 체력에 상관없이 누구나 할 수 있어요.",
+   "g": "to stay = way를 꾸미는 to부정사(형용사적 용법) · stay + 형용사 · making ~ = 분사구문(그래서 ~하게 만든다) · make it + 형용사(5형식)"
+  },
+  {
+   "en": "Besides physical health, gardening has profound mental health benefits.",
+   "ko": "몸 건강뿐 아니라, 정원 가꾸기는 마음 건강에도 아주 큰 도움이 돼요.",
+   "g": "besides = ~ 외에도(전치사) · beside(~ 옆에)와 구별!"
+  },
+  {
+   "en": "Tending to plants can be incredibly calming and meditative.",
+   "ko": "식물을 돌보다 보면 마음이 아주 차분해지고 명상하는 기분이 들어요.",
+   "g": "Tending to plants = 동명사 주어(단수 취급) · incredibly(부사)가 형용사 calming을 꾸밈"
+  },
+  {
+   "en": "It allows you to focus on the present moment, reducing stress and anxiety.",
+   "ko": "지금 이 순간에 집중하게 해 줘서, 스트레스와 불안이 줄어들어요.",
+   "g": "allow + 목적어 + to V = ~가 …하게 해 주다 · reducing ~ = 분사구문(그 결과 ~을 줄이면서)"
+  },
+  {
+   "en": "The repetitive tasks involved in gardening can induce a state of mindfulness, similar to meditation.",
+   "ko": "정원 일에서 되풀이하는 일들은 명상할 때처럼 마음을 차분하게 집중하는 상태를 만들어 줘요.",
+   "g": "involved in gardening = 과거분사구가 tasks를 뒤에서 꾸밈(수동: 포함된) · 주어 tasks ↔ 동사 can induce · similar to = ~와 비슷한"
+  },
+  {
+   "en": "Studies have shown that spending time in nature, even in a small garden, can elevate mood, improve cognition, and reduce depression symptoms.",
+   "ko": "연구에 따르면, 작은 정원이라도 자연 속에서 시간을 보내면 기분이 좋아지고, 생각하는 힘이 좋아지고, 우울한 증상이 줄어든대요.",
+   "g": "have shown = 현재완료 · that절 = 목적어 · spending time = 동명사 주어 · can 뒤 elevate, improve, reduce 동사원형 병렬"
+  },
+  {
+   "en": "The sense of accomplishment from watching your plants grow and thrive can also boost self-esteem and overall well-being.",
+   "ko": "내 식물이 쑥쑥 자라는 걸 보며 느끼는 뿌듯함은 자신감과 전체적인 행복감도 높여 줘요.",
+   "g": "watch + 목적어 + 동사원형 = ~가 …하는 것을 보다(지각동사) · grow and thrive 병렬 · 주어 The sense → 동사 can boost"
+  }
+ ],
+ "topic": "정원 가꾸기는 신체 건강과 정신 건강 모두에 큰 도움이 된다.",
+ "easy": "정원 일을 하면 몸이 튼튼해지고, 마음도 편안해져요. 식물이 자라는 걸 보면 뿌듯해서 기분도 좋아져요!",
+ "qs": [
+  {
+   "t": "요지",
+   "q": "다음 글의 요지로 가장 적절한 것은?",
+   "shuffle": true,
+   "o": [
+    "정원 가꾸기는 전통적인 운동보다 칼로리 소모가 훨씬 크다.",
+    "정원 가꾸기는 몸과 마음의 건강 모두에 도움이 된다.",
+    "마음 건강을 위해서는 작은 정원보다 넓은 자연에서 시간을 보내야 한다.",
+    "정원 일을 할 때는 부상을 막기 위해 무리한 동작을 피해야 한다.",
+    "식물을 잘 기르려면 매일 같은 일을 반복하는 인내심이 필요하다."
+   ],
+   "a": 2,
+   "why": "글 앞부분은 정원 가꾸기가 <b>신체 활동</b>으로서 좋은 점(힘, 유연성, 칼로리 소모)을, \"Besides physical health\" 뒤로는 <b>정신 건강</b>에 좋은 점(스트레스 감소, 기분 향상, 자존감)을 설명해요. 그래서 요지는 ②.<br>① 칼로리를 많이 태울 수 있다고는 했지만 전통 운동과 비교하지는 않았어요.<br>③ \"작은 정원이라도(even in a small garden)\" 좋다고 했어요.<br>④ 부상 이야기는 없어요.<br>⑤ 반복 작업은 인내심이 아니라 마음 챙김과 연결돼요.",
+   "ev": "Besides physical health, gardening has profound mental health benefits.",
+   "evKo": "신체 건강 외에도, 정원 가꾸기는 깊은 정신 건강상의 이점이 있다."
+  },
+  {
+   "t": "어휘",
+   "q": "(A), (B), (C)의 각 네모 안에서 문맥에 맞는 낱말로 가장 적절한 것은?",
+   "box": "Gardening is particularly <b>(A) [beneficial / harmful]</b> for those who find traditional exercise challenging. It's a low-impact way to stay active and fit, making it <b>(B) [inaccessible / accessible]</b> for people of all ages and physical abilities. … Tending to plants can be incredibly calming and meditative. It allows you to focus on the present moment, <b>(C) [increasing / reducing]</b> stress and anxiety.",
+   "o": [
+    "harmful — accessible — reducing",
+    "beneficial — inaccessible — increasing",
+    "beneficial — accessible — reducing",
+    "beneficial — accessible — increasing",
+    "harmful — inaccessible — reducing"
+   ],
+   "a": 3,
+   "why": "(A) 보통 운동이 힘든 사람에게 몸에 무리가 적은 활동이니 <b>이로운(beneficial)</b>. harmful은 \"해로운\".<br>(B) 몸에 무리가 적어서 모든 나이, 모든 체력의 사람들이 <b>쉽게 할 수 있는(accessible)</b>. inaccessible은 \"접근하기 어려운\"이라 반대예요.<br>(C) 마음이 차분해지고 현재에 집중하면 스트레스와 불안이 <b>줄어든다(reducing)</b>. increasing(늘리는)은 반대예요.",
+   "ev": "It allows you to focus on the present moment, reducing stress and anxiety.",
+   "evKo": "그것은 여러분이 현재 순간에 집중하게 해 주어, 스트레스와 불안을 줄여 준다."
+  },
+  {
+   "t": "어법",
+   "q": "(A), (B), (C)의 각 네모 안에서 어법에 맞는 표현으로 가장 적절한 것은?",
+   "box": "These activities help <b>(A) [improve / improving]</b> strength, flexibility, and endurance. … Gardening is particularly beneficial for those <b>(B) [which / who]</b> find traditional exercise challenging. … The repetitive tasks <b>(C) [involving / involved]</b> in gardening can induce a state of mindfulness, similar to meditation.",
+   "o": [
+    "improve — who — involved",
+    "improving — who — involved",
+    "improve — which — involving",
+    "improving — which — involved",
+    "improve — who — involving"
+   ],
+   "a": 1,
+   "why": "(A) help는 목적어 자리에 <b>동사원형</b>이나 to부정사를 써요 → <b>improve</b>. (help improving ❌)<br>(B) those는 \"사람들\"이고, 뒤에 주어가 빠진 절(find ~)이 오니 사람을 받는 주격 관계대명사 <b>who</b>. which는 사물에 써요.<br>(C) 작업들이 정원 일에 \"포함되는\" 것이니 수동의 <b>involved</b>. involve는 목적어가 필요한 동사라서 involving in처럼 쓰지 않아요.",
+   "ev": "The repetitive tasks involved in gardening can induce a state of mindfulness, similar to meditation.",
+   "evKo": "정원 가꾸기에 포함된 반복적인 작업들은 명상과 비슷한 마음 챙김 상태를 유도할 수 있다."
+  },
+  {
+   "t": "내용일치",
+   "q": "다음 글의 내용과 일치하지 <u>않는</u> 것은?",
+   "shuffle": true,
+   "o": [
+    "정원 가꾸기에는 땅 파기부터 수확하기까지 다양한 동작이 들어 있다.",
+    "잡초 뽑기 같은 작은 일로도 많은 칼로리를 소모할 수 있다.",
+    "정원 가꾸기는 나이나 신체 능력에 상관없이 누구나 할 수 있다.",
+    "정원 가꾸기는 몸에 큰 부담을 주는 고강도 운동이다.",
+    "식물이 자라는 것을 보며 느끼는 성취감은 자존감을 높일 수 있다."
+   ],
+   "a": 4,
+   "why": "본문은 정원 가꾸기를 \"<b>low-impact</b> way(몸에 부담이 적은 방법)\"라고 했어요. 그래서 운동이 힘든 사람에게 특히 좋다고 했죠. \"큰 부담을 주는 고강도 운동\"은 정반대예요.",
+   "ev": "It's a low-impact way to stay active and fit",
+   "evKo": "그것은 활동적이고 건강한 상태를 유지하는, 몸에 부담이 적은 방법이다"
+  },
+  {
+   "t": "순서",
+   "q": "주어진 글 다음에 이어질 글의 순서로 가장 적절한 것은?",
+   "box": "The act of gardening itself is a fantastic form of physical activity. It involves a range of motions, from digging and planting to watering and harvesting.<br><br><b>(A)</b> Besides physical health, gardening has profound mental health benefits. Tending to plants can be incredibly calming and meditative. It allows you to focus on the present moment, reducing stress and anxiety.<br><br><b>(B)</b> The repetitive tasks involved in gardening can induce a state of mindfulness, similar to meditation. Studies have shown that spending time in nature, even in a small garden, can elevate mood, improve cognition, and reduce depression symptoms. The sense of accomplishment from watching your plants grow and thrive can also boost self-esteem and overall well-being.<br><br><b>(C)</b> These activities help improve strength, flexibility, and endurance. You might not realize it, but small tasks like weeding or turning compost can burn many calories. Gardening is particularly beneficial for those who find traditional exercise challenging. It's a low-impact way to stay active and fit, making it accessible for people of all ages and physical abilities.",
+   "o": [
+    "(A) - (C) - (B)",
+    "(B) - (A) - (C)",
+    "(B) - (C) - (A)",
+    "(C) - (A) - (B)",
+    "(C) - (B) - (A)"
+   ],
+   "a": 4,
+   "why": "① 주어진 글: 정원 가꾸기는 신체 활동 → 땅 파기, 심기, 물 주기, 수확하기 등의 동작.<br>② <b>(C)</b> \"<b>These activities</b>(이런 활동들)\" = 앞의 동작들 → 힘·유연성·지구력 향상 등 <b>몸</b>에 좋은 점.<br>③ <b>(A)</b> \"<b>Besides physical health</b>(신체 건강 외에도)\" → 이제 <b>마음</b> 건강 이야기로 넘어가며, 차분해지고 명상 같다고 설명.<br>④ <b>(B)</b> 앞의 \"meditative\"를 이어 \"명상과 비슷한(<b>similar to meditation</b>)\" 마음 챙김 → 연구 결과와 성취감으로 마무리.<br>👉 연결고리: <b>These activities</b>(C) · <b>Besides physical health</b>(A) · <b>meditative → meditation</b>(B)",
+   "ev": "These activities help improve strength, flexibility, and endurance.",
+   "evKo": "이 활동들은 힘, 유연성, 지구력을 향상시키는 데 도움이 된다."
+  },
+  {
+   "t": "빈칸",
+   "q": "다음 빈칸에 들어갈 말로 가장 적절한 것은?",
+   "shuffle": true,
+   "box": "Besides physical health, gardening has profound <b>__________</b> benefits. Tending to plants can be incredibly calming and meditative. It allows you to focus on the present moment, reducing stress and anxiety.",
+   "o": [
+    "financial",
+    "physical strength",
+    "social media",
+    "academic",
+    "mental health"
+   ],
+   "a": 5,
+   "why": "빈칸 뒤에서 마음이 <b>차분해지고</b>, <b>스트레스와 불안이 줄어든다</b>고 설명해요. 이건 모두 <b>마음 건강(mental health)</b>에 대한 이야기예요.<br>physical strength(체력)는 \"Besides physical health(신체 건강 외에도)\"와 겹쳐서 틀리고, financial(돈의), social media(소셜 미디어), academic(학업의)은 뒤 내용과 관계가 없어요.",
+   "ev": "Tending to plants can be incredibly calming and meditative.",
+   "evKo": "식물을 돌보는 것은 믿을 수 없을 만큼 마음을 진정시키고 명상적일 수 있다."
+  }
+ ]
+},
+/* ───────── 23번 ───────── */
+{
+ "id": "23",
+ "kind": "주제",
+ "title": "감각 너머를 보여 주는 도구",
+ "words": [
+  {
+   "en": "take advantage of",
+   "ko": "~을 이용하다",
+   "m": [
+    "taken advantage of"
+   ]
+  },
+  {
+   "en": "perception",
+   "ko": "인식, 지각",
+   "m": [
+    "perception"
+   ]
+  },
+  {
+   "en": "phenomena",
+   "ko": "현상들",
+   "m": [
+    "phenomena"
+   ],
+   "tip": "단수형은 phenomenon! (phenomena는 복수)"
+  },
+  {
+   "en": "perceive",
+   "ko": "알아차리다, 지각하다",
+   "m": [
+    "perceive"
+   ],
+   "tip": "명사형: perception(인식)"
+  },
+  {
+   "en": "consist of",
+   "ko": "~로 이루어지다",
+   "m": [
+    "consists of"
+   ],
+   "tip": "자동사라서 수동태로 못 써요 (is consisted of ❌)"
+  },
+  {
+   "en": "amplify",
+   "ko": "(소리·신호를) 키우다",
+   "m": [
+    "amplifying"
+   ],
+   "tip": "amplifier = 앰프(소리를 키우는 기계)"
+  },
+  {
+   "en": "sensory",
+   "ko": "감각의",
+   "m": [
+    "sensory"
+   ],
+   "tip": "sense(감각) → sensory(감각의)"
+  },
+  {
+   "en": "telescope",
+   "ko": "망원경",
+   "m": [
+    "telescopes"
+   ],
+   "tip": "microscope = 현미경"
+  },
+  {
+   "en": "instrument",
+   "ko": "기구, 도구",
+   "m": [
+    "instruments"
+   ]
+  },
+  {
+   "en": "observe",
+   "ko": "관찰하다",
+   "m": [
+    "observe"
+   ]
+  },
+  {
+   "en": "expand",
+   "ko": "넓히다, 확장하다",
+   "m": [
+    "expanding"
+   ]
+  },
+  {
+   "en": "visible",
+   "ko": "눈에 보이는",
+   "m": [
+    "visible"
+   ],
+   "tip": "반대말: invisible(눈에 보이지 않는)"
+  },
+  {
+   "en": "ultraviolet",
+   "ko": "자외선의",
+   "m": [
+    "ultraviolet"
+   ]
+  },
+  {
+   "en": "audible",
+   "ko": "귀에 들리는",
+   "m": [
+    "audible"
+   ],
+   "tip": "반대말: inaudible(들리지 않는) · audio(소리)와 같은 뿌리"
+  },
+  {
+   "en": "property",
+   "ko": "속성, 특성",
+   "m": [
+    "properties"
+   ],
+   "tip": "\"재산\"이라는 뜻도 있어요"
+  },
+  {
+   "en": "capacity",
+   "ko": "능력, 수용력",
+   "m": [
+    "capacity"
+   ]
+  }
+ ],
+ "sents": [
+  {
+   "en": "For many centuries, humans have taken advantage of tools that translate and bring into our perception natural phenomena that we can't perceive with our senses.",
+   "ko": "아주 오랫동안 사람들은 우리가 감각으로는 느낄 수 없는 자연 현상을 바꿔서 알아볼 수 있게 해 주는 도구를 이용해 왔어요.",
+   "g": "have taken = 현재완료(계속) · take advantage of = ~을 이용하다 · bring into our perception + 긴 목적어(natural phenomena ~): 목적어가 길어서 뒤로 보냄 · that we can't perceive = 목적격 관계대명사절"
+  },
+  {
+   "en": "In some cases, this consists of simply amplifying signals that feed into our normal sensory inputs (e.g., telescopes can bring into clear view that which is too far away for our eyes to perceive on their own).",
+   "ko": "어떤 경우에는 그저 우리 감각으로 들어오는 신호를 크게 키워 주는 거예요. (예를 들어, 망원경은 너무 멀어서 눈만으로는 볼 수 없는 것을 또렷하게 보여 줘요.)",
+   "g": "consist of + 동명사(amplifying) · consist of는 수동태 불가 · that which = what(~하는 것) · too ~ for A to V = 너무 ~해서 A가 …할 수 없는 · on their own = 스스로, 혼자 힘으로"
+  },
+  {
+   "en": "Other instruments turn signals that we cannot perceive into ones that we can observe.",
+   "ko": "또 다른 기구들은 우리가 느낄 수 없는 신호를 우리가 관찰할 수 있는 신호로 바꿔 줘요.",
+   "g": "turn A into B = A를 B로 바꾸다 · ones = signals를 대신하는 대명사"
+  },
+  {
+   "en": "Some of these take the form of expanding the reach of our current senses, such as creating visible images based on the ultraviolet spectrum of light or changing sounds that are normally outside the range of what human ears can hear into audible signals.",
+   "ko": "이런 기구들 중 일부는 우리 감각이 닿는 범위를 넓혀 줘요. 예를 들면 자외선 빛을 바탕으로 눈에 보이는 그림을 만들거나, 사람 귀로는 원래 들을 수 없는 소리를 들리는 신호로 바꿔 주는 거죠.",
+   "g": "take the form of + 동명사 = ~의 형태를 띠다 · such as creating ~ or changing ~ 동명사 병렬 · change A into B에서 A(sounds ~ hear)가 길어서 into와 멀어짐 · what human ears can hear = 관계대명사 what"
+  },
+  {
+   "en": "Alternatively, some instruments measure properties for which we have no sensory capacity at all and change them into that which we can observe.",
+   "ko": "또 어떤 기구들은 우리에게 느낄 수 있는 감각이 아예 없는 성질을 재서, 그것을 우리가 관찰할 수 있는 것으로 바꿔 줘요.",
+   "g": "for which = 전치사 + 관계대명사(have capacity for properties) · no ~ at all = 전혀 ~ 없는 · measure and change 동사 병렬 · them = properties · that which = what"
+  }
+ ],
+ "topic": "인간은 감각으로 인식할 수 없는 자연 현상을 인식할 수 있는 형태로 바꿔 주는 도구를 이용해 왔다.",
+ "easy": "우리 눈과 귀로는 알 수 없는 것들이 많아요. 망원경 같은 도구들은 그런 것을 보이게, 들리게 바꿔 줘요!",
+ "qs": [
+  {
+   "t": "주제",
+   "q": "다음 글의 주제로 가장 적절한 것은?",
+   "shuffle": true,
+   "o": [
+    "the dangers of relying too much on scientific tools",
+    "why human senses are better than modern machines",
+    "the history of how telescopes were first invented",
+    "ways instruments help us sense what our senses cannot detect",
+    "the limits of using light to create visible images"
+   ],
+   "a": 4,
+   "why": "첫 문장에서 사람들은 <b>감각으로 알 수 없는 자연 현상</b>을 알아볼 수 있게 해 주는 <b>도구</b>를 이용해 왔다고 하고, 이어서 그 방법들(신호 키우기, 신호 바꾸기, 감각이 없는 속성 측정하기)을 설명해요. 그래서 주제는 ④.<br>① 도구의 위험성은 말하지 않았어요.<br>② 사람 감각이 기계보다 낫다는 말은 없어요. 오히려 감각의 한계를 이야기해요.<br>③ 망원경은 예시 하나일 뿐, 발명 역사는 없어요.<br>⑤ 빛의 한계에 대한 글이 아니에요.<br>📌 해석: ① 과학 도구에 너무 의존하는 것의 위험 ② 사람의 감각이 현대 기계보다 나은 이유 ③ 망원경이 처음 발명된 역사 ④ 기구가 우리 감각이 알아챌 수 없는 것을 느끼게 도와주는 방법 ⑤ 빛을 이용해 보이는 이미지를 만드는 것의 한계",
+   "ev": "humans have taken advantage of tools that translate and bring into our perception natural phenomena that we can't perceive with our senses",
+   "evKo": "인간은 우리가 감각으로 인식할 수 없는 자연 현상을 변환해서 인식할 수 있게 해 주는 도구를 이용해 왔다"
+  },
+  {
+   "t": "어휘",
+   "q": "(A), (B), (C)의 각 네모 안에서 문맥에 맞는 낱말로 가장 적절한 것은?",
+   "box": "In some cases, this consists of simply <b>(A) [reducing / amplifying]</b> signals that feed into our normal sensory inputs (e.g., telescopes can bring into clear view that which is too far away for our eyes to perceive on their own). … Some of these take the form of expanding the reach of our current senses, such as creating <b>(B) [visible / invisible]</b> images based on the ultraviolet spectrum of light or changing sounds that are normally outside the range of what human ears can hear into <b>(C) [inaudible / audible]</b> signals.",
+   "o": [
+    "reducing — visible — audible",
+    "amplifying — invisible — audible",
+    "reducing — invisible — inaudible",
+    "amplifying — visible — inaudible",
+    "amplifying — visible — audible"
+   ],
+   "a": 5,
+   "why": "(A) 망원경이 멀리 있는 것을 또렷하게 보여 주는 것처럼, 신호를 <b>키워 주는(amplifying)</b> 거예요. reducing(줄이는)은 반대예요.<br>(B) 우리 눈으로 못 보는 자외선을 바탕으로 <b>눈에 보이는(visible)</b> 이미지를 만들어야 감각의 범위가 넓어져요. invisible(안 보이는)이면 소용이 없죠.<br>(C) 사람 귀로 못 듣는 소리를 <b>들을 수 있는(audible)</b> 신호로 바꿔요. inaudible(들리지 않는)은 반대예요.",
+   "ev": "Other instruments turn signals that we cannot perceive into ones that we can observe.",
+   "evKo": "다른 기구들은 우리가 인식할 수 없는 신호를 우리가 관찰할 수 있는 신호로 바꾼다."
+  },
+  {
+   "t": "어법",
+   "q": "(A), (B), (C)의 각 네모 안에서 어법에 맞는 표현으로 가장 적절한 것은?",
+   "box": "In some cases, this <b>(A) [is consisted of / consists of]</b> simply amplifying signals that feed into our normal sensory inputs. … Some of these take the form of <b>(B) [expanding / expand]</b> the reach of our current senses. … Alternatively, some instruments measure properties for <b>(C) [that / which]</b> we have no sensory capacity at all and change them into that which we can observe.",
+   "o": [
+    "is consisted of — expanding — which",
+    "consists of — expanding — which",
+    "consists of — expand — that",
+    "is consisted of — expand — which",
+    "consists of — expanding — that"
+   ],
+   "a": 2,
+   "why": "(A) consist of(~로 이루어지다)는 목적어를 바로 받지 못하는 <b>자동사</b>라서 수동태로 쓸 수 없어요 → <b>consists of</b>.<br>(B) 전치사 of 뒤에는 명사나 <b>동명사</b>가 와요 → <b>expanding</b>.<br>(C) 전치사(for) 바로 뒤에는 관계대명사 that을 쓸 수 없어요 → <b>for which</b>.",
+   "ev": "some instruments measure properties for which we have no sensory capacity at all",
+   "evKo": "어떤 기구들은 우리가 전혀 감지할 능력이 없는 속성을 측정한다"
+  },
+  {
+   "t": "내용일치",
+   "q": "다음 글의 내용과 일치하지 <u>않는</u> 것은?",
+   "shuffle": true,
+   "o": [
+    "인간은 수 세기 동안 감각으로 알 수 없는 현상을 알려 주는 도구를 이용해 왔다.",
+    "망원경은 너무 멀어서 눈으로 볼 수 없는 것을 또렷하게 보여 줄 수 있다.",
+    "자외선을 바탕으로 한 기구는 눈에 보이지 않는 이미지만 만들어 낸다.",
+    "어떤 기구는 사람의 귀로 들을 수 없는 소리를 들을 수 있는 신호로 바꾼다.",
+    "어떤 기구는 우리에게 감지 능력이 전혀 없는 속성을 측정한다."
+   ],
+   "a": 3,
+   "why": "본문은 자외선 영역을 바탕으로 \"<b>visible</b> images(눈에 보이는 이미지)\"를 만든다고 했어요. \"눈에 보이지 않는 이미지만 만든다\"는 반대예요.",
+   "ev": "creating visible images based on the ultraviolet spectrum of light",
+   "evKo": "빛의 자외선 영역을 바탕으로 눈에 보이는 이미지를 만드는 것"
+  },
+  {
+   "t": "순서",
+   "q": "주어진 글 다음에 이어질 글의 순서로 가장 적절한 것은?",
+   "box": "For many centuries, humans have taken advantage of tools that translate and bring into our perception natural phenomena that we can't perceive with our senses.<br><br><b>(A)</b> In some cases, this consists of simply amplifying signals that feed into our normal sensory inputs (e.g., telescopes can bring into clear view that which is too far away for our eyes to perceive on their own).<br><br><b>(B)</b> Some of these take the form of expanding the reach of our current senses, such as creating visible images based on the ultraviolet spectrum of light or changing sounds that are normally outside the range of what human ears can hear into audible signals. Alternatively, some instruments measure properties for which we have no sensory capacity at all and change them into that which we can observe.<br><br><b>(C)</b> Other instruments turn signals that we cannot perceive into ones that we can observe.",
+   "o": [
+    "(A) - (C) - (B)",
+    "(B) - (A) - (C)",
+    "(B) - (C) - (A)",
+    "(C) - (A) - (B)",
+    "(C) - (B) - (A)"
+   ],
+   "a": 1,
+   "why": "① 주어진 글: 사람들은 감각으로 못 느끼는 현상을 알려 주는 <b>도구</b>를 써 왔다.<br>② <b>(A)</b> \"<b>In some cases, this</b>(어떤 경우 이것은)\" = 그 도구의 역할 → 첫 번째 방법: 신호를 키우기(망원경).<br>③ <b>(C)</b> \"<b>Other instruments</b>(다른 기구들)\" → (A)의 \"some cases\"와 대비되는 두 번째 방법: 못 느끼는 신호를 관찰 가능한 신호로 바꾸기.<br>④ <b>(B)</b> \"<b>Some of these</b>(이것들 중 일부)\" = (C)의 other instruments → 자외선, 소리 예시 → \"<b>Alternatively</b>(또는)\" 감각이 전혀 없는 속성 측정.<br>👉 연결고리: <b>this</b>(A) · <b>Other</b>(C) · <b>Some of these</b>(B)",
+   "ev": "Other instruments turn signals that we cannot perceive into ones that we can observe.",
+   "evKo": "다른 기구들은 우리가 인식할 수 없는 신호를 우리가 관찰할 수 있는 신호로 바꾼다."
+  },
+  {
+   "t": "빈칸",
+   "q": "다음 빈칸에 들어갈 말로 가장 적절한 것은?",
+   "shuffle": true,
+   "box": "For many centuries, humans have taken advantage of tools that translate and bring into our perception natural phenomena that we can't perceive with our senses. … Other instruments turn signals that we cannot perceive into ones that we can <b>__________</b>.",
+   "o": [
+    "ignore",
+    "never notice",
+    "observe",
+    "no longer hear",
+    "hardly imagine"
+   ],
+   "a": 3,
+   "why": "이 글의 도구들은 우리가 <b>느낄 수 없는 것</b>을 <b>알아볼 수 있게</b> 바꿔 줘요. 그러니 \"인식할 수 없는 신호 → 우리가 <b>관찰할 수 있는(observe)</b> 신호\"가 자연스러워요.<br>ignore(무시하다), never notice(전혀 알아채지 못하다), no longer hear(더 이상 듣지 못하다), hardly imagine(거의 상상하지 못하다)은 모두 \"알아볼 수 있게 해 준다\"는 도구의 역할과 반대예요.",
+   "ev": "change them into that which we can observe",
+   "evKo": "그것들을 우리가 관찰할 수 있는 것으로 바꾼다"
+  }
+ ]
+},
+/* ───────── 24번 ───────── */
+{
+ "id": "24",
+ "kind": "제목",
+ "title": "의학 발전, 정말 동물 실험 덕분?",
+ "words": [
+  {
+   "en": "opponent",
+   "ko": "반대자",
+   "m": [
+    "opponents"
+   ],
+   "tip": "반대말: defender, supporter(지지자)"
+  },
+  {
+   "en": "experimentation",
+   "ko": "실험",
+   "m": [
+    "experimentation"
+   ]
+  },
+  {
+   "en": "mortality",
+   "ko": "사망률",
+   "m": [
+    "mortality"
+   ],
+   "tip": "mortal(죽을 운명의) ↔ immortal(죽지 않는)"
+  },
+  {
+   "en": "contribute to",
+   "ko": "~에 기여하다",
+   "m": [
+    "contribute to"
+   ]
+  },
+  {
+   "en": "defender",
+   "ko": "옹호자",
+   "m": [
+    "Defenders",
+    "defenders"
+   ],
+   "tip": "동사: defend(방어하다, 옹호하다)"
+  },
+  {
+   "en": "correlation",
+   "ko": "상관관계",
+   "m": [
+    "correlation"
+   ],
+   "tip": "동사: correlate → be correlated with(~와 관련이 있다)"
+  },
+  {
+   "en": "inference",
+   "ko": "추론",
+   "m": [
+    "inference"
+   ],
+   "tip": "동사: infer(추론하다)"
+  },
+  {
+   "en": "reject",
+   "ko": "거부하다",
+   "m": [
+    "reject"
+   ],
+   "tip": "반대말: accept(받아들이다)"
+  },
+  {
+   "en": "prescribe",
+   "ko": "(법으로) 규정하다",
+   "m": [
+    "prescribes"
+   ],
+   "tip": "\"(약을) 처방하다\"라는 뜻도 있어요"
+  },
+  {
+   "en": "subsequently",
+   "ko": "그 뒤에, 나중에",
+   "m": [
+    "subsequently"
+   ]
+  },
+  {
+   "en": "prior",
+   "ko": "이전의, 사전의",
+   "m": [
+    "prior"
+   ],
+   "tip": "prior to = ~ 이전에"
+  },
+  {
+   "en": "consequently",
+   "ko": "그 결과, 따라서",
+   "m": [
+    "Consequently"
+   ],
+   "tip": "consequence(결과)의 부사형"
+  },
+  {
+   "en": "necessity",
+   "ko": "필요(성)",
+   "m": [
+    "necessity"
+   ]
+  },
+  {
+   "en": "influential",
+   "ko": "영향력 있는",
+   "m": [
+    "influential"
+   ]
+  },
+  {
+   "en": "physician",
+   "ko": "의사, 내과 의사",
+   "m": [
+    "physicians"
+   ],
+   "tip": "physicist(물리학자)와 헷갈리지 않기!"
+  },
+  {
+   "en": "substantial",
+   "ko": "상당한, 큰",
+   "m": [
+    "substantial"
+   ]
+  }
+ ],
+ "sents": [
+  {
+   "en": "Many opponents of animal experimentation argue that not only is modern medicine not the only cause for the decline in mortality, many medical advances that did contribute to human health were not the result of animal experimentation.",
+   "ko": "동물 실험을 반대하는 많은 사람들은 이렇게 말해요. 사망률이 줄어든 원인이 현대 의학만은 아닐 뿐 아니라, 사람의 건강에 실제로 도움이 된 많은 의학 발전도 동물 실험 덕분이 아니었다고요.",
+   "g": "not only가 절 앞에 나와서 도치(is modern medicine), 뒤 절 앞의 but (also)는 생략됨 · did contribute = 동사를 강조하는 did(정말로 기여한) · 주어 many medical advances ↔ 동사 were"
+  },
+  {
+   "en": "Defenders of research have claimed that since there is a strong correlation between the practice of animal experimentation and medical advancement, the former caused the latter.",
+   "ko": "동물 실험을 지지하는 사람들은, 동물 실험과 의학 발전이 서로 깊이 관련되어 있으니, 동물 실험이 의학 발전을 이끌었다고 주장해 왔어요.",
+   "g": "since = ~이기 때문에 · between A and B · the former(전자 = 동물 실험) / the latter(후자 = 의학 발전)"
+  },
+  {
+   "en": "Opponents of research reject this inference.",
+   "ko": "반대하는 사람들은 이런 생각을 받아들이지 않아요.",
+   "g": "this inference = 앞 문장의 \"관련이 있으니 원인이다\"라는 추론"
+  },
+  {
+   "en": "After all, we have independent reasons to expect these phenomena to be correlated.",
+   "ko": "왜냐하면 이 둘이 함께 나타날 수밖에 없는 다른 이유가 따로 있기 때문이에요.",
+   "g": "after all = 어쨌든, 왜냐하면(이유 덧붙이기) · to expect = reasons를 꾸미는 to부정사 · expect + 목적어 + to V · to be correlated = 수동"
+  },
+  {
+   "en": "Since the law prescribes that all new drugs, prosthetic devices, and surgical techniques be tried on animals before they are used in humans, we will subsequently find that all medical advances are correlated with prior experimentation on animals.",
+   "ko": "법은 새로운 약, 인공 신체 기구, 수술 방법을 사람에게 쓰기 전에 모두 동물에게 먼저 시험하도록 정해 두었어요. 그래서 모든 의학 발전은 당연히 그 전에 한 동물 실험과 관련이 있게 보일 수밖에 없어요.",
+   "g": "prescribe that + 주어 + (should) 동사원형 → be tried · 주어 drugs, devices, techniques 병렬 · before they are used = 수동태 · be correlated with = ~와 관련이 있다"
+  },
+  {
+   "en": "Consequently, the correlation between animal experimentation and medical discovery is the result of legal necessity, not evidence that animal experimentation led to medical advances.",
+   "ko": "결국 동물 실험과 의학 발견이 관련 있어 보이는 건 법 때문에 꼭 해야 해서 생긴 결과일 뿐, 동물 실험이 의학 발전을 이끌었다는 증거가 아니에요.",
+   "g": "주어 the correlation(단수) → is · A, not B = B가 아니라 A · evidence that = 동격의 that(증거의 내용)"
+  },
+  {
+   "en": "Moreover, several influential physicians have offered historical evidence that animal experimentation has not been as responsible for biomedical discovery as defenders suggest.",
+   "ko": "게다가 영향력 있는 몇몇 의사들은, 동물 실험이 지지자들이 말하는 것만큼 의학 발견에 큰 역할을 하지는 않았다는 역사적 증거를 내놓았어요.",
+   "g": "moreover = 게다가 · evidence that = 동격의 that · not as ~ as … = …만큼 ~하지 않은 · be responsible for = ~의 원인이 되다"
+  },
+  {
+   "en": "They claim that clinical discoveries played a more substantial role than animal researchers have led us to believe.",
+   "ko": "그 의사들은 환자를 직접 치료하면서 얻은 발견이, 동물 실험 연구자들이 말해 온 것보다 훨씬 더 큰 역할을 했다고 주장해요.",
+   "g": "They = 앞 문장의 physicians · play a role = 역할을 하다 · more ~ than 비교급 · lead + 목적어 + to V = ~가 …하게 만들다"
+  }
+ ],
+ "topic": "동물 실험과 의학 발전 사이의 상관관계는 법적 의무 때문이며, 동물 실험이 의학 발전의 원인이라는 증거가 아니라는 것이 반대 측의 주장이다.",
+ "easy": "법 때문에 새 약은 모두 동물에게 먼저 시험해야 해요. 그래서 \"동물 실험 덕분에 의학이 발전했다\"고 딱 잘라 말할 수는 없다는 거예요!",
+ "qs": [
+  {
+   "t": "제목",
+   "q": "다음 글의 제목으로 가장 적절한 것은?",
+   "shuffle": true,
+   "o": [
+    "Why Animal Experiments Must Be Banned by Law",
+    "How Modern Medicine Lowered Death Rates",
+    "Is Animal Testing Really Behind Medical Progress?",
+    "Animal Research: The Only Key to New Drugs",
+    "The Law That Protects Animals in Laboratories"
+   ],
+   "a": 3,
+   "why": "글은 \"동물 실험과 의학 발전이 관련 있으니 동물 실험이 원인이다\"라는 주장에 대해, 반대 측이 <b>법 때문에 생긴 관련성일 뿐</b>이고 <b>임상적 발견이 더 큰 역할</b>을 했다고 반박하는 내용이에요. 그래서 \"동물 실험이 정말 의학 발전의 원인일까?\"가 가장 알맞아요.<br>① 법으로 금지해야 한다는 주장은 없어요.<br>② 사망률 감소는 첫 문장에 잠깐 나올 뿐이에요.<br>④ 반대 측 주장과 정반대예요.<br>⑤ 이 글의 법은 동물 보호법이 아니라 \"사람에게 쓰기 전에 동물에게 먼저 시험하라\"는 법이에요.<br>📌 해석: ① 동물 실험이 법으로 금지되어야 하는 이유 ② 현대 의학은 어떻게 사망률을 낮췄는가 ③ 동물 실험이 정말 의학 발전의 원인일까? ④ 동물 연구: 신약의 유일한 열쇠 ⑤ 실험실 동물을 보호하는 법",
+   "ev": "the correlation between animal experimentation and medical discovery is the result of legal necessity",
+   "evKo": "동물 실험과 의학적 발견 사이의 상관관계는 법적 필요의 결과이다"
+  },
+  {
+   "t": "어휘",
+   "q": "(A), (B), (C)의 각 네모 안에서 문맥에 맞는 낱말로 가장 적절한 것은?",
+   "box": "Defenders of research have claimed that since there is a strong correlation between the practice of animal experimentation and medical advancement, the former caused the latter. Opponents of research <b>(A) [accept / reject]</b> this inference. … we will subsequently find that all medical advances are correlated with <b>(B) [prior / later]</b> experimentation on animals. … They claim that clinical discoveries played a more <b>(C) [insignificant / substantial]</b> role than animal researchers have led us to believe.",
+   "o": [
+    "reject — prior — substantial",
+    "accept — prior — substantial",
+    "reject — later — insignificant",
+    "accept — later — substantial",
+    "reject — prior — insignificant"
+   ],
+   "a": 1,
+   "why": "(A) 뒤에서 \"법 때문에 생긴 관련성일 뿐\"이라고 반박하니, 반대자들은 그 추론을 <b>거부한다(reject)</b>. accept(받아들이다)는 반대예요.<br>(B) 법이 사람에게 쓰기 <b>전에</b> 동물에게 시험하라고 정했으니 <b>이전의(prior)</b> 동물 실험. later(나중의)는 틀려요.<br>(C) 의사들은 동물 실험의 역할이 생각보다 작다고 했으니, 임상적 발견은 <b>더 큰(substantial)</b> 역할을 한 거예요. insignificant(하찮은)는 흐름과 반대예요.",
+   "ev": "Opponents of research reject this inference.",
+   "evKo": "연구 반대자들은 이 추론을 거부한다."
+  },
+  {
+   "t": "어법",
+   "q": "(A), (B), (C)의 각 네모 안에서 어법에 맞는 표현으로 가장 적절한 것은?",
+   "box": "Many opponents of animal experimentation argue that not only <b>(A) [is modern medicine / modern medicine is]</b> not the only cause for the decline in mortality, many medical advances that did contribute to human health were not the result of animal experimentation. … After all, we have independent reasons to expect these phenomena <b>(B) [being / to be]</b> correlated. … Consequently, the correlation between animal experimentation and medical discovery is the result of legal necessity, not evidence <b>(C) [which / that]</b> animal experimentation led to medical advances.",
+   "o": [
+    "modern medicine is — to be — which",
+    "is modern medicine — being — that",
+    "modern medicine is — being — that",
+    "is modern medicine — to be — which",
+    "is modern medicine — to be — that"
+   ],
+   "a": 5,
+   "why": "(A) 부정의 뜻을 가진 <b>not only</b>가 절의 맨 앞에 나오면 주어와 동사의 순서가 바뀌어요(도치) → <b>is modern medicine</b>.<br>(B) expect는 \"expect + 목적어 + <b>to V</b>\" 형태로 써요 → <b>to be</b>.<br>(C) 뒤에 주어(animal experimentation)와 동사(led)가 다 갖춰진 완전한 절이 오고, 그 절이 evidence의 내용을 설명하니 동격의 <b>that</b>. which는 뒤에 빠진 성분이 있어야 해요.",
+   "ev": "we have independent reasons to expect these phenomena to be correlated",
+   "evKo": "우리에게는 이 현상들이 서로 관련될 것이라고 예상할 별도의 이유가 있다"
+  },
+  {
+   "t": "내용일치",
+   "q": "다음 글의 내용과 일치하는 것은?",
+   "shuffle": true,
+   "o": [
+    "동물 실험 옹호자들은 동물 실험과 의학 발전 사이에 관련이 없다고 본다.",
+    "법에 따라 새로운 약은 사람에게 쓰기 전에 동물에게 먼저 시험해야 한다.",
+    "동물 실험 반대자들은 현대 의학이 사망률 감소의 유일한 원인이라고 본다.",
+    "몇몇 의사들은 동물 실험이 옹호자들의 말보다 더 큰 역할을 했다고 주장한다.",
+    "반대 측 의사들은 임상적 발견의 역할이 매우 작았다고 주장한다."
+   ],
+   "a": 2,
+   "why": "본문에 \"the law prescribes that all new drugs ... be tried on animals <b>before they are used in humans</b>\"라고 나와요.<br>① 옹호자들은 <b>강한 상관관계</b>가 있다고 봐요.<br>③ 반대자들은 현대 의학이 <b>유일한 원인이 아니라고</b> 해요.<br>④ 의사들은 동물 실험이 옹호자들 말<b>만큼 큰 역할을 하지 않았다</b>고 해요.<br>⑤ 임상적 발견이 <b>더 큰(more substantial)</b> 역할을 했다고 해요.",
+   "ev": "the law prescribes that all new drugs, prosthetic devices, and surgical techniques be tried on animals before they are used in humans",
+   "evKo": "법은 모든 새로운 약, 인공 보철 기구, 수술 기법이 사람에게 사용되기 전에 동물에게 시험되어야 한다고 규정한다"
+  },
+  {
+   "t": "순서",
+   "q": "주어진 글 다음에 이어질 글의 순서로 가장 적절한 것은?",
+   "box": "Many opponents of animal experimentation argue that not only is modern medicine not the only cause for the decline in mortality, many medical advances that did contribute to human health were not the result of animal experimentation.<br><br><b>(A)</b> Moreover, several influential physicians have offered historical evidence that animal experimentation has not been as responsible for biomedical discovery as defenders suggest. They claim that clinical discoveries played a more substantial role than animal researchers have led us to believe.<br><br><b>(B)</b> Defenders of research have claimed that since there is a strong correlation between the practice of animal experimentation and medical advancement, the former caused the latter. Opponents of research reject this inference.<br><br><b>(C)</b> After all, we have independent reasons to expect these phenomena to be correlated. Since the law prescribes that all new drugs, prosthetic devices, and surgical techniques be tried on animals before they are used in humans, we will subsequently find that all medical advances are correlated with prior experimentation on animals. Consequently, the correlation between animal experimentation and medical discovery is the result of legal necessity, not evidence that animal experimentation led to medical advances.",
+   "o": [
+    "(A) - (C) - (B)",
+    "(B) - (A) - (C)",
+    "(B) - (C) - (A)",
+    "(C) - (A) - (B)",
+    "(C) - (B) - (A)"
+   ],
+   "a": 3,
+   "why": "① 주어진 글: 반대자들은 의학 발전이 동물 실험 덕분이 아니라고 주장한다.<br>② <b>(B)</b> 옹호자들의 주장(상관관계가 있으니 원인이다) → 반대자들은 \"<b>this inference</b>(이 추론)\"를 거부.<br>③ <b>(C)</b> \"<b>After all</b>(왜냐하면)\"로 거부하는 이유를 설명 → \"<b>these phenomena</b>\" = (B)의 동물 실험과 의학 발전 → 법 때문에 생긴 관련성일 뿐.<br>④ <b>(A)</b> \"<b>Moreover</b>(게다가)\"로 의사들의 역사적 증거를 추가, \"defenders\"도 (B)에서 이미 소개됨.<br>👉 연결고리: <b>this inference</b>(B) · <b>After all / these phenomena</b>(C) · <b>Moreover</b>(A)",
+   "ev": "Opponents of research reject this inference.",
+   "evKo": "연구 반대자들은 이 추론을 거부한다."
+  },
+  {
+   "t": "빈칸",
+   "q": "다음 빈칸에 들어갈 말로 가장 적절한 것은?",
+   "shuffle": true,
+   "box": "Since the law prescribes that all new drugs, prosthetic devices, and surgical techniques be tried on animals before they are used in humans, we will subsequently find that all medical advances are correlated with prior experimentation on animals. Consequently, the correlation between animal experimentation and medical discovery is the result of <b>__________</b>, not evidence that animal experimentation led to medical advances.",
+   "o": [
+    "scientific proof",
+    "animal suffering",
+    "public opinion",
+    "legal necessity",
+    "clinical discoveries"
+   ],
+   "a": 4,
+   "why": "바로 앞 문장에서 <b>법(the law)</b>이 모든 신약 등을 동물에게 먼저 시험하도록 정했다고 했어요. 그래서 둘이 관련 있어 보이는 건 <b>법으로 꼭 해야 하기 때문(legal necessity)</b>이에요.<br>scientific proof(과학적 증거)는 뒤의 \"not evidence(증거가 아니다)\"와 부딪히고, animal suffering(동물의 고통)·public opinion(여론)은 언급이 없어요. clinical discoveries(임상적 발견)는 동물 실험과의 상관관계를 만든 원인이 아니라, 마지막에 나오는 다른 발전의 원천이에요.",
+   "ev": "the correlation between animal experimentation and medical discovery is the result of legal necessity",
+   "evKo": "동물 실험과 의학적 발견 사이의 상관관계는 법적 필요의 결과이다"
+  }
+ ]
+},
+/* ───────── 29번 ───────── */
+{
+ "id": "29",
+ "kind": "어법",
+ "title": "가젤은 왜 가축이 못 됐을까?",
+ "words": [
+  {
+   "en": "mammalian",
+   "ko": "포유류의",
+   "m": [
+    "mammalian"
+   ],
+   "tip": "mammal(포유류) + -ian → mammalian(포유류의)"
+  },
+  {
+   "en": "herbivore",
+   "ko": "초식 동물",
+   "m": [
+    "herbivore"
+   ],
+   "tip": "반대말: carnivore(육식 동물), 둘 다 먹는 건 omnivore(잡식 동물)"
+  },
+  {
+   "en": "predator",
+   "ko": "포식자",
+   "m": [
+    "predators"
+   ],
+   "tip": "반대말: prey(먹잇감)"
+  },
+  {
+   "en": "perceive",
+   "ko": "알아차리다, 인식하다",
+   "m": [
+    "perceive"
+   ]
+  },
+  {
+   "en": "threat",
+   "ko": "위협",
+   "m": [
+    "threat"
+   ],
+   "tip": "동사형: threaten(위협하다) → 지문의 threatened"
+  },
+  {
+   "en": "flight",
+   "ko": "도망, 도주",
+   "m": [
+    "flight"
+   ],
+   "tip": "flight는 \"비행\"뿐 아니라 flee(도망가다)의 명사 \"도주\"라는 뜻도 있어요. fight(싸움)와 헷갈리지 않기!"
+  },
+  {
+   "en": "stand one's ground",
+   "ko": "물러서지 않다",
+   "m": [
+    "stand their ground"
+   ]
+  },
+  {
+   "en": "captivity",
+   "ko": "갇혀 있는 상태",
+   "m": [
+    "captivity"
+   ],
+   "tip": "captive(갇힌) → captivity(감금, 사육 상태)"
+  },
+  {
+   "en": "enclosure",
+   "ko": "울타리 친 곳",
+   "m": [
+    "enclosure"
+   ],
+   "tip": "enclose(둘러싸다)의 명사형"
+  },
+  {
+   "en": "panic",
+   "ko": "공포에 질리다",
+   "m": [
+    "panic"
+   ]
+  },
+  {
+   "en": "attempt",
+   "ko": "시도",
+   "m": [
+    "attempts"
+   ]
+  },
+  {
+   "en": "game",
+   "ko": "사냥감",
+   "m": [
+    "game"
+   ],
+   "tip": "game은 \"경기, 게임\" 말고 \"사냥감(사냥해서 잡는 동물)\"이라는 뜻도 있어요."
+  },
+  {
+   "en": "settled",
+   "ko": "정착한",
+   "m": [
+    "settled"
+   ],
+   "tip": "반대 느낌: nomadic(떠돌아다니는, 유목의)"
+  },
+  {
+   "en": "domesticate",
+   "ko": "(동물을) 길들이다",
+   "m": [
+    "domesticate",
+    "domesticated"
+   ],
+   "tip": "domestic(가정의, 국내의)과 구별! domesticate = 야생 동물을 가축으로 만들다"
+  },
+  {
+   "en": "herd",
+   "ko": "(동물을) 몰다; 무리",
+   "m": [
+    "herd"
+   ],
+   "tip": "지문에서 herds는 명사 \"무리\", herd an animal은 동사 \"몰다\""
+  },
+  {
+   "en": "leap",
+   "ko": "높이 뛰어오르다",
+   "m": [
+    "leap"
+   ]
+  }
+ ],
+ "sents": [
+  {
+   "en": "Big mammalian herbivore species react to danger from predators or humans in different ways.",
+   "ko": "몸집이 큰 초식 포유동물들은 포식자나 사람이 주는 위험에 저마다 다른 방식으로 반응해요.",
+   "g": "react to = ~에 반응하다 · species는 단수와 복수의 모양이 같아요 (여기서는 복수: react)"
+  },
+  {
+   "en": "Some species are nervous, fast, and programmed for instant flight when they perceive a threat.",
+   "ko": "어떤 동물들은 겁이 많고 빠르며, 위험을 느끼면 바로 도망치도록 타고났어요.",
+   "g": "Some ~, Other ~ = 어떤 것들은 ~, 다른 것들은 ~ · nervous, fast, programmed 병렬 (are에 연결) · flight = 도망"
+  },
+  {
+   "en": "Other species are slower, less nervous, seek protection in herds, stand their ground when threatened, and don't run until necessary.",
+   "ko": "다른 동물들은 더 느리고 겁이 덜 많아요. 무리 속에서 보호를 받고, 위협을 받아도 버티며, 꼭 필요할 때가 아니면 도망치지 않아요.",
+   "g": "are ~, seek, stand, don't run 동사 병렬 · when (they are) threatened: 주어+be동사 생략 · not A until B = B하고 나서야 A하다"
+  },
+  {
+   "en": "Naturally, the nervous species are difficult to keep in captivity.",
+   "ko": "당연히, 겁 많은 동물들은 우리에 가둬 기르기가 어려워요.",
+   "g": "difficult to V = ~하기 어려운 (to keep은 형용사 difficult를 꾸미는 to부정사) · Naturally = 당연히"
+  },
+  {
+   "en": "If put into an enclosure, they are likely to panic, and either die of shock or hit themselves repeatedly to death against the fence in their attempts to escape.",
+   "ko": "울타리 안에 넣어지면, 이 동물들은 겁에 질려서, 충격으로 죽거나, 탈출하려고 울타리에 몸을 계속 부딪치다가 죽기 쉬워요.",
+   "g": "If (they are) put: 접속사 뒤 주어+be동사 생략 (넣어지는 것 → 수동 put) · be likely to V = ~하기 쉽다 · either A or B = A나 B 둘 중 하나 · themselves: 주어(they)와 목적어가 같아서 재귀대명사"
+  },
+  {
+   "en": "That's true, for example, of gazelles, which for thousands of years were the most frequently hunted game species in some parts of the Fertile Crescent.",
+   "ko": "예를 들어 가젤이 그래요. 가젤은 수천 년 동안 비옥한 초승달 지대의 몇몇 곳에서 가장 자주 사냥된 동물이었어요.",
+   "g": "be true of = ~에 해당하다 · 콤마 + which = 계속적 용법 (콤마 뒤에는 that ❌) · the most frequently hunted = 가장 자주 사냥된 (hunted는 game species를 꾸미는 과거분사)"
+  },
+  {
+   "en": "There is no mammal species that the first settled peoples of that area had more opportunity to domesticate than gazelles.",
+   "ko": "그 지역에 처음 정착한 사람들에게, 가젤보다 길들일 기회가 더 많았던 포유동물은 하나도 없었어요. (가젤을 길들일 기회가 가장 많았다는 뜻!)",
+   "g": "no + 비교급 + than = 최상급 의미 (가젤이 기회가 가장 많았다) · that = 목적격 관계대명사 (선행사 mammal species) · peoples = 민족들, 여러 집단의 사람들"
+  },
+  {
+   "en": "But no gazelle species has ever been domesticated.",
+   "ko": "하지만 가젤은 어떤 종류도 가축이 된 적이 없어요.",
+   "g": "has ever been p.p. = 현재완료 수동태 (지금까지 ~된 적이 있다) · no + 명사 = 어떤 ~도 …않다"
+  },
+  {
+   "en": "Just imagine trying to herd an animal that runs away, blindly hits itself against walls, can leap up to nearly 30 feet, and can run at a speed of 50 miles per hour!",
+   "ko": "한번 상상해 보세요. 도망가 버리고, 앞도 안 보고 벽에 몸을 부딪치고, 거의 30피트(약 9미터)나 뛰어오르고, 시속 50마일(약 80킬로미터)로 달리는 동물을 몰고 다니려고 한다면요!",
+   "g": "imagine + -ing (동명사 목적어, to부정사 ❌) · try to V = ~하려고 애쓰다 · that 뒤 runs, hits, can leap, can run 병렬 (선행사 an animal → 단수 동사) · itself = 재귀대명사"
+  }
+ ],
+ "topic": "겁이 많고 빨리 도망치는 동물(가젤)은 가둬 기르기 어려워서 가축으로 길들여지지 못했다.",
+ "easy": "가젤은 겁이 너무 많아서 우리에 가두면 놀라서 다치거나 죽어요. 그래서 사람들이 오랫동안 사냥했는데도 가축으로 만들지 못했어요!",
+ "qs": [
+  {
+   "t": "주제",
+   "q": "다음 글의 주제로 가장 적절한 것은?",
+   "shuffle": true,
+   "o": [
+    "why nervous animals like gazelles are hard to domesticate",
+    "how gazelles protect themselves by living in herds",
+    "the importance of gazelles as food for early settlers",
+    "ways to keep wild animals safely in captivity",
+    "reasons big herbivores run faster than predators"
+   ],
+   "a": 1,
+   "why": "글은 초식 동물을 \"겁 많고 빨리 도망치는 종\"과 \"느리고 버티는 종\"으로 나눈 뒤, <b>겁 많은 종은 가둬 기르기 어렵다</b>고 말해요. 그 예가 가젤이고, 기회가 가장 많았는데도 <b>한 번도 길들여지지 않았다</b>는 게 핵심이에요.<br>② 무리 속에서 보호를 찾는 건 가젤이 아니라 \"다른(느린) 종\"이에요.<br>③ 가젤을 많이 사냥했다는 말은 나오지만, 글의 중심은 \"왜 길들이지 못했나\"예요.<br>④ 야생 동물을 안전하게 기르는 방법은 나오지 않아요.<br>⑤ 포식자보다 빠른 이유는 다루지 않아요.<br>📌 해석: ① 가젤 같은 겁 많은 동물을 길들이기 어려운 이유 ② 가젤이 무리 지어 살면서 자신을 보호하는 방법 ③ 초기 정착민의 식량으로서 가젤의 중요성 ④ 야생 동물을 우리에 안전하게 가둬 기르는 방법 ⑤ 큰 초식 동물이 포식자보다 빨리 달리는 이유",
+   "ev": "Naturally, the nervous species are difficult to keep in captivity.",
+   "evKo": "당연히, 겁 많은 종은 가둬 기르기가 어렵다."
+  },
+  {
+   "t": "어휘",
+   "q": "(A), (B), (C)의 각 네모 안에서 문맥에 맞는 낱말로 가장 적절한 것은?",
+   "box": "Some species are nervous, fast, and programmed for instant <b>(A) [fight / flight]</b> when they perceive a threat. … Naturally, the nervous species are <b>(B) [difficult / easy]</b> to keep in captivity. … There is no mammal species that the first settled peoples of that area had <b>(C) [less / more]</b> opportunity to domesticate than gazelles.",
+   "o": [
+    "fight — difficult — more",
+    "flight — easy — less",
+    "fight — easy — more",
+    "flight — difficult — more",
+    "flight — difficult — less"
+   ],
+   "a": 4,
+   "why": "(A) 겁 많고 빠른 동물은 위협을 느끼면 바로 <b>도망(flight)</b>쳐요. 뒤에 나오는 \"느린 종은 필요할 때까지 도망치지 않는다(don't run)\"와 대비되고, 마지막 문장에서도 가젤은 \"runs away(도망간다)\"라고 했죠. fight(싸움)는 흐름과 맞지 않아요.<br>(B) 갇히면 겁에 질려 죽기도 하니까 가둬 기르기가 <b>어렵다(difficult)</b>. easy는 반대예요.<br>(C) 가젤은 수천 년 동안 가장 많이 사냥된 동물이니, 길들일 기회가 가젤보다 <b>더 많았던(more)</b> 동물은 없었어요(= 가젤이 기회가 가장 많았다). 그래서 다음 문장이 \"<b>But</b> 한 번도 길들여지지 않았다\"로 반전돼요. less를 넣으면 \"가젤이 기회가 가장 적었다\"는 말이 되어 흐름이 깨져요.",
+   "ev": "There is no mammal species that the first settled peoples of that area had more opportunity to domesticate than gazelles.",
+   "evKo": "그 지역에 처음 정착한 사람들이 가젤보다 길들일 기회가 더 많았던 포유류는 없다."
+  },
+  {
+   "t": "어법",
+   "q": "(A), (B), (C)의 각 네모 안에서 어법에 맞는 표현으로 가장 적절한 것은?",
+   "box": "If <b>(A) [putting / put]</b> into an enclosure, they are likely to panic, and either die of shock or hit themselves repeatedly to death against the fence in their attempts to escape. That's true, for example, of gazelles, <b>(B) [which / that]</b> for thousands of years were the most frequently hunted game species in some parts of the Fertile Crescent. … Just imagine <b>(C) [to try / trying]</b> to herd an animal that runs away",
+   "o": [
+    "putting — which — trying",
+    "put — which — trying",
+    "put — that — to try",
+    "putting — that — trying",
+    "put — which — to try"
+   ],
+   "a": 2,
+   "why": "(A) If (they are) put ~ : 접속사 뒤에 주어와 be동사가 생략된 형태예요. 동물이 울타리 안에 \"넣어지는\" 것이니 수동의 의미 → 과거분사 <b>put</b>. putting은 \"넣는\"이라는 능동이라 틀려요.<br>(B) 콤마(,) 뒤에서 앞의 gazelles를 보충 설명하는 계속적 용법 → <b>which</b>. 관계대명사 that은 콤마 뒤에 쓸 수 없어요.<br>(C) imagine은 목적어로 <b>동명사</b>를 써요 → <b>trying</b>. (imagine + to부정사 ❌)",
+   "ev": "If put into an enclosure, they are likely to panic",
+   "evKo": "울타리 안에 넣어지면, 그것들은 공포에 질리기 쉽다"
+  },
+  {
+   "t": "내용일치",
+   "q": "다음 글의 내용과 일치하지 <u>않는</u> 것은?",
+   "shuffle": true,
+   "o": [
+    "어떤 초식 동물은 위협을 느끼면 즉시 도망치도록 되어 있다.",
+    "어떤 초식 동물은 무리 속에서 보호를 찾고 필요할 때까지 달아나지 않는다.",
+    "겁 많은 종은 울타리에 갇히면 공포에 질릴 가능성이 크다.",
+    "가젤은 비옥한 초승달 지대 일부에서 수천 년 동안 가장 자주 사냥되었다.",
+    "가젤 중 일부 종은 오래전에 가축으로 길들여졌다."
+   ],
+   "a": 5,
+   "why": "본문에 \"But <b>no gazelle species has ever been domesticated</b>(어떤 가젤 종도 길들여진 적이 없다)\"라고 나와요. \"일부 종은 길들여졌다\"는 정반대예요.<br>①은 2번째 문장, ②는 3번째 문장, ③은 5번째 문장, ④는 6번째 문장과 일치해요.",
+   "ev": "But no gazelle species has ever been domesticated.",
+   "evKo": "하지만 어떤 가젤 종도 가축으로 길들여진 적이 없다."
+  },
+  {
+   "t": "순서",
+   "q": "주어진 글 다음에 이어질 글의 순서로 가장 적절한 것은?",
+   "box": "Big mammalian herbivore species react to danger from predators or humans in different ways. Some species are nervous, fast, and programmed for instant flight when they perceive a threat.<br><br><b>(A)</b> There is no mammal species that the first settled peoples of that area had more opportunity to domesticate than gazelles. But no gazelle species has ever been domesticated. Just imagine trying to herd an animal that runs away, blindly hits itself against walls, can leap up to nearly 30 feet, and can run at a speed of 50 miles per hour!<br><br><b>(B)</b> If put into an enclosure, they are likely to panic, and either die of shock or hit themselves repeatedly to death against the fence in their attempts to escape. That's true, for example, of gazelles, which for thousands of years were the most frequently hunted game species in some parts of the Fertile Crescent.<br><br><b>(C)</b> Other species are slower, less nervous, seek protection in herds, stand their ground when threatened, and don't run until necessary. Naturally, the nervous species are difficult to keep in captivity.",
+   "o": [
+    "(A) - (C) - (B)",
+    "(B) - (A) - (C)",
+    "(B) - (C) - (A)",
+    "(C) - (A) - (B)",
+    "(C) - (B) - (A)"
+   ],
+   "a": 5,
+   "why": "① 주어진 글: 동물마다 위험에 반응하는 방식이 다르다 → <b>Some species</b>는 겁이 많고 바로 도망친다.<br>② <b>(C)</b> \"<b>Other species</b>는 느리고 버틴다\"로 Some species와 짝을 이루고, 끝에서 \"겁 많은 종은 가둬 기르기 어렵다\"고 해요.<br>③ <b>(B)</b> 문장 속 <b>they</b> = (C)의 the nervous species. 갇히면 겁에 질려 죽는다 → 그 예가 가젤이고, 장소 \"Fertile Crescent\"가 나와요.<br>④ <b>(A)</b> \"<b>that area</b>(그 지역)\" = (B)의 Fertile Crescent. 가젤은 기회가 가장 많았는데도 길들여지지 않았다는 결론.<br>👉 연결고리: <b>Some ↔ Other</b> · <b>they</b>(B) = 겁 많은 종 · <b>that area</b>(A) = Fertile Crescent",
+   "ev": "Other species are slower, less nervous, seek protection in herds",
+   "evKo": "다른 종들은 더 느리고, 덜 겁을 내며, 무리 속에서 보호를 찾는다"
+  },
+  {
+   "t": "빈칸",
+   "q": "다음 빈칸에 들어갈 말로 가장 적절한 것은?",
+   "shuffle": true,
+   "box": "Some species are nervous, fast, and programmed for instant flight when they perceive a threat. … Naturally, the nervous species are <b>__________</b>. If put into an enclosure, they are likely to panic, and either die of shock or hit themselves repeatedly to death against the fence in their attempts to escape.",
+   "o": [
+    "difficult to keep in captivity",
+    "easy to train as pets",
+    "quick to get used to new places",
+    "safe from human hunters",
+    "likely to protect one another in herds"
+   ],
+   "a": 1,
+   "why": "빈칸 바로 뒤에 \"울타리에 넣으면 겁에 질려 충격으로 죽거나 몸을 부딪쳐 죽는다\"는 설명이 나와요. 그러니 겁 많은 종은 <b>가둬 기르기 어렵다(difficult to keep in captivity)</b>가 알맞아요.<br>② 반려동물로 훈련하기 쉽다, ③ 새 장소에 빨리 익숙해진다 → 겁에 질린다는 내용과 반대예요.<br>④ 가젤은 가장 자주 사냥된 동물이라 사람에게서 안전하지 않았어요.<br>⑤ 무리 속에서 서로 보호하는 건 \"다른(느린) 종\"의 특징이에요.<br>📌 해석: ① 가둬 기르기 어려운 ② 반려동물로 훈련하기 쉬운 ③ 새 장소에 빨리 익숙해지는 ④ 인간 사냥꾼으로부터 안전한 ⑤ 무리 속에서 서로를 보호할 것 같은",
+   "ev": "If put into an enclosure, they are likely to panic",
+   "evKo": "울타리 안에 넣어지면, 그것들은 공포에 질리기 쉽다"
+  }
+ ]
+},
+/* ───────── 30번 ───────── */
+{
+ "id": "30",
+ "kind": "어휘",
+ "title": "가진 게 적을수록 잘 나눠요",
+ "words": [
+  {
+   "en": "resource",
+   "ko": "자원",
+   "m": [
+    "resources"
+   ]
+  },
+  {
+   "en": "limited",
+   "ko": "한정된, 부족한",
+   "m": [
+    "limited"
+   ]
+  },
+  {
+   "en": "tendency",
+   "ko": "경향, 성향",
+   "m": [
+    "tendency"
+   ],
+   "tip": "tend to V(~하는 경향이 있다)의 명사형"
+  },
+  {
+   "en": "cooperate",
+   "ko": "협력하다",
+   "m": [
+    "cooperate"
+   ],
+   "tip": "co-(함께) + operate(일하다) → 함께 일하다"
+  },
+  {
+   "en": "complicated",
+   "ko": "복잡한",
+   "m": [
+    "complicated"
+   ],
+   "tip": "반대말: simple(단순한)"
+  },
+  {
+   "en": "nomadic",
+   "ko": "유목의, 떠도는",
+   "m": [
+    "nomadic"
+   ],
+   "tip": "nomad(유목민) → nomadic(유목의). 반대 느낌: settled(정착한)"
+  },
+  {
+   "en": "tribe",
+   "ko": "부족",
+   "m": [
+    "tribes"
+   ]
+  },
+  {
+   "en": "interest",
+   "ko": "이익",
+   "m": [
+    "interest"
+   ],
+   "tip": "interest는 \"관심, 흥미\" 말고 \"이익\"이라는 뜻도 있어요. in one's interest = ~에게 이익이 되는"
+  },
+  {
+   "en": "happen upon",
+   "ko": "우연히 만나다",
+   "m": [
+    "happen upon"
+   ]
+  },
+  {
+   "en": "hospitality",
+   "ko": "환대, 친절한 대접",
+   "m": [
+    "hospitality"
+   ],
+   "tip": "hospital(병원)과 뿌리가 같아요 → 손님을 잘 돌봐 주는 것"
+  },
+  {
+   "en": "survival",
+   "ko": "생존",
+   "m": [
+    "survival"
+   ],
+   "tip": "동사형: survive(살아남다)"
+  },
+  {
+   "en": "shelter",
+   "ko": "쉴 곳, 피난처",
+   "m": [
+    "shelter"
+   ]
+  },
+  {
+   "en": "ironically",
+   "ko": "역설적이게도",
+   "m": [
+    "Ironically"
+   ]
+  },
+  {
+   "en": "sophisticated",
+   "ko": "정교한, 세련된",
+   "m": [
+    "sophisticated"
+   ]
+  },
+  {
+   "en": "interaction",
+   "ko": "교류, 상호 작용",
+   "m": [
+    "interaction"
+   ],
+   "tip": "inter-(서로) + action(행동)"
+  },
+  {
+   "en": "disconnection",
+   "ko": "단절",
+   "m": [
+    "disconnection"
+   ],
+   "tip": "dis-(반대) + connection(연결) → 연결이 끊어짐"
+  }
+ ],
+ "sents": [
+  {
+   "en": "For a species born in a time when resources were limited and dangers were great, our natural tendency to share and cooperate is complicated when resources are plenty and outside dangers are few.",
+   "ko": "우리 인간은 먹을 것과 물건은 부족하고 위험은 많던 시절에 태어난 종이에요. 그래서 물건이 넉넉하고 바깥 위험이 적어지면, 나누고 서로 돕는 우리의 타고난 성향이 복잡해져요.",
+   "g": "born in ~ = a species를 꾸미는 과거분사구 · a time when ~ = ~한 시기 (관계부사 when) · tendency to V = ~하려는 경향 (to share and cooperate 병렬) · 주어 our natural tendency(단수) → is"
+  },
+  {
+   "en": "When we have less, we tend to be more open to sharing what we have.",
+   "ko": "우리는 가진 게 적을 때, 가진 것을 더 기꺼이 나누려고 해요.",
+   "g": "tend to V = ~하는 경향이 있다 · be open to + -ing (to는 전치사 → 동명사 sharing) · what = ~하는 것 (선행사 없음 + have의 목적어 빠짐)"
+  },
+  {
+   "en": "Certain nomadic tribes don't have much, yet they are happy to share because it is in their interest to do so.",
+   "ko": "어떤 유목 부족들은 가진 게 많지 않아요. 그런데도 기꺼이 나눠요. 그렇게 하는 게 자기들에게 이익이 되기 때문이에요.",
+   "g": "yet = 그런데도, 그러나 · be happy to V = 기꺼이 ~하다 · it is ~ to do so: it은 가주어, to do so(= to share)가 진주어"
+  },
+  {
+   "en": "If you happen upon them in your travels, they will open up their homes and give you their food and hospitality.",
+   "ko": "여러분이 여행하다가 우연히 그들을 만나면, 그들은 집 문을 열어 주고 음식을 주며 반갑게 대접해 줄 거예요.",
+   "g": "happen upon = 우연히 만나다 · 조건의 if절은 현재시제로 미래를 나타내요 (happen) · give + 간접목적어(you) + 직접목적어(their food and hospitality)"
+  },
+  {
+   "en": "It's not just because they are nice people; it's because their survival depends on sharing, for they know that they may be the travelers in need of food and shelter another day.",
+   "ko": "그건 단지 그들이 착한 사람이라서가 아니에요. 나누는 것에 그들의 생존이 달려 있기 때문이에요. 언젠가는 자기들이 음식과 쉴 곳이 필요한 여행자가 될 수도 있다는 걸 알거든요.",
+   "g": "not just because A; (but) because B = 단지 A 때문이 아니라 B 때문 · depend on + -ing · for = 왜냐하면 (접속사) · in need of = ~이 필요한"
+  },
+  {
+   "en": "Ironically, the more we have, the bigger our fences, the more sophisticated our security to keep people away and the less we want to share.",
+   "ko": "역설적이게도, 우리가 많이 가질수록 울타리는 더 커지고, 사람들을 못 오게 막는 보안은 더 철저해지고, 나누고 싶은 마음은 더 줄어들어요.",
+   "g": "the 비교급 ~, the 비교급 … = ~할수록 더 …하다 · the bigger our fences (are): be동사 생략 · to keep people away = security를 꾸미는 to부정사"
+  },
+  {
+   "en": "Our desire for more, combined with our decreased physical interaction with the \"common folk,\" starts to create a disconnection or blindness to reality.",
+   "ko": "더 많이 갖고 싶은 욕심에, \"보통 사람들\"과 직접 만나는 일까지 줄어들면서, 우리는 현실과 멀어지고 현실을 못 보게 되기 시작해요.",
+   "g": "주어 Our desire(단수) → starts (중간 삽입구에 속지 말기!) · combined with ~ = ~과 결합되어 (과거분사구) · decreased = 줄어든 (과거분사가 명사 수식)"
+  }
+ ],
+ "topic": "자원이 부족할 때 사람들은 더 잘 나누지만, 많이 가질수록 나누지 않고 현실과 멀어진다.",
+ "easy": "가진 게 적을 땐 서로 나눠야 살 수 있어서 잘 나눠요. 그런데 많이 가지면 오히려 울타리를 높이고 덜 나누게 돼요!",
+ "qs": [
+  {
+   "t": "요지",
+   "q": "다음 글의 요지로 가장 적절한 것은?",
+   "shuffle": true,
+   "o": [
+    "가진 것이 적을 때 나누려는 마음이 커지고, 많이 가질수록 나누려 하지 않는다.",
+    "유목민의 환대 문화는 그들의 착한 성품에서 비롯된다.",
+    "자원이 풍부해질수록 사람들 사이의 협력은 더 쉬워진다.",
+    "여행자는 낯선 사람의 도움을 받을 때 신중해야 한다.",
+    "재산을 지키기 위해서는 보안 시설을 강화해야 한다."
+   ],
+   "a": 1,
+   "why": "\"When we have less, we tend to be more open to sharing(가진 게 적을 때 더 나누려 한다)\" + \"the more we have, … the less we want to share(많이 가질수록 덜 나누고 싶어 한다)\"가 글의 핵심이에요.<br>② 본문은 \"<b>It's not just because they are nice people</b>(단지 착해서가 아니다)\"라고 했어요. 생존이 나눔에 달려 있기 때문이에요.<br>③ 자원이 넉넉하면 나누고 협력하는 성향이 <b>복잡해진다(complicated)</b>고 했으니 반대예요.<br>④ 여행자가 조심해야 한다는 내용은 없어요.<br>⑤ 보안이 철저해지는 건 많이 가진 사람들의 모습으로 나올 뿐, 필자가 권하는 게 아니에요.",
+   "ev": "the more we have, the bigger our fences, the more sophisticated our security to keep people away and the less we want to share",
+   "evKo": "우리가 더 많이 가질수록, 울타리는 더 커지고, 사람들을 멀리하는 보안은 더 정교해지며, 나누고 싶은 마음은 더 줄어든다"
+  },
+  {
+   "t": "어휘",
+   "q": "(A), (B), (C)의 각 네모 안에서 문맥에 맞는 낱말로 가장 적절한 것은?",
+   "box": "For a species born in a time when resources were limited and dangers were great, our natural tendency to share and cooperate is complicated when resources are <b>(A) [scarce / plenty]</b> and outside dangers are few. When we have less, we tend to be more <b>(B) [open / closed]</b> to sharing what we have. … Our desire for more, combined with our <b>(C) [increased / decreased]</b> physical interaction with the \"common folk,\" starts to create a disconnection or blindness to reality.",
+   "o": [
+    "scarce — open — decreased",
+    "plenty — open — decreased",
+    "plenty — closed — increased",
+    "scarce — closed — decreased",
+    "plenty — closed — decreased"
+   ],
+   "a": 2,
+   "why": "(A) 인간은 자원이 <b>부족한(limited)</b> 시절에 태어난 종이에요. 그런데 나누는 성향이 \"복잡해지는\" 건 그와 반대 상황, 즉 자원이 <b>넉넉할(plenty)</b> 때예요. 바로 뒤의 \"바깥 위험이 적을 때(dangers are few)\"와도 짝이 맞아요. scarce(부족한)는 앞의 limited와 같은 상황이라 틀려요.<br>(B) 가진 게 적을 때 더 <b>열려 있다(open)</b> → 더 잘 나눈다. 뒤에 유목 부족이 기꺼이 나누는 예가 나와요. closed는 반대.<br>(C) 사람들과의 교류가 <b>줄어들어야(decreased)</b> 현실과의 <b>단절(disconnection)</b>이 생겨요. 앞 문장에서도 울타리와 보안으로 \"사람들을 멀리한다(keep people away)\"고 했죠. increased는 반대.",
+   "ev": "the more sophisticated our security to keep people away",
+   "evKo": "사람들을 멀리하기 위한 보안은 더 정교해진다"
+  },
+  {
+   "t": "어법",
+   "q": "(A), (B), (C)의 각 네모 안에서 어법에 맞는 표현으로 가장 적절한 것은?",
+   "box": "When we have less, we tend to be more open to <b>(A) [share / sharing]</b> <b>(B) [what / that]</b> we have. … Our desire for more, combined with our decreased physical interaction with the \"common folk,\" <b>(C) [start / starts]</b> to create a disconnection or blindness to reality.",
+   "o": [
+    "share — what — starts",
+    "sharing — that — start",
+    "share — that — starts",
+    "sharing — what — start",
+    "sharing — what — starts"
+   ],
+   "a": 5,
+   "why": "(A) be open to ~ 의 <b>to는 전치사</b>예요. 전치사 뒤에는 명사나 동명사 → <b>sharing</b>. (to부정사로 착각하면 안 돼요!)<br>(B) sharing의 목적어 자리인데 앞에 선행사가 없고, have 뒤에 목적어가 빠져 있어요 → \"~하는 것\" <b>what</b>. that은 관계대명사로 쓰려면 앞에 선행사가 있어야 해요.<br>(C) 주어는 <b>Our desire</b>(단수)예요. 콤마 사이의 combined with ~ \"common folk\"는 끼어든 수식어구일 뿐이에요 → 단수 동사 <b>starts</b>.",
+   "ev": "When we have less, we tend to be more open to sharing what we have.",
+   "evKo": "우리는 가진 것이 적을 때, 가진 것을 나누는 데 더 열려 있는 경향이 있다."
+  },
+  {
+   "t": "내용일치",
+   "q": "다음 글의 내용과 일치하는 것은?",
+   "shuffle": true,
+   "o": [
+    "우리는 가진 것이 많을수록 나누려는 마음도 커진다.",
+    "일부 유목 부족은 가진 것이 많아서 기꺼이 나눈다.",
+    "일부 유목 부족은 우연히 만난 여행자에게 음식과 환대를 베푼다.",
+    "유목 부족이 나누는 것은 오로지 그들이 착한 사람들이기 때문이다.",
+    "많이 가질수록 사람들은 보안에 신경을 덜 쓴다."
+   ],
+   "a": 3,
+   "why": "\"If you happen upon them in your travels, they will open up their homes and give you their <b>food and hospitality</b>.\"와 일치해요.<br>① 많이 가질수록 <b>덜</b> 나누고 싶어 해요(the less we want to share).<br>② 유목 부족은 가진 게 <b>많지 않아요</b>(don't have much).<br>④ \"<b>not just</b> because they are nice people\"이라고 했어요. 생존이 나눔에 달려 있기 때문이에요.<br>⑤ 많이 가질수록 보안이 <b>더 정교해진다</b>(the more sophisticated our security)고 했어요.",
+   "ev": "they will open up their homes and give you their food and hospitality",
+   "evKo": "그들은 자기 집을 열어 주고 여러분에게 음식과 환대를 베풀 것이다"
+  },
+  {
+   "t": "순서",
+   "q": "주어진 글 다음에 이어질 글의 순서로 가장 적절한 것은?",
+   "box": "For a species born in a time when resources were limited and dangers were great, our natural tendency to share and cooperate is complicated when resources are plenty and outside dangers are few. When we have less, we tend to be more open to sharing what we have.<br><br><b>(A)</b> It's not just because they are nice people; it's because their survival depends on sharing, for they know that they may be the travelers in need of food and shelter another day. Ironically, the more we have, the bigger our fences, the more sophisticated our security to keep people away and the less we want to share.<br><br><b>(B)</b> Our desire for more, combined with our decreased physical interaction with the \"common folk,\" starts to create a disconnection or blindness to reality.<br><br><b>(C)</b> Certain nomadic tribes don't have much, yet they are happy to share because it is in their interest to do so. If you happen upon them in your travels, they will open up their homes and give you their food and hospitality.",
+   "o": [
+    "(A) - (C) - (B)",
+    "(B) - (A) - (C)",
+    "(B) - (C) - (A)",
+    "(C) - (A) - (B)",
+    "(C) - (B) - (A)"
+   ],
+   "a": 4,
+   "why": "① 주어진 글: 가진 게 적을 때 더 잘 나눈다.<br>② <b>(C)</b> 그 예시: 가진 게 많지 않은 <b>유목 부족</b>이 여행자에게 음식과 환대를 베푼다.<br>③ <b>(A)</b> \"<b>It's not just because they are nice people</b>\" → they는 (C)의 유목 부족, It은 (C)에서 말한 \"대접해 주는 일\"이에요. 그 뒤 <b>Ironically</b>로 방향을 바꿔 \"많이 가질수록 덜 나눈다\"고 해요.<br>④ <b>(B)</b> \"<b>Our desire for more</b>(더 가지려는 욕심)\"는 (A)의 \"the more we have\"를 받아서, 결국 현실과 단절된다는 결론으로 끝나요.<br>👉 연결고리: 예시(C) → <b>they</b>·<b>It</b>(A) → <b>Ironically</b>(A) → <b>desire for more</b>(B)",
+   "ev": "It's not just because they are nice people",
+   "evKo": "그것은 단지 그들이 좋은 사람들이기 때문만은 아니다"
+  },
+  {
+   "t": "빈칸",
+   "q": "다음 빈칸에 들어갈 말로 가장 적절한 것은?",
+   "shuffle": true,
+   "box": "When we have less, we tend to be more open to sharing what we have. … Ironically, the more we have, the bigger our fences, the more sophisticated our security to keep people away and <b>__________</b>.",
+   "o": [
+    "the less we want to share",
+    "the more we want to share",
+    "the safer we feel with strangers",
+    "the more often we travel",
+    "the happier our neighbors become"
+   ],
+   "a": 1,
+   "why": "앞에서 \"가진 게 적을 때 더 잘 나눈다\"고 했고, <b>Ironically(역설적이게도)</b>로 반대 상황을 말해요. 많이 가질수록 울타리를 키우고 사람들을 멀리하니까 <b>나누고 싶은 마음은 줄어든다(the less we want to share)</b>가 알맞아요.<br>② 더 나누고 싶어진다 → Ironically의 흐름, 울타리·보안과 반대예요.<br>③ 낯선 사람과 있을 때 더 안전하게 느낀다 → 사람들을 멀리한다는 내용과 맞지 않아요.<br>④ 여행을 더 자주 한다, ⑤ 이웃이 더 행복해진다 → 글과 관계없어요.<br>📌 해석: ① 우리는 덜 나누고 싶어 한다 ② 우리는 더 나누고 싶어 한다 ③ 우리는 낯선 사람과 있을 때 더 안전하게 느낀다 ④ 우리는 더 자주 여행한다 ⑤ 우리 이웃은 더 행복해진다",
+   "ev": "the more we have, the bigger our fences",
+   "evKo": "우리가 더 많이 가질수록, 울타리는 더 커진다"
+  }
+ ]
+},
+/* ───────── 31번 ───────── */
+{
+ "id": "31",
+ "kind": "빈칸",
+ "title": "행복은 제자리로 돌아와요",
+ "words": [
+  {
+   "en": "content",
+   "ko": "만족한",
+   "m": [
+    "content"
+   ],
+   "tip": "명사 content(내용)와 뜻이 달라요! 반대말: discontent(불만족한)"
+  },
+  {
+   "en": "determine",
+   "ko": "결정하다",
+   "m": [
+    "determined"
+   ]
+  },
+  {
+   "en": "merely",
+   "ko": "단지, 그저",
+   "m": [
+    "merely"
+   ]
+  },
+  {
+   "en": "successive",
+   "ko": "연속적인, 잇따른",
+   "m": [
+    "successive"
+   ],
+   "tip": "successful(성공한)과 헷갈리지 않기! succeed에는 \"뒤를 잇다\"라는 뜻도 있어요"
+  },
+  {
+   "en": "affect",
+   "ko": "영향을 주다",
+   "m": [
+    "affect"
+   ],
+   "tip": "affect는 동사, effect는 주로 명사(효과, 영향)"
+  },
+  {
+   "en": "gust",
+   "ko": "한바탕 부는 바람",
+   "m": [
+    "gust"
+   ]
+  },
+  {
+   "en": "adjust",
+   "ko": "맞춰 조절하다",
+   "m": [
+    "adjust"
+   ]
+  },
+  {
+   "en": "default",
+   "ko": "기본의, 기본값",
+   "m": [
+    "default"
+   ]
+  },
+  {
+   "en": "well-being",
+   "ko": "행복, 잘 지냄",
+   "m": [
+    "well-being"
+   ]
+  },
+  {
+   "en": "baseline",
+   "ko": "기준선",
+   "m": [
+    "baseline"
+   ]
+  },
+  {
+   "en": "euphoria",
+   "ko": "아주 큰 행복감",
+   "m": [
+    "euphoria"
+   ]
+  },
+  {
+   "en": "fade",
+   "ko": "서서히 사라지다",
+   "m": [
+    "fades"
+   ]
+  },
+  {
+   "en": "despair",
+   "ko": "절망",
+   "m": [
+    "despair"
+   ],
+   "tip": "de-(없음) + spair(희망) 느낌 → 희망이 없음. 반대말: hope"
+  },
+  {
+   "en": "break-up",
+   "ko": "이별, 헤어짐",
+   "m": [
+    "break-up"
+   ]
+  },
+  {
+   "en": "long for",
+   "ko": "간절히 바라다",
+   "m": [
+    "longed for"
+   ],
+   "tip": "long은 형용사 \"긴\" 말고 동사 \"간절히 바라다\"라는 뜻도 있어요"
+  },
+  {
+   "en": "adapt",
+   "ko": "적응하다",
+   "m": [
+    "adapt"
+   ],
+   "tip": "adopt(입양하다, 채택하다)와 헷갈리지 않기!"
+  }
+ ],
+ "sents": [
+  {
+   "en": "Whether we feel happy or sad, content or discontent, is not determined merely by each individual successive moment of life experience – a good thing happens and I'm happy, a bad thing happens and I'm sad.",
+   "ko": "우리가 행복한지 슬픈지, 만족하는지 불만인지는, 살면서 하나하나 이어지는 순간들만으로 정해지지 않아요. \"좋은 일이 생기면 행복하고, 나쁜 일이 생기면 슬프다\"처럼 단순하지 않다는 거예요.",
+   "g": "Whether ~ = ~인지 아닌지 (명사절 주어 → 단수 취급 is) · be determined by = ~에 의해 결정되다 (수동태) · not merely = 단지 ~만은 아닌 · 대시(–) 뒤는 앞 내용의 예시"
+  },
+  {
+   "en": "While our experiences affect our mood, we are not blown in a completely new direction by each gust of wind.",
+   "ko": "겪는 일들이 우리 기분에 영향을 주기는 하지만, 바람이 한 번 불 때마다 우리가 완전히 새로운 방향으로 날려 가지는 않아요.",
+   "g": "while = ~이긴 하지만 (양보) · affect = 영향을 주다 (동사) · be blown = 날려 가다 (수동태) · each + 단수명사"
+  },
+  {
+   "en": "As humans, we adjust – to new information and events both good and bad – and return to our personal default level of well-being.",
+   "ko": "사람은 좋은 일이든 나쁜 일이든 새로운 소식과 사건에 적응해서, 원래 자기의 기본 행복 수준으로 돌아가요.",
+   "g": "as = ~로서 (전치사) · adjust와 return 동사 병렬 (주어 we) · both A and B = A와 B 둘 다 · 대시 사이는 설명을 끼워 넣은 부분"
+  },
+  {
+   "en": "There will be highs and lows, but over time, like water seeking its own level, we are pulled toward our baseline – back up after bad news and back down after good.",
+   "ko": "기분이 좋을 때도 나쁠 때도 있겠지만, 시간이 지나면 물이 제 높이를 찾아가듯이, 우리는 원래의 기준선으로 끌려가요. 나쁜 소식 뒤에는 다시 올라가고, 좋은 소식 뒤에는 다시 내려오는 거죠.",
+   "g": "like = ~처럼 (전치사) · seeking = water를 꾸미는 현재분사 (물이 \"찾는\" 것 → 능동) · be pulled toward = ~쪽으로 끌려가다 (수동태) · after good (news): 반복되는 news 생략"
+  },
+  {
+   "en": "The euphoria of first love fades, and so does the despair of a break-up.",
+   "ko": "첫사랑의 들뜬 행복감도 점점 사라지고, 이별의 절망감도 마찬가지로 사라져요.",
+   "g": "so + 동사 + 주어 = ~도 역시 그렇다 (앞의 일반동사 fades를 받아서 does, 도치) · 주어 The euphoria(단수) → fades"
+  },
+  {
+   "en": "This tendency is best seen with little kids and their toy joy: When they get what they've longed for, they believe they will be happy for the rest of their lives.",
+   "ko": "이런 경향은 어린아이들이 장난감을 받고 기뻐하는 모습에서 가장 잘 보여요. 아이들은 정말 갖고 싶던 걸 받으면, 평생 행복할 거라고 믿어요.",
+   "g": "be best seen = 가장 잘 보이다 (수동태) · what = ~하는 것 (longed for의 목적어가 빠짐) · they've longed for = 현재완료 (쭉 바라 왔다) · believe (that) 생략"
+  },
+  {
+   "en": "And for the first few minutes of the rest of their lives, they are.",
+   "ko": "그리고 실제로 남은 평생 중 처음 몇 분 동안은 정말 행복해요.",
+   "g": "they are (happy): 앞 문장과 겹치는 happy 생략 · the rest of = ~의 나머지"
+  },
+  {
+   "en": "But then the kids – like adults – adapt.",
+   "ko": "하지만 그다음에는 아이들도, 어른들처럼, 적응해 버려요.",
+   "g": "adapt = 적응하다 (adopt 입양하다 ❌) · 대시 사이 like adults = 어른들처럼 (삽입)"
+  }
+ ],
+ "topic": "사람은 좋은 일이든 나쁜 일이든 적응해서, 결국 원래의 기본 행복 수준으로 돌아간다.",
+ "easy": "새 장난감을 받으면 엄청 기쁘지만 금방 익숙해지죠? 슬픈 일도 마찬가지예요. 우리 마음은 결국 원래 기분으로 돌아와요!",
+ "qs": [
+  {
+   "t": "제목",
+   "q": "다음 글의 제목으로 가장 적절한 것은?",
+   "shuffle": true,
+   "o": [
+    "Back to Normal: We Always Return to Our Happiness Baseline",
+    "Every Single Moment Decides How Happy You Are",
+    "First Love: The Secret to Lifelong Joy",
+    "Why Kids Are Always Happier Than Adults",
+    "Bad News Changes Our Mood Forever"
+   ],
+   "a": 1,
+   "why": "글의 핵심은 \"우리는 좋은 일에도 나쁜 일에도 적응해서 <b>기본 행복 수준(baseline)으로 돌아간다</b>\"예요. 첫사랑·이별·아이들의 장난감은 모두 그 예시예요.<br>② 첫 문장에서 행복은 매 순간의 경험만으로 정해지지 <b>않는다</b>고 했어요.<br>③ 첫사랑의 행복감도 <b>사라진다(fades)</b>고 했어요.<br>④ 아이들도 어른들<b>처럼</b> 적응한다고 했지, 아이들이 더 행복하다는 말은 없어요.<br>⑤ 나쁜 소식 뒤에도 다시 <b>올라온다(back up)</b>고 했으니 반대예요.<br>📌 해석: ① 제자리로: 우리는 언제나 행복의 기준선으로 돌아간다 ② 매 순간이 여러분의 행복을 결정한다 ③ 첫사랑: 평생 기쁨의 비결 ④ 아이들이 어른보다 항상 더 행복한 이유 ⑤ 나쁜 소식은 우리 기분을 영원히 바꾼다",
+   "ev": "we adjust – to new information and events both good and bad – and return to our personal default level of well-being",
+   "evKo": "우리는 좋든 나쁘든 새로운 정보와 사건에 적응하고, 자신의 기본 행복 수준으로 돌아간다"
+  },
+  {
+   "t": "어휘",
+   "q": "(A), (B), (C)의 각 네모 안에서 문맥에 맞는 낱말로 가장 적절한 것은?",
+   "box": "There will be highs and lows, but over time, like water seeking its own level, we are pulled toward our baseline – back <b>(A) [down / up]</b> after bad news and back down after good. The euphoria of first love <b>(B) [fades / grows]</b>, and so does the despair of a break-up. … But then the kids – like adults – <b>(C) [adopt / adapt]</b>.",
+   "o": [
+    "down — fades — adapt",
+    "up — grows — adopt",
+    "down — grows — adapt",
+    "up — fades — adopt",
+    "up — fades — adapt"
+   ],
+   "a": 5,
+   "why": "(A) 나쁜 소식을 들으면 기분이 내려가요. 그 뒤 기준선으로 돌아가려면 다시 <b>올라가야(up)</b> 해요. 뒤의 \"좋은 소식 뒤에는 다시 내려온다(back down after good)\"와 짝을 이뤄요. down이면 두 부분이 똑같아져서 말이 안 돼요.<br>(B) 기준선으로 돌아간다는 예시예요. 첫사랑의 행복감도, 이별의 절망도 <b>서서히 사라져요(fades)</b>. grows(커진다)는 반대예요.<br>(C) 원하던 장난감을 받은 기쁨에도 아이들은 어른처럼 <b>적응해요(adapt)</b>. adopt는 \"입양하다, 채택하다\"라서 뜻이 통하지 않아요.",
+   "ev": "The euphoria of first love fades, and so does the despair of a break-up.",
+   "evKo": "첫사랑의 큰 행복감은 사라지고, 이별의 절망감도 그렇다."
+  },
+  {
+   "t": "어법",
+   "q": "(A), (B), (C)의 각 네모 안에서 어법에 맞는 표현으로 가장 적절한 것은?",
+   "box": "Whether we feel happy or sad, content or discontent, <b>(A) [is / are]</b> not determined merely by each individual successive moment of life experience … There will be highs and lows, but over time, like water <b>(B) [seeking / sought]</b> its own level, we are pulled toward our baseline … The euphoria of first love fades, and so <b>(C) [is / does]</b> the despair of a break-up.",
+   "o": [
+    "is — seeking — does",
+    "are — seeking — is",
+    "is — sought — does",
+    "are — sought — does",
+    "is — seeking — is"
+   ],
+   "a": 1,
+   "why": "(A) 주어는 Whether ~ discontent 전체인 <b>명사절</b>이에요. 명사절 주어는 <b>단수</b> 취급 → <b>is</b>. (happy or sad처럼 단어가 여러 개 있어도 속지 말기!)<br>(B) 물이 자기 높이를 \"찾는\" 것 → 능동의 의미 <b>현재분사 seeking</b>. sought(찾아진)는 수동이라 틀려요. 뒤에 목적어 its own level이 있는 것도 능동의 단서예요.<br>(C) \"so + 동사 + 주어 = ~도 그렇다\". 앞 절의 동사가 일반동사 <b>fades</b>이므로 대동사 <b>does</b>를 써요. be동사 is는 앞에 be동사가 있을 때 써요.",
+   "ev": "The euphoria of first love fades, and so does the despair of a break-up.",
+   "evKo": "첫사랑의 큰 행복감은 사라지고, 이별의 절망감도 그렇다."
+  },
+  {
+   "t": "내용일치",
+   "q": "다음 글의 내용과 일치하지 <u>않는</u> 것은?",
+   "shuffle": true,
+   "o": [
+    "우리의 경험은 기분에 영향을 준다.",
+    "아이들은 어른과 달리 새 장난감의 기쁨에 적응하지 않는다.",
+    "사람은 좋고 나쁜 일에 적응해 자신의 기본 행복 수준으로 돌아간다.",
+    "첫사랑의 큰 행복감도 시간이 지나면 사라진다.",
+    "아이들은 원하던 것을 얻으면 평생 행복할 거라고 믿는다."
+   ],
+   "a": 2,
+   "why": "마지막 문장에서 \"the kids – <b>like adults</b> – adapt(아이들도 어른처럼 적응한다)\"라고 했어요. \"어른과 달리 적응하지 않는다\"는 정반대예요.<br>①은 2번째 문장(our experiences affect our mood), ③은 3번째 문장, ④는 5번째 문장, ⑤는 6번째 문장과 일치해요.",
+   "ev": "But then the kids – like adults – adapt.",
+   "evKo": "하지만 그러고 나서 아이들은 어른들처럼 적응한다."
+  },
+  {
+   "t": "순서",
+   "q": "주어진 글 다음에 이어질 글의 순서로 가장 적절한 것은?",
+   "box": "Whether we feel happy or sad, content or discontent, is not determined merely by each individual successive moment of life experience – a good thing happens and I'm happy, a bad thing happens and I'm sad.<br><br><b>(A)</b> The euphoria of first love fades, and so does the despair of a break-up. This tendency is best seen with little kids and their toy joy: When they get what they've longed for, they believe they will be happy for the rest of their lives. And for the first few minutes of the rest of their lives, they are.<br><br><b>(B)</b> While our experiences affect our mood, we are not blown in a completely new direction by each gust of wind. As humans, we adjust – to new information and events both good and bad – and return to our personal default level of well-being. There will be highs and lows, but over time, like water seeking its own level, we are pulled toward our baseline – back up after bad news and back down after good.<br><br><b>(C)</b> But then the kids – like adults – adapt.",
+   "o": [
+    "(A) - (C) - (B)",
+    "(B) - (A) - (C)",
+    "(B) - (C) - (A)",
+    "(C) - (A) - (B)",
+    "(C) - (B) - (A)"
+   ],
+   "a": 2,
+   "why": "① 주어진 글: 행복은 매 순간의 좋은 일·나쁜 일만으로 정해지지 않는다.<br>② <b>(B)</b> 그 설명: 경험이 기분에 영향을 주긴 하지만(<b>While</b> ~) 바람 한 번에 날려 가지 않고, 우리는 적응해서 <b>기준선(baseline)</b>으로 돌아간다.<br>③ <b>(A)</b> 기준선으로 돌아가는 예시(첫사랑·이별)를 들고, \"<b>This tendency</b>(이 경향)\" = (B)에서 말한 \"기준선으로 돌아가는 경향\"이 아이들에게서 가장 잘 보인다고 해요. 끝의 \"<b>they are</b>\"는 \"정말 (행복)하다\"는 뜻이에요.<br>④ <b>(C)</b> \"<b>But then</b> the kids\" → (A)의 \"처음 몇 분은 행복하다\"를 뒤집어 \"그러고 나서 적응한다\"로 마무리.<br>👉 연결고리: <b>baseline</b>(B) → <b>This tendency</b>(A) → <b>But then the kids</b>(C). (C)는 아이들 이야기가 나온 (A) 바로 뒤에만 올 수 있어요.",
+   "ev": "This tendency is best seen with little kids and their toy joy",
+   "evKo": "이 경향은 어린아이들과 그들의 장난감 기쁨에서 가장 잘 보인다"
+  },
+  {
+   "t": "빈칸",
+   "q": "다음 빈칸에 들어갈 말로 가장 적절한 것은?",
+   "shuffle": true,
+   "box": "While our experiences affect our mood, we are not blown in a completely new direction by each gust of wind. As humans, we adjust – to new information and events both good and bad – and <b>__________</b>. … The euphoria of first love fades, and so does the despair of a break-up.",
+   "o": [
+    "return to our personal default level of well-being",
+    "keep moving up to a higher level of happiness",
+    "stay sad for a long time after bad news",
+    "change our mood completely with each event",
+    "forget all of our past experiences"
+   ],
+   "a": 1,
+   "why": "바로 뒤에서 \"우리는 <b>기준선(baseline)</b>으로 끌려간다\"고 하고, 첫사랑의 행복도 이별의 절망도 사라진다고 해요. 즉 좋은 일이든 나쁜 일이든 겪고 나면 <b>원래의 기본 행복 수준으로 돌아간다</b>는 뜻이에요.<br>② 계속 더 높은 행복으로 올라간다 → 좋은 일 뒤에는 다시 내려온다고 했어요.<br>③ 나쁜 소식 뒤에 오래 슬프다 → 나쁜 소식 뒤에는 다시 올라온다고 했어요.<br>④ 사건마다 기분이 완전히 바뀐다 → \"완전히 새로운 방향으로 날려 가지 않는다\"와 반대예요.<br>⑤ 과거 경험을 모두 잊는다 → 글에 나오지 않는 내용이에요.<br>📌 해석: ① 자신의 기본 행복 수준으로 돌아간다 ② 계속 더 높은 행복 수준으로 올라간다 ③ 나쁜 소식 뒤에 오랫동안 슬픈 채로 있다 ④ 사건마다 기분을 완전히 바꾼다 ⑤ 과거의 경험을 모두 잊는다",
+   "ev": "we are pulled toward our baseline – back up after bad news and back down after good",
+   "evKo": "우리는 기준선 쪽으로 끌려간다. 나쁜 소식 뒤에는 다시 올라가고 좋은 소식 뒤에는 다시 내려온다"
+  }
+ ]
+},
+/* ───────── 32번 ───────── */
+{
+ "id": "32",
+ "kind": "빈칸",
+ "title": "잠은 빚처럼 꼭 갚아야 해!",
+ "note": "*compound: 화합물 **accumulation: 축적",
+ "words": [
+  {
+   "en": "put off",
+   "ko": "미루다",
+   "m": [
+    "put off"
+   ],
+   "tip": "put off = postpone(연기하다)"
+  },
+  {
+   "en": "squeeze",
+   "ko": "억지로 끼워 넣다",
+   "m": [
+    "squeeze"
+   ]
+  },
+  {
+   "en": "overwhelming",
+   "ko": "압도적인, 견딜 수 없는",
+   "m": [
+    "overwhelming"
+   ],
+   "tip": "overwhelm(압도하다) → overwhelming(압도적인)"
+  },
+  {
+   "en": "be forced to V",
+   "ko": "어쩔 수 없이 ~하다",
+   "m": [
+    "forced"
+   ]
+  },
+  {
+   "en": "drive",
+   "ko": "욕구, 충동",
+   "m": [
+    "drive"
+   ],
+   "tip": "drive는 \"운전하다\"만 있는 게 아니에요! 명사로 \"욕구\"라는 뜻도 있어요."
+  },
+  {
+   "en": "compound",
+   "ko": "화합물",
+   "m": [
+    "compound"
+   ]
+  },
+  {
+   "en": "build up",
+   "ko": "쌓이다, 쌓다",
+   "m": [
+    "builds up",
+    "build up"
+   ],
+   "tip": "반대 느낌: break down(분해하다)"
+  },
+  {
+   "en": "break down",
+   "ko": "분해하다",
+   "m": [
+    "breaks down"
+   ]
+  },
+  {
+   "en": "keep track of",
+   "ko": "~을 계속 파악하다",
+   "m": [
+    "keep track of"
+   ]
+  },
+  {
+   "en": "trigger",
+   "ko": "일으키다, 유발하다",
+   "m": [
+    "trigger"
+   ]
+  },
+  {
+   "en": "accumulation",
+   "ko": "축적, 쌓임",
+   "m": [
+    "accumulation"
+   ],
+   "tip": "accumulate(축적하다) → accumulation(축적)"
+  },
+  {
+   "en": "optimal",
+   "ko": "최적의, 가장 알맞은",
+   "m": [
+    "optimal"
+   ]
+  },
+  {
+   "en": "make up",
+   "ko": "(부족한 것을) 채우다",
+   "m": [
+    "make up"
+   ]
+  },
+  {
+   "en": "accustomed",
+   "ko": "익숙한",
+   "m": [
+    "accustomed"
+   ],
+   "tip": "be/become accustomed to + (동)명사: 여기서 to는 전치사라서 뒤에 -ing가 와요!"
+  },
+  {
+   "en": "catch up with",
+   "ko": "결국 ~에게 영향을 미치다",
+   "m": [
+    "catches up with"
+   ],
+   "tip": "원래 뜻은 \"~을 따라잡다\". 나쁜 일이 따라잡는다 → 결국 대가를 치르게 되다"
+  }
+ ],
+ "sents": [
+  {
+   "en": "Although you may put off going to sleep in order to squeeze more activities into your day, eventually your need for sleep becomes overwhelming and you are forced to get some sleep.",
+   "ko": "하루에 더 많은 일을 끼워 넣으려고 잠자리에 드는 걸 미룰 수도 있지만, 결국에는 잠이 너무너무 쏟아져서 어쩔 수 없이 잠을 조금이라도 자게 돼요.",
+   "g": "put off + 동명사(going) = ~하는 것을 미루다 · in order to V = ~하기 위해 · be forced to V = 어쩔 수 없이 ~하다 (수동)"
+  },
+  {
+   "en": "This daily drive for sleep appears to be due, in part, to a compound known as adenosine.",
+   "ko": "매일 잠이 오는 이런 욕구는, 어느 정도는 \"아데노신\"이라는 화합물 때문인 것 같아요.",
+   "g": "appear to V = ~인 것 같다 · be due to + 명사 = ~ 때문이다 (in part가 중간에 끼어 있음) · known as = ~라고 알려진 (과거분사가 a compound를 뒤에서 꾸밈)"
+  },
+  {
+   "en": "This natural chemical builds up in your blood as time awake increases.",
+   "ko": "이 자연 물질은 깨어 있는 시간이 길어질수록 핏속에 쌓여요.",
+   "g": "as = ~함에 따라, ~할수록 · time awake: 형용사 awake가 time을 뒤에서 꾸밈 (깨어 있는 시간)"
+  },
+  {
+   "en": "While you sleep, your body breaks down the adenosine.",
+   "ko": "잠을 자는 동안에는 몸이 그 아데노신을 분해해요.",
+   "g": "while = ~하는 동안 · 주어 your body(3인칭 단수) → breaks"
+  },
+  {
+   "en": "Thus, this molecule may be what your body uses to keep track of lost sleep and to trigger sleep when needed.",
+   "ko": "그래서 이 물질은 우리 몸이 못 잔 잠이 얼마인지 계속 확인하고, 필요할 때 잠이 오게 만드는 데 쓰는 것일 수도 있어요.",
+   "g": "what = ~하는 것 (선행사 없음 + uses 뒤 목적어 빠짐) · to keep ~ and to trigger ~ 병렬 · when needed = when (it is) needed (주어+be동사 생략)"
+  },
+  {
+   "en": "An accumulation of adenosine and other factors might explain why, after several nights of less than optimal amounts of sleep, you build up a sleep debt that you must make up by sleeping longer than normal.",
+   "ko": "아데노신과 다른 요인들이 쌓이는 것은 이런 일을 설명해 줄 수 있어요. 며칠 밤 동안 잠을 충분히 못 자면 \"수면 빚\"이 쌓이고, 평소보다 더 오래 자서 그 빚을 갚아야 한다는 거죠.",
+   "g": "explain + why 간접의문문(why + 주어 + 동사) · that = 목적격 관계대명사(make up의 목적어가 빠짐) · by + -ing = ~함으로써"
+  },
+  {
+   "en": "Because of such built-in molecular feedback, you can't become accustomed to getting less sleep than your body needs.",
+   "ko": "몸 안에 이런 신호 장치가 원래 들어 있어서, 우리는 몸에 필요한 것보다 적게 자는 데 익숙해질 수가 없어요.",
+   "g": "because of + 명사(구) / because + 주어 + 동사 · become accustomed to + -ing (to는 전치사!) · less ~ than = ~보다 적은"
+  },
+  {
+   "en": "Eventually, a lack of sleep catches up with you.",
+   "ko": "잠이 부족하면 결국에는 그 대가를 치르게 돼요.",
+   "g": "catch up with = (나쁜 결과가) 결국 ~에게 닥치다 · 주어 a lack(단수) → catches"
+  }
+ ],
+ "topic": "몸속 아데노신 같은 신호 때문에 우리는 적게 자는 데 익숙해질 수 없고, 부족한 잠은 결국 채워야 한다.",
+ "easy": "안 자고 버티면 몸속에 \"졸음 물질\"이 쌓여요. 그래서 잠을 줄이는 데 익숙해질 수는 없고, 못 잔 잠은 나중에 꼭 더 자서 갚아야 해요!",
+ "qs": [
+  {
+   "t": "요지",
+   "q": "다음 글의 요지로 가장 적절한 것은?",
+   "shuffle": true,
+   "o": [
+    "할 일이 많을 때는 잠을 줄여 활동 시간을 늘리는 것이 좋다.",
+    "몸은 필요한 것보다 적게 자는 데 익숙해질 수 없어서, 부족한 잠은 결국 채워야 한다.",
+    "아데노신은 잠을 방해하므로 몸에 쌓이지 않게 해야 한다.",
+    "꾸준히 연습하면 적은 수면 시간에도 몸이 적응할 수 있다.",
+    "수면 부족은 주로 정신적인 스트레스 때문에 생긴다."
+   ],
+   "a": 2,
+   "why": "아데노신은 깨어 있는 동안 쌓여서 <b>잠이 오게 만드는</b> 물질이에요. 이런 몸속 장치 때문에 \"you <b>can't become accustomed to getting less sleep</b>(적게 자는 데 익숙해질 수 없다)\"고 했고, 못 잔 잠은 <b>수면 빚</b>이 되어 더 오래 자서 갚아야 해요.<br>① 잠을 줄이라는 말은 글과 반대예요. ③ 아데노신은 잠을 방해하는 게 아니라 잠이 오게 해요. ④ 적은 잠에 적응할 수 없다고 했으니 정반대. ⑤ 스트레스 이야기는 없어요.",
+   "ev": "you can't become accustomed to getting less sleep than your body needs",
+   "evKo": "여러분은 몸에 필요한 것보다 적게 자는 데 익숙해질 수 없다"
+  },
+  {
+   "t": "어휘",
+   "q": "(A), (B), (C)의 각 네모 안에서 문맥에 맞는 낱말로 가장 적절한 것은?",
+   "box": "Although you may put off going to sleep in order to squeeze more activities into your day, eventually your need for sleep becomes <b>(A) [overwhelming / negligible]</b> and you are forced to get some sleep. … This natural chemical builds up in your blood as time awake <b>(B) [decreases / increases]</b>. … An accumulation of adenosine and other factors might explain why, after several nights of less than optimal amounts of sleep, you build up a sleep debt that you must make up by sleeping <b>(C) [longer / shorter]</b> than normal.",
+   "o": [
+    "overwhelming — decreases — longer",
+    "negligible — increases — longer",
+    "negligible — decreases — shorter",
+    "overwhelming — increases — longer",
+    "overwhelming — increases — shorter"
+   ],
+   "a": 4,
+   "why": "(A) 뒤에 \"어쩔 수 없이 잠을 자게 된다\"가 나오니, 잠이 필요한 느낌이 <b>견딜 수 없을 만큼 커진다(overwhelming)</b>. negligible은 \"무시해도 될 만큼 작은\"이라 반대예요.<br>(B) 아데노신은 깨어 있는 동안 쌓이고 잘 때 분해돼요 → 깨어 있는 시간이 <b>늘어날수록(increases)</b> 쌓여요.<br>(C) 수면 빚을 갚으려면 평소보다 <b>더 오래(longer)</b> 자야 해요. shorter면 빚이 더 늘어나겠죠.",
+   "ev": "This natural chemical builds up in your blood as time awake increases.",
+   "evKo": "이 자연 화학 물질은 깨어 있는 시간이 늘어남에 따라 혈액 속에 쌓인다."
+  },
+  {
+   "t": "어법",
+   "q": "(A), (B), (C)의 각 네모 안에서 어법에 맞는 표현으로 가장 적절한 것은?",
+   "box": "This daily drive for sleep appears to be due, in part, to a compound <b>(A) [knowing / known]</b> as adenosine. … Thus, this molecule may be <b>(B) [that / what]</b> your body uses to keep track of lost sleep and to trigger sleep when needed. … Because of such built-in molecular feedback, you can't become accustomed to <b>(C) [getting / get]</b> less sleep than your body needs.",
+   "o": [
+    "knowing — what — getting",
+    "known — what — getting",
+    "known — that — get",
+    "knowing — that — getting",
+    "known — that — getting"
+   ],
+   "a": 2,
+   "why": "(A) 화합물이 아데노신이라고 \"알려진\" 것 → 수동의 의미 과거분사 <b>known</b>. (known as = ~라고 알려진)<br>(B) be동사 뒤 보어 자리인데 앞에 꾸밀 명사(선행사)가 없고, uses 뒤에 목적어가 빠져 있어요 → \"~하는 것\" <b>what</b>. that은 이렇게 선행사 없이 \"~하는 것\"으로 쓸 수 없어요.<br>(C) become accustomed to의 <b>to는 전치사</b>라서 뒤에 동명사 <b>getting</b>이 와야 해요. (to부정사가 아니에요!)",
+   "ev": "Thus, this molecule may be what your body uses to keep track of lost sleep",
+   "evKo": "따라서 이 분자는 여러분의 몸이 부족한 잠을 계속 파악하기 위해 사용하는 것일지도 모른다"
+  },
+  {
+   "t": "내용일치",
+   "q": "다음 글의 내용과 일치하지 <u>않는</u> 것은?",
+   "shuffle": true,
+   "o": [
+    "더 많은 활동을 하려고 잠을 미뤄도 결국에는 잠을 자게 된다.",
+    "아데노신은 깨어 있는 시간이 길어질수록 혈액 속에 쌓인다.",
+    "몸은 며칠만 지나면 적은 수면량에 금방 익숙해진다.",
+    "잠을 자는 동안 몸은 아데노신을 분해한다.",
+    "수면 빚은 평소보다 더 오래 자서 갚아야 한다."
+   ],
+   "a": 3,
+   "why": "본문은 \"you <b>can't</b> become accustomed to getting less sleep(적게 자는 데 익숙해질 수 <b>없다</b>)\"고 했어요. \"금방 익숙해진다\"는 정반대예요. 나머지는 모두 본문 내용과 같아요.",
+   "ev": "you can't become accustomed to getting less sleep than your body needs",
+   "evKo": "여러분은 몸에 필요한 것보다 적게 자는 데 익숙해질 수 없다"
+  },
+  {
+   "t": "순서",
+   "q": "주어진 글 다음에 이어질 글의 순서로 가장 적절한 것은?",
+   "box": "Although you may put off going to sleep in order to squeeze more activities into your day, eventually your need for sleep becomes overwhelming and you are forced to get some sleep. This daily drive for sleep appears to be due, in part, to a compound known as adenosine.<br><br><b>(A)</b> Because of such built-in molecular feedback, you can't become accustomed to getting less sleep than your body needs. Eventually, a lack of sleep catches up with you.<br><br><b>(B)</b> Thus, this molecule may be what your body uses to keep track of lost sleep and to trigger sleep when needed. An accumulation of adenosine and other factors might explain why, after several nights of less than optimal amounts of sleep, you build up a sleep debt that you must make up by sleeping longer than normal.<br><br><b>(C)</b> This natural chemical builds up in your blood as time awake increases. While you sleep, your body breaks down the adenosine.",
+   "o": [
+    "(A) - (C) - (B)",
+    "(B) - (A) - (C)",
+    "(B) - (C) - (A)",
+    "(C) - (A) - (B)",
+    "(C) - (B) - (A)"
+   ],
+   "a": 5,
+   "why": "① 주어진 글: 잠이 오는 욕구는 <b>아데노신</b>이라는 화합물 때문이다.<br>② <b>(C)</b> \"<b>This natural chemical</b>(이 자연 물질)\"이 바로 아데노신! 깨어 있으면 쌓이고, 자면 분해된다.<br>③ <b>(B)</b> \"<b>Thus</b>(그래서)\" 이 물질이 부족한 잠을 파악하는 데 쓰인다 → 수면 빚 설명.<br>④ <b>(A)</b> \"<b>such</b> built-in molecular feedback(이런 몸속 신호 장치)\"은 (B)에서 설명한 내용을 가리켜요 → 적은 잠에 익숙해질 수 없다는 결론.<br>👉 연결고리: <b>This natural chemical</b>(C) · <b>Thus, this molecule</b>(B) · <b>such</b> feedback(A)",
+   "ev": "This natural chemical builds up in your blood as time awake increases.",
+   "evKo": "이 자연 화학 물질은 깨어 있는 시간이 늘어남에 따라 혈액 속에 쌓인다."
+  },
+  {
+   "t": "빈칸",
+   "q": "다음 빈칸에 들어갈 말로 가장 적절한 것은?",
+   "shuffle": true,
+   "box": "Thus, this molecule may be what your body uses to keep track of lost sleep and to trigger sleep when needed. An accumulation of adenosine and other factors might explain why, after several nights of less than optimal amounts of sleep, you build up a sleep debt that you must make up by sleeping longer than normal. Because of such built-in molecular feedback, you can't <b>__________</b>. Eventually, a lack of sleep catches up with you.",
+   "o": [
+    "pay back a sleep debt by sleeping longer",
+    "break down adenosine while you are sleeping",
+    "be affected by a lack of sleep",
+    "feel the need for sleep at the end of the day",
+    "become accustomed to getting less sleep than your body needs"
+   ],
+   "a": 5,
+   "why": "몸은 아데노신으로 못 잔 잠을 계속 파악하고, 못 잔 만큼 수면 빚을 쌓아요. 그러니 우리는 <b>적게 자는 데 익숙해질 수 없어요</b>. 마지막 문장 \"결국 부족한 잠이 대가를 치르게 한다\"와도 딱 맞아요.<br>① 더 오래 자서 빚을 갚아야 한다고 했으니 \"갚을 수 없다\"는 틀려요.<br>② 자는 동안 아데노신이 분해된다고 했으니 틀려요.<br>③ 잠이 부족하면 결국 영향을 받는다(catches up with you)고 했으니 반대예요.<br>④ 잠이 필요한 느낌이 결국 아주 커진다고 했으니 틀려요.",
+   "ev": "Eventually, a lack of sleep catches up with you.",
+   "evKo": "결국 수면 부족은 여러분에게 대가를 치르게 한다."
+  }
+ ]
+},
+/* ───────── 33번 ───────── */
+{
+ "id": "33",
+ "kind": "빈칸",
+ "title": "정확한 숫자? 쓰기 나름!",
+ "note": "*significant digit: 유효 숫자",
+ "words": [
+  {
+   "en": "uncertainty",
+   "ko": "불확실성",
+   "m": [
+    "uncertainty"
+   ],
+   "tip": "certain(확실한) → uncertain(불확실한) → uncertainty(불확실성)"
+  },
+  {
+   "en": "the public",
+   "ko": "일반 대중",
+   "m": [
+    "the public"
+   ]
+  },
+  {
+   "en": "appreciate",
+   "ko": "제대로 이해하다",
+   "m": [
+    "appreciate"
+   ],
+   "tip": "\"감사하다\", \"감상하다\" 말고 \"(가치·중요성을) 제대로 알다\"라는 뜻도 있어요."
+  },
+  {
+   "en": "significance",
+   "ko": "중요성, 의미",
+   "m": [
+    "significance"
+   ],
+   "tip": "significant(중요한) → significance(중요성)"
+  },
+  {
+   "en": "relative",
+   "ko": "상대적인",
+   "m": [
+    "relative"
+   ],
+   "tip": "반대말: absolute(절대적인) · 명사로는 \"친척\"이라는 뜻도 있어요."
+  },
+  {
+   "en": "relatively",
+   "ko": "비교적",
+   "m": [
+    "relatively"
+   ]
+  },
+  {
+   "en": "measure",
+   "ko": "측정하다, 재다",
+   "m": [
+    "measured"
+   ]
+  },
+  {
+   "en": "precise",
+   "ko": "정밀한",
+   "m": [
+    "precise"
+   ],
+   "tip": "반대말: vague(모호한), rough(대략적인)"
+  },
+  {
+   "en": "after all",
+   "ko": "어쨌든, 결국",
+   "m": [
+    "after all"
+   ]
+  },
+  {
+   "en": "significant digit",
+   "ko": "유효 숫자",
+   "m": [
+    "significant digits"
+   ]
+  },
+  {
+   "en": "accuracy",
+   "ko": "정확도",
+   "m": [
+    "accuracy"
+   ],
+   "tip": "accurate(정확한) → accurately(정확하게) → accuracy(정확도)"
+  },
+  {
+   "en": "quote",
+   "ko": "(숫자·말을) 제시하다, 인용하다",
+   "m": [
+    "quoted"
+   ]
+  },
+  {
+   "en": "intend to V",
+   "ko": "~할 작정이다",
+   "m": [
+    "intending to"
+   ]
+  },
+  {
+   "en": "satellite",
+   "ko": "인공위성",
+   "m": [
+    "satellite"
+   ]
+  },
+  {
+   "en": "orbit",
+   "ko": "궤도를 돌다",
+   "m": [
+    "orbit"
+   ]
+  },
+  {
+   "en": "accurately",
+   "ko": "정확하게",
+   "m": [
+    "accurately"
+   ]
+  }
+ ],
+ "sents": [
+  {
+   "en": "One of the things that makes uncertainty difficult for members of the public to appreciate is that the significance of uncertainty is relative.",
+   "ko": "보통 사람들이 \"불확실성\"을 제대로 이해하기 어려운 이유 중 하나는, 불확실성이 얼마나 중요한지가 상황에 따라 달라진다는 점이에요.",
+   "g": "One of the + 복수명사 + 단수동사(is) · make + 목적어(uncertainty) + difficult + for A to V = A가 (목적어를) ~하기 어렵게 만들다 · that절이 보어 (~라는 것)"
+  },
+  {
+   "en": "Take, for example, the distance between Earth and the sun: 1.49597 × 10⁸ km, as measured at one point during the year.",
+   "ko": "예를 들어, 지구와 태양 사이의 거리를 생각해 봐요. 일 년 중 어느 한때 재어 보면 1.49597 × 10⁸ km예요.",
+   "g": "Take ~ for example = ~을 예로 들어 보자 (명령문) · between A and B = A와 B 사이 · as measured = 측정된 대로 (as (it was) measured)"
+  },
+  {
+   "en": "This seems relatively precise; after all, using six significant digits means I know the distance to an accuracy of one part in a million or so.",
+   "ko": "이 숫자는 꽤 정확해 보여요. 어쨌든 유효 숫자를 여섯 자리나 썼다는 건, 거리를 대략 백만분의 일 정도까지 정확하게 안다는 뜻이니까요.",
+   "g": "seem + 형용사 = ~해 보이다 · 동명사구 주어(using ~ digits) + 단수동사 means · means (that) I know: 접속사 that 생략"
+  },
+  {
+   "en": "However, if the next digit is uncertain, that means the uncertainty in knowing the precise Earth-sun distance is larger than the distance between New York and Chicago!",
+   "ko": "그런데 그다음 자리 숫자를 모른다면, 지구와 태양 사이의 거리를 알 때 생기는 오차가 뉴욕에서 시카고까지 거리보다도 크다는 뜻이에요!",
+   "g": "전치사 in + 동명사(knowing) · 비교급 larger than · means (that) ~ : 주어 the uncertainty, 동사 is"
+  },
+  {
+   "en": "Whether or not the quoted number is \"precise\" therefore depends on what I'm intending to do with it.",
+   "ko": "그러니까 제시된 숫자가 \"정확한지 아닌지\"는, 내가 그 숫자로 무엇을 하려는지에 따라 달라져요.",
+   "g": "Whether or not ~ = ~인지 아닌지 (명사절 주어 → 단수동사 depends) · depend on = ~에 달려 있다 · what = 무엇을 (간접의문문)"
+  },
+  {
+   "en": "If I care only about what minute the sun will rise tomorrow, then the number quoted here is fine.",
+   "ko": "내일 해가 몇 시 몇 분에 뜨는지만 알고 싶다면, 여기 나온 숫자로 충분해요.",
+   "g": "what minute = 몇 분에 (의문사 what + 명사) · the number quoted here: 과거분사가 뒤에서 꾸밈 (여기에 제시된 숫자)"
+  },
+  {
+   "en": "If I want to send a satellite to orbit just above the sun, however, then I would need to know distances more accurately.",
+   "ko": "하지만 태양 바로 위를 도는 인공위성을 보내고 싶다면, 거리를 훨씬 더 정확하게 알아야 해요.",
+   "g": "however가 문장 중간에 삽입됨 (그러나) · to orbit = ~하도록 (목적) · more accurately = 부사 비교급"
+  }
+ ],
+ "topic": "불확실성이 얼마나 중요한지는 숫자를 어디에 쓰느냐에 따라 달라진다(상대적이다).",
+ "easy": "같은 숫자라도 해 뜨는 시각을 알 때는 충분히 정확하지만, 인공위성을 보낼 때는 부족해요. 오차가 괜찮은지는 \"무엇에 쓰느냐\"에 달려 있어요!",
+ "qs": [
+  {
+   "t": "주제",
+   "q": "다음 글의 주제로 가장 적절한 것은?",
+   "shuffle": true,
+   "o": [
+    "how scientists first measured the Earth-sun distance",
+    "the difficulty of sending satellites close to the sun",
+    "ways to remove uncertainty from scientific data",
+    "the importance of uncertainty depending on the purpose",
+    "reasons the public distrusts scientific numbers"
+   ],
+   "a": 4,
+   "why": "첫 문장에서 \"the significance of uncertainty is <b>relative</b>(불확실성의 중요성은 상대적이다)\"라고 말하고, 지구-태양 거리 예시로 <b>해 뜨는 시각</b>을 알 때는 충분하지만 <b>인공위성</b>을 보낼 때는 부족하다고 보여 줘요. 즉 오차가 중요한지는 <b>목적에 따라</b> 달라진다는 게 주제예요.<br>① 거리를 처음 잰 방법은 안 나와요. ② 위성은 예시일 뿐이에요. ③ 불확실성을 없애는 방법은 말하지 않았어요. ④가 정답. ⑤ 대중이 숫자를 불신한다는 말은 없어요.<br>📌 해석: ① 과학자들이 지구-태양 거리를 처음 측정한 방법 ② 태양 가까이 인공위성을 보내는 것의 어려움 ③ 과학 자료에서 불확실성을 없애는 방법 ④ 목적에 따라 달라지는 불확실성의 중요성 ⑤ 대중이 과학 수치를 불신하는 이유",
+   "ev": "the significance of uncertainty is relative",
+   "evKo": "불확실성의 중요성은 상대적이다"
+  },
+  {
+   "t": "어휘",
+   "q": "(A), (B), (C)의 각 네모 안에서 문맥에 맞는 낱말로 가장 적절한 것은?",
+   "box": "One of the things that makes uncertainty difficult for members of the public to appreciate is that the significance of uncertainty is <b>(A) [absolute / relative]</b>. … This seems relatively <b>(B) [precise / vague]</b>; after all, using six significant digits means I know the distance to an accuracy of one part in a million or so. … If I want to send a satellite to orbit just above the sun, however, then I would need to know distances more <b>(C) [roughly / accurately]</b>.",
+   "o": [
+    "absolute — precise — accurately",
+    "relative — precise — accurately",
+    "relative — vague — roughly",
+    "absolute — vague — accurately",
+    "relative — precise — roughly"
+   ],
+   "a": 2,
+   "why": "(A) 같은 숫자가 해 뜨는 시각엔 충분하고 위성엔 부족하다 → 불확실성의 중요성은 <b>상대적(relative)</b>이에요. absolute는 \"절대적인\"이라 반대예요.<br>(B) 유효 숫자를 여섯 자리나 썼으니 <b>정밀해(precise)</b> 보여요. vague는 \"모호한\".<br>(C) 태양 바로 위로 위성을 보내려면 거리를 <b>더 정확하게(accurately)</b> 알아야 해요. roughly는 \"대충\".",
+   "ev": "the significance of uncertainty is relative",
+   "evKo": "불확실성의 중요성은 상대적이다"
+  },
+  {
+   "t": "어법",
+   "q": "(A), (B), (C)의 각 네모 안에서 어법에 맞는 표현으로 가장 적절한 것은?",
+   "box": "One of the things that makes uncertainty difficult for members of the public to appreciate <b>(A) [are / is]</b> that the significance of uncertainty is relative. … This seems relatively precise; after all, using six significant digits <b>(B) [means / meaning]</b> I know the distance to an accuracy of one part in a million or so. … If I care only about what minute the sun will rise tomorrow, then the number <b>(C) [quoting / quoted]</b> here is fine.",
+   "o": [
+    "are — means — quoted",
+    "is — meaning — quoted",
+    "are — meaning — quoting",
+    "is — means — quoting",
+    "is — means — quoted"
+   ],
+   "a": 5,
+   "why": "(A) 주어는 <b>One</b>(of the things는 꾸며 주는 말) → 단수동사 <b>is</b>. \"One of the + 복수명사\"는 단수 취급!<br>(B) 동명사구 using six significant digits가 주어이고, 문장에 동사가 필요해요 → <b>means</b>. meaning은 동사 자리에 올 수 없어요.<br>(C) 숫자는 \"제시되는\" 것 → 수동의 의미 과거분사 <b>quoted</b>. 또 quote는 타동사인데 뒤에 목적어가 없으니 quoting은 안 돼요.",
+   "ev": "using six significant digits means I know the distance to an accuracy of one part in a million or so",
+   "evKo": "유효 숫자 여섯 자리를 사용한다는 것은 내가 그 거리를 대략 백만분의 일의 정확도로 안다는 뜻이다"
+  },
+  {
+   "t": "내용일치",
+   "q": "다음 글의 내용과 일치하는 것은?",
+   "shuffle": true,
+   "o": [
+    "필자는 지구와 태양 사이의 거리를 유효 숫자 여섯 자리로 제시했다.",
+    "다음 자리 숫자가 불확실해도 그 오차는 뉴욕과 시카고 사이 거리보다 작다.",
+    "내일 해 뜨는 시각(분)을 알기에는 제시된 숫자가 부족하다.",
+    "태양 바로 위 궤도로 위성을 보내기에는 제시된 숫자로 충분하다.",
+    "일반 대중은 불확실성의 의미를 쉽게 이해한다."
+   ],
+   "a": 1,
+   "why": "\"using <b>six significant digits</b>\"라고 했고, 1.49597도 숫자가 여섯 개예요 → ① 일치.<br>② 오차가 뉴욕-시카고 거리보다 <b>크다(larger)</b>고 했어요.<br>③ 해 뜨는 시각에는 숫자가 <b>충분하다(fine)</b>고 했어요.<br>④ 위성을 보내려면 <b>더 정확히</b> 알아야 한다고 했어요.<br>⑤ 대중이 불확실성을 이해하기 <b>어렵다(difficult)</b>고 했어요.",
+   "ev": "using six significant digits means I know the distance to an accuracy of one part in a million or so",
+   "evKo": "유효 숫자 여섯 자리를 사용한다는 것은 내가 그 거리를 대략 백만분의 일의 정확도로 안다는 뜻이다"
+  },
+  {
+   "t": "순서",
+   "q": "주어진 글 다음에 이어질 글의 순서로 가장 적절한 것은?",
+   "box": "One of the things that makes uncertainty difficult for members of the public to appreciate is that the significance of uncertainty is relative. Take, for example, the distance between Earth and the sun: 1.49597 × 10⁸ km, as measured at one point during the year.<br><br><b>(A)</b> This seems relatively precise; after all, using six significant digits means I know the distance to an accuracy of one part in a million or so.<br><br><b>(B)</b> If I care only about what minute the sun will rise tomorrow, then the number quoted here is fine. If I want to send a satellite to orbit just above the sun, however, then I would need to know distances more accurately.<br><br><b>(C)</b> However, if the next digit is uncertain, that means the uncertainty in knowing the precise Earth-sun distance is larger than the distance between New York and Chicago! Whether or not the quoted number is \"precise\" therefore depends on what I'm intending to do with it.",
+   "o": [
+    "(A) - (C) - (B)",
+    "(B) - (A) - (C)",
+    "(B) - (C) - (A)",
+    "(C) - (A) - (B)",
+    "(C) - (B) - (A)"
+   ],
+   "a": 1,
+   "why": "① 주어진 글: 불확실성의 중요성은 상대적이다 + 지구-태양 거리 숫자 예시.<br>② <b>(A)</b> \"<b>This</b>(이 숫자)는 꽤 정밀해 보인다\" → This가 주어진 글의 숫자를 가리켜요.<br>③ <b>(C)</b> \"<b>However</b>(하지만)\" 다음 자리가 불확실하면 오차가 엄청 크다 → 그러니 정밀한지는 <b>무엇을 하려는지</b>에 달려 있다.<br>④ <b>(B)</b> \"무엇을 하려는지\"의 구체적인 예: 해 뜨는 시각이면 충분, 위성이면 부족.<br>👉 연결고리: <b>This</b>(A) · <b>However</b>(C) · what I'm intending to do → 예시(B)",
+   "ev": "Whether or not the quoted number is \"precise\" therefore depends on what I'm intending to do with it.",
+   "evKo": "그러므로 제시된 숫자가 \"정밀한지\" 아닌지는 내가 그것으로 무엇을 하려는지에 달려 있다."
+  },
+  {
+   "t": "빈칸",
+   "q": "다음 빈칸에 들어갈 말로 가장 적절한 것은?",
+   "shuffle": true,
+   "box": "One of the things that makes uncertainty difficult for members of the public to appreciate is that <b>__________</b>. … Whether or not the quoted number is \"precise\" therefore depends on what I'm intending to do with it. If I care only about what minute the sun will rise tomorrow, then the number quoted here is fine. If I want to send a satellite to orbit just above the sun, however, then I would need to know distances more accurately.",
+   "o": [
+    "uncertainty always makes a number useless",
+    "the significance of uncertainty is relative",
+    "more digits always remove all uncertainty",
+    "the same uncertainty matters equally for every purpose",
+    "uncertainty exists only in very small numbers"
+   ],
+   "a": 2,
+   "why": "같은 숫자가 <b>해 뜨는 시각</b>에는 충분하고 <b>위성 발사</b>에는 부족해요. 즉 불확실성이 중요한지는 목적에 따라 달라져요 → <b>불확실성의 중요성은 상대적이다</b>.<br>① 해 뜨는 시각에는 숫자가 충분하다(fine)고 했으니 \"쓸모없다\"는 틀려요.<br>③ 여섯 자리를 써도 다음 자리가 불확실하면 오차가 크다고 했어요.<br>④ 목적마다 다르다는 글의 내용과 정반대예요.<br>⑤ 예시는 아주 큰 숫자(지구-태양 거리)였어요.",
+   "ev": "Whether or not the quoted number is \"precise\" therefore depends on what I'm intending to do with it.",
+   "evKo": "그러므로 제시된 숫자가 \"정밀한지\" 아닌지는 내가 그것으로 무엇을 하려는지에 달려 있다."
+  }
+ ]
+},
+/* ───────── 34번 ───────── */
+{
+ "id": "34",
+ "kind": "빈칸",
+ "title": "친환경 전환의 숨은 비용",
+ "words": [
+  {
+   "en": "renewable energy",
+   "ko": "재생 에너지",
+   "m": [
+    "renewable energy"
+   ],
+   "tip": "renew(새롭게 하다) + -able → 다시 쓸 수 있는 (햇빛, 바람 등)"
+  },
+  {
+   "en": "infrastructure",
+   "ko": "기반 시설",
+   "m": [
+    "infrastructure"
+   ]
+  },
+  {
+   "en": "global warming",
+   "ko": "지구 온난화",
+   "m": [
+    "global warming"
+   ]
+  },
+  {
+   "en": "be involved in",
+   "ko": "~에 참여하다",
+   "m": [
+    "involved in"
+   ]
+  },
+  {
+   "en": "in addition to",
+   "ko": "~뿐만 아니라",
+   "m": [
+    "In addition to"
+   ]
+  },
+  {
+   "en": "alternative",
+   "ko": "대안의, 대체하는",
+   "m": [
+    "alternative"
+   ]
+  },
+  {
+   "en": "procedure",
+   "ko": "절차, 방식",
+   "m": [
+    "procedures"
+   ]
+  },
+  {
+   "en": "transformation",
+   "ko": "변화, 탈바꿈",
+   "m": [
+    "transformation"
+   ]
+  },
+  {
+   "en": "fossil fuel",
+   "ko": "화석 연료",
+   "m": [
+    "fossil fuels"
+   ]
+  },
+  {
+   "en": "scarce",
+   "ko": "부족한, 희귀한",
+   "m": [
+    "scarce"
+   ],
+   "tip": "반대말: abundant(풍부한) · scary(무서운)와 헷갈리지 않기!"
+  },
+  {
+   "en": "mineral",
+   "ko": "광물",
+   "m": [
+    "minerals"
+   ]
+  },
+  {
+   "en": "excavate",
+   "ko": "파내다, 발굴하다",
+   "m": [
+    "excavated"
+   ]
+  },
+  {
+   "en": "undermine",
+   "ko": "약화시키다",
+   "m": [
+    "undermining"
+   ],
+   "tip": "under(아래) + mine(파다) → 밑을 파서 무너뜨리다. 반대 느낌: strengthen(강화하다)"
+  },
+  {
+   "en": "emission",
+   "ko": "배출(량)",
+   "m": [
+    "emissions"
+   ]
+  },
+  {
+   "en": "seldom",
+   "ko": "좀처럼 ~않는",
+   "m": [
+    "seldom"
+   ],
+   "tip": "seldom = rarely = hardly ever (부정의 뜻이 들어 있어요!)"
+  },
+  {
+   "en": "transition",
+   "ko": "전환, 이행",
+   "m": [
+    "transition"
+   ]
+  }
+ ],
+ "sents": [
+  {
+   "en": "Richard Heinberg, an American journalist, argues that in building the renewable energy infrastructure to stop global warming, we are actually involved in one of the greatest change projects in human history.",
+   "ko": "미국의 기자 리처드 하인버그는 이렇게 말해요. 지구 온난화를 막으려고 재생 에너지 시설을 짓는 일은, 사실 인류 역사에서 가장 큰 변화 작업 중 하나에 우리가 참여하고 있는 거라고요.",
+   "g": "Richard Heinberg = an American journalist (동격, 콤마 사이) · in + -ing = ~할 때, ~하는 데 있어서 · be involved in = ~에 참여하다 (수동형) · one of the + 최상급 + 복수명사"
+  },
+  {
+   "en": "In addition to solar panels and wind turbines, we have to build an alternative transport infrastructure, farming procedures and industrial processes.",
+   "ko": "태양광 패널과 풍력 발전기뿐만 아니라, 새로운 교통 시설, 농사 방식, 공장 생산 방식까지 만들어야 해요.",
+   "g": "in addition to + 명사 = ~뿐만 아니라, ~ 외에도 · have to V = ~해야 한다 · A, B and C 병렬(명사 세 개)"
+  },
+  {
+   "en": "This transformation cannot happen without fossil fuels.",
+   "ko": "그런데 이런 큰 변화는 화석 연료 없이는 일어날 수 없어요.",
+   "g": "cannot ~ without … = …없이는 ~할 수 없다 (이중부정 → 반드시 …가 필요하다) · This transformation = 앞에서 말한 모든 것을 새로 짓는 일"
+  },
+  {
+   "en": "For instance, production of concrete structures and steel elements require amounts of energy that is only possible to produce with fossil energy.",
+   "ko": "예를 들어, 콘크리트 건물과 철강 부품을 만들려면 아주 많은 에너지가 필요한데, 그 에너지는 화석 에너지로만 만들어 낼 수 있어요.",
+   "g": "for instance = 예를 들어 · that = 주격 관계대명사(선행사 energy) · (참고) 주어의 핵심은 production(단수)이라 문법적으로는 requires가 맞지만, 원문은 require로 썼어요"
+  },
+  {
+   "en": "Production of solar panels requires scarce and expensive minerals which must be excavated, again requiring the use of fossil fuels.",
+   "ko": "태양광 패널을 만들 때도 귀하고 비싼 광물이 필요한데, 이 광물을 땅에서 파내야 하니 여기서도 또 화석 연료를 써야 해요.",
+   "g": "주어 Production(단수) → requires · which = 주격 관계대명사(선행사 minerals) · must be p.p. = ~되어야 한다 (조동사 수동) · requiring ~ = 분사구문(능동, 뒤에 목적어 the use)"
+  },
+  {
+   "en": "Thus, the harder we push towards a renewable energy system, the faster we have to use fossil energy for the construction process.",
+   "ko": "그래서 재생 에너지로 바꾸려고 더 열심히 밀어붙일수록, 짓는 과정에서 화석 에너지를 더 빨리 써야 해요.",
+   "g": "the + 비교급 ~, the + 비교급 … = ~할수록 더 …하다 · push towards = ~쪽으로 밀고 나가다"
+  },
+  {
+   "en": "This is not only expensive, but also an undermining factor for our efforts to cut global emissions.",
+   "ko": "이건 돈이 많이 들 뿐만 아니라, 전 세계의 온실가스 배출을 줄이려는 우리의 노력을 약하게 만드는 원인이기도 해요.",
+   "g": "not only A but also B = A뿐만 아니라 B도 (A: 형용사 expensive, B: 명사구 an undermining factor) · efforts to V = ~하려는 노력 (to부정사의 형용사적 용법)"
+  },
+  {
+   "en": "Heinberg remarks that the cost of building this new energy infrastructure is seldom counted in transition proposals, which tend to focus just on energy supply requirements.",
+   "ko": "하인버그는 이 새 에너지 시설을 짓는 비용이 에너지 전환 계획에서 거의 계산되지 않는다고 말해요. 그런 계획들은 에너지를 얼마나 공급해야 하는지에만 집중하는 경향이 있거든요.",
+   "g": "주어 the cost(단수) → is · seldom = 좀처럼 ~않다 · 콤마 + which = 계속적 용법(that 불가), 선행사 proposals → tend · tend to V = ~하는 경향이 있다"
+  }
+ ],
+ "topic": "재생 에너지 시설을 짓는 데에도 많은 화석 연료가 필요하다는 숨은 비용이 전환 계획에서 잘 고려되지 않는다.",
+ "easy": "태양광·풍력 시설을 만들려면 콘크리트, 철, 광물이 필요하고, 그걸 만드는 데 석탄·석유 같은 화석 연료를 많이 써야 해요. 그런데 이 비용을 사람들이 잘 계산하지 않아요!",
+ "qs": [
+  {
+   "t": "제목",
+   "q": "다음 글의 제목으로 가장 적절한 것은?",
+   "shuffle": true,
+   "o": [
+    "Solar Power: The Cheapest Energy of All",
+    "Why We Should Stop Building Wind Turbines",
+    "Fossil Fuels Will Soon Run Out",
+    "How Journalists Changed Energy Policy",
+    "The Hidden Fossil Fuel Cost of Going Green"
+   ],
+   "a": 5,
+   "why": "재생 에너지 시설을 지으려면 콘크리트·철강·광물이 필요하고, 이걸 만드는 데 <b>화석 연료</b>가 많이 들어요. 그런데 이 비용은 전환 계획에서 <b>seldom counted(거의 계산되지 않는다)</b>고 했죠. 그래서 \"친환경으로 바꾸는 데 숨어 있는 화석 연료 비용\"이 가장 알맞은 제목이에요.<br>① 태양광이 가장 싸다는 말은 없어요(오히려 광물이 비싸다고 했어요). ② 풍력 발전기를 그만 짓자고 하지 않았어요. ③ 화석 연료가 곧 바닥난다는 내용은 없어요. ④ 기자가 정책을 바꿨다는 이야기는 없어요.<br>📌 해석: ① 태양광: 모든 에너지 중 가장 저렴한 에너지 ② 우리가 풍력 발전기 건설을 멈춰야 하는 이유 ③ 화석 연료는 곧 고갈될 것이다 ④ 기자들이 에너지 정책을 바꾼 방법 ⑤ 친환경으로 가는 길의 숨겨진 화석 연료 비용",
+   "ev": "the cost of building this new energy infrastructure is seldom counted in transition proposals",
+   "evKo": "이 새로운 에너지 기반 시설을 짓는 비용은 전환 계획에서 좀처럼 계산되지 않는다"
+  },
+  {
+   "t": "어휘",
+   "q": "(A), (B), (C)의 각 네모 안에서 문맥에 맞는 낱말로 가장 적절한 것은?",
+   "box": "Production of solar panels requires <b>(A) [abundant / scarce]</b> and expensive minerals which must be excavated, again requiring the use of fossil fuels. … This is not only expensive, but also an <b>(B) [undermining / strengthening]</b> factor for our efforts to cut global emissions. Heinberg remarks that the cost of building this new energy infrastructure is <b>(C) [often / seldom]</b> counted in transition proposals, which tend to focus just on energy supply requirements.",
+   "o": [
+    "abundant — undermining — seldom",
+    "scarce — strengthening — seldom",
+    "scarce — undermining — seldom",
+    "scarce — undermining — often",
+    "abundant — strengthening — often"
+   ],
+   "a": 3,
+   "why": "(A) \"expensive(비싼)\"와 함께 쓰였으니 <b>귀한, 부족한(scarce)</b> 광물이에요. abundant는 \"풍부한\"이라 비싸다는 말과 어울리지 않아요.<br>(B) 화석 연료를 더 빨리 쓰면 배출을 줄이려는 노력이 <b>약해져요(undermining)</b>. strengthening은 \"강화하는\"이라 반대예요.<br>(C) 전환 계획들이 에너지 공급량에<b>만(just)</b> 집중하니, 건설 비용은 <b>좀처럼(seldom)</b> 계산되지 않아요. often이면 흐름이 맞지 않아요.",
+   "ev": "transition proposals, which tend to focus just on energy supply requirements",
+   "evKo": "에너지 공급 필요량에만 집중하는 경향이 있는 전환 계획들"
+  },
+  {
+   "t": "어법",
+   "q": "(A), (B), (C)의 각 네모 안에서 어법에 맞는 표현으로 가장 적절한 것은?",
+   "box": "Richard Heinberg, an American journalist, argues that in building the renewable energy infrastructure to stop global warming, we are actually <b>(A) [involved / involving]</b> in one of the greatest change projects in human history. … Production of solar panels requires scarce and expensive minerals which must be excavated, again <b>(B) [requiring / required]</b> the use of fossil fuels. … Heinberg remarks that the cost of building this new energy infrastructure is seldom counted in transition proposals, <b>(C) [that / which]</b> tend to focus just on energy supply requirements.",
+   "o": [
+    "involved — requiring — which",
+    "involving — requiring — that",
+    "involved — required — which",
+    "involving — required — which",
+    "involved — requiring — that"
+   ],
+   "a": 1,
+   "why": "(A) be involved in = ~에 참여하다(관여되다). 우리가 변화 작업에 \"관여되어 있는\" 것 → 과거분사 <b>involved</b>. involve는 타동사인데 뒤에 목적어가 없으니 involving은 안 돼요.<br>(B) 뒤에 목적어 <b>the use</b>가 있어요 → 능동의 분사구문 <b>requiring</b>. (광물을 파내는 일이 화석 연료 사용을 \"필요로 하는\" 것)<br>(C) 콤마(,) 뒤에서 앞 명사를 덧붙여 설명하는 계속적 용법에는 <b>which</b>만 쓸 수 있어요. <b>that은 콤마 뒤에 못 와요!</b>",
+   "ev": "Production of solar panels requires scarce and expensive minerals which must be excavated, again requiring the use of fossil fuels.",
+   "evKo": "태양광 패널 생산에는 채굴되어야 하는 희귀하고 비싼 광물이 필요한데, 이는 또다시 화석 연료의 사용을 필요로 한다."
+  },
+  {
+   "t": "내용일치",
+   "q": "다음 글의 내용과 일치하지 <u>않는</u> 것은?",
+   "shuffle": true,
+   "o": [
+    "Richard Heinberg는 미국의 기자이다.",
+    "태양광 패널과 풍력 발전기 외에 교통, 농업, 산업 방식도 새로 만들어야 한다.",
+    "태양광 패널을 만드는 데에는 희귀하고 비싼 광물이 필요하다.",
+    "재생 에너지 체계로 빨리 바꿀수록 화석 연료 사용은 줄어든다.",
+    "전환 계획들은 에너지 공급 필요량에만 집중하는 경향이 있다."
+   ],
+   "a": 4,
+   "why": "본문은 \"the harder we push towards a renewable energy system, <b>the faster we have to use fossil energy</b>(재생 에너지 체계로 더 세게 밀어붙일수록 화석 에너지를 더 빨리 써야 한다)\"고 했어요. 화석 연료 사용이 줄어드는 게 아니라 <b>더 빨리 쓰게</b> 되는 거예요. 나머지는 모두 본문과 같아요.",
+   "ev": "the harder we push towards a renewable energy system, the faster we have to use fossil energy for the construction process",
+   "evKo": "우리가 재생 에너지 체계를 향해 더 세게 밀어붙일수록, 건설 과정을 위해 화석 에너지를 더 빨리 사용해야 한다"
+  },
+  {
+   "t": "순서",
+   "q": "주어진 글 다음에 이어질 글의 순서로 가장 적절한 것은?",
+   "box": "Richard Heinberg, an American journalist, argues that in building the renewable energy infrastructure to stop global warming, we are actually involved in one of the greatest change projects in human history. In addition to solar panels and wind turbines, we have to build an alternative transport infrastructure, farming procedures and industrial processes.<br><br><b>(A)</b> Production of solar panels requires scarce and expensive minerals which must be excavated, again requiring the use of fossil fuels. Thus, the harder we push towards a renewable energy system, the faster we have to use fossil energy for the construction process.<br><br><b>(B)</b> This is not only expensive, but also an undermining factor for our efforts to cut global emissions. Heinberg remarks that the cost of building this new energy infrastructure is seldom counted in transition proposals, which tend to focus just on energy supply requirements.<br><br><b>(C)</b> This transformation cannot happen without fossil fuels. For instance, production of concrete structures and steel elements require amounts of energy that is only possible to produce with fossil energy.",
+   "o": [
+    "(A) - (C) - (B)",
+    "(B) - (A) - (C)",
+    "(B) - (C) - (A)",
+    "(C) - (A) - (B)",
+    "(C) - (B) - (A)"
+   ],
+   "a": 4,
+   "why": "① 주어진 글: 재생 에너지 시설 + 교통·농업·산업 방식까지 새로 만들어야 하는 큰 변화.<br>② <b>(C)</b> \"<b>This transformation</b>(이 변화)\"이 주어진 글의 큰 변화를 가리켜요 → 화석 연료 없이는 안 된다 + 첫 번째 예(콘크리트·철강).<br>③ <b>(A)</b> 태양광 패널도 광물을 파내느라 \"<b>again</b>(또다시)\" 화석 연료가 필요하다 → 두 번째 예. \"Thus\" 재생 에너지로 빨리 갈수록 화석 에너지를 더 빨리 쓴다.<br>④ <b>(B)</b> \"<b>This</b>(화석 에너지를 더 빨리 쓰는 것)\"는 비싸고 배출 감축을 방해한다 → 하인버그의 마무리.<br>👉 연결고리: <b>This transformation</b>(C) · <b>again</b>(A) · <b>This</b>(B)",
+   "ev": "This transformation cannot happen without fossil fuels.",
+   "evKo": "이러한 변화는 화석 연료 없이는 일어날 수 없다."
+  },
+  {
+   "t": "빈칸",
+   "q": "다음 빈칸에 들어갈 말로 가장 적절한 것은?",
+   "shuffle": true,
+   "box": "In addition to solar panels and wind turbines, we have to build an alternative transport infrastructure, farming procedures and industrial processes. This transformation cannot happen <b>__________</b>. For instance, production of concrete structures and steel elements require amounts of energy that is only possible to produce with fossil energy. … Thus, the harder we push towards a renewable energy system, the faster we have to use fossil energy for the construction process.",
+   "o": [
+    "unless we stop using fossil fuels",
+    "without cutting global emissions first",
+    "without fossil fuels",
+    "without the help of American journalists",
+    "if we keep producing concrete and steel"
+   ],
+   "a": 3,
+   "why": "빈칸 뒤 예시를 보면 콘크리트·철강을 만드는 에너지는 <b>화석 에너지로만</b> 만들 수 있고, 재생 에너지로 빨리 갈수록 <b>화석 에너지를 더 빨리</b> 써야 한다고 해요. 즉 이 변화는 <b>화석 연료 없이는(without fossil fuels)</b> 일어날 수 없어요.<br>① \"화석 연료를 끊지 않으면 안 된다\"는 정반대예요.<br>② 이 과정이 오히려 배출 감축을 방해한다고 했어요.<br>④ 기자의 도움은 관계없어요.<br>⑤ 콘크리트·철강은 이 변화에 꼭 필요한 것이라 \"계속 만들면 안 된다\"는 틀려요.",
+   "ev": "production of concrete structures and steel elements require amounts of energy that is only possible to produce with fossil energy",
+   "evKo": "콘크리트 구조물과 철강 부품의 생산에는 화석 에너지로만 만들어 낼 수 있는 양의 에너지가 필요하다"
+  }
+ ]
+}
+];
+
+
+/* ═════════ 공통 ═════════ */
+const CIRC=['①','②','③','④','⑤'];
+const REASONS=['📖 단어를 몰랐어요','✏️ 문법을 몰랐어요','🔍 해석을 잘못했어요','🎯 근거를 못 찾았어요','🎲 찍었어요','⏩ 급하게 풀었어요'];
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const strip=h=>String(h).replace(/<[^>]+>/g,'');
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function lsGet(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}}
+function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
+function lsRaw(k){try{return localStorage.getItem(k)||sessionStorage.getItem(k)||'';}catch(e){return '';}}
+function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.remove('show'),1800);}
+function speak(txt){
+  try{
+    if(!('speechSynthesis' in window)) return toast('이 기기는 읽어주기를 지원하지 않아요');
+    speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(txt.replace(/\(-.*?\)/g,''));
+    u.lang='en-US';u.rate=0.9;
+    const v=speechSynthesis.getVoices().find(v=>/^en(-|_)US/i.test(v.lang));
+    if(v) u.voice=v;
+    speechSynthesis.speak(u);
+  }catch(e){}
+}
+function norm(s){return String(s).toLowerCase().replace(/[’‘`]/g,"'").replace(/[–—]/g,'-').replace(/[^a-z0-9]/g,'');}
+function fixWhy(why,order){
+  // 선택지를 섞은 문제: 해설 속 ①~⑤ 번호를 학생 화면 번호로 바꾸고, '📌 해석' 목록은 번호순으로 다시 정렬
+  if(!order || order.every((k,j)=>k===j)) return why;
+  let w=String(why).replace(/[①②③④⑤]/g,c=>CIRC[order.indexOf(CIRC.indexOf(c))]);
+  const at=w.indexOf('📌 해석:');
+  if(at>=0){
+    const head=w.slice(0,at+'📌 해석:'.length), tail=w.slice(at+'📌 해석:'.length);
+    const items=tail.match(/[①②③④⑤][^①②③④⑤]*/g);
+    if(items) w=head+' '+items.map(x=>x.trim()).sort((x,y)=>CIRC.indexOf(x[0])-CIRC.indexOf(y[0])).join(' ');
+  }
+  return w;
+}
+function toTop(){window.scrollTo({top:0,behavior:'smooth'});}
+
+let USER={name:'',school:''};
+let P=null;          // 현재 지문
+let S={};            // 현재 지문 학습 상태
+const progKey=()=>'bn_deep_'+EXAM.file+'_'+USER.name;
+
+/* ═════════ 시작 ═════════ */
+function init(){
+  document.title='봄날 퀴즈 | '+EXAM.title;
+  $('#stTitle').textContent=EXAM.title;
+  $('#stSub').textContent=EXAM.sub;
+  const n=lsRaw('bn_name'), sc=lsRaw('bn_school');
+  if(n){USER={name:n,school:sc||'미입력'};enter();}
+  else $('#startScreen').classList.remove('hidden');
+}
+function startApp(){
+  const n=$('#nameInput').value.trim(), sc=$('#schoolInput').value;
+  if(!n) return toast('이름을 입력하세요');
+  if(!sc) return toast('학교를 선택하세요');
+  USER={name:n,school:sc};
+  try{localStorage.setItem('bn_name',n);localStorage.setItem('bn_school',sc);}catch(e){}
+  $('#startScreen').classList.add('hidden');
+  enter();
+}
+function enter(){
+  $('#topBar').classList.remove('hidden');
+  $('#who').textContent='👤 '+USER.name;
+  goHome();
+}
+function setSteps(cur){
+  const order=['word','read','quiz'];
+  const ci=order.indexOf(cur);
+  $('#steps').classList.toggle('hidden',ci<0);
+  document.querySelectorAll('#steps div').forEach((d,i)=>{
+    d.className=i===ci?'on':(i<ci?'done':'');
+  });
+}
+
+/* ═════════ 지문 선택 ═════════ */
+function goHome(){
+  if(S.dirty && !confirm('지금 나가면 이 지문 학습 기록이 저장되지 않아요. 나갈까요?')) return;
+  S={};P=null;
+  $('#backBtn').classList.add('hidden');
+  $('#topTitle').textContent=EXAM.title;
+  setSteps('');
+  const prog=lsGet(progKey(),{});
+  let h=`<div class="card" style="text-align:center">
+    <div class="bh" style="font-size:20px;color:var(--pri)">어떤 지문을 공부할까요?</div>
+    <p class="muted" style="margin-top:4px">한 지문씩 <b>단어 → 한 줄 해석 → 문제</b> 순서로 완전정복! 틀리면 오답노트를 써야 넘어갈 수 있어요.</p>
+  </div><div class="pgrid">`;
+  PASSAGES.forEach(p=>{
+    const g=prog[p.id]||{};
+    const done=g.quiz;
+    h+=`<button class="pcard${done?' done':''}" onclick="openPassage('${p.id}')">
+      <div class="no">${p.id}번</div>
+      <div class="kd">${esc(p.kind)}</div>
+      <div class="tt">${esc(p.title)}</div>
+      <div class="pr"><i class="${g.word?'ok':''}">단어</i><i class="${g.read?'ok':''}">해석</i><i class="${g.quiz?'ok':''}">${g.quiz?'문제 '+g.score+'점':'문제'}</i></div>
+    </button>`;
+  });
+  h+='</div>';
+  $('#main').innerHTML=h;
+  toTop();
+}
+function markProg(key,val){
+  const prog=lsGet(progKey(),{});
+  prog[P.id]=Object.assign(prog[P.id]||{},{[key]:val===undefined?true:val});
+  lsSet(progKey(),prog);
+}
+function openPassage(id){
+  P=PASSAGES.find(p=>p.id===id);
+  S={t0:Date.now(),wrongWords:[],wordFirst:{},notes:[],results:{},dirty:false};
+  $('#backBtn').classList.remove('hidden');
+  $('#topTitle').textContent=P.id+'번 · '+P.kind+' — '+P.title;
+  startWords();
+}
+
+/* ═════════ ① 단어 체크 ═════════ */
+function startWords(){
+  setSteps('word');
+  S.dirty=true;
+  S.wq=shuffle(P.words.map((w,i)=>i));
+  S.wTotal=P.words.length; S.wDone=0; S.wOk=0;
+  S.wPool=[...new Set(PASSAGES.flatMap(p=>p.words.map(w=>w.ko)))];
+  nextWord();
+}
+function nextWord(){
+  if(!S.wq.length) return wordsDone();
+  const i=S.wq[0], w=P.words[i];
+  const same=P.words.map(x=>x.ko).filter(k=>k!==w.ko);
+  const others=S.wPool.filter(k=>k!==w.ko && !same.includes(k));
+  const distract=shuffle(same).slice(0,2).concat(shuffle(others)).filter((v,j,a)=>a.indexOf(v)===j).slice(0,3);
+  const opts=shuffle([w.ko,...distract]);
+  S.wCur={i,opts};
+  const retry=S.wordFirst[i]===false;
+  $('#main').innerHTML=`
+    <div class="bar"><i style="width:${Math.round(S.wDone/S.wTotal*100)}%"></i></div>
+    <div class="card wbox">
+      <div class="wcount">${retry?'<span class="qround">다시 도전</span> ':''}단어 ${S.wDone+1} / ${S.wTotal} · 알맞은 뜻을 고르세요</div>
+      <div style="display:flex;align-items:center;justify-content:center;gap:10px">
+        <div class="wen">${esc(w.en)}</div><button class="say" onclick="speak(${esc(JSON.stringify(w.en))})">🔊</button>
+      </div>
+      <div class="opts">${opts.map((o,k)=>`<button class="opt" onclick="pickWord(${k})"><span class="n">${CIRC[k]}</span><span>${esc(o)}</span></button>`).join('')}</div>
+      <div id="wfb"></div>
+    </div>`;
+}
+function pickWord(k){
+  const {i,opts}=S.wCur, w=P.words[i];
+  const ok=opts[k]===w.ko;
+  const btns=document.querySelectorAll('.opt');
+  btns.forEach((b,j)=>{b.disabled=true;if(opts[j]===w.ko)b.classList.add('right');});
+  if(!ok) btns[k].classList.add('wrong');
+  if(S.wordFirst[i]===undefined){
+    S.wordFirst[i]=ok;
+    if(ok) S.wOk++; else S.wrongWords.push(w.en+'('+w.ko+')');
+  }
+  S.wq.shift();
+  if(ok){S.wDone++;}
+  else {S.wq.push(i);}
+  const tip=w.tip?`<div class="tip">💡 ${esc(w.tip)}</div>`:'';
+  $('#wfb').innerHTML=(ok?`<div class="fb ok"><h4>⭕ 정답!</h4></div>`:`<div class="fb" style="background:var(--redBg);color:var(--red)"><h4>❌ 정답은 "${esc(w.ko)}"</h4><div style="font-size:13px">이 단어는 뒤에 한 번 더 나와요.</div></div>`)
+    +tip+`<button class="btn full" style="margin-top:14px" onclick="nextWord()">다음 →</button>`;
+  if(ok && !w.tip) setTimeout(()=>{if(S.wCur&&S.wCur.i===i&&document.getElementById('wfb'))nextWord();},650);
+}
+function wordsDone(){
+  S.wCur=null;
+  markProg('word');
+  $('#main').innerHTML=`<div class="card" style="text-align:center">
+    <div style="font-size:40px">📖</div>
+    <div class="bh" style="font-size:22px;color:var(--pri);margin:6px 0">단어 체크 완료!</div>
+    <p>처음에 바로 맞힌 단어 <b style="color:var(--pri)">${S.wOk} / ${S.wTotal}</b>개</p>
+    ${S.wrongWords.length?`<div class="tip" style="margin-top:12px"><b>헷갈렸던 단어</b><br>${S.wrongWords.map(esc).join('<br>')}</div>`:'<p class="muted" style="margin-top:6px">완벽해요! 👏</p>'}
+    <button class="btn full" style="margin-top:18px" onclick="startRead()">② 한 줄 해석 읽기 →</button>
+  </div>`;
+  toTop();
+}
+
+/* ═════════ ② 한 줄 해석 ═════════ */
+function hlWords(en){
+  let out=esc(en);
+  const list=[];
+  P.words.forEach(w=>(w.m||[]).forEach(f=>list.push({f,ko:w.ko})));
+  list.sort((a,b)=>b.f.length-a.f.length);
+  const used=[];
+  list.forEach(({f,ko},n)=>{
+    const re=new RegExp('\\b('+f.replace(/[.*+?^${}()|[\]\\]/g,'\\$&').replace(/'/g,"(?:'|&#39;)")+')\\b','i');
+    if(re.test(out)&&!used.includes(f)){
+      out=out.replace(re,m=>`\u0001${n}\u0002${m}\u0003`);used.push(f);
+    }
+  });
+  return out.replace(/\u0001(\d+)\u0002(.*?)\u0003/g,(_,n,m)=>`<span class="kw" onclick="toast(${esc(JSON.stringify(list[n].f+' = '+list[n].ko))})">${m}</span>`);
+}
+function startRead(){
+  setSteps('read');
+  S.cover=S.cover||false;
+  S.readOk=S.readOk||P.sents.map(()=>false);
+  renderRead();
+  toTop();
+}
+function renderRead(){
+  const all=S.readOk.every(Boolean);
+  const cnt=S.readOk.filter(Boolean).length;
+  let h=`<div class="toolbar">
+    <div class="tog"><button class="${S.cover?'':'on'}" onclick="setCover(false)">해석 보이기</button><button class="${S.cover?'on':''}" onclick="setCover(true)">해석 가리기</button></div>
+    <div class="muted">밑줄 단어를 누르면 뜻이 나와요 · <b style="color:var(--pri)">${cnt}/${P.sents.length}</b></div>
+  </div>`;
+  P.sents.forEach((s,i)=>{
+    h+=`<div class="sent${S.readOk[i]?' ok':''}" id="s${i}">
+      <div class="row"><div class="num">${i+1}</div><div class="en">${hlWords(s.en)}</div><button class="say" onclick="speak(P.sents[${i}].en)">🔊</button></div>
+      <div class="ko${S.cover&&!S.readOk[i]?' cover':''}" onclick="this.classList.remove('cover')">${esc(s.ko)}</div>
+      ${s.g?`<div class="gp"><b>문법</b> ${esc(s.g)}</div>`:''}
+      <button class="chk" onclick="toggleRead(${i})">${S.readOk[i]?'✔ 이해 완료':'☐ 이해했어요'}</button>
+    </div>`;
+  });
+  if(P.note) h+=`<div class="muted" style="margin:4px 4px 0;white-space:pre-line">${esc(P.note)}</div>`;
+  h+=`<div class="topic"><div class="lb">🎯 이 글의 주제</div><div class="tx">${esc(P.topic)}</div><div class="ez">🧸 쉽게 말하면… ${esc(P.easy)}</div></div>
+    <button class="btn full" ${all?'':'disabled'} onclick="startQuiz()">${all?'③ 문제 풀러 가기 →':'모든 문장에 "이해했어요"를 눌러야 넘어가요 ('+cnt+'/'+P.sents.length+')'}</button>`;
+  $('#main').innerHTML=h;
+}
+function setCover(v){S.cover=v;renderRead();}
+function toggleRead(i){
+  const y=window.scrollY;
+  const ko=document.querySelector('#s'+i+' .ko');
+  if(!S.readOk[i] && ko && ko.classList.contains('cover')){ko.classList.remove('cover');toast('해석을 확인하고 한 번 더 누르세요');return;}
+  S.readOk[i]=!S.readOk[i];renderRead();window.scrollTo(0,y);
+}
+
+/* ═════════ ③ 문제 ═════════ */
+function startQuiz(){
+  markProg('read');
+  setSteps('quiz');
+  S.round=1;
+  S.qq=P.qs.map((q,i)=>i);
+  S.qPos=0;
+  S.firstOk=0;
+  S.roundWrong=[];
+  showQ();
+}
+function showQ(){
+  if(S.qPos>=S.qq.length) return roundEnd();
+  const qi=S.qq[S.qPos], q=P.qs[qi];
+  const order=q.shuffle?shuffle(q.o.map((_,k)=>k)):q.o.map((_,k)=>k);
+  S.cur={qi,order,answered:false};
+  $('#main').innerHTML=`
+    <div class="bar"><i style="width:${Math.round(S.qPos/S.qq.length*100)}%"></i></div>
+    <div class="card">
+      <div class="qhead"><span class="qtype">${esc(q.t)}</span>${S.round>1?`<span class="qround">틀린 문제 다시 풀기 ${S.round-1}회차</span>`:''}<span class="muted">${S.qPos+1} / ${S.qq.length}</span></div>
+      <div class="qstem">${q.q}</div>
+      ${q.box?`<div class="qbox">${q.box}</div>`:''}
+      <div class="opts">${order.map((k,j)=>`<button class="opt" onclick="pickQ(${j})"><span class="n">${CIRC[j]}</span><span>${esc(q.o[k])}</span></button>`).join('')}</div>
+      <div id="qfb"></div>
+    </div>`;
+  toTop();
+}
+function pickQ(j){
+  if(S.cur.answered) return;
+  S.cur.answered=true;
+  const {qi,order}=S.cur, q=P.qs[qi];
+  const pickedK=order[j], ansK=q.a-1, ansJ=order.indexOf(ansK);
+  const ok=pickedK===ansK;
+  const btns=document.querySelectorAll('.opt');
+  btns.forEach((b,x)=>{b.disabled=true;if(x===ansJ)b.classList.add('right');});
+  if(!ok) btns[j].classList.add('wrong');
+  if(S.round===1){
+    S.results[qi]={ok,my:CIRC[j]+' '+strip(q.o[pickedK]),ans:CIRC[ansJ]+' '+strip(q.o[ansK])};
+    if(ok) S.firstOk++;
+  }
+  if(ok){
+    $('#qfb').innerHTML=`<div class="fb ok"><h4>⭕ 정답이에요!</h4>${fixWhy(q.why,order)}</div>
+      <button class="btn full" style="margin-top:14px" onclick="S.qPos++;showQ()">다음 문제 →</button>`;
+    return;
+  }
+  S.roundWrong.push(qi);
+  S.note={qi,my:CIRC[j],myText:strip(q.o[pickedK]),ans:CIRC[ansJ],ansText:strip(q.o[ansK]),reasons:[],copyOk:false,memo:''};
+  const tr=P.sents.map((s,i)=>`<p><b>${i+1}.</b> ${esc(s.en)}<span class="k">→ ${esc(s.ko)}</span></p>`).join('');
+  $('#qfb').innerHTML=`
+  <div class="note" id="noteBox">
+    <div class="note-h"><span style="font-size:24px">🚨</span><span class="bh">오답노트 써!</span></div>
+    <div class="note-b">
+      <div class="nsec">
+        <div class="lb">✅ 정답과 자세한 해설</div>
+        <div class="expl">내 답 <b style="color:var(--red)">${CIRC[j]}</b> → 정답 <span class="ans">${CIRC[ansJ]} ${esc(strip(q.o[ansK]))}</span><br><br>${fixWhy(q.why,order)}</div>
+      </div>
+      <div class="nsec">
+        <div class="lb">📌 근거 문장과 해석</div>
+        <div class="ev"><div class="e">${esc(q.ev)}</div><div class="k">→ ${esc(q.evKo)}</div></div>
+        <button class="linkbtn" onclick="const f=this.nextElementSibling;f.classList.toggle('hidden');this.textContent=f.classList.contains('hidden')?'📖 전체 해석 펼치기':'📖 전체 해석 접기'">📖 전체 해석 펼치기</button>
+        <div class="full-tr hidden">${tr}</div>
+      </div>
+      <div class="nsec">
+        <div class="lb">1️⃣ 왜 틀렸나요? (여러 개 골라도 돼요)</div>
+        <div class="rs">${REASONS.map((r,k)=>`<button onclick="toggleReason(${k},this)">${r}</button>`).join('')}</div>
+      </div>
+      <div class="nsec">
+        <div class="lb">2️⃣ 근거 문장을 그대로 따라 쓰세요 (복사·붙여넣기 금지)</div>
+        <textarea class="copy" id="copyIn" rows="2" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="위의 파란 영어 문장을 보고 직접 입력" oninput="checkCopy()" onpaste="event.preventDefault();toast('직접 써야 기억에 남아요 ✍️')" ondrop="event.preventDefault()"></textarea>
+        <div class="cstat" id="copyStat">대소문자·문장부호는 조금 달라도 괜찮아요</div>
+      </div>
+      <div class="nsec">
+        <div class="lb">3️⃣ 한 줄 정리 — 다음엔 어떻게 풀까?</div>
+        <textarea class="copy" id="memoIn" rows="2" placeholder="예) miss 뒤에는 -ing! / While은 '~인 반면에' → 앞뒤가 반대 내용" oninput="checkNote()"></textarea>
+        <div class="cstat" id="memoStat">8글자 이상 써 주세요</div>
+      </div>
+      <button class="btn full warn" id="noteSave" disabled onclick="saveNote()">오답노트 저장하고 다음 →</button>
+    </div>
+  </div>`;
+  setTimeout(()=>{const nb=$('#noteBox');if(nb)nb.scrollIntoView({behavior:'smooth',block:'start'});},120);
+}
+function toggleReason(k,btn){
+  const r=S.note.reasons, at=r.indexOf(REASONS[k]);
+  if(at<0) r.push(REASONS[k]); else r.splice(at,1);
+  btn.classList.toggle('on',at<0);
+  checkNote();
+}
+function checkCopy(){
+  const el=$('#copyIn'), st=$('#copyStat');
+  const target=norm(P.qs[S.note.qi].ev), typed=norm(el.value);
+  el.classList.remove('good','bad');st.classList.remove('good','bad');
+  if(!typed){st.textContent='대소문자·문장부호는 조금 달라도 괜찮아요';S.note.copyOk=false;return checkNote();}
+  if(typed===target){
+    S.note.copyOk=true;el.classList.add('good');st.classList.add('good');st.textContent='✔ 완벽하게 따라 썼어요!';
+  }else if(target.startsWith(typed)){
+    S.note.copyOk=false;st.textContent='좋아요, 계속 쓰세요… ('+Math.round(typed.length/target.length*100)+'%)';
+  }else{
+    S.note.copyOk=false;el.classList.add('bad');st.classList.add('bad');
+    let k=0;while(k<typed.length&&typed[k]===target[k])k++;
+    st.textContent='✖ 철자가 다른 곳이 있어요 — 앞에서부터 '+Math.round(k/target.length*100)+'%까지 맞아요';
+  }
+  checkNote();
+}
+function checkNote(){
+  const m=($('#memoIn')||{}).value||'';
+  const mOk=m.replace(/\s/g,'').length>=8;
+  const ms=$('#memoStat');
+  if(ms){ms.classList.toggle('good',mOk);ms.textContent=mOk?'✔ 좋아요':'8글자 이상 써 주세요 ('+m.replace(/\s/g,'').length+'/8)';}
+  S.note.memo=m.trim();
+  const ready=S.note.reasons.length>0 && S.note.copyOk && mOk;
+  const b=$('#noteSave');
+  if(b){b.disabled=!ready;b.textContent=ready?'오답노트 저장하고 다음 →':'1️⃣ 이유 · 2️⃣ 따라쓰기 · 3️⃣ 한 줄 정리를 모두 해야 넘어가요';}
+}
+function saveNote(){
+  const n=S.note, q=P.qs[n.qi];
+  S.notes.push({pid:P.id,type:q.t,round:S.round,my:n.my+' '+n.myText,ans:n.ans+' '+n.ansText,reasons:n.reasons.slice(),memo:n.memo});
+  S.note=null;
+  S.qPos++;showQ();
+}
+function roundEnd(){
+  if(S.roundWrong.length){
+    const w=S.roundWrong.slice();
+    $('#main').innerHTML=`<div class="card" style="text-align:center">
+      <div style="font-size:40px">💪</div>
+      <div class="bh" style="font-size:21px;color:var(--red);margin:6px 0">틀린 문제 ${w.length}개 다시 풀기</div>
+      <p class="muted">오답노트에 쓴 내용을 떠올리면서 다시 풀어 보세요.<br>모두 맞혀야 이 지문이 끝나요!</p>
+      <button class="btn full" style="margin-top:16px" onclick="startRetry()">다시 풀기 →</button>
+    </div>`;
+    S.nextQ=w;
+    toTop();
+    return;
+  }
+  finishPassage();
+}
+function startRetry(){
+  S.round++;
+  S.qq=shuffle(S.nextQ);S.qPos=0;S.roundWrong=[];
+  showQ();
+}
+
+/* ═════════ 결과 · 저장 ═════════ */
+function finishPassage(){
+  const total=P.qs.length;
+  const score=Math.round(S.firstOk/total*100);
+  const el=Math.max(1,Math.round((Date.now()-S.t0)/60000));
+  markProg('quiz');markProg('score',score);
+  S.dirty=false;
+  const lines=[];
+  if(S.wrongWords.length) lines.push('[단어] '+S.wrongWords.join(', '));
+  S.notes.forEach(n=>lines.push(`[${n.pid}번 ${n.type}${n.round>1?' 재도전':''}] 내답 ${n.my.slice(0,2)}→정답 ${n.ans.slice(0,2)} · ${n.reasons.map(r=>r.replace(/^\S+\s/,'')).join(', ')} · "${n.memo}"`));
+  const payload={
+    submittedAt:new Date().toISOString(),
+    studentName:USER.name, school:USER.school,
+    quizType:EXAM.quizType, file:EXAM.file, quizLabel:EXAM.title+' '+P.id+'번',
+    passages:[P.id+'번'],
+    score, correct:S.firstOk, wrong:total-S.firstOk, total,
+    elapsedMin:el,
+    wordTotal:S.wTotal, wordCorrect:S.wOk,
+    rounds:S.round,
+    details:P.qs.map((q,i)=>{const r=S.results[i]||{};return{문제:P.id+'-'+q.t,지문:P.id+'번',유형:q.t,결과:r.ok?'✅정답':'❌오답',내답:r.my||'',정답:r.ans||''};}),
+    wrongNotes:S.notes,
+    wrongSentences:lines.join(' / ')
+  };
+  let saveMsg='기록 저장 중…';
+  (async()=>{
+    let ok=false;
+    try{ if(window._fbSave){ ok=(await window._fbSave(payload))!==false; } }catch(e){ok=false;}
+    const s=document.getElementById('saveMsg');
+    if(s) s.textContent=ok?'✔ 선생님께 기록이 전송됐어요':'⚠ 인터넷이 불안정해요 — 다음에 접속할 때 자동으로 다시 보내요';
+  })();
+
+  const nextP=PASSAGES[PASSAGES.findIndex(p=>p.id===P.id)+1];
+  $('#main').innerHTML=`<div class="card" style="text-align:center">
+      <div class="muted">${P.id}번 · ${esc(P.kind)} 완전정복 완료</div>
+      <div class="big" style="margin-top:8px">${score}<span style="font-size:24px">점</span></div>
+      <div class="muted">처음에 바로 맞힌 문제 기준</div>
+      <div class="stats">
+        <div><b>${S.wOk}/${S.wTotal}</b><span>단어</span></div>
+        <div><b>${S.firstOk}/${total}</b><span>문제</span></div>
+        <div><b>${S.notes.length}</b><span>오답노트</span></div>
+      </div>
+      <div class="muted" id="saveMsg">${saveMsg}</div>
+    </div>
+    ${S.notes.length?`<div class="card"><div class="bh" style="font-size:18px;color:var(--red);margin-bottom:10px">📝 내 오답노트</div><div class="nlist">${S.notes.map(n=>`
+      <div class="ni"><div class="t">${n.pid}번 ${esc(n.type)}${n.round>1?' (재도전)':''}</div>
+      <div>내 답 ${esc(n.my)}<br>정답 <b style="color:var(--green)">${esc(n.ans)}</b></div>
+      <div class="muted">이유: ${n.reasons.map(esc).join(', ')}</div>
+      <div style="margin-top:4px">✍️ ${esc(n.memo)}</div></div>`).join('')}</div></div>`:'<div class="card" style="text-align:center">🎉 한 번도 안 틀렸어요! 오답노트 없음</div>'}
+    <div class="btnrow">
+      ${nextP?`<button class="btn" onclick="openPassage('${nextP.id}')">다음: ${nextP.id}번 →</button>`:''}
+      <button class="btn sub" onclick="goHome()">지문 목록</button>
+      <button class="btn sub" onclick="openPassage('${P.id}')">이 지문 다시</button>
+    </div>`;
+  setSteps('');
+  toTop();
+}
+
+window.addEventListener('beforeunload',e=>{if(S.dirty){e.preventDefault();e.returnValue='';}});
+if('speechSynthesis' in window){try{speechSynthesis.getVoices();}catch(e){}}
+init();
+</script>
+</body>
+</html>

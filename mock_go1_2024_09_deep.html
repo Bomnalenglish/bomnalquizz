@@ -1,0 +1,2248 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>봄날 퀴즈 | 고1 24년 9월 지문 완전정복</title>
+<script type="module" src="bn_tracker.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Black+Han+Sans&display=swap');
+:root{
+  --bg:#f5efe6; --card:#fffdf9; --ink:#2a2a2a; --soft:#7a7570; --line:#e4dccf;
+  --pri:#4a6741; --pri2:#6b8f60; --priBg:#eaf0e6;
+  --acc:#c47f3b; --accBg:#fbf0e3;
+  --red:#c0392b; --redBg:#fbeceb; --green:#2e7d32; --greenBg:#e8f3e9;
+  --blue:#3d6a8f; --blueBg:#e8eff5;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;line-height:1.6}
+.hidden{display:none!important}
+button{font-family:inherit;cursor:pointer}
+.wrap{max-width:720px;margin:0 auto;padding:16px 16px 60px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;margin-bottom:14px;box-shadow:0 2px 10px rgba(80,60,30,.05)}
+h1,.bh{font-family:'Black Han Sans',sans-serif;font-weight:400;letter-spacing:.3px}
+.btn{border:none;border-radius:12px;padding:13px 20px;font-size:15px;font-weight:700;background:var(--pri);color:#fff;transition:transform .1s,opacity .15s}
+.btn:active{transform:scale(.97)}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+.btn.sub{background:#fff;color:var(--pri);border:2px solid var(--pri)}
+.btn.warn{background:var(--red)}
+.btn.full{width:100%}
+.muted{color:var(--soft);font-size:13px}
+.chip{display:inline-block;font-size:11.5px;font-weight:700;border-radius:20px;padding:2px 10px;background:var(--priBg);color:var(--pri)}
+
+/* 시작 */
+#startScreen .card{max-width:440px;margin:40px auto;text-align:center}
+#startScreen h1{font-size:24px;color:var(--pri);margin-bottom:4px}
+.inp{width:100%;padding:12px 14px;border:2px solid var(--line);border-radius:12px;font-size:15px;font-family:inherit;margin-bottom:10px;outline:none;background:#fff}
+.inp:focus{border-color:var(--pri)}
+.flow{display:flex;justify-content:center;gap:6px;flex-wrap:wrap;margin:16px 0 20px}
+.flow span{background:var(--priBg);color:var(--pri);border-radius:10px;padding:6px 10px;font-size:12.5px;font-weight:700}
+
+/* 헤더 */
+.top{position:sticky;top:0;z-index:20;background:rgba(245,239,230,.94);backdrop-filter:blur(6px);border-bottom:1px solid var(--line)}
+.top-in{max-width:720px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:10px}
+.top .back{background:#fff;border:1px solid var(--line);border-radius:10px;padding:6px 10px;font-size:13px;font-weight:700;color:var(--ink)}
+.top .ttl{font-weight:900;font-size:15px;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top .who{font-size:12px;color:var(--soft);white-space:nowrap}
+.steps{max-width:720px;margin:0 auto;padding:0 16px 10px;display:flex;gap:6px}
+.steps div{flex:1;text-align:center;font-size:12px;font-weight:700;padding:6px 0;border-radius:10px;background:#fff;color:#b8b0a5;border:1px solid var(--line)}
+.steps div.on{background:var(--pri);color:#fff;border-color:var(--pri)}
+.steps div.done{background:var(--priBg);color:var(--pri);border-color:var(--priBg)}
+
+/* 지문 선택 */
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.pcard{background:var(--card);border:2px solid var(--line);border-radius:16px;padding:16px 12px;text-align:left;transition:border-color .15s,transform .15s}
+.pcard:hover{border-color:var(--pri);transform:translateY(-2px)}
+.pcard .no{font-family:'Black Han Sans',sans-serif;font-size:28px;color:var(--pri);line-height:1}
+.pcard .kd{font-size:12px;color:var(--acc);font-weight:700;margin:4px 0 2px}
+.pcard .tt{font-size:13px;font-weight:700;color:var(--ink);min-height:40px}
+.pcard .pr{display:flex;gap:4px;margin-top:10px;flex-wrap:wrap}
+.pcard .pr i{font-style:normal;font-size:11px;padding:1px 7px;border-radius:8px;background:#f0ebe3;color:#b8b0a5;font-weight:700}
+.pcard .pr i.ok{background:var(--greenBg);color:var(--green)}
+.pcard.done{border-color:var(--pri2);background:#fbfdf9}
+
+/* 단어 */
+.wbox{text-align:center;padding:28px 18px}
+.wen{font-size:30px;font-weight:900;letter-spacing:.3px;word-break:break-word}
+.wcount{font-size:13px;color:var(--soft);margin-bottom:10px}
+.opts{display:flex;flex-direction:column;gap:9px;margin-top:18px}
+.opt{text-align:left;background:#fff;border:2px solid var(--line);border-radius:12px;padding:12px 14px;font-size:15px;color:var(--ink);line-height:1.5;display:flex;gap:10px;align-items:flex-start}
+.opt .n{font-weight:900;color:var(--pri);flex:none}
+.opt:hover:not(:disabled){border-color:var(--pri2)}
+.opt.right{border-color:var(--green);background:var(--greenBg)}
+.opt.wrong{border-color:var(--red);background:var(--redBg)}
+.opt:disabled{cursor:default}
+.tip{margin-top:14px;background:var(--accBg);border-radius:12px;padding:10px 14px;font-size:13.5px;text-align:left;color:#7a4a1a}
+.say{background:none;border:1px solid var(--line);border-radius:50%;width:34px;height:34px;font-size:15px;vertical-align:middle;flex:none;background:#fff}
+.bar{height:6px;background:#ebe4d8;border-radius:6px;overflow:hidden;margin-bottom:14px}
+.bar i{display:block;height:100%;background:var(--pri2);width:0;transition:width .3s}
+
+/* 해석 */
+.toolbar{display:flex;gap:8px;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap}
+.tog{display:flex;background:#fff;border:1px solid var(--line);border-radius:12px;padding:3px}
+.tog button{border:none;background:none;padding:6px 12px;border-radius:9px;font-size:13px;font-weight:700;color:var(--soft)}
+.tog button.on{background:var(--pri);color:#fff}
+.sent{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px;margin-bottom:10px;transition:border-color .2s,background .2s}
+.sent.ok{border-color:#b9d1b1;background:#fafcf8}
+.sent .row{display:flex;gap:10px;align-items:flex-start}
+.sent .num{flex:none;width:26px;height:26px;border-radius:50%;background:var(--priBg);color:var(--pri);font-weight:900;font-size:13px;display:flex;align-items:center;justify-content:center;margin-top:2px}
+.sent .en{font-size:16.5px;font-weight:500;line-height:1.65;flex:1}
+.kw{border-bottom:2px solid #e3c79f;cursor:pointer;font-weight:700}
+.sent .ko{margin:8px 0 0 36px;font-size:15px;color:#3f5a37;background:var(--priBg);border-radius:10px;padding:8px 12px;line-height:1.6}
+.sent .ko.cover{color:transparent;background:repeating-linear-gradient(45deg,#e7e0d4,#e7e0d4 8px,#efe9df 8px,#efe9df 16px);cursor:pointer;position:relative;user-select:none}
+.sent .ko.cover::after{content:'👆 눌러서 해석 보기';position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);text-align:center;color:#8b7f6f;font-size:13px;font-weight:700}
+.sent .gp{margin:8px 0 0 36px;font-size:13px;color:#6b4a1f;background:var(--accBg);border-radius:10px;padding:7px 12px}
+.sent .gp b{color:var(--acc)}
+.sent .chk{margin:10px 0 0 36px;border:2px solid var(--line);background:#fff;border-radius:10px;padding:5px 12px;font-size:13px;font-weight:700;color:var(--soft)}
+.sent.ok .chk{border-color:var(--green);background:var(--greenBg);color:var(--green)}
+.topic{background:linear-gradient(135deg,#4a6741,#6b8f60);color:#fff;border-radius:18px;padding:18px 20px;margin:16px 0}
+.topic .lb{font-size:12px;font-weight:700;opacity:.85;margin-bottom:4px}
+.topic .tx{font-size:16px;font-weight:700;line-height:1.55}
+.topic .ez{margin-top:10px;background:rgba(255,255,255,.16);border-radius:12px;padding:10px 12px;font-size:14.5px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#2a2a2a;color:#fff;padding:10px 16px;border-radius:12px;font-size:14px;z-index:99;max-width:90vw;text-align:center;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.show{opacity:1}
+
+/* 문제 */
+.qhead{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap}
+.qtype{font-size:12px;font-weight:900;border-radius:8px;padding:2px 10px;background:var(--blueBg);color:var(--blue)}
+.qround{font-size:12px;font-weight:900;border-radius:8px;padding:2px 10px;background:var(--redBg);color:var(--red)}
+.qstem{font-size:16px;font-weight:700;line-height:1.55}
+.qbox{margin-top:12px;border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;font-size:14.5px;line-height:1.75;background:#fff}
+.qbox b{color:var(--blue)}
+.qbox u{text-decoration-thickness:2px;text-underline-offset:3px}
+.fb{margin-top:14px;border-radius:14px;padding:12px 14px;font-size:14.5px;line-height:1.7}
+.fb.ok{background:var(--greenBg);color:#1f5a23}
+.fb h4{font-size:15px;margin-bottom:4px}
+
+/* 오답노트 */
+.note{margin-top:16px;border:3px solid var(--red);border-radius:18px;overflow:hidden;background:#fff}
+.note-h{background:var(--red);color:#fff;padding:12px 16px;display:flex;align-items:center;gap:8px}
+.note-h .bh{font-size:20px}
+.note-b{padding:14px 16px}
+.nsec{margin-bottom:16px}
+.nsec>.lb{font-size:13px;font-weight:900;color:var(--red);margin-bottom:6px}
+.expl{background:#fff8f0;border-radius:12px;padding:10px 14px;font-size:14.5px;line-height:1.75}
+.expl b{color:#a3471b}
+.ans{font-weight:900;color:var(--green)}
+.ev{background:var(--blueBg);border-radius:12px;padding:10px 14px}
+.ev .e{font-size:15.5px;font-weight:700;color:#1e3d57;line-height:1.6}
+.ev .k{font-size:14px;color:#3d5a73;margin-top:4px}
+.rs{display:flex;flex-wrap:wrap;gap:6px}
+.rs button{border:2px solid var(--line);background:#fff;border-radius:20px;padding:6px 12px;font-size:13.5px;font-weight:700;color:var(--ink)}
+.rs button.on{border-color:var(--red);background:var(--redBg);color:var(--red)}
+.copy{width:100%;padding:11px 12px;border:2px solid var(--line);border-radius:12px;font-size:15px;font-family:inherit;outline:none;resize:vertical;min-height:70px;line-height:1.5}
+.copy.good{border-color:var(--green);background:#f6fbf6}
+.copy.bad{border-color:#e2a39b}
+.cstat{font-size:12.5px;margin-top:4px;color:var(--soft)}
+.cstat.good{color:var(--green);font-weight:700}
+.cstat.bad{color:var(--red);font-weight:700}
+.full-tr{margin-top:8px;border-top:1px dashed var(--line);padding-top:8px}
+.full-tr p{font-size:13.5px;margin-bottom:8px}
+.full-tr p .k{display:block;color:#3f5a37}
+.linkbtn{background:none;border:none;color:var(--blue);font-weight:700;font-size:13.5px;padding:4px 0;text-decoration:underline}
+
+/* 결과 */
+.big{font-family:'Black Han Sans',sans-serif;font-size:54px;color:var(--pri);line-height:1}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:16px 0}
+.stats div{background:var(--priBg);border-radius:12px;padding:10px 4px;text-align:center}
+.stats b{display:block;font-size:20px;color:var(--pri)}
+.stats span{font-size:12px;color:var(--soft)}
+.nlist .ni{border-left:4px solid var(--red);background:#fff;border-radius:10px;padding:10px 12px;margin-bottom:8px;font-size:13.5px}
+.nlist .ni .t{font-weight:900;color:var(--red)}
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.btnrow .btn{flex:1;min-width:140px}
+@media(max-width:480px){
+  .wen{font-size:26px}
+  .sent .en{font-size:16px}
+  .sent .ko,.sent .gp,.sent .chk{margin-left:0}
+  .stats b{font-size:18px}
+}
+@media print{.top,.steps,.btnrow,.btn{display:none!important}body{background:#fff}}
+</style>
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getFirestore,collection,addDoc,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+const cfg={apiKey:"AIzaSyCxS524S8KAaF87DomPtl9sJdF-eqes404",authDomain:"bomnalvaca.firebaseapp.com",projectId:"bomnalvaca",storageBucket:"bomnalvaca.firebasestorage.app",messagingSenderId:"115868052300",appId:"1:115868052300:web:765c08867b6f1ce0987de9"};
+const app=initializeApp(cfg);
+const db=getFirestore(app);
+window._fbSave=async function(data){
+  await addDoc(collection(db,'quiz_results'),{...data,timestamp:serverTimestamp()});
+};
+</script>
+</head>
+<body>
+
+<!-- 시작 -->
+<div id="startScreen" class="wrap hidden">
+  <div class="card">
+    <div class="chip" style="margin-bottom:10px">봄날 ENGLISH</div>
+    <h1 id="stTitle"></h1>
+    <p class="muted" id="stSub"></p>
+    <div class="flow"><span>① 단어 체크</span><span>② 한 줄 해석</span><span>③ 문제 풀기</span><span>🚨 오답노트</span></div>
+    <input class="inp" id="nameInput" placeholder="이름" autocomplete="off">
+    <select class="inp" id="schoolInput">
+      <option value="">학교 선택</option>
+      <option>종촌고</option><option>고운고</option><option>대성고</option><option>기타</option>
+    </select>
+    <button class="btn full" onclick="startApp()">시작하기</button>
+  </div>
+</div>
+
+<!-- 상단바 -->
+<div id="topBar" class="top hidden">
+  <div class="top-in">
+    <button class="back" id="backBtn" onclick="goHome()">← 지문</button>
+    <div class="ttl" id="topTitle"></div>
+    <div class="who" id="who"></div>
+  </div>
+  <div class="steps" id="steps">
+    <div data-s="word">① 단어</div><div data-s="read">② 해석</div><div data-s="quiz">③ 문제</div>
+  </div>
+</div>
+
+<div class="wrap" id="main"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const EXAM = {
+  "file": "mock_go1_2024_09_deep",
+  "title": "고1 24년 9월 · 지문 완전정복",
+  "sub": "단어 체크 → 한 줄 해석 → 문제 풀기 → 오답노트",
+  "quizType": "고1_24년9월_지문완전정복_독해"
+};
+
+const PASSAGES = [
+/* ───────── 20번 ───────── */
+{
+ "id": "20",
+ "kind": "주장",
+ "title": "우리 아이 자랑, 조금만 줄여요",
+ "words": [
+  {
+   "en": "gifted",
+   "ko": "재능이 뛰어난",
+   "m": [
+    "gifted"
+   ],
+   "tip": "gift(선물, 재능) + -ed → 재능을 선물받은 = 영재의"
+  },
+  {
+   "en": "be aware of",
+   "ko": "~을 알고 있다",
+   "m": [
+    "be aware of"
+   ]
+  },
+  {
+   "en": "trap",
+   "ko": "함정",
+   "m": [
+    "trap"
+   ]
+  },
+  {
+   "en": "proud",
+   "ko": "자랑스러워하는",
+   "m": [
+    "proud"
+   ],
+   "tip": "명사형 pride(자부심)"
+  },
+  {
+   "en": "nonstop",
+   "ko": "쉬지 않고",
+   "m": [
+    "nonstop"
+   ]
+  },
+  {
+   "en": "remarkable",
+   "ko": "놀라운, 주목할 만한",
+   "m": [
+    "remarkable"
+   ],
+   "tip": "remark(주목하다) + -able"
+  },
+  {
+   "en": "stressful",
+   "ko": "스트레스를 주는",
+   "m": [
+    "stressful"
+   ],
+   "tip": "반대 느낌: relaxing(마음을 편하게 하는)"
+  },
+  {
+   "en": "limit",
+   "ko": "제한하다, 줄이다",
+   "m": [
+    "limit"
+   ],
+   "tip": "limit A to B = A를 B로 한정하다 / 반대말 expand(넓히다)"
+  },
+  {
+   "en": "brag",
+   "ko": "자랑하다, 떠벌리다",
+   "m": [
+    "bragging"
+   ]
+  },
+  {
+   "en": "pressured",
+   "ko": "부담을 느끼는",
+   "m": [
+    "pressured"
+   ],
+   "tip": "pressure(압박) → feel pressured(압박감을 느끼다)"
+  },
+  {
+   "en": "show off",
+   "ko": "뽐내다",
+   "m": [
+    "show them off"
+   ],
+   "tip": "대명사 목적어는 가운데! show them off ⭕ / show off them ❌"
+  },
+  {
+   "en": "expectation",
+   "ko": "기대",
+   "m": [
+    "expectations"
+   ]
+  },
+  {
+   "en": "live up to",
+   "ko": "(기대)에 부응하다",
+   "m": [
+    "live up to"
+   ]
+  },
+  {
+   "en": "achievement",
+   "ko": "성취, 업적",
+   "m": [
+    "achievements"
+   ],
+   "tip": "동사 achieve(이루다)"
+  },
+  {
+   "en": "end up with",
+   "ko": "결국 ~을 갖게 되다",
+   "m": [
+    "end up with"
+   ]
+  },
+  {
+   "en": "perfectionist",
+   "ko": "완벽주의자",
+   "m": [
+    "perfectionist"
+   ]
+  }
+ ],
+ "sents": [
+  {
+   "en": "As the parent of a gifted child, you need to be aware of a certain common parent trap.",
+   "ko": "재능이 뛰어난 아이의 부모라면, 부모들이 흔히 빠지는 함정 하나를 꼭 알고 있어야 해요.",
+   "g": "as = ~로서(자격) · be aware of = ~을 알고 있다 · need to V = ~해야 한다"
+  },
+  {
+   "en": "Of course you are a proud parent, and you should be.",
+   "ko": "물론 여러분은 아이를 자랑스러워하는 부모이고, 그러는 게 당연해요.",
+   "g": "you should be 뒤에 a proud parent가 생략됨 (반복 피하기)"
+  },
+  {
+   "en": "While it is very easy to talk nonstop about your little genius and his or her remarkable behavior, this can be very stressful on your child.",
+   "ko": "여러분의 꼬마 천재와 그 아이의 놀라운 행동을 쉬지 않고 자랑하기는 아주 쉬워요. 하지만 이건 아이에게 큰 스트레스가 될 수 있어요.",
+   "g": "while = ~이지만(양보) · it은 가주어, 진짜 주어는 to talk ~ · this = 쉬지 않고 아이 자랑을 하는 것"
+  },
+  {
+   "en": "It is extremely important to limit your bragging behavior to your very close friends, or your parents.",
+   "ko": "그러니 아이 자랑은 아주 친한 친구나 여러분의 부모님께만 하도록 줄이는 게 정말 중요해요.",
+   "g": "It(가주어) is important to V(진주어) · limit A to B = A를 B로 한정하다"
+  },
+  {
+   "en": "Gifted children feel pressured when their parents show them off too much.",
+   "ko": "재능 있는 아이들은 부모가 자기를 너무 많이 자랑하면 부담을 느껴요.",
+   "g": "feel pressured: 아이가 압박을 \"받는\" 쪽이므로 과거분사 · show off의 목적어가 대명사면 가운데(show them off)"
+  },
+  {
+   "en": "This behavior creates expectations that they may not be able to live up to, and also creates a false sense of self for your child.",
+   "ko": "이런 행동은 아이가 채우지 못할 수도 있는 기대를 만들어요. 또 아이가 자기 자신을 진짜와 다르게 생각하게 만들어요.",
+   "g": "that = 목적격 관계대명사(선행사 expectations, live up to의 목적어가 빠짐) · live up to = (기대)에 부응하다 · creates ~ and also creates 병렬 (주어 This behavior → 단수)"
+  },
+  {
+   "en": "You want your child to be who they are, not who they seem to be as defined by their incredible achievements.",
+   "ko": "여러분은 아이가 대단한 성과로 만들어진 \"겉모습\"이 아니라, 있는 그대로의 자기 모습으로 살기를 바라잖아요.",
+   "g": "want + 목적어 + to V = ~가 …하기를 원하다 · who they are = 그들 본래의 모습(명사절) · A, not B = B가 아니라 A"
+  },
+  {
+   "en": "If not, you could end up with a driven perfectionist child or perhaps a drop-out, or worse.",
+   "ko": "그렇지 않으면, 아이가 무언가에 쫓기는 완벽주의자가 되거나, 어쩌면 학교를 그만두거나, 더 나쁜 일이 생길 수도 있어요.",
+   "g": "If not = 그렇지 않으면 · end up with = 결국 ~을 갖게 되다 · could = ~할 수도 있다"
+  }
+ ],
+ "topic": "영재 자녀를 지나치게 자랑하면 아이가 부담을 느끼므로, 자랑을 줄이고 아이가 있는 그대로의 모습이 되게 해야 한다.",
+ "easy": "부모가 아이 자랑을 너무 많이 하면 아이는 \"계속 잘해야 해!\" 하는 부담을 느껴요. 그러니 자랑은 조금만 하고, 아이가 있는 그대로 지내게 해 주세요!",
+ "qs": [
+  {
+   "t": "주장",
+   "q": "다음 글에서 필자가 주장하는 바로 가장 적절한 것은?",
+   "shuffle": true,
+   "o": [
+    "재능 있는 아이의 성취를 주변에 널리 알려 자신감을 키워 주어야 한다.",
+    "재능 있는 아이에게는 또래보다 더 높은 목표를 세워 주어야 한다.",
+    "자녀의 친구 관계에 부모가 지나치게 간섭해서는 안 된다.",
+    "영재 자녀에 대한 자랑을 자제하여 아이가 있는 그대로의 모습이 되게 해야 한다.",
+    "아이가 실패했을 때는 꾸짖기보다 격려해 주어야 한다."
+   ],
+   "a": 4,
+   "why": "필자는 아이 자랑을 너무 많이 하면 아이가 <b>부담(pressured)</b>을 느끼고 <b>잘못된 자아상(a false sense of self)</b>이 생긴다고 해요. 그래서 \"자랑은 아주 가까운 사람에게만 하라(limit your bragging behavior)\"고 하고, 아이가 <b>있는 그대로의 모습(who they are)</b>이 되기를 바라야 한다고 말하죠.<br>① 널리 자랑하라는 건 정반대예요.<br>② 더 높은 목표는 오히려 부담을 키우는 쪽이고, 글에 나오지 않아요.<br>③ 친구 관계 간섭, ⑤ 실패했을 때의 격려는 글에서 다루지 않았어요.",
+   "ev": "It is extremely important to limit your bragging behavior to your very close friends, or your parents.",
+   "evKo": "여러분의 자랑하는 행동을 아주 가까운 친구나 여러분의 부모님에게로 제한하는 것이 매우 중요하다."
+  },
+  {
+   "t": "어휘",
+   "q": "(A), (B), (C)의 각 네모 안에서 문맥에 맞는 낱말로 가장 적절한 것은?",
+   "box": "While it is very easy to talk nonstop about your little genius and his or her remarkable behavior, this can be very <b>(A) [relaxing / stressful]</b> on your child. It is extremely important to <b>(B) [limit / expand]</b> your bragging behavior to your very close friends, or your parents. Gifted children feel <b>(C) [pressured / relieved]</b> when their parents show them off too much.",
+   "o": [
+    "relaxing — limit — pressured",
+    "relaxing — expand — relieved",
+    "stressful — limit — pressured",
+    "stressful — expand — pressured",
+    "stressful — limit — relieved"
+   ],
+   "a": 3,
+   "why": "(A) While(~이지만)로 시작하니 앞뒤가 반대 흐름이에요. 자랑하기는 쉽지만 → 아이에게는 <b>스트레스를 주는(stressful)</b> 일. relaxing은 \"마음을 편하게 하는\"이라 흐름이 안 맞아요.<br>(B) 자랑이 아이에게 해로우니, 자랑은 가까운 사람에게만 하도록 <b>제한해야(limit)</b> 해요. expand는 \"넓히다\"라서 반대예요. 게다가 뒤의 to your very close friends(아주 친한 친구에게로)와도 limit가 잘 어울려요.<br>(C) 부모가 너무 자랑하면 아이는 <b>부담을 느껴요(pressured)</b>. 바로 뒤에 \"기대에 부응하지 못할 수도 있다\"는 내용이 이어지죠. relieved는 \"안심한\"이라 반대예요.",
+   "ev": "Gifted children feel pressured when their parents show them off too much.",
+   "evKo": "재능 있는 아이들은 부모가 그들을 너무 많이 자랑할 때 압박감을 느낀다."
+  },
+  {
+   "t": "어법",
+   "q": "(A), (B), (C)의 각 네모 안에서 어법에 맞는 표현으로 가장 적절한 것은?",
+   "box": "Gifted children feel <b>(A) [pressuring / pressured]</b> when their parents show them off too much. This behavior creates expectations <b>(B) [that / what]</b> they may not be able to live up to, and also creates a false sense of self for your child. You want your child <b>(C) [be / to be]</b> who they are, not who they seem to be as defined by their incredible achievements.",
+   "o": [
+    "pressuring — that — to be",
+    "pressuring — what — be",
+    "pressured — what — to be",
+    "pressured — that — be",
+    "pressured — that — to be"
+   ],
+   "a": 5,
+   "why": "(A) 아이들이 압박을 \"주는\" 게 아니라 \"받는\" 거예요 → 과거분사 <b>pressured</b>. (감정을 느끼는 사람 주어 + feel + p.p.)<br>(B) 앞에 선행사 expectations가 있고, live up to 뒤에 목적어가 빠져 있어요 → 목적격 관계대명사 <b>that</b>. what은 선행사를 이미 품고 있어서 앞에 명사가 있으면 쓸 수 없어요.<br>(C) want + 목적어 + <b>to V</b> (~가 …하기를 원하다). want는 목적격 보어로 동사원형을 쓰지 않아요.",
+   "ev": "You want your child to be who they are",
+   "evKo": "여러분은 여러분의 아이가 있는 그대로의 자신이 되기를 원한다"
+  },
+  {
+   "t": "내용일치",
+   "q": "다음 글의 내용과 일치하는 것은?",
+   "shuffle": true,
+   "o": [
+    "필자는 부모가 자녀를 자랑스러워해서는 안 된다고 말한다.",
+    "자녀 자랑은 아주 친한 친구나 자신의 부모에게만 하는 것이 좋다.",
+    "재능 있는 아이들은 부모가 자신을 자랑할 때 자신감을 얻는다.",
+    "부모의 지나친 자랑은 아이에게 정확한 자아상을 심어 준다.",
+    "부모는 아이가 뛰어난 성취로 정의되는 모습이 되기를 바라야 한다."
+   ],
+   "a": 2,
+   "why": "본문에 \"자랑하는 행동을 <b>아주 친한 친구나 여러분의 부모님</b>에게로 제한하라\"는 말이 그대로 나와요.<br>① \"you should be(자랑스러워해도 된다)\"라고 했어요.<br>③ 아이들은 자신감이 아니라 <b>부담(pressured)</b>을 느껴요.<br>④ 정확한 자아상이 아니라 <b>잘못된(false)</b> 자아상이 생겨요.<br>⑤ 성취로 정의되는 모습이 <b>아니라(not)</b> 있는 그대로의 모습이 되기를 바라야 해요.",
+   "ev": "It is extremely important to limit your bragging behavior to your very close friends, or your parents.",
+   "evKo": "여러분의 자랑하는 행동을 아주 가까운 친구나 여러분의 부모님에게로 제한하는 것이 매우 중요하다."
+  },
+  {
+   "t": "순서",
+   "q": "주어진 글 다음에 이어질 글의 순서로 가장 적절한 것은?",
+   "box": "As the parent of a gifted child, you need to be aware of a certain common parent trap. Of course you are a proud parent, and you should be.<br><br><b>(A)</b> It is extremely important to limit your bragging behavior to your very close friends, or your parents. Gifted children feel pressured when their parents show them off too much.<br><br><b>(B)</b> This behavior creates expectations that they may not be able to live up to, and also creates a false sense of self for your child. You want your child to be who they are, not who they seem to be as defined by their incredible achievements. If not, you could end up with a driven perfectionist child or perhaps a drop-out, or worse.<br><br><b>(C)</b> While it is very easy to talk nonstop about your little genius and his or her remarkable behavior, this can be very stressful on your child.",
+   "o": [
+    "(A) - (C) - (B)",
+    "(B) - (A) - (C)",
+    "(B) - (C) - (A)",
+    "(C) - (A) - (B)",
+    "(C) - (B) - (A)"
+   ],
+   "a": 4,
+   "why": "① 주어진 글: 부모가 빠지기 쉬운 <b>함정(trap)</b>이 있다. 물론 자랑스러워해도 된다.<br>② <b>(C)</b> \"While(~이지만)\" 아이 자랑을 늘어놓기는 쉽지만 아이에게 스트레스가 된다 → 함정의 정체를 밝혀요.<br>③ <b>(A)</b> (C)의 \"쉬지 않고 자랑하기\"를 <b>your bragging behavior</b>로 받아, 자랑을 줄이라고 해요. 이어서 부모가 자랑하면(show them off) 아이가 부담을 느낀다고 이유를 말해요.<br>④ <b>(B)</b> <b>This behavior</b>(= 아이를 자랑하는 행동)가 부담스러운 기대와 잘못된 자아를 만든다 → 아이가 <b>있는 그대로의 모습</b>이 되길 바라야 하고, <b>If not</b>(그렇지 않으면) 나쁜 결과가 생긴다는 마무리.<br>(A)는 \"your bragging behavior\"가 무엇인지 먼저 나와야 하고, (B)의 This behavior는 (A) 끝의 \"show them off\"를 가리키므로 (C) → (A) → (B) 순서예요.<br>👉 연결고리: <b>While ~ this</b>(C) · <b>your bragging behavior</b>(A) · <b>This behavior</b>(B)",
+   "ev": "This behavior creates expectations that they may not be able to live up to",
+   "evKo": "이러한 행동은 그들이 부응하지 못할 수도 있는 기대를 만든다"
+  },
+  {
+   "t": "빈칸",
+   "q": "다음 빈칸에 들어갈 말로 가장 적절한 것은?",
+   "shuffle": true,
+   "box": "Gifted children feel pressured when their parents show them off too much. This behavior creates expectations that they may not be able to live up to, and also creates a false sense of self for your child. You want your child to be <b>__________</b>, not who they seem to be as defined by their incredible achievements.",
+   "o": [
+    "the best student in their class",
+    "what their parents expect",
+    "who they are",
+    "famous for their talents",
+    "more perfect than others"
+   ],
+   "a": 3,
+   "why": "빈칸 뒤에 \"not who they seem to be(겉으로 보이는 모습이 아니라)\"가 있어요. 그러니 빈칸에는 그 반대인 <b>진짜 자기 모습(who they are)</b>이 들어가야 해요. 앞에서 \"잘못된 자아(a false sense of self)\"가 문제라고 한 것과도 딱 맞죠.<br>① 반에서 1등, ② 부모가 기대하는 모습, ④ 재능으로 유명한 모습, ⑤ 남보다 완벽한 모습은 모두 필자가 걱정하는 \"부담스러운 기대\"예요.",
+   "ev": "You want your child to be who they are, not who they seem to be",
+   "evKo": "여러분은 아이가 겉으로 보이는 모습이 아니라 있는 그대로의 모습이 되기를 원한다"
+  }
+ ]
+},
+/* ───────── 22번 ───────── */
+{
+ "id": "22",
+ "kind": "요지",
+ "title": "감정은 생존을 위한 프로그램",
+ "words": [
+  {
+   "en": "emotion",
+   "ko": "감정",
+   "m": [
+    "emotions",
+    "emotion"
+   ]
+  },
+  {
+   "en": "contribute to",
+   "ko": "~에 기여하다",
+   "m": [
+    "contributed to"
+   ],
+   "tip": "to는 전치사! contribute to + 명사/동명사"
+  },
+  {
+   "en": "survival",
+   "ko": "생존",
+   "m": [
+    "survival"
+   ],
+   "tip": "동사 survive(살아남다)"
+  },
+  {
+   "en": "species",
+   "ko": "(생물의) 종",
+   "m": [
+    "species"
+   ],
+   "tip": "단수와 복수 모양이 같아요: a species / two species"
+  },
+  {
+   "en": "scare off",
+   "ko": "겁주어 쫓아내다",
+   "m": [
+    "scare off"
+   ]
+  },
+  {
+   "en": "threat",
+   "ko": "위협",
+   "m": [
+    "threats",
+    "threat"
+   ],
+   "tip": "형용사 threatening(위협적인)"
+  },
+  {
+   "en": "bond with",
+   "ko": "~와 유대를 맺다",
+   "m": [
+    "bond with"
+   ]
+  },
+  {
+   "en": "evolutionary",
+   "ko": "진화의",
+   "m": [
+    "evolutionary"
+   ],
+   "tip": "evolve(진화하다) → evolution(진화) → evolutionary(진화의)"
+  },
+  {
+   "en": "perspective",
+   "ko": "관점",
+   "m": [
+    "perspective"
+   ]
+  },
+  {
+   "en": "trigger",
+   "ko": "작동시키다, 유발하다",
+   "m": [
+    "triggered"
+   ]
+  },
+  {
+   "en": "perception",
+   "ko": "지각, 인식",
+   "m": [
+    "perception"
+   ],
+   "tip": "형용사 perceptual(지각의)"
+  },
+  {
+   "en": "attentive",
+   "ko": "주의를 기울이는",
+   "m": [
+    "attentive"
+   ],
+   "tip": "반대말 careless(부주의한)"
+  },
+  {
+   "en": "stimuli",
+   "ko": "자극들",
+   "m": [
+    "stimuli"
+   ],
+   "tip": "단수형은 stimulus"
+  },
+  {
+   "en": "regardless of",
+   "ko": "~와 상관없이",
+   "m": [
+    "Regardless of"
+   ]
+  },
+  {
+   "en": "possess",
+   "ko": "가지다, 소유하다",
+   "m": [
+    "possess"
+   ]
+  },
+  {
+   "en": "adapt",
+   "ko": "적응하다",
+   "m": [
+    "adapt"
+   ],
+   "tip": "adopt(채택하다, 입양하다)와 헷갈리지 않기!"
+  }
+ ],
+ "sents": [
+  {
+   "en": "Our emotions are thought to exist because they have contributed to our survival as a species.",
+   "ko": "우리에게 감정이 있는 건, 감정이 우리 인류가 살아남는 데 도움을 줬기 때문이라고 여겨져요.",
+   "g": "be thought to V = ~한다고 여겨지다 · contribute to = ~에 기여하다 (to는 전치사) · as = ~로서"
+  },
+  {
+   "en": "Fear has helped us avoid dangers, expressing anger helps us scare off threats, and expressing positive emotions helps us bond with others.",
+   "ko": "두려움은 우리가 위험을 피하도록 도와 왔어요. 화를 내면 위협을 겁주어 쫓아낼 수 있고, 좋은 감정을 표현하면 다른 사람과 친해질 수 있어요.",
+   "g": "help + 목적어 + 동사원형(avoid, scare off, bond) · expressing anger = 동명사 주어 → 단수 동사 helps · 세 개의 절이 A, B, and C로 병렬"
+  },
+  {
+   "en": "From an evolutionary perspective, an emotion is a kind of \"program\" that, when triggered, directs many of our activities (including attention, perception, memory, movement, expressions, etc.).",
+   "ko": "진화의 눈으로 보면, 감정은 일종의 \"프로그램\"이에요. 이 프로그램은 한번 켜지면 우리의 많은 활동(주의 집중, 알아차리기, 기억, 움직임, 표정 등)을 이끌어요.",
+   "g": "that = 주격 관계대명사(선행사 a kind of \"program\"), 동사는 directs · when triggered = when it is triggered (주어+be동사 생략) · including = ~을 포함하여"
+  },
+  {
+   "en": "For example, fear makes us very attentive, narrows our perceptual focus to threatening stimuli, will cause us either to face a situation (fight) or avoid it (flight), and may cause us to remember an experience more acutely (so that we avoid the threat in the future).",
+   "ko": "예를 들어, 두려움을 느끼면 우리는 아주 조심하게 되고, 위험해 보이는 것에만 집중하게 돼요. 또 상황에 맞서거나(싸우기) 피하게(도망가기) 되고, 그 일을 더 또렷하게 기억할 수도 있어요(나중에 그 위험을 피하려고요).",
+   "g": "makes / narrows / will cause / may cause 네 동사가 병렬 · cause + 목적어 + to V = ~가 …하게 하다 · either A or B = A 또는 B · so that = ~하도록"
+  },
+  {
+   "en": "Regardless of the specific ways in which they activate our systems, the specific emotions we possess are thought to exist because they have helped us (as a species) survive challenges within our environment long ago.",
+   "ko": "감정이 우리 몸과 마음을 움직이는 방식이 구체적으로 어떻든, 우리가 가진 감정들은 아주 먼 옛날 인류가 주변 환경의 어려움을 이겨 내도록 도와줬기 때문에 있는 거라고 여겨져요.",
+   "g": "regardless of = ~와 상관없이 · in which = 전치사+관계대명사 (뒤에 완전한 문장) · emotions (that) we possess: 목적격 관계대명사 생략, 주어 emotions → are · help + 목적어 + 동사원형(survive)"
+  },
+  {
+   "en": "If they had not helped us adapt and survive, they would not have evolved with us.",
+   "ko": "만약 감정이 우리가 적응하고 살아남는 걸 돕지 않았다면, 감정은 우리와 함께 진화해 오지 않았을 거예요.",
+   "g": "가정법 과거완료: If + 주어 + had p.p., 주어 + would have p.p. (과거 사실과 반대) · help + 목적어 + 동사원형(adapt, survive)"
+  }
+ ],
+ "topic": "감정은 인류가 생존하고 적응하는 데 도움을 주었기 때문에 진화하여 존재하게 되었다.",
+ "easy": "무서움, 화, 기쁨 같은 감정은 옛날 사람들이 살아남는 걸 도와줬어요. 그래서 지금 우리에게도 감정이 남아 있는 거예요!",
+ "qs": [
+  {
+   "t": "요지",
+   "q": "다음 글의 요지로 가장 적절한 것은?",
+   "shuffle": true,
+   "o": [
+    "감정은 인류의 생존과 적응을 도왔기 때문에 진화하여 존재하게 되었다.",
+    "부정적인 감정은 생존에 방해가 되므로 억제하는 것이 좋다.",
+    "두려움은 다른 사람과의 유대감을 약하게 만든다.",
+    "감정은 환경보다 개인의 성격에 따라 결정된다.",
+    "긍정적인 감정만이 인류의 진화에 도움을 주었다."
+   ],
+   "a": 1,
+   "why": "글의 처음과 끝이 같은 말을 해요. 감정은 <b>우리의 생존에 기여했기 때문에 존재</b>하고(첫 문장), 적응과 생존을 돕지 않았다면 <b>함께 진화하지 않았을 것</b>이다(마지막 문장).<br>② 본문은 두려움·분노 같은 감정도 위험을 피하고 위협을 쫓아내는 데 도움이 됐다고 해요. 억제하라는 말은 없어요.<br>③ 유대감을 돕는 건 긍정적 감정이고, 두려움이 유대감을 약하게 한다는 말은 없어요.<br>④ 성격 이야기는 나오지 않아요.<br>⑤ 두려움, 분노도 도움이 됐으니 \"긍정적 감정만\"은 틀려요.",
+   "ev": "If they had not helped us adapt and survive, they would not have evolved with us.",
+   "evKo": "만약 그것들(감정)이 우리가 적응하고 생존하도록 돕지 않았다면, 그것들은 우리와 함께 진화하지 않았을 것이다."
+  },
+  {
+   "t": "어휘",
+   "q": "(A), (B), (C)의 각 네모 안에서 문맥에 맞는 낱말로 가장 적절한 것은?",
+   "box": "Fear has helped us <b>(A) [approach / avoid]</b> dangers, expressing anger helps us scare off threats, and expressing positive emotions helps us bond with others. … For example, fear makes us very <b>(B) [careless / attentive]</b>, narrows our perceptual focus to threatening stimuli … If they had not helped us <b>(C) [adapt / adopt]</b> and survive, they would not have evolved with us.",
+   "o": [
+    "approach — careless — adopt",
+    "approach — attentive — adapt",
+    "avoid — careless — adapt",
+    "avoid — attentive — adopt",
+    "avoid — attentive — adapt"
+   ],
+   "a": 5,
+   "why": "(A) 감정은 생존을 도왔어요. 두려움은 위험을 <b>피하게(avoid)</b> 해 줘야 살아남죠. approach(다가가다)는 오히려 위험해요.<br>(B) 두려움은 위협적인 것에 초점을 맞추게 한다고 했으니, 우리를 <b>주의 깊게(attentive)</b> 만들어요. careless는 \"부주의한\"이라 반대예요.<br>(C) 뒤에 survive(살아남다)와 함께 쓰였으니 환경에 <b>적응하다(adapt)</b>가 맞아요. adopt는 \"채택하다, 입양하다\"로 철자만 비슷해요.",
+   "ev": "For example, fear makes us very attentive, narrows our perceptual focus to threatening stimuli",
+   "evKo": "예를 들어, 두려움은 우리를 매우 주의 깊게 만들고, 우리의 지각 초점을 위협적인 자극으로 좁힌다"
+  },
+  {
+   "t": "어법",
+   "q": "(A), (B), (C)의 각 네모 안에서 어법에 맞는 표현으로 가장 적절한 것은?",
+   "box": "Our emotions are thought <b>(A) [to exist / existing]</b> because they have contributed to our survival as a species. Fear has helped us avoid dangers, expressing anger <b>(B) [helps / help]</b> us scare off threats, and expressing positive emotions helps us bond with others. … Regardless of the specific ways <b>(C) [which / in which]</b> they activate our systems, the specific emotions we possess are thought to exist",
+   "o": [
+    "to exist — helps — in which",
+    "to exist — help — which",
+    "existing — helps — in which",
+    "existing — help — which",
+    "to exist — help — in which"
+   ],
+   "a": 1,
+   "why": "(A) be thought <b>to V</b> = ~한다고 여겨지다. (They think that our emotions exist → Our emotions are thought to exist)<br>(B) 주어가 동명사구 expressing anger예요. 동명사 주어는 <b>단수</b> 취급 → <b>helps</b>. anger 앞의 expressing이 주어의 핵심이에요.<br>(C) 뒤에 they activate our systems라는 <b>완전한 문장</b>이 와요(주어·목적어 다 있음). 그러니 관계대명사 which만으로는 안 되고, \"그 방식으로\"라는 뜻의 <b>in which</b>(전치사+관계대명사)가 맞아요.",
+   "ev": "Our emotions are thought to exist because they have contributed to our survival as a species.",
+   "evKo": "우리의 감정은 그것들이 종으로서 우리의 생존에 기여해 왔기 때문에 존재한다고 여겨진다."
+  },
+  {
+   "t": "내용일치",
+   "q": "다음 글의 내용과 일치하지 <u>않는</u> 것은?",
+   "shuffle": true,
+   "o": [
+    "감정은 인류의 생존에 기여했기 때문에 존재한다고 여겨진다.",
+    "긍정적인 감정을 표현하는 것은 다른 사람과 유대를 맺는 데 도움이 된다.",
+    "두려움은 우리의 지각 초점을 넓혀 주변의 모든 것에 관심을 갖게 한다.",
+    "진화적 관점에서 감정은 주의, 기억, 움직임 등 여러 활동을 이끈다.",
+    "감정이 생존에 도움이 되지 않았다면 우리와 함께 진화하지 않았을 것이다."
+   ],
+   "a": 3,
+   "why": "본문은 두려움이 지각 초점을 위협적인 자극으로 <b>좁힌다(narrows)</b>고 했어요. \"넓혀서 모든 것에 관심을 갖게 한다\"는 정반대예요.<br>나머지는 각각 1번째, 2번째, 3번째, 마지막 문장의 내용과 일치해요.",
+   "ev": "fear makes us very attentive, narrows our perceptual focus to threatening stimuli",
+   "evKo": "두려움은 우리를 매우 주의 깊게 만들고, 우리의 지각 초점을 위협적인 자극으로 좁힌다"
+  },
+  {
+   "t": "순서",
+   "q": "주어진 글 다음에 이어질 글의 순서로 가장 적절한 것은?",
+   "box": "Our emotions are thought to exist because they have contributed to our survival as a species. Fear has helped us avoid dangers, expressing anger helps us scare off threats, and expressing positive emotions helps us bond with others.<br><br><b>(A)</b> For example, fear makes us very attentive, narrows our perceptual focus to threatening stimuli, will cause us either to face a situation (fight) or avoid it (flight), and may cause us to remember an experience more acutely (so that we avoid the threat in the future).<br><br><b>(B)</b> From an evolutionary perspective, an emotion is a kind of \"program\" that, when triggered, directs many of our activities (including attention, perception, memory, movement, expressions, etc.).<br><br><b>(C)</b> Regardless of the specific ways in which they activate our systems, the specific emotions we possess are thought to exist because they have helped us (as a species) survive challenges within our environment long ago. If they had not helped us adapt and survive, they would not have evolved with us.",
+   "o": [
+    "(A) - (C) - (B)",
+    "(B) - (A) - (C)",
+    "(B) - (C) - (A)",
+    "(C) - (A) - (B)",
+    "(C) - (B) - (A)"
+   ],
+   "a": 2,
+   "why": "① 주어진 글: 감정은 생존에 도움을 줘서 존재한다. 두려움·분노·긍정적 감정의 역할.<br>② <b>(B)</b> 진화의 관점에서 감정은 주의, 지각, 기억 등을 이끄는 <b>\"프로그램\"</b>이라고 설명해요.<br>③ <b>(A)</b> <b>For example</b>로 (B)의 예를 들어요. 두려움이 주의(attentive), 지각(perceptual focus), 기억(remember)을 움직이는 모습이 (B)의 attention, perception, memory와 딱 맞아요.<br>④ <b>(C)</b> \"구체적인 방식(specific ways)과 상관없이\"로 (A)의 구체적 예를 정리하고, 감정이 생존을 도와 진화했다는 결론으로 마무리해요.<br>👉 연결고리: <b>\"program\" → For example</b>(A) · <b>Regardless of the specific ways</b>(C)",
+   "ev": "an emotion is a kind of \"program\" that, when triggered, directs many of our activities",
+   "evKo": "감정은 작동되면 우리의 많은 활동을 이끄는 일종의 \"프로그램\"이다"
+  },
+  {
+   "t": "빈칸",
+   "q": "다음 빈칸에 들어갈 말로 가장 적절한 것은?",
+   "shuffle": true,
+   "box": "Our emotions are thought to exist because they have contributed to our survival as a species. … Regardless of the specific ways in which they activate our systems, the specific emotions we possess are thought to exist because they have helped us (as a species) <b>__________</b> within our environment long ago. If they had not helped us adapt and survive, they would not have evolved with us.",
+   "o": [
+    "hide our true feelings",
+    "forget past mistakes",
+    "survive challenges",
+    "think more logically",
+    "live without any fear"
+   ],
+   "a": 3,
+   "why": "글 전체가 \"감정은 <b>생존(survival)</b>을 도왔기 때문에 존재한다\"는 내용이에요. 빈칸 바로 뒤 문장도 \"적응하고 <b>살아남는(survive)</b> 걸 돕지 않았다면\"이라고 하죠. 그러니 \"<b>어려움을 이겨 내고 살아남다(survive challenges)</b>\"가 정답!<br>① 감정을 숨기기, ② 실수 잊기, ④ 더 논리적으로 생각하기는 글에 나오지 않아요.<br>⑤ 두려움은 오히려 생존에 도움이 됐다고 했으니, \"두려움 없이 살기\"는 글과 반대예요.",
+   "ev": "they have helped us (as a species) survive challenges within our environment long ago",
+   "evKo": "그것들이 아주 오래전 (종으로서의) 우리가 환경 속의 어려움을 견디고 살아남도록 도와주었다"
+  }
+ ]
+},
+/* ───────── 23번 ───────── */
+{
+ "id": "23",
+ "kind": "주제",
+ "title": "AI, 모두가 함께 일하는 일터로",
+ "note": "*dysarthric: (신경 장애로 인한) 구음 장애의",
+ "words": [
+  {
+   "en": "accessibility",
+   "ko": "접근성",
+   "m": [
+    "accessibility"
+   ],
+   "tip": "access(접근) → accessible(접근 가능한) → accessibility(접근성)"
+  },
+  {
+   "en": "at a disadvantage",
+   "ko": "불리한 입장에 있는",
+   "m": [
+    "at a disadvantage"
+   ],
+   "tip": "반대말 at an advantage(유리한)"
+  },
+  {
+   "en": "labour market",
+   "ko": "노동 시장",
+   "m": [
+    "labour market"
+   ],
+   "tip": "labour는 영국식, labor는 미국식 철자"
+  },
+  {
+   "en": "inclusiveness",
+   "ko": "포용성",
+   "m": [
+    "inclusiveness"
+   ],
+   "tip": "include(포함하다) ↔ exclude(배제하다)"
+  },
+  {
+   "en": "assistive",
+   "ko": "보조하는, 돕는",
+   "m": [
+    "assistive"
+   ]
+  },
+  {
+   "en": "aid",
+   "ko": "돕다",
+   "m": [
+    "aid"
+   ]
+  },
+  {
+   "en": "widespread",
+   "ko": "널리 퍼진",
+   "m": [
+    "widespread"
+   ]
+  },
+  {
+   "en": "disability",
+   "ko": "장애",
+   "m": [
+    "disabilities"
+   ],
+   "tip": "dis(아닌) + ability(능력)"
+  },
+  {
+   "en": "recognition",
+   "ko": "인식",
+   "m": [
+    "recognition"
+   ],
+   "tip": "speech recognition = 음성 인식"
+  },
+  {
+   "en": "facilitate",
+   "ko": "쉽게 하다, 촉진하다",
+   "m": [
+    "facilitate"
+   ],
+   "tip": "반대 느낌: hinder(방해하다)"
+  },
+  {
+   "en": "colleague",
+   "ko": "(직장) 동료",
+   "m": [
+    "colleagues"
+   ]
+  },
+  {
+   "en": "enhance",
+   "ko": "향상시키다",
+   "m": [
+    "enhance"
+   ]
+  },
+  {
+   "en": "capability",
+   "ko": "능력",
+   "m": [
+    "capabilities"
+   ]
+  },
+  {
+   "en": "wage",
+   "ko": "임금, 급여",
+   "m": [
+    "wages"
+   ]
+  },
+  {
+   "en": "prospect",
+   "ko": "전망, 가능성",
+   "m": [
+    "prospects"
+   ]
+  },
+  {
+   "en": "domain",
+   "ko": "분야, 영역",
+   "m": [
+    "domains"
+   ]
+  }
+ ],
+ "sents": [
+  {
+   "en": "By improving accessibility of the workplace for workers that are typically at a disadvantage in the labour market, AI can improve inclusiveness in the workplace.",
+   "ko": "일자리를 구할 때 보통 불리한 사람들도 일터에 더 쉽게 들어올 수 있게 해 줘서, AI는 일터를 모두가 함께하는 곳으로 만들 수 있어요.",
+   "g": "by + V-ing = ~함으로써 · that = 주격 관계대명사(선행사 workers → 복수 동사 are) · at a disadvantage = 불리한 입장에 있는"
+  },
+  {
+   "en": "AI-powered assistive devices to aid workers with visual, speech or hearing difficulties are becoming more widespread, improving the access to, and the quality of work for people with disabilities.",
+   "ko": "눈이 잘 안 보이거나, 말하기나 듣기가 어려운 사람을 돕는 AI 보조 기기가 점점 많이 쓰이고 있어요. 그 덕분에 장애가 있는 사람들이 일자리를 얻기도 쉬워지고, 일하는 환경도 더 좋아지고 있어요.",
+   "g": "to aid ~ = 앞 명사 devices를 꾸미는 to부정사 · 주어 devices(복수) → are becoming · improving ~ = 분사구문(그러면서 ~을 개선하는) · the access to와 the quality of가 work를 함께 받음"
+  },
+  {
+   "en": "For example, speech recognition solutions for people with dysarthric voices, or live captioning systems for deaf and hard of hearing people can facilitate communication with colleagues and access to jobs where inter-personal communication is necessary.",
+   "ko": "예를 들어, 발음이 어려운 사람을 위한 음성 인식 기술이나, 듣지 못하거나 잘 못 듣는 사람을 위한 실시간 자막 시스템이 있어요. 이런 기술 덕분에 동료와 대화하기가 쉬워지고, 사람들과 이야기를 나눠야 하는 일자리도 얻기 쉬워져요.",
+   "g": "긴 주어(solutions ~ or systems ~) + 동사 can facilitate · facilitate의 목적어 communication과 access가 병렬 · where = 관계부사(선행사 jobs, 뒤에 완전한 문장)"
+  },
+  {
+   "en": "AI can also enhance the capabilities of low-skilled workers, with potentially positive effects on their wages and career prospects.",
+   "ko": "AI는 기술이 부족한 노동자의 능력도 높여 줄 수 있어요. 그러면 그 사람들의 월급이나 앞으로의 직장 생활에도 좋은 영향을 줄 수 있어요.",
+   "g": "also = 또한 (새로운 장점 추가) · have an effect on = ~에 영향을 주다 · potentially = 어쩌면, 잠재적으로"
+  },
+  {
+   "en": "For example, AI's capacity to translate written and spoken word in real-time can improve the performance of non-native speakers in the workplace.",
+   "ko": "예를 들어, 글과 말을 그 자리에서 바로 번역해 주는 AI의 능력 덕분에, 그 나라 말이 모국어가 아닌 사람도 일터에서 일을 더 잘할 수 있어요.",
+   "g": "capacity to V = ~할 수 있는 능력 (to부정사가 앞 명사를 꾸밈) · 주어 AI's capacity / 동사 can improve · written and spoken = word를 꾸미는 과거분사 병렬"
+  },
+  {
+   "en": "Moreover, recent developments in AI-powered text generators can instantly improve the performance of lower-skilled individuals in domains such as writing, coding or customer service.",
+   "ko": "게다가, 요즘 발전한 AI 글 만들기 도구는 글쓰기, 코딩, 고객 상담 같은 분야에서 실력이 부족한 사람의 성과를 곧바로 높여 줄 수 있어요.",
+   "g": "moreover = 게다가 · 주어 developments(복수) / in ~ generators는 수식어 · such as = ~와 같은"
+  }
+ ],
+ "topic": "AI는 장애인과 기술이 부족한 노동자를 도와 일터의 포용성을 높일 수 있다.",
+ "easy": "AI는 몸이 불편한 사람이나 아직 일이 서툰 사람도 일을 잘할 수 있게 도와줘요. 그래서 더 많은 사람이 함께 일할 수 있어요!",
+ "qs": [
+  {
+   "t": "주제",
+   "q": "다음 글의 주제로 가장 적절한 것은?",
+   "shuffle": true,
+   "o": [
+    "ways AI can make workplaces more inclusive",
+    "risks of AI replacing low-skilled workers",
+    "difficulties of developing AI-powered assistive devices",
+    "the importance of learning foreign languages at work",
+    "reasons skilled workers earn higher wages than others"
+   ],
+   "a": 1,
+   "why": "첫 문장이 주제문이에요. AI는 일터의 <b>포용성(inclusiveness)</b>을 높일 수 있다! 그 뒤로 ① 장애가 있는 노동자를 돕는 기기, ② 기술이 부족한 노동자의 능력을 높이는 번역·글쓰기 도구가 예로 나와요. 모두 \"<b>AI가 더 많은 사람이 함께 일하게 돕는 방법</b>\"이죠.<br>② AI가 노동자를 대체하는 위험은 나오지 않아요(오히려 돕는다고 해요).<br>③ 기기 개발의 어려움은 나오지 않아요.<br>④ 외국어 공부가 아니라 AI 번역이 도와준다는 내용이에요.<br>⑤ 숙련 노동자의 임금 이야기는 없어요.<br>📌 해석: ① AI가 일터를 더 포용적으로 만들 수 있는 방법 ② AI가 기술이 부족한 노동자를 대체하는 위험 ③ AI 기반 보조 기기 개발의 어려움 ④ 직장에서 외국어를 배우는 것의 중요성 ⑤ 숙련된 노동자가 다른 사람보다 임금을 더 많이 받는 이유",
+   "ev": "By improving accessibility of the workplace for workers that are typically at a disadvantage in the labour market, AI can improve inclusiveness in the workplace.",
+   "evKo": "노동 시장에서 보통 불리한 입장에 있는 노동자들을 위해 일터의 접근성을 높임으로써, AI는 일터의 포용성을 높일 수 있다."
+  },
+  {
+   "t": "어휘",
+   "q": "(A), (B), (C)의 각 네모 안에서 문맥에 맞는 낱말로 가장 적절한 것은?",
+   "box": "By improving accessibility of the workplace for workers that are typically at a disadvantage in the labour market, AI can improve <b>(A) [exclusiveness / inclusiveness]</b> in the workplace. … or live captioning systems for deaf and hard of hearing people can <b>(B) [facilitate / hinder]</b> communication with colleagues … AI can also <b>(C) [reduce / enhance]</b> the capabilities of low-skilled workers, with potentially positive effects on their wages and career prospects.",
+   "o": [
+    "exclusiveness — facilitate — enhance",
+    "inclusiveness — facilitate — enhance",
+    "inclusiveness — hinder — enhance",
+    "inclusiveness — facilitate — reduce",
+    "exclusiveness — hinder — reduce"
+   ],
+   "a": 2,
+   "why": "(A) 불리한 노동자도 일터에 쉽게 접근하게 해 주면, 일터는 더 많은 사람을 <b>포용하게(inclusiveness)</b> 돼요. exclusiveness는 \"배타성(끼워 주지 않음)\"이라 반대예요.<br>(B) 자막 시스템은 청각 장애인이 동료와 대화하는 걸 <b>쉽게 해 줘요(facilitate)</b>. hinder는 \"방해하다\"라서 반대예요.<br>(C) 뒤에 임금과 직업 전망에 <b>긍정적인 영향(positive effects)</b>이 있다고 했으니, 능력을 <b>향상시키다(enhance)</b>가 맞아요. reduce는 \"줄이다\".",
+   "ev": "AI can also enhance the capabilities of low-skilled workers, with potentially positive effects on their wages and career prospects.",
+   "evKo": "AI는 또한 기술이 낮은 노동자의 능력을 향상시킬 수 있으며, 그들의 임금과 직업 전망에 잠재적으로 긍정적인 영향을 준다."
+  },
+  {
+   "t": "어법",
+   "q": "(A), (B), (C)의 각 네모 안에서 어법에 맞는 표현으로 가장 적절한 것은?",
+   "box": "By improving accessibility of the workplace for workers <b>(A) [what / that]</b> are typically at a disadvantage in the labour market, AI can improve inclusiveness in the workplace. AI-powered assistive devices to aid workers with visual, speech or hearing difficulties are becoming more widespread, <b>(B) [improving / improved]</b> the access to, and the quality of work for people with disabilities. … can facilitate communication with colleagues and access to jobs <b>(C) [which / where]</b> inter-personal communication is necessary.",
+   "o": [
+    "what — improving — where",
+    "that — improved — which",
+    "what — improved — where",
+    "that — improving — where",
+    "that — improving — which"
+   ],
+   "a": 4,
+   "why": "(A) 앞에 선행사 workers가 있고, 뒤에 주어가 빠진 채 are가 와요 → 주격 관계대명사 <b>that</b>. what은 선행사가 없을 때만 써요.<br>(B) 앞 문장에 이미 동사 are becoming이 있으니, 접속사 없이 또 동사(improved)를 쓸 수 없어요. 기기가 접근성과 일의 질을 \"개선하는\" 능동 관계 → 분사구문 <b>improving</b>. 뒤에 목적어(the access ~)가 있는 것도 능동의 힌트예요.<br>(C) 뒤에 inter-personal communication is necessary라는 <b>완전한 문장</b>이 와요 → 관계부사 <b>where</b>(선행사 jobs = 일하는 곳). which는 뒤에 빠진 성분이 있어야 해요.",
+   "ev": "AI-powered assistive devices to aid workers with visual, speech or hearing difficulties are becoming more widespread",
+   "evKo": "시각, 언어 또는 청각에 어려움이 있는 노동자를 돕는 AI 기반 보조 기기가 더 널리 퍼지고 있다"
+  },
+  {
+   "t": "내용일치",
+   "q": "다음 글의 내용과 일치하는 것은?",
+   "shuffle": true,
+   "o": [
+    "AI는 노동 시장에서 유리한 위치에 있는 사람들만 돕는다.",
+    "시각이나 청각에 어려움이 있는 노동자를 돕는 AI 기기는 점점 줄어들고 있다.",
+    "실시간 자막 시스템은 청각 장애인이 동료와 소통하는 것을 도울 수 있다.",
+    "AI의 실시간 번역 기능은 원어민 노동자의 성과만 높여 준다.",
+    "AI 텍스트 생성기는 기술 수준이 높은 사람들의 성과만 높여 준다."
+   ],
+   "a": 3,
+   "why": "본문에 실시간 자막 시스템이 청각 장애인과 <b>동료의 소통(communication with colleagues)</b>을 쉽게 해 준다고 나와요.<br>① AI는 <b>불리한(at a disadvantage)</b> 노동자를 돕는다고 했어요.<br>② AI 보조 기기는 <b>더 널리 퍼지고(more widespread)</b> 있어요.<br>④ 번역 기능은 <b>원어민이 아닌(non-native)</b> 사람의 성과를 높여 줘요.<br>⑤ 텍스트 생성기는 <b>기술이 낮은(lower-skilled)</b> 사람의 성과를 높여 줘요.",
+   "ev": "live captioning systems for deaf and hard of hearing people can facilitate communication with colleagues",
+   "evKo": "청각 장애가 있거나 잘 듣지 못하는 사람들을 위한 실시간 자막 시스템은 동료와의 의사소통을 쉽게 해 줄 수 있다"
+  },
+  {
+   "t": "순서",
+   "q": "주어진 글 다음에 이어질 글의 순서로 가장 적절한 것은?",
+   "box": "By improving accessibility of the workplace for workers that are typically at a disadvantage in the labour market, AI can improve inclusiveness in the workplace. AI-powered assistive devices to aid workers with visual, speech or hearing difficulties are becoming more widespread, improving the access to, and the quality of work for people with disabilities.<br><br><b>(A)</b> For example, AI's capacity to translate written and spoken word in real-time can improve the performance of non-native speakers in the workplace. Moreover, recent developments in AI-powered text generators can instantly improve the performance of lower-skilled individuals in domains such as writing, coding or customer service.<br><br><b>(B)</b> For example, speech recognition solutions for people with dysarthric voices, or live captioning systems for deaf and hard of hearing people can facilitate communication with colleagues and access to jobs where inter-personal communication is necessary.<br><br><b>(C)</b> AI can also enhance the capabilities of low-skilled workers, with potentially positive effects on their wages and career prospects.",
+   "o": [
+    "(A) - (C) - (B)",
+    "(B) - (A) - (C)",
+    "(B) - (C) - (A)",
+    "(C) - (A) - (B)",
+    "(C) - (B) - (A)"
+   ],
+   "a": 3,
+   "why": "① 주어진 글: AI는 일터의 포용성을 높인다. 특히 <b>장애가 있는 사람들(people with disabilities)</b>을 돕는 AI 기기가 늘고 있다.<br>② <b>(B)</b> <b>For example</b>로 장애인을 돕는 기술의 예(음성 인식, 실시간 자막)를 들어요.<br>③ <b>(C)</b> <b>also(또한)</b>로 두 번째 장점, \"기술이 부족한 노동자(low-skilled workers)\"의 능력 향상을 새로 꺼내요.<br>④ <b>(A)</b> (C)의 예시: 원어민이 아닌 사람을 돕는 번역, <b>lower-skilled</b> 사람을 돕는 글쓰기 도구. <b>Moreover</b>로 예를 하나 더 더해요.<br>(A)의 예시는 장애인이 아니라 기술이 부족한 사람에 대한 것이라 주어진 글 바로 뒤에 올 수 없어요.<br>👉 연결고리: <b>disabilities → For example</b>(B) · <b>also</b>(C) · <b>low-skilled → lower-skilled</b>(A)",
+   "ev": "AI can also enhance the capabilities of low-skilled workers",
+   "evKo": "AI는 또한 기술이 낮은 노동자의 능력을 향상시킬 수 있다"
+  },
+  {
+   "t": "빈칸",
+   "q": "다음 빈칸에 들어갈 말로 가장 적절한 것은?",
+   "shuffle": true,
+   "box": "By improving accessibility of the workplace for workers that are typically at a disadvantage in the labour market, AI can improve <b>__________</b> in the workplace. AI-powered assistive devices to aid workers with visual, speech or hearing difficulties are becoming more widespread, improving the access to, and the quality of work for people with disabilities.",
+   "o": [
+    "competition",
+    "inclusiveness",
+    "automation",
+    "secrecy",
+    "uniformity"
+   ],
+   "a": 2,
+   "why": "AI가 <b>불리한 노동자(workers at a disadvantage)</b>와 <b>장애가 있는 사람들</b>도 일터에 쉽게 들어오고 일할 수 있게 해 준다고 했어요. 더 많은 사람을 함께 품는 것 = <b>포용성(inclusiveness)</b>!<br>① 경쟁, ③ 자동화, ④ 비밀 유지, ⑤ 획일성은 \"불리한 사람도 함께 일하게 돕는다\"는 내용과 관련이 없어요.",
+   "ev": "AI can improve inclusiveness in the workplace",
+   "evKo": "AI는 일터의 포용성을 높일 수 있다"
+  }
+ ]
+},
+/* ───────── 30번 ───────── */
+{
+ "id": "30",
+ "kind": "어휘",
+ "title": "배달 트럭이 도시를 살린다?",
+ "note": "*animus: 반감, 미움",
+ "words": [
+  {
+   "en": "alternative",
+   "ko": "대안",
+   "m": [
+    "alternative"
+   ],
+   "tip": "alternative to ~ = ~의 대안 (to는 전치사!)"
+  },
+  {
+   "en": "calm",
+   "ko": "진정시키다",
+   "m": [
+    "calming"
+   ]
+  },
+  {
+   "en": "reserve",
+   "ko": "따로 남겨 두다",
+   "m": [
+    "reserve"
+   ],
+   "tip": "reserve A for B = A를 B를 위해 따로 떼어 두다 (reservation 예약)"
+  },
+  {
+   "en": "extensive",
+   "ko": "넓은, 광범위한",
+   "m": [
+    "extensive"
+   ],
+   "tip": "extend(넓히다)의 형용사형"
+  },
+  {
+   "en": "pedestrian",
+   "ko": "보행자",
+   "m": [
+    "pedestrians"
+   ]
+  },
+  {
+   "en": "occasional",
+   "ko": "가끔의",
+   "m": [
+    "occasional"
+   ],
+   "tip": "occasionally = 가끔"
+  },
+  {
+   "en": "motivate",
+   "ko": "동기를 부여하다",
+   "m": [
+    "motivates"
+   ],
+   "tip": "motivate + 목적어 + to V = ~가 …하도록 만들다"
+  },
+  {
+   "en": "convert",
+   "ko": "바꾸다, 전환하다",
+   "m": [
+    "convert"
+   ]
+  },
+  {
+   "en": "accommodate",
+   "ko": "수용하다",
+   "m": [
+    "accommodate"
+   ],
+   "tip": "accommodation = 숙소, 수용"
+  },
+  {
+   "en": "nevertheless",
+   "ko": "그럼에도 불구하고",
+   "m": [
+    "Nevertheless"
+   ],
+   "tip": "= nonetheless, however (앞 내용과 반대 흐름)"
+  },
+  {
+   "en": "emergency",
+   "ko": "비상, 응급",
+   "m": [
+    "emergency"
+   ]
+  },
+  {
+   "en": "essential",
+   "ko": "꼭 필요한",
+   "m": [
+    "essential"
+   ],
+   "tip": "반대말 느낌: unnecessary(불필요한)"
+  },
+  {
+   "en": "component",
+   "ko": "구성 요소",
+   "m": [
+    "component"
+   ]
+  },
+  {
+   "en": "efficient",
+   "ko": "효율적인",
+   "m": [
+    "efficient"
+   ],
+   "tip": "반대말: inefficient(비효율적인) / effective(효과적인)와 구별"
+  },
+  {
+   "en": "distribute",
+   "ko": "나누어 주다, 유통하다",
+   "m": [
+    "Distributing"
+   ]
+  },
+  {
+   "en": "vendor",
+   "ko": "판매상, 가게",
+   "m": [
+    "vendors"
+   ]
+  }
+ ],
+ "sents": [
+  {
+   "en": "An excellent alternative to calming traffic is removing it.",
+   "ko": "차들이 천천히 다니게 만드는 것보다 훨씬 좋은 방법은, 아예 차를 없애 버리는 거예요.",
+   "g": "주어는 alternative(단수) → 동사 is · alternative to ~ = ~의 대안 (to가 전치사라 뒤에 동명사 calming) · removing it = 보어로 쓰인 동명사, it = traffic"
+  },
+  {
+   "en": "Some cities reserve an extensive network of lanes and streets for bikes, pedestrians, and the occasional service vehicle.",
+   "ko": "어떤 도시들은 넓게 이어진 길과 도로를 자전거, 걸어 다니는 사람, 그리고 가끔 다니는 업무용 차만 쓰도록 따로 정해 둬요.",
+   "g": "reserve A for B = A를 B를 위해 따로 떼어 두다 · bikes, pedestrians, and the occasional service vehicle = 명사 3개 병렬"
+  },
+  {
+   "en": "This motivates people to travel by bike rather than by car, making streets safer for everyone.",
+   "ko": "이렇게 하면 사람들이 차 대신 자전거를 타고 싶어져서, 모두에게 길이 더 안전해져요.",
+   "g": "motivate + 목적어 + to V = ~가 …하도록 동기를 주다 · A rather than B = B보다는 A · making ~ = 분사구문(그래서 ~하게 만들며), make + 목적어 + 형용사(safer)"
+  },
+  {
+   "en": "As bicycles become more popular in a city, planners can convert more automobile lanes and entire streets to accommodate more of them.",
+   "ko": "도시에서 자전거가 더 인기를 얻으면, 도시 계획가들은 더 많은 자전거가 다닐 수 있도록 자동차 차로와 도로 전체를 더 많이 바꿀 수 있어요.",
+   "g": "as = ~함에 따라 · to accommodate = ~을 수용하기 위해(목적의 to부정사) · them = bicycles"
+  },
+  {
+   "en": "Nevertheless, even the most bikeable cities still require motor vehicle lanes for taxis, emergency vehicles, and delivery trucks.",
+   "ko": "그래도 자전거 타기 가장 좋은 도시조차, 택시나 구급차 같은 응급 차량, 배달 트럭이 다닐 찻길은 여전히 필요해요.",
+   "g": "Nevertheless = 그럼에도 불구하고(앞 내용과 반대 흐름) · even the most + 형용사 = 가장 ~한 것조차 · 주어 cities(복수) → require"
+  },
+  {
+   "en": "Delivery vehicles are frequently a target of animus, but they are actually an essential component to making cities greener.",
+   "ko": "배달 차량은 사람들에게 자주 미움을 받지만, 사실은 도시를 더 친환경적으로 만드는 데 꼭 필요한 존재예요.",
+   "g": "a target of ~ = ~의 대상 · but ~ actually = 하지만 사실은(반전) · to making: to는 전치사라 뒤에 동명사 · make + 목적어 + 형용사(greener)"
+  },
+  {
+   "en": "A tightly packed delivery truck is a far more efficient transporter of goods than several hybrids carrying a few shopping bags each.",
+   "ko": "짐을 꽉꽉 채운 배달 트럭 한 대가, 장바구니를 몇 개씩만 싣고 다니는 하이브리드 자동차 여러 대보다 물건을 훨씬 더 효율적으로 옮겨요.",
+   "g": "far + 비교급 = 훨씬 더 ~ (much, even, still, a lot도 가능 / very ❌) · tightly packed = 빽빽하게 채워진(과거분사) · carrying ~ = hybrids를 뒤에서 꾸미는 현재분사구"
+  },
+  {
+   "en": "Distributing food and other goods to neighborhood vendors allows them to operate smaller stores close to homes so that residents can walk, rather than drive, to get their groceries.",
+   "ko": "음식과 여러 물건을 동네 가게에 배달해 주면, 그 가게들은 집 가까이에서 작은 가게를 운영할 수 있어요. 그래서 주민들은 차를 타지 않고 걸어가서 장을 볼 수 있어요.",
+   "g": "동명사 주어(Distributing ~)는 단수 취급 → allows · allow + 목적어 + to V · so that + 주어 + can ~ = ~가 …할 수 있도록 · them = neighborhood vendors"
+  }
+ ],
+ "topic": "자동차를 줄인 도시에서도 배달 차량은 도시를 친환경적으로 만드는 데 꼭 필요하다.",
+ "easy": "차를 없애고 자전거 길을 만들면 좋아요. 그래도 배달 트럭은 꼭 있어야 해요. 트럭 한 대가 물건을 한꺼번에 날라 주면 사람들이 걸어서 장을 볼 수 있거든요!",
+ "qs": [
+  {
+   "t": "요지",
+   "q": "다음 글의 요지로 가장 적절한 것은?",
+   "shuffle": true,
+   "o": [
+    "도시의 모든 차로를 없애고 자전거 도로로 바꿔야 한다.",
+    "자동차를 줄인 도시에서도 배달 차량은 친환경 도시를 위해 꼭 필요하다.",
+    "하이브리드 자동차가 배달 트럭보다 물건을 더 효율적으로 나른다.",
+    "주민들은 동네 작은 가게보다 큰 마트를 이용하는 것이 좋다.",
+    "교통 체증을 줄이려면 택시와 응급 차량의 수를 줄여야 한다."
+   ],
+   "a": 2,
+   "why": "앞부분은 차를 없애고 자전거 길을 늘리는 이야기지만, <b>Nevertheless</b>(그럼에도 불구하고)로 흐름이 바뀌어요. 자전거 도시에서도 차로는 필요하고, 특히 <b>배달 차량은 도시를 더 친환경적으로 만드는 데 꼭 필요한 요소(essential component)</b>라는 것이 글의 핵심이에요.<br>① \"모든\" 차로를 없애라는 말은 없어요. 택시·응급 차량·배달 트럭 차로는 필요하다고 했어요.<br>③ 반대예요. 배달 트럭이 훨씬 더 효율적이라고 했어요.<br>④ 반대예요. 집 가까운 작은 가게에 걸어가게 된다고 했어요.<br>⑤ 택시·응급 차량 수를 줄이자는 말은 없어요.",
+   "ev": "they are actually an essential component to making cities greener",
+   "evKo": "그것들(배달 차량)은 사실 도시를 더 친환경적으로 만드는 데 꼭 필요한 요소이다"
+  },
+  {
+   "t": "어휘",
+   "q": "(A), (B), (C)의 각 네모 안에서 문맥에 맞는 낱말로 가장 적절한 것은?",
+   "box": "This motivates people to travel by bike rather than by car, making streets <b>(A) [riskier / safer]</b> for everyone. … Nevertheless, even the most bikeable cities still <b>(B) [require / refuse]</b> motor vehicle lanes for taxis, emergency vehicles, and delivery trucks. … A tightly packed delivery truck is a far more <b>(C) [efficient / inefficient]</b> transporter of goods than several hybrids carrying a few shopping bags each.",
+   "o": [
+    "riskier — require — efficient",
+    "riskier — refuse — inefficient",
+    "safer — refuse — efficient",
+    "safer — require — efficient",
+    "safer — require — inefficient"
+   ],
+   "a": 4,
+   "why": "(A) 차 대신 자전거를 타게 되면 길은 모두에게 <b>더 안전해져요(safer)</b>. riskier는 \"더 위험한\"이라 반대 흐름이에요.<br>(B) <b>Nevertheless</b>(그럼에도 불구하고) 뒤이므로, 자전거 도시라도 택시·응급 차량·배달 트럭 차로는 여전히 <b>필요하다(require)</b>. refuse는 \"거부하다\"라서 뒤에 나오는 \"배달 차량은 꼭 필요하다\"는 내용과 맞지 않아요.<br>(C) 짐을 꽉 채운 트럭 한 대가 장바구니 몇 개 실은 차 여러 대보다 <b>훨씬 더 효율적(efficient)</b>이에요. 그래서 도시를 더 친환경적으로 만든다고 했죠. inefficient는 \"비효율적인\".",
+   "ev": "even the most bikeable cities still require motor vehicle lanes for taxis, emergency vehicles, and delivery trucks",
+   "evKo": "자전거 타기 가장 좋은 도시조차 여전히 택시, 응급 차량, 배달 트럭을 위한 차로를 필요로 한다"
+  },
+  {
+   "t": "어법",
+   "q": "(A), (B), (C)의 각 네모 안에서 어법에 맞는 표현으로 가장 적절한 것은?",
+   "box": "An excellent alternative to calming traffic <b>(A) [is / are]</b> removing it. … This motivates people to travel by bike rather than by car, <b>(B) [made / making]</b> streets safer for everyone. … Distributing food and other goods to neighborhood vendors allows them <b>(C) [operating / to operate]</b> smaller stores close to homes so that residents can walk, rather than drive, to get their groceries.",
+   "o": [
+    "are — making — to operate",
+    "is — making — to operate",
+    "is — made — to operate",
+    "is — making — operating",
+    "are — made — operating"
+   ],
+   "a": 2,
+   "why": "(A) 주어는 <b>An excellent alternative</b>(단수)예요. to calming traffic은 꾸며 주는 말일 뿐이니 단수 동사 <b>is</b>.<br>(B) 앞 문장 전체의 결과를 나타내는 분사구문이에요. 뒤에 목적어 streets가 있고, 주어 This가 길을 안전하게 \"만드는\" 능동 관계 → 현재분사 <b>making</b>. made를 쓰면 이미 동사 motivates가 있는데 접속사 없이 동사가 또 나와서 틀려요.<br>(C) allow + 목적어 + <b>to V</b> (~가 …하도록 허락하다/가능하게 하다) → <b>to operate</b>.",
+   "ev": "An excellent alternative to calming traffic is removing it.",
+   "evKo": "교통 속도를 늦추는 것의 훌륭한 대안은 그것(차량 통행)을 없애는 것이다."
+  },
+  {
+   "t": "내용일치",
+   "q": "다음 글의 내용과 일치하지 <u>않는</u> 것은?",
+   "shuffle": true,
+   "o": [
+    "일부 도시는 자전거와 보행자를 위한 넓은 도로망을 따로 마련해 둔다.",
+    "자전거가 인기를 얻으면 자동차 차로를 자전거용으로 더 바꿀 수 있다.",
+    "배달 차량은 사람들에게 미움을 받는 일이 거의 없다.",
+    "자전거 타기 좋은 도시에서도 택시와 응급 차량을 위한 차로는 필요하다.",
+    "동네 가게에 물건을 배달하면 주민들이 걸어서 장을 볼 수 있다."
+   ],
+   "a": 3,
+   "why": "본문은 배달 차량이 \"<b>frequently</b> a target of animus(<b>자주</b> 미움의 대상)\"라고 했어요. \"거의 미움받지 않는다\"는 정반대예요. (animus = 반감, 미움 — 주석 참고)<br>①은 2번째 문장, ②는 4번째 문장, ④는 5번째 문장, ⑤는 마지막 문장과 일치해요.",
+   "ev": "Delivery vehicles are frequently a target of animus",
+   "evKo": "배달 차량은 자주 미움의 대상이 된다"
+  },
+  {
+   "t": "순서",
+   "q": "주어진 글 다음에 이어질 글의 순서로 가장 적절한 것은?",
+   "box": "An excellent alternative to calming traffic is removing it. Some cities reserve an extensive network of lanes and streets for bikes, pedestrians, and the occasional service vehicle.<br><br><b>(A)</b> A tightly packed delivery truck is a far more efficient transporter of goods than several hybrids carrying a few shopping bags each. Distributing food and other goods to neighborhood vendors allows them to operate smaller stores close to homes so that residents can walk, rather than drive, to get their groceries.<br><br><b>(B)</b> Nevertheless, even the most bikeable cities still require motor vehicle lanes for taxis, emergency vehicles, and delivery trucks. Delivery vehicles are frequently a target of animus, but they are actually an essential component to making cities greener.<br><br><b>(C)</b> This motivates people to travel by bike rather than by car, making streets safer for everyone. As bicycles become more popular in a city, planners can convert more automobile lanes and entire streets to accommodate more of them.",
+   "o": [
+    "(A) - (C) - (B)",
+    "(B) - (A) - (C)",
+    "(B) - (C) - (A)",
+    "(C) - (A) - (B)",
+    "(C) - (B) - (A)"
+   ],
+   "a": 5,
+   "why": "① 주어진 글: 어떤 도시는 길을 자전거·보행자 전용으로 떼어 둔다.<br>② <b>(C)</b> <b>This</b>(= 길을 자전거·보행자용으로 떼어 두는 것)가 사람들을 자전거 타게 만든다 → 자전거가 늘면 차로를 더 바꿀 수 있다.<br>③ <b>(B)</b> <b>Nevertheless</b>(그럼에도 불구하고) → 그래도 차로는 필요하고, 배달 차량은 도시를 더 친환경적으로 만드는 데 꼭 필요하다.<br>④ <b>(A)</b> 배달 트럭이 왜 친환경적인지 이유 설명: 한 번에 많이 나르고, 주민이 걸어서 장을 보게 해 준다.<br>👉 연결고리: <b>This</b>(C) · <b>Nevertheless</b>(B) · <b>delivery truck</b>(A)는 (B)의 delivery vehicles를 이어받음",
+   "ev": "Nevertheless, even the most bikeable cities still require motor vehicle lanes",
+   "evKo": "그럼에도 불구하고, 자전거 타기 가장 좋은 도시조차 여전히 자동차 차로가 필요하다"
+  },
+  {
+   "t": "빈칸",
+   "q": "다음 빈칸에 들어갈 말로 가장 적절한 것은?",
+   "shuffle": true,
+   "box": "Nevertheless, even the most bikeable cities still require motor vehicle lanes for taxis, emergency vehicles, and delivery trucks. Delivery vehicles are frequently a target of animus, but they are actually <b>__________</b>. A tightly packed delivery truck is a far more efficient transporter of goods than several hybrids carrying a few shopping bags each.",
+   "o": [
+    "an essential component to making cities greener",
+    "the main cause of air pollution in cities",
+    "a serious danger to pedestrians and cyclists",
+    "a good reason to build more parking lots",
+    "no longer needed in bike-friendly cities"
+   ],
+   "a": 1,
+   "why": "빈칸 앞 \"미움을 받지만(<b>but</b>) 사실은(<b>actually</b>)\"은 반전 신호라서, 빈칸에는 <b>좋은 내용</b>이 와야 해요. 뒤 문장에서 배달 트럭이 <b>훨씬 더 효율적으로</b> 물건을 나른다고 했으니 \"도시를 더 친환경적으로 만드는 데 꼭 필요한 요소\"가 딱 맞아요.<br>②③ 나쁜 내용이라 but actually와 안 맞아요.<br>④ 주차장 이야기는 없어요.<br>⑤ 앞 문장에서 자전거 도시에도 배달 트럭 차로가 필요하다고 했으니 반대예요.<br>📌 해석: ① 도시를 더 친환경적으로 만드는 데 꼭 필요한 요소 ② 도시 대기 오염의 주된 원인 ③ 보행자와 자전거 타는 사람에게 심각한 위험 ④ 주차장을 더 지어야 할 좋은 이유 ⑤ 자전거 친화 도시에서는 더 이상 필요 없는 것",
+   "ev": "A tightly packed delivery truck is a far more efficient transporter of goods",
+   "evKo": "꽉 채운 배달 트럭은 훨씬 더 효율적인 물건 운반 수단이다"
+  }
+ ]
+},
+/* ───────── 32번 ───────── */
+{
+ "id": "32",
+ "kind": "빈칸",
+ "title": "매체는 새로운 고글이다",
+ "words": [
+  {
+   "en": "medium",
+   "ko": "매체, 수단",
+   "m": [
+    "medium"
+   ],
+   "tip": "복수형은 media (미디어)"
+  },
+  {
+   "en": "come along",
+   "ko": "나타나다, 생기다",
+   "m": [
+    "comes along"
+   ]
+  },
+  {
+   "en": "invention",
+   "ko": "발명",
+   "m": [
+    "invention"
+   ],
+   "tip": "invent(발명하다) / inventor(발명가)"
+  },
+  {
+   "en": "put on",
+   "ko": "(몸에) 쓰다, 입다",
+   "m": [
+    "putting on",
+    "put on"
+   ],
+   "tip": "put on = 입는 동작 / wear = 입고 있는 상태"
+  },
+  {
+   "en": "goggles",
+   "ko": "고글, 보안경",
+   "m": [
+    "goggles"
+   ]
+  },
+  {
+   "en": "absorb",
+   "ko": "받아들이다, 흡수하다",
+   "m": [
+    "absorb"
+   ]
+  },
+  {
+   "en": "particular",
+   "ko": "특정한",
+   "m": [
+    "particular"
+   ],
+   "tip": "in particular = 특히"
+  },
+  {
+   "en": "shape",
+   "ko": "모양 짓다, 형성하다",
+   "m": [
+    "shaped"
+   ]
+  },
+  {
+   "en": "communicate",
+   "ko": "소통하다",
+   "m": [
+    "communicate"
+   ],
+   "tip": "communication = 의사소통"
+  },
+  {
+   "en": "bury",
+   "ko": "묻다, 숨기다",
+   "m": [
+    "buried"
+   ],
+   "tip": "bury-buried-buried, 발음은 [베리]"
+  },
+  {
+   "en": "gently",
+   "ko": "부드럽게, 살며시",
+   "m": [
+    "gently"
+   ]
+  },
+  {
+   "en": "according to",
+   "ko": "~에 따라",
+   "m": [
+    "according to"
+   ]
+  },
+  {
+   "en": "code",
+   "ko": "규칙, 암호",
+   "m": [
+    "codes"
+   ]
+  },
+  {
+   "en": "argue",
+   "ko": "주장하다",
+   "m": [
+    "argued"
+   ],
+   "tip": "argument = 주장, 논쟁"
+  },
+  {
+   "en": "surface",
+   "ko": "겉면, 표면",
+   "m": [
+    "surfaces"
+   ]
+  },
+  {
+   "en": "appearance",
+   "ko": "겉모습, 외관",
+   "m": [
+    "appearances"
+   ],
+   "tip": "appear(나타나다, ~처럼 보이다)의 명사형"
+  }
+ ],
+ "sents": [
+  {
+   "en": "Every time a new medium comes along – whether it's the invention of the printed book, or TV, or SNS – and you start to use it, it's like you are putting on a new kind of goggles, with their own special colors and lenses.",
+   "ko": "인쇄된 책이든, TV든, SNS든, 새로운 매체가 나타나서 우리가 그걸 쓰기 시작할 때마다, 그건 마치 저마다 특별한 색깔과 렌즈가 달린 새로운 고글을 쓰는 것과 같아요.",
+   "g": "every time + 주어 + 동사 = ~할 때마다 · whether it's A or B = A든 B든 · it's like ~ = 마치 ~와 같다 · their = goggles의"
+  },
+  {
+   "en": "Each set of goggles you put on makes you see things differently.",
+   "ko": "고글을 하나 쓸 때마다, 그 고글은 세상을 다르게 보이게 만들어요.",
+   "g": "주어 Each set(단수) → makes · you put on = set을 꾸미는 관계절(목적격 관계대명사 that/which 생략) · make + 목적어 + 동사원형(see) (사역동사)"
+  },
+  {
+   "en": "So when you start to watch television, before you absorb the message of any particular TV show – whether it's Wheel of Fortune or The Wire – you start to see the world as being shaped like television itself.",
+   "ko": "그래서 텔레비전을 보기 시작하면, \"휠 오브 포춘\"이든 \"더 와이어\"든 어떤 프로그램의 내용을 받아들이기도 전에, 세상을 텔레비전 모양대로 보기 시작해요.",
+   "g": "see A as B = A를 B로 보다 · being shaped = 수동형 동명사(모양 지어지는 것) · Wheel of Fortune, The Wire = TV 프로그램 이름 · itself = 강조(바로 그 텔레비전)"
+  },
+  {
+   "en": "That's why Marshall McLuhan said that every time a new medium comes along – a new way for humans to communicate – it has buried in it a message.",
+   "ko": "그래서 마셜 매클루언은, 새로운 매체(사람들이 소통하는 새로운 방법)가 나타날 때마다 그 안에 메시지가 숨어 있다고 말했어요.",
+   "g": "That's why + 결과 = 그래서 ~이다 (앞 내용이 이유) · for humans = to communicate의 의미상 주어 · has buried in it a message = has a message buried in it (목적어가 길어 뒤로 간 어순)"
+  },
+  {
+   "en": "It is gently guiding us to see the world according to a new set of codes.",
+   "ko": "그 매체는 우리가 새로운 규칙에 맞춰 세상을 보도록 살며시 이끌고 있어요.",
+   "g": "It = 새 매체(그 안에 숨은 메시지) · guide + 목적어 + to V = ~가 …하도록 이끌다 · according to = ~에 따라"
+  },
+  {
+   "en": "The way information gets to you, McLuhan argued, is more important than the information itself.",
+   "ko": "매클루언은, 정보가 우리에게 전달되는 방식이 정보 그 자체보다 더 중요하다고 주장했어요.",
+   "g": "the way + 주어 + 동사 = ~하는 방식 (the way how ❌: the way나 how 중 하나만) · McLuhan argued = 중간에 끼어든 삽입절 · 주어 The way(단수) → is"
+  },
+  {
+   "en": "TV teaches you that the world is fast; that it's about surfaces and appearances.",
+   "ko": "TV는 세상이 빠르다는 것, 그리고 세상은 겉모습이 중요하다는 것을 가르쳐 줘요.",
+   "g": "teach + 사람 + that절 = ~에게 …라는 것을 가르치다 · 세미콜론(;) 뒤 that절도 teaches의 목적어(병렬) · it = the world"
+  }
+ ],
+ "topic": "새로운 매체는 그 내용과 상관없이 우리가 세상을 보는 방식 자체를 바꾼다.",
+ "easy": "새로운 매체(책, TV, SNS)를 쓰는 건 색깔 있는 고글을 쓰는 것과 같아요. 무슨 내용을 보느냐보다, 어떤 방법으로 보느냐가 우리 생각을 더 많이 바꿔요!",
+ "qs": [
+  {
+   "t": "제목",
+   "q": "다음 글의 제목으로 가장 적절한 것은?",
+   "shuffle": true,
+   "o": [
+    "New Goggles: How a Medium Changes the Way We See",
+    "The Content of TV Shows Matters Most",
+    "Why Goggles Are the Best Way to Protect Your Eyes",
+    "Printed Books: Still the Most Popular Medium",
+    "How to Choose Good TV Shows for Children"
+   ],
+   "a": 1,
+   "why": "새로운 매체를 쓰는 것은 <b>새 고글을 쓰는 것</b>과 같아서 세상을 다르게 보게 만들고, 매클루언은 <b>정보가 전달되는 방식이 정보 자체보다 더 중요하다</b>고 했어요. 그래서 ①이 딱 맞아요.<br>② 반대예요. 프로그램 내용(message of any particular TV show)을 받아들이기 <b>전에</b> 이미 세상을 보는 눈이 바뀐다고 했어요.<br>③ 고글은 비유일 뿐, 눈 보호 이야기가 아니에요.<br>④ 책이 가장 인기 있다는 말은 없어요.<br>⑤ 좋은 프로그램 고르는 법은 나오지 않아요.<br>📌 해석: ① 새 고글: 매체는 우리가 보는 방식을 어떻게 바꾸는가 ② TV 프로그램의 내용이 가장 중요하다 ③ 고글이 눈을 보호하는 최고의 방법인 이유 ④ 인쇄된 책: 여전히 가장 인기 있는 매체 ⑤ 아이들을 위한 좋은 TV 프로그램 고르는 법",
+   "ev": "The way information gets to you, McLuhan argued, is more important than the information itself.",
+   "evKo": "정보가 당신에게 전달되는 방식이 정보 그 자체보다 더 중요하다고 매클루언은 주장했다."
+  },
+  {
+   "t": "어휘",
+   "q": "(A), (B), (C)의 각 네모 안에서 문맥에 맞는 낱말로 가장 적절한 것은?",
+   "box": "Each set of goggles you put on makes you see things <b>(A) [differently / similarly]</b>. … That's why Marshall McLuhan said that every time a new medium comes along – a new way for humans to <b>(B) [compete / communicate]</b> – it has buried in it a message. … The way information gets to you, McLuhan argued, is <b>(C) [less / more]</b> important than the information itself.",
+   "o": [
+    "differently — compete — more",
+    "differently — communicate — more",
+    "differently — communicate — less",
+    "similarly — communicate — more",
+    "similarly — compete — less"
+   ],
+   "a": 2,
+   "why": "(A) 고글마다 \"자기만의 특별한 색깔과 렌즈\"가 있으니, 쓸 때마다 세상이 <b>다르게(differently)</b> 보여요. similarly는 \"비슷하게\".<br>(B) 매체(책, TV, SNS)는 사람들이 <b>소통하는(communicate)</b> 새로운 방법이에요. compete는 \"경쟁하다\"라서 매체의 뜻과 맞지 않아요.<br>(C) 프로그램 내용을 받아들이기 <b>전에</b> 이미 세상을 TV 모양으로 보게 되고, TV는 \"세상은 빠르고 겉모습이 중요하다\"고 가르친다고 했어요. 즉, 전달 방식이 내용보다 <b>더(more)</b> 중요하다는 거예요.",
+   "ev": "Each set of goggles you put on makes you see things differently.",
+   "evKo": "당신이 쓰는 고글 하나하나가 당신이 사물을 다르게 보게 만든다."
+  },
+  {
+   "t": "어법",
+   "q": "(A), (B), (C)의 각 네모 안에서 어법에 맞는 표현으로 가장 적절한 것은?",
+   "box": "Each set of goggles you put on <b>(A) [make / makes]</b> you see things differently. So when you start to watch television, before you absorb the message of any particular TV show – whether it's Wheel of Fortune or The Wire – you start to see the world as <b>(B) [shaping / being shaped]</b> like television itself. … It is gently guiding us <b>(C) [seeing / to see]</b> the world according to a new set of codes.",
+   "o": [
+    "make — shaping — to see",
+    "make — being shaped — seeing",
+    "makes — shaping — seeing",
+    "makes — being shaped — seeing",
+    "makes — being shaped — to see"
+   ],
+   "a": 5,
+   "why": "(A) 주어는 <b>Each set</b>(단수)예요. of goggles는 꾸미는 말, you put on은 set을 꾸미는 관계절(목적격 관계대명사 생략)이라 동사는 단수형 <b>makes</b>.<br>(B) 세상이 텔레비전처럼 \"모양 지어지는\" 것이니 수동 → <b>being shaped</b>. shaping은 뒤에 목적어가 필요한 능동형이에요.<br>(C) guide + 목적어 + <b>to V</b> (~가 …하도록 이끌다) → <b>to see</b>.",
+   "ev": "It is gently guiding us to see the world according to a new set of codes.",
+   "evKo": "그것은 우리가 새로운 규칙에 따라 세상을 보도록 부드럽게 이끌고 있다."
+  },
+  {
+   "t": "내용일치",
+   "q": "다음 글의 내용과 일치하는 것은?",
+   "shuffle": true,
+   "o": [
+    "텔레비전은 특정 프로그램을 다 본 뒤에야 세상을 보는 방식에 영향을 준다.",
+    "매클루언은 정보 자체가 정보의 전달 방식보다 더 중요하다고 했다.",
+    "새로운 매체를 쓰기 시작하는 것은 새로운 고글을 쓰는 것과 같다.",
+    "매클루언은 새로운 매체에는 아무 메시지도 담겨 있지 않다고 했다.",
+    "TV는 세상이 느리고 속 깊은 곳이라고 가르친다."
+   ],
+   "a": 3,
+   "why": "첫 문장에서 새로운 매체를 쓰기 시작하는 것은 \"<b>like you are putting on a new kind of goggles</b>(새로운 고글을 쓰는 것 같다)\"라고 했어요.<br>① 프로그램 내용을 받아들이기 <b>전에(before)</b> 이미 세상을 TV 모양으로 본다고 했어요.<br>② 반대예요. 전달 방식이 정보 자체보다 <b>더 중요하다</b>고 했어요.<br>④ 반대예요. 새 매체 안에 메시지가 <b>숨어 있다(has buried in it a message)</b>고 했어요.<br>⑤ 반대예요. 세상이 <b>빠르고(fast)</b> 겉모습(surfaces and appearances)이 중요하다고 가르친다고 했어요.",
+   "ev": "it's like you are putting on a new kind of goggles, with their own special colors and lenses",
+   "evKo": "그것은 마치 저마다 특별한 색깔과 렌즈를 가진 새로운 종류의 고글을 쓰는 것과 같다"
+  },
+  {
+   "t": "순서",
+   "q": "주어진 글 다음에 이어질 글의 순서로 가장 적절한 것은?",
+   "box": "Every time a new medium comes along – whether it's the invention of the printed book, or TV, or SNS – and you start to use it, it's like you are putting on a new kind of goggles, with their own special colors and lenses.<br><br><b>(A)</b> The way information gets to you, McLuhan argued, is more important than the information itself. TV teaches you that the world is fast; that it's about surfaces and appearances.<br><br><b>(B)</b> Each set of goggles you put on makes you see things differently. So when you start to watch television, before you absorb the message of any particular TV show – whether it's Wheel of Fortune or The Wire – you start to see the world as being shaped like television itself.<br><br><b>(C)</b> That's why Marshall McLuhan said that every time a new medium comes along – a new way for humans to communicate – it has buried in it a message. It is gently guiding us to see the world according to a new set of codes.",
+   "o": [
+    "(A) - (C) - (B)",
+    "(B) - (A) - (C)",
+    "(B) - (C) - (A)",
+    "(C) - (A) - (B)",
+    "(C) - (B) - (A)"
+   ],
+   "a": 3,
+   "why": "① 주어진 글: 새 매체를 쓰는 건 <b>새 고글</b>을 쓰는 것과 같다.<br>② <b>(B)</b> \"<b>Each set of goggles</b>\"가 주어진 글의 goggles를 바로 이어받아 비유를 설명하고, <b>So</b>로 TV의 예를 들어요.<br>③ <b>(C)</b> <b>That's why</b>(그래서) 앞의 설명과 TV 예시를 근거로, 매클루언의 말(새 매체 안에는 메시지가 숨어 있다)이 나와요. 여기서 <b>Marshall McLuhan</b>이 처음으로 성과 이름을 모두 갖춰 소개돼요.<br>④ <b>(A)</b> 이미 소개된 인물이라 성만 써서 <b>McLuhan argued</b>라고 이어 말하고, TV가 가르치는 것으로 마무리해요.<br>👉 연결고리: <b>goggles</b>(B) · <b>That's why</b>(C) · 처음 소개(C) → 성만 쓰기(A)",
+   "ev": "Each set of goggles you put on makes you see things differently.",
+   "evKo": "당신이 쓰는 고글 하나하나가 당신이 사물을 다르게 보게 만든다."
+  },
+  {
+   "t": "빈칸",
+   "q": "다음 빈칸에 들어갈 말로 가장 적절한 것은?",
+   "shuffle": true,
+   "box": "Each set of goggles you put on makes you see things differently. … That's why Marshall McLuhan said that every time a new medium comes along – a new way for humans to communicate – it has buried in it a message. It is gently guiding us to see the world according to a new set of codes. <b>__________</b>, McLuhan argued, is more important than the information itself.",
+   "o": [
+    "The way information gets to you",
+    "The message of each TV show",
+    "The amount of information you receive",
+    "The truth behind the information",
+    "The person who creates the information"
+   ],
+   "a": 1,
+   "why": "글 전체가 \"매체(정보가 전달되는 <b>방법</b>)가 세상을 보는 눈을 바꾼다\"는 내용이에요. 그러니 정보 자체보다 더 중요한 것은 <b>정보가 전달되는 방식</b>이에요.<br>② TV 프로그램의 내용은 오히려 받아들이기 <b>전에</b> 이미 영향을 받는다고 했으니 틀려요.<br>③④ 정보의 양이나 진실은 \"정보 자체\"에 관한 것이라 글의 흐름과 반대예요.<br>⑤ 정보를 만드는 사람 이야기는 없어요.<br>📌 해석: ① 정보가 당신에게 전달되는 방식 ② 각 TV 프로그램의 메시지 ③ 당신이 받는 정보의 양 ④ 정보 뒤에 숨은 진실 ⑤ 정보를 만드는 사람",
+   "ev": "before you absorb the message of any particular TV show",
+   "evKo": "어떤 특정 TV 프로그램의 메시지를 받아들이기 전에"
+  }
+ ]
+},
+/* ───────── 38번 ───────── */
+{
+ "id": "38",
+ "kind": "문장삽입",
+ "title": "날개는 다 같은 날개일까?",
+ "words": [
+  {
+   "en": "distinguish",
+   "ko": "구별하다",
+   "m": [
+    "distinguish"
+   ],
+   "tip": "distinguish A from B = A와 B를 구별하다"
+  },
+  {
+   "en": "similarity",
+   "ko": "유사성, 비슷함",
+   "m": [
+    "similarity"
+   ],
+   "tip": "similar(비슷한)의 명사형"
+  },
+  {
+   "en": "trait",
+   "ko": "특성, 형질",
+   "m": [
+    "traits"
+   ]
+  },
+  {
+   "en": "analogous",
+   "ko": "상사의, 유사한",
+   "m": [
+    "Analogous"
+   ],
+   "tip": "analogy(유사, 상사) — 기능은 같지만 기원이 다름"
+  },
+  {
+   "en": "homologous",
+   "ko": "상동의",
+   "m": [
+    "Homologous"
+   ],
+   "tip": "homology(상동) — 기능은 달라도 조상(기원)이 같음"
+  },
+  {
+   "en": "function",
+   "ko": "기능",
+   "m": [
+    "function"
+   ],
+   "tip": "nonfunctional = 기능과 상관없는"
+  },
+  {
+   "en": "arise",
+   "ko": "생겨나다",
+   "m": [
+    "arose"
+   ],
+   "tip": "arise-arose-arisen / arouse(불러일으키다)와 구별"
+  },
+  {
+   "en": "evolutionary",
+   "ko": "진화의",
+   "m": [
+    "evolutionary"
+   ],
+   "tip": "evolve(진화하다) → evolution(진화)"
+  },
+  {
+   "en": "independently",
+   "ko": "따로, 독립적으로",
+   "m": [
+    "independently"
+   ]
+  },
+  {
+   "en": "in contrast",
+   "ko": "대조적으로",
+   "m": [
+    "in contrast"
+   ]
+  },
+  {
+   "en": "descend from",
+   "ko": "~의 자손이다",
+   "m": [
+    "descended from"
+   ]
+  },
+  {
+   "en": "ancestor",
+   "ko": "조상",
+   "m": [
+    "ancestor"
+   ],
+   "tip": "반대말: descendant(자손)"
+  },
+  {
+   "en": "hence",
+   "ko": "그러므로",
+   "m": [
+    "hence"
+   ]
+  },
+  {
+   "en": "indicate",
+   "ko": "나타내다, 보여 주다",
+   "m": [
+    "indicates"
+   ]
+  },
+  {
+   "en": "modification",
+   "ko": "변형",
+   "m": [
+    "modifications"
+   ],
+   "tip": "modify(변형하다, 수정하다)의 명사형"
+  },
+  {
+   "en": "property",
+   "ko": "속성, 특징",
+   "m": [
+    "properties"
+   ],
+   "tip": "\"재산\"이라는 뜻도 있어요"
+  }
+ ],
+ "sents": [
+  {
+   "en": "Biologists distinguish two kinds of similarity.",
+   "ko": "생물학자들은 \"비슷함\"을 두 종류로 나눠서 봐요.",
+   "g": "distinguish = 구별하다 · two kinds of ~ = 두 종류의 ~"
+  },
+  {
+   "en": "\"Analogous\" traits are ones that have a common function but arose on different branches of the evolutionary tree and are in an important sense not \"the same\" organ.",
+   "ko": "\"상사\" 특징은 하는 일(기능)은 같지만 진화 나무의 서로 다른 가지에서 생겨난 것이라서, 중요한 의미에서 보면 \"같은\" 기관이 아니에요.",
+   "g": "ones = traits (반복을 피하는 대명사) · 주격 관계대명사 that 뒤 동사 have, arose, are 병렬 · arise-arose-arisen = 생겨나다"
+  },
+  {
+   "en": "The wings of birds and the wings of bees are both used for flight and are similar in some ways because anything used for flight has to be built in those ways, but they arose independently in evolution and have nothing in common beyond their use in flight.",
+   "ko": "새의 날개와 벌의 날개는 둘 다 나는 데 쓰여요. 날기 위한 것은 그런 식으로 만들어질 수밖에 없어서 어떤 면에서는 비슷하죠. 하지만 둘은 진화 과정에서 따로따로 생겨났고, 난다는 점 말고는 공통점이 전혀 없어요.",
+   "g": "be used for ~ = ~에 쓰이다(수동) · anything used for flight: used는 anything을 꾸미는 과거분사, 주어 anything(단수) → has · have to be built = 수동형 to부정사 · have nothing in common = 공통점이 전혀 없다"
+  },
+  {
+   "en": "\"Homologous\" traits, in contrast, may or may not have a common function, but they descended from a common ancestor and hence have some common structure that indicates their being \"the same\" organ.",
+   "ko": "반대로 \"상동\" 특징은 하는 일이 같을 수도 있고 다를 수도 있지만, 같은 조상에게서 내려왔어요. 그래서 공통된 구조를 갖고 있고, 그 구조가 둘이 \"같은\" 기관이라는 걸 보여 줘요.",
+   "g": "in contrast = 대조적으로 · may or may not = ~일 수도 있고 아닐 수도 있다 · hence = 그러므로 · their being ~: their는 동명사 being의 의미상 주어"
+  },
+  {
+   "en": "The wing of a bat and the front leg of a horse have very different functions, but they are all modifications of the forelimb of the ancestor of all mammals.",
+   "ko": "박쥐의 날개와 말의 앞다리는 하는 일이 아주 다르지만, 둘 다 모든 포유류의 조상이 가졌던 앞다리가 변한 거예요.",
+   "g": "but = 앞뒤 내용이 반대 · modification = 변형(modify의 명사형) · 주어 The wing ~ and the front leg ~ (A and B = 복수) → have"
+  },
+  {
+   "en": "As a result, they share nonfunctional traits like the number of bones and the ways they are connected.",
+   "ko": "그래서 이 둘은 뼈의 개수나 뼈끼리 연결된 방식처럼, 하는 일과는 상관없는 특징을 함께 가지고 있어요.",
+   "g": "As a result = 그 결과 · like = ~ 같은(전치사, 예시) · the number of + 복수명사 = ~의 수 · the ways (that) they are connected, they = bones"
+  },
+  {
+   "en": "To distinguish analogy from homology, biologists usually look at the overall architecture of the organs and focus on their most useless properties.",
+   "ko": "상사와 상동을 구별하려고, 생물학자들은 보통 기관의 전체 구조를 살펴보고, 그 기관의 가장 쓸모없는 특징에 집중해요.",
+   "g": "To distinguish ~ = ~하기 위해(목적의 to부정사) · distinguish A from B = A와 B를 구별하다 · look at과 focus on 병렬(주어 biologists)"
+  }
+ ],
+ "topic": "생물학자들이 구별하는 두 종류의 유사성(상사와 상동)과 그것을 구별하는 방법",
+ "easy": "새와 벌의 날개는 둘 다 날지만 조상이 달라요(상사). 박쥐 날개와 말 앞다리는 하는 일은 달라도 조상이 같아요(상동). 둘을 구별하려면 쓸모없어 보이는 뼈 모양을 보면 돼요!",
+ "qs": [
+  {
+   "t": "주제",
+   "q": "다음 글의 주제로 가장 적절한 것은?",
+   "shuffle": true,
+   "o": [
+    "two types of biological similarity and how to tell them apart",
+    "the evolutionary advantages of animals that can fly",
+    "why organs with the same function always share an ancestor",
+    "the process by which horses developed their front legs",
+    "the importance of useful traits in classifying organs"
+   ],
+   "a": 1,
+   "why": "첫 문장에서 \"생물학자들은 <b>두 종류의 유사성</b>을 구별한다\"고 한 뒤, 상사(analogous)와 상동(homologous)을 예와 함께 설명하고, 마지막에 <b>둘을 구별하는 방법</b>을 말해요.<br>② 나는 동물의 장점 이야기가 아니에요.<br>③ 반대예요. 새와 벌의 날개는 기능이 같아도 따로 생겨났어요.<br>④ 말의 앞다리는 예시일 뿐이에요.<br>⑤ 반대예요. <b>가장 쓸모없는</b> 특징에 집중한다고 했어요.<br>📌 해석: ① 생물학적 유사성의 두 종류와 그것을 구별하는 방법 ② 날 수 있는 동물의 진화적 이점 ③ 같은 기능을 가진 기관이 항상 조상을 공유하는 이유 ④ 말이 앞다리를 발달시킨 과정 ⑤ 기관을 분류할 때 쓸모 있는 특징의 중요성",
+   "ev": "Biologists distinguish two kinds of similarity.",
+   "evKo": "생물학자들은 두 종류의 유사성을 구별한다."
+  },
+  {
+   "t": "어휘",
+   "q": "(A), (B), (C)의 각 네모 안에서 문맥에 맞는 낱말로 가장 적절한 것은?",
+   "box": "The wings of birds and the wings of bees are both used for flight … but they arose <b>(A) [together / independently]</b> in evolution and have nothing in common beyond their use in flight. … The wing of a bat and the front leg of a horse have very <b>(B) [different / similar]</b> functions, but they are all modifications of the forelimb of the ancestor of all mammals. … To distinguish analogy from homology, biologists usually look at the overall architecture of the organs and focus on their most <b>(C) [useful / useless]</b> properties.",
+   "o": [
+    "together — different — useful",
+    "together — similar — useless",
+    "independently — similar — useful",
+    "independently — similar — useless",
+    "independently — different — useless"
+   ],
+   "a": 5,
+   "why": "(A) 상사 형질은 진화 나무의 <b>서로 다른 가지</b>에서 생겨났고, 뒤에 \"공통점이 전혀 없다\"고 했으니 <b>따로(independently)</b> 생겨난 거예요. together(함께)는 반대예요.<br>(B) 박쥐 날개(날기)와 말 앞다리(달리기)는 하는 일이 <b>아주 다르죠(different)</b>. 뒤의 <b>but</b>(그렇지만 둘 다 같은 조상의 앞다리가 변한 것)과도 잘 이어져요.<br>(C) 상동 기관은 <b>기능과 상관없는(nonfunctional)</b> 특징(뼈의 개수, 연결 방식)을 공유해요. 기능이 같은 건 상사일 수도 있으니, 구별하려면 <b>가장 쓸모없는(useless)</b> 특징을 봐야 해요.",
+   "ev": "they share nonfunctional traits like the number of bones and the ways they are connected",
+   "evKo": "그것들은 뼈의 개수와 뼈가 연결된 방식 같은 기능과 무관한 특징을 공유한다"
+  },
+  {
+   "t": "어법",
+   "q": "(A), (B), (C)의 각 네모 안에서 어법에 맞는 표현으로 가장 적절한 것은?",
+   "box": "\"Analogous\" traits are ones <b>(A) [that / what]</b> have a common function but arose on different branches of the evolutionary tree … because anything used for flight <b>(B) [have / has]</b> to be built in those ways … To distinguish analogy from homology, biologists usually look at the overall architecture of the organs and <b>(C) [focusing / focus]</b> on their most useless properties.",
+   "o": [
+    "that — has — focus",
+    "that — have — focusing",
+    "what — has — focus",
+    "what — have — focus",
+    "that — has — focusing"
+   ],
+   "a": 1,
+   "why": "(A) 앞에 꾸밈을 받는 명사 <b>ones</b>(= traits)가 있고 뒤에 주어가 빠진 문장이 오니 주격 관계대명사 <b>that</b>. what은 앞에 명사(선행사)가 없을 때만 써요.<br>(B) 주어는 <b>anything</b>(단수)이고, used for flight는 anything을 꾸미는 과거분사구예요 → 단수 동사 <b>has</b>.<br>(C) 주어 biologists의 동사 look at과 and로 연결된 병렬 구조 → 동사 <b>focus</b>. focusing은 동사 자리에 올 수 없어요.",
+   "ev": "biologists usually look at the overall architecture of the organs and focus on their most useless properties",
+   "evKo": "생물학자들은 보통 기관의 전체 구조를 살펴보고 가장 쓸모없는 특징에 집중한다"
+  },
+  {
+   "t": "내용일치",
+   "q": "다음 글의 내용과 일치하지 <u>않는</u> 것은?",
+   "shuffle": true,
+   "o": [
+    "생물학자들은 두 종류의 유사성을 구별한다.",
+    "새의 날개와 벌의 날개는 진화 과정에서 따로 생겨났다.",
+    "상동 형질은 항상 같은 기능을 가진다.",
+    "박쥐의 날개와 말의 앞다리는 모든 포유류 조상의 앞다리가 변한 것이다.",
+    "박쥐의 날개와 말의 앞다리는 뼈의 개수 같은 특징을 공유한다."
+   ],
+   "a": 3,
+   "why": "상동 형질은 \"<b>may or may not</b> have a common function(같은 기능을 가질 수도 있고 <b>아닐 수도</b> 있다)\"이라고 했어요. 실제로 박쥐 날개와 말 앞다리는 기능이 아주 달라요. 그러니 \"항상 같은 기능\"은 틀려요.<br>①은 1번째 문장, ②는 3번째 문장, ④는 5번째 문장, ⑤는 6번째 문장과 일치해요.",
+   "ev": "\"Homologous\" traits, in contrast, may or may not have a common function",
+   "evKo": "대조적으로, \"상동\" 형질은 공통된 기능을 가질 수도 있고 그렇지 않을 수도 있다"
+  },
+  {
+   "t": "순서",
+   "q": "주어진 글 다음에 이어질 글의 순서로 가장 적절한 것은?",
+   "box": "Biologists distinguish two kinds of similarity. \"Analogous\" traits are ones that have a common function but arose on different branches of the evolutionary tree and are in an important sense not \"the same\" organ.<br><br><b>(A)</b> \"Homologous\" traits, in contrast, may or may not have a common function, but they descended from a common ancestor and hence have some common structure that indicates their being \"the same\" organ. The wing of a bat and the front leg of a horse have very different functions, but they are all modifications of the forelimb of the ancestor of all mammals.<br><br><b>(B)</b> As a result, they share nonfunctional traits like the number of bones and the ways they are connected. To distinguish analogy from homology, biologists usually look at the overall architecture of the organs and focus on their most useless properties.<br><br><b>(C)</b> The wings of birds and the wings of bees are both used for flight and are similar in some ways because anything used for flight has to be built in those ways, but they arose independently in evolution and have nothing in common beyond their use in flight.",
+   "o": [
+    "(A) - (C) - (B)",
+    "(B) - (A) - (C)",
+    "(B) - (C) - (A)",
+    "(C) - (A) - (B)",
+    "(C) - (B) - (A)"
+   ],
+   "a": 4,
+   "why": "① 주어진 글: 두 종류의 유사성 중 첫 번째, <b>상사(Analogous)</b> 형질 설명.<br>② <b>(C)</b> 상사 형질의 예: 새와 벌의 날개(기능은 같지만 따로 생겨남).<br>③ <b>(A)</b> <b>in contrast</b>(대조적으로) → 두 번째 <b>상동(Homologous)</b> 형질 설명과 예: 박쥐 날개와 말 앞다리.<br>④ <b>(B)</b> <b>As a result</b>(그 결과), <b>they</b>(= 박쥐 날개와 말 앞다리)는 뼈의 개수 등을 공유한다 → 구별 방법으로 마무리.<br>👉 (B)가 (C) 뒤에 오면 \"공통점이 전혀 없다\"는 새·벌 날개가 뼈 구조를 공유한다는 모순이 생겨요.<br>👉 연결고리: 예시(C) · <b>in contrast</b>(A) · <b>As a result, they</b>(B)",
+   "ev": "\"Homologous\" traits, in contrast, may or may not have a common function",
+   "evKo": "대조적으로, \"상동\" 형질은 공통된 기능을 가질 수도 있고 그렇지 않을 수도 있다"
+  },
+  {
+   "t": "빈칸",
+   "q": "다음 빈칸에 들어갈 말로 가장 적절한 것은?",
+   "shuffle": true,
+   "box": "\"Homologous\" traits, in contrast, may or may not have a common function, but they descended from a common ancestor and hence have some common structure that indicates their being \"the same\" organ. … As a result, they share nonfunctional traits like the number of bones and the ways they are connected. To distinguish analogy from homology, biologists usually look at the overall architecture of the organs and focus on <b>__________</b>.",
+   "o": [
+    "their most useless properties",
+    "the functions they perform",
+    "how well they help animals survive",
+    "the environments the animals live in",
+    "the size and speed of the animals"
+   ],
+   "a": 1,
+   "why": "상동 기관은 조상이 같아서 <b>기능과 상관없는(nonfunctional)</b> 특징(뼈의 개수, 연결 방식)을 공유해요. 반면 기능이 같은 것은 따로 생겨난 상사일 수도 있어요. 그래서 둘을 구별하려면 기능이 아니라 <b>가장 쓸모없는 특징</b>을 봐야 해요.<br>②③ 기능·쓸모에 집중하면 새 날개와 벌 날개처럼 상사인 것도 같아 보여서 구별이 안 돼요.<br>④⑤ 사는 환경, 크기·속도 이야기는 글에 없어요.<br>📌 해석: ① 그것들의 가장 쓸모없는 특징 ② 그것들이 하는 기능 ③ 그것들이 동물의 생존을 얼마나 잘 돕는지 ④ 동물이 사는 환경 ⑤ 동물의 크기와 속도",
+   "ev": "As a result, they share nonfunctional traits like the number of bones and the ways they are connected.",
+   "evKo": "그 결과, 그것들은 뼈의 개수와 뼈가 연결된 방식 같은 기능과 무관한 특징을 공유한다."
+  }
+ ]
+}
+];
+
+
+/* ═════════ 공통 ═════════ */
+const CIRC=['①','②','③','④','⑤'];
+const REASONS=['📖 단어를 몰랐어요','✏️ 문법을 몰랐어요','🔍 해석을 잘못했어요','🎯 근거를 못 찾았어요','🎲 찍었어요','⏩ 급하게 풀었어요'];
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const strip=h=>String(h).replace(/<[^>]+>/g,'');
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function lsGet(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}}
+function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
+function lsRaw(k){try{return localStorage.getItem(k)||sessionStorage.getItem(k)||'';}catch(e){return '';}}
+function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.remove('show'),1800);}
+function speak(txt){
+  try{
+    if(!('speechSynthesis' in window)) return toast('이 기기는 읽어주기를 지원하지 않아요');
+    speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(txt.replace(/\(-.*?\)/g,''));
+    u.lang='en-US';u.rate=0.9;
+    const v=speechSynthesis.getVoices().find(v=>/^en(-|_)US/i.test(v.lang));
+    if(v) u.voice=v;
+    speechSynthesis.speak(u);
+  }catch(e){}
+}
+function norm(s){return String(s).toLowerCase().replace(/[’‘`]/g,"'").replace(/[–—]/g,'-').replace(/[^a-z0-9]/g,'');}
+function fixWhy(why,order){
+  // 선택지를 섞은 문제: 해설 속 ①~⑤ 번호를 학생 화면 번호로 바꾸고, '📌 해석' 목록은 번호순으로 다시 정렬
+  if(!order || order.every((k,j)=>k===j)) return why;
+  let w=String(why).replace(/[①②③④⑤]/g,c=>CIRC[order.indexOf(CIRC.indexOf(c))]);
+  const at=w.indexOf('📌 해석:');
+  if(at>=0){
+    const head=w.slice(0,at+'📌 해석:'.length), tail=w.slice(at+'📌 해석:'.length);
+    const items=tail.match(/[①②③④⑤][^①②③④⑤]*/g);
+    if(items) w=head+' '+items.map(x=>x.trim()).sort((x,y)=>CIRC.indexOf(x[0])-CIRC.indexOf(y[0])).join(' ');
+  }
+  return w;
+}
+function toTop(){window.scrollTo({top:0,behavior:'smooth'});}
+
+let USER={name:'',school:''};
+let P=null;          // 현재 지문
+let S={};            // 현재 지문 학습 상태
+const progKey=()=>'bn_deep_'+EXAM.file+'_'+USER.name;
+
+/* ═════════ 시작 ═════════ */
+function init(){
+  document.title='봄날 퀴즈 | '+EXAM.title;
+  $('#stTitle').textContent=EXAM.title;
+  $('#stSub').textContent=EXAM.sub;
+  const n=lsRaw('bn_name'), sc=lsRaw('bn_school');
+  if(n){USER={name:n,school:sc||'미입력'};enter();}
+  else $('#startScreen').classList.remove('hidden');
+}
+function startApp(){
+  const n=$('#nameInput').value.trim(), sc=$('#schoolInput').value;
+  if(!n) return toast('이름을 입력하세요');
+  if(!sc) return toast('학교를 선택하세요');
+  USER={name:n,school:sc};
+  try{localStorage.setItem('bn_name',n);localStorage.setItem('bn_school',sc);}catch(e){}
+  $('#startScreen').classList.add('hidden');
+  enter();
+}
+function enter(){
+  $('#topBar').classList.remove('hidden');
+  $('#who').textContent='👤 '+USER.name;
+  goHome();
+}
+function setSteps(cur){
+  const order=['word','read','quiz'];
+  const ci=order.indexOf(cur);
+  $('#steps').classList.toggle('hidden',ci<0);
+  document.querySelectorAll('#steps div').forEach((d,i)=>{
+    d.className=i===ci?'on':(i<ci?'done':'');
+  });
+}
+
+/* ═════════ 지문 선택 ═════════ */
+function goHome(){
+  if(S.dirty && !confirm('지금 나가면 이 지문 학습 기록이 저장되지 않아요. 나갈까요?')) return;
+  S={};P=null;
+  $('#backBtn').classList.add('hidden');
+  $('#topTitle').textContent=EXAM.title;
+  setSteps('');
+  const prog=lsGet(progKey(),{});
+  let h=`<div class="card" style="text-align:center">
+    <div class="bh" style="font-size:20px;color:var(--pri)">어떤 지문을 공부할까요?</div>
+    <p class="muted" style="margin-top:4px">한 지문씩 <b>단어 → 한 줄 해석 → 문제</b> 순서로 완전정복! 틀리면 오답노트를 써야 넘어갈 수 있어요.</p>
+  </div><div class="pgrid">`;
+  PASSAGES.forEach(p=>{
+    const g=prog[p.id]||{};
+    const done=g.quiz;
+    h+=`<button class="pcard${done?' done':''}" onclick="openPassage('${p.id}')">
+      <div class="no">${p.id}번</div>
+      <div class="kd">${esc(p.kind)}</div>
+      <div class="tt">${esc(p.title)}</div>
+      <div class="pr"><i class="${g.word?'ok':''}">단어</i><i class="${g.read?'ok':''}">해석</i><i class="${g.quiz?'ok':''}">${g.quiz?'문제 '+g.score+'점':'문제'}</i></div>
+    </button>`;
+  });
+  h+='</div>';
+  $('#main').innerHTML=h;
+  toTop();
+}
+function markProg(key,val){
+  const prog=lsGet(progKey(),{});
+  prog[P.id]=Object.assign(prog[P.id]||{},{[key]:val===undefined?true:val});
+  lsSet(progKey(),prog);
+}
+function openPassage(id){
+  P=PASSAGES.find(p=>p.id===id);
+  S={t0:Date.now(),wrongWords:[],wordFirst:{},notes:[],results:{},dirty:false};
+  $('#backBtn').classList.remove('hidden');
+  $('#topTitle').textContent=P.id+'번 · '+P.kind+' — '+P.title;
+  startWords();
+}
+
+/* ═════════ ① 단어 체크 ═════════ */
+function startWords(){
+  setSteps('word');
+  S.dirty=true;
+  S.wq=shuffle(P.words.map((w,i)=>i));
+  S.wTotal=P.words.length; S.wDone=0; S.wOk=0;
+  S.wPool=[...new Set(PASSAGES.flatMap(p=>p.words.map(w=>w.ko)))];
+  nextWord();
+}
+function nextWord(){
+  if(!S.wq.length) return wordsDone();
+  const i=S.wq[0], w=P.words[i];
+  const same=P.words.map(x=>x.ko).filter(k=>k!==w.ko);
+  const others=S.wPool.filter(k=>k!==w.ko && !same.includes(k));
+  const distract=shuffle(same).slice(0,2).concat(shuffle(others)).filter((v,j,a)=>a.indexOf(v)===j).slice(0,3);
+  const opts=shuffle([w.ko,...distract]);
+  S.wCur={i,opts};
+  const retry=S.wordFirst[i]===false;
+  $('#main').innerHTML=`
+    <div class="bar"><i style="width:${Math.round(S.wDone/S.wTotal*100)}%"></i></div>
+    <div class="card wbox">
+      <div class="wcount">${retry?'<span class="qround">다시 도전</span> ':''}단어 ${S.wDone+1} / ${S.wTotal} · 알맞은 뜻을 고르세요</div>
+      <div style="display:flex;align-items:center;justify-content:center;gap:10px">
+        <div class="wen">${esc(w.en)}</div><button class="say" onclick="speak(${esc(JSON.stringify(w.en))})">🔊</button>
+      </div>
+      <div class="opts">${opts.map((o,k)=>`<button class="opt" onclick="pickWord(${k})"><span class="n">${CIRC[k]}</span><span>${esc(o)}</span></button>`).join('')}</div>
+      <div id="wfb"></div>
+    </div>`;
+}
+function pickWord(k){
+  const {i,opts}=S.wCur, w=P.words[i];
+  const ok=opts[k]===w.ko;
+  const btns=document.querySelectorAll('.opt');
+  btns.forEach((b,j)=>{b.disabled=true;if(opts[j]===w.ko)b.classList.add('right');});
+  if(!ok) btns[k].classList.add('wrong');
+  if(S.wordFirst[i]===undefined){
+    S.wordFirst[i]=ok;
+    if(ok) S.wOk++; else S.wrongWords.push(w.en+'('+w.ko+')');
+  }
+  S.wq.shift();
+  if(ok){S.wDone++;}
+  else {S.wq.push(i);}
+  const tip=w.tip?`<div class="tip">💡 ${esc(w.tip)}</div>`:'';
+  $('#wfb').innerHTML=(ok?`<div class="fb ok"><h4>⭕ 정답!</h4></div>`:`<div class="fb" style="background:var(--redBg);color:var(--red)"><h4>❌ 정답은 "${esc(w.ko)}"</h4><div style="font-size:13px">이 단어는 뒤에 한 번 더 나와요.</div></div>`)
+    +tip+`<button class="btn full" style="margin-top:14px" onclick="nextWord()">다음 →</button>`;
+  if(ok && !w.tip) setTimeout(()=>{if(S.wCur&&S.wCur.i===i&&document.getElementById('wfb'))nextWord();},650);
+}
+function wordsDone(){
+  S.wCur=null;
+  markProg('word');
+  $('#main').innerHTML=`<div class="card" style="text-align:center">
+    <div style="font-size:40px">📖</div>
+    <div class="bh" style="font-size:22px;color:var(--pri);margin:6px 0">단어 체크 완료!</div>
+    <p>처음에 바로 맞힌 단어 <b style="color:var(--pri)">${S.wOk} / ${S.wTotal}</b>개</p>
+    ${S.wrongWords.length?`<div class="tip" style="margin-top:12px"><b>헷갈렸던 단어</b><br>${S.wrongWords.map(esc).join('<br>')}</div>`:'<p class="muted" style="margin-top:6px">완벽해요! 👏</p>'}
+    <button class="btn full" style="margin-top:18px" onclick="startRead()">② 한 줄 해석 읽기 →</button>
+  </div>`;
+  toTop();
+}
+
+/* ═════════ ② 한 줄 해석 ═════════ */
+function hlWords(en){
+  let out=esc(en);
+  const list=[];
+  P.words.forEach(w=>(w.m||[]).forEach(f=>list.push({f,ko:w.ko})));
+  list.sort((a,b)=>b.f.length-a.f.length);
+  const used=[];
+  list.forEach(({f,ko},n)=>{
+    const re=new RegExp('\\b('+f.replace(/[.*+?^${}()|[\]\\]/g,'\\$&').replace(/'/g,"(?:'|&#39;)")+')\\b','i');
+    if(re.test(out)&&!used.includes(f)){
+      out=out.replace(re,m=>`\u0001${n}\u0002${m}\u0003`);used.push(f);
+    }
+  });
+  return out.replace(/\u0001(\d+)\u0002(.*?)\u0003/g,(_,n,m)=>`<span class="kw" onclick="toast(${esc(JSON.stringify(list[n].f+' = '+list[n].ko))})">${m}</span>`);
+}
+function startRead(){
+  setSteps('read');
+  S.cover=S.cover||false;
+  S.readOk=S.readOk||P.sents.map(()=>false);
+  renderRead();
+  toTop();
+}
+function renderRead(){
+  const all=S.readOk.every(Boolean);
+  const cnt=S.readOk.filter(Boolean).length;
+  let h=`<div class="toolbar">
+    <div class="tog"><button class="${S.cover?'':'on'}" onclick="setCover(false)">해석 보이기</button><button class="${S.cover?'on':''}" onclick="setCover(true)">해석 가리기</button></div>
+    <div class="muted">밑줄 단어를 누르면 뜻이 나와요 · <b style="color:var(--pri)">${cnt}/${P.sents.length}</b></div>
+  </div>`;
+  P.sents.forEach((s,i)=>{
+    h+=`<div class="sent${S.readOk[i]?' ok':''}" id="s${i}">
+      <div class="row"><div class="num">${i+1}</div><div class="en">${hlWords(s.en)}</div><button class="say" onclick="speak(P.sents[${i}].en)">🔊</button></div>
+      <div class="ko${S.cover&&!S.readOk[i]?' cover':''}" onclick="this.classList.remove('cover')">${esc(s.ko)}</div>
+      ${s.g?`<div class="gp"><b>문법</b> ${esc(s.g)}</div>`:''}
+      <button class="chk" onclick="toggleRead(${i})">${S.readOk[i]?'✔ 이해 완료':'☐ 이해했어요'}</button>
+    </div>`;
+  });
+  if(P.note) h+=`<div class="muted" style="margin:4px 4px 0;white-space:pre-line">${esc(P.note)}</div>`;
+  h+=`<div class="topic"><div class="lb">🎯 이 글의 주제</div><div class="tx">${esc(P.topic)}</div><div class="ez">🧸 쉽게 말하면… ${esc(P.easy)}</div></div>
+    <button class="btn full" ${all?'':'disabled'} onclick="startQuiz()">${all?'③ 문제 풀러 가기 →':'모든 문장에 "이해했어요"를 눌러야 넘어가요 ('+cnt+'/'+P.sents.length+')'}</button>`;
+  $('#main').innerHTML=h;
+}
+function setCover(v){S.cover=v;renderRead();}
+function toggleRead(i){
+  const y=window.scrollY;
+  const ko=document.querySelector('#s'+i+' .ko');
+  if(!S.readOk[i] && ko && ko.classList.contains('cover')){ko.classList.remove('cover');toast('해석을 확인하고 한 번 더 누르세요');return;}
+  S.readOk[i]=!S.readOk[i];renderRead();window.scrollTo(0,y);
+}
+
+/* ═════════ ③ 문제 ═════════ */
+function startQuiz(){
+  markProg('read');
+  setSteps('quiz');
+  S.round=1;
+  S.qq=P.qs.map((q,i)=>i);
+  S.qPos=0;
+  S.firstOk=0;
+  S.roundWrong=[];
+  showQ();
+}
+function showQ(){
+  if(S.qPos>=S.qq.length) return roundEnd();
+  const qi=S.qq[S.qPos], q=P.qs[qi];
+  const order=q.shuffle?shuffle(q.o.map((_,k)=>k)):q.o.map((_,k)=>k);
+  S.cur={qi,order,answered:false};
+  $('#main').innerHTML=`
+    <div class="bar"><i style="width:${Math.round(S.qPos/S.qq.length*100)}%"></i></div>
+    <div class="card">
+      <div class="qhead"><span class="qtype">${esc(q.t)}</span>${S.round>1?`<span class="qround">틀린 문제 다시 풀기 ${S.round-1}회차</span>`:''}<span class="muted">${S.qPos+1} / ${S.qq.length}</span></div>
+      <div class="qstem">${q.q}</div>
+      ${q.box?`<div class="qbox">${q.box}</div>`:''}
+      <div class="opts">${order.map((k,j)=>`<button class="opt" onclick="pickQ(${j})"><span class="n">${CIRC[j]}</span><span>${esc(q.o[k])}</span></button>`).join('')}</div>
+      <div id="qfb"></div>
+    </div>`;
+  toTop();
+}
+function pickQ(j){
+  if(S.cur.answered) return;
+  S.cur.answered=true;
+  const {qi,order}=S.cur, q=P.qs[qi];
+  const pickedK=order[j], ansK=q.a-1, ansJ=order.indexOf(ansK);
+  const ok=pickedK===ansK;
+  const btns=document.querySelectorAll('.opt');
+  btns.forEach((b,x)=>{b.disabled=true;if(x===ansJ)b.classList.add('right');});
+  if(!ok) btns[j].classList.add('wrong');
+  if(S.round===1){
+    S.results[qi]={ok,my:CIRC[j]+' '+strip(q.o[pickedK]),ans:CIRC[ansJ]+' '+strip(q.o[ansK])};
+    if(ok) S.firstOk++;
+  }
+  if(ok){
+    $('#qfb').innerHTML=`<div class="fb ok"><h4>⭕ 정답이에요!</h4>${fixWhy(q.why,order)}</div>
+      <button class="btn full" style="margin-top:14px" onclick="S.qPos++;showQ()">다음 문제 →</button>`;
+    return;
+  }
+  S.roundWrong.push(qi);
+  S.note={qi,my:CIRC[j],myText:strip(q.o[pickedK]),ans:CIRC[ansJ],ansText:strip(q.o[ansK]),reasons:[],copyOk:false,memo:''};
+  const tr=P.sents.map((s,i)=>`<p><b>${i+1}.</b> ${esc(s.en)}<span class="k">→ ${esc(s.ko)}</span></p>`).join('');
+  $('#qfb').innerHTML=`
+  <div class="note" id="noteBox">
+    <div class="note-h"><span style="font-size:24px">🚨</span><span class="bh">오답노트 써!</span></div>
+    <div class="note-b">
+      <div class="nsec">
+        <div class="lb">✅ 정답과 자세한 해설</div>
+        <div class="expl">내 답 <b style="color:var(--red)">${CIRC[j]}</b> → 정답 <span class="ans">${CIRC[ansJ]} ${esc(strip(q.o[ansK]))}</span><br><br>${fixWhy(q.why,order)}</div>
+      </div>
+      <div class="nsec">
+        <div class="lb">📌 근거 문장과 해석</div>
+        <div class="ev"><div class="e">${esc(q.ev)}</div><div class="k">→ ${esc(q.evKo)}</div></div>
+        <button class="linkbtn" onclick="const f=this.nextElementSibling;f.classList.toggle('hidden');this.textContent=f.classList.contains('hidden')?'📖 전체 해석 펼치기':'📖 전체 해석 접기'">📖 전체 해석 펼치기</button>
+        <div class="full-tr hidden">${tr}</div>
+      </div>
+      <div class="nsec">
+        <div class="lb">1️⃣ 왜 틀렸나요? (여러 개 골라도 돼요)</div>
+        <div class="rs">${REASONS.map((r,k)=>`<button onclick="toggleReason(${k},this)">${r}</button>`).join('')}</div>
+      </div>
+      <div class="nsec">
+        <div class="lb">2️⃣ 근거 문장을 그대로 따라 쓰세요 (복사·붙여넣기 금지)</div>
+        <textarea class="copy" id="copyIn" rows="2" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="위의 파란 영어 문장을 보고 직접 입력" oninput="checkCopy()" onpaste="event.preventDefault();toast('직접 써야 기억에 남아요 ✍️')" ondrop="event.preventDefault()"></textarea>
+        <div class="cstat" id="copyStat">대소문자·문장부호는 조금 달라도 괜찮아요</div>
+      </div>
+      <div class="nsec">
+        <div class="lb">3️⃣ 한 줄 정리 — 다음엔 어떻게 풀까?</div>
+        <textarea class="copy" id="memoIn" rows="2" placeholder="예) miss 뒤에는 -ing! / While은 '~인 반면에' → 앞뒤가 반대 내용" oninput="checkNote()"></textarea>
+        <div class="cstat" id="memoStat">8글자 이상 써 주세요</div>
+      </div>
+      <button class="btn full warn" id="noteSave" disabled onclick="saveNote()">오답노트 저장하고 다음 →</button>
+    </div>
+  </div>`;
+  setTimeout(()=>{const nb=$('#noteBox');if(nb)nb.scrollIntoView({behavior:'smooth',block:'start'});},120);
+}
+function toggleReason(k,btn){
+  const r=S.note.reasons, at=r.indexOf(REASONS[k]);
+  if(at<0) r.push(REASONS[k]); else r.splice(at,1);
+  btn.classList.toggle('on',at<0);
+  checkNote();
+}
+function checkCopy(){
+  const el=$('#copyIn'), st=$('#copyStat');
+  const target=norm(P.qs[S.note.qi].ev), typed=norm(el.value);
+  el.classList.remove('good','bad');st.classList.remove('good','bad');
+  if(!typed){st.textContent='대소문자·문장부호는 조금 달라도 괜찮아요';S.note.copyOk=false;return checkNote();}
+  if(typed===target){
+    S.note.copyOk=true;el.classList.add('good');st.classList.add('good');st.textContent='✔ 완벽하게 따라 썼어요!';
+  }else if(target.startsWith(typed)){
+    S.note.copyOk=false;st.textContent='좋아요, 계속 쓰세요… ('+Math.round(typed.length/target.length*100)+'%)';
+  }else{
+    S.note.copyOk=false;el.classList.add('bad');st.classList.add('bad');
+    let k=0;while(k<typed.length&&typed[k]===target[k])k++;
+    st.textContent='✖ 철자가 다른 곳이 있어요 — 앞에서부터 '+Math.round(k/target.length*100)+'%까지 맞아요';
+  }
+  checkNote();
+}
+function checkNote(){
+  const m=($('#memoIn')||{}).value||'';
+  const mOk=m.replace(/\s/g,'').length>=8;
+  const ms=$('#memoStat');
+  if(ms){ms.classList.toggle('good',mOk);ms.textContent=mOk?'✔ 좋아요':'8글자 이상 써 주세요 ('+m.replace(/\s/g,'').length+'/8)';}
+  S.note.memo=m.trim();
+  const ready=S.note.reasons.length>0 && S.note.copyOk && mOk;
+  const b=$('#noteSave');
+  if(b){b.disabled=!ready;b.textContent=ready?'오답노트 저장하고 다음 →':'1️⃣ 이유 · 2️⃣ 따라쓰기 · 3️⃣ 한 줄 정리를 모두 해야 넘어가요';}
+}
+function saveNote(){
+  const n=S.note, q=P.qs[n.qi];
+  S.notes.push({pid:P.id,type:q.t,round:S.round,my:n.my+' '+n.myText,ans:n.ans+' '+n.ansText,reasons:n.reasons.slice(),memo:n.memo});
+  S.note=null;
+  S.qPos++;showQ();
+}
+function roundEnd(){
+  if(S.roundWrong.length){
+    const w=S.roundWrong.slice();
+    $('#main').innerHTML=`<div class="card" style="text-align:center">
+      <div style="font-size:40px">💪</div>
+      <div class="bh" style="font-size:21px;color:var(--red);margin:6px 0">틀린 문제 ${w.length}개 다시 풀기</div>
+      <p class="muted">오답노트에 쓴 내용을 떠올리면서 다시 풀어 보세요.<br>모두 맞혀야 이 지문이 끝나요!</p>
+      <button class="btn full" style="margin-top:16px" onclick="startRetry()">다시 풀기 →</button>
+    </div>`;
+    S.nextQ=w;
+    toTop();
+    return;
+  }
+  finishPassage();
+}
+function startRetry(){
+  S.round++;
+  S.qq=shuffle(S.nextQ);S.qPos=0;S.roundWrong=[];
+  showQ();
+}
+
+/* ═════════ 결과 · 저장 ═════════ */
+function finishPassage(){
+  const total=P.qs.length;
+  const score=Math.round(S.firstOk/total*100);
+  const el=Math.max(1,Math.round((Date.now()-S.t0)/60000));
+  markProg('quiz');markProg('score',score);
+  S.dirty=false;
+  const lines=[];
+  if(S.wrongWords.length) lines.push('[단어] '+S.wrongWords.join(', '));
+  S.notes.forEach(n=>lines.push(`[${n.pid}번 ${n.type}${n.round>1?' 재도전':''}] 내답 ${n.my.slice(0,2)}→정답 ${n.ans.slice(0,2)} · ${n.reasons.map(r=>r.replace(/^\S+\s/,'')).join(', ')} · "${n.memo}"`));
+  const payload={
+    submittedAt:new Date().toISOString(),
+    studentName:USER.name, school:USER.school,
+    quizType:EXAM.quizType, file:EXAM.file, quizLabel:EXAM.title+' '+P.id+'번',
+    passages:[P.id+'번'],
+    score, correct:S.firstOk, wrong:total-S.firstOk, total,
+    elapsedMin:el,
+    wordTotal:S.wTotal, wordCorrect:S.wOk,
+    rounds:S.round,
+    details:P.qs.map((q,i)=>{const r=S.results[i]||{};return{문제:P.id+'-'+q.t,지문:P.id+'번',유형:q.t,결과:r.ok?'✅정답':'❌오답',내답:r.my||'',정답:r.ans||''};}),
+    wrongNotes:S.notes,
+    wrongSentences:lines.join(' / ')
+  };
+  let saveMsg='기록 저장 중…';
+  (async()=>{
+    let ok=false;
+    try{ if(window._fbSave){ ok=(await window._fbSave(payload))!==false; } }catch(e){ok=false;}
+    const s=document.getElementById('saveMsg');
+    if(s) s.textContent=ok?'✔ 선생님께 기록이 전송됐어요':'⚠ 인터넷이 불안정해요 — 다음에 접속할 때 자동으로 다시 보내요';
+  })();
+
+  const nextP=PASSAGES[PASSAGES.findIndex(p=>p.id===P.id)+1];
+  $('#main').innerHTML=`<div class="card" style="text-align:center">
+      <div class="muted">${P.id}번 · ${esc(P.kind)} 완전정복 완료</div>
+      <div class="big" style="margin-top:8px">${score}<span style="font-size:24px">점</span></div>
+      <div class="muted">처음에 바로 맞힌 문제 기준</div>
+      <div class="stats">
+        <div><b>${S.wOk}/${S.wTotal}</b><span>단어</span></div>
+        <div><b>${S.firstOk}/${total}</b><span>문제</span></div>
+        <div><b>${S.notes.length}</b><span>오답노트</span></div>
+      </div>
+      <div class="muted" id="saveMsg">${saveMsg}</div>
+    </div>
+    ${S.notes.length?`<div class="card"><div class="bh" style="font-size:18px;color:var(--red);margin-bottom:10px">📝 내 오답노트</div><div class="nlist">${S.notes.map(n=>`
+      <div class="ni"><div class="t">${n.pid}번 ${esc(n.type)}${n.round>1?' (재도전)':''}</div>
+      <div>내 답 ${esc(n.my)}<br>정답 <b style="color:var(--green)">${esc(n.ans)}</b></div>
+      <div class="muted">이유: ${n.reasons.map(esc).join(', ')}</div>
+      <div style="margin-top:4px">✍️ ${esc(n.memo)}</div></div>`).join('')}</div></div>`:'<div class="card" style="text-align:center">🎉 한 번도 안 틀렸어요! 오답노트 없음</div>'}
+    <div class="btnrow">
+      ${nextP?`<button class="btn" onclick="openPassage('${nextP.id}')">다음: ${nextP.id}번 →</button>`:''}
+      <button class="btn sub" onclick="goHome()">지문 목록</button>
+      <button class="btn sub" onclick="openPassage('${P.id}')">이 지문 다시</button>
+    </div>`;
+  setSteps('');
+  toTop();
+}
+
+window.addEventListener('beforeunload',e=>{if(S.dirty){e.preventDefault();e.returnValue='';}});
+if('speechSynthesis' in window){try{speechSynthesis.getVoices();}catch(e){}}
+init();
+</script>
+</body>
+</html>

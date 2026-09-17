@@ -206,6 +206,7 @@ footer { text-align: center; padding: 28px; color: #aabbc8; font-size: .8rem; fo
         <a id="mock-type-voca"    class="sp-btn" target="_blank" rel="noopener" style="text-align:center;display:block;text-decoration:none;"><div class="sp-n">📖 단어</div><div style="font-size:.7rem;color:#7a7570;margin-top:2px">어휘 · 뜻 맞추기</div></a>
         <a id="mock-type-memory"  class="sp-btn" target="_blank" rel="noopener" style="text-align:center;display:block;text-decoration:none;"><div class="sp-n">🧠 본문 암기</div><div style="font-size:.7rem;color:#7a7570;margin-top:2px">빈칸 채우기 · 문장 순서</div></a>
         <a id="mock-type-grammar" class="sp-btn" target="_blank" rel="noopener" style="text-align:center;display:block;text-decoration:none;"><div class="sp-n">✏️ 어법 선택</div><div style="font-size:.7rem;color:#7a7570;margin-top:2px">어법 · 어휘 선택형</div></a>
+        <a id="mock-type-deep"    class="sp-btn" target="_blank" rel="noopener" style="text-align:center;display:block;text-decoration:none;"><div class="sp-n">🔍 지문 완전정복</div><div style="font-size:.7rem;color:#7a7570;margin-top:2px">단어 · 한 줄 해석 · 문제 · 오답노트</div></a>
         <a id="mock-type-total"   class="sp-btn" target="_blank" rel="noopener" style="text-align:center;display:block;text-decoration:none;"><div class="sp-n">🏆 총괄 퀴즈</div><div style="font-size:.7rem;color:#7a7570;margin-top:2px">문맥 · 순서 · 삽입 · 서술형</div></a>
         <a id="mock-type-synanm"  class="sp-btn" target="_blank" rel="noopener" style="text-align:center;display:block;text-decoration:none;display:none;"><div class="sp-n">🔤 동반의어</div><div style="font-size:.7rem;color:#7a7570;margin-top:2px">유의어 · 반의어</div></a>
       </div>
@@ -585,6 +586,17 @@ const SCHOOLS = [
           ]},
           {label:"4과", emoji:"📒", items:[
             {file:"__coming__", title:"교과서 4과", sub:"준비중", emoji:"📒", badge:"coming"}
+          ]}
+        ]}
+        ,{label:"26년 시험범위 · 모의고사", emoji:"🎯", sub:"22년·24년·25년 9월 · 지문 완전정복", groups:[
+          {label:"22년 9월 모의", emoji:"📝", items:[
+            {file:"mock_go1_2022_09_deep", q:"?v=20260917c", title:"22년 9월 지문 완전정복", sub:"20·23·24·29번 · 단어→한 줄 해석→문제→오답노트", emoji:"🔍", badge:"NEW"}
+          ]},
+          {label:"24년 9월 모의", emoji:"📝", items:[
+            {file:"mock_go1_2024_09_deep", q:"?v=20260917c", title:"24년 9월 지문 완전정복", sub:"20·22·23·30·32·38번 · 단어→한 줄 해석→문제→오답노트", emoji:"🔍", badge:"NEW"}
+          ]},
+          {label:"25년 9월 모의", emoji:"📝", items:[
+            {file:"mock_go1_2025_09_deep", q:"?v=20260917c", title:"25년 9월 지문 완전정복", sub:"21~24·29~34번 · 단어→한 줄 해석→문제→오답노트", emoji:"🔍", badge:"NEW"}
           ]}
         ]}
       ]},
@@ -1181,12 +1193,12 @@ function selectMockYear(year){
 }
 // 존재하는 모의고사 파일 명시 목록 (HEAD 요청 대신 정적 화이트리스트)
 const MOCK_FILES_AVAILABLE = new Set([
-  'mock_go1_2022_09_total',
+  'mock_go1_2022_09_total','mock_go1_2022_09_deep',
   'mock_go1_2023_06_voca','mock_go1_2023_06_memory',
   'mock_go1_2024_06_voca','mock_go1_2024_06_memory',
-  'mock_go1_2024_09_voca','mock_go1_2024_09_total',
+  'mock_go1_2024_09_voca','mock_go1_2024_09_total','mock_go1_2024_09_deep',
   'mock_go1_2025_06_voca','mock_go1_2025_06_memory','mock_go1_2025_06_total',
-  'mock_go1_2025_09_voca','mock_go1_2025_09_total',
+  'mock_go1_2025_09_voca','mock_go1_2025_09_total','mock_go1_2025_09_deep',
   'mock_go1_2026_06_voca',
   'mock_go1_2026_09_voca',
   'mock_go2_2024_06_voca','mock_go2_2024_06_memory','mock_go2_2024_06_grammar','mock_go2_2024_06_total',
@@ -1200,7 +1212,7 @@ const MOCK_FILES_AVAILABLE = new Set([
 ]);
 
 // 모의고사 파일 갱신 시 이 값을 올리면 학생 폰의 캐시가 무시되고 새 버전이 열립니다.
-const MOCK_VER = '20260916f';
+const MOCK_VER = '20260917c';
 
 function selectMockMonth(month){
   mockMonth = month;
@@ -1235,6 +1247,7 @@ function selectMockMonth(month){
   setTypeBtn('mock-type-memory','_memory','본문암기');
   setTypeBtn('mock-type-grammar','_grammar','어법선택');
   setTypeBtn('mock-type-total','_total','총괄퀴즈');
+  setTypeBtn('mock-type-deep','_deep','지문완전정복');
   document.getElementById('mock-type-title').textContent = mockGrade + ' ' + mockYear + '년 ' + month + ' · 유형을 선택하세요.';
 
   // 동반의어: 파일이 있는 조합만 표시
