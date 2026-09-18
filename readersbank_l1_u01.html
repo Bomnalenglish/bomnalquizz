@@ -184,11 +184,11 @@ let idx = 0;
 const startedAt = Date.now();
 
 /* ───────── 로그인 ───────── */
-(function autoLogin(){
-  const n = localStorage.getItem('bn_name');
-  const s = localStorage.getItem('bn_school');
+function autoLogin(){
+  let n=null, s=null;
+  try{ n = localStorage.getItem('bn_name'); s = localStorage.getItem('bn_school'); }catch(e){}
   if(n){ student.name=n; student.school=s||'미입력'; showMain(); }
-})();
+}
 
 function doLogin(){
   const n = document.getElementById('inName').value.trim();
@@ -585,6 +585,9 @@ function saveResult(pct, mins){
     .catch(()=>{ const m=$('saveMsg'); if(m) m.textContent='결과 저장에 실패했어요. (인터넷 확인)'; });
   else setTimeout(()=>{ const m=$('saveMsg'); if(m) m.textContent='✅ 학습을 마쳤어요.'; }, 600);
 }
+
+/* ═══ 모든 선언이 끝난 뒤 시작 ═══ */
+autoLogin();
 </script>
 
 <script type="module">
