@@ -197,6 +197,21 @@ footer { text-align: center; padding: 28px; color: #aabbc8; font-size: .8rem; fo
   </main>
 </div>
 
+<div id="screen-reading" class="screen">
+  <main>
+    <button class="back-btn" onclick="goStep('screen-pick')">← 메뉴로 돌아가기</button>
+    <div class="school-banner">
+      <div style="flex:1">
+        <div style="display:flex;align-items:center;flex-wrap:wrap;gap:6px">
+          <div class="banner-name" id="reading-name">봄날리딩</div>
+        </div>
+        <div class="banner-sub" id="reading-sub"></div>
+      </div>
+    </div>
+    <div id="reading-list"></div>
+  </main>
+</div>
+
 <div id="screen-mock-type" class="screen">
   <div class="auth-wrap">
     <div class="auth-card" style="max-width:420px;">
@@ -870,7 +885,7 @@ function renderSchoolPicker() {
 
   addPickerSection(picker, "📖 봄날 보카",        VOCA_LEVELS,      {emoji:"📖", collapsed:true});
   addPickerSection(picker, "🎧 봄날 Listening",   LISTENING_LEVELS, {emoji:"🎧", collapsed:true});
-  addPickerSection(picker, "📖 봄날 리딩 (초등)",  READING_LEVELS,   {emoji:"📖", collapsed:true});
+  addPickerSection(picker, "📖 봄날 리딩 (초등)",  READING_BOOKS,    {emoji:"📖", collapsed:true, onClick:function(b){ openReading(b.level); }});
 
   const mockSep = document.createElement("div");
   mockSep.style.cssText = "grid-column:1/-1;border-top:1px solid #e0d8ce;padding-top:10px;font-family:'Black Han Sans',sans-serif;font-size:.82rem;color:#a09890;margin-top:6px;";
@@ -980,10 +995,18 @@ function addPickerSection(picker, label, items, opts){
   head.onclick = function(){ open = !open; sync(); };
 
   items.forEach(function(item){
-    const a = document.createElement("a");
-    a.href = BASE + item.file + ".html" + (item.q || "");
-    a.target = "_blank"; a.rel = "noopener";
-    a.style.cssText = "display:block;text-decoration:none;border-radius:12px;padding:12px 14px;"
+    let a;
+    if(opts.onClick){
+      a = document.createElement("button");
+      a.type = "button";
+      a.onclick = function(){ opts.onClick(item); };
+    }else{
+      a = document.createElement("a");
+      a.href = BASE + item.file + ".html" + (item.q || "");
+      a.target = "_blank"; a.rel = "noopener";
+    }
+    a.style.cssText = "display:block;width:100%;text-align:left;cursor:pointer;text-decoration:none;"
+      + "border-radius:12px;padding:12px 14px;"
       + "border:2px solid #d0dde8;background:white;font-family:inherit;transition:border-color .15s,background .15s;";
     a.innerHTML = '<div style="font-size:.82rem;font-weight:700;color:#2a2a2a">' + (opts.emoji || '') + ' ' + item.title + '</div>'
       + (item.sub ? '<div style="font-size:.7rem;color:#7a7570;margin-top:2px">' + item.sub + '</div>' : '')
@@ -998,11 +1021,58 @@ function addPickerSection(picker, label, items, opts){
   picker.appendChild(wrap);
 }
 
-const READING_LEVELS = [
-  {file:'bomnalreading1_01', title:'1권 · 01과  힘든 일은 저에게 시키세요!', sub:'어휘 듣기 → 뜻 매칭 → 본문 듣기 → 문장 나누기', badge:'초등'},
-  {file:'bomnalreading1_02', title:'1권 · 02과  눈치 빠른 소년',           sub:'어휘 듣기 → 뜻 매칭 → 본문 듣기 → 문장 나누기', badge:'초등'},
-  {file:'bomnalreading1_03', title:'1권 · 03과  화성으로 여행 가요!',       sub:'어휘 듣기 → 뜻 매칭 → 본문 듣기 → 문장 나누기', badge:'초등'},
+const READING_BOOKS = [
+  {level:1, title:'봄날리딩 1권', sub:'초등 저·중학년 · 지문 01~03'},
 ];
+const READING_ITEMS = [
+  {level:1, unit:1, no:1, file:'bomnalreading1_01', title:'힘든 일은 저에게 시키세요!'},
+  {level:1, unit:1, no:2, file:'bomnalreading1_02', title:'눈치 빠른 소년'},
+  {level:1, unit:1, no:3, file:'bomnalreading1_03', title:'화성으로 여행 가요!'},
+];
+
+/* 권을 누르면 그 권의 지문 목록 화면으로 */
+function openReading(level){
+  const book  = READING_BOOKS.find(function(b){ return b.level === level; });
+  const items = READING_ITEMS.filter(function(i){ return i.level === level; });
+  document.getElementById('reading-name').textContent = book ? book.title : '봄날리딩';
+  document.getElementById('reading-sub').textContent  = '지문 ' + items.length + '개';
+
+  const wrap = document.getElementById('reading-list');
+  wrap.innerHTML = '';
+  if(!items.length){
+    wrap.innerHTML = '<div style="text-align:center;color:#a09890;padding:40px 0;font-size:.9rem">아직 준비 중이에요.</div>';
+    goStep('screen-reading'); return;
+  }
+  const units = [];
+  items.forEach(function(i){ if(units.indexOf(i.unit) < 0) units.push(i.unit); });
+
+  units.forEach(function(u){
+    const h = document.createElement('div');
+    h.style.cssText = "font-family:'Black Han Sans',sans-serif;font-size:.95rem;color:#2a2a2a;"
+      + "margin:20px 0 11px;padding-left:12px;border-left:4px solid #a09890;";
+    h.textContent = 'Unit ' + ('0' + u).slice(-2);
+    wrap.appendChild(h);
+
+    const g = document.createElement('div');
+    g.style.cssText = "display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px;";
+    items.filter(function(i){ return i.unit === u; }).forEach(function(i){
+      const a = document.createElement('a');
+      a.href = BASE + i.file + '.html';
+      a.target = '_blank'; a.rel = 'noopener';
+      a.style.cssText = "display:block;text-decoration:none;border-radius:14px;padding:14px 16px;"
+        + "border:2px solid #d0dde8;background:#fff;transition:border-color .15s,background .15s;";
+      a.innerHTML = '<div style="font-size:.68rem;color:#a09890;font-weight:700;letter-spacing:.3px">'
+          + 'UNIT ' + ('0'+u).slice(-2) + ' · ' + ('0'+i.no).slice(-2) + '과</div>'
+        + '<div style="font-size:.92rem;font-weight:700;color:#2a2a2a;margin-top:5px;line-height:1.4">' + i.title + '</div>'
+        + '<div style="font-size:.67rem;color:#7a7570;margin-top:6px">어휘 → 매칭 → 본문 듣기 → 문장 나누기</div>';
+      a.onmouseenter = function(){ a.style.borderColor='#888'; a.style.background='#f5f2ee'; };
+      a.onmouseleave = function(){ a.style.borderColor='#d0dde8'; a.style.background='#fff'; };
+      g.appendChild(a);
+    });
+    wrap.appendChild(g);
+  });
+  goStep('screen-reading');
+}
 const LISTENING_LEVELS = [
   {file:'bomnal_listening_go1_A', title:'고1 듣기평가 A', sub:'20문제 · 5지선다', badge:'고1'},
 ];
