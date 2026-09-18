@@ -868,35 +868,9 @@ function renderSchoolPicker() {
     picker.appendChild(btn);
   });
 
-  const sep = document.createElement("div");
-  sep.style.cssText = "grid-column:1/-1;border-top:1px solid #e0d8ce;padding-top:10px;font-family:'Black Han Sans',sans-serif;font-size:.82rem;color:#a09890;margin-top:2px;";
-  sep.textContent = "📖 봄날 보카";
-  picker.appendChild(sep);
-  VOCA_LEVELS.forEach((item) => {
-    const a = document.createElement("a");
-    a.href = BASE + item.file + ".html" + (item.q || "");
-    a.target = "_blank"; a.rel = "noopener";
-    a.style.cssText = "display:block;text-decoration:none;border-radius:12px;padding:12px 14px;border:2px solid #d0dde8;background:white;font-family:inherit;transition:border-color .15s,background .15s;";
-    a.innerHTML = '<div style="font-size:.82rem;font-weight:700;color:#2a2a2a">📖 ' + item.title + '</div>' + (item.sub ? '<div style="font-size:.7rem;color:#7a7570;margin-top:2px">' + item.sub + '</div>' : '');
-    a.onmouseenter = () => { a.style.borderColor='#888'; a.style.background='#f5f2ee'; };
-    a.onmouseleave = () => { a.style.borderColor='#d0dde8'; a.style.background='white'; };
-    picker.appendChild(a);
-  });
-
-  const listenSep = document.createElement("div");
-  listenSep.style.cssText = "grid-column:1/-1;border-top:1px solid #e0d8ce;padding-top:10px;font-family:'Black Han Sans',sans-serif;font-size:.82rem;color:#a09890;margin-top:6px;";
-  listenSep.textContent = "🎧 봄날 Listening";
-  picker.appendChild(listenSep);
-  LISTENING_LEVELS.forEach((item) => {
-    const a = document.createElement("a");
-    a.href = BASE + item.file + ".html" + (item.q || "");
-    a.target = "_blank"; a.rel = "noopener";
-    a.style.cssText = "display:block;text-decoration:none;border-radius:12px;padding:12px 14px;border:2px solid #d0dde8;background:white;font-family:inherit;transition:border-color .15s,background .15s;";
-    a.innerHTML = '<div style="font-size:.82rem;font-weight:700;color:#2a2a2a">🎧 ' + item.title + '</div>' + (item.sub ? '<div style="font-size:.7rem;color:#7a7570;margin-top:2px">' + item.sub + '</div>' : '') + (item.badge ? '<span style="display:inline-block;font-size:.63rem;background:#3d3d3d;color:#f0ede8;border-radius:20px;padding:1px 8px;margin-top:4px">' + item.badge + '</span>' : '');
-    a.onmouseenter = () => { a.style.borderColor='#888'; a.style.background='#f5f2ee'; };
-    a.onmouseleave = () => { a.style.borderColor='#d0dde8'; a.style.background='white'; };
-    picker.appendChild(a);
-  });
+  addPickerSection(picker, "📖 봄날 보카",        VOCA_LEVELS,      {emoji:"📖", collapsed:true});
+  addPickerSection(picker, "🎧 봄날 Listening",   LISTENING_LEVELS, {emoji:"🎧", collapsed:true});
+  addPickerSection(picker, "📖 봄날 리딩 (초등)",  READING_LEVELS,   {emoji:"📖", collapsed:true});
 
   const mockSep = document.createElement("div");
   mockSep.style.cssText = "grid-column:1/-1;border-top:1px solid #e0d8ce;padding-top:10px;font-family:'Black Han Sans',sans-serif;font-size:.82rem;color:#a09890;margin-top:6px;";
@@ -976,6 +950,58 @@ const VOCA_LEVELS = [
   {file:'bomnal_voca_고등_컴플리트_수능2000', q:'?v=6', title:'워드마스터 고등 Complete+수능2000', sub:'5735단어 · Day별 테스트 (하루 단어수 설정)', badge:'NEW'},
   {file:'bomnal_voca_고등_파이널2000', q:'?v=6', title:'워드마스터 파이널2000', sub:'1200단어 · Day별 테스트 (하루 단어수 설정)', badge:'NEW'},
   {file:'bomnal_voca_고등_하이퍼2000', q:'?v=6', title:'워드마스터 하이퍼2000 (고등 하이)', sub:'2494단어 · Day별 테스트 (하루 단어수 설정)', badge:'NEW'},
+];
+
+/* 학교 선택 화면의 접이식 섹션 (보카·리스닝·리딩 공용) */
+function addPickerSection(picker, label, items, opts){
+  opts = opts || {};
+  if(!items || !items.length) return;
+  const wrap = document.createElement("div");
+  wrap.style.cssText = "grid-column:1/-1;border-top:1px solid #e0d8ce;padding-top:10px;margin-top:6px;";
+
+  const head = document.createElement("button");
+  head.type = "button";
+  head.style.cssText = "display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;"
+    + "background:none;border:none;padding:2px 2px 9px;cursor:pointer;text-align:left;"
+    + "font-family:'Black Han Sans',sans-serif;font-size:.82rem;color:#a09890;";
+  const tt = document.createElement("span"); tt.textContent = label;
+  const ar = document.createElement("span");
+  ar.style.cssText = "font-family:'Gowun Dodum',sans-serif;font-size:.72rem;color:#b3a89a;";
+  head.appendChild(tt); head.appendChild(ar);
+
+  const body = document.createElement("div");
+  body.style.cssText = "display:grid;grid-template-columns:1fr;gap:8px;padding-bottom:2px;";
+
+  let open = !opts.collapsed;
+  function sync(){
+    body.style.display = open ? "grid" : "none";
+    ar.textContent = open ? "접기 ▲" : ("펼치기 ▼ " + items.length + "개");
+  }
+  head.onclick = function(){ open = !open; sync(); };
+
+  items.forEach(function(item){
+    const a = document.createElement("a");
+    a.href = BASE + item.file + ".html" + (item.q || "");
+    a.target = "_blank"; a.rel = "noopener";
+    a.style.cssText = "display:block;text-decoration:none;border-radius:12px;padding:12px 14px;"
+      + "border:2px solid #d0dde8;background:white;font-family:inherit;transition:border-color .15s,background .15s;";
+    a.innerHTML = '<div style="font-size:.82rem;font-weight:700;color:#2a2a2a">' + (opts.emoji || '') + ' ' + item.title + '</div>'
+      + (item.sub ? '<div style="font-size:.7rem;color:#7a7570;margin-top:2px">' + item.sub + '</div>' : '')
+      + (item.badge ? '<span style="display:inline-block;font-size:.63rem;background:#3d3d3d;color:#f0ede8;border-radius:20px;padding:1px 8px;margin-top:4px">' + item.badge + '</span>' : '');
+    a.onmouseenter = function(){ a.style.borderColor='#888'; a.style.background='#f5f2ee'; };
+    a.onmouseleave = function(){ a.style.borderColor='#d0dde8'; a.style.background='white'; };
+    body.appendChild(a);
+  });
+
+  sync();
+  wrap.appendChild(head); wrap.appendChild(body);
+  picker.appendChild(wrap);
+}
+
+const READING_LEVELS = [
+  {file:'bomnalreading1_01', title:'1권 · 01과  힘든 일은 저에게 시키세요!', sub:'어휘 듣기 → 뜻 매칭 → 본문 듣기 → 문장 나누기', badge:'초등'},
+  {file:'bomnalreading1_02', title:'1권 · 02과  눈치 빠른 소년',           sub:'어휘 듣기 → 뜻 매칭 → 본문 듣기 → 문장 나누기', badge:'초등'},
+  {file:'bomnalreading1_03', title:'1권 · 03과  화성으로 여행 가요!',       sub:'어휘 듣기 → 뜻 매칭 → 본문 듣기 → 문장 나누기', badge:'초등'},
 ];
 const LISTENING_LEVELS = [
   {file:'bomnal_listening_go1_A', title:'고1 듣기평가 A', sub:'20문제 · 5지선다', badge:'고1'},
