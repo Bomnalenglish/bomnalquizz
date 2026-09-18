@@ -177,6 +177,11 @@ tr:hover td{background:#f8f9ff;}
 .type-pill.type-ok{background:#e8f5e9;color:#2e7d32;}
 .type-pill.type-warn{background:#fff8e1;color:#f57c00;}
 .type-pill.type-default{background:#e8eaf6;color:#3949ab;}
+.type-pill.type-deep{background:#eaf0e6;color:#3f5a37;}
+.deep-note{border-left:3px solid #c0392b;background:#fff;border-radius:8px;padding:7px 10px;margin-bottom:6px;font-size:11px;line-height:1.6;}
+.deep-note .dn-t{font-weight:800;color:#c0392b;}
+.deep-note .dn-a{color:#2e7d32;font-weight:700;}
+.deep-note .dn-m{color:#334155;}
 
 .expand-btn{background:transparent;border:none;color:#64748b;cursor:pointer;font-size:11px;padding:3px 6px;border-radius:5px;transition:all .12s;}
 .expand-btn:hover{background:#e2e8f0;color:#1e293b;}
@@ -684,6 +689,11 @@ function _toQuiz(doc){
         attemptCount:d.attemptCount||1,
         passages:d.passages||[],
         details:d.details||[],
+        wordTotal:d.wordTotal||0,                          // 지문 완전정복: 단어 체크 문항 수
+        wordCorrect:(d.wordCorrect!==undefined?d.wordCorrect:null),
+        rounds:d.rounds||1,
+        wrongNotes:d.wrongNotes||[],                       // 지문 완전정복: 학생이 쓴 오답노트
+
         day:(d.day!==undefined&&d.day!==null?d.day:''),   // 봄날 보카 Day 차시
         level:d.level||'',                                 // 봄날 보카 교재명(워드마스터 중등 BASIC 등)
         submittedAt:d.submittedAt||null,
@@ -936,6 +946,20 @@ function sectionTag(qt){
   return m?m[1].trim():'';
 }
 
+// 지문 완전정복: 학생이 쓴 오답노트를 보기 좋게
+function deepNotesHtml(d){
+  if(!isDeepType(d.quizType)) return '';
+  const wordLine=(d.wordTotal)?`<div style="font-size:11px;color:#475569;margin-bottom:6px">📖 단어 체크 <b>${d.wordCorrect!=null?d.wordCorrect:'-'}/${d.wordTotal}</b>${d.rounds>1?` · 오답 다시 풀기 ${d.rounds-1}회`:''}</div>`:'';
+  const notes=Array.isArray(d.wrongNotes)?d.wrongNotes:[];
+  if(!notes.length) return wordLine;
+  const rows=notes.map(n=>`<div class="deep-note">
+      <span class="dn-t">${escapeHtml(n.pid||'')}번 ${escapeHtml(n.type||'')}${n.round>1?' (재도전)':''}</span>
+      &nbsp; 내 답 ${escapeHtml(n.my||'')} → 정답 <span class="dn-a">${escapeHtml(n.ans||'')}</span>
+      <div class="dn-m">이유: ${escapeHtml((n.reasons||[]).join(', '))}</div>
+      <div class="dn-m">✍️ ${escapeHtml(n.memo||'')}</div>
+    </div>`).join('');
+  return wordLine+`<div class="dwl-label">📝 오답노트 (${notes.length}개)</div>`+rows;
+}
 function passagesStr(d){
   if(!d || !d.passages || d.passages.length===0) return '';
   return [...d.passages].sort((a,b)=>parseInt(a)-parseInt(b)).join(',')+'번';
@@ -1053,8 +1077,8 @@ function renderTable(data){
     const lessonDisplay=lessonSet.length===0?'<span style="color:#cbd5e1">-</span>'
       :lessonSet.length===1?lessonSet[0]
       :`<span style="color:#475569">${lessonSet.join(', ')}</span>`;
-    const hasWrongs=(d.wrongWords&&d.wrongWords.length>0)||d.wrongSentences||d.wrongNumbers;
-    const anyHasWrong=attempts.some(a=>(a.wrongWords&&a.wrongWords.length)||a.wrongSentences||a.wrongNumbers);
+    const hasWrongs=(d.wrongWords&&d.wrongWords.length>0)||d.wrongSentences||d.wrongNumbers||(isDeepType(d.quizType)&&d.wordTotal>0);
+    const anyHasWrong=attempts.some(a=>(a.wrongWords&&a.wrongWords.length)||a.wrongSentences||a.wrongNumbers||(isDeepType(a.quizType)&&a.wordTotal>0));
     const expandable=anyHasWrong||total>1;
     const wrongCnt=(d.wrongWords&&d.wrongWords.length)||(d.wrongSentences?d.wrongSentences.split(' / ').length:0)||(d.wrongNumbers?(d.wrongNumbers.match(/번/g)||[]).length:0);
     const isIncomplete=d.quitMidway===true;   // 중도이탈(시험 중간에 끔)
@@ -1082,6 +1106,7 @@ function renderTable(data){
             ${att.round>1?`<span class="round-badge">${att.round}라운드</span>`:''}
             <button class="del-btn-mini" onclick="deleteSingle('${att.id}')" title="이 시도만 삭제">🗑️</button>
           </div>
+          ${isDeepType(att.quizType)?`<div style="margin-top:6px">${deepNotesHtml(att)}</div>`:''}
           ${attChips?`<div class="wt-chips" style="margin-top:6px">${attChips}</div>`:''}
           ${(!att.wrongWords||!att.wrongWords.length)&&att.wrongSentences?`<div class="ah-text">${att.wrongSentences.split(' / ').join('<br>')}</div>`:''}
           ${(!att.wrongWords||!att.wrongWords.length)&&!att.wrongSentences&&att.wrongNumbers?`<div class="ah-text-bold">${att.wrongNumbers}</div>`:''}
@@ -1096,6 +1121,7 @@ function renderTable(data){
         <div class="stat-item"><span class="stat-label">시간초과</span><span class="stat-val ${d.timedOut>0?'warn':'ok'}">${d.timedOut||0}</span></div>
         <div class="stat-item"><span class="stat-label">총문제</span><span class="stat-val">${d.total||0}</span></div>
       </div>
+      ${isDeepType(d.quizType)?`<div class="detail-wrong-list">${deepNotesHtml(d)}</div>`:''}
       ${(d.wrongWords&&d.wrongWords.length>0)?`<div class="detail-wrong-list"><div class="dwl-label">📝 ${isClinicType(d.quizType)?'오답 문항':'오답 단어'} (${d.wrongWords.length}개)</div><div class="wt-chips">${buildChips(d)}</div></div>`:''}
       ${(!d.wrongWords||d.wrongWords.length===0)&&d.wrongSentences?`<div class="detail-wrong-list"><div class="dwl-label">📝 오답 문장</div><div style="font-size:11px;color:var(--red);line-height:1.8">${d.wrongSentences.split(' / ').join('<br>')}</div></div>`:''}
       ${(!d.wrongWords||d.wrongWords.length===0)&&!d.wrongSentences&&d.wrongNumbers?`<div class="detail-wrong-list"><div class="dwl-label">📝 오답 번호</div><div style="font-size:12px;color:var(--red);line-height:1.7;font-weight:700">${d.wrongNumbers}</div></div>`:''}
@@ -1151,6 +1177,8 @@ const CLINIC_LABELS = {
   '고운고1_공통영어2_1과_일치불일치_개인오답': '1과 오답 일치불일치(오답클리닉)'
 };
 function isClinicType(qt){ return !!qt && qt.includes('개인오답'); }
+// 지문 완전정복(mock_..._deep): quizType 예) 고1_26년9월_지문완전정복_독해
+function isDeepType(qt){ return !!qt && String(qt).includes('지문완전정복'); }
 function clinicFileName(d){
   if(!d) return '';
   if(d.file) return String(d.file).replace(/\.html$/,'')+'.html';
@@ -1190,6 +1218,7 @@ function parseQuizMeta(d){
   if (/서술|writing/i.test(qt)) { type='서술형'; typeClass='total'; }
   if (/빈칸시험|챕터/i.test(qt)) { type='빈칸'; typeClass='memory'; }
   if (/리딩|reading|독해/i.test(qt)) { type='독해'; typeClass='memory'; }
+  if (isDeepType(qt)) { type='지문 완전정복'; typeClass='deep'; }   // 단어→해석→문제→오답노트
   if (/_오답완료/.test(qt)) { type+='✓'; typeClass='ok'; }
   if (/_오답재시|_재시도/.test(qt)) { type+='↻'; typeClass='warn'; }
   // 교재명 추출
