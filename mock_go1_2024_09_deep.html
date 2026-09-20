@@ -1861,6 +1861,25 @@ let USER={name:'',school:''};
 let P=null;          // 현재 지문
 let S={};            // 현재 지문 학습 상태
 const progKey=()=>'bn_deep_'+EXAM.file+'_'+USER.name;
+// 중간에 끊겨도 이어서 할 수 있게, 지문마다 진행 상태를 저장해 둔다
+const stateKey=pid=>'bn_deepS_'+EXAM.file+'_'+USER.name+'_'+pid;
+function saveS(stage){
+  if(!P) return;
+  if(stage) S.stage=stage;
+  lsSet(stateKey(P.id),{stage:S.stage,t0:S.t0,at:Date.now(),
+    wrongWords:S.wrongWords,wordFirst:S.wordFirst,notes:S.notes,results:S.results,
+    wq:S.wq,wTotal:S.wTotal,wDone:S.wDone,wOk:S.wOk,
+    readOk:S.readOk,cover:S.cover,
+    round:S.round,qq:S.qq,qPos:S.qPos,firstOk:S.firstOk,roundWrong:S.roundWrong,nextQ:S.nextQ});
+}
+function clearS(pid){ try{localStorage.removeItem(stateKey(pid));}catch(e){} }
+function agoText(t){
+  const m=Math.round((Date.now()-t)/60000);
+  if(m<1) return '방금 전';
+  if(m<60) return m+'분 전';
+  const h=Math.round(m/60); if(h<24) return h+'시간 전';
+  return Math.round(h/24)+'일 전';
+}
 
 /* ═════════ 시작 ═════════ */
 function init(){
@@ -1896,7 +1915,7 @@ function setSteps(cur){
 
 /* ═════════ 지문 선택 ═════════ */
 function goHome(){
-  if(S.dirty && !confirm('지금 나가면 이 지문 학습 기록이 저장되지 않아요. 나갈까요?')) return;
+  if(S.dirty) saveS();          // 하던 데까지 저장 (다시 들어오면 이어서)
   S={};P=null;
   $('#backBtn').classList.add('hidden');
   $('#topTitle').textContent=EXAM.title;
@@ -1909,11 +1928,13 @@ function goHome(){
   PASSAGES.forEach(p=>{
     const g=prog[p.id]||{};
     const done=g.quiz;
+    const sv=lsGet(stateKey(p.id),null);
     h+=`<button class="pcard${done?' done':''}" onclick="openPassage('${p.id}')">
       <div class="no">${p.id}번</div>
       <div class="kd">${esc(p.kind)}</div>
       <div class="tt">${esc(p.title)}</div>
       <div class="pr"><i class="${g.word?'ok':''}">단어</i><i class="${g.read?'ok':''}">해석</i><i class="${g.quiz?'ok':''}">${g.quiz?'문제 '+g.score+'점':'문제'}</i></div>
+      ${sv&&sv.stage?`<div class="pr"><i style="background:#fbf0e3;color:#a3641f">▶ 이어하기</i></div>`:''}
     </button>`;
   });
   h+='</div>';
@@ -1925,12 +1946,44 @@ function markProg(key,val){
   prog[P.id]=Object.assign(prog[P.id]||{},{[key]:val===undefined?true:val});
   lsSet(progKey(),prog);
 }
-function openPassage(id){
+function openPassage(id,mode){
   P=PASSAGES.find(p=>p.id===id);
-  S={t0:Date.now(),wrongWords:[],wordFirst:{},notes:[],results:{},dirty:false};
   $('#backBtn').classList.remove('hidden');
   $('#topTitle').textContent=P.id+'번 · '+P.kind+' — '+P.title;
+  const saved=mode==='fresh'?null:lsGet(stateKey(id),null);
+  if(saved&&saved.stage) return askResume(saved);
+  clearS(id);
+  S={t0:Date.now(),wrongWords:[],wordFirst:{},notes:[],results:{},dirty:false};
   startWords();
+}
+// 끊긴 지점 안내 화면
+function askResume(sv){
+  setSteps('');
+  const label={word:'① 단어 체크',read:'② 한 줄 해석',quiz:'③ 문제 풀기'}[sv.stage]||'';
+  let detail='';
+  if(sv.stage==='word') detail=`단어 ${(sv.wDone||0)}/${sv.wTotal||P.words.length}개까지 했어요`;
+  else if(sv.stage==='read') detail=`문장 ${(sv.readOk||[]).filter(Boolean).length}/${P.sents.length}개까지 읽었어요`;
+  else detail=`문제 ${Math.min((sv.qPos||0)+1,(sv.qq||P.qs).length)}/${(sv.qq||P.qs).length}번째${sv.round>1?' · 틀린 문제 다시 풀기':''}`;
+  $('#main').innerHTML=`<div class="card" style="text-align:center">
+    <div style="font-size:40px">🔖</div>
+    <div class="bh" style="font-size:21px;color:var(--pri);margin:6px 0">하던 데부터 이어서 할까요?</div>
+    <p class="muted">${P.id}번 · ${esc(label)}에서 멈췄어요 (${esc(agoText(sv.at||Date.now()))})<br><b style="color:var(--ink)">${esc(detail)}</b></p>
+    ${(sv.notes&&sv.notes.length)?`<p class="muted" style="margin-top:6px">써 둔 오답노트 ${sv.notes.length}개도 그대로 있어요</p>`:''}
+    <button class="btn full" style="margin-top:16px" onclick="resumeS()">이어서 하기 →</button>
+    <button class="btn full sub" style="margin-top:8px" onclick="if(confirm('처음부터 다시 하면 지금까지 한 기록은 지워져요. 계속할까요?'))openPassage('${P.id}','fresh')">처음부터 다시</button>
+  </div>`;
+  toTop();
+}
+function resumeS(){
+  const sv=lsGet(stateKey(P.id),null);
+  if(!sv) return openPassage(P.id,'fresh');
+  S=Object.assign({},sv);
+  S.dirty=true; S.wCur=null; S.note=null;
+  S.wrongWords=S.wrongWords||[]; S.wordFirst=S.wordFirst||{}; S.notes=S.notes||[]; S.results=S.results||{};
+  S.wPool=[...new Set(PASSAGES.flatMap(p=>p.words.map(w=>w.ko)))];
+  if(S.stage==='word'){ setSteps('word'); nextWord(); }
+  else if(S.stage==='read'){ startRead(); }
+  else { setSteps('quiz'); S.round=S.round||1; S.qq=S.qq||P.qs.map((q,i)=>i); S.qPos=S.qPos||0; S.roundWrong=S.roundWrong||[]; showQ(); }
 }
 
 /* ═════════ ① 단어 체크 ═════════ */
@@ -1940,10 +1993,12 @@ function startWords(){
   S.wq=shuffle(P.words.map((w,i)=>i));
   S.wTotal=P.words.length; S.wDone=0; S.wOk=0;
   S.wPool=[...new Set(PASSAGES.flatMap(p=>p.words.map(w=>w.ko)))];
+  saveS('word');
   nextWord();
 }
 function nextWord(){
   if(!S.wq.length) return wordsDone();
+  saveS('word');
   const i=S.wq[0], w=P.words[i];
   const same=P.words.map(x=>x.ko).filter(k=>k!==w.ko);
   const others=S.wPool.filter(k=>k!==w.ko && !same.includes(k));
@@ -1975,6 +2030,7 @@ function pickWord(k){
   S.wq.shift();
   if(ok){S.wDone++;}
   else {S.wq.push(i);}
+  saveS('word');
   const tip=w.tip?`<div class="tip">💡 ${esc(w.tip)}</div>`:'';
   $('#wfb').innerHTML=(ok?`<div class="fb ok"><h4>⭕ 정답!</h4></div>`:`<div class="fb" style="background:var(--redBg);color:var(--red)"><h4>❌ 정답은 "${esc(w.ko)}"</h4><div style="font-size:13px">이 단어는 뒤에 한 번 더 나와요.</div></div>`)
     +tip+`<button class="btn full" style="margin-top:14px" onclick="nextWord()">다음 →</button>`;
@@ -1983,6 +2039,7 @@ function pickWord(k){
 function wordsDone(){
   S.wCur=null;
   markProg('word');
+  saveS('read');
   $('#main').innerHTML=`<div class="card" style="text-align:center">
     <div style="font-size:40px">📖</div>
     <div class="bh" style="font-size:22px;color:var(--pri);margin:6px 0">단어 체크 완료!</div>
@@ -2016,6 +2073,7 @@ function startRead(){
   toTop();
 }
 function renderRead(){
+  saveS('read');
   const all=S.readOk.every(Boolean);
   const cnt=S.readOk.filter(Boolean).length;
   let h=`<div class="toolbar">
@@ -2052,10 +2110,12 @@ function startQuiz(){
   S.qPos=0;
   S.firstOk=0;
   S.roundWrong=[];
+  saveS('quiz');
   showQ();
 }
 function showQ(){
   if(S.qPos>=S.qq.length) return roundEnd();
+  saveS('quiz');
   const qi=S.qq[S.qPos], q=P.qs[qi];
   const order=q.shuffle?shuffle(q.o.map((_,k)=>k)):q.o.map((_,k)=>k);
   S.cur={qi,order,answered:false};
@@ -2079,16 +2139,17 @@ function pickQ(j){
   const btns=document.querySelectorAll('.opt');
   btns.forEach((b,x)=>{b.disabled=true;if(x===ansJ)b.classList.add('right');});
   if(!ok) btns[j].classList.add('wrong');
-  if(S.round===1){
+  if(S.round===1 && S.results[qi]===undefined){   // 끊겼다 이어서 다시 답해도 처음 결과가 그대로 남게
     S.results[qi]={ok,my:CIRC[j]+' '+strip(q.o[pickedK]),ans:CIRC[ansJ]+' '+strip(q.o[ansK])};
     if(ok) S.firstOk++;
   }
+  saveS('quiz');
   if(ok){
     $('#qfb').innerHTML=`<div class="fb ok"><h4>⭕ 정답이에요!</h4>${fixWhy(q.why,order)}</div>
       <button class="btn full" style="margin-top:14px" onclick="S.qPos++;showQ()">다음 문제 →</button>`;
     return;
   }
-  S.roundWrong.push(qi);
+  if(!S.roundWrong.includes(qi)) S.roundWrong.push(qi);
   S.note={qi,my:CIRC[j],myText:strip(q.o[pickedK]),ans:CIRC[ansJ],ansText:strip(q.o[ansK]),reasons:[],copyOk:false,memo:''};
   const tr=P.sents.map((s,i)=>`<p><b>${i+1}.</b> ${esc(s.en)}<span class="k">→ ${esc(s.ko)}</span></p>`).join('');
   $('#qfb').innerHTML=`
@@ -2160,7 +2221,7 @@ function saveNote(){
   const n=S.note, q=P.qs[n.qi];
   S.notes.push({pid:P.id,type:q.t,round:S.round,my:n.my+' '+n.myText,ans:n.ans+' '+n.ansText,reasons:n.reasons.slice(),memo:n.memo});
   S.note=null;
-  S.qPos++;showQ();
+  S.qPos++;saveS('quiz');showQ();
 }
 function roundEnd(){
   if(S.roundWrong.length){
@@ -2172,6 +2233,7 @@ function roundEnd(){
       <button class="btn full" style="margin-top:16px" onclick="startRetry()">다시 풀기 →</button>
     </div>`;
     S.nextQ=w;
+    saveS('quiz');
     toTop();
     return;
   }
@@ -2180,6 +2242,7 @@ function roundEnd(){
 function startRetry(){
   S.round++;
   S.qq=shuffle(S.nextQ);S.qPos=0;S.roundWrong=[];
+  saveS('quiz');
   showQ();
 }
 
@@ -2189,6 +2252,7 @@ function finishPassage(){
   const score=Math.round(S.firstOk/total*100);
   const el=Math.max(1,Math.round((Date.now()-S.t0)/60000));
   markProg('quiz');markProg('score',score);
+  clearS(P.id);          // 다 끝났으니 이어하기 표시 없애기
   S.dirty=false;
   const lines=[];
   if(S.wrongWords.length) lines.push('[단어] '+S.wrongWords.join(', '));
@@ -2240,7 +2304,8 @@ function finishPassage(){
   toTop();
 }
 
-window.addEventListener('beforeunload',e=>{if(S.dirty){e.preventDefault();e.returnValue='';}});
+window.addEventListener('beforeunload',()=>{ if(S.dirty) saveS(); });
+document.addEventListener('visibilitychange',()=>{ if(document.hidden && S.dirty) saveS(); });
 if('speechSynthesis' in window){try{speechSynthesis.getVoices();}catch(e){}}
 init();
 </script>
