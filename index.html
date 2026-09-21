@@ -197,6 +197,19 @@ footer { text-align: center; padding: 28px; color: #aabbc8; font-size: .8rem; fo
   </main>
 </div>
 
+<div id="screen-listen" class="screen">
+  <main>
+    <button class="back-btn" onclick="goStep('screen-pick')">← 메뉴로 돌아가기</button>
+    <div class="school-banner">
+      <div style="flex:1">
+        <div class="banner-name">🎧 봄날 듣기 · 초등</div>
+        <div class="banner-sub">학년을 누르고 풀 회차를 고르세요</div>
+      </div>
+    </div>
+    <div id="listen-list"></div>
+  </main>
+</div>
+
 <div id="screen-reading" class="screen">
   <main>
     <button class="back-btn" onclick="goStep('screen-pick')">← 메뉴로 돌아가기</button>
@@ -884,7 +897,7 @@ function renderSchoolPicker() {
   });
 
   addPickerSection(picker, "📖 봄날 보카",        VOCA_LEVELS,      {emoji:"📖", collapsed:true});
-  addPickerSection(picker, "🎧 봄날 Listening",   LISTENING_LEVELS, {emoji:"🎧", collapsed:true});
+  addPickerSection(picker, "🎧 봄날 듣기",        LISTENING_LEVELS, {emoji:"🎧", collapsed:true});
   addPickerSection(picker, "📖 봄날 리딩 (초등)",  READING_BOOKS,    {emoji:"📖", collapsed:true, onClick:function(b){ openReading(b.level); }});
 
   const mockSep = document.createElement("div");
@@ -996,10 +1009,11 @@ function addPickerSection(picker, label, items, opts){
 
   items.forEach(function(item){
     let a;
-    if(opts.onClick){
+    const clickFn = item.onClick || opts.onClick;
+    if(clickFn){
       a = document.createElement("button");
       a.type = "button";
-      a.onclick = function(){ opts.onClick(item); };
+      a.onclick = function(){ clickFn(item); };
     }else{
       a = document.createElement("a");
       a.href = BASE + item.file + ".html" + (item.q || "");
@@ -1365,9 +1379,59 @@ function openReading(level){
   });
   goStep('screen-reading');
 }
+/* 봄날 듣기 · 초등 — 새 학기 교재는 LISTEN_BOOKS 에 한 줄 추가 */
+const LISTEN_BOOKS = [
+  {grade:3, term:1, code:'e3_1', rounds:10},
+];
+function listenDone(file){
+  try{ const n=localStorage.getItem('bn_name')||''; const v=JSON.parse(localStorage.getItem('bnls_done:'+file+':'+n)||'null'); return v; }catch(e){ return null; }
+}
+function listenInProgress(file){
+  try{ const n=localStorage.getItem('bn_name')||''; return !!localStorage.getItem('bnls_prog:'+file+':'+n); }catch(e){ return false; }
+}
+function openListen(){
+  const wrap=document.getElementById('listen-list'); wrap.innerHTML='';
+  const grades=[]; LISTEN_BOOKS.forEach(function(b){ if(grades.indexOf(b.grade)<0) grades.push(b.grade); });
+  grades.sort(function(a,b){return a-b;});
+  grades.forEach(function(g, gi){
+    const books=LISTEN_BOOKS.filter(function(b){return b.grade===g;}).sort(function(a,b){return a.term-b.term;});
+    const total=books.reduce(function(t,b){return t+b.rounds;},0);
+    const card=document.createElement('div');
+    card.style.cssText="background:#fdf8f2;border:1px solid #e8e3dd;border-radius:16px;margin-bottom:12px;overflow:hidden;";
+    const head=document.createElement('button'); head.type='button';
+    head.style.cssText="display:flex;justify-content:space-between;align-items:center;width:100%;padding:16px 18px;background:none;border:none;cursor:pointer;font-family:inherit;text-align:left;";
+    head.innerHTML='<span style="font-family:\'Black Han Sans\',sans-serif;font-size:1.05rem;color:#2a2a2a">'+g+'학년</span>'
+      +'<span style="font-size:.78rem;color:#a09890" class="arw"></span>';
+    const body=document.createElement('div'); body.style.cssText="padding:0 16px 16px;";
+    books.forEach(function(b){
+      const t=document.createElement('div');
+      t.style.cssText="font-size:.8rem;font-weight:700;color:#7a7570;margin:6px 2px 8px;";
+      t.textContent=b.term+'학기 ('+g+'-'+b.term+') · '+b.rounds+'회';
+      body.appendChild(t);
+      const grid=document.createElement('div');
+      grid.style.cssText="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:10px;";
+      for(let r=1;r<=b.rounds;r++){
+        const file='bomnallistening_'+b.code+'_'+('0'+r).slice(-2);
+        const done=listenDone(file), prog=listenInProgress(file);
+        const a=document.createElement('a'); a.href=BASE+file+'.html'; a.target='_blank'; a.rel='noopener';
+        a.style.cssText="display:block;text-align:center;text-decoration:none;border-radius:12px;padding:10px 0 8px;border:2px solid "+(done?'#9db894':'#d0dde8')+";background:"+(done?'#eef4ec':'#fff')+";";
+        a.innerHTML='<div style="font-weight:700;color:#2a2a2a;font-size:.9rem">'+('0'+r).slice(-2)+'회</div>'
+          +'<div style="font-size:.66rem;margin-top:2px;color:'+(done?'#4a6741':(prog?'#b08d57':'#b8b0a4'))+'">'+(done?done.score+'점':(prog?'이어서':'&nbsp;'))+'</div>';
+        grid.appendChild(a);
+      }
+      body.appendChild(grid);
+    });
+    let open = gi===0;
+    function sync(){ body.style.display=open?'block':'none'; head.querySelector('.arw').textContent=open?'접기 ▲':('펼치기 ▼ '+total+'회'); }
+    head.onclick=function(){ open=!open; sync(); };
+    sync(); card.appendChild(head); card.appendChild(body); wrap.appendChild(card);
+  });
+  goStep('screen-listen');
+}
+
 const LISTENING_LEVELS = [
   {file:'bomnal_listening_go1_A', title:'고1 듣기평가 A', sub:'20문제 · 5지선다', badge:'고1'},
-  {file:'bomnallistening_e3_1_01', title:'초등 3-1 · 01회', sub:'20문항 · 문항별 자동 재생 · 틀린 문제 다시 듣기', badge:'초등'},
+  {title:'초등 듣기평가', sub:'학년 → 학기 → 회차 선택', badge:'초등', onClick:function(){ openListen(); }},
 ];
 
 function renderVoca(){
