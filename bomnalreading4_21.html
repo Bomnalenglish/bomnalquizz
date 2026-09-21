@@ -152,6 +152,8 @@ header{background:linear-gradient(135deg,#f7efe4 0%,#f0e6d8 50%,#ece0d2 100%); p
 .score-box .n{font-size:1.5rem; font-weight:800; color:#5c3d1e;}
 .score-box .l{font-size:.72rem; color:var(--soft); margin-top:3px;}
 .hide{display:none !important;}
+.keycard{background:#fff8e1 !important;border:2px solid #f5c542 !important}
+.keybadge{display:inline-block;background:#f5c542;color:#5a4300;font-weight:800;font-size:.85rem;padding:4px 12px;border-radius:14px;margin-bottom:12px}
 </style>
 </head>
 <body>
@@ -245,7 +247,8 @@ const UNIT = {
     },
     {
       "en": "But the ship was attacked by British ships.",
-      "ko": "그런데 그 배는 영국 배들의 공격을 받았어요."
+      "ko": "그런데 그 배는 영국 배들의 공격을 받았어요.",
+      "key": "근거"
     },
     {
       "en": "It sank near Colombia.",
@@ -257,11 +260,13 @@ const UNIT = {
     },
     {
       "en": "Then, someone found it after about 300 years.",
-      "ko": "그러다 약 300년 뒤에 누군가가 그 배를 찾아냈어요."
+      "ko": "그러다 약 300년 뒤에 누군가가 그 배를 찾아냈어요.",
+      "key": "중요"
     },
     {
       "en": "Now, many countries want the treasure.",
-      "ko": "이제 여러 나라가 그 보물을 원하고 있어요."
+      "ko": "이제 여러 나라가 그 보물을 원하고 있어요.",
+      "key": "주제"
     },
     {
       "en": "Colombia says, “The ship is in our waters, so it is ours.”",
@@ -285,7 +290,8 @@ const UNIT = {
     },
     {
       "en": "Countries are still fighting about it.",
-      "ko": "나라들은 아직도 그 보물을 두고 다투고 있어요."
+      "ko": "나라들은 아직도 그 보물을 두고 다투고 있어요.",
+      "key": "결론"
     },
     {
       "en": "Who will get the treasure?",
@@ -447,7 +453,8 @@ const UNIT = {
       ],
       "answer": 0
     }
-  }
+  },
+  "keyMode": true
 };
 
 const ROLE = {
@@ -629,13 +636,14 @@ function pickM(el){
 /* ═══ 3단계 ═══ */
 function renderPassage(){
   const s = UNIT.sentences[idx];
-  heard = false; round = 0; clearTimeout(tmr);
+  heard = false; round = 0; clearTimeout(tmr); NEED = needOf(s);
   area().innerHTML = `
     <div class="panel">
       <h3 class="stage-name">3단계 · 본문 듣기</h3>
-      <p class="stage-desc">한 문장을 두 번 들으며 뜻을 익혀 보세요.</p>
+      <p class="stage-desc">${UNIT.keyMode?'한 번씩 들으며 뜻을 익혀요. ⭐ 핵심 문장은 두 번 들어요.':'한 문장을 두 번 들으며 뜻을 익혀 보세요.'}</p>
       <div class="counter">${idx+1} / ${UNIT.sentences.length}</div>
-      <div class="wordcard" style="padding:28px 18px">
+      <div class="wordcard${isKey(s)?' keycard':''}" style="padding:28px 18px">
+        ${isKey(s)?`<div class="keybadge">⭐ 핵심 · ${s.key}</div>`:''}
         <div class="sent-en">${s.en}</div>
         <div><button class="spk" id="spkBtn" onclick="replaySent()">🔊 다시 듣기</button></div>
         <div class="sent-ko" id="sKo">${s.ko}</div>
@@ -651,7 +659,10 @@ function renderPassage(){
 }
 
 /* ── 문장을 2번 다 들어야 '다음'이 열림 ── */
-const NEED = 2;                       // 자동 재생 횟수
+/* 1·2권: 모든 문장 2번 / 3권 이상(keyMode): 핵심 문장(⭐)만 2번, 나머지 1번 */
+function isKey(s){ return !!(UNIT.keyMode && s.key); }
+function needOf(s){ return (!UNIT.keyMode || s.key) ? 2 : 1; }
+let NEED = 2;
 let heard=false, tok=0, tmr=null, round=0;
 
 function startListening(){ round = 0; nextRound(); }
@@ -660,7 +671,7 @@ function nextRound(){ round++; speakRound(); }
 function speakRound(){
   const s = UNIT.sentences[idx];
   const my = ++tok;
-  setNote('🎧 ' + round + '번째 듣는 중…  (' + round + '/' + NEED + ')');
+  setNote(NEED===1 ? '🎧 듣는 중…' : '🎧 ' + round + '번째 듣는 중…  (' + round + '/' + NEED + ')');
   const spk=$('spkBtn'); if(spk) spk.textContent='🔊 재생 중…';
   saySentence(s.en, ()=>{ if(my===tok) roundEnd(); });
   // 소리가 안 나오는 기기 대비 — 문장 길이만큼 기다렸다가 넘어감
@@ -673,7 +684,7 @@ function roundEnd(){
   tok++; clearTimeout(tmr);
   const spk=$('spkBtn'); if(spk) spk.textContent='🔊 다시 듣기';
   if(round === 1) showKo();                      // 1번 듣고 나면 해석 공개
-  if(round < NEED){ setNote('🎧 한 번 더 들어 볼까요?'); setTimeout(nextRound, 1000); }
+  if(round < NEED){ setNote(isKey(UNIT.sentences[idx]) ? '⭐ 핵심 문장이에요! 한 번 더 들어요' : '🎧 한 번 더 들어 볼까요?'); setTimeout(nextRound, 1000); }
   else markHeard();
 }
 
@@ -691,7 +702,7 @@ function markHeard(){
   showKo();
   const b=$('nextSentBtn'), note=$('listenNote');
   if(b){ b.disabled=false; b.textContent = (idx===UNIT.sentences.length-1)?'문장 나누기로 ▶':'다음 문장 ▶'; }
-  setNote('✅ 두 번 다 들었어요! 이제 넘어가도 좋아요');
+  setNote(NEED===1 ? '✅ 잘 들었어요! 이제 넘어가도 좋아요' : '✅ 두 번 다 들었어요! 이제 넘어가도 좋아요');
   if(note) note.classList.add('done');
 }
 
