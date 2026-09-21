@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>봄날 리스닝 초등 3-1 · 01회</title>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Gowun+Dodum&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#2a2a2a; --soft:#7a7570; --bg:#f5efe6; --card:#fdf8f2;
+  --line:#e8e3dd; --primary:#4a6741; --red:#c0392b; --gold:#b08d57; --blue:#3f6f9f;
+}
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+body{margin:0; background:var(--bg); font-family:"Gowun Dodum",sans-serif; color:var(--ink);}
+.wrap{max-width:720px; margin:0 auto; padding:0 16px 60px;}
+header{background:linear-gradient(135deg,#f7efe4 0%,#f0e6d8 50%,#ece0d2 100%); padding:24px 20px 20px; text-align:center;}
+.h-title{font-family:"Black Han Sans",sans-serif; font-size:1.3rem; color:#5c3d1e;}
+.h-sub{font-size:.82rem; color:#8a7f70; margin-top:5px;}
+.hide{display:none !important;}
+
+#login{display:flex; justify-content:center; padding:50px 16px;}
+.card{background:var(--card); border:1px solid var(--line); border-radius:20px; padding:24px 20px;
+  box-shadow:0 2px 10px rgba(0,0,0,.05); margin-top:18px;}
+.auth{max-width:380px; width:100%; text-align:center;}
+.auth h2{font-family:"Black Han Sans",sans-serif; font-size:1.1rem; margin:0 0 6px;}
+.auth p{font-size:.82rem; color:var(--soft); margin:0 0 18px;}
+.inp{width:100%; padding:14px; border:2px solid #d8cfc3; border-radius:12px; font-size:1rem; font-family:inherit;
+  text-align:center; margin-bottom:10px; background:#fff; outline:none;}
+.btn{border:none; border-radius:12px; padding:14px 22px; font-family:inherit; font-size:1rem; font-weight:700; cursor:pointer;}
+.btn-main{background:#3d3d3d; color:#fff;}
+.btn-main:disabled{opacity:.35; cursor:default;}
+.btn-sub{background:#fff; color:#5a5550; border:2px solid #d8cfc3;}
+.btn-row{display:flex; gap:10px; justify-content:center; margin-top:18px; flex-wrap:wrap;}
+.full{width:100%;}
+
+.intro{text-align:center;}
+.intro .big{font-family:"Black Han Sans",sans-serif; font-size:1.5rem; color:#5c3d1e; margin:6px 0;}
+.intro ul{text-align:left; font-size:.9rem; color:#5a5550; line-height:1.8; padding-left:22px; margin:16px auto; max-width:420px;}
+
+.bar{height:8px; background:#e6ddd0; border-radius:10px; overflow:hidden; margin:16px 0 6px;}
+.bar i{display:block; height:100%; background:var(--gold); transition:width .3s;}
+.qhead{display:flex; justify-content:space-between; align-items:center; font-size:.82rem; color:var(--soft);}
+.qimg{width:100%; border-radius:14px; border:1px solid var(--line); background:#fff; display:block; margin-top:10px;}
+.listen{display:flex; align-items:center; gap:10px; margin-top:12px; padding:10px 14px; background:#f2ede5;
+  border-radius:14px; font-size:.86rem; color:#5c3d1e;}
+.listen button{border:2px solid #e0d8ce; background:#fff; border-radius:30px; padding:8px 16px; font-family:inherit;
+  font-size:.86rem; cursor:pointer;}
+.listen .st{flex:1;}
+.pulse{display:inline-block; width:10px; height:10px; border-radius:50%; background:var(--gold); margin-right:6px;
+  animation:pl 1s infinite;}
+@keyframes pl{0%,100%{opacity:1}50%{opacity:.25}}
+.choices{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:14px;}
+.ch{font-size:1.9rem; padding:14px 0; border-radius:16px; border:3px solid #e0d8ce; background:#fff; cursor:pointer;
+  font-family:inherit; color:#3d3d3d; transition:.12s;}
+.ch.sel{border-color:#3d3d3d; background:#f0ede8; transform:translateY(-2px);}
+.ch.ok{border-color:var(--primary); background:#d6ead0; color:var(--primary); font-weight:800; opacity:1;}
+.ch.bad{border-color:var(--red); background:#fbeeec; color:var(--red); opacity:.6;}
+.hint{text-align:center; font-size:.9rem; min-height:1.4em; margin-top:12px;}
+.hint.good{color:var(--primary);} .hint.no{color:var(--red);}
+
+.score{text-align:center;}
+.score .n{font-family:"Black Han Sans",sans-serif; font-size:3rem; color:var(--primary);}
+.score .s{font-size:.9rem; color:var(--soft);}
+.grid{display:grid; grid-template-columns:repeat(5,1fr); gap:8px; margin-top:16px;}
+.cell{border-radius:12px; padding:9px 0; text-align:center; font-size:.85rem; background:#eef4ec; color:var(--primary);}
+.cell.x{background:#fbeeec; color:var(--red); font-weight:700;}
+.cell b{display:block; font-size:1.05rem;}
+.save{text-align:center; font-size:.75rem; color:#a8a098; margin-top:14px;}
+</style>
+</head>
+<body>
+<header>
+  <div class="h-title" id="hTitle">🎧 봄날 리스닝</div>
+  <div class="h-sub" id="hSub"></div>
+</header>
+
+<div id="login">
+  <div class="card auth">
+    <h2>이름을 입력해 주세요</h2>
+    <p>결과가 선생님께 전달돼요.</p>
+    <input class="inp" id="inName" placeholder="이름 (예: 김도윤)" autocomplete="off">
+    <input class="inp" id="inSchool" placeholder="학교 (예: 종촌초)" autocomplete="off">
+    <button class="btn btn-main full" onclick="doLogin()">시작하기</button>
+  </div>
+</div>
+
+<div class="wrap hide" id="main"><div id="area"></div></div>
+<audio id="au" preload="auto"></audio>
+
+<script>
+const T = {"book": "봄날 리스닝 초등 3-1", "round": "01회", "base": "listen/e3_1/r01/", "answers": [2, 2, 1, 1, 1, 3, 3, 2, 2, 1, 2, 2, 3, 1, 3, 2, 1, 3, 1, 2]};
+const N = T.answers.length;
+const $ = id => document.getElementById(id);
+const area = () => $('area');
+const au = $('au');
+let student={name:'',school:''};
+let picks=[], firstWrong=[], qi=0, heard=false, fallback=null, startedAt=Date.now();
+let mode='test', retryList=[], ri=0, replays=0;
+
+function src(i){ return T.base + 'q' + String(i+1).padStart(2,'0'); }
+
+/* ── 로그인 ── */
+function doLogin(){
+  const n=$('inName').value.trim(); if(!n){ alert('이름을 입력해 주세요.'); return; }
+  student={name:n, school:$('inSchool').value.trim()||'미입력'};
+  try{ localStorage.setItem('bn_name',n); localStorage.setItem('bn_school',student.school);}catch(e){}
+  showMain();
+}
+function autoLogin(){
+  let n=null,s=null; try{ n=localStorage.getItem('bn_name'); s=localStorage.getItem('bn_school'); }catch(e){}
+  if(n){ student={name:n,school:s||'미입력'}; showMain(); }
+}
+function showMain(){
+  $('login').classList.add('hide'); $('main').classList.remove('hide');
+  $('hTitle').textContent='🎧 '+T.book; $('hSub').textContent=T.round+' · '+N+'문항';
+  renderIntro();
+}
+
+/* ── 소리 ── */
+function play(i, onEnd){
+  clearTimeout(fallback);
+  au.onended=null; au.onerror=null;
+  au.src = src(i)+'.mp3';
+  const done=()=>{ clearTimeout(fallback); onEnd&&onEnd(); };
+  au.onended=done;
+  au.onerror=()=>{ fallback=setTimeout(done,1500); };
+  au.onloadedmetadata=()=>{ clearTimeout(fallback); fallback=setTimeout(done,(au.duration+3)*1000); };
+  const p=au.play(); if(p&&p.catch) p.catch(()=>{ fallback=setTimeout(done,3000); });
+}
+function stopAudio(){ try{au.pause();}catch(e){} clearTimeout(fallback); }
+
+/* ── 시작 화면 ── */
+function renderIntro(){
+  area().innerHTML=`
+    <div class="card intro">
+      <div style="font-size:2.4rem">🎧</div>
+      <div class="big">${T.round} 듣기 평가</div>
+      <div style="color:var(--soft);font-size:.9rem">${T.book} · ${N}문항 · 문항당 5점</div>
+      <ul>
+        <li>문제가 나오면 <b>소리가 자동으로</b> 나와요.</li>
+        <li>소리를 끝까지 듣고 ①②③ 중에서 답을 고르세요.</li>
+        <li>잘 안 들리면 <b>🔊 다시 듣기</b>를 눌러도 돼요.</li>
+        <li>다 풀면 채점하고, <b>틀린 문제는 다시 들으며</b> 풀어요.</li>
+      </ul>
+      <button class="btn btn-main full" onclick="startTest()">듣기 평가 시작하기 ▶</button>
+    </div>`;
+}
+function startTest(){ mode='test'; qi=0; picks=new Array(N).fill(0); renderQ(); }
+
+/* ── 문항 화면 (시험 · 오답 공용) ── */
+function renderQ(){
+  const i = mode==='test' ? qi : retryList[ri];
+  const pos = mode==='test' ? qi+1 : ri+1, tot = mode==='test' ? N : retryList.length;
+  heard=false;
+  area().innerHTML=`
+    <div class="card">
+      <div class="qhead"><span>${mode==='test'?'듣기 평가':'🔁 틀린 문제 다시 풀기'}</span><span>${pos} / ${tot}</span></div>
+      <div class="bar"><i style="width:${(pos-1)/tot*100}%"></i></div>
+      <img class="qimg" src="${src(i)}.jpg" alt="${i+1}번 문제">
+      <div class="listen"><span class="st" id="st"><span class="pulse"></span>듣는 중…</span>
+        <button id="rep" onclick="replay()">🔊 다시 듣기</button></div>
+      <div class="choices">${[1,2,3].map(c=>`<button class="ch" data-c="${c}" onclick="pick(${c})">${'①②③'[c-1]}</button>`).join('')}</div>
+      <div class="hint" id="hint"></div>
+      <div class="btn-row"><button class="btn btn-main full" id="nx" disabled onclick="next()">${mode==='test'?'끝까지 듣고 답을 고르세요':'답을 고르세요'}</button></div>
+    </div>`;
+  window.scrollTo(0,0);
+  play(i, onHeard);
+}
+function onHeard(){
+  heard=true;
+  const st=$('st'); if(st) st.innerHTML='✅ 다 들었어요';
+  updateNext();
+}
+function replay(){
+  const i = mode==='test' ? qi : retryList[ri];
+  replays++; const st=$('st'); if(st) st.innerHTML='<span class="pulse"></span>다시 듣는 중…';
+  play(i, onHeard);
+}
+let cur=0;
+function pick(c){
+  if(mode==='retry' && document.querySelector('.ch.ok')) return;
+  cur=c;
+  document.querySelectorAll('.ch').forEach(b=>b.classList.toggle('sel', +b.dataset.c===c));
+  if(mode==='retry') return checkRetry(c);
+  updateNext();
+}
+function updateNext(){
+  const b=$('nx'); if(!b) return;
+  if(mode==='test'){
+    const ok = heard && document.querySelector('.ch.sel');
+    b.disabled=!ok;
+    b.textContent = !heard ? '끝까지 듣고 답을 고르세요' : (!document.querySelector('.ch.sel') ? '답을 고르세요' : (qi===N-1?'채점하기 ▶':'다음 문제 ▶'));
+  }
+}
+function next(){
+  if(mode==='test'){
+    const sel=document.querySelector('.ch.sel'); if(!sel||!heard) return;
+    picks[qi]=+sel.dataset.c; stopAudio();
+    if(qi<N-1){ qi++; renderQ(); } else grade();
+  }else{
+    stopAudio();
+    if(ri<retryList.length-1){ ri++; renderQ(); }
+    else{
+      const still=retryList.filter(i=>!retryOk[i]);
+      if(still.length){ retryList=still; ri=0; retryOk={}; renderQ(); }
+      else renderDone();
+    }
+  }
+}
+
+/* ── 채점 ── */
+function grade(){
+  firstWrong=[]; for(let i=0;i<N;i++) if(picks[i]!==T.answers[i]) firstWrong.push(i);
+  const right=N-firstWrong.length, mins=Math.max(1,Math.round((Date.now()-startedAt)/60000));
+  area().innerHTML=`
+    <div class="card score">
+      <div class="s">${T.round} 결과</div>
+      <div class="n">${right*5}점</div>
+      <div class="s">${N}문제 중 ${right}개 맞았어요 · ${mins}분</div>
+      <div class="grid">${T.answers.map((a,i)=>`<div class="cell ${picks[i]===a?'':'x'}"><b>${picks[i]===a?'○':'✕'}</b>${i+1}번</div>`).join('')}</div>
+      <div class="btn-row">
+        ${firstWrong.length ? `<button class="btn btn-main full" onclick="startRetry()">틀린 ${firstWrong.length}문제 다시 들으며 풀기 ▶</button>`
+                            : `<div style="color:var(--primary);font-weight:700">🎉 만점이에요!</div>`}
+      </div>
+      <div class="save" id="save">결과 저장 중…</div>
+    </div>`;
+  save(right, mins);
+}
+let retryOk={};
+function startRetry(){ mode='retry'; retryList=firstWrong.slice(); ri=0; retryOk={}; renderQ(); }
+function checkRetry(c){
+  const i=retryList[ri], ans=T.answers[i], h=$('hint'), b=$('nx');
+  document.querySelectorAll('.ch').forEach(x=>x.classList.remove('sel'));
+  const btn=document.querySelector(`.ch[data-c="${c}"]`);
+  if(c===ans){
+    btn.classList.add('ok'); retryOk[i]=true;
+    h.className='hint good'; h.textContent='정답이에요! 👏';
+    b.disabled=false; b.textContent = ri===retryList.length-1 ? '확인 ▶' : '다음 문제 ▶';
+  }else{
+    btn.classList.add('bad'); btn.disabled=true;
+    h.className='hint no'; h.textContent='다시 한 번 들어 볼까요? 🔊';
+    if(!retryOk[i]) retryOk[i]=false;
+  }
+}
+function renderDone(){
+  area().innerHTML=`
+    <div class="card score">
+      <div style="font-size:2.4rem">🎊</div>
+      <div class="n" style="font-size:1.8rem">틀린 문제까지 모두 해결!</div>
+      <div class="s">처음 점수는 ${(N-firstWrong.length)*5}점이었어요.</div>
+      <div class="btn-row">
+        <button class="btn btn-sub" onclick="location.reload()">처음부터 다시</button>
+        <button class="btn btn-main" onclick="location.href='index.html'">메뉴로</button>
+      </div>
+    </div>`;
+}
+
+/* ── 기록 ── */
+function save(right, mins){
+  const data={ name:student.name, school:student.school,
+    quiz:T.book+' '+T.round, type:'듣기 평가 · '+T.book,
+    file:(location.pathname.split('/').pop()||'').replace('.html',''),
+    score:right*5, correct:right, totalQ:N, total:right*5,
+    wrong:firstWrong.map(i=>i+1).join(','), replays, minutes:mins,
+    date:new Date().toLocaleString('ko-KR') };
+  if(window._saveQuiz) window._saveQuiz(data)
+    .then(()=>{ const s=$('save'); if(s) s.textContent='✅ 결과가 선생님께 전달됐어요.'; })
+    .catch(()=>{ const s=$('save'); if(s) s.textContent='결과 저장에 실패했어요. (인터넷 확인)'; });
+  else { const s=$('save'); if(s) s.textContent=''; }
+}
+autoLogin();
+</script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+const db = getFirestore(initializeApp({
+  apiKey:"AIzaSyCxS524S8KAaF87DomPtl9sJdF-eqes404", authDomain:"bomnalvaca.firebaseapp.com",
+  projectId:"bomnalvaca", storageBucket:"bomnalvaca.firebasestorage.app",
+  messagingSenderId:"115868052300", appId:"1:115868052300:web:765c08867b6f1ce0987de9"}));
+window._saveQuiz = async d => { await addDoc(collection(db,"quiz_results"), {...d, timestamp:serverTimestamp()}); };
+</script>
+<script type="module" src="bn_tracker.js"></script>
+</body>
+</html>
