@@ -31,7 +31,8 @@ header{background:linear-gradient(135deg,#f7efe4 0%,#f0e6d8 50%,#ece0d2 100%); p
   font-size:1rem; font-weight:800; cursor:pointer; font-family:inherit; letter-spacing:.5px;}
 
 .steps{display:flex; gap:6px; margin:18px 0 20px;}
-.step{flex:1; text-align:center; font-size:.7rem; color:#a8a098; padding-bottom:7px; border-bottom:3px solid #e2dbd1; transition:.25s;}
+.step b{display:block; font-size:.78rem; margin-bottom:1px;}
+.step{flex:1; text-align:center; font-size:.66rem; white-space:nowrap; letter-spacing:-.3px; color:#a8a098; padding-bottom:7px; border-bottom:3px solid #e2dbd1; transition:.25s;}
 .step.on{color:#5c3d1e; font-weight:700; border-bottom-color:var(--gold);}
 .step.done{color:var(--primary); border-bottom-color:#9db894;}
 
@@ -128,6 +129,22 @@ header{background:linear-gradient(135deg,#f7efe4 0%,#f0e6d8 50%,#ece0d2 100%); p
 .bd-comp .t{color:var(--c-comp);} .bd-comp .l{background:var(--c-comp);}
 .bd-rest .t{color:#a8a098;} .bd-rest .l{background:#b8ada0;}
 
+/* 5단계 · 내용 확인 */
+.q-pre{font-size:.86rem; color:var(--primary); background:#eef4ec; border-radius:12px; padding:10px 14px; margin-bottom:14px; line-height:1.5;}
+.q-text{font-size:1.02rem; font-weight:700; margin:0 0 14px; line-height:1.5; color:#3d3d3d;}
+.q-choices{display:flex; flex-direction:column; gap:9px;}
+.q-ch{display:flex; gap:10px; align-items:flex-start; width:100%; text-align:left; background:#fff;
+  border:2px solid #e0d8ce; border-radius:14px; padding:13px 14px; font-family:inherit; font-size:.95rem;
+  color:var(--ink); cursor:pointer; line-height:1.45; transition:.15s;}
+.q-ch .q-no{color:#a09890; font-weight:700; flex-shrink:0;}
+.q-ch.en{font-size:1.02rem;}
+.q-ch:disabled{cursor:default; color:var(--ink);}
+.q-ch.ok{border-color:var(--primary); background:#e3efdf; color:var(--primary); font-weight:700; opacity:1;}
+.q-ch.ok .q-no{color:var(--primary);}
+.q-ch.ok::after{content:'✓'; margin-left:auto; font-weight:800;}
+.q-ch.bad{border-color:var(--red); background:#fbeeec; opacity:.5; animation:shake .35s;}
+.q-why{margin-top:12px; padding:12px 14px; background:#f7f2e9; border-radius:12px; font-size:.86rem; color:#5c3d1e; line-height:1.55;}
+
 /* 결과 */
 .result-big{font-family:"Black Han Sans",sans-serif; font-size:2.6rem; color:var(--primary); text-align:center;}
 .score-row{display:flex; gap:10px; margin-top:18px;}
@@ -156,10 +173,11 @@ header{background:linear-gradient(135deg,#f7efe4 0%,#f0e6d8 50%,#ece0d2 100%); p
 
 <div class="wrap hide" id="main">
   <div class="steps">
-    <div class="step" data-s="1">1. 어휘 듣기</div>
-    <div class="step" data-s="2">2. 뜻 매칭</div>
-    <div class="step" data-s="3">3. 본문 듣기</div>
-    <div class="step" data-s="4">4. 문장 나누기</div>
+    <div class="step" data-s="1"><b>1</b>어휘 듣기</div>
+    <div class="step" data-s="2"><b>2</b>뜻 매칭</div>
+    <div class="step" data-s="3"><b>3</b>본문 듣기</div>
+    <div class="step" data-s="4"><b>4</b>문장 나누기</div>
+    <div class="step" data-s="5"><b>5</b>내용 확인</div>
   </div>
   <div id="stageArea"></div>
 </div>
@@ -396,7 +414,38 @@ const UNIT = {
       ],
       "comp": []
     }
-  ]
+  ],
+  "quiz": {
+    "tf": {
+      "choices": [
+        "Jake는 뉴스에서 스타십에 대해 읽었다.",
+        "Jake는 열두 살이다.",
+        "Jake는 고양이를 화성에 데려가고 싶어 한다.",
+        "Jake는 로켓을 직접 만들었다."
+      ],
+      "answer": 0,
+      "why": "\"I read about your amazing invention, Starship, in the news.\" — 뉴스에서 읽었다고 했어요. Jake는 10살이고, 데려가고 싶은 건 강아지 Max예요."
+    },
+    "topicKo": {
+      "choices": [
+        "화성에 가고 싶은 아이가 발명가에게 쓴 편지",
+        "강아지와 산책하는 방법",
+        "로켓을 만드는 방법",
+        "뉴스를 읽는 좋은 습관"
+      ],
+      "answer": 0,
+      "why": "Jake가 Elon Musk에게 스타십으로 화성에 갈 수 있는지, 강아지도 데려갈 수 있는지 묻는 편지예요."
+    },
+    "topicEn": {
+      "choices": [
+        "A boy's letter about going to Mars",
+        "How to walk your dog",
+        "How to make a rocket",
+        "Good habits for reading the news"
+      ],
+      "answer": 0
+    }
+  }
 };
 
 const ROLE = {
@@ -411,7 +460,7 @@ const ORDER = ['subj','verb','obj','comp'];
 let student = { name:"", school:"" };
 let stage = 1;
 let idx = 0;
-let score = { match:0, matchTry:0, parse:0, parseTry:0 };
+let score = { match:0, matchTry:0, parse:0, parseTry:0, quiz:0, quizTry:0 };
 const startedAt = Date.now();
 
 function doLogin(){
@@ -476,7 +525,7 @@ function clean(t){ return t.replace(/[.,!?;:"]/g,''); }
 function phrase(s, arr){ const tk=tokens(s.en); return arr.map(i=>clean(tk[i])).join(' '); }
 
 function goStage(n){
-  stage=n; idx=0; stopAudio();
+  stage=n; idx=0; qIdx=0; stopAudio();
   document.querySelectorAll('.step').forEach(el=>{
     const s=+el.dataset.s;
     el.classList.toggle('on', s===n);
@@ -487,6 +536,7 @@ function goStage(n){
   else if(n===2) renderMatch();
   else if(n===3) renderPassage();
   else if(n===4) renderParse();
+  else if(n===5) renderQuiz();
   else renderResult();
 }
 
@@ -895,12 +945,76 @@ function nextParse(){
   else goStage(5);
 }
 
+/* ═══ 5단계 · 내용 확인 (일치 · 한글 주제 · 영어 주제) ═══ */
+let qIdx = 0, qFirst = true;
+function quizList(){
+  const q = UNIT.quiz;
+  if(!q) return [];
+  const koTopic = q.topicKo.choices[q.topicKo.answer];
+  return [
+    { label:'내용 일치', q:(q.tf.q || '글의 내용과 일치하는 것은?'),
+      choices:q.tf.choices, answer:q.tf.answer, why:q.tf.why, en:false },
+    { label:'주제 찾기', q:'이 글의 주제로 가장 알맞은 것은?',
+      choices:q.topicKo.choices, answer:q.topicKo.answer, why:q.topicKo.why, en:false },
+    { label:'영어로 고르기', q:'이 주제를 영어로 바르게 나타낸 것은?', pre:koTopic,
+      choices:q.topicEn.choices, answer:q.topicEn.answer, why:q.topicEn.why, en:true }
+  ];
+}
+function renderQuiz(){
+  const list = quizList();
+  if(!list.length){ goStage(6); return; }
+  const it = list[qIdx];
+  qFirst = true;
+  const order = shuffle(it.choices.map((c,i)=>i));
+  const nums = ['①','②','③','④','⑤'];
+  area().innerHTML = `
+    <div class="panel">
+      <h3 class="stage-name">5단계 · 내용 확인</h3>
+      <p class="stage-desc">글 전체 내용을 떠올리며 풀어 보세요.</p>
+      <div class="counter">${qIdx+1} / ${list.length} · ${it.label}</div>
+      ${it.pre ? `<div class="q-pre">✅ 이 글의 주제: <b>${it.pre}</b></div>` : ''}
+      <div class="q-text">${it.q}</div>
+      <div class="q-choices">
+        ${order.map((ci,n)=>`<button class="q-ch${it.en?' en':''}" data-ci="${ci}" onclick="pickQ(this)">
+            <span class="q-no">${nums[n]}</span><span>${it.choices[ci]}</span></button>`).join('')}
+      </div>
+      <div class="hint" id="qHint"></div>
+      <div id="qWhy"></div>
+      <div class="btn-row">
+        <button class="btn btn-main hide" id="qNext" onclick="nextQ()">${qIdx===list.length-1?'결과 보기 ▶':'다음 문제 ▶'}</button>
+      </div>
+    </div>`;
+}
+function pickQ(el){
+  const it = quizList()[qIdx];
+  if(el.disabled) return;
+  score.quizTry++;
+  if(+el.dataset.ci === it.answer){
+    if(qFirst) score.quiz++;
+    el.classList.add('ok');
+    document.querySelectorAll('.q-ch').forEach(b=>b.disabled=true);
+    const h=$('qHint'); h.className='hint good';
+    h.textContent = qFirst ? '정답이에요! 👏' : '정답이에요! 끝까지 잘 찾았어요.';
+    if(it.why) $('qWhy').innerHTML = `<div class="q-why">💡 ${it.why}</div>`;
+    if(it.en) saySentence(it.choices[it.answer]);
+    $('qNext').classList.remove('hide');
+  }else{
+    qFirst = false;
+    el.classList.add('bad'); el.disabled = true;
+    const h=$('qHint'); h.className='hint'; h.textContent='다시 한 번 골라 볼까요?';
+  }
+}
+function nextQ(){
+  if(qIdx < quizList().length-1){ qIdx++; renderQuiz(); }
+  else goStage(6);
+}
+
 /* ═══ 결과 ═══ */
 function renderResult(){
   document.querySelectorAll('.step').forEach(el=>{ el.classList.remove('on'); el.classList.add('done'); });
   const mins = Math.max(1, Math.round((Date.now()-startedAt)/60000));
-  const total = score.match + score.parse;
-  const tries = score.matchTry + score.parseTry;
+  const total = score.match + score.parse + score.quiz;
+  const tries = score.matchTry + score.parseTry + score.quizTry;
   const pct = tries ? Math.round(total/tries*100) : 100;
   area().innerHTML = `
     <div class="panel">
@@ -911,6 +1025,7 @@ function renderResult(){
       <div class="score-row">
         <div class="score-box"><div class="n">${score.match}/${UNIT.words.length}</div><div class="l">단어 매칭</div></div>
         <div class="score-box"><div class="n">${score.parse}/${UNIT.parse.length}</div><div class="l">문장 나누기</div></div>
+        <div class="score-box"><div class="n">${score.quiz}/${quizList().length}</div><div class="l">내용 확인</div></div>
       </div>
       <div class="score-row">
         <div class="score-box"><div class="n">${pct}%</div><div class="l">한 번에 맞힌 비율</div></div>
@@ -934,7 +1049,8 @@ function saveResult(pct, mins){
     level: UNIT.level, unit: UNIT.unitNo, unitTitle: UNIT.title,
     matchScore: score.match + '/' + UNIT.words.length,
     parseScore: score.parse + '/' + UNIT.parse.length,
-    matchTry: score.matchTry, parseTry: score.parseTry,
+    quizScore:  score.quiz + '/' + quizList().length,
+    matchTry: score.matchTry, parseTry: score.parseTry, quizTry: score.quizTry,
     accuracy: pct, minutes: mins, total: pct,
     date: new Date().toLocaleString('ko-KR')
   };
