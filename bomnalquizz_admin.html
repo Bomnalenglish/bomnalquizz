@@ -669,13 +669,13 @@ async function _fetchSnaps(colName, fields, cutoff){
 // 초등 봄날리딩·봄날듣기는 quizType/점수 필드가 없이 저장돼 '-'로 뭉쳐 보였다 → 파일명으로 채운다
 function _normElem(d){
   const f=String(d.file||'');
-  let m=f.match(/^bomnalreading(\d+)_(\d+)/);
+  let m=f.match(/^bomnalreading(t?\d+)_(\d+)/);
   if(m && !d.quizType){
     const sc=[d.matchScore,d.parseScore,d.quizScore].map(s=>String(s||'0/0').split('/').map(Number));
     const c=sc.reduce((a,x)=>a+(x[0]||0),0), n=sc.reduce((a,x)=>a+(x[1]||0),0);
-    return {...d, quizType:`봄날리딩${m[1]}_${m[2]}과_리딩`, score:(d.accuracy!==undefined?d.accuracy:d.total)||0,
+    return {...d, quizType:(m[1][0]==='t'?`봄날리딩튜터${m[1].slice(1)}_${m[2]}과_리딩`:`봄날리딩${m[1]}_${m[2]}과_리딩`), score:(d.accuracy!==undefined?d.accuracy:d.total)||0,
             correct:c, total:n, wrong:Math.max(0,n-c), elapsedMin:d.minutes||0,
-            _elem:'reading', _book:+m[1], _unit:+m[2]};
+            _elem:'reading', _book:(m[1][0]==='t'?'튜터 '+m[1].slice(1):m[1]), _unit:+m[2]};
   }
   m=f.match(/^bomnallistening_e(\d)_(\d)_(\d+)/);
   if(m && !d.quizType){
@@ -1251,7 +1251,7 @@ function parseQuizMeta(d){
   if (/_오답완료/.test(qt)) { type+='✓'; typeClass='ok'; }
   if (/_오답재시|_재시도/.test(qt)) { type+='↻'; typeClass='warn'; }
   // 교재명 추출
-  if (/^봄날리딩(\d+)_(\d+)과/.test(qt)) { const m=qt.match(/^봄날리딩(\d+)_(\d+)과/); textbook='봄날리딩 '+m[1]+'권'; return {textbook,type,typeClass,lesson:m[2]+'과',passages}; }
+  if (/^봄날리딩(튜터)?(\d+)_(\d+)과/.test(qt)) { const m0=qt.match(/^봄날리딩(튜터)?(\d+)_(\d+)과/); const m=[m0[0],m0[2],m0[3]]; textbook='봄날리딩 '+(m0[1]?'튜터 ':'')+m[1]+'권'; return {textbook,type,typeClass,lesson:m[2]+'과',passages}; }
   else if (/^봄날듣기_/.test(qt)) { const m=qt.match(/^봄날듣기_([\d-]+)_(\d+)회/); textbook='초등 듣기 '+m[1]; return {textbook,type,typeClass,lesson:m[2]+'회',passages}; }
   else if (/^종촌중1/.test(qt)) textbook='종촌중 1학년';
   else if (/^종촌중2/.test(qt)) textbook='종촌중 2학년';
