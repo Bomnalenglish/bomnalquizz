@@ -321,6 +321,7 @@ tr:hover td{background:#f8f9ff;}
             <optgroup label="종촌중"><option value="종촌중">종촌중 전체</option><option value="종촌중1">종촌중1</option><option value="종촌중2">종촌중2</option><option value="종촌중3">종촌중3</option></optgroup>
             <optgroup label="어진중"><option value="어진중">어진중 전체</option><option value="어진중1">어진중1</option><option value="어진중2">어진중2</option><option value="어진중3">어진중3</option></optgroup>
             <optgroup label="고운중"><option value="고운중">고운중 전체</option><option value="고운중1">고운중1</option><option value="고운중2">고운중2</option><option value="고운중3">고운중3</option></optgroup>
+            <optgroup label="초등"><option value="초등">초등 전체</option><option value="초등1">초등1</option><option value="초등2">초등2</option><option value="초등3">초등3</option><option value="초등4">초등4</option><option value="초등5">초등5</option><option value="초등6">초등6</option></optgroup>
           </select>
           <span class="ctrl-label">교재</span>
           <select class="ctrl-sel" id="fTextbook" onchange="applyFilter()">
@@ -359,6 +360,7 @@ tr:hover td{background:#f8f9ff;}
             <optgroup label="종촌중"><option value="종촌중">종촌중 전체</option><option value="종촌중1">종촌중1</option><option value="종촌중2">종촌중2</option><option value="종촌중3">종촌중3</option></optgroup>
             <optgroup label="어진중"><option value="어진중">어진중 전체</option><option value="어진중1">어진중1</option><option value="어진중2">어진중2</option><option value="어진중3">어진중3</option></optgroup>
             <optgroup label="고운중"><option value="고운중">고운중 전체</option><option value="고운중1">고운중1</option><option value="고운중2">고운중2</option><option value="고운중3">고운중3</option></optgroup>
+            <optgroup label="초등"><option value="초등">초등 전체</option><option value="초등1">초등1</option><option value="초등2">초등2</option><option value="초등3">초등3</option><option value="초등4">초등4</option><option value="초등5">초등5</option><option value="초등6">초등6</option></optgroup>
           </select>
           <span class="ctrl-label">이름</span>
           <input type="text" class="ctrl-inp" id="secName" placeholder="검색..." oninput="renderSectionView()">
@@ -442,6 +444,7 @@ tr:hover td{background:#f8f9ff;}
                 <optgroup label="종촌중"><option>종촌중1</option><option>종촌중2</option><option>종촌중3</option></optgroup>
                 <optgroup label="어진중"><option>어진중1</option><option>어진중2</option><option>어진중3</option></optgroup>
                 <optgroup label="고운중"><option>고운중1</option><option>고운중2</option><option>고운중3</option></optgroup>
+<optgroup label="초등"><option>초등1</option><option>초등2</option><option>초등3</option><option>초등4</option><option>초등5</option><option>초등6</option></optgroup>
               </select>
             </div>
             <button class="btn-refresh" onclick="addStudent()">➕ 학생 등록</button>
@@ -523,7 +526,7 @@ let allAccessData = [];  // ★ hub_access 데이터
 // 예전에는 열 때마다 quiz_results·hub_access 컬렉션 '전체'를 읽어서 느렸고,
 // Firestore 무료 할당량(하루 5만 읽기)도 빠르게 소진됐다.
 // ① 기간 제한 쿼리(서버에서 잘라서 가져오기) ② 병렬 로드 ③ 10분 캐시 로 개선.
-const CACHE_KEY='bn_admin_cache_v5';   // v5: saveId 중복 제거 반영   // v3: day·level 추가 + 학교 표기 통일
+const CACHE_KEY='bn_admin_cache_v6';   // v6: 초등 봄날리딩·봄날듣기 기록 반영   // v5: saveId 중복 제거 반영   // v3: day·level 추가 + 학교 표기 통일
 
 // 챕터 시험은 학교를 '종촌중학교'로, 어휘 퀴즈는 '종촌중1'로 저장한다.
 // 표기가 갈리면 같은 학생이 두 명으로 잡히므로 '종촌중1' 형태로 통일한다.
@@ -663,8 +666,28 @@ async function _fetchSnaps(colName, fields, cutoff){
 }
 
 // 문서 한 건 → 화면용 기록 한 건 (옛 loadData 안에 있던 코드를 그대로 떼어냈다)
+// 초등 봄날리딩·봄날듣기는 quizType/점수 필드가 없이 저장돼 '-'로 뭉쳐 보였다 → 파일명으로 채운다
+function _normElem(d){
+  const f=String(d.file||'');
+  let m=f.match(/^bomnalreading(\d+)_(\d+)/);
+  if(m && !d.quizType){
+    const sc=[d.matchScore,d.parseScore,d.quizScore].map(s=>String(s||'0/0').split('/').map(Number));
+    const c=sc.reduce((a,x)=>a+(x[0]||0),0), n=sc.reduce((a,x)=>a+(x[1]||0),0);
+    return {...d, quizType:`봄날리딩${m[1]}_${m[2]}과_리딩`, score:(d.accuracy!==undefined?d.accuracy:d.total)||0,
+            correct:c, total:n, wrong:Math.max(0,n-c), elapsedMin:d.minutes||0,
+            _elem:'reading', _book:+m[1], _unit:+m[2]};
+  }
+  m=f.match(/^bomnallistening_e(\d)_(\d)_(\d+)/);
+  if(m && !d.quizType){
+    const n=d.totalQ||20, c=d.correct||0;
+    return {...d, quizType:`봄날듣기_${m[1]}-${m[2]}_${m[3]}회`, score:d.score||0, correct:c, total:n,
+            wrong:n-c, elapsedMin:d.minutes||0, _elem:'listen', _book:`${m[1]}-${m[2]}`, _unit:+m[3]};
+  }
+  return d;
+}
+
 function _toQuiz(doc){
-      const d=doc.data();
+      const d=_normElem(doc.data());
       // per-문제 이벤트 레코드 숨김 (q 필드가 있거나, result가 ok/fail인 한 문제 단위 로그)
       if(d.q!==undefined || d.result==='ok' || d.result==='fail') return null;
       return ({
@@ -700,6 +723,7 @@ function _toQuiz(doc){
 
         day:(d.day!==undefined&&d.day!==null?d.day:''),   // 봄날 보카 Day 차시
         level:d.level||'',                                 // 봄날 보카 교재명(워드마스터 중등 BASIC 등)
+        elem:d._elem||'', elemBook:d._book||'', elemUnit:d._unit||0,   // 초등 봄날리딩·봄날듣기
         submittedAt:d.submittedAt||null,
         time:d.timestamp
           ?(typeof d.timestamp.toDate==='function'?d.timestamp.toDate():new Date(d.timestamp))
@@ -1222,11 +1246,14 @@ function parseQuizMeta(d){
   if (/서술|writing/i.test(qt)) { type='서술형'; typeClass='total'; }
   if (/빈칸시험|챕터/i.test(qt)) { type='빈칸'; typeClass='memory'; }
   if (/리딩|reading|독해/i.test(qt)) { type='독해'; typeClass='memory'; }
+  if (/^봄날듣기/.test(qt)) { type='듣기'; typeClass='voca'; }
   if (isDeepType(qt)) { type='지문 완전정복'; typeClass='deep'; }   // 단어→해석→문제→오답노트
   if (/_오답완료/.test(qt)) { type+='✓'; typeClass='ok'; }
   if (/_오답재시|_재시도/.test(qt)) { type+='↻'; typeClass='warn'; }
   // 교재명 추출
-  if (/^종촌중1/.test(qt)) textbook='종촌중 1학년';
+  if (/^봄날리딩(\d+)_(\d+)과/.test(qt)) { const m=qt.match(/^봄날리딩(\d+)_(\d+)과/); textbook='봄날리딩 '+m[1]+'권'; return {textbook,type,typeClass,lesson:m[2]+'과',passages}; }
+  else if (/^봄날듣기_/.test(qt)) { const m=qt.match(/^봄날듣기_([\d-]+)_(\d+)회/); textbook='초등 듣기 '+m[1]; return {textbook,type,typeClass,lesson:m[2]+'회',passages}; }
+  else if (/^종촌중1/.test(qt)) textbook='종촌중 1학년';
   else if (/^종촌중2/.test(qt)) textbook='종촌중 2학년';
   else if (/^종촌중3/.test(qt)) textbook='종촌중 3학년';
   else if (/^어진중2/.test(qt)) textbook='어진중 2학년';
@@ -1600,7 +1627,8 @@ function renderSectionView(){
     // 개인 오답 클리닉(지면 시험 오답을 학생별로 다시 풀리는 퀴즈)은 따로 뽑아 맨 위에 보여준다
     const isClinicRec = d => d.quizType && d.quizType.includes('개인오답');
     const clinicRecords=nonSecRecords.filter(d=>isClinicRec(d));
-    const otherRecords=nonSecRecords.filter(d=>!isSynanmType(d.quizType) && !isReadingLab(d.quizType) && !isVocaRec(d) && !isChapterRec(d) && !isClinicRec(d));
+    const elemRecords=nonSecRecords.filter(d=>d.elem);
+    const otherRecords=nonSecRecords.filter(d=>!d.elem && !isSynanmType(d.quizType) && !isReadingLab(d.quizType) && !isVocaRec(d) && !isChapterRec(d) && !isClinicRec(d));
     const vocaRecords=nonSecRecords.filter(d=>!isSynanmType(d.quizType) && !isReadingLab(d.quizType) && isVocaRec(d));
     const chapterRecords=nonSecRecords.filter(d=>!isSynanmType(d.quizType) && !isReadingLab(d.quizType) && !isVocaRec(d) && isChapterRec(d));
 
@@ -1799,6 +1827,38 @@ function renderSectionView(){
       }).join('')}
       </div></div>`:'';
 
+    // ── 초등: 봄날리딩(권·과별) / 봄날듣기(학기·회별) ──
+    const elemBooks={};
+    elemRecords.forEach(d=>{
+      const k=d.elem+'|'+d.elemBook;
+      if(!elemBooks[k]) elemBooks[k]={elem:d.elem, book:d.elemBook, units:{}, count:0, time:null};
+      const b=elemBooks[k]; b.count++;
+      if(d.time&&(!b.time||d.time>b.time)) b.time=d.time;
+      const u=b.units[d.elemUnit]||(b.units[d.elemUnit]={n:0,best:d,last:d});
+      u.n++;
+      if((d.score||0)>(u.best.score||0)) u.best=d;
+      if(d.time&&(!u.last.time||d.time>u.last.time)) u.last=d;
+    });
+    const elemHtml=Object.keys(elemBooks).length>0?Object.values(elemBooks)
+      .sort((a,b)=>((a.elem==='reading'?'0':'1')+a.book).localeCompare((b.elem==='reading'?'0':'1')+b.book,'ko',{numeric:true})).map(b=>{
+        const isR=b.elem==='reading';
+        const nums=Object.keys(b.units).map(Number).sort((x,y)=>x-y);
+        const cells=nums.map(n=>{
+          const u=b.units[n], sc=u.best.score||0;
+          const ts=u.last.time?u.last.time.toLocaleString('ko-KR',{month:'2-digit',day:'2-digit'}):'';
+          return `<div class="sec-cell ${sc>=80?'perfect':'has-wrong'}" style="min-width:72px;text-align:left;"${_cellAttrs(st.name,st.school,u.last.quizType)}>
+            <div style="font-size:10px;font-weight:800;color:var(--muted);">${isR?String(n).padStart(2,'0')+'과':String(n).padStart(2,'0')+'회'}</div>
+            <div class="sec-score">${sc}${isR?'%':'점'}</div>
+            <div class="sec-time">${ts}</div></div>`;
+        }).join('');
+        return `<div style="margin-bottom:14px;padding:10px 12px;background:${isR?'#f1f8e9':'#e3f2fd'};border-radius:10px;border:1px solid ${isR?'#c5e1a5':'#bbdefb'};">
+          <div style="font-size:11.5px;font-weight:900;color:${isR?'#33691e':'#0d47a1'};margin-bottom:8px;">
+            ${isR?'📖 봄날리딩 '+b.book+'권':'🎧 초등 듣기 '+b.book} · ${nums.length}${isR?'개 지문':'개 회차'} 완료
+            <span style="font-weight:700;color:#78909c;">(총 ${b.count}회 학습)</span></div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;">${cells}</div></div>`;
+      }).join(''):'';
+    const elemReadN=elemRecords.filter(d=>d.elem==='reading').length, elemListenN=elemRecords.filter(d=>d.elem==='listen').length;
+
     const nonSecMap={};
     otherRecords.forEach(d=>{
       const qtBase=d.quizType?d.quizType.replace('_오답완료',''):d.quizType;
@@ -1993,6 +2053,8 @@ function renderSectionView(){
             : `<span class="sum-pill done">📝 총 ${st.records.length}회 응시</span>
                <span class="sum-pill ${avgScore>=85?'done':'warn'}">평균 ${avgScore}점</span>
                <span class="sum-pill" style="background:#ede7f6;color:#5e35b1;">📅 최근 ${latestDate}</span>`}
+          ${elemReadN>0?`<span class="sum-pill" style="background:#f1f8e9;color:#33691e;">📖 리딩 ${elemReadN}회</span>`:''}
+          ${elemListenN>0?`<span class="sum-pill" style="background:#e3f2fd;color:#0d47a1;">🎧 듣기 ${elemListenN}회</span>`:''}
           ${myAccess.length>0?`<span class="sum-pill" style="background:#e3f2fd;color:#1565c0;">🔐 접속 ${myAccess.length}건</span>`:''}
           ${clinicGroups.length>0?(clinicCleared
             ? `<span class="sum-pill" style="background:#e8f5e9;color:#1b5e20;">🏆 오답 클리닉 완료</span>`
@@ -2000,6 +2062,7 @@ function renderSectionView(){
         </div>
       </div>
       <div id="${cardBodyId}" class="student-card-body" style="display:none;margin-top:14px;padding-top:14px;border-top:1px dashed #cbd5e1;">
+        ${elemHtml}
         ${clinicHtml}
         ${secBlocksHtml}
         ${reviewHtml}
@@ -2100,7 +2163,8 @@ const STU_SCHOOL_OPTIONS=`<option value="">선택…</option>
 <optgroup label="대성고"><option>대성고1</option><option>대성고2</option><option>대성고3</option></optgroup>
 <optgroup label="종촌중"><option>종촌중1</option><option>종촌중2</option><option>종촌중3</option></optgroup>
 <optgroup label="어진중"><option>어진중1</option><option>어진중2</option><option>어진중3</option></optgroup>
-<optgroup label="고운중"><option>고운중1</option><option>고운중2</option><option>고운중3</option></optgroup>`;
+<optgroup label="고운중"><option>고운중1</option><option>고운중2</option><option>고운중3</option></optgroup>
+<optgroup label="초등"><option>초등1</option><option>초등2</option><option>초등3</option><option>초등4</option><option>초등5</option><option>초등6</option></optgroup>`;
 
 async function loadStudents(){
   document.getElementById('stuArea').innerHTML='<div class="loading-msg">⏳ 학생 명단 불러오는 중…</div>';
