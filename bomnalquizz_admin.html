@@ -526,7 +526,7 @@ let allAccessData = [];  // ★ hub_access 데이터
 // 예전에는 열 때마다 quiz_results·hub_access 컬렉션 '전체'를 읽어서 느렸고,
 // Firestore 무료 할당량(하루 5만 읽기)도 빠르게 소진됐다.
 // ① 기간 제한 쿼리(서버에서 잘라서 가져오기) ② 병렬 로드 ③ 10분 캐시 로 개선.
-const CACHE_KEY='bn_admin_cache_v6';   // v6: 초등 봄날리딩·봄날듣기 기록 반영   // v5: saveId 중복 제거 반영   // v3: day·level 추가 + 학교 표기 통일
+const CACHE_KEY='bn_admin_cache_v7';   // v6: 초등 봄날리딩·봄날듣기 기록 반영   // v5: saveId 중복 제거 반영   // v3: day·level 추가 + 학교 표기 통일
 
 // 챕터 시험은 학교를 '종촌중학교'로, 어휘 퀴즈는 '종촌중1'로 저장한다.
 // 표기가 갈리면 같은 학생이 두 명으로 잡히므로 '종촌중1' 형태로 통일한다.
@@ -724,6 +724,8 @@ function _toQuiz(doc){
         day:(d.day!==undefined&&d.day!==null?d.day:''),   // 봄날 보카 Day 차시
         level:d.level||'',                                 // 봄날 보카 교재명(워드마스터 중등 BASIC 등)
         elem:d._elem||'', elemBook:d._book||'', elemUnit:d._unit||0,   // 초등 봄날리딩·봄날듣기
+        rStage:(d._elem==='reading'?{m:d.matchScore||'',p:d.parseScore||'',q:d.quizScore||'',
+                 mt:d.matchTry||0,pt:d.parseTry||0,qt:d.quizTry||0}:null),   // 리딩 단계별 점수
         submittedAt:d.submittedAt||null,
         time:d.timestamp
           ?(typeof d.timestamp.toDate==='function'?d.timestamp.toDate():new Date(d.timestamp))
@@ -1840,15 +1842,19 @@ function renderSectionView(){
       if(d.time&&(!u.last.time||d.time>u.last.time)) u.last=d;
     });
     const elemHtml=Object.keys(elemBooks).length>0?Object.values(elemBooks)
-      .sort((a,b)=>((a.elem==='reading'?'0':'1')+a.book).localeCompare((b.elem==='reading'?'0':'1')+b.book,'ko',{numeric:true})).map(b=>{
+      .sort((a,b)=>{const k=x=>(x.elem!=='reading'?'2':(String(x.book).indexOf('튜터')>=0?'1':'0'))+String(x.book).replace('튜터 ','');return k(a).localeCompare(k(b),'ko',{numeric:true});}).map(b=>{
         const isR=b.elem==='reading';
         const nums=Object.keys(b.units).map(Number).sort((x,y)=>x-y);
         const cells=nums.map(n=>{
           const u=b.units[n], sc=u.best.score||0;
           const ts=u.last.time?u.last.time.toLocaleString('ko-KR',{month:'2-digit',day:'2-digit'}):'';
-          return `<div class="sec-cell ${sc>=80?'perfect':'has-wrong'}" style="min-width:72px;text-align:left;"${_cellAttrs(st.name,st.school,u.last.quizType)}>
+          return `<div class="sec-cell ${sc>=80?'perfect':'has-wrong'}" style="min-width:118px;text-align:left;"${_cellAttrs(st.name,st.school,u.last.quizType)}>
             <div style="font-size:10px;font-weight:800;color:var(--muted);">${isR?String(n).padStart(2,'0')+'과':String(n).padStart(2,'0')+'회'}</div>
             <div class="sec-score">${sc}${isR?'%':'점'}</div>
+            ${isR&&u.best.rStage?`<div style="font-size:9.5px;color:#33691e;font-weight:700;line-height:1.5;margin-top:2px;">
+                 단어 ${u.best.rStage.m}${u.best.rStage.mt?` <span style="color:#e65100">(${u.best.rStage.mt}번)</span>`:''}<br>
+                 나누기 ${u.best.rStage.p}${u.best.rStage.pt?` <span style="color:#e65100">(${u.best.rStage.pt}번)</span>`:''}<br>
+                 확인 ${u.best.rStage.q}${u.best.rStage.qt?` <span style="color:#e65100">(${u.best.rStage.qt}번)</span>`:''}</div>`:''}
             <div class="sec-time">${ts}</div></div>`;
         }).join('');
         return `<div style="margin-bottom:14px;padding:10px 12px;background:${isR?'#f1f8e9':'#e3f2fd'};border-radius:10px;border:1px solid ${isR?'#c5e1a5':'#bbdefb'};">
