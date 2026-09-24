@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>봄날 리스닝 초등 3-1 · 02회</title>
+<title>__TITLE__</title>
 <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Gowun+Dodum&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -90,6 +90,7 @@ header{background:linear-gradient(135deg,#f7efe4 0%,#f0e6d8 50%,#ece0d2 100%); p
 <script>
 const T = {"book": "봄날 리스닝 초등 3-1", "round": "02회", "base": "listen/e3_1/r02/", "answers": [1, 2, 3, 3, 1, 2, 1, 2, 3, 1, 2, 1, 2, 2, 2, 3, 1, 2, 3, 2]};
 const N = T.answers.length;
+const NCH = T.choices || 3;          // 보기 개수 (3학년 3개 · 4학년 4개)
 const $ = id => document.getElementById(id);
 const area = () => $('area');
 const au = $('au');
@@ -147,7 +148,7 @@ function renderIntro(){
       <div style="color:var(--soft);font-size:.9rem">${T.book} · ${N}문항 · 문항당 5점</div>
       <ul>
         <li>문제가 나오면 <b>소리가 자동으로</b> 나와요.</li>
-        <li>소리를 끝까지 듣고 ①②③ 중에서 답을 고르세요.</li>
+        <li>소리를 끝까지 듣고 ${'①②③④'.slice(0,NCH)} 중에서 답을 고르세요.</li>
         <li>잘 안 들리면 <b>🔊 다시 듣기</b>를 눌러도 돼요.</li>
         <li>다 풀면 채점하고, <b>틀린 문제는 다시 들으며</b> 풀어요.</li>
       </ul>
@@ -186,7 +187,7 @@ function renderQ(){
       <img class="qimg" src="${src(i)}.jpg" alt="${i+1}번 문제">
       <div class="listen"><span class="st" id="st"><span class="pulse"></span>듣는 중…</span>
         <button id="rep" onclick="replay()">🔊 다시 듣기</button></div>
-      <div class="choices">${[1,2,3].map(c=>`<button class="ch" data-c="${c}" onclick="pick(${c})">${'①②③'[c-1]}</button>`).join('')}</div>
+      <div class="choices">${Array.from({length:NCH},(_,k)=>k+1).map(c=>`<button class="ch" data-c="${c}" onclick="pick(${c})">${'①②③④'[c-1]}</button>`).join('')}</div>
       <div class="hint" id="hint"></div>
       <div class="btn-row"><button class="btn btn-main full" id="nx" disabled onclick="next()">${mode==='test'?'끝까지 듣고 답을 고르세요':'답을 고르세요'}</button></div>
     </div>`;
