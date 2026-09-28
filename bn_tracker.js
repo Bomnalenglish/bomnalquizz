@@ -5,9 +5,54 @@
    - 직접 URL 접속·메뉴를 통한 접속 모두 추적
    사용법: <script type="module" src="bn_tracker.js"></script>
 ═══════════════════════════════════════════════════════════ */
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, collection, addDoc, serverTimestamp }
-  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+/* ───────────────────────────────────────────────────────────
+   공용 패드 대비 — 화면 오른쪽 위에 "👤 이름 · 바꾸기" 칩
+   · 앞 학생 이름 그대로 다음 학생이 문제를 푸는 일을 막는다
+   · 마지막 로그인 뒤 3시간이 지났으면 이름을 지우고 첫 화면으로 보낸다
+   · Firebase 로딩보다 먼저 실행되도록 파일 맨 앞에 둔다
+─────────────────────────────────────────────────────────── */
+(function studentChip(){
+  const HOURS = 3;
+  const g = k => { try { return localStorage.getItem(k) || sessionStorage.getItem(k) || ''; } catch(e){ return ''; } };
+  const clearAll = () => { ["bn_name","bn_school","bn_auth","bn_id","bn_at"].forEach(k=>{
+      try{ localStorage.removeItem(k); sessionStorage.removeItem(k); }catch(e){} }); };
+
+  const at = parseInt(g('bn_at') || '0', 10);
+  const name = (g('bn_name') || '').trim();
+  if (name && at && (Date.now() - at > HOURS*3600*1000)) {   // 오래된 로그인 → 정리 후 첫 화면
+    clearAll();
+    location.href = 'index.html';
+    return;
+  }
+  if (!name) return;
+
+  function draw(){
+    if (!document.body || document.getElementById('bnWhoChip')) return;
+    const box = document.createElement('div');
+    box.id = 'bnWhoChip';
+    box.style.cssText = 'position:fixed;top:8px;right:8px;z-index:99999;display:flex;align-items:center;gap:6px;'
+      + 'background:rgba(255,255,255,.94);border:1.5px solid #d8cfc4;border-radius:999px;padding:5px 8px 5px 11px;'
+      + 'font-family:inherit;font-size:12px;color:#4a4a4a;box-shadow:0 2px 8px rgba(0,0,0,.12);max-width:60vw';
+    const who = document.createElement('span');
+    who.textContent = '👤 ' + name;
+    who.style.cssText = 'font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis';
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.textContent = '바꾸기';
+    btn.style.cssText = 'font:inherit;font-size:11px;font-weight:800;color:#fff;background:#8a7f74;border:none;'
+      + 'border-radius:999px;padding:4px 9px;cursor:pointer';
+    btn.onclick = function(){
+      if (!confirm(name + ' 학생이 아니면 이름을 바꿔요.\n지금까지 푼 내용은 저장되지 않습니다. 바꿀까요?')) return;
+      clearAll();
+      location.href = 'index.html';
+    };
+    box.appendChild(who); box.appendChild(btn);
+    document.body.appendChild(box);
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', draw);
+  else draw();
+  setTimeout(draw, 1500);
+})();
 
 const cfg = {
   apiKey: "AIzaSyCxS524S8KAaF87DomPtl9sJdF-eqes404",
@@ -18,8 +63,23 @@ const cfg = {
   appId: "1:115868052300:web:765c08867b6f1ce0987de9"
 };
 
-const app = initializeApp(cfg);
-const db = getFirestore(app);
+/* Firebase SDK는 동적으로 불러온다.
+   (정적 import는 네트워크가 느리거나 구형 브라우저면 파일 전체가 죽어버려서
+    이름 칩·자동 채움 같은 기본 기능까지 함께 멈춘다) */
+let _fbPromise = null;
+function _fb(){
+  if (_fbPromise) return _fbPromise;
+  _fbPromise = (async () => {
+    const [appMod, fsMod] = await Promise.all([
+      import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js"),
+      import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js")
+    ]);
+    const app = appMod.initializeApp(cfg);
+    return { db: fsMod.getFirestore(app), collection: fsMod.collection,
+             addDoc: fsMod.addDoc, serverTimestamp: fsMod.serverTimestamp };
+  })().catch(e => { console.log('firebase load fail', e); return null; });
+  return _fbPromise;
+}
 
 /* 파일명에서 학교/학년/단원 등의 메타데이터 추출 */
 function extractMeta(filename) {
@@ -42,15 +102,18 @@ function extractMeta(filename) {
 }
 
 window._logAccess = async (data) => {
+  const rec = { ...data, userAgent: navigator.userAgent.substring(0, 120) };
   try {
-    await addDoc(collection(db, "hub_access"), {
-      ...data,
-      timestamp: serverTimestamp(),
-      userAgent: navigator.userAgent.substring(0, 120)
-    });
+    const f = await _fb();
+    if (f) {
+      await f.addDoc(f.collection(f.db, "hub_access"), { ...rec, timestamp: f.serverTimestamp() });
+      return;
+    }
   } catch (e) {
     console.log("log fail", e);
   }
+  // SDK를 못 불러왔거나 저장이 실패하면 REST로 한 번 더
+  try { await _postOneRest('hub_access', { ...rec, timestamp: new Date().toISOString() }); } catch(e){}
 };
 
 (function autoLog() {
