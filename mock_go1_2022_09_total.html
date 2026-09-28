@@ -632,6 +632,33 @@ const QUESTIONS = [
 {"no": 243, "school": "발곡고 (의정부시)", "pref": "45", "type": "대명사", "stem": "다음 글의 밑줄 친 ⓐ~ⓚ 중 가리키는 말이 같은 것끼리 짝지어진 것은? (할아버지=ⓐⓔⓕⓖⓚ중 선별)", "p": "45-a", "choices": ["ⓐ, ⓔ, ⓖ, ⓚ", "ⓑ, ⓒ, ⓓ, ⓔ", "ⓔ, ⓕ, ⓗ, ⓚ", "ⓔ, ⓖ, ⓘ, ⓙ", "ⓗ, ⓘ, ⓙ, ⓚ"], "ans": 1, "exp": "", "b": 2},
 {"no": 421, "school": "서산여고 (서산시)", "pref": "45", "type": "내용일치", "stem": "다음 글을 읽고 질문에 답할 수 없는 것은?", "p": "45-b", "choices": ["Who took the boy to the best school in town?", "What did the old man do whenever he found a school?", "How did the old man find his grandson the best school?", "What was the reason the old man didn't teach the grandson himself?", "What was the reaction of the children whom the old man met most of the schools?"], "ans": 4, "exp": "할아버지가 손자를 직접 가르치지 않은 이유는 글에 언급되지 않는다.", "b": 5}
 ];
+
+/* ── 안전장치 ──────────────────────────────────────────────
+   ⓐ~ⓔ 보기로 고르는 어휘·어법 문항인데 지문에 ⓐ~ⓔ 표시가 없으면
+   학생이 무엇에 밑줄이 그어졌는지 알 수 없어 풀 수 없다.
+   지문이 갖춰질 때까지 그런 문항은 출제 목록에서 빼 둔다. */
+(function dropUnmarkedVocab(){
+  function bodyOf(q){
+    if (q.bb) return q.bb;
+    if (q.body) return q.body;
+    try { if (typeof PASS !== 'undefined' && PASS && PASS[q.p]) return PASS[q.p]; } catch(e){}
+    return '';
+  }
+  var dropped = 0, i, q, t, first;
+  for (i = QUESTIONS.length - 1; i >= 0; i--) {
+    q = QUESTIONS[i];
+    t = String(q.type || '');
+    if (t.indexOf('\uc5b4\ud718') < 0 && t.indexOf('\uc5b4\ubc95') < 0) continue;   // 어휘·어법만
+    if (t.indexOf('\uad04\ud638') >= 0) continue;                                     // 괄호(네모)형은 제외
+    first = String((q.choices && q.choices[0]) || '');
+    if (!/^[\u24d0-\u24d4]/.test(first)) continue;        // ⓐ~ⓔ 보기가 아니면 그대로
+    if (bodyOf(q).indexOf('\u24d0') >= 0) continue;        // 지문에 ⓐ가 있으면 정상
+    QUESTIONS.splice(i, 1);
+    dropped++;
+  }
+  if (dropped) console.log('밑줄 표시가 없어 제외한 문항: ' + dropped + '개');
+})();
+
 // bb: 문제 유형에 맞게 빈칸·(A)(B)(C)·삽입 위치를 표시한 지문
 QUESTIONS.forEach(q=>{q.body=q.bb||PASS[q.p]||'';delete q.bb;});
 

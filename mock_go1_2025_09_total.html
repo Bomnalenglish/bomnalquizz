@@ -551,6 +551,33 @@ const QUESTIONS = [
 {"no": 334, "school": "산동고 (구미시)", "pref": "45", "type": "제목", "stem": "윗글의 제목으로 가장 적절한 것은?", "p": "45-a", "choices": ["Appropriate Use of School Facilities", "Beyond a Bill: A Moment of True Connection", "The Struggle for Popularity at School", "A Moment Dave Refused to Challenge", "The Day the Machine Broke Down"], "ans": 2, "exp": "상급생이 Dave를 도우며 서로 다른 세계의 두 사람이 진정한 교감을 나눈 순간을 그린 글이다.", "b": 4},
 {"no": 335, "school": "산동고 (구미시)", "pref": "45", "type": "어법", "stem": "밑줄 친 ⓐ~ⓔ 중에서 어법상 어색한 것은? (ⓐ(his table) where (other students… were sitting) ⓑ(make the machine) take ⓒ(kept aimlessly) pushing ⓓ(explained) how (the machine often had trouble recognizing dollar bills) ⓔ(Although it was clear) what (they were from very distinct worlds))", "p": "45-a", "choices": ["ⓐ where", "ⓑ take", "ⓒ pushing", "ⓓ how", "ⓔ what"], "ans": 5, "exp": "ⓔ what → that: 가주어 it의 진주어로 완전한 절을 이끄는 접속사 that이 와야 한다.", "b": 4}
 ];
+
+/* ── 안전장치 ──────────────────────────────────────────────
+   ⓐ~ⓔ 보기로 고르는 어휘·어법 문항인데 지문에 ⓐ~ⓔ 표시가 없으면
+   학생이 무엇에 밑줄이 그어졌는지 알 수 없어 풀 수 없다.
+   지문이 갖춰질 때까지 그런 문항은 출제 목록에서 빼 둔다. */
+(function dropUnmarkedVocab(){
+  function bodyOf(q){
+    if (q.bb) return q.bb;
+    if (q.body) return q.body;
+    try { if (typeof PASS !== 'undefined' && PASS && PASS[q.p]) return PASS[q.p]; } catch(e){}
+    return '';
+  }
+  var dropped = 0, i, q, t, first;
+  for (i = QUESTIONS.length - 1; i >= 0; i--) {
+    q = QUESTIONS[i];
+    t = String(q.type || '');
+    if (t.indexOf('\uc5b4\ud718') < 0 && t.indexOf('\uc5b4\ubc95') < 0) continue;   // 어휘·어법만
+    if (t.indexOf('\uad04\ud638') >= 0) continue;                                     // 괄호(네모)형은 제외
+    first = String((q.choices && q.choices[0]) || '');
+    if (!/^[\u24d0-\u24d4]/.test(first)) continue;        // ⓐ~ⓔ 보기가 아니면 그대로
+    if (bodyOf(q).indexOf('\u24d0') >= 0) continue;        // 지문에 ⓐ가 있으면 정상
+    QUESTIONS.splice(i, 1);
+    dropped++;
+  }
+  if (dropped) console.log('밑줄 표시가 없어 제외한 문항: ' + dropped + '개');
+})();
+
 // bb: 문제 유형에 맞게 빈칸·(A)(B)(C)·삽입 위치를 표시한 지문
 QUESTIONS.forEach(q=>{q.body=q.bb||PASS[q.p]||'';delete q.bb;});
 

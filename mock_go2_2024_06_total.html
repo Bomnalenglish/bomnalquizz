@@ -265,6 +265,33 @@ const QUESTIONS = [
   {no:100,school:``,pref:`40`,type:`빈칸추론`,stem:`다음 빈칸에 들어갈 말로 가장 적절한 것은?`,body:`Many things spark envy: ownership, status, health, youth, talent, popularity, beauty. It is often confused with jealousy because the physical reactions are identical. The difference: the subject of envy is a thing (status, money, health etc.). The subject of jealousy is the behaviour of a third person. Envy needs two people. Jealousy, on the other hand, requires three: Peter is jealous of Sam because the beautiful girl next door rings him instead. Paradoxically, with envy we direct resentments toward those who ______________________. We don’t envy businesspeople from the century before last. We don’t envy millionaires on the other side of the globe. As a writer, I don’t envy musicians, managers or dentists, but other writers. As a CEO you envy other, bigger CEOs. As a supermodel you envy more successful supermodels.`,choices:[`excel beyond us`,`are our acquaintances`,`share the same belief`,`are in comparable situations`,`are of different backgrounds 29 - 06월`],ans:4}
 ];
 
+/* ── 안전장치 ──────────────────────────────────────────────
+   ⓐ~ⓔ 보기로 고르는 어휘·어법 문항인데 지문에 ⓐ~ⓔ 표시가 없으면
+   학생이 무엇에 밑줄이 그어졌는지 알 수 없어 풀 수 없다.
+   지문이 갖춰질 때까지 그런 문항은 출제 목록에서 빼 둔다. */
+(function dropUnmarkedVocab(){
+  function bodyOf(q){
+    if (q.bb) return q.bb;
+    if (q.body) return q.body;
+    try { if (typeof PASS !== 'undefined' && PASS && PASS[q.p]) return PASS[q.p]; } catch(e){}
+    return '';
+  }
+  var dropped = 0, i, q, t, first;
+  for (i = QUESTIONS.length - 1; i >= 0; i--) {
+    q = QUESTIONS[i];
+    t = String(q.type || '');
+    if (t.indexOf('\uc5b4\ud718') < 0 && t.indexOf('\uc5b4\ubc95') < 0) continue;   // 어휘·어법만
+    if (t.indexOf('\uad04\ud638') >= 0) continue;                                     // 괄호(네모)형은 제외
+    first = String((q.choices && q.choices[0]) || '');
+    if (!/^[\u24d0-\u24d4]/.test(first)) continue;        // ⓐ~ⓔ 보기가 아니면 그대로
+    if (bodyOf(q).indexOf('\u24d0') >= 0) continue;        // 지문에 ⓐ가 있으면 정상
+    QUESTIONS.splice(i, 1);
+    dropped++;
+  }
+  if (dropped) console.log('밑줄 표시가 없어 제외한 문항: ' + dropped + '개');
+})();
+
+
 // Build PASSAGES array dynamically
 const PASSAGE_ORDER = ['20','21','22','23','24','26','29','30','31','32','33','34','35','36','37','38','39','40'];
 const PASSAGES_BY_REF = {};
