@@ -599,6 +599,23 @@ function startQuiz(){
 // ── QUIZ ──────────────────────────────────────────
 function escHTML(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
+function markUPhrase(h, q){
+  // 보기(ⓐ~ⓖ)에 적힌 문구와 같은 부분을 지문에서 찾아 문구 전체에 밑줄
+  if (!q || !q.choices) return h;
+  for (var i = 0; i < q.choices.length; i++) {
+    var m = String(q.choices[i]).match(/^([\u24d0-\u24d6])\s*(.+)$/);
+    if (!m) continue;
+    var sym = m[1], ph = m[2].trim();
+    if (!ph || ph.indexOf(':') >= 0 || !/[A-Za-z]/.test(ph)) continue;
+    if (ph.split(/\s+/).length > 6) continue;
+    var esc = escHTML(ph).replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\s+/g, '\\s+');
+    try {
+      var re = new RegExp(sym + '\\s?' + esc);
+      if (re.test(h)) h = h.replace(re, '<b class="mk">' + sym + '<u>' + escHTML(ph) + '</u></b>');
+    } catch (e) {}
+  }
+  return h;
+}
 function markU(h){return h.replace(/([ⓐⓑⓒⓓⓔⓕⓖ])\s?([A-Za-z][A-Za-z'\-]*)/g,'<b class="mk">$1<u>$2</u></b>').replace(/(\((?:A|B|C|D)\)\s?\[[^\]]+\])/g,'<b class="mk">$1</b>').replace(/(_{6,})/g,'<b class="mk">$1</b>').replace(/(\( [①②③④⑤] \))/g,'<b class="mk">$1</b>');}
 function showQ(){
   if(idx>=qs.length){showResult();return;}
@@ -623,7 +640,7 @@ function showQ(){
         <span class="passage-tag">${q.pref}번 · ${q.b}차</span>
         ${schoolBadge}
       </div>
-      <div class="passage-box">${markU(escHTML(q.body))}</div>
+      <div class="passage-box">${markU(markUPhrase(escHTML(q.body), q))}</div>
       <div class="q-prompt">❓ ${escHTML(q.stem)}</div>
       <div class="choices" id="qChoices">${choiceHTML}</div>
       <div class="fb-msg" id="fb"></div>
