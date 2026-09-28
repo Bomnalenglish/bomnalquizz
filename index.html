@@ -1,6 +1,51 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
+<script>
+/* ── 구형 기기 진단용: 스크립트 오류를 화면에 보여 준다 ──
+   버튼을 눌러도 아무 일이 없을 때 원인을 바로 확인할 수 있게 한다.
+   오래된 브라우저에서도 읽히도록 ES5 문법만 쓴다. */
+window.__bnErr = [];
+(function(){
+  function show(extra){
+    try{
+      var box = document.getElementById('bnErrBox');
+      if(!box){
+        box = document.createElement('div');
+        box.id = 'bnErrBox';
+        box.style.cssText = 'position:fixed;left:0;right:0;bottom:0;z-index:2147483647;background:#c62828;'
+          + 'color:#fff;font:12px/1.5 sans-serif;padding:9px 11px;max-height:45%;overflow:auto;white-space:pre-wrap';
+        (document.body || document.documentElement).appendChild(box);
+      }
+      box.textContent = '⚠️ 이 기기에서 문제가 생겼어요.\n이 글씨를 그대로 캡처해서 선생님께 보내 주세요.\n\n'
+        + (extra ? extra + '\n' : '') + window.__bnErr.join('\n');
+    }catch(e){}
+  }
+  window.__bnShowErr = show;
+  window.onerror = function(m, u, l){
+    window.__bnErr.push(String(m) + '  (' + String(u || '').split('/').pop() + ' ' + l + '줄)');
+    if(document.body) show(); else setTimeout(show, 900);
+    return false;
+  };
+  if(window.addEventListener){
+    window.addEventListener('error', function(e){
+      var t = e && e.target;
+      if(t && t.tagName === 'SCRIPT'){
+        var nm = String(t.src || '').split('/').pop();
+        window.__bnErr.push(nm ? ('파일을 불러오지 못했어요: ' + nm)
+                               : '자료 서버(Firebase) 연결에 실패했어요');
+      }
+    }, true);
+    window.addEventListener('load', function(){
+      setTimeout(function(){
+        if(typeof window.submitName !== 'function'){
+          show('로금인 기능이 준뭄되지 않았어요 (버튼이 동작하지 않음)');
+        }
+      }, 1500);
+    });
+  }
+})();
+</script>
 <link rel="manifest" href="manifest.json"/>
 <meta name="theme-color" content="#4a6741"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
@@ -314,6 +359,29 @@ window._lookupStudent=async(code)=>{
 
 <script>
 const ACCESS_CODE = "bn2026";
+
+/* ── 학생 코드 조회 (REST) ──
+   Firebase SDK는 ES 모듈이라 오래된 브라우저·차단된 망에서는 못 불러온다.
+   그 경우에도 코드 로그인이 되도록 Firestore REST로 한 번 더 시도한다.
+   실패하면 'ERR'을 돌려주어 "등록되지 않은 코드"와 구분한다. */
+function _lookupStudentRest(code){
+  var url = 'https://firestore.googleapis.com/v1/projects/bomnalvaca/databases/(default)/documents:runQuery';
+  var body = { structuredQuery: {
+      from: [{ collectionId: 'students' }],
+      where: { fieldFilter: { field: { fieldPath: 'code' }, op: 'EQUAL', value: { stringValue: code } } },
+      limit: 1 } };
+  return fetch(url, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) })
+    .then(function(r){ if(!r.ok) throw new Error('http ' + r.status); return r.json(); })
+    .then(function(j){
+      if(!j || !j.length) return null;
+      var f = null, i;
+      for(i = 0; i < j.length; i++){ if(j[i] && j[i].document){ f = j[i].document.fields; break; } }
+      if(!f) return null;
+      function g(k){ return (f[k] && f[k].stringValue) || ''; }
+      return { code: g('code') || code, name: g('name'), school: g('school') };
+    })
+    .catch(function(e){ console.log('rest lookup fail', e); return 'ERR'; });
+}
 const BASE = "https://bomnalenglish.github.io/bomnalquizz/";
 const COLORS = ["c-0","c-1","c-2","c-3","c-4","c-5","c-6","c-7"];
 let ci = 0;
@@ -1948,12 +2016,17 @@ async function submitCode(){
   const err = document.getElementById("codeErr");
   err.textContent = "";
   if (!code) { err.textContent = "코드를 입력해주세요"; return; }
-  // Firebase 준비 대기
-  let w=0; while(!window._lookupStudent && w<8000){ await new Promise(r=>setTimeout(r,200)); w+=200; }
-  if (!window._lookupStudent) { err.textContent = "잠시 후 다시 시도해주세요"; return; }
+  // Firebase 준비 대기 (3.5초까지) → 그 뒤에는 REST로 조회
+  let w=0; while(!window._lookupStudent && w<3500){ await new Promise(r=>setTimeout(r,200)); w+=200; }
   err.textContent = "⏳ 확인 중…";
   err.style.color = "#475569";
-  const stu = await window._lookupStudent(code);
+  let stu = window._lookupStudent ? await window._lookupStudent(code) : null;
+  if (!stu) stu = await _lookupStudentRest(code);      // SDK 실패·구형 브라우저 대비
+  if (stu === 'ERR') {
+    err.textContent = "인터넷 연결이 불안정해요. 잠시 후 다시 시도해주세요.";
+    err.style.color = "#dc2626";
+    return;
+  }
   if (!stu) {
     err.textContent = "❌ 등록되지 않은 코드입니다. 선생님께 문의하거나, 아래 '이름·학교 직접 입력'을 이용해주세요.";
     err.style.color = "#dc2626";
