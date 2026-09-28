@@ -7,6 +7,18 @@
    오래된 브라우저에서도 읽히도록 ES5 문법만 쓴다. */
 window.__bnErr = [];
 (function(){
+  function __bnFeat(){
+    var r = [];
+    try{ eval("(function(){return 1})"); }catch(e){ r.push('기본'); }
+    try{ eval("(()=>1)"); }catch(e){ r.push('\ud654\uc0b4\ud45c\ud568\uc218'); }
+    try{ eval("var _t=`x`;"); }catch(e){ r.push('\ud15c\ud50c\ub9bf\ubb38\uc790\uc5f4'); }
+    try{ eval("let _l=1; const _c=2;"); }catch(e){ r.push('let/const'); }
+    try{ eval("(async function(){})"); }catch(e){ r.push('async'); }
+    try{ eval("var _o={a:1}; var _b={..._o};"); }catch(e){ r.push('\uac1d\uccb4\ud3bc\uce58\uae30'); }
+    try{ eval("({a:1})?.a"); }catch(e){ r.push('\uc635\uc154\ub110\uccb4\uc774\ub2dd'); }
+    try{ eval("var _s=document.createElement('script'); if(!('noModule' in _s)) throw 0;"); }catch(e){ r.push('\ubaa8\ub4c8'); }
+    return r;
+  }
   function show(extra){
     try{
       var box = document.getElementById('bnErrBox');
@@ -17,8 +29,15 @@ window.__bnErr = [];
           + 'color:#fff;font:12px/1.5 sans-serif;padding:9px 11px;max-height:45%;overflow:auto;white-space:pre-wrap';
         (document.body || document.documentElement).appendChild(box);
       }
+      var miss = __bnFeat();
+      var ua = navigator.userAgent;
+      var br = (ua.match(/SamsungBrowser\/[\d.]+/) || ua.match(/Chrome\/[\d.]+/) || ua.match(/Version\/[\d.]+/) || ['?'])[0];
       box.textContent = '⚠️ 이 기기에서 문제가 생겼어요.\n이 글씨를 그대로 캡처해서 선생님께 보내 주세요.\n\n'
-        + (extra ? extra + '\n' : '') + window.__bnErr.join('\n');
+        + (extra ? extra + '\n' : '')
+        + window.__bnErr.join('\n')
+        + '\n\n[브라우저] ' + br
+        + '\n[못 읽는 문법] ' + (miss.length ? miss.join(', ') : '없음')
+        + '\n[기기] ' + ua;
     }catch(e){}
   }
   window.__bnShowErr = show;
@@ -2015,17 +2034,27 @@ function doLogout() {
 }
 
 // 학생 코드로 로그인
-async function submitCode(){
+function submitCode(){
   const code = document.getElementById("codeInput").value.trim();
   const err = document.getElementById("codeErr");
   err.textContent = "";
   if (!code) { err.textContent = "코드를 입력해주세요"; return; }
-  // Firebase 준비 대기 (3.5초까지) → 그 뒤에는 REST로 조회
-  let w=0; while(!window._lookupStudent && w<3500){ await new Promise(r=>setTimeout(r,200)); w+=200; }
   err.textContent = "⏳ 확인 중…";
   err.style.color = "#475569";
-  let stu = window._lookupStudent ? await window._lookupStudent(code) : null;
-  if (!stu) stu = await _lookupStudentRest(code);      // SDK 실패·구형 브라우저 대비
+  // Firebase 준비 대기 (3.5초까지) → 그 뒤에는 REST로 조회
+  function waitSdk(left){
+    if (window._lookupStudent || left <= 0) return Promise.resolve();
+    return new Promise(function(r){ setTimeout(r, 200); }).then(function(){ return waitSdk(left - 200); });
+  }
+  waitSdk(3500)
+    .then(function(){ return window._lookupStudent ? window._lookupStudent(code) : null; })
+    .catch(function(){ return null; })
+    .then(function(stu){ return stu ? stu : _lookupStudentRest(code); })   // SDK 실패·구형 브라우저 대비
+    .then(function(stu){ _afterLookup(stu, code, err); })
+    .catch(function(){ _afterLookup('ERR', code, err); });
+}
+
+function _afterLookup(stu, code, err){
   if (stu === 'ERR') {
     err.textContent = "인터넷 연결이 불안정해요. 잠시 후 다시 시도해주세요.";
     err.style.color = "#dc2626";
