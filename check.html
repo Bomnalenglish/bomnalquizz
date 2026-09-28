@@ -41,4 +41,28 @@ if (bad === 0) { v.textContent = '✅ 이 기기는 봄날퀴즈를 쓸 수 있�
 else { v.textContent = '⚠️ 이 기기는 브라우저가 오래됐어요 ('+bad+'가지 안 됨)'; v.style.color='#c62828'; }
 document.getElementById('ua').textContent = navigator.userAgent;
 </script>
+<div class="box"><div style="font-weight:800;margin-bottom:6px">첫 화면 오류 검사</div>
+<div id="iferr" style="font-size:.85rem;color:#555">검사 중… (10초쯤 걸려요)</div></div>
+<script>
+(function(){
+  var out=document.getElementById('iferr');
+  var f=document.createElement('iframe');
+  f.style.cssText='width:1px;height:1px;opacity:0;position:absolute;left:-9999px';
+  f.src='index.html?probe=1';
+  var msgs=[];
+  f.onload=function(){
+    try{
+      f.contentWindow.onerror=function(m,u,l,c){ msgs.push(m+' (줄 '+l+')'); return false; };
+      setTimeout(function(){
+        var w=f.contentWindow, txt='';
+        try{ txt = (typeof w.submitName==='function' ? '로그인 기능 있음' : '로그인 기능 없음(스크립트 중단)'); }catch(e){ txt='확인 불가'; }
+        var mod='';
+        try{ mod = w.window._fbReady ? '자료 서버 연결됨' : '자료 서버 연결 안 됨'; }catch(e){ mod='자료 서버 연결 안 됨'; }
+        out.innerHTML = txt + '<br>' + mod + (msgs.length? '<br><span class="no">오류: '+msgs.join('<br>')+'</span>' : '<br>오류 메시지 없음');
+      }, 6000);
+    }catch(e){ out.textContent='검사 실패: '+e.message; }
+  };
+  document.body.appendChild(f);
+})();
+</script>
 </body></html>
