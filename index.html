@@ -946,13 +946,19 @@ function renderSchoolPicker() {
 function submitSchool() {
   if (!selectedSchoolId) { document.getElementById("pickErr").textContent = "학교를 선택해주세요!"; return; }
   const s = SCHOOL_LIST.find(x => x.id === selectedSchoolId);
-  studentSchool = s ? s.name : selectedSchoolId;
+  const pickedSchool = s ? s.name : selectedSchoolId;
+  // 학생 코드로 들어온 경우, 여기서 고른 학교 카드는 '볼 자료'를 고르는 것일 뿐이다.
+  // 등록된 학교(초등5 등)를 카드 이름으로 덮어쓰면 기록이 엉뚱한 학교로 남는다.
+  const byCode = !!localStorage.getItem("bn_id");
+  if (!byCode) studentSchool = pickedSchool;
   sessionStorage.setItem("bn_name", studentName);
-  sessionStorage.setItem("bn_school", studentSchool);
   sessionStorage.setItem("bn_auth", "1");
   localStorage.setItem("bn_name", studentName);
-  localStorage.setItem("bn_school", studentSchool);
   localStorage.setItem("bn_auth", "1");
+  if (!byCode) {
+    sessionStorage.setItem("bn_school", studentSchool);
+    localStorage.setItem("bn_school", studentSchool);
+  }
   if (window._logAccess) window._logAccess({ type:"login", name:studentName, school:studentSchool });
   openHub();
 }

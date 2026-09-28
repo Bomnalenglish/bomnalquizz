@@ -526,7 +526,7 @@ let allAccessData = [];  // ★ hub_access 데이터
 // 예전에는 열 때마다 quiz_results·hub_access 컬렉션 '전체'를 읽어서 느렸고,
 // Firestore 무료 할당량(하루 5만 읽기)도 빠르게 소진됐다.
 // ① 기간 제한 쿼리(서버에서 잘라서 가져오기) ② 병렬 로드 ③ 10분 캐시 로 개선.
-const CACHE_KEY='bn_admin_cache_v7';   // v6: 초등 봄날리딩·봄날듣기 기록 반영   // v5: saveId 중복 제거 반영   // v3: day·level 추가 + 학교 표기 통일
+const CACHE_KEY='bn_admin_cache_v8';   // v8: 등록 학교로 바로잡기   // v6: 초등 봄날리딩·봄날듣기 기록 반영   // v5: saveId 중복 제거 반영   // v3: day·level 추가 + 학교 표기 통일
 
 // 챕터 시험은 학교를 '종촌중학교'로, 어휘 퀴즈는 '종촌중1'로 저장한다.
 // 표기가 갈리면 같은 학생이 두 명으로 잡히므로 '종촌중1' 형태로 통일한다.
@@ -747,7 +747,29 @@ function _toAcc(docA){
       });
 }
 
+// 학생 코드로 등록된 학교를 '정답'으로 삼아 기록의 학교를 바로잡는다.
+// (초등 학생이 허브에서 중학교 카드를 눌러 들어가면 예전엔 그 학교로 저장됐다)
+let _REG_SCHOOL=null;
+async function _loadRegisteredSchools(){
+  if(_REG_SCHOOL) return _REG_SCHOOL;
+  try{
+    const snap=await window._getDocs(window._col(window._db,'students'));
+    const cnt={}, sch={};
+    snap.forEach(d=>{ const x=d.data(); const n=(x.name||'').trim(); if(!n) return;
+      cnt[n]=(cnt[n]||0)+1; sch[n]=x.school||''; });
+    _REG_SCHOOL={}; Object.keys(cnt).forEach(n=>{ if(cnt[n]===1 && sch[n]) _REG_SCHOOL[n]=sch[n]; });
+  }catch(e){ _REG_SCHOOL={}; }
+  return _REG_SCHOOL;
+}
+function _fixSchools(){
+  if(!_REG_SCHOOL) return;
+  const fix=d=>{ const r=_REG_SCHOOL[(d.name||'').trim()]; if(r && d.school!==r) d.school=r; };
+  allData.forEach(fix);
+  if(Array.isArray(allAccessData)) allAccessData.forEach(fix);
+}
+
 function _renderAll(status){
+  _fixSchools();
   document.getElementById('lastRefresh').textContent=status;
   buildHistoryMap(); populateTextbookFilter();
   renderSummary(); renderCharts(); applyFilter();
@@ -850,6 +872,7 @@ async function loadData(force){
     const c=await _readCache(days);
     if(c){
       allData=c.quiz; allAccessData=c.access; _cacheFullAt=c.fullAt||0;
+      await _loadRegisteredSchools();
       _renderAll(`⚡ 저장본 (${periodLabel} · ${allData.length}건) · ${new Date(c.savedAt).toLocaleTimeString('ko-KR')} 기준 · 새 기록 받는 중…`);
       _refreshInBackground(days, periodLabel);
       return;
@@ -862,6 +885,7 @@ async function loadData(force){
   _fetchFailed=0; _fetchFailMsg='';
   try{
     await _waitFb();
+    await _loadRegisteredSchools();
     await _fetchAll(days);
     // 일부라도 못 불러왔다면 반쪽짜리 목록을 캐시에 남기지 않는다
     if(!_fetchFailed){ _cacheFullAt=Date.now(); await _writeCache(days); }
