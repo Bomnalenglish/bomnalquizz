@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ko"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>봄날퀴즈 · 기기 점검</title>
+<style>
+body{font-family:-apple-system,"Malgun Gothic",sans-serif;background:#f5efe6;color:#2a2a2a;margin:0;padding:18px;line-height:1.6}
+h1{font-size:1.1rem;margin:0 0 4px}
+p.s{color:#7a7570;font-size:.85rem;margin:0 0 16px}
+.box{background:#fff;border:2px solid #e6ddd4;border-radius:14px;padding:14px 16px;margin-bottom:12px;word-break:break-all}
+.row{display:flex;justify-content:space-between;gap:10px;padding:5px 0;border-bottom:1px dashed #eee;font-size:.9rem}
+.ok{color:#2e7d32;font-weight:700}.no{color:#c62828;font-weight:700}
+.big{font-size:1.05rem;font-weight:800}
+</style></head><body>
+<h1>🌸 봄날퀴즈 기기 점검</h1>
+<p class="s">이 화면을 캡처해서 선생님께 보내 주세요.</p>
+<div class="box"><div class="big" id="verdict">확인 중…</div><div id="ver" style="font-size:.9rem;color:#555;margin-top:6px"></div></div>
+<div class="box" id="list"></div>
+<div class="box"><div style="font-size:.78rem;color:#7a7570" id="ua"></div></div>
+<script>
+var T = [];
+function add(name, ok){ T.push([name, ok]); }
+try { add("주소 저장(localStorage)", (function(){ try{ localStorage.setItem('_t','1'); localStorage.removeItem('_t'); return true; }catch(e){ return false; } })()); } catch(e){ add("주소 저장(localStorage)", false); }
+add("최신 문법(화살표 함수)", (function(){ try{ eval("(()=>1)()"); return true; }catch(e){ return false; } })());
+add("최신 문법(비동기 async)", (function(){ try{ eval("(async function(){})"); return true; }catch(e){ return false; } })());
+add("최신 문법(모듈 import)", (function(){ var s=document.createElement('script'); return 'noModule' in s; })());
+add("최신 문법(옵셔널 체이닝)", (function(){ try{ eval("({a:1})?.a"); return true; }catch(e){ return false; } })());
+add("소리 재생(Audio)", typeof Audio !== 'undefined');
+add("말하기(TTS)", typeof speechSynthesis !== 'undefined');
+add("앱 설치(서비스워커)", 'serviceWorker' in navigator);
+add("인터넷 연결", navigator.onLine !== false);
+var m = (navigator.userAgent.match(/Chrome\/(\d+)/) || navigator.userAgent.match(/SamsungBrowser\/(\d+)/) || [])[1];
+var name = /SamsungBrowser/.test(navigator.userAgent) ? '삼성 인터넷' : (/Chrome/.test(navigator.userAgent) ? '크롬' : '알 수 없는 브라우저');
+var html = '';
+for (var i=0;i<T.length;i++){ html += '<div class="row"><span>'+T[i][0]+'</span><span class="'+(T[i][1]?'ok':'no')+'">'+(T[i][1]?'O 됨':'X 안 됨')+'</span></div>'; }
+document.getElementById('list').innerHTML = html;
+document.getElementById('ver').textContent = name + ' ' + (m || '버전 확인 안 됨') + ' 버전';
+var bad = 0; for (var j=0;j<T.length;j++){ if(!T[j][1]) bad++; }
+var v = document.getElementById('verdict');
+if (bad === 0) { v.textContent = '✅ 이 기기는 봄날퀴즈를 쓸 수 있어요'; v.style.color='#2e7d32'; }
+else { v.textContent = '⚠️ 이 기기는 브라우저가 오래됐어요 ('+bad+'가지 안 됨)'; v.style.color='#c62828'; }
+document.getElementById('ua').textContent = navigator.userAgent;
+</script>
+</body></html>
