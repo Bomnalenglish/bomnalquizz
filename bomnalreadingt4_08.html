@@ -1132,11 +1132,32 @@ function saveResult(pct, mins){
     wrongCount: wrongTotal(), retryDone: retryDone,
     date: new Date().toLocaleString('ko-KR')
   };
+  // SDK가 준비됐으면 SDK로, 아니면 REST로. SDK 저장이 실패해도 REST로 한 번 더.
+  const _ok = ()=>{ const m=$('saveMsg'); if(m) m.textContent='✅ 결과가 선생님께 전달됐어요.'; };
+  const _no = ()=>{ const m=$('saveMsg'); if(m) m.textContent='결과 저장에 실패했어요. (인터넷 확인)'; };
   if(window._saveQuiz)
-    window._saveQuiz(data)
-      .then(()=>{ const m=$('saveMsg'); if(m) m.textContent='✅ 결과가 선생님께 전달됐어요.'; })
-      .catch(()=>{ const m=$('saveMsg'); if(m) m.textContent='결과 저장에 실패했어요. (인터넷 확인)'; });
-  else setTimeout(()=>{ const m=$('saveMsg'); if(m) m.textContent='✅ 학습을 마쳤어요.'; },600);
+    window._saveQuiz(data).then(_ok).catch(()=>{ _saveQuizRest(data).then(_ok).catch(_no); });
+  else
+    _saveQuizRest(data).then(_ok).catch(_no);
+}
+
+/* ═══ 결과 저장 예비 경로 (REST) ═══
+   Firebase SDK는 ES 모듈이라 아주 오래된 브라우저에서는 실행되지 않는다.
+   그런 기기에서도 결과가 선생님께 가도록 REST로 직접 보낸다. (ES5 문법만) */
+function _fsVal(v){
+  if (v === null || typeof v === 'undefined') return { nullValue: null };
+  if (typeof v === 'boolean') return { booleanValue: v };
+  if (typeof v === 'number') return (v === Math.floor(v)) ? { integerValue: String(v) } : { doubleValue: v };
+  return { stringValue: String(v) };
+}
+function _saveQuizRest(data){
+  if (typeof fetch === 'undefined') return Promise.reject(new Error('no fetch'));
+  var fields = {}, k;
+  for (k in data){ if (Object.prototype.hasOwnProperty.call(data, k)) fields[k] = _fsVal(data[k]); }
+  fields.submittedAt = { stringValue: new Date().toISOString() };
+  return fetch('https://firestore.googleapis.com/v1/projects/bomnalvaca/databases/(default)/documents/quiz_results',
+      { method:'POST', headers:{ 'Content-Type':'application/json' }, body:JSON.stringify({ fields: fields }) })
+    .then(function(r){ if(!r.ok) throw new Error('http ' + r.status); return true; });
 }
 
 /* ═══ 모든 선언이 끝난 뒤 시작 ═══ */

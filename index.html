@@ -925,7 +925,11 @@ function clinicState(c, code) {
   try {
     const s = JSON.parse(localStorage.getItem("bn_clinic_" + c.id + "_" + code) || "null");
     if (s && Array.isArray(s.remaining)) {
-      return { ...s, remaining: s.cleared ? [] : s.remaining.filter(n => mine.includes(n)) };
+      // 오래된 브라우저(크롬 59 이하)는 객체 펼치기 문법을 못 읽어 스크립트 전체가 멈춘다
+      var out = {};
+      for (var k in s) { if (Object.prototype.hasOwnProperty.call(s, k)) out[k] = s[k]; }
+      out.remaining = s.cleared ? [] : s.remaining.filter(function(n){ return mine.indexOf(n) >= 0; });
+      return out;
     }
   } catch (e) {}
   return { remaining: mine.slice(), cleared: false, round: 0 };
