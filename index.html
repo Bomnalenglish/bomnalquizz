@@ -979,12 +979,63 @@ function renderClinicBanner() {
   });
 }
 
+/* ───────────────────────────────────────────────────────────
+   학생의 학교급(초·중·고)에 맞춰 첫 화면을 다르게 보여 준다.
+   초등 학생에게 중·고등학교 카드가 먼저 보이면 그걸 눌러야 하는 줄 안다. */
+function studentLevel(){
+  try { var lv = localStorage.getItem('bn_lv'); if (lv) return lv; } catch(e){}
+  var s = String(studentSchool || localStorage.getItem('bn_school') || '');
+  if (s.indexOf('\ucd08') >= 0) return '\ucd08';   // 초
+  if (s.indexOf('\uc911') >= 0) return '\uc911';   // 중
+  if (s.indexOf('\uace0') >= 0) return '\uace0';   // 고
+  return '';
+}
+var PICK_SHOW_ALL = false;          // 초등 화면에서 '중·고등 자료도 보기'를 누르면 true
+
+function elemVocaList(){
+  return VOCA_LEVELS.filter(function(v){
+    var t = String(v.title || '');
+    return t.indexOf('\ucd08\ub4f1') >= 0 || t.indexOf('Level 1') >= 0 || t.indexOf('\uc911\ub4f1\uae30\ucd08') >= 0;
+  });
+}
+
 function renderSchoolPicker() {
   const picker = document.getElementById("school-picker");
   picker.innerHTML = "";
   selectedSchoolId = null;
   renderClinicBanner();
-  SCHOOL_LIST.forEach(s => {
+
+  var isElem = (studentLevel() === '\ucd08') && !PICK_SHOW_ALL;
+  var _h  = document.querySelector('#screen-pick h2');
+  var _p  = document.querySelector('#screen-pick p');
+  var _go = document.querySelector('#screen-pick .auth-btn');
+  if (isElem) {
+    if (_h) _h.textContent = '\ud83c\udf38 ' + (studentName ? studentName + ' \ud559\uc0dd, ' : '') + '\ubb34\uc5c7\ubd80\ud130 \ud560\uae4c\uc694?';
+    if (_p) _p.textContent = '\ud558\uace0 \uc2f6\uc740 \uac83\uc744 \ub20c\ub7ec \uc8fc\uc138\uc694.';
+    if (_go) _go.style.display = 'none';
+  } else {
+    if (_h) _h.textContent = '\ud83e\uddf8 \ud559\uad50\ub97c \uc120\ud0dd\ud558\uc138\uc694';
+    if (_p) _p.textContent = '\ubcf8\uc778\uc774 \ub2e4\ub2c8\ub294 \ud559\uad50\ub97c \uc120\ud0dd\ud574\uc8fc\uc138\uc694.';
+    if (_go) _go.style.display = '';
+  }
+
+  if (!isElem && studentLevel() === '') {
+    var el = document.createElement('button');
+    el.type = 'button';
+    el.style.cssText = 'grid-column:1/-1;margin-bottom:12px;border-radius:12px;padding:12px 14px;cursor:pointer;'
+      + 'border:2px solid #f5c542;background:linear-gradient(135deg,#fff8e1,#fff3c4);'
+      + "font-family:inherit;font-size:.84rem;font-weight:800;color:#6b5300";
+    el.textContent = '\ud83c\udf38 \uc800\ub294 \ucd08\ub4f1\ud559\uc0dd\uc774\uc5d0\uc694';   // 🌸 저는 초등학생이에요
+    el.onclick = function(){
+      try { localStorage.setItem('bn_lv', '\ucd08'); } catch(e){}
+      PICK_SHOW_ALL = false;
+      renderSchoolPicker();
+      window.scrollTo(0, 0);
+    };
+    picker.appendChild(el);
+  }
+
+  (isElem ? [] : SCHOOL_LIST).forEach(s => {
     const btn = document.createElement("button");
     btn.className = "sp-btn";
     btn.dataset.id = s.id;
@@ -998,10 +1049,18 @@ function renderSchoolPicker() {
     picker.appendChild(btn);
   });
 
-  addPickerSection(picker, "📖 봄날 보카",        VOCA_LEVELS,      {emoji:"📖", collapsed:true});
-  addPickerSection(picker, "🎧 봄날 듣기",        LISTENING_LEVELS, {emoji:"🎧", collapsed:true});
-  addPickerSection(picker, "📖 봄날 리딩 (초등)",  READING_BOOKS,    {emoji:"📖", collapsed:true, onClick:function(b){ openReading(b.level); }});
+  if (isElem) {
+    // 초등: 바로 시작할 수 있게 리딩·듣기를 펼쳐 둔다
+    addPickerSection(picker, "📖 봄날 리딩", READING_BOOKS,    {emoji:"📖", collapsed:false, onClick:function(b){ openReading(b.level); }});
+    addPickerSection(picker, "🎧 봄날 듣기", LISTENING_LEVELS, {emoji:"🎧", collapsed:false});
+    addPickerSection(picker, "📖 봄날 보카", elemVocaList(),   {emoji:"📖", collapsed:true});
+  } else {
+    addPickerSection(picker, "📖 봄날 보카",        VOCA_LEVELS,      {emoji:"📖", collapsed:true});
+    addPickerSection(picker, "🎧 봄날 듣기",        LISTENING_LEVELS, {emoji:"🎧", collapsed:true});
+    addPickerSection(picker, "📖 봄날 리딩 (초등)",  READING_BOOKS,    {emoji:"📖", collapsed:true, onClick:function(b){ openReading(b.level); }});
+  }
 
+  if (!isElem) {
   const mockSep = document.createElement("div");
   mockSep.style.cssText = "grid-column:1/-1;border-top:1px solid #e0d8ce;padding-top:10px;font-family:'Black Han Sans',sans-serif;font-size:.82rem;color:#a09890;margin-top:6px;";
   mockSep.textContent = "📝 봄날 모의고사 · 📚 부교재";
@@ -1022,6 +1081,7 @@ function renderSchoolPicker() {
   supBtn.onmouseenter = () => { supBtn.style.borderColor='#888'; supBtn.style.background='#f5f2ee'; };
   supBtn.onmouseleave = () => { supBtn.style.borderColor='#d0dde8'; supBtn.style.background='white'; };
   picker.appendChild(supBtn);
+  }
 
   // ── 📊 내 학습 기록 ──
   const myProgSep = document.createElement("div");
@@ -1035,6 +1095,23 @@ function renderSchoolPicker() {
   myProgBtn.onmouseenter = () => { myProgBtn.style.borderColor='#b45309'; myProgBtn.style.background='#fef3c7'; };
   myProgBtn.onmouseleave = () => { myProgBtn.style.borderColor='#fcd34d'; myProgBtn.style.background='linear-gradient(135deg,#fff7e0,#fef3c7)'; };
   picker.appendChild(myProgBtn);
+
+  // 초등 학생도 필요하면 전체 자료를 볼 수 있게 (작게, 맨 아래)
+  if (studentLevel() === '\ucd08') {
+    var more = document.createElement('button');
+    more.type = 'button';
+    more.style.cssText = 'grid-column:1/-1;margin-top:14px;background:none;border:none;cursor:pointer;'
+      + "font-family:'Gowun Dodum',sans-serif;font-size:.75rem;color:#a09890;text-decoration:underline";
+    more.textContent = PICK_SHOW_ALL ? '\u2190 \ub0b4 \uc790\ub8cc\ub9cc \ubcf4\uae30' : '\uc911\u00b7\uace0\ub4f1 \uc790\ub8cc\ub3c4 \ubcf4\uae30';
+    more.onclick = function(){
+      PICK_SHOW_ALL = !PICK_SHOW_ALL;
+      // 직접 '초등학생이에요'를 눌러 둔 경우라면 그 표시를 지워 다음부터는 원래 화면으로
+      try { if (PICK_SHOW_ALL && localStorage.getItem('bn_lv')) localStorage.removeItem('bn_lv'); } catch(e){}
+      renderSchoolPicker();
+      window.scrollTo(0,0);
+    };
+    picker.appendChild(more);
+  }
 }
 
 function submitSchool() {
@@ -2025,7 +2102,7 @@ function goHome() {
   document.getElementById("subtitle").textContent = "학교를 선택하세요";
 }
 function doLogout() {
-  ["bn_name","bn_school","bn_auth","bn_id","bn_at"].forEach(k=>{sessionStorage.removeItem(k);localStorage.removeItem(k);});
+  ["bn_name","bn_school","bn_auth","bn_id","bn_at","bn_lv"].forEach(k=>{sessionStorage.removeItem(k);localStorage.removeItem(k);});
   studentName = ""; studentSchool = "";
   var ni=document.getElementById("nameInput"); if(ni) ni.value="";
   var ci=document.getElementById("codeInput"); if(ci) ci.value="";
