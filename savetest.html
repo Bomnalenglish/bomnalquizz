@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ko"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>봄날퀴즈 · 기록 저장 검사</title>
+<style>
+body{font-family:-apple-system,"Malgun Gothic",sans-serif;background:#f5efe6;color:#2a2a2a;margin:0;padding:18px;line-height:1.6}
+h1{font-size:1.1rem;margin:0 0 4px}
+p.s{color:#7a7570;font-size:.85rem;margin:0 0 14px}
+.box{background:#fff;border:2px solid #e6ddd4;border-radius:14px;padding:14px 16px;margin-bottom:12px;word-break:break-all}
+.row{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px dashed #eee;font-size:.9rem}
+.ok{color:#2e7d32;font-weight:800}.no{color:#c62828;font-weight:800}
+.big{font-size:1.02rem;font-weight:800}
+button{font:inherit;font-size:1rem;font-weight:800;color:#fff;background:#4a6741;border:none;border-radius:12px;padding:13px 20px;width:100%;cursor:pointer}
+.msg{font-size:.8rem;color:#666;margin-top:6px;white-space:pre-wrap}
+</style></head><body>
+<h1>💾 봄날퀴즈 · 기록 저장 검사</h1>
+<p class="s">아래 버튼을 한 번 누르고, 결과가 다 나오면 이 화면을 캡처해서 선생님께 보내 주세요.</p>
+
+<div class="box"><button id="go">검사 시작</button></div>
+<div class="box"><div class="big" id="verdict">아직 시작하지 않았어요</div><div id="list"></div></div>
+<div class="box"><div style="font-size:.78rem;color:#7a7570" id="ua"></div></div>
+
+<script>
+var WHO = 'ZZ검사_' + (new Date().getMinutes()) + '분';
+var T = [];
+function row(name, ok, extra){
+  T.push([name, ok, extra || '']);
+  var h = '';
+  for (var i=0;i<T.length;i++){
+    h += '<div class="row"><span>'+T[i][0]+'</span><span class="'+(T[i][1]?'ok':'no')+'">'+(T[i][1]?'O 됨':'X 안 됨')+'</span></div>';
+    if (T[i][2]) h += '<div class="msg">'+T[i][2]+'</div>';
+  }
+  document.getElementById('list').innerHTML = h;
+}
+document.getElementById('ua').textContent = navigator.userAgent;
+
+function data(tag){
+  return { name: WHO, school: '검사', quiz: '저장검사 ' + tag, type: '저장검사',
+           file: 'savetest', total: 100, score: 100, correct: 1, totalQ: 1,
+           date: new Date().toLocaleString('ko-KR') };
+}
+
+/* 1) REST 저장 (일반 스크립트 · 오래된 기기도 됨) */
+function testRest(){
+  if (typeof fetch === 'undefined') { row('REST 저장', false, 'fetch 기능이 없는 브라우저'); return Promise.resolve(); }
+  var url = 'https://firestore.googleapis.com/v1/projects/bomnalvaca/databases/(default)/documents/quiz_results';
+  var d = data('REST'), fields = {};
+  for (var k in d) if (Object.prototype.hasOwnProperty.call(d,k)) {
+    fields[k] = (typeof d[k] === 'number') ? { integerValue: String(d[k]) } : { stringValue: String(d[k]) };
+  }
+  fields.submittedAt = { stringValue: new Date().toISOString() };
+  var t0 = Date.now();
+  return fetch(url, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({fields:fields}) })
+    .then(function(r){ row('REST 저장', r.ok, 'HTTP ' + r.status + ' · ' + (Date.now()-t0) + 'ms'); })
+    .catch(function(e){ row('REST 저장', false, String(e && e.message || e)); });
+}
+
+/* 2) Firebase SDK 저장 (모듈) */
+function testSdk(){
+  var s = document.createElement('script');
+  if (!('noModule' in s)) { row('Firebase SDK 저장', false, '이 브라우저는 모듈을 못 씁니다'); return; }
+  window.__sdkDone = function(ok, msg){ row('Firebase SDK 저장', ok, msg || ''); };
+  var tag = document.createElement('script');
+  tag.type = 'module';
+  tag.textContent = [
+    'import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";',
+    'import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";',
+    'const cfg={apiKey:"AIzaSyCxS524S8KAaF87DomPtl9sJdF-eqes404",authDomain:"bomnalvaca.firebaseapp.com",projectId:"bomnalvaca",storageBucket:"bomnalvaca.firebasestorage.app",messagingSenderId:"115868052300",appId:"1:115868052300:web:765c08867b6f1ce0987de9"};',
+    'try{',
+    '  const db = getFirestore(initializeApp(cfg));',
+    '  const d = Object.assign({}, window.__testData, {timestamp: serverTimestamp()});',
+    '  addDoc(collection(db,"quiz_results"), d)',
+    '    .then(function(){ window.__sdkDone(true, "저장됨"); })',
+    '    .catch(function(e){ window.__sdkDone(false, String(e && e.message || e)); });',
+    '}catch(e){ window.__sdkDone(false, String(e && e.message || e)); }'
+  ].join('\n');
+  window.__testData = data('SDK');
+  tag.onerror = function(){ row('Firebase SDK 저장', false, '모듈 파일을 못 불러왔습니다'); };
+  document.head.appendChild(tag);
+  setTimeout(function(){
+    var seen = false;
+    for (var i=0;i<T.length;i++) if (T[i][0] === 'Firebase SDK 저장') seen = true;
+    if (!seen) row('Firebase SDK 저장', false, '10초 동안 응답이 없습니다 (차단된 듯)');
+  }, 10000);
+}
+
+document.getElementById('go').onclick = function(){
+  this.disabled = true; this.textContent = '검사 중…';
+  T = []; document.getElementById('list').innerHTML = '';
+  document.getElementById('verdict').textContent = '검사 중… (10초쯤)';
+  row('검사용 이름', true, WHO + ' — 관리자모드에서 이 이름을 찾아보세요');
+  testRest().then(function(){
+    testSdk();
+    setTimeout(function(){
+      var okAny = false;
+      for (var i=0;i<T.length;i++) if (T[i][1] && /^(REST|Firebase)/.test(T[i][0])) okAny = true;
+      var v = document.getElementById('verdict');
+      v.textContent = okAny ? '✅ 이 기기에서 기록이 저장됩니다' : '⚠️ 이 기기에서 기록이 저장되지 않습니다';
+      v.style.color = okAny ? '#2e7d32' : '#c62828';
+      document.getElementById('go').textContent = '다시 검사';
+      document.getElementById('go').disabled = false;
+    }, 11000);
+  });
+};
+</script>
+</body></html>
