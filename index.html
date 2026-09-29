@@ -1084,9 +1084,28 @@ function renderSchoolPicker() {
 
   if (isElem) {
     // 초등: 바로 시작할 수 있게 리딩·듣기를 펼쳐 둔다
-    addPickerSection(picker, "📖 봄날 보카", elemVocaList(),   {emoji:"📖", collapsed:false});
-    addPickerSection(picker, "📖 봄날 리딩", READING_BOOKS,    {emoji:"📖", collapsed:false, onClick:function(b){ openReading(b.level); }});
-    addPickerSection(picker, "🎧 봄날 듣기", LISTENING_LEVELS, {emoji:"🎧", collapsed:false});
+    // 듣기는 항목이 하나뿐이라 리딩(12권) 아래로 가면 화면 밖으로 밀린다 → 위로
+    var _secs = [];
+    addPickerSection(picker, "\ud83d\udcd6 \ubd04\ub0a0 \ubcf4\uce74", elemVocaList(),   {emoji:"\ud83d\udcd6", collapsed:false});
+    _secs.push(['\ud83d\udcd6 \ubcf4\uce74', picker.lastChild]);
+    addPickerSection(picker, "\ud83c\udfa7 \ubd04\ub0a0 \ub4e3\uae30", LISTENING_LEVELS, {emoji:"\ud83c\udfa7", collapsed:false});
+    _secs.push(['\ud83c\udfa7 \ub4e3\uae30', picker.lastChild]);
+    addPickerSection(picker, "\ud83d\udcd6 \ubd04\ub0a0 \ub9ac\ub529", READING_BOOKS,    {emoji:"\ud83d\udcd6", collapsed:false, onClick:function(b){ openReading(b.level); }});
+    _secs.push(['\ud83d\udcd6 \ub9ac\ub529', picker.lastChild]);
+
+    // 맨 위 바로가기 — 세 가지가 한눈에 보이고, 누르면 그 자리로 내려간다
+    var nav = document.createElement('div');
+    nav.style.cssText = 'grid-column:1/-1;display:flex;gap:8px;margin-bottom:6px;';
+    _secs.forEach(function(pair){
+      var t = document.createElement('button');
+      t.type = 'button';
+      t.style.cssText = 'flex:1;border-radius:999px;padding:11px 6px;cursor:pointer;border:2px solid #d8cfc4;'
+        + 'background:#fff;font-family:inherit;font-size:.8rem;font-weight:800;color:#5a4a3a;';
+      t.textContent = pair[0];
+      t.onclick = function(){ if (pair[1] && pair[1].scrollIntoView) pair[1].scrollIntoView({behavior:'smooth', block:'start'}); };
+      nav.appendChild(t);
+    });
+    picker.insertBefore(nav, picker.firstChild);
   } else {
     addPickerSection(picker, "📖 봄날 보카",        VOCA_LEVELS,      {emoji:"📖", collapsed:true});
     addPickerSection(picker, "🎧 봄날 듣기",        LISTENING_LEVELS, {emoji:"🎧", collapsed:true});
