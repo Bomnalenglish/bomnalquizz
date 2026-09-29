@@ -602,12 +602,28 @@ function sayWord(w, cb){
   try{
     curAudio = new Audio(url);
     curAudio.onended = ()=>{ curAudio=null; cb&&cb(); };
-    curAudio.onerror = ()=>{ curAudio=null; saySentence(w, cb); };
-    curAudio.play().catch(()=>{ curAudio=null; saySentence(w, cb); });
-  }catch(e){ saySentence(w, cb); }
+    curAudio.onerror = ()=>{ curAudio=null; ttsSay(w, cb); };
+    curAudio.play().catch(()=>{ curAudio=null; ttsSay(w, cb); });
+  }catch(e){ ttsSay(w, cb); }
 }
 function saySentence(t, cb){
   stopAudio();
+  const txt = String(t == null ? '' : t).trim();
+  if(!txt){ cb&&cb(); return; }
+  // 1순위: 단어와 같은 온라인 음성 — TTS 엔진이 없는 기기에서도 소리가 난다
+  try{
+    const url = 'https://dict.youdao.com/dictvoice?audio=' + encodeURIComponent(txt) + '&type=2';
+    curAudio = new Audio(url);
+    curAudio.onended = ()=>{ curAudio=null; cb&&cb(); };
+    curAudio.onerror = ()=>{ curAudio=null; ttsSay(txt, cb); };
+    const pr = curAudio.play();
+    if(pr && pr.catch) pr.catch(()=>{ curAudio=null; ttsSay(txt, cb); });
+    return;
+  }catch(e){ ttsSay(txt, cb); return; }
+}
+
+/* 기기 자체 음성(TTS) — 온라인 음성이 안 될 때 */
+function ttsSay(t, cb){
   if(!('speechSynthesis' in window)){ cb&&cb(); return; }
   try{
     const u = new SpeechSynthesisUtterance(t);
@@ -621,6 +637,19 @@ function saySentence(t, cb){
   }catch(e){ cb&&cb(); }
 }
 try{ speechSynthesis.getVoices(); speechSynthesis.onvoiceschanged=function(){}; }catch(e){}
+
+/* 첫 터치 때 소리 재생을 미리 허용받아 둔다 (아이패드는 사용자가 누른 직후에만 소리가 난다) */
+(function primeAudio(){
+  function go(){
+    try{ const u = new SpeechSynthesisUtterance(' '); u.volume = 0; speechSynthesis.speak(u); }catch(e){}
+    document.removeEventListener('pointerdown', go, true);
+    document.removeEventListener('touchstart', go, true);
+    document.removeEventListener('click', go, true);
+  }
+  document.addEventListener('pointerdown', go, true);
+  document.addEventListener('touchstart', go, true);
+  document.addEventListener('click', go, true);
+})();
 
 /* ───────── 유틸 ───────── */
 const $ = id => document.getElementById(id);
