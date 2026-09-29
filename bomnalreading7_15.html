@@ -597,26 +597,23 @@ function sayWord(w, cb){
     curAudio.onerror = ()=>{ curAudio=null; ttsSay(w, cb); };
     curAudio.play().catch(()=>{ curAudio=null; ttsSay(w, cb); });
   }catch(e){ ttsSay(w, cb); }
+  // (단어는 온라인 음성 → 기기 음성 순서를 그대로 둔다)
 }
+/* 문장 읽어 주기
+   cb(true)  = 소리가 실제로 끝까지 났다
+   cb(false) = 소리를 못 냈다 (이때는 화면이 곧바로 넘어가지 않게 한다) */
 function saySentence(t, cb){
   stopAudio();
   const txt = String(t == null ? '' : t).trim();
-  if(!txt){ cb&&cb(); return; }
-  // 1순위: 단어와 같은 온라인 음성 — TTS 엔진이 없는 기기에서도 소리가 난다
-  try{
-    const url = 'https://dict.youdao.com/dictvoice?audio=' + encodeURIComponent(txt) + '&type=2';
-    curAudio = new Audio(url);
-    curAudio.onended = ()=>{ curAudio=null; cb&&cb(); };
-    curAudio.onerror = ()=>{ curAudio=null; ttsSay(txt, cb); };
-    const pr = curAudio.play();
-    if(pr && pr.catch) pr.catch(()=>{ curAudio=null; ttsSay(txt, cb); });
-    return;
-  }catch(e){ ttsSay(txt, cb); return; }
+  if(!txt){ cb && cb(false); return; }
+  ttsSay(txt, cb);                       // 기기 음성 먼저 (빠르고 인터넷이 필요 없다)
 }
 
-/* 기기 자체 음성(TTS) — 온라인 음성이 안 될 때 */
+/* 기기 자체 음성(TTS) — 0.8초 안에 말하기 시작하지 않으면 온라인 음성으로 */
 function ttsSay(t, cb){
-  if(!('speechSynthesis' in window)){ cb&&cb(); return; }
+  if(!('speechSynthesis' in window)){ onlineSay(t, cb); return; }
+  let done = false;
+  function once(ok){ if(done) return; done = true; cb && cb(ok); }
   try{
     const u = new SpeechSynthesisUtterance(t);
     u.lang='en-US'; u.rate=0.82; u.pitch=1.05;
@@ -624,9 +621,35 @@ function ttsSay(t, cb){
     const v = vs.find(x=>/en-US/.test(x.lang) && /Samantha|Google US|Aria|Jenny/i.test(x.name))
            || vs.find(x=>/^en/.test(x.lang));
     if(v) u.voice=v;
-    u.onend = ()=>{ cb&&cb(); };
+    u.onend   = ()=>{ once(true); };
+    u.onerror = ()=>{ if(!done){ done = true; onlineSay(t, cb); } };
     speechSynthesis.speak(u);
-  }catch(e){ cb&&cb(); }
+    setTimeout(()=>{
+      if(done) return;
+      let speaking = false;
+      try{ speaking = speechSynthesis.speaking; }catch(e){}
+      if(!speaking){                     // 목소리가 없는 기기 — 소리가 나지 않았다
+        done = true;
+        try{ speechSynthesis.cancel(); }catch(e){}
+        onlineSay(t, cb);
+      }
+    }, 800);
+  }catch(e){ if(!done){ done = true; onlineSay(t, cb); } }
+}
+
+/* 온라인 음성 — 단어 듣기와 같은 곳 */
+function onlineSay(t, cb){
+  let done = false;
+  function once(ok){ if(done) return; done = true; curAudio = null; cb && cb(ok); }
+  try{
+    const url = 'https://dict.youdao.com/dictvoice?audio=' + encodeURIComponent(t) + '&type=2';
+    curAudio = new Audio(url);
+    curAudio.onended = ()=>{ once(true); };
+    curAudio.onerror = ()=>{ once(false); };
+    const pr = curAudio.play();
+    if(pr && pr.catch) pr.catch(()=>{ once(false); });
+    setTimeout(()=>{ if(!done && !(curAudio && curAudio.currentTime > 0)) once(false); }, 2500);
+  }catch(e){ once(false); }
 }
 try{ speechSynthesis.getVoices(); speechSynthesis.onvoiceschanged=function(){}; }catch(e){}
 
@@ -797,7 +820,12 @@ function speakRound(){
   const my = ++tok;
   setNote(NEED===1 ? '🎧 듣는 중…' : '🎧 ' + round + '번째 듣는 중…  (' + round + '/' + NEED + ')');
   const spk=$('spkBtn'); if(spk) spk.textContent='🔊 재생 중…';
-  saySentence(s.en, ()=>{ if(my===tok) roundEnd(); });
+  // 소리가 실제로 끝났을 때만 넘어간다. 못 냈으면 아래 시간제한이 대신 넘긴다.
+  saySentence(s.en, (played)=>{
+    if(my !== tok) return;
+    if(played) roundEnd();
+    else setNote('\ud83d\udd08 \uc18c\ub9ac\uac00 \uc548 \ub4e4\ub9ac\uba74 \uc544\ub798 \ud83d\udd0a \ub2e4\uc2dc \ub4e3\uae30\ub97c \ub20c\ub7ec \uc8fc\uc138\uc694');
+  });
   // 소리가 안 나오는 기기 대비 — 문장 길이만큼 기다렸다가 넘어감
   clearTimeout(tmr);
   const est = Math.max(3500, s.en.split(/\s+/).length*620 + 1800);
