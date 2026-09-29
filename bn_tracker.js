@@ -230,10 +230,15 @@ function _pushPending(item){ const a=_readPending(); a.push(item); _writePending
 function _dropPending(id){ const a=_readPending().filter(p=>p.id!==id); _writePending(a); }
 
 async function _postOneRest(collectionName, data){
-  // submittedAt 보강 (서버 timestamp는 REST에서 사용 불편 — 클라이언트 ISO 문자열로 대체)
-  const enriched = { ...data, submittedAt: data.submittedAt || new Date().toISOString() };
+  // 시각은 반드시 '시각' 형식으로 넣는다.
+  // 글자로 넣으면 관리자모드의 기간 조회(시각 비교)에 한 건도 걸리지 않는다.
+  const enriched = { ...data };
+  delete enriched.submittedAt; delete enriched.timestamp;
   const payload = { fields: {} };
   for (const k of Object.keys(enriched)) payload.fields[k] = _toFs(enriched[k]);
+  const _iso = new Date().toISOString();
+  payload.fields.submittedAt = { timestampValue: _iso };
+  payload.fields.timestamp   = { timestampValue: _iso };
   try {
     const resp = await fetch(`${_RESTFS_BASE}/${collectionName}`, {
       method: 'POST',

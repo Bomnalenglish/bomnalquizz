@@ -1218,7 +1218,9 @@ function _saveQuizRest(data){
   if (typeof fetch === 'undefined') return Promise.reject(new Error('no fetch'));
   var fields = {}, k;
   for (k in data){ if (Object.prototype.hasOwnProperty.call(data, k)) fields[k] = _fsVal(data[k]); }
-  fields.submittedAt = { stringValue: new Date().toISOString() };
+  var _iso = new Date().toISOString();
+  fields.submittedAt = { timestampValue: _iso };   // 관리자모드 기간 조회에 걸리도록 '시각' 형식
+  fields.timestamp   = { timestampValue: _iso };
   return fetch('https://firestore.googleapis.com/v1/projects/bomnalvaca/databases/(default)/documents/quiz_results',
       { method:'POST', headers:{ 'Content-Type':'application/json' }, body:JSON.stringify({ fields: fields }) })
     .then(function(r){ if(!r.ok) throw new Error('http ' + r.status); return true; });

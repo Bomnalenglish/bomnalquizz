@@ -32,7 +32,10 @@
     if (typeof fetch === 'undefined') return Promise.reject(new Error('no fetch'));
     var fields = {}, k;
     for (k in data) { if (Object.prototype.hasOwnProperty.call(data, k)) fields[k] = val(data[k]); }
-    if (!fields.submittedAt) fields.submittedAt = { stringValue: new Date().toISOString() };
+    var _iso = new Date().toISOString();
+    // 관리자모드가 기간으로 찾을 수 있도록 '시각' 형식으로 넣는다 (글자로 넣으면 조회에 안 걸린다)
+    fields.submittedAt = { timestampValue: _iso };
+    fields.timestamp   = { timestampValue: _iso };
     if (!fields.date) fields.date = { stringValue: new Date().toLocaleString('ko-KR') };
     return fetch(BASE + coll, {
       method: 'POST',
