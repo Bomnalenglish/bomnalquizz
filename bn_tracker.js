@@ -14,7 +14,7 @@
 (function studentChip(){
   const HOURS = 3;
   const g = k => { try { return localStorage.getItem(k) || sessionStorage.getItem(k) || ''; } catch(e){ return ''; } };
-  const clearAll = () => { ["bn_name","bn_school","bn_auth","bn_id","bn_at"].forEach(k=>{
+  const clearAll = () => { ["bn_name","bn_school","bn_auth","bn_id","bn_at","bn_lv"].forEach(k=>{
       try{ localStorage.removeItem(k); sessionStorage.removeItem(k); }catch(e){} }); };
 
   const at = parseInt(g('bn_at') || '0', 10);

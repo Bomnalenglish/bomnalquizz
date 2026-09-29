@@ -983,7 +983,16 @@ function renderClinicBanner() {
    학생의 학교급(초·중·고)에 맞춰 첫 화면을 다르게 보여 준다.
    초등 학생에게 중·고등학교 카드가 먼저 보이면 그걸 눌러야 하는 줄 안다. */
 function studentLevel(){
-  try { var lv = localStorage.getItem('bn_lv'); if (lv) return lv; } catch(e){}
+  // bn_lv는 '초:김민찬' 처럼 이름과 함께 저장한다. 공용 패드에서 다음 학생에게 따라붙지 않도록.
+  try {
+    var lv = localStorage.getItem('bn_lv');
+    if (lv) {
+      var bits = String(lv).split(':');
+      var who = String(studentName || localStorage.getItem('bn_name') || '');
+      if (bits.length < 2 || bits[1] === who) return bits[0];
+      localStorage.removeItem('bn_lv');
+    }
+  } catch(e){}
   var s = String(studentSchool || localStorage.getItem('bn_school') || '');
   if (s.indexOf('\ucd08') >= 0) return '\ucd08';   // 초
   if (s.indexOf('\uc911') >= 0) return '\uc911';   // 중
@@ -1004,6 +1013,30 @@ function renderSchoolPicker() {
   picker.innerHTML = "";
   selectedSchoolId = null;
   renderClinicBanner();
+
+  // 지금 누구로 들어와 있는지 — 공용 패드에서 앞 학생 이름 그대로 푸는 일을 막는다
+  var bar = document.getElementById('bnWhoBar');
+  if (!bar) {
+    bar = document.createElement('div');
+    bar.id = 'bnWhoBar';
+    bar.style.cssText = 'display:flex;align-items:center;justify-content:space-between;gap:8px;'
+      + 'background:#f2ede5;border:1.5px solid #e0d8ce;border-radius:12px;padding:8px 10px 8px 12px;margin-bottom:14px;';
+    var who = document.createElement('span');
+    who.id = 'bnWhoName';
+    who.style.cssText = 'font-size:.82rem;font-weight:800;color:#5a4a3a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap';
+    var out = document.createElement('button');
+    out.type = 'button';
+    out.style.cssText = 'flex:none;font:inherit;font-size:.72rem;font-weight:800;color:#fff;background:#8a7f74;'
+      + 'border:none;border-radius:999px;padding:6px 11px;cursor:pointer';
+    out.textContent = '\ub0b4\uac00 \uc544\ub2c8\uc5d0\uc694';      // 내가 아니에요
+    out.onclick = function(){ doLogout(); };
+    bar.appendChild(who); bar.appendChild(out);
+    var card = document.querySelector('#screen-pick .auth-card');
+    if (card) card.insertBefore(bar, card.firstChild);
+  }
+  var nm = document.getElementById('bnWhoName');
+  if (nm) nm.textContent = '\ud83d\udc64 ' + (studentName || '\uc774\ub984 \uc5c6\uc74c')
+        + (studentSchool && studentSchool !== '\ubbf8\uc785\ub825' ? ' \u00b7 ' + studentSchool : '');
 
   var isElem = (studentLevel() === '\ucd08') && !PICK_SHOW_ALL;
   var _h  = document.querySelector('#screen-pick h2');
@@ -1027,7 +1060,7 @@ function renderSchoolPicker() {
       + "font-family:inherit;font-size:.84rem;font-weight:800;color:#6b5300";
     el.textContent = '\ud83c\udf38 \uc800\ub294 \ucd08\ub4f1\ud559\uc0dd\uc774\uc5d0\uc694';   // 🌸 저는 초등학생이에요
     el.onclick = function(){
-      try { localStorage.setItem('bn_lv', '\ucd08'); } catch(e){}
+      try { localStorage.setItem('bn_lv', '\ucd08:' + String(studentName || localStorage.getItem('bn_name') || '')); } catch(e){}
       PICK_SHOW_ALL = false;
       renderSchoolPicker();
       window.scrollTo(0, 0);
