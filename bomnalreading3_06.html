@@ -635,34 +635,39 @@ function saySentence(t, cb){
   stopAudio();
   const txt = String(t == null ? '' : t).trim();
   if(!txt){ cb && cb(false); return; }
-  ttsSay(txt, cb);                       // 기기 음성 먼저 (빠르고 인터넷이 필요 없다)
+  // cancel() 직후 곧바로 speak() 하면 소리가 안 나는 브라우저가 있어 아주 짧게 쉬었다 읽는다
+  setTimeout(()=>{ ttsSay(txt, cb); }, 60);
 }
 
 /* 기기 자체 음성(TTS) — 0.8초 안에 말하기 시작하지 않으면 온라인 음성으로 */
 function ttsSay(t, cb){
   if(!('speechSynthesis' in window)){ onlineSay(t, cb); return; }
-  let done = false;
+  let vs = [];
+  try{ vs = speechSynthesis.getVoices() || []; }catch(e){}
+  if(!vs.length){ onlineSay(t, cb); return; }     // 목소리가 아예 없는 기기 → 바로 온라인 음성
+
+  let done = false, started = false;
   function once(ok){ if(done) return; done = true; cb && cb(ok); }
   try{
     const u = new SpeechSynthesisUtterance(t);
     u.lang='en-US'; u.rate=0.82; u.pitch=1.05;
-    const vs = speechSynthesis.getVoices();
     const v = vs.find(x=>/en-US/.test(x.lang) && /Samantha|Google US|Aria|Jenny/i.test(x.name))
            || vs.find(x=>/^en/.test(x.lang));
     if(v) u.voice=v;
+    u.onstart = ()=>{ started = true; };
     u.onend   = ()=>{ once(true); };
-    u.onerror = ()=>{ if(!done){ done = true; onlineSay(t, cb); } };
+    u.onerror = ()=>{ if(!done && !started){ done = true; onlineSay(t, cb); } else once(false); };
     speechSynthesis.speak(u);
+    // 말하기가 시작됐으면 끊지 않는다. 1.5초가 지나도 시작조차 못 하면 온라인 음성으로.
     setTimeout(()=>{
-      if(done) return;
-      let speaking = false;
-      try{ speaking = speechSynthesis.speaking; }catch(e){}
-      if(!speaking){                     // 목소리가 없는 기기 — 소리가 나지 않았다
-        done = true;
-        try{ speechSynthesis.cancel(); }catch(e){}
-        onlineSay(t, cb);
-      }
-    }, 800);
+      if(done || started) return;
+      let active = false;
+      try{ active = speechSynthesis.speaking || speechSynthesis.pending; }catch(e){}
+      if(active) return;
+      done = true;
+      try{ speechSynthesis.cancel(); }catch(e){}
+      onlineSay(t, cb);
+    }, 1500);
   }catch(e){ if(!done){ done = true; onlineSay(t, cb); } }
 }
 
