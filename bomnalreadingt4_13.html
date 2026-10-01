@@ -115,6 +115,10 @@ header{background:linear-gradient(135deg,#f7efe4 0%,#f0e6d8 50%,#ece0d2 100%); p
 .chip.sel{border-color:var(--gold) !important; background:#f6ecda !important; font-weight:700;
   transform:translateY(-4px); box-shadow:0 5px 12px rgba(176,141,87,.35);}
 .chips.aim{border-color:var(--gold); background:#fdfaf4;}
+/* 꾸며 주는 말 — 움직이지 않는 낱말 */
+.chip.fixed{background:#f1ede7; border:2px dashed #cfc6ba; color:#8d857a; cursor:default;
+            box-shadow:none; font-weight:400;}
+.chip.fixed:active{cursor:default;}
 .zone.aim{border-color:var(--gold); background:#faf3e7;}
 .tapguide{font-size:.78rem; color:#8a7f70; text-align:center; background:#f7f2e9;
   border-radius:12px; padding:9px 12px; margin-bottom:14px; line-height:1.5;}
@@ -859,6 +863,9 @@ function renderParse(){
   const s = pList()[idx];
   const roles = activeRoles(s);
   const tk = tokens(s.en);
+  // 주어·동사·목적어·보어에 속한 낱말 번호. 여기 없는 낱말은 꾸며 주는 말이라 고정한다.
+  const _roleIdx = [];
+  ORDER.forEach(function(k){ (s[k]||[]).forEach(function(i){ if(_roleIdx.indexOf(i)<0) _roleIdx.push(i); }); });
   area().innerHTML = `
     <div class="panel">
       <h3 class="stage-name">4단계 · 문장 나누기</h3>
@@ -871,7 +878,7 @@ function renderParse(){
 
       <div class="tapguide">
         👆 단어를 <b>톡 누르면</b> 선택돼요. 그다음 <b>넣을 칸을 누르면</b> 쏙 들어갑니다.<br>
-        여러 개를 한꺼번에 골라도 되고, 끌어다 놓아도 돼요.
+        <b>회색 점선 낱말</b>은 꾸며 주는 말이라 <b>움직이지 않아요</b>. 그대로 두면 돼요.
       </div>
 
       <div class="zones">
@@ -884,9 +891,9 @@ function renderParse(){
         }).join('')}
       </div>
 
-      <div class="pool-label">꾸며 주는 말은 여기 그대로 두어도 괜찮아요</div>
+      <div class="pool-label">색칠된 낱말만 옮기면 돼요 · <span style="color:#8d857a">회색 점선</span>은 꾸며 주는 말</div>
       <div class="chips" id="chips" onclick="tapPool(event)">
-        ${tk.map((t,i)=>`<div class="chip" data-i="${i}">${clean(t)}</div>`).join('')}
+        ${tk.map((t,i)=>`<div class="chip${_roleIdx.indexOf(i)<0?' fixed':''}" data-i="${i}">${clean(t)}</div>`).join('')}
       </div>
 
       <div class="hint" id="pHint"></div>
@@ -901,7 +908,8 @@ function renderParse(){
 }
 
 function bindAllChips(){
-  document.querySelectorAll('.chip').forEach(c=>{ c.onpointerdown = e=>onChipDown(e,c); });
+  // 고정된 꾸밈말은 집히지 않게 한다
+  document.querySelectorAll('.chip:not(.fixed)').forEach(c=>{ c.onpointerdown = e=>onChipDown(e,c); });
 }
 function zones(){ return [...document.querySelectorAll('.zone')]; }
 function zoneAt(x,y){
