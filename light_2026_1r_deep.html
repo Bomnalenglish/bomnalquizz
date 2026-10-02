@@ -1,15 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<script src="bn_save.js"></script>
-<link rel="manifest" href="manifest.json"/>
-<meta name="theme-color" content="#4a6741"/>
-<meta name="apple-mobile-web-app-capable" content="yes"/>
-<meta name="mobile-web-app-capable" content="yes"/>
-<meta name="apple-mobile-web-app-title" content="봄날퀴즈"/>
-<link rel="apple-touch-icon" href="icon-192.png"/>
-<style>html,body{overscroll-behavior-y:contain}</style>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>봄날 퀴즈 | 수특라이트 6·7·12강 지문 완전정복</title>
@@ -219,7 +210,8 @@ const EXAM = {
   "file": "light_2026_1r_deep",
   "title": "수특라이트 6·7·12강 · 지문 완전정복",
   "sub": "단어 체크 → 한 줄 해석 → 문제 풀기 → 오답노트",
-  "quizType": "수특라이트_1라운드_지문완전정복_독해"
+  "quizType": "수특라이트_1라운드_지문완전정복_독해",
+  "noType": true
 };
 
 const PASSAGES = [
@@ -5024,6 +5016,7 @@ const PASSAGES = [
 
 /* ═════════ 공통 ═════════ */
 const CIRC=['①','②','③','④','⑤'];
+const NOTYPE = !!(typeof EXAM !== 'undefined' && EXAM && EXAM.noType);   // true면 오답노트 타이핑 없음
 const REASONS=['📖 단어를 몰랐어요','✏️ 문법을 몰랐어요','🔍 해석을 잘못했어요','🎯 근거를 못 찾았어요','🎲 찍었어요','⏩ 급하게 풀었어요'];
 const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -5372,6 +5365,7 @@ function pickQ(j){
         <div class="lb">1️⃣ 왜 틀렸나요? (여러 개 골라도 돼요)</div>
         <div class="rs">${REASONS.map((r,k)=>`<button onclick="toggleReason(${k},this)">${r}</button>`).join('')}</div>
       </div>
+      ${NOTYPE ? '' : `
       <div class="nsec">
         <div class="lb">2️⃣ 근거 문장을 그대로 따라 쓰세요 (복사·붙여넣기 금지)</div>
         <textarea class="copy" id="copyIn" rows="2" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="위의 파란 영어 문장을 보고 직접 입력" oninput="guardCopy(event);checkCopy()" onbeforeinput="if(/insertFromPaste|insertFromDrop|insertReplacement/.test(event.inputType)){event.preventDefault();toast('복사해서 붙여넣기는 안 돼요 ✍️ 직접 써야 기억에 남아요');}" onpaste="event.preventDefault();toast('복사해서 붙여넣기는 안 돼요 ✍️ 직접 써야 기억에 남아요')" ondrop="event.preventDefault()" oncopy="event.preventDefault()" oncut="event.preventDefault()"></textarea>
@@ -5381,8 +5375,8 @@ function pickQ(j){
         <div class="lb">3️⃣ 한 줄 정리 — 다음엔 어떻게 풀까?</div>
         <textarea class="copy" id="memoIn" rows="2" placeholder="예) miss 뒤에는 -ing! / While은 '~인 반면에' → 앞뒤가 반대 내용" oninput="checkNote()" onpaste="event.preventDefault();toast('직접 써 주세요 ✍️')"></textarea>
         <div class="cstat" id="memoStat">8글자 이상 써 주세요</div>
-      </div>
-      <button class="btn full warn" id="noteSave" disabled onclick="saveNote()">오답노트 저장하고 다음 →</button>
+      </div>`}
+      <button class="btn full warn" id="noteSave" ${NOTYPE ? '' : 'disabled'} onclick="saveNote()">${NOTYPE ? '확인했어요 · 다음 →' : '오답노트 저장하고 다음 →'}</button>
     </div>
   </div>`;
   setTimeout(()=>{const nb=$('#noteBox');if(nb)nb.scrollIntoView({behavior:'smooth',block:'start'});},120);
@@ -5423,6 +5417,11 @@ function checkCopy(){
   checkNote();
 }
 function checkNote(){
+  if(NOTYPE){                                  // 타이핑 없는 교재
+    const b0=$('#noteSave');
+    if(b0){ b0.disabled=false; b0.textContent='확인했어요 · 다음 →'; }
+    return;
+  }
   const m=($('#memoIn')||{}).value||'';
   const mOk=m.replace(/\s/g,'').length>=8;
   const ms=$('#memoStat');
@@ -5532,10 +5531,6 @@ window.addEventListener('beforeunload',()=>{ if(S.dirty) saveS(); });
 document.addEventListener('visibilitychange',()=>{ if(document.hidden && S.dirty) saveS(); });
 if('speechSynthesis' in window){try{speechSynthesis.getVoices();}catch(e){}}
 init();
-</script>
-<script>
-/* 홈 화면에 추가했을 때 주소창 없이 앱처럼 열리게 한다 (안드로이드) */
-if('serviceWorker' in navigator){ window.addEventListener('load',function(){ navigator.serviceWorker.register('sw.js').catch(function(){}); }); }
 </script>
 </body>
 </html>
