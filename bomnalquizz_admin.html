@@ -526,7 +526,7 @@ let allAccessData = [];  // ★ hub_access 데이터
 // 예전에는 열 때마다 quiz_results·hub_access 컬렉션 '전체'를 읽어서 느렸고,
 // Firestore 무료 할당량(하루 5만 읽기)도 빠르게 소진됐다.
 // ① 기간 제한 쿼리(서버에서 잘라서 가져오기) ② 병렬 로드 ③ 10분 캐시 로 개선.
-const CACHE_KEY='bn_admin_cache_v8';   // v8: 등록 학교로 바로잡기   // v6: 초등 봄날리딩·봄날듣기 기록 반영   // v5: saveId 중복 제거 반영   // v3: day·level 추가 + 학교 표기 통일
+const CACHE_KEY='bn_admin_cache_v9';   // v8: 등록 학교로 바로잡기   // v6: 초등 봄날리딩·봄날듣기 기록 반영   // v5: saveId 중복 제거 반영   // v3: day·level 추가 + 학교 표기 통일
 
 // 챕터 시험은 학교를 '종촌중학교'로, 어휘 퀴즈는 '종촌중1'로 저장한다.
 // 표기가 갈리면 같은 학생이 두 명으로 잡히므로 '종촌중1' 형태로 통일한다.
@@ -590,7 +590,7 @@ function _getPeriodDays(){
 // IndexedDB 는 그런 한계가 없다. 담는 모양(JSON)은 예전 그대로다.
 // v7: 학교 분류(normSchool)가 바뀌었다. 저장본에는 옛 분류('종촌고')가 그대로 들어 있어
 //     키를 올려 한 번은 새로 받게 한다. 안 그러면 고쳐도 계속 안 보인다.
-const IDB_NAME='bn_admin', IDB_STORE='kv', IDB_KEY='cache_v8';
+const IDB_NAME='bn_admin', IDB_STORE='kv', IDB_KEY='cache_v9';
 const FULL_EVERY_MS=6*60*60*1000;   // 6시간마다 한 번은 통째로 다시 받는다 (다른 곳에서 지운 기록 반영)
 let _cacheFullAt=0;                  // 마지막으로 통째로 받은 시각
 function _idb(){
@@ -1037,7 +1037,8 @@ function nonSecLabel(qt, d){
   if(d && d.day!==undefined && d.day!==null && d.day!==''){
     const lvl = d.level || qt.replace(/^봄날보카_?/,'');
     const r = (d.round||1)>1 ? ` <span style="color:#e65100">R${d.round}</span>` : '';
-    return `Day ${d.day}${r}` + (lvl?`<div style="font-weight:600;color:#9a8f8a;font-size:9px;margin-top:1px;">${lvl}</div>`:'');
+    const cnt = d.total ? ` <span style="font-weight:700;color:#5a4a3a;">${d.total}단어</span>` : '';
+    return `Day ${d.day}${r}${cnt}` + (lvl?`<div style="font-weight:600;color:#9a8f8a;font-size:9px;margin-top:1px;">${lvl}</div>`:'');
   }
   if(qt.includes('동반의어')){
     let lbl='';
@@ -1335,7 +1336,8 @@ function parseQuizMeta(d){
     if (rm) type = '어휘·'+rm[1].replace(/_오답완료|_오답재시도/g,'');
   }
   // 봄날 보카는 quizType에 차시가 없고 day 필드에 들어 있음 → 'Day N'으로 표시
-  if (d.day !== undefined && d.day !== null && d.day !== '') lesson = 'Day ' + d.day;
+  if (d.day !== undefined && d.day !== null && d.day !== '')
+    lesson = 'Day ' + d.day + (d.total ? ' · ' + d.total + '단어' : '');
   return { textbook, type, typeClass, lesson, passages };
 }
 
@@ -1845,6 +1847,7 @@ function renderSectionView(){
           const clear=rec.wrong===0;
           return `<div style="display:flex;align-items:center;gap:6px;padding:3px 0;border-top:1px dashed #e6ddd4;">
             <span style="font-weight:900;color:#1565c0;min-width:46px;">Day ${n}</span>
+            <span class="vocaWords" style="font-weight:800;color:#5a4a3a;background:#f2ede5;border-radius:6px;padding:1px 6px;font-size:10px;">${rec.total||0}단어</span>
             <span style="font-weight:800;color:${clear?'#2e7d32':'#e65100'};">${rec.score}점</span>
             ${clear?'<span style="color:#2e7d32;font-weight:800;">✅</span>'
                    :`<span style="color:#c62828;">오답 ${rec.wrong}개</span>`}
