@@ -512,8 +512,8 @@ function renderRetryIntro(){
       <div class="btn-row">
         <button class="btn btn-main" onclick="startRetry()">오답 다시 풀기 ▶</button>
       </div>
-      <div class="btn-row">
-        <button class="btn btn-sub" onclick="renderResult()">건너뛰고 결과 보기</button>
+      <div style="text-align:center;font-size:.78rem;color:#c0392b;font-weight:700;margin-top:10px">
+        ⚠️ 오답을 모두 다시 풀어야 학습이 끝나요
       </div>
     </div>`;
   window.scrollTo(0,0);
@@ -1211,7 +1211,7 @@ function renderResult(){
 function saveResult(pct, mins){
   const data = {
     name: student.name, school: student.school,
-    quiz: UNIT.level + ' ' + UNIT.unitNo,
+    quiz: UNIT.level + ' ' + UNIT.unitNo + ((wrongTotal() && !retryDone) ? ' · 오답 미완료' : ''),
     type: '초등 독해 · 봄날리딩',
     file: (location.pathname.split('/').pop()||'').replace('.html',''),
     level: UNIT.level, unit: UNIT.unitNo, unitTitle: UNIT.title,
@@ -1252,6 +1252,12 @@ function _saveQuizRest(data){
       { method:'POST', headers:{ 'Content-Type':'application/json' }, body:JSON.stringify({ fields: fields }) })
     .then(function(r){ if(!r.ok) throw new Error('http ' + r.status); return true; });
 }
+
+/* 오답을 다 풀기 전에 창을 닫으려 하면 한 번 물어본다 */
+window.addEventListener('beforeunload', function(e){
+  var left = (typeof wrongTotal === 'function') ? wrongTotal() : 0;
+  if (left > 0 && !retryDone) { e.preventDefault(); e.returnValue = ''; return ''; }
+});
 
 /* ═══ 모든 선언이 끝난 뒤 시작 ═══ */
 autoLogin();

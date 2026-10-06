@@ -250,7 +250,10 @@ footer{text-align:center;padding:24px;color:#d9b8c8;font-size:.78rem;font-family
     <div class="score-big" id="roundScore"></div>
     <div class="score-label" id="roundScoreLabel"></div>
     <button class="retry-btn" onclick="startRetry()">오답 다시 풀기 🔄</button>
-    <button class="done-btn" onclick="finishEarly()">완료하기</button>
+    <div style="margin-top:12px;font-size:.82rem;font-weight:800;color:#c0392b;line-height:1.5">
+      ⚠️ 오답을 모두 맞혀야 Day가 끝나요<br>
+      <span style="font-weight:600;color:#7a7570">끝내지 않으면 선생님 화면에 '오답 미완료'로 남아요</span>
+    </div>
   </div>
 </div>
 
@@ -1252,7 +1255,20 @@ function startRetry(){
   quizActive=true;
   showScreen('screen-quiz'); loadWord();
 }
-function finishEarly(){ showDone(false); }
+function finishEarly(){
+  // 오답이 남아 있으면 끝낼 수 없다 (오답 필수)
+  if (typeof wrongWords !== 'undefined' && wrongWords.length) {
+    alert('오답 ' + wrongWords.length + '개를 다시 풀어야 끝나요!');
+    return;
+  }
+  showDone(false);
+}
+/* 오답이 남은 채 창을 닫으려 하면 한 번 물어본다 */
+window.addEventListener('beforeunload', function(e){
+  try{
+    if (typeof wrongWords !== 'undefined' && wrongWords.length) { e.preventDefault(); e.returnValue=''; return ''; }
+  }catch(err){}
+});
 function showDone(full){
   const elapsed=Math.max(1,Math.round((new Date()-startTime)/60000));
   if(full){ markDayDone(chosenDay); }             // 3단계까지 끝내면 Day 완료 기록

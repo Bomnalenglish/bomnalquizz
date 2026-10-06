@@ -251,7 +251,11 @@ function grade(){
   firstWrong=[]; for(let i=0;i<N;i++) if(picks[i]!==T.answers[i]) firstWrong.push(i);
   const right=N-firstWrong.length, mins=Math.max(1,Math.round((Date.now()-startedAt)/60000));
   mode='graded'; renderScore();
-  if(!graded){ graded=true; markDone(right*5); save(right, mins); }
+  if(!graded){
+    graded=true; markDone(right*5);
+    if(firstWrong.length===0) save(right, mins, true);      // 만점 → 바로 완료
+    else armPending(right, mins);                            // 오답 있으면 다 풀어야 완료
+  }
   if(firstWrong.length) saveProg(); else clearProg();
 }
 function renderScore(){
@@ -263,7 +267,11 @@ function renderScore(){
       <div class="s">${N}문제 중 ${right}개 맞았어요 · ${mins}분</div>
       <div class="grid">${T.answers.map((a,i)=>`<div class="cell ${picks[i]===a?'':'x'}"><b>${picks[i]===a?'○':'✕'}</b>${i+1}번</div>`).join('')}</div>
       <div class="btn-row">
-        ${firstWrong.length ? `<button class="btn btn-main full" onclick="startRetry()">틀린 ${firstWrong.length}문제 다시 들으며 풀기 ▶</button>`
+        ${firstWrong.length ? `<button class="btn btn-main full" onclick="startRetry()">틀린 ${firstWrong.length}문제 다시 들으며 풀기 ▶</button>
+            <div style="margin-top:10px;font-size:.8rem;font-weight:800;color:#c0392b;line-height:1.5">
+              ⚠️ 아직 끝나지 않았어요 — 틀린 문제를 다시 풀어야 끝나요<br>
+              <span style="font-weight:600;color:#7a7570">지금 나가면 선생님 화면에 '오답 미완료'로 남아요</span>
+            </div>`
                             : `<div style="color:var(--primary);font-weight:700">🎉 만점이에요!</div>`}
       </div>
       <div class="save" id="save">${graded?'✅ 결과가 선생님께 전달됐어요.':'결과 저장 중…'}</div>
@@ -287,6 +295,7 @@ function checkRetry(c){
 }
 function renderDone(){
   clearProg();
+  flushPending(true);                 // 오답까지 다 풀었다 → 완료로 기록
   area().innerHTML=`
     <div class="card score">
       <div style="font-size:2.4rem">🎊</div>
@@ -300,9 +309,24 @@ function renderDone(){
 }
 
 /* ── 기록 ── */
-function save(right, mins){
-  const data={ name:student.name, school:student.school,
-    quiz:T.book+' '+T.round, type:'듣기 평가 · '+T.book,
+/* 오답을 다 풀기 전에는 '미완료'로 남는다. 창을 닫으면 그 상태로 저장. */
+let _pend=null, _pendSent=false;
+function armPending(right, mins){
+  _pend={right, mins};
+  window.addEventListener('pagehide', ()=>flushPending(false));
+  window.addEventListener('beforeunload', e=>{
+    if(_pend && !_pendSent){ flushPending(false); e.preventDefault(); e.returnValue=''; return ''; }
+  });
+}
+function flushPending(done){
+  if(!_pend || _pendSent) return;
+  _pendSent=true;
+  save(_pend.right, _pend.mins, done);
+}
+
+function save(right, mins, retryDone){
+  const data={ name:student.name, school:student.school, retryDone:!!retryDone,
+    quiz:T.book+' '+T.round+(retryDone?'':' · 오답 미완료'), type:'듣기 평가 · '+T.book,
     file:(location.pathname.split('/').pop()||'').replace('.html',''),
     score:right*5, correct:right, totalQ:N, total:right*5,
     wrong:firstWrong.map(i=>i+1).join(','), replays, minutes:mins,
