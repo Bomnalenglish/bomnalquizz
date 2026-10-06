@@ -1300,7 +1300,14 @@ function saveResult(completed){
     userAgent:navigator.userAgent.substring(0,100)
   };
   let w=0;
-  const t=setInterval(()=>{ w+=200; if(window._saveResult){ clearInterval(t); window._saveResult(data); } else if(w>=6000) clearInterval(t); },200);
+  const t=setInterval(()=>{
+    w+=200;
+    if(window._saveResult){ clearInterval(t); window._saveResult(data); }
+    else if(w>=2500){                       // 모듈이 안 돌아가는 기기(옛 태블릿)
+      clearInterval(t);
+      if(window._saveQuiz) window._saveQuiz(data);   // bn_save.js · REST 저장
+    }
+  },200);
 }
 
 // 중간에 그만두거나 창을 닫아도 지금까지 푼 결과 저장 (best-effort)
@@ -1317,7 +1324,10 @@ function saveMidway(){
     wrongWords:allWrong.map(w=>({eng:w.en,kor:w.ko})),
     userAgent:navigator.userAgent.substring(0,100)
   };
-  try{ if(window._saveResult) window._saveResult(data); }catch(e){}
+  try{
+    if(window._saveResult) window._saveResult(data);
+    else if(window._saveQuiz) window._saveQuiz(data);   // 옛 태블릿 예비 경로
+  }catch(e){}
 }
 window.addEventListener('pagehide', saveMidway);
 window.addEventListener('beforeunload', saveMidway);
@@ -1330,6 +1340,28 @@ initIntro();
 <script>
 /* 홈 화면에 추가했을 때 주소창 없이 앱처럼 열리게 한다 (안드로이드) */
 if('serviceWorker' in navigator){ window.addEventListener('load',function(){ navigator.serviceWorker.register('sw.js').catch(function(){}); }); }
+</script>
+
+<script>
+/* 오답이 남아 있으면 다른 곳으로 빠져나갈 수 없다 */
+(function(){
+  function left(){
+    try{ return (typeof wrongWords !== 'undefined' && wrongWords.length) ? wrongWords.length : 0; }
+    catch(e){ return 0; }
+  }
+  function nag(){ alert('오답 ' + left() + '개를 다시 풀어야 끝나요!'); }
+  function wrap(name){
+    var f = window[name];
+    if (typeof f !== 'function') return;
+    window[name] = function(){
+      if (left()) { nag(); return; }
+      return f.apply(null, arguments);
+    };
+  }
+  wrap('restartSame');
+  wrap('chooseAnother');
+  wrap('showDayScreen');
+})();
 </script>
 </body>
 </html>
