@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>봄날 레벨테스트</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#faf5ee; --card:#ffffff; --ink:#3d3530; --sub:#7a7068; --line:#ecdfcf;
+  --acc:#c27a45; --acc-soft:#f6e6d6; --sage:#6b8f71; --sage-soft:#e3eee4;
+  --sky:#5a86a8; --sky-soft:#e1ecf4; --rose:#c0605a; --rose-soft:#f7e1df;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{background:var(--bg);}
+body{font-family:'Noto Sans KR',sans-serif;color:var(--ink);min-height:100vh;line-height:1.55;}
+.hide{display:none !important;}
+.wrap{max-width:760px;margin:0 auto;padding:16px;}
+button{font-family:inherit;cursor:pointer;}
+input,select,textarea{font-family:inherit;font-size:1rem;}
+
+/* 헤더 */
+.top{background:linear-gradient(135deg,#f7efe4,#ece0d2);border-bottom:1px solid var(--line);padding:22px 16px 18px;text-align:center;}
+.top h1{font-size:1.45rem;font-weight:900;letter-spacing:-.5px;}
+.top p{font-size:.85rem;color:var(--sub);margin-top:4px;}
+
+/* 카드 */
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;margin-bottom:14px;box-shadow:0 2px 10px rgba(120,90,60,.06);}
+.card h2{font-size:1.05rem;font-weight:800;margin-bottom:12px;}
+.tabs{display:flex;gap:8px;margin:14px 0;}
+.tab{flex:1;padding:11px;border:1px solid var(--line);background:#fff;border-radius:12px;font-weight:700;color:var(--sub);font-size:.95rem;}
+.tab.on{background:var(--ink);color:#fff;border-color:var(--ink);}
+
+.fld{margin-bottom:12px;}
+.fld label{display:block;font-size:.82rem;font-weight:700;color:var(--sub);margin-bottom:5px;}
+.fld input,.fld select,.fld textarea{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:10px;background:#fffdfa;color:var(--ink);}
+.fld textarea{min-height:70px;resize:vertical;}
+.row2{display:flex;gap:10px;}
+.row2>.fld{flex:1;min-width:0;}
+.hint{font-size:.78rem;color:var(--sub);margin-top:5px;line-height:1.5;}
+.btn{display:block;width:100%;padding:15px;border:none;border-radius:14px;background:var(--acc);color:#fff;font-weight:800;font-size:1.05rem;}
+.btn.dark{background:var(--ink);}
+.btn.ghost{background:#fff;color:var(--ink);border:1px solid var(--line);}
+.btn.small{display:inline-block;width:auto;padding:9px 14px;font-size:.88rem;border-radius:10px;}
+.btns{display:flex;gap:8px;flex-wrap:wrap;}
+
+/* 시험 화면 */
+#test{min-height:100vh;display:flex;flex-direction:column;}
+.tbar{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:#fff;border-bottom:1px solid var(--line);}
+.sec-chip{font-size:.8rem;font-weight:800;padding:5px 11px;border-radius:99px;}
+.sec-main{background:var(--acc-soft);color:var(--acc);}
+.sec-listen{background:var(--sky-soft);color:var(--sky);}
+.sec-voca{background:var(--sage-soft);color:var(--sage);}
+.stage-name{font-size:.9rem;font-weight:700;color:var(--sub);}
+.dots{display:flex;gap:6px;justify-content:center;padding:12px 0 2px;}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--line);}
+.dot.done{background:var(--acc);}
+.dot.now{background:var(--ink);transform:scale(1.25);}
+.qwrap{flex:1;max-width:760px;width:100%;margin:0 auto;padding:12px 16px 28px;}
+.qtext{font-size:1.15rem;font-weight:800;text-align:center;margin:10px 0 14px;}
+.emoji{font-size:5.2rem;text-align:center;line-height:1.15;margin:4px 0 8px;}
+.show{background:#fffdf9;border:1px solid var(--line);border-radius:16px;padding:16px 18px;margin-bottom:16px;font-size:1.08rem;line-height:1.75;white-space:pre-line;}
+.show.big{font-size:2.6rem;font-weight:900;text-align:center;letter-spacing:2px;padding:20px;}
+.show.mid{font-size:1.55rem;font-weight:800;text-align:center;}
+.show.passage{font-size:1rem;line-height:1.8;text-align:left;}
+.spk{display:block;margin:0 auto 16px;padding:13px 22px;border-radius:99px;border:none;background:var(--sky);color:#fff;font-weight:800;font-size:1rem;}
+.spk[disabled]{opacity:.45;}
+.spk-note{text-align:center;font-size:.8rem;color:var(--sub);margin:-8px 0 14px;}
+.chs{display:grid;grid-template-columns:1fr;gap:10px;}
+.chs.grid2{grid-template-columns:1fr 1fr;}
+.ch{padding:15px 16px;border:2px solid var(--line);border-radius:14px;background:#fff;font-size:1.05rem;font-weight:600;color:var(--ink);text-align:left;line-height:1.45;}
+.ch.c{text-align:center;font-size:1.5rem;font-weight:800;}
+.ch.e{text-align:center;font-size:3rem;padding:10px;}
+.ch:active,.ch.pick{border-color:var(--acc);background:var(--acc-soft);}
+.ch[disabled]{opacity:.5;}
+.dk{display:block;margin:16px auto 0;background:none;border:none;color:var(--sub);font-size:.9rem;text-decoration:underline;padding:8px;}
+.vword{font-size:2.6rem;font-weight:900;text-align:center;margin:10px 0 4px;letter-spacing:.5px;}
+
+/* 안내 화면 */
+.center{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;text-align:center;}
+.center .card{max-width:520px;width:100%;padding:34px 24px;}
+.big-emoji{font-size:4.2rem;margin-bottom:10px;}
+.center h2{font-size:1.4rem;font-weight:900;margin-bottom:8px;}
+.center p{color:var(--sub);margin-bottom:20px;}
+
+/* 결과지 */
+.rep-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap;}
+.rep-name{font-size:1.4rem;font-weight:900;}
+.rep-meta{font-size:.85rem;color:var(--sub);}
+.lvl-badge{background:var(--ink);color:#fff;border-radius:16px;padding:14px 18px;text-align:center;min-width:150px;}
+.lvl-badge .k{font-size:.75rem;opacity:.75;}
+.lvl-badge .v{font-size:1.2rem;font-weight:900;line-height:1.3;}
+.bars{margin-top:6px;}
+.bar{margin-bottom:14px;}
+.bar .lab{display:flex;justify-content:space-between;font-size:.9rem;font-weight:700;margin-bottom:5px;gap:8px;}
+.bar .lab span:last-child{color:var(--sub);font-weight:500;text-align:right;}
+.track{height:14px;background:#f1e8dc;border-radius:99px;overflow:hidden;position:relative;}
+.fill{height:100%;border-radius:99px;}
+.f-main{background:var(--acc);} .f-listen{background:var(--sky);} .f-voca{background:var(--sage);}
+.mark{position:absolute;top:-3px;width:3px;height:20px;background:var(--ink);border-radius:2px;}
+.legend{font-size:.75rem;color:var(--sub);margin-top:-4px;}
+.rec{display:grid;grid-template-columns:1fr;gap:10px;}
+.rec-item{border:1px solid var(--line);border-radius:14px;padding:12px 14px;background:#fffdf9;}
+.rec-item .k{font-size:.78rem;font-weight:800;color:var(--acc);}
+.rec-item .v{font-weight:700;margin-top:2px;}
+.rec-item .s{font-size:.82rem;color:var(--sub);margin-top:2px;}
+.pill{display:inline-block;padding:4px 10px;border-radius:99px;font-size:.82rem;font-weight:700;margin:3px 4px 3px 0;}
+.pill.good{background:var(--sage-soft);color:var(--sage);}
+.pill.weak{background:var(--rose-soft);color:var(--rose);}
+.cmt{width:100%;min-height:230px;border:1px solid var(--line);border-radius:12px;padding:12px;font-size:.95rem;line-height:1.7;background:#fffdfa;color:var(--ink);}
+.cmt-view{white-space:pre-line;font-size:.95rem;line-height:1.75;}
+table.st{width:100%;border-collapse:collapse;font-size:.88rem;}
+table.st th,table.st td{border-bottom:1px solid var(--line);padding:8px 6px;text-align:left;vertical-align:top;}
+table.st th{font-size:.78rem;color:var(--sub);font-weight:700;}
+.nw{white-space:nowrap;}
+.ok{color:var(--sage);font-weight:800;} .ng{color:var(--rose);font-weight:800;}
+.wrong-list{font-size:.86rem;}
+.wrong-list li{margin:0 0 8px 18px;}
+.wrong-list .a{color:var(--sage);} .wrong-list .p{color:var(--rose);}
+.note{background:var(--acc-soft);border-radius:12px;padding:12px 14px;font-size:.9rem;margin-top:10px;}
+.saved{font-size:.8rem;color:var(--sub);text-align:right;margin-top:6px;}
+.foot{text-align:center;font-size:.78rem;color:var(--sub);padding:14px 0 30px;}
+
+/* 기록 목록 */
+.hist-item{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 4px;border-bottom:1px solid var(--line);cursor:pointer;}
+.hist-item:last-child{border-bottom:none;}
+.hist-item .n{font-weight:800;}
+.hist-item .m{font-size:.8rem;color:var(--sub);}
+.hist-item .l{font-size:.85rem;font-weight:700;color:var(--acc);text-align:right;}
+
+@media (min-width:600px){ .rec{grid-template-columns:1fr 1fr;} }
+@media (max-width:420px){ .row2{flex-direction:column;gap:0;} .show.big{font-size:2.1rem;} .chs.grid2 .ch.c{font-size:1.25rem;} }
+@media print{
+  body{background:#fff;}
+  .noprint{display:none !important;}
+  .card{box-shadow:none;break-inside:avoid;}
+  .wrap{max-width:none;padding:0;}
+}
+</style>
+</head>
+<body>
+
+<!-- ───────────── 1. 선생님 입력 ───────────── -->
+<div id="setup">
+  <div class="top">
+    <h1>🌱 봄날 레벨테스트</h1>
+    <p>알파벳부터 고3 수능형까지 · 맞히면 자동으로 다음 단계로</p>
+  </div>
+  <div class="wrap">
+    <div class="tabs">
+      <button class="tab on" id="tabNew" onclick="showTab('new')">새 레벨테스트</button>
+      <button class="tab" id="tabHist" onclick="showTab('hist')">🔒 지난 기록</button>
+    </div>
+
+    <div id="paneNew">
+      <div id="resumeBox" class="card hide" style="border-color:var(--acc);">
+        <h2>⏸ 끝나지 않은 테스트가 있어요</h2>
+        <p id="resumeTxt" style="font-size:.92rem;color:var(--sub);margin-bottom:12px;"></p>
+        <div class="btns">
+          <button class="btn small" onclick="resumeTest()">이어서 하기</button>
+          <button class="btn small ghost" onclick="dropResume()">지우고 새로 시작</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>학생 정보</h2>
+        <div class="row2">
+          <div class="fld"><label>이름 *</label><input id="inName" placeholder="예) 김봄날"></div>
+          <div class="fld"><label>학년 *</label>
+            <select id="inGrade">
+              <option value="">선택</option>
+              <option>7세</option>
+              <option>초1</option><option>초2</option><option>초3</option><option>초4</option><option>초5</option><option>초6</option>
+              <option>중1</option><option>중2</option><option>중3</option>
+              <option>고1</option><option>고2</option><option>고3</option>
+            </select>
+          </div>
+        </div>
+        <div class="row2">
+          <div class="fld"><label>학교</label><input id="inSchool" placeholder="예) 종촌초"></div>
+          <div class="fld"><label>학부모님 연락처 (선택)</label><input id="inPhone" placeholder="010-"></div>
+        </div>
+        <div class="fld"><label>학부모님이 말씀하신 수준</label>
+          <select id="inClaim">
+            <option value="">말씀 없음 / 모름</option>
+            <option value="1">알파벳을 아직 몰라요</option>
+            <option value="2">알파벳은 알고 파닉스 시작</option>
+            <option value="4">파닉스 다 배웠어요</option>
+            <option value="5">짧은 문장 읽어요 (리딩 시작)</option>
+            <option value="6">초등 리딩 교재 하는 중</option>
+            <option value="7">초등 고학년 리딩 · 문법 시작</option>
+            <option value="8">중등 문법·독해 하는 중</option>
+            <option value="9">중등 심화 · 예비고</option>
+            <option value="10">고1 모의고사 수준</option>
+            <option value="11">고2~3 수능 수준</option>
+          </select>
+        </div>
+        <div class="fld"><label>상담 메모</label><textarea id="inMemo" placeholder="예) 다른 학원에서 1년 파닉스, 영어 동화 좋아함, 듣기는 영상으로 많이 접함"></textarea></div>
+      </div>
+
+      <div class="card">
+        <h2>시작 단계</h2>
+        <div class="fld">
+          <select id="inStart"></select>
+          <p class="hint">기본은 <b>알파벳부터</b>예요. 아는 단계는 몇 문제만에 바로 넘어가요.<br>
+          중·고등학생은 시간을 줄이려면 높은 단계에서 시작해도 돼요. <b>시작 단계를 못 넘으면 자동으로 한 단계씩 내려가며</b> 실제 수준을 찾아요.</p>
+        </div>
+        <p class="hint" style="margin-bottom:14px;">🔊 듣기 문제가 있어요. 태블릿 소리를 켜 주세요. 예상 시간: 초등 10~15분 · 중고등 20~25분</p>
+        <button class="btn" onclick="startTest()">테스트 시작하기</button>
+      </div>
+    </div>
+
+    <div id="paneHist" class="hide">
+      <div class="card" id="histLock">
+        <h2>🔒 선생님 확인</h2>
+        <div class="fld"><input type="password" id="pw" placeholder="관리자 비밀번호" onkeydown="if(event.key==='Enter')openHist()"></div>
+        <button class="btn dark" onclick="openHist()">기록 보기</button>
+      </div>
+      <div class="card hide" id="histList">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <h2 style="margin:0;">지난 레벨테스트</h2>
+          <button class="btn small ghost" onclick="loadHist()">새로고침</button>
+        </div>
+        <div class="fld" style="margin-bottom:6px;"><input id="histQ" placeholder="이름으로 찾기" oninput="renderHist()"></div>
+        <div id="histBody"><p class="hint">불러오는 중…</p></div>
+      </div>
+    </div>
+    <div class="foot">봄날영어수학학원 · 입학 레벨테스트</div>
+  </div>
+</div>
+
+<!-- ───────────── 2. 학생에게 건네기 ───────────── -->
+<div id="hello" class="center hide">
+  <div class="card">
+    <div class="big-emoji">👋</div>
+    <h2 id="helloName">안녕!</h2>
+    <p>지금부터 영어 문제를 풀어 볼 거예요.<br>쉬운 문제부터 시작해서 조금씩 어려워져요.<br>
+    <b>모르는 문제는 '모르겠어요'</b>를 눌러도 괜찮아요.<br>찍지 말고 솔직하게 풀어 주세요 😊</p>
+    <button class="btn" onclick="beginStudent()">🔊 시작하기</button>
+  </div>
+</div>
+
+<!-- ───────────── 3. 문제 ───────────── -->
+<div id="test" class="hide">
+  <div class="tbar">
+    <span class="sec-chip" id="secChip">읽기·문법</span>
+    <span class="stage-name" id="stageName"></span>
+  </div>
+  <div class="dots" id="dots"></div>
+  <div class="qwrap" id="qwrap"></div>
+</div>
+
+<!-- ───────────── 4. 단계 사이 안내 ───────────── -->
+<div id="inter" class="center hide">
+  <div class="card">
+    <div class="big-emoji" id="interEmoji">🎉</div>
+    <h2 id="interTitle"></h2>
+    <p id="interText"></p>
+    <button class="btn" id="interBtn">계속하기</button>
+  </div>
+</div>
+
+<!-- ───────────── 5. 끝 ───────────── -->
+<div id="finish" class="center hide">
+  <div class="card">
+    <div class="big-emoji">👏</div>
+    <h2>다 끝났어요! 정말 잘했어요</h2>
+    <p>태블릿을 선생님께 드려 주세요.</p>
+    <button class="btn dark" onclick="openReport()">결과 보기 (선생님)</button>
+    <p class="hint" id="saveState" style="margin-top:12px;"></p>
+  </div>
+</div>
+
+<!-- ───────────── 6. 결과지 ───────────── -->
+<div id="report" class="hide">
+  <div class="wrap">
+    <div class="tabs noprint">
+      <button class="tab on" id="rtT" onclick="repTab('t')">원장 상담용</button>
+      <button class="tab" id="rtP" onclick="repTab('p')">학부모 공유용</button>
+    </div>
+    <div id="repT"></div>
+    <div id="repP" class="hide"></div>
+    <div class="btns noprint" style="margin:6px 0 30px;">
+      <button class="btn small ghost" onclick="backToSetup()">← 처음으로</button>
+    </div>
+  </div>
+</div>
+
+<script src="bn_save.js"></script>
+<script src="leveltest_items.js"></script>
+<script src="leveltest_voca.js"></script>
+<script>
+/* ═══════════════════════════════════════════════════════════
+   봄날 레벨테스트
+   - 읽기·문법 사다리(1~11) → 듣기 사다리(1~5) → 어휘 사다리(봄날보카 단어장 10단계)
+   - 각 사다리: 통과하면 한 단계 위로, 처음 단계를 못 넘으면 한 단계씩 아래로
+   - 결과는 quiz_results 에 quizType '입학레벨테스트' 로 저장 (detail 에 전체 기록)
+   - 구형 태블릿 대응: ?. ?? 같은 최신 문법은 쓰지 않음
+═══════════════════════════════════════════════════════════ */
+var ADMIN_PW = 'bomnalvaca2025';
+var LS_KEY = 'bn_leveltest_session';
+var MAIN = window.LT_MAIN, LISTEN = window.LT_LISTEN, VOCA = window.LT_VOCA, TAGS = window.LT_TAGS;
+var VOCA_N = 5, VOCA_PASS = 4;
+
+var GRADE_EXPECT = {'7세':2,'초1':3,'초2':4,'초3':5,'초4':6,'초5':6,'초6':7,'중1':8,'중2':8,'중3':9,'고1':10,'고2':10,'고3':11};
+
+/* 읽기 단계 → 추천 반/교재 */
+var MAIN_REC = [
+  {cls:'알파벳 기초반', book:'알파벳 · 파닉스 기초', s:'알파벳 이름과 소리부터 차근차근 시작해요.'},
+  {cls:'파닉스반 ①', book:'파닉스 첫소리 · 단모음', s:'알파벳은 알아요. 글자와 소리를 연결하는 연습이 필요해요.'},
+  {cls:'파닉스반 ②', book:'파닉스 단모음 · 이중자음', s:'첫소리는 알아요. 짧은 모음 단어 읽기를 익혀요.'},
+  {cls:'파닉스반 ③', book:'파닉스 이중자음 · 장모음', s:'단모음 단어는 읽어요. sh·ch·ee 같은 규칙을 익혀요.'},
+  {cls:'리딩 입문반', book:'사이트워드 + 봄날리딩 1권', s:'파닉스가 완성되었어요. 짧은 문장 읽기로 넘어가요.'},
+  {cls:'초등 리딩반', book:'봄날리딩 1~2권', s:'짧은 문장을 읽어요. 짧은 글 독해를 시작해요.'},
+  {cls:'초등 리딩반', book:'봄날리딩 3~4권 · 튜터 1권', s:'짧은 글을 잘 읽어요. 글 길이와 문법을 늘려요.'},
+  {cls:'초등 고학년 리딩·문법반', book:'봄날리딩 5~6권 · 튜터 2~3권', s:'초등 리딩이 탄탄해요. 중등 문법을 준비해요.'},
+  {cls:'중등반 (중1~2 과정)', book:'봄날리딩 7~8권 · 튜터 4권 · 중등 문법', s:'중1~2 문법과 독해를 해요.'},
+  {cls:'중등 심화 · 예비고반', book:'중3 문법 심화 · 고1 모의고사 입문', s:'중등 과정이 탄탄해요. 모의고사 유형을 시작해요.'},
+  {cls:'고1 모의고사반', book:'고1 모의고사 · 지문 완전정복', s:'고1 모의고사 유형을 풀 수 있어요.'},
+  {cls:'고2~3 수능반', book:'고2~3 모의고사 · 수능형 빈칸·순서', s:'수능형 고난도 문항까지 도전해요.'}
+];
+var LISTEN_REC = [
+  {book:'소리 · 단어 듣기 기초', s:'영어 소리에 익숙해지는 단계예요.'},
+  {book:'초등 듣기평가 3학년', s:'단어는 잘 알아들어요. 문장 듣기를 늘려요.'},
+  {book:'초등 듣기평가 4학년', s:'짧은 문장을 알아들어요. 대화 듣기로 넘어가요.'},
+  {book:'초등 듣기평가 5~6학년', s:'초등 대화를 잘 이해해요.'},
+  {book:'EBS 중학영어듣기평가', s:'중학교 듣기평가 수준이에요.'},
+  {book:'EBS 고등 영어듣기평가', s:'고등·수능 듣기까지 가능해요.'}
+];
+
+function $(id){ return document.getElementById(id); }
+function esc(s){ return String(s == null ? '' : s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+function shuffle(a){ a = a.slice(); for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
+function show(id){ ['setup','hello','test','inter','finish','report'].forEach(function(x){ $(x).classList.add('hide'); }); $(id).classList.remove('hide'); window.scrollTo(0,0); }
+function lsGet(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
+function lsSet(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }
+function lsDel(k){ try{ localStorage.removeItem(k); }catch(e){} }
+
+/* ───────── 시작 단계 선택 ───────── */
+(function initStart(){
+  var sel = $('inStart'), h = '';
+  MAIN.forEach(function(s){ h += '<option value="'+s.lv+'">'+s.lv+'단계 · '+s.name+(s.lv===1?' (권장)':'')+'</option>'; });
+  sel.innerHTML = h;
+})();
+$('inGrade').onchange = function(){
+  /* 중·고등은 시간이 길어지니 시작 단계를 살짝 올려 둔다 (선생님이 바꿀 수 있음) */
+  var g = this.value, st = 1;
+  if(/^중/.test(g)) st = 5;
+  if(/^고/.test(g)) st = 7;
+  $('inStart').value = st;
+};
+
+/* ───────── 탭 ───────── */
+function showTab(t){
+  $('tabNew').classList.toggle('on', t==='new');
+  $('tabHist').classList.toggle('on', t==='hist');
+  $('paneNew').classList.toggle('hide', t!=='new');
+  $('paneHist').classList.toggle('hide', t!=='hist');
+  if(t==='hist' && sessionStorage.getItem('bnadmin')==='1'){ $('histLock').classList.add('hide'); $('histList').classList.remove('hide'); if(!HIST) loadHist(); }
+}
+
+/* ═════════ 상태 ═════════
+   S.phase : main → listen → voca → done
+   S.lad   : 지금 사다리 {sec, min, max, cur, best, failedAbove}
+   S.stage : 지금 단계 {lv, qs:[{ref, order}], i, ok, ng}
+   S.res   : 단계별 결과 {main:{lv:{n,ok,pass}}, ...}
+   S.log   : 문항 기록 */
+var S = null;
+
+function newState(info){
+  return { v:1, info:info, t0:Date.now(), phase:'main', lad:null, stage:null,
+           res:{main:{}, listen:{}, voca:{}}, best:{main:0, listen:0, voca:0},
+           log:[], done:false, finishedAt:null, saved:false };
+}
+function persist(){ if(S && !S.done) lsSet(LS_KEY, JSON.stringify(S)); }
+
+/* 끝나지 않은 테스트 확인 */
+(function checkResume(){
+  var raw = lsGet(LS_KEY); if(!raw) return;
+  try{
+    var s = JSON.parse(raw);
+    if(!s || s.done || !s.info) return;
+    $('resumeTxt').textContent = s.info.name + ' (' + s.info.grade + ') · ' + new Date(s.t0).toLocaleString('ko-KR') + ' 시작';
+    $('resumeBox').classList.remove('hide');
+  }catch(e){}
+})();
+function resumeTest(){
+  try{ S = JSON.parse(lsGet(LS_KEY)); }catch(e){ S = null; }
+  if(!S){ alert('불러오지 못했어요.'); return; }
+  $('helloName').textContent = '안녕, ' + S.info.name + '!';
+  show('hello');
+}
+function dropResume(){ lsDel(LS_KEY); $('resumeBox').classList.add('hide'); }
+
+function startTest(){
+  var name = $('inName').value.trim(), grade = $('inGrade').value;
+  if(!name){ alert('이름을 입력해 주세요.'); return; }
+  if(!grade){ alert('학년을 선택해 주세요.'); return; }
+  var info = { name:name, grade:grade, school:$('inSchool').value.trim(), phone:$('inPhone').value.trim(),
+               claim:$('inClaim').value ? +$('inClaim').value : 0,
+               claimText:$('inClaim').value ? $('inClaim').options[$('inClaim').selectedIndex].text : '',
+               memo:$('inMemo').value.trim(), start:+$('inStart').value || 1 };
+  S = newState(info);
+  persist();
+  $('helloName').textContent = '안녕, ' + name + '!';
+  show('hello');
+}
+
+function beginStudent(){
+  unlockAudio();
+  if(!S.lad){ startLadder('main', 1, MAIN.length, S.info.start); }
+  else if(S.stage){ renderQ(); show('test'); }
+  else { nextStage(); }
+}
+
+/* ═════════ 사다리 ═════════ */
+function secLevels(sec){ return sec==='main' ? MAIN : sec==='listen' ? LISTEN : null; }
+
+function startLadder(sec, min, max, start){
+  if(start < min) start = min; if(start > max) start = max;
+  S.phase = sec;
+  S.lad = { sec:sec, min:min, max:max, cur:start, best:min-1, failedAbove:max+1 };
+  S.stage = null;
+  nextStage();
+}
+
+function nextStage(){
+  var L = S.lad, lv = L.cur, qs = [];
+  if(L.sec === 'voca'){
+    var band = VOCA[lv-1], idx = shuffle(band.words.map(function(_,i){return i;})).slice(0, VOCA_N);
+    idx.forEach(function(wi){
+      var others = shuffle(band.words.map(function(_,i){return i;}).filter(function(i){ return i!==wi && band.words[i][1]!==band.words[wi][1]; })).slice(0,3);
+      qs.push({ref:wi, opts:shuffle([wi].concat(others))});
+    });
+  } else {
+    var st = secLevels(L.sec)[lv-1];
+    var pick = shuffle(st.items.map(function(_,i){return i;})).slice(0, st.n);
+    pick.forEach(function(ii){
+      var it = st.items[ii], order = it.ch.map(function(_,i){return i;});
+      if(!it.fixed) order = shuffle(order);
+      qs.push({ref:ii, order:order});
+    });
+  }
+  S.stage = { lv:lv, qs:qs, i:0, ok:0, ng:0 };
+  persist();
+  renderQ();
+  show('test');
+}
+
+function stageMeta(){
+  var L = S.lad, lv = S.stage.lv;
+  if(L.sec === 'voca'){ var b = VOCA[lv-1]; return {name:'어휘 '+lv+'단계', n:VOCA_N, pass:VOCA_PASS, early:false}; }
+  var st = secLevels(L.sec)[lv-1];
+  return {name:lv+'단계 · '+st.short, n:st.n, pass:st.pass, early:!!st.early};
+}
+
+/* 단계 끝 판정 */
+function stageResult(){
+  var m = stageMeta(), g = S.stage;
+  if(g.ok >= m.pass && (m.early || g.i >= g.qs.length)) return 'pass';
+  if(g.ng > m.n - m.pass) return 'fail';          // 더 풀어도 통과 못함 → 바로 끝
+  if(g.i >= g.qs.length) return g.ok >= m.pass ? 'pass' : 'fail';
+  return null;
+}
+
+function endStage(result){
+  var L = S.lad, g = S.stage, m = stageMeta();
+  S.res[L.sec][g.lv] = { asked:g.i, ok:g.ok, ng:g.ng, n:m.n, pass:result==='pass' };
+  var next = null;
+  if(result === 'pass'){
+    if(g.lv > L.best) L.best = g.lv;
+    if(g.lv < L.max && g.lv + 1 < L.failedAbove) next = g.lv + 1;
+  } else {
+    if(g.lv < L.failedAbove) L.failedAbove = g.lv;
+    if(L.best < L.min && g.lv > L.min) next = g.lv - 1;      // 아직 통과한 단계가 없으면 아래로
+  }
+  S.stage = null;
+  if(next !== null){
+    L.cur = next; persist();
+    if(result === 'pass') interPass(next); else interDown(next);
+    return;
+  }
+  /* 사다리 끝 */
+  S.best[L.sec] = Math.max(0, L.best);
+  persist();
+  if(L.sec === 'main'){
+    var hp = S.best.main;
+    var ls = hp<=4 ? 1 : hp===5 ? 2 : hp<=7 ? 3 : hp<=9 ? 4 : 5;
+    inter('🎧', '읽기 문제는 여기까지!', '이번에는 <b>듣기 문제</b>예요.<br>소리를 잘 들어 보세요. 한 번 더 들을 수 있어요.', function(){ startLadder('listen', 1, LISTEN.length, ls); });
+  } else if(L.sec === 'listen'){
+    var hp2 = S.best.main;
+    if(hp2 < 3){ finishTest(); return; }               // 아직 글자를 못 읽으면 어휘 시험은 건너뜀
+    var vs = hp2<=5 ? 1 : hp2===6 ? 2 : hp2===7 ? 3 : hp2===8 ? 4 : hp2===9 ? 5 : hp2===10 ? 7 : 8;
+    inter('📖', '듣기 문제도 끝!', '마지막으로 <b>단어 뜻</b>을 골라 볼게요.<br>모르는 단어는 \'모르겠어요\'를 눌러요.', function(){ startLadder('voca', 1, VOCA.length, vs); });
+  } else {
+    finishTest();
+  }
+}
+
+function inter(emoji, title, text, fn){
+  $('interEmoji').textContent = emoji; $('interTitle').textContent = title; $('interText').innerHTML = text;
+  $('interBtn').onclick = function(){ unlockAudio(); fn(); };
+  show('inter');
+}
+function interPass(next){
+  var msgs = ['잘했어요! 다음 단계로 가요', '대단해요! 한 단계 올라가요', '멋져요! 조금 더 어려운 문제예요'];
+  inter('🎉', msgs[Math.floor(Math.random()*msgs.length)], '조금씩 어려워져요. 천천히 풀어도 괜찮아요.', nextStage);
+}
+function interDown(next){
+  inter('🙂', '좋아요, 이번엔 다른 문제예요', '조금 쉬운 문제로 풀어 볼게요.', nextStage);
+}
+
+/* ═════════ 문제 그리기 ═════════ */
+var playCount = 0, answering = false, Q_TOKEN = 0;
+
+function renderQ(){
+  var L = S.lad, g = S.stage, m = stageMeta(), q = g.qs[g.i];
+  answering = false;
+  var chip = $('secChip');
+  chip.className = 'sec-chip sec-' + L.sec;
+  chip.textContent = L.sec==='main' ? '📘 읽기·문법' : L.sec==='listen' ? '🎧 듣기' : '📖 어휘';
+  $('stageName').textContent = m.name;
+  var d = '';
+  for(var k=0;k<m.n;k++) d += '<span class="dot'+(k<g.i?' done':k===g.i?' now':'')+'"></span>';
+  $('dots').innerHTML = d;
+
+  var h = '';
+  if(L.sec === 'voca'){
+    var band = VOCA[g.lv-1], w = band.words[q.ref];
+    h += '<div class="qtext">단어의 뜻을 고르세요</div>';
+    h += '<div class="vword">'+esc(w[0])+'</div>';
+    h += '<button class="spk" id="spk" onclick="playQ()">🔊 듣기</button>';
+    h += '<div class="chs grid2">';
+    q.opts.forEach(function(oi, k){ h += '<button class="ch c" style="font-size:1.1rem" onclick="answer('+k+')">'+esc(band.words[oi][1])+'</button>'; });
+    h += '</div>';
+  } else {
+    var it = secLevels(L.sec)[g.lv-1].items[q.ref];
+    h += '<div class="qtext">'+esc(it.q)+'</div>';
+    if(it.emoji) h += '<div class="emoji">'+it.emoji+'</div>';
+    if(it.show){
+      var len = it.show.length, cls = len<=12 ? 'big' : len<=40 ? 'mid' : 'passage';
+      h += '<div class="show '+cls+'">'+esc(it.show)+'</div>';
+    }
+    if(it.say || it.dlg){
+      h += '<button class="spk" id="spk" onclick="playQ()">🔊 듣기</button>';
+      if(L.sec==='listen') h += '<div class="spk-note" id="spkNote">두 번까지 들을 수 있어요</div>';
+    }
+    var isEmoji = it.big, short = it.ch.every(function(c){ return c.length <= 8; });
+    h += '<div class="chs'+((isEmoji||short)?' grid2':'')+'">';
+    q.order.forEach(function(ci, k){
+      h += '<button class="ch'+(isEmoji?' e':short?' c':'')+'" onclick="answer('+k+')">'+esc(it.ch[ci])+'</button>';
+    });
+    h += '</div>';
+  }
+  h += '<button class="dk" onclick="answer(-1)">🤔 모르겠어요</button>';
+  $('qwrap').innerHTML = h;
+  window.scrollTo(0,0);
+  playCount = 0;
+  var it0 = curItem(), myQ = ++Q_TOKEN;
+  if(L.sec==='voca' || (it0 && (it0.say || it0.dlg))) setTimeout(function(){ if(myQ === Q_TOKEN) playQ(); }, 350);
+}
+
+function curItem(){
+  var L = S.lad, g = S.stage; if(!L || !g || L.sec==='voca' || g.i >= g.qs.length) return null;
+  return secLevels(L.sec)[g.lv-1].items[g.qs[g.i].ref];
+}
+
+function playQ(){
+  var L = S.lad, g = S.stage; if(!g || g.i >= g.qs.length) return;
+  var spk = $('spk'); if(!spk) return;
+  var it = curItem();
+  if(L.sec !== 'voca' && (!it || (!it.say && !it.dlg))) return;
+  if(L.sec === 'listen' && playCount >= 2) return;
+  playCount++;
+  spk.disabled = true; spk.textContent = '🔊 듣는 중…';
+  var done = function(){
+    if(!$('spk')) return;
+    if(L.sec === 'listen' && playCount >= 2){ spk.textContent = '🔇 다 들었어요'; var n=$('spkNote'); if(n) n.textContent='이제 답을 골라요'; return; }
+    spk.disabled = false; spk.textContent = L.sec==='listen' ? '🔊 한 번 더 듣기' : '🔊 다시 듣기';
+  };
+  if(L.sec === 'voca'){ sayWord(VOCA[g.lv-1].words[g.qs[g.i].ref][0], done); return; }
+  if(it.dlg) sayDialog(it.dlg, done);
+  else if(it.say && it.say.indexOf(' ') < 0) sayWord(it.say, done);
+  else sayLine(it.say, 'W', done);
+}
+
+function answer(k){
+  if(answering || !S.stage || S.stage.i >= S.stage.qs.length) return; answering = true;
+  Q_TOKEN++; stopAudio();
+  var L = S.lad, g = S.stage, q = g.qs[g.i], ok = false, rec;
+  if(L.sec === 'voca'){
+    var band = VOCA[g.lv-1], w = band.words[q.ref];
+    ok = k >= 0 && q.opts[k] === q.ref;
+    rec = {sec:'voca', lv:g.lv, tag:'voca', q:w[0], ans:w[1], pick:k<0?'모르겠어요':band.words[q.opts[k]][1], ok:ok, dk:k<0};
+  } else {
+    var it = curItem();
+    ok = k >= 0 && q.order[k] === it.a;
+    rec = {sec:L.sec, lv:g.lv, tag:it.tag, q:it.q + (it.show && it.show.length<=60 ? ' — '+it.show.replace(/\n/g,' ') : it.say ? ' — 🔊 '+it.say : ''),
+           ans:it.ch[it.a], pick:k<0?'모르겠어요':it.ch[q.order[k]], ok:ok, dk:k<0};
+  }
+  S.log.push(rec);
+  if(ok) g.ok++; else g.ng++;
+  g.i++;
+  var btns = document.querySelectorAll('.ch');
+  if(k >= 0 && btns[k]) btns[k].classList.add('pick');
+  persist();
+  setTimeout(function(){
+    var r = stageResult();
+    if(r) endStage(r); else renderQ();
+  }, 260);
+}
+
+/* ═════════ 끝 · 저장 ═════════ */
+function finishTest(){
+  S.done = true; S.finishedAt = Date.now();
+  lsDel(LS_KEY);
+  show('finish');
+  saveResult();
+}
+
+function summaryLevel(){
+  var hp = S.best.main;
+  return hp === 0 ? '알파벳 이전' : MAIN[hp-1].name;
+}
+
+function saveResult(){
+  if(S.saved) return;
+  var st = $('saveState'); if(st) st.textContent = '결과 저장 중…';
+  var R = buildReport(S);
+  var data = {
+    name: S.info.name, school: S.info.school || '레벨테스트', grade: S.info.grade,
+    quizType: '입학레벨테스트', score: S.best.main, total: MAIN.length,
+    correct: S.log.filter(function(x){return x.ok;}).length, wrong: S.log.filter(function(x){return !x.ok;}).length,
+    level: summaryLevel(), listenLevel: S.best.listen, vocaLevel: S.best.voca,
+    recommend: R.rec.cls + ' / ' + R.rec.book, vocaBook: R.voca.name,
+    detail: JSON.stringify(S)
+  };
+  var fn = window._bnRestSave;
+  if(typeof fn !== 'function'){ if(st) st.textContent = '⚠️ 저장 기능을 불러오지 못했어요 (결과는 화면에서 볼 수 있어요)'; return; }
+  fn(data).then(function(){ S.saved = true; if(st) st.textContent = '✓ 결과가 저장되었어요 (지난 기록에서 다시 볼 수 있어요)'; var s2=$('savedNote'); if(s2) s2.textContent='✓ 저장됨'; })
+          ['catch'](function(){ if(st) st.textContent = '⚠️ 인터넷 문제로 저장하지 못했어요. 결과 화면에서 다시 저장을 눌러 주세요.'; var s2=$('savedNote'); if(s2) s2.innerHTML='⚠️ 저장 안 됨 <button class="btn small ghost" onclick="saveResult()">다시 저장</button>'; });
+}
+
+/* ═════════ 결과 계산 ═════════ */
+function buildReport(s){
+  var hp = s.best.main, lp = s.best.listen, vp = s.best.voca;
+  var rec = MAIN_REC[hp];
+  /* 단어장: 통과한 다음 단계 = 지금 공부할 책 */
+  var vIdx, vNote;
+  if(hp < 3){ vIdx = 0; vNote = '파닉스를 마친 뒤 시작해요'; }
+  else if(vp >= VOCA.length){ vIdx = VOCA.length-1; vNote = '모든 단계를 통과했어요 — 마무리·복습용'; }
+  else { vIdx = vp; vNote = vp===0 ? '가장 기초 단어부터 시작해요' : VOCA[vp-1].name + ' 단계 단어는 대부분 알아요'; }
+  var voca = VOCA[vIdx];
+
+  /* 영역별 문항 통계 */
+  var tagStat = {};
+  s.log.forEach(function(x){
+    if(x.tag==='voca') return;
+    var t = tagStat[x.tag] || (tagStat[x.tag] = {ok:0, n:0, top:0});
+    t.n++; if(x.ok) t.ok++;
+    var rank = (x.sec==='main' ? x.lv : x.lv*2);
+    if(rank > t.top) t.top = rank;
+  });
+  var strong = [], weak = [];
+  Object.keys(tagStat).forEach(function(t){
+    var v = tagStat[t];
+    if(v.n >= 2 && v.ok === v.n) strong.push(t);
+    else if(v.n - v.ok >= 2 || (v.n >= 1 && v.ok/v.n < 0.5)) weak.push(t);
+  });
+  strong.sort(function(a,b){ return tagStat[b].top - tagStat[a].top; });
+  weak.sort(function(a,b){ return (tagStat[b].n-tagStat[b].ok) - (tagStat[a].n-tagStat[a].ok); });
+
+  var exp = GRADE_EXPECT[s.info.grade] || 0, diff = hp - exp, gradeTxt;
+  if(diff >= 1) gradeTxt = '학년보다 앞서 있어요';
+  else if(diff >= 0) gradeTxt = '학년에 알맞은 수준이에요';
+  else if(diff === -1) gradeTxt = '학년 수준에 조금 못 미쳐요';
+  else gradeTxt = '학년에 비해 기초 보강이 필요해요';
+
+  /* 듣기 기대 단계 (읽기 기준) */
+  var lExp = hp<=1 ? 1 : hp<=4 ? 2 : hp<=6 ? 3 : hp<=8 ? 4 : 5;
+  var dk = s.log.filter(function(x){return x.dk;}).length;
+  var mins = Math.max(1, Math.round(((s.finishedAt||Date.now()) - s.t0)/60000));
+
+  return { hp:hp, lp:lp, vp:vp, rec:rec, lrec:LISTEN_REC[lp], voca:voca, vNote:vNote,
+           tagStat:tagStat, strong:strong.slice(0,4), weak:weak.slice(0,4), exp:exp, diff:diff, gradeTxt:gradeTxt,
+           lExp:lExp, dk:dk, mins:mins };
+}
+
+function lvlName(hp){ return hp===0 ? '알파벳 이전' : hp+'단계 · '+MAIN[hp-1].name; }
+function lName(lp){ return lp===0 ? '단어 듣기 이전' : lp+'단계 · '+LISTEN[lp-1].name; }
+
+/* 원장 코멘트 자동 작성 (학부모용) */
+function autoComment(s, R){
+  var n = s.info.name, out = [];
+  if(R.hp === 0) out.push(n+' 학생은 아직 알파벳을 익히는 단계예요. 영어를 처음 시작하기에 딱 좋은 때라, 알파벳 이름과 소리부터 즐겁게 시작하려고 해요.');
+  else out.push(n+' 학생은 \''+MAIN[R.hp-1].name+'\' 단계까지 안정적으로 해결했어요. '+s.info.grade+' 기준으로 '+R.gradeTxt.replace(/요$/,'요.'));
+  if(R.strong.length) out.push('특히 '+R.strong.slice(0,2).map(function(t){return TAGS[t];}).join(', ')+'에서 모든 문제를 맞혀 기본기가 좋아요.');
+  if(R.weak.length) out.push('앞으로는 '+R.weak.slice(0,2).map(function(t){return TAGS[t];}).join(', ')+'을(를) 중점적으로 보완하면 좋겠어요.');
+  if(R.hp >= 2){
+    if(R.lp > R.lExp) out.push('듣기가 읽기보다 강한 편이에요. 소리로 익힌 영어를 글로 읽고 쓰는 연습과 연결하면 빠르게 성장할 거예요.');
+    else if(R.lp < R.lExp - 0) out.push('읽기에 비해 듣기가 아직 약해요. 수업에서 듣기평가를 꾸준히 함께 할게요.');
+    else out.push('읽기와 듣기 실력이 고르게 잡혀 있어요.');
+  }
+  if(R.hp >= 3){
+    if(R.vp + 1 < Math.min(10, Math.max(1, R.hp - 3))) out.push('독해 수준에 비해 어휘가 부족한 편이라, 단어장 학습을 매일 꾸준히 하는 것이 중요해요.');
+    out.push('단어장은 \''+R.voca.name+'\'으로 시작해요.');
+  }
+  out.push('추천 과정: '+R.rec.cls+' ('+R.rec.book+')');
+  return out.join('\n');
+}
+
+/* ═════════ 결과지 그리기 ═════════ */
+var CUR = null;   // 지금 보고 있는 결과 상태
+
+function openReport(){ renderReport(S); }
+
+function renderReport(s){
+  CUR = s;
+  var R = buildReport(s), I = s.info;
+  var dateTxt = new Date(s.t0).toLocaleDateString('ko-KR', {year:'numeric', month:'long', day:'numeric'});
+
+  function bars(teacher){
+    var h = '<div class="bars">';
+    h += barRow('📘 읽기·문법', lvlName(R.hp), R.hp, MAIN.length, 'f-main', teacher && R.exp ? R.exp : 0);
+    h += barRow('🎧 듣기', lName(R.lp), R.lp, LISTEN.length, 'f-listen', 0);
+    if(R.hp >= 3) h += barRow('📖 어휘', R.vp===0?'기초 이전':R.vp+'단계 · '+VOCA[R.vp-1].name+' 통과', R.vp, VOCA.length, 'f-voca', 0);
+    h += '</div>';
+    if(teacher && R.exp) h += '<p class="legend">▍ 검은 선 = '+esc(I.grade)+' 학년 기대 수준</p>';
+    return h;
+  }
+  function recBox(){
+    var h = '<div class="rec">';
+    h += '<div class="rec-item"><div class="k">추천 반 · 교재</div><div class="v">'+esc(R.rec.cls)+'</div><div class="s">'+esc(R.rec.book)+'<br>'+esc(R.rec.s)+'</div></div>';
+    h += '<div class="rec-item"><div class="k">봄날보카 단어장</div><div class="v">'+(R.hp<3?'파닉스 후 시작':esc(R.voca.name))+'</div><div class="s">'+(R.hp<3?'글자 읽기가 되면 \''+esc(VOCA[0].name)+'\'부터':esc(R.voca.target)+' 수준 · '+esc(R.vNote))+'</div></div>';
+    h += '<div class="rec-item"><div class="k">듣기 교재</div><div class="v">'+esc(R.lrec.book)+'</div><div class="s">'+esc(R.lrec.s)+'</div></div>';
+    h += '</div>';
+    return h;
+  }
+  function pills(){
+    var h = '';
+    if(R.strong.length){ h += '<div style="margin-bottom:6px;"><b style="font-size:.85rem;">잘하는 점</b><br>'; R.strong.forEach(function(t){ h += '<span class="pill good">👍 '+esc(TAGS[t])+'</span>'; }); h += '</div>'; }
+    if(R.weak.length){ h += '<div><b style="font-size:.85rem;">보완할 점</b><br>'; R.weak.forEach(function(t){ h += '<span class="pill weak">📌 '+esc(TAGS[t])+'</span>'; }); h += '</div>'; }
+    if(!h) h = '<p class="hint">문항 수가 적어 영역 분석을 하지 않았어요.</p>';
+    return h;
+  }
+  var head = '<div class="rep-head"><div><div class="rep-name">'+esc(I.name)+'</div><div class="rep-meta">'+esc(I.grade)+(I.school?' · '+esc(I.school):'')+' · '+dateTxt+'</div></div>'+
+             '<div class="lvl-badge"><div class="k">종합 레벨</div><div class="v">'+esc(R.hp===0?'알파벳 이전':MAIN[R.hp-1].name)+'</div></div></div>';
+
+  /* ── 원장 상담용 ── */
+  var t = '';
+  t += '<div class="card">'+head+'<p style="margin-top:12px;font-weight:700;">'+esc(R.gradeTxt)+(R.exp?' <span style="color:var(--sub);font-weight:500;font-size:.85rem;">(학년 기대 '+R.exp+'단계 · 실제 '+R.hp+'단계)</span>':'')+'</p>';
+  t += '<p class="hint">소요 시간 약 '+R.mins+'분 · 푼 문항 '+s.log.length+'개 · 모르겠어요 '+R.dk+'번</p>';
+  t += '<div id="savedNote" class="saved">'+(s.saved?'✓ 저장됨':'')+'</div></div>';
+
+  t += '<div class="card"><h2>영역별 수준</h2>'+bars(true);
+  if(I.claim){
+    var gap = R.hp - I.claim, gt;
+    if(gap >= 1) gt = '말씀하신 것보다 <b>잘해요</b> (말씀: '+I.claim+'단계 수준 → 실제 '+R.hp+'단계).';
+    else if(gap === 0) gt = '말씀하신 수준과 <b>같아요</b>.';
+    else gt = '말씀하신 것보다 <b>'+(-gap)+'단계 아래</b>로 나왔어요 (말씀: '+I.claim+'단계 수준 → 실제 '+R.hp+'단계). 배운 내용이 아직 완전히 자리 잡지 않았을 수 있어요.';
+    t += '<div class="note">💬 학부모 말씀: "'+esc(I.claimText)+'"<br>'+gt+'</div>';
+  }
+  if(R.dk >= 4) t += '<div class="note" style="background:var(--sky-soft);">🤔 \'모르겠어요\'를 '+R.dk+'번 눌렀어요. 찍지 않고 솔직하게 푼 편이라 결과를 그대로 믿어도 좋아요.</div>';
+  t += '</div>';
+
+  t += '<div class="card"><h2>추천</h2>'+recBox()+'</div>';
+  t += '<div class="card"><h2>강점 · 약점</h2>'+pills()+'</div>';
+
+  /* 단계별 표 */
+  t += '<div class="card"><h2>단계별 결과</h2><table class="st"><tr><th>영역</th><th>단계</th><th>맞힘</th><th>결과</th></tr>';
+  ['main','listen','voca'].forEach(function(sec){
+    var r = s.res[sec];
+    Object.keys(r).map(Number).sort(function(a,b){return a-b;}).forEach(function(lv){
+      var x = r[lv], nm = sec==='main' ? MAIN[lv-1].name : sec==='listen' ? LISTEN[lv-1].name : VOCA[lv-1].name;
+      t += '<tr><td class="nw">'+(sec==='main'?'읽기':sec==='listen'?'듣기':'어휘')+'</td><td>'+lv+'. '+esc(nm)+'</td><td class="nw">'+x.ok+' / '+x.asked+'</td><td class="nw '+(x.pass?'ok':'ng')+'">'+(x.pass?'통과':'멈춤')+'</td></tr>';
+    });
+  });
+  t += '</table></div>';
+
+  /* 틀린 문항 */
+  var wr = s.log.filter(function(x){ return !x.ok; });
+  t += '<div class="card"><h2>틀린 문항 ('+wr.length+')</h2>';
+  if(!wr.length) t += '<p class="hint">틀린 문항이 없어요.</p>';
+  else { t += '<ol class="wrong-list">'; wr.forEach(function(x){ t += '<li>['+(x.sec==='main'?'읽기':x.sec==='listen'?'듣기':'어휘')+' '+x.lv+'] '+esc(x.q)+'<br><span class="a">정답: '+esc(x.ans)+'</span> · <span class="p">고른 답: '+esc(x.pick)+'</span></li>'; }); t += '</ol>'; }
+  t += '</div>';
+
+  if(I.memo || I.phone) t += '<div class="card"><h2>상담 메모</h2><p class="cmt-view">'+esc(I.memo)+(I.phone?'\n📞 '+esc(I.phone):'')+'</p></div>';
+  t += '<div class="btns noprint"><button class="btn small dark" onclick="repTab(\'p\')">학부모 공유용 보기 →</button><button class="btn small ghost" onclick="window.print()">🖨 인쇄</button></div>';
+  $('repT').innerHTML = t;
+
+  /* ── 학부모 공유용 ── */
+  var cm = autoComment(s, R);
+  var p = '<div id="parentCard">';
+  p += '<div class="card" style="text-align:center;background:linear-gradient(135deg,#f7efe4,#ece0d2);"><div style="font-size:.85rem;color:var(--sub);font-weight:700;">봄날영어수학학원</div><div style="font-size:1.3rem;font-weight:900;">영어 레벨테스트 결과</div></div>';
+  p += '<div class="card">'+head+'</div>';
+  p += '<div class="card"><h2>영역별 수준</h2>'+bars(false)+'</div>';
+  p += '<div class="card"><h2>잘하는 점 · 보완할 점</h2>'+pills()+'</div>';
+  p += '<div class="card"><h2>추천 학습</h2>'+recBox()+'</div>';
+  p += '<div class="card"><h2>원장 코멘트</h2><textarea class="cmt noprint" id="cmtBox" oninput="syncCmt()">'+esc(cm)+'</textarea><p class="cmt-view hide" id="cmtView"></p><p class="hint noprint">✏️ 내용을 고쳐서 보낼 수 있어요.</p></div>';
+  p += '</div>';
+  p += '<div class="btns noprint" style="margin-bottom:10px;"><button class="btn small" onclick="copyKakao()">💬 카톡 문구 복사</button><button class="btn small dark" onclick="saveImage()">🖼 이미지로 저장</button><button class="btn small ghost" onclick="printParent()">🖨 인쇄 · PDF</button></div>';
+  $('repP').innerHTML = p;
+  syncCmt();
+  repTab('t');
+  show('report');
+}
+
+function barRow(label, txt, v, max, cls, mark){
+  var pct = Math.round(v/max*100);
+  var h = '<div class="bar"><div class="lab"><span>'+label+'</span><span>'+esc(txt)+'</span></div><div class="track"><div class="fill '+cls+'" style="width:'+Math.max(3,pct)+'%"></div>';
+  if(mark) h += '<div class="mark" style="left:calc('+Math.round(mark/max*100)+'% - 2px)"></div>';
+  return h + '</div></div>';
+}
+
+function repTab(t){
+  $('rtT').classList.toggle('on', t==='t'); $('rtP').classList.toggle('on', t==='p');
+  $('repT').classList.toggle('hide', t!=='t'); $('repP').classList.toggle('hide', t!=='p');
+  window.scrollTo(0,0);
+}
+function syncCmt(){ var b=$('cmtBox'), v=$('cmtView'); if(b&&v) v.textContent = b.value; }
+
+function kakaoText(){
+  var s = CUR, R = buildReport(s), I = s.info;
+  var lines = ['[봄날영어 레벨테스트 결과]', I.name+' ('+I.grade+')', '',
+    '■ 종합 레벨: '+(R.hp===0?'알파벳 이전':MAIN[R.hp-1].name),
+    '■ 읽기·문법: '+lvlName(R.hp)+' / '+MAIN.length+'단계',
+    '■ 듣기: '+lName(R.lp)+' / '+LISTEN.length+'단계'];
+  if(R.hp >= 3) lines.push('■ 어휘: '+(R.vp===0?'기초':R.vp+'단계 통과')+' / '+VOCA.length+'단계');
+  lines.push('', '▶ 추천 반: '+R.rec.cls, '▶ 교재: '+R.rec.book, '▶ 단어장: '+(R.hp<3?'파닉스 후 시작':R.voca.name), '▶ 듣기: '+R.lrec.book, '');
+  var b = $('cmtBox'); lines.push(b ? b.value : autoComment(s, R));
+  return lines.join('\n');
+}
+function copyKakao(){
+  var t = kakaoText();
+  function fallback(){
+    var ta = document.createElement('textarea'); ta.value = t; ta.style.position='fixed'; ta.style.opacity='0';
+    document.body.appendChild(ta); ta.select();
+    try{ document.execCommand('copy'); alert('복사했어요. 카카오톡에 붙여 넣어 주세요.'); }catch(e){ prompt('아래 내용을 복사해 주세요', t); }
+    document.body.removeChild(ta);
+  }
+  if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(function(){ alert('복사했어요. 카카오톡에 붙여 넣어 주세요.'); }, fallback);
+  else fallback();
+}
+function printParent(){ repTab('p'); setTimeout(function(){ window.print(); }, 200); }
+
+function saveImage(){
+  function go(){
+    var card = $('parentCard'), box = $('cmtBox'), view = $('cmtView');
+    box.classList.add('hide'); view.classList.remove('hide');
+    window.html2canvas(card, {backgroundColor:'#faf5ee', scale:2}).then(function(cv){
+      box.classList.remove('hide'); view.classList.add('hide');
+      var a = document.createElement('a');
+      a.download = '레벨테스트_'+CUR.info.name+'.png'; a.href = cv.toDataURL('image/png');
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    })['catch'](function(){ box.classList.remove('hide'); view.classList.add('hide'); alert('이미지를 만들지 못했어요. 인쇄 · PDF를 이용해 주세요.'); });
+  }
+  if(window.html2canvas){ go(); return; }
+  var sc = document.createElement('script');
+  sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+  sc.onload = go; sc.onerror = function(){ alert('인터넷 연결을 확인해 주세요.'); };
+  document.head.appendChild(sc);
+}
+
+function backToSetup(){ location.reload(); }
+
+/* ═════════ 지난 기록 ═════════ */
+var HIST = null;
+function openHist(){
+  if($('pw').value !== ADMIN_PW){ $('pw').value=''; $('pw').placeholder='비밀번호가 틀렸어요'; return; }
+  try{ sessionStorage.setItem('bnadmin','1'); }catch(e){}
+  $('histLock').classList.add('hide'); $('histList').classList.remove('hide');
+  loadHist();
+}
+function fsVal(v){
+  if(!v) return null;
+  if('stringValue' in v) return v.stringValue;
+  if('integerValue' in v) return +v.integerValue;
+  if('doubleValue' in v) return v.doubleValue;
+  if('booleanValue' in v) return v.booleanValue;
+  if('timestampValue' in v) return v.timestampValue;
+  return null;
+}
+function loadHist(){
+  $('histBody').innerHTML = '<p class="hint">불러오는 중…</p>';
+  var url = 'https://firestore.googleapis.com/v1/projects/bomnalvaca/databases/(default)/documents:runQuery';
+  var body = {structuredQuery:{from:[{collectionId:'quiz_results'}], where:{fieldFilter:{field:{fieldPath:'quizType'}, op:'EQUAL', value:{stringValue:'입학레벨테스트'}}}, limit:300}};
+  fetch(url, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)})
+    .then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); })
+    .then(function(rows){
+      HIST = [];
+      rows.forEach(function(row){
+        if(!row.document) return;
+        var f = row.document.fields || {}, o = {};
+        Object.keys(f).forEach(function(k){ o[k] = fsVal(f[k]); });
+        try{ o.S = JSON.parse(o.detail); }catch(e){ o.S = null; }
+        if(o.S) HIST.push(o);
+      });
+      HIST.sort(function(a,b){ return (b.S.t0||0) - (a.S.t0||0); });
+      renderHist();
+    })['catch'](function(e){ $('histBody').innerHTML = '<p class="hint">기록을 불러오지 못했어요 ('+esc(e.message)+'). 인터넷 연결을 확인해 주세요.</p>'; });
+}
+function renderHist(){
+  if(!HIST) return;
+  var q = ($('histQ').value||'').trim(), h = '';
+  HIST.forEach(function(o, i){
+    if(q && String(o.name).indexOf(q) < 0) return;
+    var s = o.S;
+    h += '<div class="hist-item" onclick="openHistItem('+i+')"><div><div class="n">'+esc(o.name)+' <span style="font-weight:500;color:var(--sub);font-size:.85rem;">'+esc(s.info.grade)+(s.info.school?' · '+esc(s.info.school):'')+'</span></div><div class="m">'+new Date(s.t0).toLocaleString('ko-KR')+'</div></div><div class="l">'+esc(o.level||'')+'<br><span style="color:var(--sub);font-weight:500;font-size:.78rem;">'+esc(o.vocaBook||'')+'</span></div></div>';
+  });
+  $('histBody').innerHTML = h || '<p class="hint">기록이 없어요.</p>';
+}
+function openHistItem(i){ var s = HIST[i].S; s.saved = true; renderReport(s); }
+
+/* ═════════ 소리 ═════════
+   단어: 온라인 사전 음성 → 기기 음성
+   문장/대화: 기기 음성(TTS) → 0.8~1.5초 안에 안 나오면 온라인 음성 */
+var curAudio = null, VOICES = [];
+function loadVoices(){ try{ VOICES = speechSynthesis.getVoices() || []; }catch(e){ VOICES = []; } }
+if('speechSynthesis' in window){ loadVoices(); try{ speechSynthesis.onvoiceschanged = loadVoices; }catch(e){} }
+
+function unlockAudio(){
+  /* 첫 터치 때 소리 권한 열기 (모바일 브라우저 정책) */
+  try{ if('speechSynthesis' in window){ var u = new SpeechSynthesisUtterance(' '); u.volume = 0; speechSynthesis.speak(u); } }catch(e){}
+}
+function stopAudio(){
+  if(curAudio){ try{ curAudio.pause(); }catch(e){} curAudio = null; }
+  if('speechSynthesis' in window){ try{ speechSynthesis.cancel(); }catch(e){} }
+  DLG_TOKEN++;
+}
+function sayWord(w, cb){
+  stopAudio();
+  var url = 'https://dict.youdao.com/dictvoice?audio=' + encodeURIComponent(String(w).toLowerCase()) + '&type=2';
+  var done = false; function once(){ if(done) return; done = true; curAudio = null; cb && cb(); }
+  try{
+    curAudio = new Audio(url);
+    curAudio.onended = once;
+    curAudio.onerror = function(){ curAudio = null; ttsSay(w, 'W', once); };
+    var p = curAudio.play(); if(p && p['catch']) p['catch'](function(){ curAudio = null; ttsSay(w, 'W', once); });
+  }catch(e){ ttsSay(w, 'W', once); }
+  setTimeout(once, 4000);
+}
+function pickVoice(who){
+  if(!VOICES.length) loadVoices();
+  var en = VOICES.filter(function(v){ return /^en/i.test(v.lang); });
+  if(!en.length) return null;
+  var fem = /Samantha|Google US English|Aria|Jenny|Zira|female|Karen|Moira|Tessa|Victoria/i;
+  var mal = /Daniel|Alex|Fred|Guy|David|Mark|male|Google UK English Male|Aaron|Arthur/i;
+  if(who === 'M'){ for(var i=0;i<en.length;i++) if(mal.test(en[i].name) && !/female/i.test(en[i].name)) return en[i]; return null; }
+  for(var j=0;j<en.length;j++) if(fem.test(en[j].name) && /en-US/i.test(en[j].lang)) return en[j];
+  for(var k=0;k<en.length;k++) if(/en-US/i.test(en[k].lang)) return en[k];
+  return en[0];
+}
+function ttsSay(t, who, cb){
+  if(!('speechSynthesis' in window)){ onlineSay(t, cb); return; }
+  if(!VOICES.length) loadVoices();
+  if(!VOICES.length){ onlineSay(t, cb); return; }
+  var done = false, started = false;
+  function once(){ if(done) return; done = true; cb && cb(); }
+  try{
+    var u = new SpeechSynthesisUtterance(t);
+    u.lang = 'en-US'; u.rate = 0.85;
+    var v = pickVoice(who);
+    if(who === 'M'){ if(v) u.voice = v; else { var f = pickVoice('W'); if(f) u.voice = f; } u.pitch = v ? 1 : 0.6; }
+    else { if(v) u.voice = v; u.pitch = 1.1; }
+    u.onstart = function(){ started = true; };
+    u.onend = once;
+    u.onerror = function(){ if(!done && !started){ done = true; onlineSay(t, cb); } else once(); };
+    speechSynthesis.speak(u);
+    setTimeout(function(){
+      if(done || started) return;
+      var active = false; try{ active = speechSynthesis.speaking || speechSynthesis.pending; }catch(e){}
+      if(active) return;
+      done = true; try{ speechSynthesis.cancel(); }catch(e){}
+      onlineSay(t, cb);
+    }, 1500);
+    /* 소리가 끝났다는 신호가 안 오는 기기 대비 */
+    setTimeout(once, Math.max(4000, t.split(/\s+/).length * 700 + 2500));
+  }catch(e){ if(!done){ done = true; onlineSay(t, cb); } }
+}
+function onlineSay(t, cb){
+  var done = false; function once(){ if(done) return; done = true; curAudio = null; cb && cb(); }
+  try{
+    curAudio = new Audio('https://dict.youdao.com/dictvoice?audio=' + encodeURIComponent(t) + '&type=2');
+    curAudio.onended = once; curAudio.onerror = once;
+    var p = curAudio.play(); if(p && p['catch']) p['catch'](once);
+  }catch(e){ once(); }
+  setTimeout(once, Math.max(4000, t.split(/\s+/).length * 700 + 2500));
+}
+function sayLine(t, who, cb){ stopAudio(); setTimeout(function(){ ttsSay(t, who, cb); }, 60); }
+
+var DLG_TOKEN = 0;
+function sayDialog(lines, cb){
+  stopAudio();
+  var my = DLG_TOKEN, i = 0;
+  function step(){
+    if(my !== DLG_TOKEN) return;
+    if(i >= lines.length){ cb && cb(); return; }
+    var L = lines[i++];
+    ttsSay(L[1], L[0], function(){ if(my !== DLG_TOKEN) return; setTimeout(step, 450); });
+  }
+  setTimeout(step, 80);
+}
+</script>
+</body>
+</html>
