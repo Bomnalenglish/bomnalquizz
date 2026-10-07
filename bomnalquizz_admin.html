@@ -206,6 +206,33 @@ tr:hover td{background:#f8f9ff;}
 .stat-val.ok{color:#16a34a;}
 .stat-val.no{color:#dc2626;}
 .stat-val.warn{color:#ea580c;}
+.lt-box{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:12px 14px;margin:6px 0 10px;font-size:13px;line-height:1.6;}
+.lt-head{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px;}
+.lt-sub{color:#64748b;font-size:12px;font-weight:500;}
+.lt-open{background:#3d3530;color:#fff;border-radius:8px;padding:5px 12px;font-size:12px;font-weight:800;text-decoration:none;}
+.lt-sum{display:flex;flex-wrap:wrap;gap:6px 18px;background:#faf5ee;border-radius:8px;padding:8px 12px;margin-bottom:8px;}
+.lt-sum span{display:block;font-size:11px;color:#7a7068;}
+.lt-sum b{font-size:13px;}
+.lt-memo{background:#fef3c7;border-radius:8px;padding:6px 10px;font-size:12px;margin-bottom:8px;}
+.lt-sec{font-weight:900;margin:12px 0 4px;font-size:13.5px;}
+.lt-stage{border:1px solid #e2e8f0;border-radius:8px;margin-bottom:6px;background:#fcfcfd;}
+.lt-stage>summary{cursor:pointer;padding:7px 10px;font-weight:800;}
+.lt-pill{display:inline-block;font-size:11px;padding:1px 8px;border-radius:99px;margin-right:4px;}
+.lt-pill.p{background:#dcfce7;color:#166534;} .lt-pill.f{background:#fee2e2;color:#991b1b;}
+.lt-q{margin:0;padding:4px 12px 8px 32px;}
+.lt-q li{padding:6px 0;border-top:1px dashed #e2e8f0;}
+.lt-q li.x .lt-qt{color:#b91c1c;}
+.lt-qt{font-weight:700;}
+.lt-emoji{font-size:22px;}
+.lt-show{background:#f8fafc;border-radius:6px;padding:3px 8px;margin:3px 0;white-space:pre-line;}
+.lt-pass{margin:3px 0;} .lt-pass summary{cursor:pointer;color:#475569;font-size:12px;}
+.lt-pass div{background:#f8fafc;border-radius:6px;padding:6px 8px;white-space:pre-line;}
+.lt-audio{color:#0369a1;font-size:12px;margin:2px 0;white-space:pre-line;}
+.lt-chs{display:flex;flex-wrap:wrap;gap:4px;margin-top:3px;}
+.lt-ch{border:1px solid #e2e8f0;border-radius:6px;padding:1px 7px;font-size:12px;background:#fff;}
+.lt-ch.a{background:#dcfce7;border-color:#86efac;color:#166534;font-weight:700;}
+.lt-ch.w{background:#fee2e2;border-color:#fca5a5;color:#991b1b;font-weight:700;}
+.lt-ans .a{color:#166534;} .lt-ans .w{color:#991b1b;}
 .detail-wrong-list{background:white;border:1px solid #e2e8f0;border-radius:8px;padding:10px 12px;margin-top:6px;}
 .dwl-label{font-size:11px;font-weight:800;color:#475569;margin-bottom:6px;}
 /* 같은 날 같은 시험 시도 이력 */
@@ -469,6 +496,8 @@ tr:hover td{background:#f8f9ff;}
   </div>
 </div>
 
+<script src="leveltest_items.js"></script>
+<script src="leveltest_voca.js"></script>
 <script type="module">
 import{initializeApp}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import{getFirestore,collection,getDocs,query,orderBy,limit,startAfter,deleteDoc,doc,addDoc,updateDoc,where,serverTimestamp}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
@@ -728,6 +757,8 @@ function _toQuiz(doc){
         wordCorrect:(d.wordCorrect!==undefined?d.wordCorrect:null),
         rounds:d.rounds||1,
         wrongNotes:d.wrongNotes||[],                       // 지문 완전정복: 학생이 쓴 오답노트
+        ltDetail:(d.quizType==='입학레벨테스트'?(d.detail||''):''),   // 입학 레벨테스트: 전체 풀이 기록(JSON)
+        ltRec:d.recommend||'', ltVoca:d.vocaBook||'', ltLevel:(d.quizType==='입학레벨테스트'?(d.level||''):''),
 
         day:(d.day!==undefined&&d.day!==null?d.day:''),   // 봄날 보카 Day 차시
         level:d.level||'',                                 // 봄날 보카 교재명(워드마스터 중등 BASIC 등)
@@ -1142,7 +1173,8 @@ function renderTable(data){
       :`<span style="color:#475569">${lessonSet.join(', ')}</span>`;
     const hasWrongs=(d.wrongWords&&d.wrongWords.length>0)||d.wrongSentences||d.wrongNumbers||(isDeepType(d.quizType)&&d.wordTotal>0);
     const anyHasWrong=attempts.some(a=>(a.wrongWords&&a.wrongWords.length)||a.wrongSentences||a.wrongNumbers||(isDeepType(a.quizType)&&a.wordTotal>0));
-    const expandable=anyHasWrong||total>1;
+    const isLT=d.quizType==='입학레벨테스트';
+    const expandable=anyHasWrong||total>1||isLT;
     const wrongCnt=(d.wrongWords&&d.wrongWords.length)||(d.wrongSentences?d.wrongSentences.split(' / ').length:0)||(d.wrongNumbers?(d.wrongNumbers.match(/번/g)||[]).length:0);
     const isIncomplete=d.quitMidway===true;   // 중도이탈(시험 중간에 끔)
     const incBadge=isIncomplete?`<span class="incomplete-badge" title="시험을 끝까지 풀지 않고 중간에 종료">⚠️ 미완료${d.answered!=null&&d.total?` ${d.answered}/${d.total}`:''}</span>`:'';
@@ -1200,15 +1232,15 @@ function renderTable(data){
         <td class="td-textbook"><div class="textbook-name${isClinicType(d.quizType)?' is-clinic':''}" title="${meta.textbook}">${meta.textbook}</div>${isClinicType(d.quizType)&&clinicFileName(d)?`<div class="clinic-file">📄 ${clinicFileName(d)}</div>`:''}${(typeChip||attemptBadge)?'<div style="margin-top:3px;display:flex;flex-wrap:wrap;gap:3px;align-items:center">'+typeChip+attemptBadge+'</div>':''}</td>
         <td class="td-lesson">${lessonDisplay}${passageInfo?'<br>'+passageInfo:''}${roundBadge}</td>
         <td class="td-time">${d.elapsed?d.elapsed+'분':'-'}</td>
-        <td class="td-score"><span class="sp ${gc(d.score)}">${d.score}점</span><div class="score-sub">${isIncomplete?`⚠️ 중도이탈${d.answered!=null&&d.total?` (${d.answered}/${d.total})`:''}`:gl(d.score)}</div></td>
+        <td class="td-score">${isLT?`<span class="sp" style="background:#fef3c7;color:#92400e">읽기 ${d.score}단계</span><div class="score-sub">/ 11단계</div>`:`<span class="sp ${gc(d.score)}">${d.score}점</span>`}<div class="score-sub">${isIncomplete?`⚠️ 중도이탈${d.answered!=null&&d.total?` (${d.answered}/${d.total})`:''}`:gl(d.score)}</div></td>
         <td class="td-submit">${ft(d.time)}</td>
         <td class="td-actions">
-          ${hasWrongs?`<span class="wrong-count-badge">오답 ${wrongCnt}</span>`:'<span class="ok-badge">✅</span>'}
+          ${isLT?`<span class="wrong-count-badge" style="background:#e0f2fe;color:#075985">${d.correct||0}/${(d.correct||0)+(d.wrong||0)}문항</span>`:hasWrongs?`<span class="wrong-count-badge">오답 ${wrongCnt}</span>`:'<span class="ok-badge">✅</span>'}
           <button class="del-btn-mini" onclick="deleteSingle('${d.id}')" title="이 시도 삭제">🗑️</button>
         </td>
       </tr>
       ${expandable?`<tr class="detail-row" style="display:none"><td colspan="11" style="padding:0;background:#f8fafc;border-top:1px dashed #cbd5e1">
-        <div class="detail-content">${historyHtml||singleDetailHtml}</div>
+        <div class="detail-content">${isLT?attempts.slice().reverse().map(ltDetailHtml).join(''):(historyHtml||singleDetailHtml)}</div>
       </td></tr>`:''}
     </tbody>`;
   }).join('');
@@ -1268,6 +1300,9 @@ function parseQuizMeta(d){
     const done = /_오답완료/.test(qt);
     return { textbook: clinicLabel(d) || qt, type: done?'완료✓':'진행중',
              typeClass: done?'ok':'warn', lesson: d.lesson || '', passages: '' };
+  }
+  if (qt === '입학레벨테스트') {
+    return { textbook:'입학 레벨테스트', type:'레벨테스트', typeClass:'deep', lesson:d.ltLevel||d.level||'', passages:'' };
   }
   let passages = passagesStr(d) || '';
   // 유형 분류
@@ -2276,6 +2311,65 @@ function renderStudentList(){
   document.getElementById('stuArea').innerHTML=`<table class="report-table" style="width:auto;min-width:620px;">
     <thead><tr><th style="width:40px;">#</th><th>코드</th><th>이름</th><th>학교</th><th>등록일</th><th style="width:80px;">관리</th></tr></thead>
     <tbody>${rows}</tbody></table>`;
+}
+
+/* ============================================================
+   입학 레벨테스트 상세: 어떤 문제를 풀었고 어떻게 답했는지
+   (bomnal_leveltest.html 이 detail 필드에 JSON 으로 저장)
+   ============================================================ */
+function ltDetailHtml(d){
+  let S=null; try{ S=JSON.parse(d.ltDetail||''); }catch(e){}
+  if(!S||!S.log) return '<div class="lt-box">상세 기록이 없습니다.</div>';
+  const E=escapeHtml, I=S.info||{}, B=S.best||{};
+  const MAIN=window.LT_MAIN||[], LIS=window.LT_LISTEN||[], VOC=window.LT_VOCA||[];
+  const secName={main:'📘 읽기·문법',listen:'🎧 듣기',voca:'📖 어휘'};
+  const stName=(sec,lv)=>{const a=sec==='main'?MAIN:sec==='listen'?LIS:VOC; const x=a[lv-1]; return x?(x.name||''):'';};
+  const lvTxt=(sec,v)=>v?v+'단계 · '+stName(sec,v):'시작 단계 미통과';
+  const mins=S.finishedAt?Math.max(1,Math.round((S.finishedAt-S.t0)/60000)):null;
+  let h='<div class="lt-box">';
+  h+=`<div class="lt-head"><div><b style="font-size:15px">${E(I.name)}</b> <span class="lt-sub">${E(I.grade||'')}${I.school?' · '+E(I.school):''}${mins?' · 약 '+mins+'분':''}${S.t0?' · '+new Date(S.t0).toLocaleString('ko-KR'):''}</span></div>
+      <a class="lt-open" href="bomnal_leveltest.html#r=${encodeURIComponent(d.id)}" target="_blank" rel="noopener">📄 결과지 열기</a></div>`;
+  h+=`<div class="lt-sum">
+      <div><span>읽기·문법</span><b>${E(lvTxt('main',B.main))}</b></div>
+      <div><span>듣기</span><b>${E(lvTxt('listen',B.listen))}</b></div>
+      ${S.res&&S.res.voca&&Object.keys(S.res.voca).length?`<div><span>어휘</span><b>${E(lvTxt('voca',B.voca))}</b></div>`:''}
+      ${d.ltRec?`<div><span>추천</span><b>${E(d.ltRec)}</b></div>`:''}
+      ${d.ltVoca?`<div><span>단어장</span><b>${E(d.ltVoca)}</b></div>`:''}
+    </div>`;
+  if(I.claimText||I.memo) h+=`<div class="lt-memo">${I.claimText?'💬 학부모 말씀: '+E(I.claimText):''}${I.claimText&&I.memo?'<br>':''}${I.memo?'📝 '+E(I.memo):''}</div>`;
+
+  // 단계별로 묶기 (푼 순서 그대로)
+  const blocks=[]; let cur=null;
+  S.log.forEach(x=>{
+    const k=x.sec+'|'+x.lv;
+    if(!cur||cur.k!==k){ cur={k,sec:x.sec,lv:x.lv,items:[]}; blocks.push(cur); }
+    cur.items.push(x);
+  });
+  let lastSec='';
+  blocks.forEach(b=>{
+    if(b.sec!==lastSec){ h+=`<div class="lt-sec">${secName[b.sec]||b.sec}</div>`; lastSec=b.sec; }
+    const ok=b.items.filter(x=>x.ok).length;
+    const r=(S.res&&S.res[b.sec]&&S.res[b.sec][b.lv])||{};
+    const pass=r.pass;
+    h+=`<details class="lt-stage"${pass?'':' open'}><summary><span class="lt-pill ${pass?'p':'f'}">${pass?'통과':'멈춤'}</span> ${b.lv}단계 · ${E(stName(b.sec,b.lv))} <span class="lt-sub">— ${ok}/${b.items.length} 맞힘</span></summary><ol class="lt-q">`;
+    b.items.forEach(x=>{
+      h+=`<li class="${x.ok?'o':'x'}"><div class="lt-qt">${x.ok?'✅':(x.dk?'🤔':'❌')} ${E(x.qq||x.q)}</div>`;
+      if(x.emoji) h+=`<div class="lt-emoji">${x.emoji}</div>`;
+      if(x.show) h+= x.show.length>70?`<details class="lt-pass"><summary>지문 보기</summary><div>${E(x.show)}</div></details>`:`<div class="lt-show">${E(x.show)}</div>`;
+      if(x.audio) h+=`<div class="lt-audio">🔊 ${E(x.audio)}</div>`;
+      if(x.chs&&x.chs.length){
+        h+='<div class="lt-chs">'+x.chs.map((c,i)=>{
+          const cls=i===x.ai?'a':(i===x.pk?'w':'');
+          return `<span class="lt-ch ${cls}">${i===x.ai?'✔ ':i===x.pk?'✘ ':''}${E(c)}</span>`;
+        }).join('')+(x.dk?'<span class="lt-ch w">🤔 모르겠어요</span>':'')+'</div>';
+      } else {
+        h+=`<div class="lt-ans"><span class="a">정답: ${E(x.ans)}</span>${x.ok?'':` · <span class="w">고른 답: ${E(x.pick)}</span>`}</div>`;
+      }
+      h+='</li>';
+    });
+    h+='</ol></details>';
+  });
+  return h+'</div>';
 }
 
 function escapeHtml(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}

@@ -591,12 +591,16 @@ function answer(k){
   if(L.sec === 'voca'){
     var band = VOCA[g.lv-1], w = band.words[q.ref];
     ok = k >= 0 && q.opts[k] === q.ref;
-    rec = {sec:'voca', lv:g.lv, tag:'voca', q:w[0], ans:w[1], pick:k<0?'모르겠어요':band.words[q.opts[k]][1], ok:ok, dk:k<0};
+    rec = {sec:'voca', lv:g.lv, tag:'voca', q:w[0], qq:'단어 뜻 — '+w[0], ans:w[1], pick:k<0?'모르겠어요':band.words[q.opts[k]][1], ok:ok, dk:k<0,
+           chs:q.opts.map(function(oi){ return band.words[oi][1]; }), ai:q.opts.indexOf(q.ref), pk:k};
   } else {
     var it = curItem();
     ok = k >= 0 && q.order[k] === it.a;
     rec = {sec:L.sec, lv:g.lv, tag:it.tag, q:it.q + (it.show && it.show.length<=60 ? ' — '+it.show.replace(/\n/g,' ') : it.say ? ' — 🔊 '+it.say : ''),
-           ans:it.ch[it.a], pick:k<0?'모르겠어요':it.ch[q.order[k]], ok:ok, dk:k<0};
+           ans:it.ch[it.a], pick:k<0?'모르겠어요':it.ch[q.order[k]], ok:ok, dk:k<0,
+           qq:it.q, show:it.show||'', emoji:it.emoji||'', ref:q.ref,
+           audio:it.dlg ? it.dlg.map(function(l){ return l[0]+': '+l[1]; }).join('\n') : (it.say||''),
+           chs:q.order.map(function(ci){ return it.ch[ci]; }), ai:q.order.indexOf(it.a), pk:k};
   }
   S.log.push(rec);
   if(ok) g.ok++; else g.ng++;
@@ -861,7 +865,25 @@ function saveImage(){
   document.head.appendChild(sc);
 }
 
-function backToSetup(){ location.reload(); }
+function backToSetup(){ if(location.hash){ location.href = location.pathname; } else location.reload(); }
+
+/* 관리자모드 '📄 결과지 열기' → bomnal_leveltest.html#r=문서번호 */
+(function openFromAdmin(){
+  var m = /#r=([^&]+)/.exec(location.hash || ''); if(!m) return;
+  var id = decodeURIComponent(m[1]);
+  document.body.insertAdjacentHTML('afterbegin', '<div id="ltLoading" style="padding:30px;text-align:center;color:#7a7068">결과를 불러오는 중…</div>');
+  $('setup').classList.add('hide');
+  fetch('https://firestore.googleapis.com/v1/projects/bomnalvaca/databases/(default)/documents/quiz_results/' + encodeURIComponent(id))
+    .then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); })
+    .then(function(doc){
+      var f = doc.fields || {}, s = JSON.parse(fsVal(f.detail));
+      s.saved = true;
+      var L = $('ltLoading'); if(L) L.parentNode.removeChild(L);
+      renderReport(s);
+    })['catch'](function(e){
+      var L = $('ltLoading'); if(L) L.innerHTML = '결과를 불러오지 못했어요 (' + esc(e.message) + ')<br><a href="bomnal_leveltest.html">처음으로</a>';
+    });
+})();
 
 /* ═════════ 지난 기록 ═════════ */
 var HIST = null;
