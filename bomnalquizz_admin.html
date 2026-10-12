@@ -80,6 +80,8 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--bg);color:#1a1a2e;mi
 .row-tag{font-family:'Black Han Sans',sans-serif;font-size:12px;color:var(--primary);background:#e8eaf6;border-radius:7px;padding:4px 10px;letter-spacing:.3px;margin-right:2px;}
 .ctrl-row.find .row-tag{background:#fff3e0;color:#e65100;}
 .ctrl-inp.search{min-width:150px;}
+.chk-left{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:800;color:#b91c1c;background:#fff;border:1.5px solid #fca5a5;border-radius:8px;padding:6px 11px;cursor:pointer;}
+.chk-left input{accent-color:#b91c1c;cursor:pointer;margin:0;}
 .btn-reset{background:#fff;color:#94a3b8;border:1.5px solid var(--border);padding:7px 13px;border-radius:8px;font-family:'Nanum Gothic',sans-serif;font-size:12px;font-weight:800;cursor:pointer;}
 .btn-reset:hover{color:var(--primary);border-color:var(--primary);}
 .ctrl-label{font-size:11px;font-weight:800;color:var(--primary);}
@@ -199,6 +201,9 @@ tr:hover td{background:#f8f9ff;}
 .round-badge{display:inline-block;padding:0 6px;background:#fef3c7;color:#92400e;border-radius:9px;font-size:9.5px;font-weight:800;margin-left:3px;}
 .wrong-count-badge{display:inline-block;padding:2px 7px;background:#fee2e2;color:#b91c1c;border-radius:10px;font-size:10.5px;font-weight:800;margin-right:4px;}
 .ok-badge{display:inline-block;color:#16a34a;font-size:13px;margin-right:4px;}
+/* 오답을 다시 풀었는지 한눈에 */
+.wrong-count-badge.redone{background:#e8f5e9;color:#2e7d32;}
+.wrong-count-badge.left{background:#fee2e2;color:#b91c1c;border:1.5px solid #fca5a5;}
 .incomplete-badge{display:inline-block;padding:2px 8px;background:#ffedd5;color:#c2410c;border:1.5px solid #fdba74;border-radius:10px;font-size:10px;font-weight:800;margin-left:5px;vertical-align:middle;}
 .report-table .incomplete-row td{background:#fff7ed !important;}
 .report-table .incomplete-row:hover td{background:#ffedd5 !important;}
@@ -381,6 +386,9 @@ tr:hover td{background:#f8f9ff;}
             <option value="score_desc">점수↓</option>
             <option value="score_asc">점수↑</option>
           </select>
+          <label class="chk-left" title="틀린 문제를 다시 풀지 않고 끝낸 기록만 보여 줍니다">
+            <input type="checkbox" id="fOnlyLeft" onchange="applyFilter()"> ⚠️ 오답 미완료만
+          </label>
           <button class="btn-reset" onclick="resetFilter()" title="이름·학교·교재명·정렬을 모두 처음 상태로">↺ 초기화</button>
           </div>
         </div>
@@ -1084,6 +1092,7 @@ function populateTextbookFilter(){
 function resetFilter(){
   const set=(id,v)=>{ const el=document.getElementById(id); if(el) el.value=v; };
   set('fName',''); set('fSchool',''); set('fTextbook',''); set('fSort','time_desc');
+  const ol=document.getElementById('fOnlyLeft'); if(ol) ol.checked=false;
   applyFilter();
 }
 function applyFilter(){
@@ -1206,6 +1215,34 @@ function _widenPeriod(v){
   const sel=document.getElementById('fPeriod');
   if(sel){ sel.value=v; loadData(true); }
 }
+/* 한 세션(묶인 응시)에서 오답을 다시 풀지 않고 끝났는지 */
+function _rdDone(a){ return a.retryDone===true||a.completed===true||/오답완료/.test(a.quizType||'')||/오답 ?완료/.test(a.quiz||''); }
+function _rdKnown(a){ return (a.retryDone!==undefined&&a.retryDone!==null)
+  || (a.completed!==undefined&&a.completed!==null)
+  || /오답\s?미?완료/.test((a.quizType||'')+(a.quiz||'')); }
+function _hasWrong(a){ return (a.wrongWords&&a.wrongWords.length>0)||a.wrongSentences||a.wrongNumbers; }
+// 한 줄에 여러 차시가 묶여 있으므로 차시(Day/과) 단위로 따진다.
+// 같은 Day 를 20개로 하다 말고 50개로 다시 해 끝냈으면 그 Day 는 '끝낸' 것이다.
+function _rdKey(a){
+  return [a.quizType||'', a.day!=null?('D'+a.day):'', a.unit||'', a.round&&a.lesson?a.lesson:'' ].join('|')
+       || (a.file||'');
+}
+// 아직 오답이 남은 차시들의 이름을 돌려준다 (없으면 빈 배열)
+function _retryLeftLessons(records){
+  const by=new Map();
+  records.forEach(r=>{ const k=_rdKey(r); if(!by.has(k)) by.set(k,[]); by.get(k).push(r); });
+  const left=[];
+  by.forEach(rs=>{
+    if(!rs.some(_hasWrong)) return;          // 틀린 게 없던 차시
+    if(!rs.some(_rdKnown)) return;           // 완료 표시가 없는 옛 기록 → 알 수 없음
+    if(rs.some(_rdDone)) return;             // 한 번이라도 끝냈으면 끝낸 것
+    const r=rs[0];
+    left.push(r.day!=null?('Day '+r.day):(r.unit?(r.unit+'과'):(parseQuizMeta(r).lesson||'')));
+  });
+  return left;
+}
+function _groupRetryLeft(records){ return _retryLeftLessons(records).length>0; }
+
 function renderTable(data){
   if(!data.length){
     document.getElementById('cntBadge').textContent='0건';
@@ -1223,9 +1260,13 @@ function renderTable(data){
   }
 
   // 학생·시험·날짜별로 묶기 → 같은 시험 다회 응시는 한 줄로 모이고 펼치면 이전 시도가 보임
-  const groups=groupAttempts(data);
+  let groups=groupAttempts(data);
+  // '오답 미완료만' 체크 시: 틀린 게 있는데 다시 풀지 않은 세션만 남긴다
+  const onlyLeft=document.getElementById('fOnlyLeft');
+  if(onlyLeft && onlyLeft.checked) groups=groups.filter(g=>_groupRetryLeft(g.records));
   const multiCnt=groups.filter(g=>g.records.length>1).length;
-  document.getElementById('cntBadge').textContent=`${data.length}건 / ${groups.length}세션${multiCnt?` · 다회응시 ${multiCnt}건`:''}`;
+  const shownCnt=groups.reduce((n,g)=>n+g.records.length,0);
+  document.getElementById('cntBadge').textContent=`${shownCnt}건 / ${groups.length}세션${multiCnt?` · 다회응시 ${multiCnt}건`:''}`;
   // 디버그: 다회 응시 그룹 콘솔에 출력
   if(multiCnt && window.console){
     console.log(`[그룹화] ${data.length}건 → ${groups.length}세션 (다회 응시 ${multiCnt}건)`);
@@ -1266,6 +1307,11 @@ function renderTable(data){
     const lessonDisplay=lessonSet.length===0?'<span style="color:#cbd5e1">-</span>'
       :lessonSet.length===1?lessonSet[0]
       :`<span style="color:#475569">${_compactLessons(lessonSet)}</span>`;
+    // 오답을 다시 풀었는지: 봄날리딩·듣기는 retryDone, 보카는 completed,
+    // 지문 완전정복은 quizType 에 '오답완료' 가 붙는다. 그 표시가 아예 없는 옛 기록은 '모름'.
+    const retryLeft=_retryLeftLessons(attempts);     // 아직 오답이 남은 차시들
+    const retryKnown=attempts.some(_rdKnown);
+    const retryDoneAny=retryKnown && retryLeft.length===0;
     const hasWrongs=(d.wrongWords&&d.wrongWords.length>0)||d.wrongSentences||d.wrongNumbers||(isDeepType(d.quizType)&&d.wordTotal>0);
     const anyHasWrong=attempts.some(a=>(a.wrongWords&&a.wrongWords.length)||a.wrongSentences||a.wrongNumbers||(isDeepType(a.quizType)&&a.wordTotal>0));
     const isLT=d.quizType==='입학레벨테스트';
@@ -1330,7 +1376,13 @@ function renderTable(data){
         <td class="td-score">${isLT?`<span class="sp" style="background:#fef3c7;color:#92400e">읽기 ${d.score}단계</span><div class="score-sub">/ 11단계</div>`:`<span class="sp ${gc(d.score)}">${d.score}점</span>`}<div class="score-sub">${isIncomplete?`⚠️ 중도이탈${d.answered!=null&&d.total?` (${d.answered}/${d.total})`:''}`:gl(d.score)}</div></td>
         <td class="td-submit">${ft(d.time)}</td>
         <td class="td-actions">
-          ${isLT?`<span class="wrong-count-badge" style="background:#e0f2fe;color:#075985">${d.correct||0}/${(d.correct||0)+(d.wrong||0)}문항</span>`:hasWrongs?`<span class="wrong-count-badge">오답 ${wrongCnt}</span>`:'<span class="ok-badge">✅</span>'}
+          ${isLT?`<span class="wrong-count-badge" style="background:#e0f2fe;color:#075985">${d.correct||0}/${(d.correct||0)+(d.wrong||0)}문항</span>`
+            :hasWrongs?(retryLeft.length
+                ?`<span class="wrong-count-badge left" title="${retryLeft.filter(Boolean).length?retryLeft.filter(Boolean).join(', ')+'의 ':''}틀린 문제를 다시 풀지 않고 나갔습니다">오답 ${wrongCnt} ⚠</span>`
+                :retryDoneAny
+                ?`<span class="wrong-count-badge redone" title="틀린 문제를 모두 다시 풀어 끝냈습니다">오답 ${wrongCnt} ✓</span>`
+                :`<span class="wrong-count-badge" title="이 기록에는 오답 완료 여부가 남아 있지 않습니다">오답 ${wrongCnt}</span>`)
+            :'<span class="ok-badge">✅</span>'}
           <button class="del-btn-mini" onclick="deleteSingle('${d.id}')" title="이 시도 삭제">🗑️</button>
         </td>
       </tr>
