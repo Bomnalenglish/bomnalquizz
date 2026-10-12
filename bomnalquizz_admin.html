@@ -146,27 +146,27 @@ tr:hover td{background:#f8f9ff;}
 .report-table{width:100%;border-collapse:separate;border-spacing:0;background:white;table-layout:fixed;}
 .report-table thead tr{background:#f8fafc;}
 .report-table th{padding:9px 6px !important;font-size:11.5px !important;font-weight:800;color:#475569;border-bottom:2px solid #e2e8f0;text-align:left;white-space:nowrap;}
-.report-table th.th-check,.report-table th.th-expand,.report-table th.th-idx{text-align:center;width:30px;padding:9px 4px !important;}
+.report-table th.th-check,.report-table th.th-expand,.report-table th.th-idx{text-align:center;padding:9px 4px !important;}
 .report-table td{padding:8px 6px !important;font-size:12px !important;border-bottom:1px solid #f1f5f9;vertical-align:middle;}
 .report-table tbody.row-group:hover .data-row{background:#f8fafc;}
 .report-table tbody.row-group .data-row{transition:background .12s;}
 .report-table .td-check,.report-table .td-expand,.report-table .td-idx{text-align:center;color:#94a3b8;}
 .report-table .td-idx{font-weight:700;font-size:11px !important;}
-.report-table .td-class{font-size:11.5px;color:#64748b;font-weight:700;white-space:nowrap;width:90px;}
-.report-table .td-name{white-space:nowrap;font-size:12px;color:#1e293b;width:78px;}
+.report-table .td-class{font-size:11.5px;color:#64748b;font-weight:700;white-space:nowrap;overflow:hidden;}
+.report-table .td-name{white-space:nowrap;font-size:12px;color:#1e293b;overflow:hidden;}
 .report-table .td-name strong{font-weight:800;}
-.report-table .td-textbook{width:155px;}
-.report-table .td-textbook .textbook-name{font-weight:700;color:#1565c0;font-size:11.5px;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.report-table .td-textbook{}
+.report-table .td-textbook .textbook-name{font-weight:700;color:#1565c0;font-size:11.5px;line-height:1.35;white-space:normal;word-break:keep-all;overflow-wrap:break-word;}
 /* 개인 오답 클리닉: 교재명이 길어서 줄바꿈을 허용하고, 파일명은 그 아래 작게 */
 .report-table .td-textbook .textbook-name.is-clinic{white-space:normal;overflow:visible;color:#c62828;}
 .report-table .td-textbook .clinic-file{margin-top:2px;font-size:9.5px;color:#9aa3ad;word-break:break-all;line-height:1.35;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;}
-.report-table .td-lesson{font-size:11.5px;color:#475569;width:88px;}
+.report-table .td-lesson{font-size:11.5px;color:#475569;line-height:1.45;}
 .report-table .td-lesson .passage-info{display:inline-block;padding:0 6px;background:#fff3e0;color:#e65100;border-radius:9px;font-size:10px;font-weight:800;margin-top:2px;white-space:nowrap;}
-.report-table .td-time{white-space:nowrap;font-size:11.5px;color:#64748b;font-weight:700;width:58px;text-align:center;}
-.report-table .td-score{white-space:nowrap;width:80px;}
+.report-table .td-time{white-space:nowrap;font-size:11.5px;color:#64748b;font-weight:700;text-align:center;}
+.report-table .td-score{white-space:nowrap;}
 .report-table .td-score .score-sub{font-size:9.5px;color:#94a3b8;margin-top:1px;}
-.report-table .td-submit{white-space:nowrap;font-size:10.5px;color:#94a3b8;width:90px;}
-.report-table .td-actions{white-space:nowrap;text-align:center;width:90px;}
+.report-table .td-submit{font-size:10.5px;color:#94a3b8;line-height:1.35;}
+.report-table .td-actions{white-space:nowrap;text-align:center;}
 
 /* 유형 색상 칩 (어휘/본문/어법/총괄) */
 .type-pill{display:inline-block;padding:1px 7px;border-radius:11px;font-size:10px;font-weight:800;white-space:nowrap;}
@@ -1188,10 +1188,10 @@ function renderTable(data){
       :typeSet.length===0?''
       :typeSet.length===1?`<span class="type-pill type-${meta.typeClass}">${typeSet[0]}</span>`
       :typeSet.map(t=>`<span class="type-pill type-default">${t}</span>`).join(' ');
-    // 차시 표시: 단일이면 그대로, 복수면 콤마로 묶음, 없으면 '-'
+    // 차시 표시: 단일이면 그대로, 복수면 짧게 묶음(Day 1~12 · 50단어), 없으면 '-'
     const lessonDisplay=lessonSet.length===0?'<span style="color:#cbd5e1">-</span>'
       :lessonSet.length===1?lessonSet[0]
-      :`<span style="color:#475569">${lessonSet.join(', ')}</span>`;
+      :`<span style="color:#475569">${_compactLessons(lessonSet)}</span>`;
     const hasWrongs=(d.wrongWords&&d.wrongWords.length>0)||d.wrongSentences||d.wrongNumbers||(isDeepType(d.quizType)&&d.wordTotal>0);
     const anyHasWrong=attempts.some(a=>(a.wrongWords&&a.wrongWords.length)||a.wrongSentences||a.wrongNumbers||(isDeepType(a.quizType)&&a.wordTotal>0));
     const isLT=d.quizType==='입학레벨테스트';
@@ -1266,6 +1266,12 @@ function renderTable(data){
     </tbody>`;
   }).join('');
   document.getElementById('tblArea').innerHTML=`<div class="tbl-scroll"><table class="report-table">
+    <colgroup><!-- 화면 폭에 비례해 함께 늘어나도록 % 로 둔다 -->
+      <col style="width:2.4%"><col style="width:2.2%"><col style="width:2.4%">
+      <col style="width:6%"><col style="width:6%">
+      <col style="width:24%"><col style="width:22%">
+      <col style="width:6.5%"><col style="width:7.5%"><col style="width:11%"><col style="width:10%">
+    </colgroup>
     <thead><tr>
       <th class="th-check"><input type="checkbox" id="chkAll" onchange="toggleAllCheck(this)" style="cursor:pointer"></th>
       <th class="th-expand"></th>
@@ -1280,6 +1286,28 @@ function renderTable(data){
       <th>상세</th>
     </tr></thead>
     ${rows}</table></div>`;
+}
+
+// 여러 차시를 짧게 묶는다. 'Day 1 · 50단어' 가 열두 개면 'Day 1~12 · 50단어' 한 줄로.
+// 뒷말(· 50단어)이 서로 다르거나 Day 꼴이 아니면 앞의 몇 개만 보이고 '외 N개'.
+function _compactLessons(list){
+  const m=list.map(x=>String(x).match(/^Day\s*(\d+)\s*(?:·\s*(.+))?$/));
+  const allDay=m.every(x=>x);
+  const tails=allDay?Array.from(new Set(m.map(x=>(x[2]||'').trim()))):[];
+  if(allDay && tails.length===1){
+    const ns=m.map(x=>parseInt(x[1],10)).sort((a,b)=>a-b);
+    const parts=[]; let st=ns[0], prev=ns[0];
+    for(let i=1;i<=ns.length;i++){
+      const n=ns[i];
+      if(n===prev+1){ prev=n; continue; }
+      parts.push(st===prev?`${st}`:`${st}~${prev}`);
+      st=n; prev=n;
+    }
+    const tail=tails[0]?' · '+tails[0]:'';
+    return 'Day '+parts.join(', ')+tail;
+  }
+  if(list.length>3) return list.slice(0,3).join(', ')+` <span style="color:#94a3b8">외 ${list.length-3}개</span>`;
+  return list.join(', ');
 }
 
 // 응시 기록의 quizType을 교재명/유형/차시로 분리
