@@ -73,6 +73,15 @@ body{font-family:'Nanum Gothic',sans-serif;background:var(--bg);color:#1a1a2e;mi
 .bar-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,#3949ab,#ff6f00);transition:width .5s;}
 .bar-val{width:32px;font-weight:700;color:var(--primary);text-align:right;}
 .controls{background:var(--card);border-radius:12px;padding:12px 16px;margin-bottom:16px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;box-shadow:0 2px 8px rgba(26,35,126,.06);}
+/* 퀴즈 결과 탭의 조작줄만 두 단으로 — 윗줄 '불러오기' / 아랫줄 '찾기' */
+.controls.two-row{flex-direction:column;align-items:stretch;gap:0;padding:0;overflow:hidden;}
+.ctrl-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:11px 16px;}
+.ctrl-row+.ctrl-row{border-top:1px solid var(--border);background:#fafbff;}
+.row-tag{font-family:'Black Han Sans',sans-serif;font-size:12px;color:var(--primary);background:#e8eaf6;border-radius:7px;padding:4px 10px;letter-spacing:.3px;margin-right:2px;}
+.ctrl-row.find .row-tag{background:#fff3e0;color:#e65100;}
+.ctrl-inp.search{min-width:150px;}
+.btn-reset{background:#fff;color:#94a3b8;border:1.5px solid var(--border);padding:7px 13px;border-radius:8px;font-family:'Nanum Gothic',sans-serif;font-size:12px;font-weight:800;cursor:pointer;}
+.btn-reset:hover{color:var(--primary);border-color:var(--primary);}
 .ctrl-label{font-size:11px;font-weight:800;color:var(--primary);}
 .ctrl-sel,.ctrl-inp{padding:7px 10px;border:1.5px solid var(--border);border-radius:8px;font-family:'Nanum Gothic',sans-serif;font-size:12px;outline:none;}
 .ctrl-sel:focus,.ctrl-inp:focus{border-color:var(--primary);}
@@ -326,7 +335,9 @@ tr:hover td{background:#f8f9ff;}
           <div class="sum-card g"><div class="sum-n" id="sScore">-</div>  <div class="sum-l">평균 점수</div></div>
           <div class="sum-card r"><div class="sum-n" id="sWrong">-</div>  <div class="sum-l">평균 오답</div></div>
         </div>
-        <div class="controls">
+        <div class="controls two-row">
+          <div class="ctrl-row">
+          <span class="row-tag">불러오기</span>
           <span class="ctrl-label">기간</span>
           <select class="ctrl-sel" id="fPeriod" onchange="loadData(true)" title="불러올 기간이 짧을수록 훨씬 빠릅니다">
             <option value="7" selected>최근 7일 (빠름)</option>
@@ -337,6 +348,17 @@ tr:hover td{background:#f8f9ff;}
             <option value="0">전체 (느림)</option>
           </select>
           <button class="ctrl-sel" id="btnMorePeriod" style="cursor:pointer;font-weight:800" onclick="_morePeriod()" title="그 이전 기록까지 더 불러옵니다">＋ 이전 기록 더 보기</button>
+          <div class="spacer"></div>
+          <button class="btn-delete-all" onclick="confirmDeleteAll()">🗑️ 선택 삭제</button>
+          <button class="btn-export" onclick="exportCSV()">📥 CSV</button>
+          <button class="btn-refresh" id="btnAuto" onclick="toggleAuto()" title="켜 두면 아이들이 푼 새 기록이 저절로 올라옵니다">🔄 자동갱신</button>
+          <button class="btn-refresh" onclick="loadData(true)">🔄 새로고침</button>
+          </div>
+
+          <div class="ctrl-row find">
+          <span class="row-tag">찾기</span>
+          <span class="ctrl-label">이름</span>
+          <input type="text" class="ctrl-inp search" id="fName" placeholder="🔍 학생 이름" oninput="applyFilter()">
           <span class="ctrl-label">학교</span>
           <select class="ctrl-sel" id="fSchool" onchange="applyFilter()">
             <option value="">전체</option>
@@ -348,12 +370,10 @@ tr:hover td{background:#f8f9ff;}
             <optgroup label="고운중"><option value="고운중">고운중 전체</option><option value="고운중1">고운중1</option><option value="고운중2">고운중2</option><option value="고운중3">고운중3</option></optgroup>
             <optgroup label="초등"><option value="초등">초등 전체</option><option value="초등1">초등1</option><option value="초등2">초등2</option><option value="초등3">초등3</option><option value="초등4">초등4</option><option value="초등5">초등5</option><option value="초등6">초등6</option></optgroup>
           </select>
-          <span class="ctrl-label">교재</span>
+          <span class="ctrl-label">교재명</span>
           <select class="ctrl-sel" id="fTextbook" onchange="applyFilter()">
-            <option value="">전체</option>
+            <option value="">전체 교재</option>
           </select>
-          <span class="ctrl-label">이름</span>
-          <input type="text" class="ctrl-inp" id="fName" placeholder="검색..." oninput="applyFilter()">
           <span class="ctrl-label">정렬</span>
           <select class="ctrl-sel" id="fSort" onchange="applyFilter()">
             <option value="time_desc">최신순</option>
@@ -361,11 +381,8 @@ tr:hover td{background:#f8f9ff;}
             <option value="score_desc">점수↓</option>
             <option value="score_asc">점수↑</option>
           </select>
-          <div class="spacer"></div>
-          <button class="btn-delete-all" onclick="confirmDeleteAll()">🗑️ 선택 삭제</button>
-          <button class="btn-export" onclick="exportCSV()">📥 CSV</button>
-          <button class="btn-refresh" id="btnAuto" onclick="toggleAuto()" title="켜 두면 아이들이 푼 새 기록이 저절로 올라옵니다">🔄 자동갱신</button>
-          <button class="btn-refresh" onclick="loadData(true)">🔄 새로고침</button>
+          <button class="btn-reset" onclick="resetFilter()" title="이름·학교·교재명·정렬을 모두 처음 상태로">↺ 초기화</button>
+          </div>
         </div>
         <div class="tbl-wrap">
           <div class="tbl-head"><span class="tbl-title">응시 기록</span><span class="cnt-badge" id="cntBadge">0건</span></div>
@@ -1063,6 +1080,12 @@ function populateTextbookFilter(){
   sel.value=cur; // 이전 선택 유지
 }
 
+// '찾기' 줄만 처음 상태로 (기간은 건드리지 않는다 — 다시 불러와야 해서)
+function resetFilter(){
+  const set=(id,v)=>{ const el=document.getElementById(id); if(el) el.value=v; };
+  set('fName',''); set('fSchool',''); set('fTextbook',''); set('fSort','time_desc');
+  applyFilter();
+}
 function applyFilter(){
   const sq=document.getElementById('fSchool').value;
   const tq=document.getElementById('fTextbook')?document.getElementById('fTextbook').value:'';
