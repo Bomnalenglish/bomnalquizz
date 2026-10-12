@@ -364,6 +364,7 @@ tr:hover td{background:#f8f9ff;}
           <div class="spacer"></div>
           <button class="btn-delete-all" onclick="confirmDeleteAll()">🗑️ 선택 삭제</button>
           <button class="btn-export" onclick="exportCSV()">📥 CSV</button>
+          <button class="btn-refresh" id="btnAuto" onclick="toggleAuto()" title="켜 두면 아이들이 푼 새 기록이 저절로 올라옵니다">🔄 자동갱신</button>
           <button class="btn-refresh" onclick="loadData(true)">🔄 새로고침</button>
         </div>
         <div class="tbl-wrap">
@@ -517,6 +518,7 @@ function doLogin(){
     document.getElementById('dashboard').classList.remove('hidden');
     sessionStorage.setItem('bnadmin','1');
     loadData();
+    _autoStart();
   } else {
     const el=document.getElementById('pwInput');
     el.classList.add('err');el.value='';el.placeholder='비밀번호가 틀렸습니다';
@@ -530,6 +532,7 @@ window.addEventListener('load',function(){
     document.getElementById('loginWrap').classList.add('hidden');
     document.getElementById('dashboard').classList.remove('hidden');
     loadData();
+    _autoStart();
   }
 });
 
@@ -824,6 +827,7 @@ function _fixSchools(){
 }
 
 function _renderAll(status){
+  const _sy=window.scrollY;                 // 자동갱신으로 다시 그려도 보던 자리를 지킨다
   _fixSchools();
   document.getElementById('lastRefresh').textContent=status;
   buildHistoryMap(); populateTextbookFilter();
@@ -833,7 +837,41 @@ function _renderAll(status){
   if(sec && sec.classList.contains('active')) renderSectionView();
   const mk=document.getElementById('panel-mock');
   if(mk && mk.classList.contains('active')) renderMockView();
+  if(Math.abs(window.scrollY-_sy)>2) window.scrollTo(0,_sy);
 }
+
+/* ── 자동 새로고침 ─────────────────────────────────────────
+   아이들이 푸는 동안 새 기록이 저절로 올라오게 한다.
+   · 30초마다 '새로 생긴 기록만' 받아온다 (기간 전체를 다시 받지 않는다)
+   · 다른 탭·다른 창을 보고 있을 때는 쉬고, 돌아오면 바로 한 번 받는다
+   · 바뀐 게 없으면 표를 다시 그리지 않는다 (보던 화면이 흔들리지 않게)
+   · 버튼으로 끄고 켤 수 있고, 그 설정은 이 기기에 기억된다 */
+const AUTO_MS=30000;
+let _autoTimer=null;
+function _autoOn(){ try{ return localStorage.getItem('bn_admin_auto')!=='off'; }catch(e){ return true; } }
+function _autoTick(){
+  if(!_autoOn() || document.hidden || _bgBusy) return;
+  const days=_getPeriodDays();
+  _refreshInBackground(days, days?`최근 ${days}일`:'전체 기간');
+}
+function _autoStart(){
+  if(_autoTimer) clearInterval(_autoTimer);
+  _autoTimer=setInterval(_autoTick, AUTO_MS);
+  _syncAutoBtn();
+}
+function _syncAutoBtn(){
+  const b=document.getElementById('btnAuto'); if(!b) return;
+  const on=_autoOn();
+  b.textContent = on ? '🔄 자동갱신 켜짐' : '⏸️ 자동갱신 꺼짐';
+  b.style.filter = on ? '' : 'grayscale(1)';
+  b.style.opacity = on ? '1' : '.6';
+}
+function toggleAuto(){
+  try{ localStorage.setItem('bn_admin_auto', _autoOn()?'off':'on'); }catch(e){}
+  _syncAutoBtn();
+  if(_autoOn()) _autoTick();
+}
+document.addEventListener('visibilitychange', function(){ if(!document.hidden) _autoTick(); });
 function _statusLine(prefix, periodLabel){
   return prefix + ` · ${periodLabel} ${allData.length}건` + (dedupCount>0 ? ` · 중복 ${dedupCount}건 제외` : '');
 }
