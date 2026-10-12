@@ -320,15 +320,11 @@ tr:hover td{background:#f8f9ff;}
     <div class="panel active" id="panel-quiz">
       <div class="quiz-inner">
         <div class="summary-grid">
-          <div class="sum-card">  <div class="sum-n" id="sTotal">-</div>  <div class="sum-l">총 응시 횟수</div></div>
-          <div class="sum-card">  <div class="sum-n" id="sStud">-</div>   <div class="sum-l">응시 학생 수</div></div>
+          <div class="sum-card">  <div class="sum-n" id="sToday">-</div>  <div class="sum-l" id="sTodayL">오늘 응시자</div></div>
+          <div class="sum-card">  <div class="sum-n" id="sYday">-</div>   <div class="sum-l" id="sYdayL">어제 응시자</div></div>
+          <div class="sum-card">  <div class="sum-n" id="sStud">-</div>   <div class="sum-l" id="sStudL">기간 응시 학생</div></div>
           <div class="sum-card g"><div class="sum-n" id="sScore">-</div>  <div class="sum-l">평균 점수</div></div>
           <div class="sum-card r"><div class="sum-n" id="sWrong">-</div>  <div class="sum-l">평균 오답</div></div>
-          <div class="sum-card o"><div class="sum-n" id="sTimeout">-</div><div class="sum-l">평균 시간초과</div></div>
-        </div>
-        <div class="chart-grid">
-          <div class="chart-card"><h3>📊 점수 분포</h3><div id="scoreDist"></div></div>
-          <div class="chart-card"><h3>❌ 자주 틀린 단어 TOP 10</h3><div id="wrongWords"></div></div>
         </div>
         <div class="controls">
           <span class="ctrl-label">기간</span>
@@ -973,14 +969,31 @@ async function loadData(force){
 function renderSummary(){
   const avg=arr=>arr.length?Math.round(arr.reduce((a,b)=>a+b,0)/arr.length):0;
   const names=new Set(allData.map(d=>d.name+'|'+d.school));
-  document.getElementById('sTotal').textContent=allData.length;
-  document.getElementById('sStud').textContent=names.size;
+  // 날짜별 응시자 수 (같은 학생이 여러 번 풀어도 1명)
+  const dkey=t=>{ const x=new Date(t); return x.getFullYear()+'-'+(x.getMonth()+1)+'-'+x.getDate(); };
+  const dlabel=t=>{ const x=new Date(t); return (x.getMonth()+1)+'월 '+x.getDate()+'일'; };
+  const now=new Date(), yday=new Date(now.getTime()-86400000);
+  const kToday=dkey(now), kYday=dkey(yday);
+  const setT=new Set(), setY=new Set();
+  allData.forEach(d=>{
+    if(!d.time) return;
+    const k=dkey(d.time), who=d.name+'|'+d.school;
+    if(k===kToday) setT.add(who); else if(k===kYday) setY.add(who);
+  });
+  const periodDays=_getPeriodDays();
+  document.getElementById('sToday').textContent=setT.size+'명';
+  document.getElementById('sTodayL').textContent='오늘 ('+dlabel(now)+') 응시자';
+  document.getElementById('sYday').textContent=setY.size+'명';
+  document.getElementById('sYdayL').textContent='어제 ('+dlabel(yday)+') 응시자';
+  document.getElementById('sStud').textContent=names.size+'명';
+  document.getElementById('sStudL').textContent=(periodDays?'최근 '+periodDays+'일':'전체 기간')+' 응시 학생';
   document.getElementById('sScore').textContent=avg(allData.map(d=>d.score))+'점';
   document.getElementById('sWrong').textContent=avg(allData.map(d=>d.wrong))+'개';
-  document.getElementById('sTimeout').textContent=avg(allData.map(d=>d.timedOut))+'개';
 }
 
 function renderCharts(){
+  // 점수 분포 / 자주 틀린 단어 표는 화면에서 뺐다. 자리가 없으면 아무것도 하지 않는다.
+  if(!document.getElementById('scoreDist')) return;
   const bands=[{l:'S(95↑)',min:95,max:101},{l:'A(85↑)',min:85,max:95},{l:'B(70↑)',min:70,max:85},{l:'C(55↑)',min:55,max:70},{l:'D(~54)',min:0,max:55}];
   const maxB=Math.max(...bands.map(b=>allData.filter(d=>d.score>=b.min&&d.score<b.max).length),1);
   document.getElementById('scoreDist').innerHTML=bands.map(b=>{
