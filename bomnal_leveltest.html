@@ -128,6 +128,28 @@ table.st th{font-size:.78rem;color:var(--sub);font-weight:700;}
 .hist-item .m{font-size:.8rem;color:var(--sub);}
 .hist-item .l{font-size:.85rem;font-weight:700;color:var(--acc);text-align:right;}
 
+/* 예비중1 문법 */
+.gprog{height:6px;background:var(--line);}
+.gprog>div{height:100%;background:var(--acc);width:0;transition:width .3s;}
+.gq{font-size:1.05rem;font-weight:800;margin:14px 0 12px;line-height:1.5;}
+.gno{display:inline-block;min-width:30px;padding:2px 8px;margin-right:8px;border-radius:8px;background:var(--ink);color:#fff;font-size:.9rem;text-align:center;}
+.gshow{font-size:1rem;line-height:2.1;}
+.gshow u,.gch u{text-decoration-thickness:2px;text-underline-offset:3px;}
+.ginp{width:92px;max-width:100%;padding:5px 7px;margin:2px 2px;border:none;border-bottom:2px solid var(--acc);background:#fff7ef;border-radius:6px 6px 0 0;font-size:1rem;color:var(--ink);}
+.ginp.long{display:block;width:100%;margin:6px 0;}
+.ginp:focus{outline:none;background:#ffeedd;}
+.gch{display:flex;gap:10px;align-items:flex-start;}
+.gc{flex:none;font-weight:800;color:var(--acc);}
+.gnav{display:flex;gap:8px;justify-content:space-between;margin-top:18px;}
+.gnav .btn{flex:1;white-space:nowrap;padding-left:6px;padding-right:6px;}
+.gnav .btn[disabled]{opacity:.35;}
+.ggrid{display:grid;grid-template-columns:repeat(10,1fr);gap:5px;margin-top:6px;}
+.ggrid button{padding:7px 0;border:1px solid var(--line);border-radius:7px;background:#fff;font-size:.8rem;font-weight:700;color:var(--sub);}
+.ggrid button.ok{background:var(--acc-soft);color:var(--acc);border-color:#e9c9a8;}
+.ggrid button.dk{background:var(--sky-soft);color:var(--sky);}
+.ggrid button.now{outline:2px solid var(--ink);}
+@media (max-width:420px){ .ggrid{grid-template-columns:repeat(8,1fr);} }
+
 @media (min-width:600px){ .rec{grid-template-columns:1fr 1fr;} }
 @media (max-width:420px){ .row2{flex-direction:column;gap:0;} .show.big{font-size:2.1rem;} .chs.grid2 .ch.c{font-size:1.25rem;} }
 @media print{
@@ -199,6 +221,21 @@ table.st th{font-size:.78rem;color:var(--sub);font-weight:700;}
       </div>
 
       <div class="card">
+        <h2>테스트 종류</h2>
+        <div class="tabs" style="margin:0 0 6px;">
+          <button class="tab on" id="modeLv" onclick="setMode('level')">🌱 종합 레벨테스트<br><span style="font-size:.75rem;font-weight:500">알파벳~고3 · 읽기·듣기·어휘</span></button>
+          <button class="tab" id="modeGr" onclick="setMode('gram')">✏️ 예비중1 문법<br><span style="font-size:.75rem;font-weight:500">80문항 · 객관식+서술형</span></button>
+        </div>
+      </div>
+
+      <div class="card" id="gramCard" style="display:none">
+        <h2>예비중1 문법 테스트</h2>
+        <p class="hint">종이 PLACEMENT TEST 80문항을 그대로 옮겼어요 (객관식 63 · 서술형 17). 듣기는 없어요.<br>
+        이전/다음으로 오가며 고칠 수 있고, 끝나면 <b>영역별(시제·조동사·비교·to부정사·동명사…) 결과</b>가 나와요.<br>예상 시간: 40~50분</p>
+        <button class="btn" style="margin-top:12px" onclick="startTest()">문법 테스트 시작하기</button>
+      </div>
+
+      <div class="card" id="levelCard">
         <h2>시작 단계</h2>
         <div class="fld">
           <select id="inStart"></select>
@@ -250,6 +287,16 @@ table.st th{font-size:.78rem;color:var(--sub);font-weight:700;}
   <div class="qwrap" id="qwrap"></div>
 </div>
 
+<!-- ───────────── 3-2. 예비중1 문법 ───────────── -->
+<div id="gtest" class="hide">
+  <div class="tbar">
+    <span class="sec-chip sec-main">✏️ 예비중1 문법</span>
+    <span class="stage-name" id="gNum"></span>
+  </div>
+  <div class="gprog"><div id="gBar"></div></div>
+  <div class="qwrap" id="gwrap"></div>
+</div>
+
 <!-- ───────────── 4. 단계 사이 안내 ───────────── -->
 <div id="inter" class="center hide">
   <div class="card">
@@ -289,6 +336,7 @@ table.st th{font-size:.78rem;color:var(--sub);font-weight:700;}
 <script src="bn_save.js"></script>
 <script src="leveltest_items.js"></script>
 <script src="leveltest_voca.js"></script>
+<script src="leveltest_grammar.js"></script>
 <script>
 /* ═══════════════════════════════════════════════════════════
    봄날 레벨테스트
@@ -331,7 +379,7 @@ var LISTEN_REC = [
 function $(id){ return document.getElementById(id); }
 function esc(s){ return String(s == null ? '' : s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
 function shuffle(a){ a = a.slice(); for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
-function show(id){ ['setup','hello','test','inter','finish','report'].forEach(function(x){ $(x).classList.add('hide'); }); $(id).classList.remove('hide'); window.scrollTo(0,0); }
+function show(id){ ['setup','hello','test','gtest','inter','finish','report'].forEach(function(x){ $(x).classList.add('hide'); }); $(id).classList.remove('hide'); window.scrollTo(0,0); }
 function lsGet(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
 function lsSet(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }
 function lsDel(k){ try{ localStorage.removeItem(k); }catch(e){} }
@@ -380,7 +428,7 @@ function persist(){ if(S && !S.done) lsSet(LS_KEY, JSON.stringify(S)); }
   try{
     var s = JSON.parse(raw);
     if(!s || s.done || !s.info) return;
-    $('resumeTxt').textContent = s.info.name + ' (' + s.info.grade + ') · ' + new Date(s.t0).toLocaleString('ko-KR') + ' 시작';
+    $('resumeTxt').textContent = (s.mode==='gram' ? '[예비중1 문법 · '+((s.i||0)+1)+'번까지] ' : '') + s.info.name + ' (' + s.info.grade + ') · ' + new Date(s.t0).toLocaleString('ko-KR') + ' 시작';
     $('resumeBox').classList.remove('hide');
   }catch(e){}
 })();
@@ -392,6 +440,13 @@ function resumeTest(){
 }
 function dropResume(){ lsDel(LS_KEY); $('resumeBox').classList.add('hide'); }
 
+var MODE = 'level';
+function setMode(m){
+  MODE = m;
+  $('modeLv').classList.toggle('on', m==='level'); $('modeGr').classList.toggle('on', m==='gram');
+  $('levelCard').style.display = m==='level' ? '' : 'none';
+  $('gramCard').style.display = m==='gram' ? '' : 'none';
+}
 function startTest(){
   var name = $('inName').value.trim(), grade = $('inGrade').value;
   if(!name){ alert('이름을 입력해 주세요.'); return; }
@@ -400,6 +455,7 @@ function startTest(){
                claim:$('inClaim').value ? +$('inClaim').value : 0,
                claimText:$('inClaim').value ? $('inClaim').options[$('inClaim').selectedIndex].text : '',
                memo:$('inMemo').value.trim(), start:+$('inStart').value || 1 };
+  if(MODE === 'gram'){ gramStart(info); return; }
   S = newState(info);
   persist();
   $('helloName').textContent = '안녕, ' + name + '!';
@@ -408,6 +464,7 @@ function startTest(){
 
 function beginStudent(){
   unlockAudio();
+  if(S.mode === 'gram'){ gramBegin(); return; }
   if(!S.lad){ startLadder('main', 1, MAIN.length, S.info.start); }
   else if(S.stage){ renderQ(); show('test'); }
   else { nextStage(); }
@@ -630,8 +687,10 @@ function summaryLevel(){
 function saveResult(){
   if(S.saved) return;
   var st = $('saveState'); if(st) st.textContent = '결과 저장 중…';
+  var data = S.mode === 'gram' ? gramSaveData(S) : null;
+  if(!data){
   var R = buildReport(S);
-  var data = {
+  data = {
     name: S.info.name, school: S.info.school || '레벨테스트', grade: S.info.grade,
     quizType: '입학레벨테스트', score: S.best.main, total: MAIN.length,
     correct: S.log.filter(function(x){return x.ok;}).length, wrong: S.log.filter(function(x){return !x.ok;}).length,
@@ -639,6 +698,7 @@ function saveResult(){
     recommend: R.rec.cls + ' / ' + R.rec.book, vocaBook: R.voca.name,
     detail: JSON.stringify(S)
   };
+  }
   var fn = window._bnRestSave;
   if(typeof fn !== 'function'){ if(st) st.textContent = '⚠️ 저장 기능을 불러오지 못했어요 (결과는 화면에서 볼 수 있어요)'; return; }
   fn(data).then(function(){ S.saved = true; if(st) st.textContent = '✓ 결과가 저장되었어요 (지난 기록에서 다시 볼 수 있어요)'; var s2=$('savedNote'); if(s2) s2.textContent='✓ 저장됨'; })
@@ -719,6 +779,7 @@ var CUR = null;   // 지금 보고 있는 결과 상태
 function openReport(){ renderReport(S); }
 
 function renderReport(s){
+  if(s && s.mode === 'gram'){ renderGramReport(s); return; }
   CUR = s;
   var R = buildReport(s), I = s.info;
   var dateTxt = new Date(s.t0).toLocaleDateString('ko-KR', {year:'numeric', month:'long', day:'numeric'});
@@ -824,6 +885,7 @@ function repTab(t){
 function syncCmt(){ var b=$('cmtBox'), v=$('cmtView'); if(b&&v) v.textContent = b.value; }
 
 function kakaoText(){
+  if(CUR && CUR.mode === 'gram') return gramKakao();
   var s = CUR, R = buildReport(s), I = s.info;
   var lines = ['[봄날영어 레벨테스트 결과]', I.name+' ('+I.grade+')', '',
     '■ 종합 레벨: '+(R.hp===0?'알파벳 이전':MAIN[R.hp-1].name),
@@ -905,7 +967,7 @@ function fsVal(v){
 function loadHist(){
   $('histBody').innerHTML = '<p class="hint">불러오는 중…</p>';
   var url = 'https://firestore.googleapis.com/v1/projects/bomnalvaca/databases/(default)/documents:runQuery';
-  var body = {structuredQuery:{from:[{collectionId:'quiz_results'}], where:{fieldFilter:{field:{fieldPath:'quizType'}, op:'EQUAL', value:{stringValue:'입학레벨테스트'}}}, limit:300}};
+  var body = {structuredQuery:{from:[{collectionId:'quiz_results'}], where:{fieldFilter:{field:{fieldPath:'quizType'}, op:'IN', value:{arrayValue:{values:[{stringValue:'입학레벨테스트'},{stringValue:'예비중1문법테스트'}]}}}}, limit:300}};
   fetch(url, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)})
     .then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); })
     .then(function(rows){
@@ -927,7 +989,7 @@ function renderHist(){
   HIST.forEach(function(o, i){
     if(q && String(o.name).indexOf(q) < 0) return;
     var s = o.S;
-    h += '<div class="hist-item" onclick="openHistItem('+i+')"><div><div class="n">'+esc(o.name)+' <span style="font-weight:500;color:var(--sub);font-size:.85rem;">'+esc(s.info.grade)+(s.info.school?' · '+esc(s.info.school):'')+'</span></div><div class="m">'+new Date(s.t0).toLocaleString('ko-KR')+'</div></div><div class="l">'+esc(o.level||'')+'<br><span style="color:var(--sub);font-weight:500;font-size:.78rem;">'+esc(o.vocaBook||'')+'</span></div></div>';
+    h += '<div class="hist-item" onclick="openHistItem('+i+')"><div><div class="n">'+esc(o.name)+' <span style="font-weight:500;color:var(--sub);font-size:.85rem;">'+esc(s.info.grade)+(s.info.school?' · '+esc(s.info.school):'')+'</span></div><div class="m">'+(s.mode==='gram'?'✏️ 예비중1 문법 · ':'🌱 종합 · ')+new Date(s.t0).toLocaleString('ko-KR')+'</div></div><div class="l">'+esc(o.level||'')+'<br><span style="color:var(--sub);font-weight:500;font-size:.78rem;">'+esc(o.vocaBook||'')+'</span></div></div>';
   });
   $('histBody').innerHTML = h || '<p class="hint">기록이 없어요.</p>';
 }
@@ -1021,6 +1083,286 @@ function sayDialog(lines, cb){
     ttsSay(L[1], L[0], function(){ if(my !== DLG_TOKEN) return; setTimeout(step, 450); });
   }
   setTimeout(step, 80);
+}
+</script>
+<script>
+/* ═══════════════════════════════════════════════════════════
+   예비중1 문법 테스트 (80문항 · 종이 PLACEMENT TEST 그대로)
+   - 문항: leveltest_grammar.js
+   - 순서대로 풀고, 이전/다음으로 오가며 고칠 수 있음
+   - 서술형은 띄어쓰기·대소문자·마침표·줄임말(doesn't = does not)을 너그럽게 채점
+   - 저장: quiz_results / quizType '예비중1문법테스트'
+═══════════════════════════════════════════════════════════ */
+var GI = window.GT_ITEMS || [], GTOP = window.GT_TOPICS || {};
+var CIRC = ['①','②','③','④','⑤','⑥'];
+
+/* 점수 구간별 판정·추천 (원장님이 고쳐 쓰셔도 됩니다) */
+var GT_BANDS = [
+  {min:90, name:'중1 문법 완성',      cls:'중2 문법 과정',         s:'중1 문법을 거의 다 알고 있어요. 중2 과정(완료·수동태·관계사)으로 바로 들어가도 좋아요.'},
+  {min:75, name:'중1 문법 대부분 이해', cls:'중1 문법 심화',         s:'중1 문법의 큰 줄기는 잡혀 있어요. 틀린 영역만 짚고 심화 문제로 다져요.'},
+  {min:55, name:'중1 문법 기초 있음',   cls:'중1 문법 정규 과정',     s:'기본은 알지만 빈틈이 있어요. 중1 문법을 처음부터 체계적으로 정리해요.'},
+  {min:35, name:'기초 문법 보강 필요',  cls:'중1 기초 문법',         s:'be동사·일반동사·시제 같은 기초부터 다시 다져야 해요.'},
+  {min:0,  name:'초등 문법부터',        cls:'초등 고학년 문법 기초',  s:'문장의 기본 구조부터 차근차근 시작해요.'}
+];
+
+function gIsW(it){ return !!it.w; }
+function gMulti(it){ return Object.prototype.toString.call(it.a) === '[object Array]'; }
+function gU(s){ return esc(s).replace(/\{\{(.+?)\}\}/g, '<u>$1</u>'); }
+
+function gramStart(info){
+  S = { mode:'gram', v:1, info:info, t0:Date.now(), i:0, ans:GI.map(function(){ return null; }), done:false, finishedAt:null, saved:false };
+  persist();
+  $('helloName').textContent = '안녕, ' + info.name + '!';
+  show('hello');
+}
+function gramBegin(){ gRender(); show('gtest'); }
+
+/* ───────── 화면 ───────── */
+function gRender(){
+  var i = S.i, it = GI[i], a = S.ans[i] || {}, h = '';
+  $('gNum').textContent = (i+1) + ' / ' + GI.length;
+  var done = S.ans.filter(function(x){ return x && (x.dk || (x.pick && x.pick.length) || (x.txt && x.txt.join('').trim())); }).length;
+  $('gBar').style.width = Math.round(done / GI.length * 100) + '%';
+
+  h += '<div class="gq"><span class="gno">'+it.n+'</span>'+gU(it.q)+'</div>';
+  if(it.show){
+    if(gIsW(it)){
+      var k = 0, txt = a.txt || [];
+      var html = gU(it.show).replace(/\[\[(long)?\]\]/g, function(_, lg){
+        var v = txt[k] || '', id = 'gi'+k;
+        k++;
+        return '<input class="ginp'+(lg?' long':'')+'" id="'+id+'" data-k="'+(k-1)+'" value="'+esc(v)+'" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" oninput="gSaveTxt()">';
+      });
+      h += '<div class="show passage gshow">'+html+'</div>';
+      h += '<p class="hint" style="margin:-6px 0 12px;">✏️ 영어로 직접 써요. 철자와 띄어쓰기를 확인해요.</p>';
+    } else {
+      h += '<div class="show passage gshow">'+gU(it.show)+'</div>';
+    }
+  }
+  if(!gIsW(it)){
+    var picks = a.pick || [];
+    if(gMulti(it)) h += '<p class="hint" style="margin:-4px 0 10px;">👉 정답을 <b>'+it.a.length+'개</b> 골라요.</p>';
+    h += '<div class="chs">';
+    it.ch.forEach(function(c, ci){
+      h += '<button class="ch gch'+(picks.indexOf(ci)>=0?' pick':'')+'" onclick="gPick('+ci+')"><span class="gc">'+CIRC[ci]+'</span><span>'+gU(c)+'</span></button>';
+    });
+    h += '</div>';
+  }
+  h += '<div class="gnav">';
+  h += '<button class="btn ghost small" onclick="gGo(-1)"'+(i===0?' disabled':'')+'>← 이전</button>';
+  h += '<button class="btn small" style="background:#fff;color:var(--sub);border:1px solid var(--line);" onclick="gDk()">🤔 모르겠어요</button>';
+  h += (i === GI.length-1) ? '<button class="btn small dark" onclick="gSubmit()">제출하기 ✓</button>'
+                          : '<button class="btn small" onclick="gGo(1)">다음 →</button>';
+  h += '</div>';
+  h += '<button class="dk" onclick="gGrid()">📋 문항 번호 보기 (안 푼 문제 찾기)</button><div id="gGridBox"></div>';
+  $('gwrap').innerHTML = h;
+  window.scrollTo(0,0);
+  if(a.dk){ var n=document.createElement('p'); n.className='hint'; n.style.textAlign='center'; n.textContent='🤔 모르겠어요로 넘긴 문제예요'; $('gwrap').insertBefore(n, $('gwrap').firstChild.nextSibling); }
+}
+
+function gPick(ci){
+  var it = GI[S.i], a = S.ans[S.i] || {pick:[]};
+  a.dk = false;
+  if(!a.pick) a.pick = [];
+  if(gMulti(it)){
+    var p = a.pick.indexOf(ci);
+    if(p >= 0) a.pick.splice(p, 1);
+    else { a.pick.push(ci); if(a.pick.length > it.a.length) a.pick.shift(); }
+    S.ans[S.i] = a; persist();
+    var bs = document.querySelectorAll('.gch');
+    for(var k=0;k<bs.length;k++) bs[k].classList.toggle('pick', a.pick.indexOf(k)>=0);
+    if(a.pick.length === it.a.length) setTimeout(function(){ gGo(1); }, 450);
+    return;
+  }
+  a.pick = [ci]; S.ans[S.i] = a; persist();
+  var bs2 = document.querySelectorAll('.gch');
+  for(var j=0;j<bs2.length;j++) bs2[j].classList.toggle('pick', j===ci);
+  setTimeout(function(){ if(S.i === GI.length-1) return; gGo(1); }, 300);
+}
+function gSaveTxt(){
+  var ins = document.querySelectorAll('.ginp'), t = [];
+  for(var k=0;k<ins.length;k++) t.push(ins[k].value);
+  var a = S.ans[S.i] || {}; a.txt = t; a.dk = false; S.ans[S.i] = a; persist();
+}
+function gDk(){
+  var it = GI[S.i];
+  S.ans[S.i] = {dk:true, pick:[], txt:gIsW(it) ? [] : undefined};
+  persist();
+  if(S.i === GI.length-1){ gSubmit(); return; }
+  gGo(1);
+}
+function gGo(d){
+  if(document.querySelector('.ginp')) gSaveTxt();
+  var n = S.i + d; if(n < 0 || n >= GI.length) return;
+  S.i = n; persist(); gRender();
+}
+function gJump(n){ if(document.querySelector('.ginp')) gSaveTxt(); S.i = n; persist(); gRender(); }
+function gAnswered(x){ return !!(x && (x.dk || (x.pick && x.pick.length) || (x.txt && x.txt.join('').trim()))); }
+function gGrid(){
+  var box = $('gGridBox'); if(box.innerHTML){ box.innerHTML=''; return; }
+  var h = '<div class="ggrid">';
+  GI.forEach(function(it, k){
+    var x = S.ans[k];
+    h += '<button class="'+(k===S.i?'now ':'')+(gAnswered(x)?(x.dk?'dk':'ok'):'')+'" onclick="gJump('+k+')">'+(k+1)+'</button>';
+  });
+  $('gGridBox').innerHTML = h + '</div><p class="hint" style="text-align:center">색칠된 번호 = 푼 문제 · 흰 번호 = 아직 안 푼 문제</p>';
+}
+function gSubmit(){
+  if(document.querySelector('.ginp')) gSaveTxt();
+  var left = [];
+  S.ans.forEach(function(x, k){ if(!gAnswered(x)) left.push(k+1); });
+  if(left.length && !confirm('아직 안 푼 문제가 '+left.length+'개 있어요 ('+left.slice(0,10).join(', ')+(left.length>10?' …':'')+').\n그래도 제출할까요?')) { gJump(left[0]-1); return; }
+  gGrade(S);
+  S.done = true; S.finishedAt = Date.now();
+  lsDel(LS_KEY);
+  show('finish');
+  saveResult();
+}
+
+/* ───────── 채점 ───────── */
+function gNorm(s){
+  s = String(s == null ? '' : s).toLowerCase().replace(/[‘’ʼ`´]/g, "'");
+  var C = [[/\bwon't\b/g,'will not'],[/\bcan't\b/g,'can not'],[/\bcannot\b/g,'can not'],[/\bshan't\b/g,'shall not'],
+           [/\b(\w+)n't\b/g,'$1 not'],[/\bi'm\b/g,'i am'],[/\b(he|she|it|that|there|what|who|where)'s\b/g,'$1 is'],
+           [/\b(you|we|they)'re\b/g,'$1 are'],[/\b(i|you|we|they|he|she|it)'ll\b/g,'$1 will'],
+           [/\b(i|you|we|they)'ve\b/g,'$1 have'],[/\b(i|you|we|they|he|she)'d\b/g,'$1 would']];
+  C.forEach(function(r){ s = s.replace(r[0], r[1]); });
+  return s.replace(/[.,!?;:"()→]/g, ' ').replace(/\s+/g, ' ').trim();
+}
+function gGrade(s){
+  var log = [];
+  GI.forEach(function(it, k){
+    var x = s.ans[k] || {}, rec = {n:it.n, tag:it.t, qq:it.q, show:it.show||'', dk:!!x.dk};
+    if(gIsW(it)){
+      var txt = x.txt || [], okN = 0;
+      var bl = it.w.map(function(acc, b){
+        var v = txt[b] || '', good = acc.some(function(a){ return gNorm(a) === gNorm(v); });
+        if(good) okN++;
+        return {v:v, ok:good, ans:acc[0]};
+      });
+      rec.w = true; rec.blanks = bl; rec.ok = okN === it.w.length; rec.part = okN + '/' + it.w.length;
+      rec.ans = it.w.map(function(a){ return a[0]; }).join(' / ');
+      rec.pick = x.dk ? '모르겠어요' : (txt.join(' / ') || '(빈칸)');
+    } else {
+      var A = [].concat(it.a), P = (x.pick || []).slice().sort();
+      rec.chs = it.ch; rec.ai = A; rec.pk = x.pick || [];
+      rec.ok = !x.dk && P.length === A.length && A.slice().sort().every(function(v, j){ return v === P[j]; });
+      rec.ans = A.map(function(v){ return CIRC[v]+' '+it.ch[v]; }).join(', ');
+      rec.pick = x.dk ? '모르겠어요' : (P.length ? P.map(function(v){ return CIRC[v]+' '+it.ch[v]; }).join(', ') : '(안 풂)');
+    }
+    log.push(rec);
+  });
+  s.log = log;
+  return log;
+}
+
+function gBuild(s){
+  var log = s.log || gGrade(s);
+  var ok = log.filter(function(x){ return x.ok; }).length, n = log.length;
+  var mc = log.filter(function(x){ return !x.w; }), wr = log.filter(function(x){ return x.w; });
+  var pct = Math.round(ok / n * 100), band = GT_BANDS.filter(function(b){ return pct >= b.min; })[0];
+  var T = {};
+  log.forEach(function(x){ var t = T[x.tag] || (T[x.tag] = {ok:0, n:0}); t.n++; if(x.ok) t.ok++; });
+  var keys = Object.keys(GTOP).filter(function(k){ return T[k]; });
+  var strong = keys.filter(function(k){ return T[k].n >= 3 && T[k].ok / T[k].n >= 0.85; });
+  var weak = keys.filter(function(k){ return T[k].ok / T[k].n < 0.6; }).sort(function(a,b){ return T[a].ok/T[a].n - T[b].ok/T[b].n; });
+  var mins = Math.max(1, Math.round(((s.finishedAt||Date.now()) - s.t0) / 60000));
+  return { ok:ok, n:n, pct:pct, band:band, T:T, keys:keys, strong:strong, weak:weak,
+           mcOk:mc.filter(function(x){return x.ok;}).length, mcN:mc.length,
+           wOk:wr.filter(function(x){return x.ok;}).length, wN:wr.length,
+           dk:log.filter(function(x){return x.dk;}).length, mins:mins };
+}
+
+function gramSaveData(s){
+  var R = gBuild(s);
+  return { name:s.info.name, school:s.info.school || '레벨테스트', grade:s.info.grade,
+           quizType:'예비중1문법테스트', score:R.pct, total:R.n, correct:R.ok, wrong:R.n - R.ok,
+           level:R.band.name, recommend:R.band.cls, vocaBook:'문법 '+R.ok+'/'+R.n,
+           detail:JSON.stringify(s) };
+}
+
+function gComment(s, R){
+  var n = s.info.name, out = [];
+  out.push(n+' 학생은 예비중1 문법 테스트 80문항 중 '+R.ok+'문항('+R.pct+'%)을 맞혔어요. \''+R.band.name+'\' 단계로 판단돼요.');
+  if(R.strong.length) out.push(R.strong.slice(0,2).map(function(k){ return GTOP[k]; }).join(', ')+'은(는) 잘 알고 있어요.');
+  if(R.weak.length) out.push('특히 '+R.weak.slice(0,3).map(function(k){ return GTOP[k]; }).join(', ')+' 영역을 집중적으로 보완하면 좋겠어요.');
+  if(R.wN && R.wOk / R.wN < R.mcOk / R.mcN - 0.2) out.push('객관식에 비해 직접 쓰는 문제(서술형)가 약해요. 학교 서술형 대비를 위해 문장 쓰기 연습을 함께 할게요.');
+  out.push(R.band.s);
+  out.push('추천 과정: '+R.band.cls);
+  return out.join('\n');
+}
+
+function renderGramReport(s){
+  CUR = s;
+  if(!s.log) gGrade(s);
+  var R = gBuild(s), I = s.info;
+  var dateTxt = new Date(s.t0).toLocaleDateString('ko-KR', {year:'numeric', month:'long', day:'numeric'});
+  var head = '<div class="rep-head"><div><div class="rep-name">'+esc(I.name)+'</div><div class="rep-meta">'+esc(I.grade)+(I.school?' · '+esc(I.school):'')+' · '+dateTxt+'</div></div>'+
+             '<div class="lvl-badge"><div class="k">예비중1 문법</div><div class="v">'+R.ok+' / '+R.n+'</div><div class="k" style="opacity:.9;margin-top:2px">'+esc(R.band.name)+'</div></div></div>';
+  function topicBars(){
+    var h = '<div class="bars">';
+    R.keys.forEach(function(k){
+      var t = R.T[k], p = Math.round(t.ok / t.n * 100);
+      h += '<div class="bar"><div class="lab"><span>'+esc(GTOP[k])+'</span><span>'+t.ok+' / '+t.n+'</span></div><div class="track"><div class="fill '+(p>=80?'f-voca':p>=60?'f-listen':'f-main')+'" style="width:'+Math.max(3,p)+'%"></div></div></div>';
+    });
+    return h + '</div>';
+  }
+  function pills(){
+    var h = '';
+    if(R.strong.length){ h += '<div style="margin-bottom:6px;"><b style="font-size:.85rem;">잘하는 점</b><br>'; R.strong.forEach(function(k){ h += '<span class="pill good">👍 '+esc(GTOP[k])+'</span>'; }); h += '</div>'; }
+    if(R.weak.length){ h += '<div><b style="font-size:.85rem;">보완할 점</b><br>'; R.weak.forEach(function(k){ h += '<span class="pill weak">📌 '+esc(GTOP[k])+'</span>'; }); h += '</div>'; }
+    return h || '<p class="hint">모든 영역이 고르게 나왔어요.</p>';
+  }
+  function recBox(){
+    return '<div class="rec"><div class="rec-item"><div class="k">판정</div><div class="v">'+esc(R.band.name)+'</div><div class="s">'+esc(R.band.s)+'</div></div>'+
+           '<div class="rec-item"><div class="k">추천 과정</div><div class="v">'+esc(R.band.cls)+'</div><div class="s">객관식 '+R.mcOk+'/'+R.mcN+' · 서술형 '+R.wOk+'/'+R.wN+'</div></div></div>';
+  }
+
+  var t = '<div class="card">'+head+'<p style="margin-top:12px;font-weight:700;">정답률 '+R.pct+'% · 객관식 '+R.mcOk+'/'+R.mcN+' · 서술형 '+R.wOk+'/'+R.wN+'</p>';
+  t += '<p class="hint">소요 시간 약 '+R.mins+'분 · 모르겠어요 '+R.dk+'번</p><div id="savedNote" class="saved">'+(s.saved?'✓ 저장됨':'')+'</div></div>';
+  if(I.claimText) t += '<div class="card"><div class="note" style="margin:0">💬 학부모 말씀: "'+esc(I.claimText)+'"</div></div>';
+  t += '<div class="card"><h2>영역별 결과</h2>'+topicBars()+'</div>';
+  t += '<div class="card"><h2>추천</h2>'+recBox()+'</div>';
+  t += '<div class="card"><h2>강점 · 약점</h2>'+pills()+'</div>';
+  var wr = s.log.filter(function(x){ return !x.ok; });
+  t += '<div class="card"><h2>틀린 문항 ('+wr.length+')</h2>';
+  if(!wr.length) t += '<p class="hint">틀린 문항이 없어요.</p>';
+  else {
+    t += '<ol class="wrong-list" style="list-style:none;margin-left:0">';
+    wr.forEach(function(x){
+      t += '<li style="margin-left:0"><b>'+x.n+'.</b> <span style="color:var(--sub)">['+esc(GTOP[x.tag]||'')+']</span> '+gU(x.qq)+(x.show?'<div class="hint" style="white-space:pre-line;margin:2px 0;">'+gU(x.show.replace(/\[\[(long)?\]\]/g,'____'))+'</div>':'')+
+           '<span class="a">정답: '+gU(x.ans)+'</span><br><span class="p">학생 답: '+gU(x.pick)+(x.w?' ('+x.part+'칸 맞음)':'')+'</span></li>';
+    });
+    t += '</ol>';
+  }
+  t += '<p class="hint">서술형은 대소문자·마침표·줄임말을 너그럽게 채점했어요. 철자가 틀리면 오답이에요.</p></div>';
+  if(I.memo || I.phone) t += '<div class="card"><h2>상담 메모</h2><p class="cmt-view">'+esc(I.memo)+(I.phone?'\n📞 '+esc(I.phone):'')+'</p></div>';
+  t += '<div class="btns noprint"><button class="btn small dark" onclick="repTab(\'p\')">학부모 공유용 보기 →</button><button class="btn small ghost" onclick="window.print()">🖨 인쇄</button></div>';
+  $('repT').innerHTML = t;
+
+  var p = '<div id="parentCard">';
+  p += '<div class="card" style="text-align:center;background:linear-gradient(135deg,#f7efe4,#ece0d2);"><div style="font-size:.85rem;color:var(--sub);font-weight:700;">봄날영어수학학원</div><div style="font-size:1.3rem;font-weight:900;">예비중1 문법 테스트 결과</div></div>';
+  p += '<div class="card">'+head+'</div>';
+  p += '<div class="card"><h2>영역별 결과</h2>'+topicBars()+'</div>';
+  p += '<div class="card"><h2>잘하는 점 · 보완할 점</h2>'+pills()+'</div>';
+  p += '<div class="card"><h2>추천 학습</h2>'+recBox()+'</div>';
+  p += '<div class="card"><h2>원장 코멘트</h2><textarea class="cmt noprint" id="cmtBox" oninput="syncCmt()">'+esc(gComment(s, R))+'</textarea><p class="cmt-view hide" id="cmtView"></p><p class="hint noprint">✏️ 내용을 고쳐서 보낼 수 있어요.</p></div>';
+  p += '</div>';
+  p += '<div class="btns noprint" style="margin-bottom:10px;"><button class="btn small" onclick="copyKakao()">💬 카톡 문구 복사</button><button class="btn small dark" onclick="saveImage()">🖼 이미지로 저장</button><button class="btn small ghost" onclick="printParent()">🖨 인쇄 · PDF</button></div>';
+  $('repP').innerHTML = p;
+  syncCmt();
+  repTab('t');
+  show('report');
+}
+
+function gramKakao(){
+  var s = CUR, R = gBuild(s), I = s.info, b = $('cmtBox');
+  var L = ['[봄날영어 예비중1 문법 테스트 결과]', I.name+' ('+I.grade+')', '',
+           '■ 점수: '+R.ok+' / '+R.n+' ('+R.pct+'%)', '■ 객관식 '+R.mcOk+'/'+R.mcN+' · 서술형 '+R.wOk+'/'+R.wN, '■ 판정: '+R.band.name, ''];
+  if(R.strong.length) L.push('👍 잘하는 점: '+R.strong.map(function(k){ return GTOP[k]; }).join(', '));
+  if(R.weak.length) L.push('📌 보완할 점: '+R.weak.map(function(k){ return GTOP[k]; }).join(', '));
+  L.push('▶ 추천 과정: '+R.band.cls, '', b ? b.value : gComment(s, R));
+  return L.join('\n');
 }
 </script>
 </body>

@@ -522,6 +522,7 @@ tr:hover td{background:#f8f9ff;}
 
 <script src="leveltest_items.js"></script>
 <script src="leveltest_voca.js"></script>
+<script src="leveltest_grammar.js"></script>
 <script type="module">
 import{initializeApp}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import{getFirestore,collection,getDocs,query,orderBy,limit,startAfter,deleteDoc,doc,addDoc,updateDoc,where,serverTimestamp}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
@@ -801,8 +802,8 @@ function _toQuiz(doc){
         wordCorrect:(d.wordCorrect!==undefined?d.wordCorrect:null),
         rounds:d.rounds||1,
         wrongNotes:d.wrongNotes||[],                       // 지문 완전정복: 학생이 쓴 오답노트
-        ltDetail:(d.quizType==='입학레벨테스트'?(d.detail||''):''),   // 입학 레벨테스트: 전체 풀이 기록(JSON)
-        ltRec:d.recommend||'', ltVoca:d.vocaBook||'', ltLevel:(d.quizType==='입학레벨테스트'?(d.level||''):''),
+        ltDetail:((d.quizType==='입학레벨테스트'||d.quizType==='예비중1문법테스트')?(d.detail||''):''),   // 입학 레벨테스트: 전체 풀이 기록(JSON)
+        ltRec:d.recommend||'', ltVoca:d.vocaBook||'', ltLevel:((d.quizType==='입학레벨테스트'||d.quizType==='예비중1문법테스트')?(d.level||''):''),
 
         day:(d.day!==undefined&&d.day!==null?d.day:''),   // 봄날 보카 Day 차시
         level:d.level||'',                                 // 봄날 보카 교재명(워드마스터 중등 BASIC 등)
@@ -1314,7 +1315,8 @@ function renderTable(data){
     const retryDoneAny=retryKnown && retryLeft.length===0;
     const hasWrongs=(d.wrongWords&&d.wrongWords.length>0)||d.wrongSentences||d.wrongNumbers||(isDeepType(d.quizType)&&d.wordTotal>0);
     const anyHasWrong=attempts.some(a=>(a.wrongWords&&a.wrongWords.length)||a.wrongSentences||a.wrongNumbers||(isDeepType(a.quizType)&&a.wordTotal>0));
-    const isLT=d.quizType==='입학레벨테스트';
+    const isGT=d.quizType==='예비중1문법테스트';
+    const isLT=d.quizType==='입학레벨테스트'||isGT;
     const expandable=anyHasWrong||total>1||isLT;
     const wrongCnt=(d.wrongWords&&d.wrongWords.length)||(d.wrongSentences?d.wrongSentences.split(' / ').length:0)||(d.wrongNumbers?(d.wrongNumbers.match(/번/g)||[]).length:0);
     const isIncomplete=d.quitMidway===true;   // 중도이탈(시험 중간에 끔)
@@ -1373,7 +1375,7 @@ function renderTable(data){
         <td class="td-textbook"><div class="textbook-name${isClinicType(d.quizType)?' is-clinic':''}" title="${meta.textbook}">${meta.textbook}</div>${isClinicType(d.quizType)&&clinicFileName(d)?`<div class="clinic-file">📄 ${clinicFileName(d)}</div>`:''}${(typeChip||attemptBadge)?'<div style="margin-top:3px;display:flex;flex-wrap:wrap;gap:3px;align-items:center">'+typeChip+attemptBadge+'</div>':''}</td>
         <td class="td-lesson">${lessonDisplay}${passageInfo?'<br>'+passageInfo:''}${roundBadge}</td>
         <td class="td-time">${d.elapsed?d.elapsed+'분':'-'}</td>
-        <td class="td-score">${isLT?`<span class="sp" style="background:#fef3c7;color:#92400e">읽기 ${d.score}단계</span><div class="score-sub">/ 11단계</div>`:`<span class="sp ${gc(d.score)}">${d.score}점</span>`}<div class="score-sub">${isIncomplete?`⚠️ 중도이탈${d.answered!=null&&d.total?` (${d.answered}/${d.total})`:''}`:gl(d.score)}</div></td>
+        <td class="td-score">${isGT?`<span class="sp ${gc(d.score)}">${d.correct||0}/${d.total||80}</span><div class="score-sub">${d.score}%</div>`:isLT?`<span class="sp" style="background:#fef3c7;color:#92400e">읽기 ${d.score}단계</span><div class="score-sub">/ 11단계</div>`:`<span class="sp ${gc(d.score)}">${d.score}점</span>`}<div class="score-sub">${isIncomplete?`⚠️ 중도이탈${d.answered!=null&&d.total?` (${d.answered}/${d.total})`:''}`:gl(d.score)}</div></td>
         <td class="td-submit">${ft(d.time)}</td>
         <td class="td-actions">
           ${isLT?`<span class="wrong-count-badge" style="background:#e0f2fe;color:#075985">${d.correct||0}/${(d.correct||0)+(d.wrong||0)}문항</span>`
@@ -1475,6 +1477,9 @@ function parseQuizMeta(d){
     const done = /_오답완료/.test(qt);
     return { textbook: clinicLabel(d) || qt, type: done?'완료✓':'진행중',
              typeClass: done?'ok':'warn', lesson: d.lesson || '', passages: '' };
+  }
+  if (qt === '예비중1문법테스트') {
+    return { textbook:'예비중1 문법 테스트', type:'레벨테스트', typeClass:'deep', lesson:d.ltLevel||d.level||'', passages:'' };
   }
   if (qt === '입학레벨테스트') {
     return { textbook:'입학 레벨테스트', type:'레벨테스트', typeClass:'deep', lesson:d.ltLevel||d.level||'', passages:'' };
@@ -2494,6 +2499,7 @@ function renderStudentList(){
    ============================================================ */
 function ltDetailHtml(d){
   let S=null; try{ S=JSON.parse(d.ltDetail||''); }catch(e){}
+  if(S&&S.mode==='gram') return gtDetailHtml(d,S);
   if(!S||!S.log) return '<div class="lt-box">상세 기록이 없습니다.</div>';
   const E=escapeHtml, I=S.info||{}, B=S.best||{};
   const MAIN=window.LT_MAIN||[], LIS=window.LT_LISTEN||[], VOC=window.LT_VOCA||[];
@@ -2544,6 +2550,37 @@ function ltDetailHtml(d){
     });
     h+='</ol></details>';
   });
+  return h+'</div>';
+}
+
+/* 예비중1 문법 테스트 상세: 80문항 하나하나 */
+function gtDetailHtml(d,S){
+  const E=escapeHtml, I=S.info||{}, T=window.GT_TOPICS||{}, C=['①','②','③','④','⑤'];
+  const U=x=>E(x).replace(/\{\{(.+?)\}\}/g,'<u>$1</u>').replace(/\[\[(long)?\]\]/g,'____');
+  const log=S.log||[], ok=log.filter(x=>x.ok).length;
+  const mins=S.finishedAt?Math.max(1,Math.round((S.finishedAt-S.t0)/60000)):null;
+  const by={}; log.forEach(x=>{const t=by[x.tag]||(by[x.tag]={ok:0,n:0}); t.n++; if(x.ok) t.ok++;});
+  let h='<div class="lt-box">';
+  h+=`<div class="lt-head"><div><b style="font-size:15px">${E(I.name)}</b> <span class="lt-sub">${E(I.grade||'')}${I.school?' · '+E(I.school):''}${mins?' · 약 '+mins+'분':''}${S.t0?' · '+new Date(S.t0).toLocaleString('ko-KR'):''}</span></div>
+      <a class="lt-open" href="bomnal_leveltest.html#r=${encodeURIComponent(d.id)}" target="_blank" rel="noopener">📄 결과지 열기</a></div>`;
+  h+=`<div class="lt-sum"><div><span>점수</span><b>${ok} / ${log.length}</b></div><div><span>판정</span><b>${E(d.ltLevel||'')}</b></div><div><span>추천</span><b>${E(d.ltRec||'')}</b></div></div>`;
+  h+='<div class="lt-sum">'+Object.keys(T).filter(k=>by[k]).map(k=>{const t=by[k],p=Math.round(t.ok/t.n*100);return `<div><span>${E(T[k])}</span><b style="color:${p>=80?'#166534':p>=60?'#92400e':'#b91c1c'}">${t.ok}/${t.n}</b></div>`;}).join('')+'</div>';
+  if(I.claimText||I.memo) h+=`<div class="lt-memo">${I.claimText?'💬 학부모 말씀: '+E(I.claimText):''}${I.claimText&&I.memo?'<br>':''}${I.memo?'📝 '+E(I.memo):''}</div>`;
+  const wrong=log.filter(x=>!x.ok);
+  const item=x=>{
+    let r=`<li class="${x.ok?'o':'x'}" value="${x.n}"><div class="lt-qt">${x.ok?'✅':(x.dk?'🤔':'❌')} ${U(x.qq)} <span class="lt-sub">[${E(T[x.tag]||'')}]</span></div>`;
+    if(x.show) r+= x.show.length>110?`<details class="lt-pass"><summary>지문 보기</summary><div>${U(x.show)}</div></details>`:`<div class="lt-show">${U(x.show)}</div>`;
+    if(x.w){
+      r+='<div class="lt-chs">'+(x.blanks||[]).map(b=>`<span class="lt-ch ${b.ok?'a':'w'}">${b.ok?'✔':'✘'} ${E(b.v||'(빈칸)')}${b.ok?'':` <span style="color:#166534;font-weight:700">→ ${E(b.ans)}</span>`}</span>`).join('')+(x.dk?'<span class="lt-ch w">🤔 모르겠어요</span>':'')+'</div>';
+    } else if(x.chs){
+      const A=[].concat(x.ai), P=x.pk||[];
+      r+='<div class="lt-chs">'+x.chs.map((c,i)=>{const cls=A.indexOf(i)>=0?'a':(P.indexOf(i)>=0?'w':'');return `<span class="lt-ch ${cls}">${C[i]} ${U(c)}</span>`;}).join('')+(x.dk?'<span class="lt-ch w">🤔 모르겠어요</span>':'')+'</div>';
+    }
+    return r+'</li>';
+  };
+  h+=`<div class="lt-sec">❌ 틀린 문항 (${wrong.length})</div>`;
+  h+= wrong.length?`<div class="lt-stage"><ol class="lt-q">${wrong.map(item).join('')}</ol></div>`:'<div class="lt-sub">틀린 문항이 없습니다.</div>';
+  h+=`<details class="lt-stage"><summary>📋 전체 80문항 보기 (맞은 문항 포함)</summary><ol class="lt-q">${log.map(item).join('')}</ol></details>`;
   return h+'</div>';
 }
 
