@@ -520,18 +520,22 @@ function showMain(){
 
 /* ───────── 소리 ───────── */
 let curAudio = null;
+let SAY_SEQ = 0;            // 새 소리를 틀 때마다 1씩 — 끊긴 옛 소리가 뒤늦게 다시 읽지 않게
 function stopAudio(){
+  SAY_SEQ++;
   if(curAudio){ try{curAudio.pause();}catch(e){} curAudio=null; }
   if(window.speechSynthesis) try{ speechSynthesis.cancel(); }catch(e){}
 }
 function sayWord(w, cb){
   stopAudio();
   const url = 'https://dict.youdao.com/dictvoice?audio=' + encodeURIComponent(String(w).toLowerCase()) + '&type=2';
+  const my = SAY_SEQ;
   try{
-    curAudio = new Audio(url);
-    curAudio.onended = ()=>{ curAudio=null; cb&&cb(); };
-    curAudio.onerror = ()=>{ curAudio=null; ttsSay(w, cb); };
-    curAudio.play().catch(()=>{ curAudio=null; ttsSay(w, cb); });
+    const a = new Audio(url);
+    curAudio = a;
+    a.onended = ()=>{ if(my!==SAY_SEQ) return; curAudio=null; cb&&cb(); };
+    a.onerror = ()=>{ if(my!==SAY_SEQ) return; curAudio=null; ttsSay(w, cb); };
+    a.play().catch(()=>{ if(my!==SAY_SEQ) return; curAudio=null; ttsSay(w, cb); });
   }catch(e){ ttsSay(w, cb); }
   // (단어는 온라인 음성 → 기기 음성 순서를 그대로 둔다)
 }
@@ -542,8 +546,14 @@ function saySentence(t, cb){
   stopAudio();
   const txt = String(t == null ? '' : t).trim();
   if(!txt){ cb && cb(false); return; }
-  // cancel() 직후 곧바로 speak() 하면 소리가 안 나는 브라우저가 있어 아주 짧게 쉬었다 읽는다
-  setTimeout(()=>{ ttsSay(txt, cb); }, 60);
+  // 아이폰은 기기 음성(TTS)이 소리 없이 '재생 중'으로 멈추는 경우가 많아
+  // 온라인 음성을 먼저 쓰고, 그게 안 될 때만 기기 음성으로 읽는다
+  const my = SAY_SEQ;
+  onlineSay(txt, (ok)=>{
+    if(my!==SAY_SEQ) return;
+    if(ok){ cb && cb(true); return; }
+    setTimeout(()=>{ if(my===SAY_SEQ) ttsSay(txt, cb); }, 60);
+  });
 }
 
 /* 기기 자체 음성(TTS) — 0.8초 안에 말하기 시작하지 않으면 온라인 음성으로 */
@@ -581,23 +591,29 @@ function ttsSay(t, cb){
 /* 온라인 음성 — 단어 듣기와 같은 곳 */
 function onlineSay(t, cb){
   let done = false;
-  function once(ok){ if(done) return; done = true; curAudio = null; cb && cb(ok); }
+  const my = SAY_SEQ;
+  function once(ok){ if(done) return; done = true; if(my!==SAY_SEQ) return; curAudio = null; cb && cb(ok); }
   try{
     const url = 'https://dict.youdao.com/dictvoice?audio=' + encodeURIComponent(t) + '&type=2';
-    curAudio = new Audio(url);
-    curAudio.onended = ()=>{ once(true); };
-    curAudio.onerror = ()=>{ once(false); };
-    const pr = curAudio.play();
+    const a = SENT_AUDIO;     // 첫 터치 때 허락받아 둔 재생기를 계속 쓴다 (아이폰 자동재생 막힘 방지)
+    a.onended = ()=>{ once(true); };
+    a.onerror = ()=>{ once(false); };
+    a.src = url;
+    curAudio = a;
+    const pr = a.play();
     if(pr && pr.catch) pr.catch(()=>{ once(false); });
-    setTimeout(()=>{ if(!done && !(curAudio && curAudio.currentTime > 0)) once(false); }, 2500);
+    setTimeout(()=>{ if(!done && !(a.currentTime > 0)){ if(my===SAY_SEQ){ try{a.pause();}catch(e){} } once(false); } }, 4000);
   }catch(e){ once(false); }
 }
+const SENT_AUDIO = new Audio();
+SENT_AUDIO.preload = 'auto';
 try{ speechSynthesis.getVoices(); speechSynthesis.onvoiceschanged=function(){}; }catch(e){}
 
 /* 첫 터치 때 소리 재생을 미리 허용받아 둔다 (아이패드는 사용자가 누른 직후에만 소리가 난다) */
 (function primeAudio(){
   function go(){
     try{ const u = new SpeechSynthesisUtterance(' '); u.volume = 0; speechSynthesis.speak(u); }catch(e){}
+    try{ if(!SENT_AUDIO.src){ SENT_AUDIO.src = 'data:audio/wav;base64,UklGRrQBAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YZABAACAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA'; const p = SENT_AUDIO.play(); if(p && p.catch) p.catch(()=>{}); } }catch(e){}
     document.removeEventListener('pointerdown', go, true);
     document.removeEventListener('touchstart', go, true);
     document.removeEventListener('click', go, true);
