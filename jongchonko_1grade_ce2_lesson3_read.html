@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<script src="bn_save.js"></script>
+<link rel="manifest" href="manifest.json"/>
+<meta name="theme-color" content="#4a6741"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-title" content="봄날퀴즈"/>
+<link rel="apple-touch-icon" href="icon-192.png"/>
+<style>html,body{overscroll-behavior-y:contain}</style>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>봄날 퀴즈 | 공통영어2 3과 깊이 읽기</title>
+<script type="module" src="bn_tracker.js"></script>
+<script src="mock_word_dict.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;700;800&display=swap');
+:root{--pri:#6b4a2b;--acc:#b07a45;--bg:#f5efe6;--card:#fdf8f2;--bdr:#d9c9b3;--muted:#757575;--green:#2e7d32;--red:#c62828;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);min-height:100vh;color:#2a2a2a;}
+.hidden{display:none!important;}
+
+/* START */
+#startScreen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
+.s-card{background:var(--card);border-radius:24px;padding:36px 28px;text-align:center;max-width:520px;width:100%;box-shadow:0 8px 32px rgba(107,74,43,.15);}
+.s-card h1{font-family:'Black Han Sans',sans-serif;font-size:20px;color:var(--pri);margin-bottom:6px;}
+.s-sub{font-size:13px;color:var(--muted);margin-bottom:20px;}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:18px;}
+.info-item{background:var(--bg);border-radius:10px;padding:10px;text-align:center;font-size:12px;color:var(--pri);font-weight:700;}
+.ni{width:100%;padding:11px 14px;border:2px solid var(--bdr);border-radius:12px;font-size:14px;font-family:'Noto Sans KR',sans-serif;outline:none;margin-bottom:10px;}
+.ni:focus{border-color:var(--pri);}
+.start-btn{width:100%;padding:14px;border-radius:12px;border:none;background:linear-gradient(135deg,#6b4a2b,#b07a45);color:white;font-size:1rem;font-weight:800;cursor:pointer;font-family:inherit;}
+
+/* PASSAGE SELECT */
+#passageScreen{padding:20px;max-width:680px;margin:0 auto;}
+.ps-header{background:linear-gradient(135deg,#f7efe4,#ece0d2);color:#5c3d1e;border:1px solid #e8dccb;border-radius:16px;padding:18px 22px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;}
+.ps-title{font-family:'Black Han Sans',sans-serif;font-size:16px;}
+.ps-sub{font-size:11px;opacity:.8;margin-top:3px;}
+.user-info{background:rgba(255,255,255,.7);color:#5c3d1e;border-radius:10px;padding:6px 14px;font-size:12px;font-weight:700;}
+.filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
+.fb{padding:7px 16px;border:2px solid var(--pri);border-radius:20px;background:white;color:var(--pri);font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s;}
+.fb.on{background:var(--pri);color:white;}
+.passage-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px;margin-bottom:20px;}
+.p-card{background:white;border-radius:14px;padding:14px 8px;text-align:center;cursor:pointer;border:2.5px solid #e6dccd;transition:all .18s;position:relative;}
+.p-card:hover{border-color:var(--pri);transform:translateY(-2px);box-shadow:0 6px 18px rgba(107,74,43,.12);}
+.p-card.sel{border-color:var(--pri);background:#f3ebe0;}
+.p-card.done{border-color:#4caf50;background:#e8f5e9;}
+.p-no{font-family:'Black Han Sans',sans-serif;font-size:18px;color:var(--pri);margin-bottom:2px;}
+.p-count{font-size:10px;color:var(--muted);}
+.p-badge{position:absolute;top:6px;right:6px;font-size:9px;padding:2px 6px;border-radius:8px;font-weight:700;}
+.done-badge{background:#e8f5e9;color:#2e7d32;}
+.sel-all-btn{width:100%;padding:12px;border-radius:12px;border:2px solid var(--pri);background:white;color:var(--pri);font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;margin-bottom:10px;}
+.type-box{background:white;border-radius:12px;padding:12px 14px;margin-bottom:14px;border:2px solid #e6dccd;}
+.type-row{display:flex;gap:6px;flex-wrap:wrap;}
+.type-row .fb{padding:6px 12px;font-size:12.5px;}
+.type-row .fb small{font-weight:400;opacity:.75;margin-left:3px;}
+.p-card.off{opacity:.35;pointer-events:none;}
+.cnt-box{background:white;border-radius:12px;padding:12px 14px;margin-bottom:10px;border:2px solid #e6dccd;}
+.cnt-lbl{font-size:13px;font-weight:800;color:var(--pri);margin-bottom:8px;}
+.cnt-lbl span{font-weight:400;color:var(--muted);font-size:12px;}
+.cnt-row{display:flex;gap:8px;flex-wrap:wrap;}
+.p-solved{font-size:10px;color:var(--muted);margin-top:2px;}
+.fb-exp{margin-top:8px;padding-top:8px;border-top:1px dashed rgba(0,0,0,.15);font-weight:400;color:#37474f;line-height:1.6;}
+.q-prompt{white-space:pre-line;}
+.passage-box .mk{color:#8a4b1c;}
+.passage-box .mk u{text-underline-offset:3px;}
+.go-btn{width:100%;padding:14px;border-radius:12px;border:none;background:linear-gradient(135deg,#6b4a2b,#b07a45);color:white;font-size:1rem;font-weight:800;cursor:pointer;font-family:inherit;}
+
+/* QUIZ HEADER */
+.hdr{background:#f7efe4;color:#5c3d1e;border-bottom:1px solid #e8dccb;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.ht{font-family:'Black Han Sans',sans-serif;font-size:15px;}
+.hs{font-size:10px;opacity:.7;margin-top:2px;}
+.hb{background:#fff;color:#5c3d1e;border:1px solid #e8dccb;border-radius:16px;padding:4px 12px;font-size:12px;font-weight:700;}
+.pw{height:4px;background:#e6dccd;}.pf{height:100%;background:linear-gradient(90deg,#6b4a2b,#b07a45);transition:width .4s;}
+
+/* QUIZ AREA */
+#quizArea{padding:20px;max-width:720px;margin:0 auto;}
+.qc{background:white;border-radius:18px;padding:22px 20px;margin-bottom:16px;box-shadow:0 3px 16px rgba(107,74,43,.08);}
+.q-no-badge{display:flex;align-items:center;gap:6px;margin-bottom:10px;flex-wrap:wrap;}
+.qno{font-family:'Black Han Sans',sans-serif;font-size:13px;color:white;background:var(--pri);padding:3px 12px;border-radius:12px;}
+.qtype{font-size:11px;font-weight:700;padding:3px 10px;border-radius:10px;background:#f6e7d6;color:#9a5b2b;}
+.qsrc{font-size:10px;color:var(--muted);margin-left:auto;}
+.passage-tag{font-size:10px;font-weight:700;color:#6b4a2b;background:#f3ebe0;padding:2px 8px;border-radius:8px;}
+.passage-box{background:#fbf7f1;border-left:4px solid var(--pri);border-radius:0 10px 10px 0;padding:14px 16px;font-size:13px;line-height:1.85;margin-bottom:14px;color:#3b2f25;white-space:pre-wrap;}
+.q-prompt{font-size:13px;font-weight:700;color:#6b4a2b;margin-bottom:10px;padding:8px 12px;background:#f3ebe0;border-radius:8px;}
+.choices{display:grid;gap:8px;}
+.cb{background:#f7f1e8;border:2px solid #e6dccd;border-radius:11px;padding:12px 15px;font-family:'Noto Sans KR',sans-serif;font-size:13px;font-weight:700;cursor:pointer;text-align:left;transition:all .15s;display:flex;align-items:flex-start;gap:10px;line-height:1.5;}
+.cb:hover:not(:disabled){border-color:var(--pri);background:#f3ebe0;}
+.cb.correct{background:#e8f5e9;border-color:#2e7d32;color:#1b5e20;}
+.cb.wrong{background:#ffebee;border-color:#c62828;color:#b71c1c;}
+.cb.reveal{background:#e8f5e9;border-color:#2e7d32;}
+.cn{width:24px;height:24px;border-radius:50%;background:#d9c9b3;color:white;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0;}
+.fb-msg{padding:10px 14px;border-radius:10px;font-size:13px;font-weight:800;margin-top:10px;display:none;}
+.fb-msg.ok{background:#e8f5e9;color:#1b5e20;display:block;}
+.fb-msg.no{background:#ffebee;color:#b71c1c;display:block;}
+
+/* RESULT */
+#resultScreen{padding:20px;max-width:600px;margin:0 auto;}
+.rc{background:white;border-radius:24px;padding:30px 22px;box-shadow:0 8px 32px rgba(107,74,43,.1);text-align:center;}
+.rs{font-family:'Black Han Sans',sans-serif;font-size:52px;color:var(--pri);line-height:1;}
+.rsub{font-size:13px;color:var(--muted);margin-top:4px;}
+.sr{display:flex;justify-content:center;gap:20px;margin-top:16px;flex-wrap:wrap;}
+.si{text-align:center;}.sn{font-family:'Black Han Sans',sans-serif;font-size:24px;}.sl{font-size:11px;color:var(--muted);margin-top:2px;}
+.wl{background:var(--bg);border-radius:14px;padding:14px;text-align:left;margin-top:14px;max-height:300px;overflow-y:auto;}
+.wl h3{font-size:12px;font-weight:800;color:var(--red);margin-bottom:8px;}
+.wi{background:white;border-radius:8px;padding:8px 12px;margin-bottom:6px;font-size:11px;border-left:3px solid #e91e63;}
+.wie{font-weight:800;color:var(--pri);}.wid{font-size:10px;color:var(--muted);margin-top:2px;}
+.rbtns{display:flex;gap:10px;justify-content:center;margin-top:18px;flex-wrap:wrap;}
+.rbtn{padding:12px 24px;border-radius:12px;border:none;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;}
+.rbtn-p{background:linear-gradient(135deg,#6b4a2b,#b07a45);color:white;}
+.rbtn-s{background:#f7f1e8;color:#6b4a2b;border:2px solid #d9c9b3;}
+
+@media(max-width:480px){.passage-grid{grid-template-columns:repeat(3,1fr)}}
+body{font-family:'Noto Sans KR',sans-serif;}
+.s-sub,.ps-sub,.cnt-lbl span{font-family:'Gowun Dodum','Noto Sans KR',sans-serif;}
+.p-card{background:#fdf8f2;}
+.p-card.sel{background:#f0e6d8;}
+</style>
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getFirestore,collection,addDoc,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+const cfg={apiKey:"AIzaSyCxS524S8KAaF87DomPtl9sJdF-eqes404",authDomain:"bomnalvaca.firebaseapp.com",projectId:"bomnalvaca",storageBucket:"bomnalvaca.firebasestorage.app",messagingSenderId:"115868052300",appId:"1:115868052300:web:765c08867b6f1ce0987de9"};
+const app=initializeApp(cfg);
+const db=getFirestore(app);
+window._fbSave=async function(data){
+  try{await addDoc(collection(db,'quiz_results'),{...data,timestamp:serverTimestamp()});}
+  catch(e){console.warn('FB 저장 오류:',e);}
+};
+</script>
+
+<style>
+/* 지문 깊이 풀기 — 맑은 고딕 11pt */
+:root{ --fsz:11pt; }
+body, .ni, .cb, .si, input, select, button{
+  font-family:"Malgun Gothic","맑은 고딕",AppleGothic,"Apple SD Gothic Neo",
+              -apple-system,BlinkMacSystemFont,sans-serif !important;
+}
+.passage-box{ font-size:var(--fsz) !important; line-height:1.95 !important; padding:18px 18px !important; }
+.cb{ font-size:var(--fsz) !important; line-height:1.6 !important; padding:14px 16px !important; font-weight:600 !important; }
+.q-prompt{ font-size:calc(var(--fsz) + 1pt) !important; line-height:1.55 !important; }
+.fb-msg{ font-size:var(--fsz) !important; line-height:1.7 !important; }
+.fb-exp{ font-size:var(--fsz) !important; line-height:1.8 !important; }
+.passage-box b.mk{ background:#fdf0c9; border-radius:4px; padding:0 2px; }
+.type-box{ display:none !important; }   /* 유형 선택 줄은 쓰지 않는다 */
+</style>
+</head>
+<body>
+
+<!-- START -->
+<div id="startScreen">
+  <div class="s-card">
+    <h1>📖 공통영어2 3과 깊이 읽기</h1>
+    <div class="s-sub">YBM 김은형 공통영어2 3과 · 본문을 여섯 토막으로 나눠 깊이 읽기 · 자동채점</div>
+    <div class="info-grid">
+      <div class="info-item">📝 본문 6토막</div>
+      <div class="info-item">🎯 토막을 골라 16문제씩</div>
+      <div class="info-item">🔢 4지선다 96문항</div>
+      <div class="info-item">📊 내용 이해 · 일치 · 표현의 의미 · 빈칸</div>
+    </div>
+    
+  <div id="resumeBox" style="display:none;background:linear-gradient(135deg,#fff7e0,#fef3c7);border:2px solid #fcd34d;border-radius:14px;padding:14px 16px;margin:12px auto;text-align:left;max-width:560px;">
+    <div style="font-family:'Black Han Sans',sans-serif;font-size:1rem;color:#92400e;margin-bottom:4px;">⏸️ 풀던 시험이 있어요</div>
+    <div id="resumeInfo" style="font-size:.78rem;color:#a16207;line-height:1.5;margin-bottom:10px;"></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button style="flex:1;min-width:120px;padding:11px 14px;font-size:.88rem;background:linear-gradient(135deg,#f59e0b,#d97706);color:white;border:none;border-radius:10px;font-weight:800;cursor:pointer;" onclick="resumeSession()">▶️ 이어서 풀기</button>
+      <button style="flex:1;min-width:120px;padding:11px 14px;font-size:.88rem;background:linear-gradient(135deg,#94a3b8,#64748b);color:white;border:none;border-radius:10px;font-weight:800;cursor:pointer;" onclick="discardSession()">🔄 새로 시작</button>
+    </div>
+  </div>
+    <select class="ni" id="si" style="background:white;color:#6b4a2b;font-weight:700;cursor:pointer;">
+      <option value="">학교 선택</option>
+      <option value="종촌고1">종촌고 1학년</option>
+      <option value="종촌고2">종촌고 2학년</option>
+      <option value="종촌고3">종촌고 3학년</option>
+      <option value="고운고1">고운고 1학년</option>
+      <option value="고운고2">고운고 2학년</option>
+      <option value="고운고3">고운고 3학년</option>
+      <option value="대성고1">대성고 1학년</option>
+      <option value="기타">기타</option>
+    </select>
+    <input type="text" class="ni" id="ni" placeholder="이름 입력" maxlength="10">
+    <button class="start-btn" onclick="goPassageSelect()">다음 → 지문 선택</button>
+  </div>
+</div>
+
+<!-- PASSAGE SELECT -->
+<div id="passageScreen" class="hidden">
+  <div class="ps-header">
+    <div>
+      <div class="ps-title">📖 유형 · 번호 선택</div>
+      <div class="ps-sub">풀 본문 토막을 고르세요 (여러 개 고를 수 있어요)</div>
+    </div>
+    <div class="user-info" id="userInfo"></div>
+  </div>
+  <div class="type-box">
+    <div class="cnt-lbl">① 유형 선택 <span>· 여러 개 고를 수 있어요</span></div>
+    <div class="type-row" id="typeRow"></div>
+  </div>
+  <div class="cnt-lbl" style="margin:4px 2px 8px;">본문 선택 <span>· 토막마다 16문제</span></div>
+    <div class="passage-grid" id="passageGrid"></div>
+  <button class="sel-all-btn" onclick="selectAll()">전체 선택 / 해제</button>
+  <button class="go-btn" onclick="startQuiz()">선택한 번호 풀기 🚀</button>
+</div>
+
+<!-- QUIZ HEADER (sticky) -->
+<div id="hdr" class="hdr hidden">
+  <div><div class="ht">📖 공통영어2 3과 깊이 읽기</div><div class="hs" id="hs"></div></div>
+  <div class="hb" id="hb">0/0</div>
+</div>
+<div id="pw" class="pw hidden"><div class="pf" id="pf" style="width:0%"></div></div>
+<div id="quizArea" class="hidden"></div>
+<div id="resultScreen" class="hidden"></div>
+
+<script>
+// ── DATA ──────────────────────────────────────────
+const PASS = {};
+const QUESTIONS = [
+{"no": 1, "school": "", "pref": "1", "type": "", "diff": "", "stem": "글에 따르면 캐서린의 아버지가 가족을 다른 곳으로 옮긴 이유는?", "p": "1-1", "choices": ["더 좋은 일자리를 찾기 위해서", "친척 가까이 살기 위해서", "딸을 고등학교에 보내기 위해서", "대학 학비를 모으기 위해서"], "ans": 3, "exp": "고향에서는 흑인 학생이 고등학교에 갈 수 없었어요. 그래서 아버지가 딸을 고등학교에 보내려고 200킬로미터를 이사했다고 했습니다.\n📖 So her father moved the family 200 kilometers away so that <b>she could enter high school</b>\n   그래서 아버지는 그녀가 고등학교에 들어갈 수 있도록 가족을 200킬로미터 떨어진 곳으로 옮겼다.", "b": 1, "bb": "Katherine Johnson was born on August 26, 1918, in West Virginia, in the U.S., and was the youngest of four children in a black family. Katherine was a math prodigy from early childhood. Reflecting on her youth, Katherine once said, “I counted everything—the steps to the road, the steps up to church, the number of dishes, spoons, and forks I washed.” She excitedly added, “I couldn’t wait to get to high school to take algebra and geometry.” But Katherine’s hometown had a segregated education system, and black students could not enter high school. So her father moved the family 200 kilometers away so that she could enter high school. After graduating from high school in 1932, she was admitted to a black college at the age of fifteen. By her junior year, she had taken all the math courses the college could offer."},
+{"no": 2, "school": "", "pref": "1", "type": "", "diff": "", "stem": "캐서린이 고등학교에 가기를 몹시 기다린 이유는?", "p": "1-2", "choices": ["친구들을 더 많이 만들고 싶어서", "대수와 기하를 배우고 싶어서", "선생님이 되고 싶었기 때문에", "집을 떠나 살고 싶었기 때문에"], "ans": 2, "exp": "캐서린이 직접 한 말에 답이 있습니다. 대수와 기하를 배우려고 고등학교에 빨리 가고 싶었다고 했어요.\n📖 I couldn’t wait to get to high school to <b>take algebra and geometry</b>\n   나는 대수와 기하를 배우려고 고등학교에 빨리 가고 싶어 견딜 수 없었다.", "b": 1, "bb": "Katherine Johnson was born on August 26, 1918, in West Virginia, in the U.S., and was the youngest of four children in a black family. Katherine was a math prodigy from early childhood. Reflecting on her youth, Katherine once said, “I counted everything—the steps to the road, the steps up to church, the number of dishes, spoons, and forks I washed.” She excitedly added, “I couldn’t wait to get to high school to take algebra and geometry.” But Katherine’s hometown had a segregated education system, and black students could not enter high school. So her father moved the family 200 kilometers away so that she could enter high school. After graduating from high school in 1932, she was admitted to a black college at the age of fifteen. By her junior year, she had taken all the math courses the college could offer."},
+{"no": 3, "school": "", "pref": "1", "type": "", "diff": "", "stem": "대학 3학년(junior year)이 될 무렵의 캐서린에 대해 글이 말하는 것은?", "p": "1-3", "choices": ["수학 대신 과학을 전공하였다", "학교를 그만두고 일을 시작했다", "다른 대학으로 편입을 하였다", "대학의 수학 과목을 모두 들었다"], "ans": 4, "exp": "마지막 문장에 그대로 나옵니다. 3학년이 될 무렵 그 대학이 줄 수 있는 수학 과목을 전부 들었다고 했어요.\n📖 By her junior year, she had <b>taken all the math courses the college could offer</b>\n   3학년이 될 무렵 그녀는 그 대학이 제공할 수 있는 모든 수학 과목을 들었다.", "b": 1, "bb": "Katherine Johnson was born on August 26, 1918, in West Virginia, in the U.S., and was the youngest of four children in a black family. Katherine was a math prodigy from early childhood. Reflecting on her youth, Katherine once said, “I counted everything—the steps to the road, the steps up to church, the number of dishes, spoons, and forks I washed.” She excitedly added, “I couldn’t wait to get to high school to take algebra and geometry.” But Katherine’s hometown had a segregated education system, and black students could not enter high school. So her father moved the family 200 kilometers away so that she could enter high school. After graduating from high school in 1932, she was admitted to a black college at the age of fifteen. By her junior year, she had taken all the math courses the college could offer."},
+{"no": 4, "school": "", "pref": "1", "type": "", "diff": "", "stem": "캐서린의 고향 교육 제도에 대해 글이 말하는 것은?", "p": "1-4", "choices": ["흑인 학생은 고등학교에 갈 수 없었다", "모든 학생이 함께 수업을 들었다", "여학생만 고교 진학이 가능했다", "수학 수업이 아예 없었다"], "ans": 1, "exp": "고향은 인종을 갈라놓은 교육 제도였고, 그래서 흑인 학생은 고등학교에 들어갈 수 없었다고 했습니다.\n📖 Katherine’s hometown had a segregated education system, and <b>black students could not enter high school</b>\n   캐서린의 고향에는 인종을 분리한 교육 제도가 있어서 흑인 학생은 고등학교에 들어갈 수 없었다.", "b": 1, "bb": "Katherine Johnson was born on August 26, 1918, in West Virginia, in the U.S., and was the youngest of four children in a black family. Katherine was a math prodigy from early childhood. Reflecting on her youth, Katherine once said, “I counted everything—the steps to the road, the steps up to church, the number of dishes, spoons, and forks I washed.” She excitedly added, “I couldn’t wait to get to high school to take algebra and geometry.” But Katherine’s hometown had a segregated education system, and black students could not enter high school. So her father moved the family 200 kilometers away so that she could enter high school. After graduating from high school in 1932, she was admitted to a black college at the age of fifteen. By her junior year, she had taken all the math courses the college could offer."},
+{"no": 5, "school": "", "pref": "1", "type": "", "diff": "", "stem": "윗글의 내용과 일치하는 것은?", "p": "1-5", "choices": ["캐서린은 1932년에 태어났다", "캐서린은 네 남매 중 막내였다", "캐서린은 수학을 늦게 시작했다", "캐서린은 백인 대학에 입학했다"], "ans": 2, "exp": "첫 문장에 네 아이 중 막내였다고 나옵니다. 1932년은 고등학교를 졸업한 해이고, 들어간 대학은 흑인 대학이었어요.\n📖 was the <b>youngest of four children</b> in a black family\n   흑인 가정의 네 아이 중 막내였다.", "b": 1, "bb": "Katherine Johnson was born on August 26, 1918, in West Virginia, in the U.S., and was the youngest of four children in a black family. Katherine was a math prodigy from early childhood. Reflecting on her youth, Katherine once said, “I counted everything—the steps to the road, the steps up to church, the number of dishes, spoons, and forks I washed.” She excitedly added, “I couldn’t wait to get to high school to take algebra and geometry.” But Katherine’s hometown had a segregated education system, and black students could not enter high school. So her father moved the family 200 kilometers away so that she could enter high school. After graduating from high school in 1932, she was admitted to a black college at the age of fifteen. By her junior year, she had taken all the math courses the college could offer."},
+{"no": 6, "school": "", "pref": "1", "type": "", "diff": "", "stem": "윗글의 내용과 일치하지 않는 것은?", "p": "1-6", "choices": ["캐서린은 1918년에 태어났다", "캐서린은 웨스트버지니아 출신이다", "캐서린은 스무 살에 대학에 들어갔다", "캐서린은 1932년에 고교를 졸업했다"], "ans": 3, "exp": "대학에 들어간 나이는 열다섯이었습니다. 스무 살이라는 말은 글에 없어요.\n📖 she was admitted to a black college at the age of <b>fifteen</b>\n   그녀는 열다섯 살에 흑인 대학에 입학 허가를 받았다.", "b": 1, "bb": "Katherine Johnson was born on August 26, 1918, in West Virginia, in the U.S., and was the youngest of four children in a black family. Katherine was a math prodigy from early childhood. Reflecting on her youth, Katherine once said, “I counted everything—the steps to the road, the steps up to church, the number of dishes, spoons, and forks I washed.” She excitedly added, “I couldn’t wait to get to high school to take algebra and geometry.” But Katherine’s hometown had a segregated education system, and black students could not enter high school. So her father moved the family 200 kilometers away so that she could enter high school. After graduating from high school in 1932, she was admitted to a black college at the age of fifteen. By her junior year, she had taken all the math courses the college could offer."},
+{"no": 7, "school": "", "pref": "1", "type": "", "diff": "", "stem": "캐서린이 어린 시절 세어 보았다고 말한 것으로 글에 제시되지 않은 것은?", "p": "1-7", "choices": ["길까지 가는 걸음 수", "교회로 올라가는 걸음 수", "자신이 씻은 접시의 수", "집에 있는 책의 권수"], "ans": 4, "exp": "길까지의 걸음, 교회로 올라가는 걸음, 씻은 접시와 숟가락, 포크는 나오지만 책 권수는 나오지 않습니다.\n📖 I counted everything—the steps to the road, the steps up to church, <b>the number of dishes, spoons, and forks I washed</b>\n   나는 모든 것을 셌다. 길까지의 걸음 수, 교회로 올라가는 걸음 수, 내가 씻은 접시와 숟가락과 포크의 수까지.", "b": 1, "bb": "Katherine Johnson was born on August 26, 1918, in West Virginia, in the U.S., and was the youngest of four children in a black family. Katherine was a math prodigy from early childhood. Reflecting on her youth, Katherine once said, “I counted everything—the steps to the road, the steps up to church, the number of dishes, spoons, and forks I washed.” She excitedly added, “I couldn’t wait to get to high school to take algebra and geometry.” But Katherine’s hometown had a segregated education system, and black students could not enter high school. So her father moved the family 200 kilometers away so that she could enter high school. After graduating from high school in 1932, she was admitted to a black college at the age of fifteen. By her junior year, she had taken all the math courses the college could offer."},
+{"no": 8, "school": "", "pref": "1", "type": "", "diff": "", "stem": "밑줄 친 'a math prodigy'가 뜻하는 바로 가장 적절한 것은?", "p": "1-8", "choices": ["수학을 유난히 싫어한 아이", "수학에 뛰어난 재능을 가진 아이", "수학을 늦게 배우기 시작한 아이", "수학 교사를 꿈꾸던 평범한 아이"], "ans": 2, "exp": "prodigy는 '신동'이라는 뜻입니다. 어릴 때부터 수학에 남다른 재능이 있었다는 말이에요.\n📖 Katherine was <b>a math prodigy</b> from early childhood\n   캐서린은 아주 어릴 때부터 수학 신동이었다.", "b": 1, "bb": "Katherine Johnson was born on August 26, 1918, in West Virginia, in the U.S., and was the youngest of four children in a black family. Katherine was a math prodigy from early childhood. Reflecting on her youth, Katherine once said, “I counted everything—the steps to the road, the steps up to church, the number of dishes, spoons, and forks I washed.” She excitedly added, “I couldn’t wait to get to high school to take algebra and geometry.” But Katherine’s hometown had a segregated education system, and black students could not enter high school. So her father moved the family 200 kilometers away so that she could enter high school. After graduating from high school in 1932, she was admitted to a black college at the age of fifteen. By her junior year, she had taken all the math courses the college could offer."},
+{"no": 9, "school": "", "pref": "1", "type": "", "diff": "", "stem": "밑줄 친 'a segregated education system'이 뜻하는 바로 가장 적절한 것은?", "p": "1-9", "choices": ["인종에 따라 학교를 나눈 제도", "학비를 전혀 받지 않는 제도", "성적순으로 반을 나누는 제도", "모두가 같은 학교에 가는 제도"], "ans": 1, "exp": "바로 뒤에 흑인 학생은 고등학교에 들어갈 수 없었다고 했으니, 인종으로 학교를 갈라놓은 제도를 뜻합니다.\n📖 Katherine’s hometown had <b>a segregated education system</b>\n   캐서린의 고향에는 인종을 분리한 교육 제도가 있었다.", "b": 1, "bb": "Katherine Johnson was born on August 26, 1918, in West Virginia, in the U.S., and was the youngest of four children in a black family. Katherine was a math prodigy from early childhood. Reflecting on her youth, Katherine once said, “I counted everything—the steps to the road, the steps up to church, the number of dishes, spoons, and forks I washed.” She excitedly added, “I couldn’t wait to get to high school to take algebra and geometry.” But Katherine’s hometown had a segregated education system, and black students could not enter high school. So her father moved the family 200 kilometers away so that she could enter high school. After graduating from high school in 1932, she was admitted to a black college at the age of fifteen. By her junior year, she had taken all the math courses the college could offer."},
+{"no": 10, "school": "", "pref": "1", "type": "", "diff": "", "stem": "밑줄 친 'I couldn’t wait'가 뜻하는 바로 가장 적절한 것은?", "p": "1-10", "choices": ["시간이 모자랐다는 뜻이다", "전혀 관심이 없었다는 뜻이다", "너무 기대되어 설렜다는 뜻이다", "기다릴 필요가 없었다는 뜻이다"], "ans": 3, "exp": "can't wait는 '너무 기대돼서 못 기다린다'는 뜻입니다. 앞에 excitedly(들떠서)라는 말도 있어요.\n📖 She excitedly added, “<b>I couldn’t wait</b> to get to high school\n   그녀는 들떠서 덧붙였다. 고등학교에 가고 싶어 견딜 수 없었다고.", "b": 1, "bb": "Katherine Johnson was born on August 26, 1918, in West Virginia, in the U.S., and was the youngest of four children in a black family. Katherine was a math prodigy from early childhood. Reflecting on her youth, Katherine once said, “I counted everything—the steps to the road, the steps up to church, the number of dishes, spoons, and forks I washed.” She excitedly added, “I couldn’t wait to get to high school to take algebra and geometry.” But Katherine’s hometown had a segregated education system, and black students could not enter high school. So her father moved the family 200 kilometers away so that she could enter high school. After graduating from high school in 1932, she was admitted to a black college at the age of fifteen. By her junior year, she had taken all the math courses the college could offer."},
+{"no": 11, "school": "", "pref": "1", "type": "", "diff": "", "stem": "문맥상 'admitted'의 뜻으로 가장 적절한 것은?", "p": "1-11", "choices": ["잘못을 인정한", "초대를 거절한", "시험에 떨어진", "입학을 허가받은"], "ans": 4, "exp": "뒤에 '대학에 ~되었다'가 이어지므로 입학을 허가받았다는 뜻입니다.\n📖 she was <b>admitted</b> to a black college at the age of fifteen\n   그녀는 열다섯 살에 흑인 대학에 입학 허가를 받았다.", "b": 1, "bb": "Katherine Johnson was born on August 26, 1918, in West Virginia, in the U.S., and was the youngest of four children in a black family. Katherine was a math prodigy from early childhood. Reflecting on her youth, Katherine once said, “I counted everything—the steps to the road, the steps up to church, the number of dishes, spoons, and forks I washed.” She excitedly added, “I couldn’t wait to get to high school to take algebra and geometry.” But Katherine’s hometown had a segregated education system, and black students could not enter high school. So her father moved the family 200 kilometers away so that she could enter high school. After graduating from high school in 1932, she was admitted to a black college at the age of fifteen. By her junior year, she had taken all the math courses the college could offer."},
+{"no": 12, "school": "", "pref": "1", "type": "", "diff": "", "stem": "문맥상 'Reflecting'의 뜻으로 가장 적절한 것은?", "p": "1-12", "choices": ["크게 후회하는", "되돌아보며 생각하는", "거울에 비추는", "빠르게 잊어버리는"], "ans": 2, "exp": "reflect on은 지난 일을 돌아보며 생각한다는 뜻입니다. 어린 시절을 돌아보며 말한 장면이에요.\n📖 <b>Reflecting</b> on her youth, Katherine once said\n   어린 시절을 돌아보며 캐서린은 언젠가 이렇게 말했다.", "b": 1, "bb": "Katherine Johnson was born on August 26, 1918, in West Virginia, in the U.S., and was the youngest of four children in a black family. Katherine was a math prodigy from early childhood. Reflecting on her youth, Katherine once said, “I counted everything—the steps to the road, the steps up to church, the number of dishes, spoons, and forks I washed.” She excitedly added, “I couldn’t wait to get to high school to take algebra and geometry.” But Katherine’s hometown had a segregated education system, and black students could not enter high school. So her father moved the family 200 kilometers away so that she could enter high school. After graduating from high school in 1932, she was admitted to a black college at the age of fifteen. By her junior year, she had taken all the math courses the college could offer."},
+{"no": 13, "school": "", "pref": "1", "type": "", "diff": "", "stem": "위 지문의 밑줄 친 빈칸에 들어갈 말로 가장 적절한 것은?", "p": "1-13", "choices": ["200킬로미터 떨어진 곳으로", "바로 옆 동네 집으로", "바다 건너 외국으로", "학교 기숙사 안으로"], "ans": 1, "exp": "딸을 고등학교에 보내려고 가족이 아주 멀리, 200킬로미터나 떨어진 곳으로 옮겼다고 했습니다.\n📖 So her father moved the family <b>200 kilometers away</b> so that she could enter high school\n   그래서 아버지는 그녀가 고등학교에 들어갈 수 있도록 가족을 200킬로미터 떨어진 곳으로 옮겼다.", "b": 1, "bb": "Katherine Johnson was born on August 26, 1918, in West Virginia, in the U.S., and was the youngest of four children in a black family. Katherine was a math prodigy from early childhood. Reflecting on her youth, Katherine once said, “I counted everything—the steps to the road, the steps up to church, the number of dishes, spoons, and forks I washed.” She excitedly added, “I couldn’t wait to get to high school to take algebra and geometry.” But Katherine’s hometown had a segregated education system, and black students could not enter high school. So her father moved the family ______ so that she could enter high school. After graduating from high school in 1932, she was admitted to a black college at the age of fifteen. By her junior year, she had taken all the math courses the college could offer."},
+{"no": 14, "school": "", "pref": "1", "type": "", "diff": "", "stem": "글쓴이가 캐서린을 어릴 때부터 수학 신동이었다고 말하는 근거는?", "p": "1-14", "choices": ["수학 대회에서 우승했기 때문", "수학 교사의 딸이었기 때문", "모든 것을 수로 세었기 때문", "학교를 일찍 졸업했기 때문"], "ans": 3, "exp": "신동이라는 말 바로 뒤에, 걸음 수와 접시 수까지 모든 것을 셌다는 본인의 말이 근거로 나옵니다.\n📖 “<b>I counted everything</b>—the steps to the road, the steps up to church\n   나는 모든 것을 셌다. 길까지의 걸음 수, 교회로 올라가는 걸음 수까지.", "b": 1, "bb": "Katherine Johnson was born on August 26, 1918, in West Virginia, in the U.S., and was the youngest of four children in a black family. Katherine was a math prodigy from early childhood. Reflecting on her youth, Katherine once said, “I counted everything—the steps to the road, the steps up to church, the number of dishes, spoons, and forks I washed.” She excitedly added, “I couldn’t wait to get to high school to take algebra and geometry.” But Katherine’s hometown had a segregated education system, and black students could not enter high school. So her father moved the family 200 kilometers away so that she could enter high school. After graduating from high school in 1932, she was admitted to a black college at the age of fifteen. By her junior year, she had taken all the math courses the college could offer."},
+{"no": 15, "school": "", "pref": "1", "type": "", "diff": "", "stem": "윗글의 제목으로 가장 적절한 것은?", "p": "1-15", "choices": ["나사 최초의 흑인 여성 국장", "미국 고등학교 제도의 변화", "가족을 위해 꿈을 접은 소녀", "수학 천재 소녀의 어린 시절"], "ans": 4, "exp": "출생과 어린 시절, 고교 진학과 대학까지 수학에 뛰어났던 소녀의 성장 과정을 다룹니다.\n📖 Katherine was <b>a math prodigy from early childhood</b>\n   캐서린은 아주 어릴 때부터 수학 신동이었다.", "b": 1, "bb": "Katherine Johnson was born on August 26, 1918, in West Virginia, in the U.S., and was the youngest of four children in a black family. Katherine was a math prodigy from early childhood. Reflecting on her youth, Katherine once said, “I counted everything—the steps to the road, the steps up to church, the number of dishes, spoons, and forks I washed.” She excitedly added, “I couldn’t wait to get to high school to take algebra and geometry.” But Katherine’s hometown had a segregated education system, and black students could not enter high school. So her father moved the family 200 kilometers away so that she could enter high school. After graduating from high school in 1932, she was admitted to a black college at the age of fifteen. By her junior year, she had taken all the math courses the college could offer."},
+{"no": 16, "school": "", "pref": "1", "type": "", "diff": "", "stem": "윗글의 전개 방식으로 가장 적절한 것은?", "p": "1-16", "choices": ["출생에서 대학까지 시간 순서로", "현재에서 과거로 거슬러 가며", "두 인물을 번갈아 비교하며", "주장을 먼저 내고 예를 들며"], "ans": 1, "exp": "태어난 날로 시작해 어린 시절, 1932년 고교 졸업, 대학 3학년까지 시간 순서로 이어집니다.\n📖 Katherine Johnson was born on <b>August 26, 1918</b>, in West Virginia\n   캐서린 존슨은 1918년 8월 26일 웨스트버지니아에서 태어났다.", "b": 1, "bb": "Katherine Johnson was born on August 26, 1918, in West Virginia, in the U.S., and was the youngest of four children in a black family. Katherine was a math prodigy from early childhood. Reflecting on her youth, Katherine once said, “I counted everything—the steps to the road, the steps up to church, the number of dishes, spoons, and forks I washed.” She excitedly added, “I couldn’t wait to get to high school to take algebra and geometry.” But Katherine’s hometown had a segregated education system, and black students could not enter high school. So her father moved the family 200 kilometers away so that she could enter high school. After graduating from high school in 1932, she was admitted to a black college at the age of fifteen. By her junior year, she had taken all the math courses the college could offer."},
+{"no": 17, "school": "", "pref": "2", "type": "", "diff": "", "stem": "멘토가 캐서린에게 권한 진로는?", "p": "2-17", "choices": ["고등학교 교사", "연구 수학자", "대학 행정가", "공장 기술자"], "ans": 2, "exp": "멘토는 '너는 좋은 연구 수학자가 될 것'이라며 그 길을 준비시켜 주겠다고 했습니다.\n📖 “<b>You would make a good research mathematician</b>,” he told his seventeen-year-old student\n   그는 열일곱 살 제자에게 너는 훌륭한 연구 수학자가 될 것이라고 말했다.", "b": 1, "bb": "Her mentor gladly offered special classes just for her, but he was not happy when he had to tell his outstanding student about her career opportunities. “You would make a good research mathematician,” he told his seventeen-year-old student, “and I’m going to prepare you for this career.” Katherine asked, “Where will I find a job?” “That,” he replied, “will be your problem.” The path ahead was unclear and full of obstacles, but Katherine knew she had the strength to make her own way. In 1935, at the age of eighteen, Katherine graduated from college with highest honors and began her career as a teacher at a black public school. At that time, teaching was the only option available to her."},
+{"no": 18, "school": "", "pref": "2", "type": "", "diff": "", "stem": "일자리를 어디서 찾느냐는 캐서린의 물음에 멘토가 한 대답은?", "p": "2-18", "choices": ["그건 네 문제가 될 거라고 했다", "자기가 자리를 구해 주겠다고 했다", "학교에 남으라고 권했다", "답을 알려 주지 않고 웃었다"], "ans": 1, "exp": "멘토는 '그건 네 문제가 될 것'이라고 답했습니다. 길을 열어 줄 수는 없었다는 뜻이에요.\n📖 “That,” he replied, “<b>will be your problem</b>.”\n   그것은 네 문제가 될 거라고 그가 답했다.", "b": 1, "bb": "Her mentor gladly offered special classes just for her, but he was not happy when he had to tell his outstanding student about her career opportunities. “You would make a good research mathematician,” he told his seventeen-year-old student, “and I’m going to prepare you for this career.” Katherine asked, “Where will I find a job?” “That,” he replied, “will be your problem.” The path ahead was unclear and full of obstacles, but Katherine knew she had the strength to make her own way. In 1935, at the age of eighteen, Katherine graduated from college with highest honors and began her career as a teacher at a black public school. At that time, teaching was the only option available to her."},
+{"no": 19, "school": "", "pref": "2", "type": "", "diff": "", "stem": "대학을 졸업한 뒤 캐서린이 처음 시작한 일은?", "p": "2-19", "choices": ["나사의 계산 담당자", "대학의 연구 조교", "흑인 공립학교 교사", "은행의 회계 직원"], "ans": 3, "exp": "1935년 졸업 후 흑인 공립학교 교사로 일을 시작했다고 했습니다.\n📖 began her career as <b>a teacher at a black public school</b>\n   그녀는 흑인 공립학교의 교사로 경력을 시작했다.", "b": 1, "bb": "Her mentor gladly offered special classes just for her, but he was not happy when he had to tell his outstanding student about her career opportunities. “You would make a good research mathematician,” he told his seventeen-year-old student, “and I’m going to prepare you for this career.” Katherine asked, “Where will I find a job?” “That,” he replied, “will be your problem.” The path ahead was unclear and full of obstacles, but Katherine knew she had the strength to make her own way. In 1935, at the age of eighteen, Katherine graduated from college with highest honors and began her career as a teacher at a black public school. At that time, teaching was the only option available to her."},
+{"no": 20, "school": "", "pref": "2", "type": "", "diff": "", "stem": "캐서린의 대학 졸업 성적에 대해 글이 말하는 것은?", "p": "2-20", "choices": ["간신히 졸업하였다", "한 해 늦게 졸업하였다", "수학만 우수하였다", "최우등으로 졸업하였다"], "ans": 4, "exp": "with highest honors, 즉 최고 우등으로 졸업했다고 했습니다.\n📖 Katherine graduated from college <b>with highest honors</b>\n   캐서린은 최우등으로 대학을 졸업했다.", "b": 1, "bb": "Her mentor gladly offered special classes just for her, but he was not happy when he had to tell his outstanding student about her career opportunities. “You would make a good research mathematician,” he told his seventeen-year-old student, “and I’m going to prepare you for this career.” Katherine asked, “Where will I find a job?” “That,” he replied, “will be your problem.” The path ahead was unclear and full of obstacles, but Katherine knew she had the strength to make her own way. In 1935, at the age of eighteen, Katherine graduated from college with highest honors and began her career as a teacher at a black public school. At that time, teaching was the only option available to her."},
+{"no": 21, "school": "", "pref": "2", "type": "", "diff": "", "stem": "윗글의 내용과 일치하는 것은?", "p": "2-21", "choices": ["멘토는 특별 수업을 거절하였다", "캐서린은 바로 나사에 취직했다", "캐서린은 열여덟에 대학을 졸업했다", "캐서린은 교사가 되기를 거부했다"], "ans": 3, "exp": "1935년, 열여덟 살에 대학을 졸업했다고 했습니다. 멘토는 특별 수업을 기꺼이 열어 주었고요.\n📖 In 1935, <b>at the age of eighteen</b>, Katherine graduated from college\n   1935년 열여덟 살에 캐서린은 대학을 졸업했다.", "b": 1, "bb": "Her mentor gladly offered special classes just for her, but he was not happy when he had to tell his outstanding student about her career opportunities. “You would make a good research mathematician,” he told his seventeen-year-old student, “and I’m going to prepare you for this career.” Katherine asked, “Where will I find a job?” “That,” he replied, “will be your problem.” The path ahead was unclear and full of obstacles, but Katherine knew she had the strength to make her own way. In 1935, at the age of eighteen, Katherine graduated from college with highest honors and began her career as a teacher at a black public school. At that time, teaching was the only option available to her."},
+{"no": 22, "school": "", "pref": "2", "type": "", "diff": "", "stem": "윗글의 내용과 일치하지 않는 것은?", "p": "2-22", "choices": ["멘토는 캐서린만을 위한 수업을 열었다", "멘토는 진로 이야기를 기쁘게 했다", "캐서린은 열일곱에 진로 조언을 들었다", "그때 캐서린에게는 교직뿐이었다"], "ans": 2, "exp": "멘토는 진로 전망을 알려 줄 때 마음이 편치 않았다(not happy)고 했습니다.\n📖 <b>he was not happy</b> when he had to tell his outstanding student about her career opportunities\n   뛰어난 제자에게 진로 기회를 말해 주어야 할 때 그는 마음이 편치 않았다.", "b": 1, "bb": "Her mentor gladly offered special classes just for her, but he was not happy when he had to tell his outstanding student about her career opportunities. “You would make a good research mathematician,” he told his seventeen-year-old student, “and I’m going to prepare you for this career.” Katherine asked, “Where will I find a job?” “That,” he replied, “will be your problem.” The path ahead was unclear and full of obstacles, but Katherine knew she had the strength to make her own way. In 1935, at the age of eighteen, Katherine graduated from college with highest honors and began her career as a teacher at a black public school. At that time, teaching was the only option available to her."},
+{"no": 23, "school": "", "pref": "2", "type": "", "diff": "", "stem": "2번 지문에서 캐서린에 대해 언급되지 않은 것은?", "p": "2-23", "choices": ["대학 졸업 당시의 나이", "졸업 후 맡은 직업", "멘토가 권한 진로", "결혼한 해와 상대"], "ans": 4, "exp": "졸업 나이, 첫 직업, 권유받은 진로는 모두 나오지만 결혼에 관한 내용은 없습니다.\n📖 In 1935, at the age of eighteen, Katherine <b>graduated from college with highest honors</b> and began her career as a teacher at a black public school\n   1935년 열여덟 살에 캐서린은 최우등으로 대학을 졸업하고 흑인 공립학교 교사로 일을 시작했다.", "b": 1, "bb": "Her mentor gladly offered special classes just for her, but he was not happy when he had to tell his outstanding student about her career opportunities. “You would make a good research mathematician,” he told his seventeen-year-old student, “and I’m going to prepare you for this career.” Katherine asked, “Where will I find a job?” “That,” he replied, “will be your problem.” The path ahead was unclear and full of obstacles, but Katherine knew she had the strength to make her own way. In 1935, at the age of eighteen, Katherine graduated from college with highest honors and began her career as a teacher at a black public school. At that time, teaching was the only option available to her."},
+{"no": 24, "school": "", "pref": "2", "type": "", "diff": "", "stem": "밑줄 친 'will be your problem'이 뜻하는 바로 가장 적절한 것은?", "p": "2-24", "choices": ["직업 찾기는 네 몫이라는 말", "너에게는 문제가 없다는 말", "문제를 더 풀어 보라는 말", "곧 해결해 주겠다는 말"], "ans": 1, "exp": "일자리를 어디서 찾느냐는 물음에 대한 답입니다. 그 일은 네가 알아서 해야 한다는 뜻이에요.\n📖 Katherine asked, “Where will I find a job?” “That,” he replied, “<b>will be your problem</b>.”\n   일자리를 어디서 찾느냐고 묻자, 그것은 네 문제가 될 거라고 그가 답했다.", "b": 1, "bb": "Her mentor gladly offered special classes just for her, but he was not happy when he had to tell his outstanding student about her career opportunities. “You would make a good research mathematician,” he told his seventeen-year-old student, “and I’m going to prepare you for this career.” Katherine asked, “Where will I find a job?” “That,” he replied, “will be your problem.” The path ahead was unclear and full of obstacles, but Katherine knew she had the strength to make her own way. In 1935, at the age of eighteen, Katherine graduated from college with highest honors and began her career as a teacher at a black public school. At that time, teaching was the only option available to her."},
+{"no": 25, "school": "", "pref": "2", "type": "", "diff": "", "stem": "밑줄 친 'The path ahead was unclear and full of obstacles'가 뜻하는 바로 가장 적절한 것은?", "p": "2-25", "choices": ["앞길이 평탄하고 밝았다", "앞길이 막막하고 장애가 많았다", "길을 잃어 학교를 못 갔다", "장애물 경기를 좋아했다"], "ans": 2, "exp": "앞으로 갈 길이 잘 보이지 않고 걸림돌이 가득했다는 말입니다.\n📖 <b>The path ahead was unclear and full of obstacles</b>, but Katherine knew she had the strength\n   앞길은 불분명하고 장애물로 가득했지만 캐서린은 자신에게 힘이 있음을 알았다.", "b": 1, "bb": "Her mentor gladly offered special classes just for her, but he was not happy when he had to tell his outstanding student about her career opportunities. “You would make a good research mathematician,” he told his seventeen-year-old student, “and I’m going to prepare you for this career.” Katherine asked, “Where will I find a job?” “That,” he replied, “will be your problem.” The path ahead was unclear and full of obstacles, but Katherine knew she had the strength to make her own way. In 1935, at the age of eighteen, Katherine graduated from college with highest honors and began her career as a teacher at a black public school. At that time, teaching was the only option available to her."},
+{"no": 26, "school": "", "pref": "2", "type": "", "diff": "", "stem": "밑줄 친 'make her own way'가 뜻하는 바로 가장 적절한 것은?", "p": "2-26", "choices": ["남이 낸 길을 그대로 간다", "길을 직접 포장해 만든다", "자기 방식을 양보한다", "스스로 길을 열어 나간다"], "ans": 4, "exp": "정해진 길이 없으니 자기 힘으로 길을 만들어 나간다는 뜻입니다.\n📖 Katherine knew she had the strength to <b>make her own way</b>\n   캐서린은 자기 길을 스스로 낼 힘이 있음을 알고 있었다.", "b": 1, "bb": "Her mentor gladly offered special classes just for her, but he was not happy when he had to tell his outstanding student about her career opportunities. “You would make a good research mathematician,” he told his seventeen-year-old student, “and I’m going to prepare you for this career.” Katherine asked, “Where will I find a job?” “That,” he replied, “will be your problem.” The path ahead was unclear and full of obstacles, but Katherine knew she had the strength to make her own way. In 1935, at the age of eighteen, Katherine graduated from college with highest honors and began her career as a teacher at a black public school. At that time, teaching was the only option available to her."},
+{"no": 27, "school": "", "pref": "2", "type": "", "diff": "", "stem": "문맥상 'outstanding'의 뜻으로 가장 적절한 것은?", "p": "2-27", "choices": ["눈에 거슬리는", "밖에 서 있는", "아주 뛰어난", "성실하지 않은"], "ans": 3, "exp": "대학 수학 과목을 전부 들은 제자를 가리키는 말이니 '뛰어난'이라는 뜻입니다.\n📖 when he had to tell his <b>outstanding</b> student about her career opportunities\n   뛰어난 제자에게 진로 기회를 말해 주어야 할 때.", "b": 1, "bb": "Her mentor gladly offered special classes just for her, but he was not happy when he had to tell his outstanding student about her career opportunities. “You would make a good research mathematician,” he told his seventeen-year-old student, “and I’m going to prepare you for this career.” Katherine asked, “Where will I find a job?” “That,” he replied, “will be your problem.” The path ahead was unclear and full of obstacles, but Katherine knew she had the strength to make her own way. In 1935, at the age of eighteen, Katherine graduated from college with highest honors and began her career as a teacher at a black public school. At that time, teaching was the only option available to her."},
+{"no": 28, "school": "", "pref": "2", "type": "", "diff": "", "stem": "문맥상 'option'의 뜻으로 가장 적절한 것은?", "p": "2-28", "choices": ["선택할 수 있는 길", "반드시 할 의무", "뜻밖의 사고", "오래된 전통"], "ans": 1, "exp": "그때 그녀가 고를 수 있는 길이 교직뿐이었다는 뜻입니다.\n📖 teaching was the only <b>option</b> available to her\n   그때 그녀에게 가능한 유일한 선택은 교직이었다.", "b": 1, "bb": "Her mentor gladly offered special classes just for her, but he was not happy when he had to tell his outstanding student about her career opportunities. “You would make a good research mathematician,” he told his seventeen-year-old student, “and I’m going to prepare you for this career.” Katherine asked, “Where will I find a job?” “That,” he replied, “will be your problem.” The path ahead was unclear and full of obstacles, but Katherine knew she had the strength to make her own way. In 1935, at the age of eighteen, Katherine graduated from college with highest honors and began her career as a teacher at a black public school. At that time, teaching was the only option available to her."},
+{"no": 29, "school": "", "pref": "2", "type": "", "diff": "", "stem": "위 지문의 밑줄 친 빈칸에 들어갈 말로 가장 적절한 것은?", "p": "2-29", "choices": ["스물일곱 살의", "열일곱 살의", "일곱 살의", "서른 살의"], "ans": 2, "exp": "1935년에 열여덟 살로 졸업했으니 진로 조언을 들을 때는 열일곱 살이었습니다.\n📖 he told his <b>seventeen-year-old</b> student\n   그는 열일곱 살인 제자에게 말했다.", "b": 1, "bb": "Her mentor gladly offered special classes just for her, but he was not happy when he had to tell his outstanding student about her career opportunities. “You would make a good research mathematician,” he told his ______ student, “and I’m going to prepare you for this career.” Katherine asked, “Where will I find a job?” “That,” he replied, “will be your problem.” The path ahead was unclear and full of obstacles, but Katherine knew she had the strength to make her own way. In 1935, at the age of eighteen, Katherine graduated from college with highest honors and began her career as a teacher at a black public school. At that time, teaching was the only option available to her."},
+{"no": 30, "school": "", "pref": "2", "type": "", "diff": "", "stem": "글쓴이가 멘토의 마음이 편치 않았다고 말한 이유는?", "p": "2-30", "choices": ["제자가 수업을 자주 빠져서", "제자의 성적이 떨어져서", "제자의 일자리 전망이 어두워서", "제자가 전공을 바꾸려 해서"], "ans": 3, "exp": "실력은 뛰어난데 흑인 여성이 갈 수 있는 자리가 없었어요. 일자리는 네 문제라고 말할 수밖에 없었습니다.\n📖 he was not happy when he had to tell his outstanding student about <b>her career opportunities</b>\n   뛰어난 제자에게 그녀의 진로 기회를 말해 주어야 할 때 그는 마음이 편치 않았다.", "b": 1, "bb": "Her mentor gladly offered special classes just for her, but he was not happy when he had to tell his outstanding student about her career opportunities. “You would make a good research mathematician,” he told his seventeen-year-old student, “and I’m going to prepare you for this career.” Katherine asked, “Where will I find a job?” “That,” he replied, “will be your problem.” The path ahead was unclear and full of obstacles, but Katherine knew she had the strength to make her own way. In 1935, at the age of eighteen, Katherine graduated from college with highest honors and began her career as a teacher at a black public school. At that time, teaching was the only option available to her."},
+{"no": 31, "school": "", "pref": "2", "type": "", "diff": "", "stem": "윗글의 요지로 가장 적절한 것은?", "p": "2-31", "choices": ["멘토 덕분에 바로 취업하였다", "교사가 가장 좋은 직업이었다", "성적보다 인맥이 더 중요하다", "길이 막혔어도 캐서린은 나아갔다"], "ans": 4, "exp": "앞길은 막막했지만 스스로 길을 낼 힘이 있다고 믿고 나아갔다는 것이 글의 핵심입니다.\n📖 but <b>Katherine knew she had the strength to make her own way</b>\n   그러나 캐서린은 자기 길을 스스로 낼 힘이 있음을 알고 있었다.", "b": 1, "bb": "Her mentor gladly offered special classes just for her, but he was not happy when he had to tell his outstanding student about her career opportunities. “You would make a good research mathematician,” he told his seventeen-year-old student, “and I’m going to prepare you for this career.” Katherine asked, “Where will I find a job?” “That,” he replied, “will be your problem.” The path ahead was unclear and full of obstacles, but Katherine knew she had the strength to make her own way. In 1935, at the age of eighteen, Katherine graduated from college with highest honors and began her career as a teacher at a black public school. At that time, teaching was the only option available to her."},
+{"no": 32, "school": "", "pref": "2", "type": "", "diff": "", "stem": "2번 지문에서 멘토와 캐서린의 대화가 하는 역할로 가장 적절한 것은?", "p": "2-32", "choices": ["캐서린이 마주한 현실을 보여 준다", "수학 공부 방법을 설명해 준다", "멘토의 잘못을 비판하고 있다", "나사의 연구 과정을 소개한다"], "ans": 1, "exp": "실력은 인정받아도 흑인 여성에게 자리가 없던 당시 현실을 짧은 대화로 보여 줍니다.\n📖 Katherine asked, “<b>Where will I find a job?</b>”\n   캐서린은 일자리를 어디서 찾게 되겠냐고 물었다.", "b": 1, "bb": "Her mentor gladly offered special classes just for her, but he was not happy when he had to tell his outstanding student about her career opportunities. “You would make a good research mathematician,” he told his seventeen-year-old student, “and I’m going to prepare you for this career.” Katherine asked, “Where will I find a job?” “That,” he replied, “will be your problem.” The path ahead was unclear and full of obstacles, but Katherine knew she had the strength to make her own way. In 1935, at the age of eighteen, Katherine graduated from college with highest honors and began her career as a teacher at a black public school. At that time, teaching was the only option available to her."},
+{"no": 33, "school": "", "pref": "3", "type": "", "diff": "", "stem": "1953년에 캐서린이 일자리를 얻은 곳은?", "p": "3-33", "choices": ["워싱턴의 대학 연구소", "뉴욕의 공립 고등학교", "텍사스의 비행 학교", "버지니아의 나사 현장 센터"], "ans": 4, "exp": "1953년이 되어서야 버지니아에 있는 나사 현장 센터에 자리를 얻었다고 했습니다.\n📖 Katherine found a job at <b>a NASA field center in Virginia</b>\n   캐서린은 버지니아의 나사 현장 센터에서 일자리를 얻었다.", "b": 1, "bb": "It was not until 1953 that Katherine found a job at a NASA field center in Virginia. There, she worked as one of the “Black computers” who did complex calculations manually to support white male engineers. Though they greatly contributed to the space project, they endured a lot of discrimination, including segregation in the office and being referred to with terms like “girl” despite being professional women. Two weeks into the job, Katherine was reassigned to NASA’s elite space research division. There, she was the only black female member of the staff. Despite her enormous contributions, the important research meetings were held only among white staff members. When she asked for permission to attend the meetings, her male colleagues said that “the girls” didn’t usually go."},
+{"no": 34, "school": "", "pref": "3", "type": "", "diff": "", "stem": "'Black computers'라 불린 사람들이 한 일은?", "p": "3-34", "choices": ["손으로 복잡한 계산을 했다", "기계 설계를 직접 맡았다", "회의 기록을 정리했다", "우주선을 직접 조종했다"], "ans": 1, "exp": "백인 남성 공학자들을 돕기 위해 복잡한 계산을 손으로 했다고 했습니다.\n📖 who did <b>complex calculations manually</b> to support white male engineers\n   그들은 백인 남성 공학자들을 돕기 위해 복잡한 계산을 손으로 했다.", "b": 1, "bb": "It was not until 1953 that Katherine found a job at a NASA field center in Virginia. There, she worked as one of the “Black computers” who did complex calculations manually to support white male engineers. Though they greatly contributed to the space project, they endured a lot of discrimination, including segregation in the office and being referred to with terms like “girl” despite being professional women. Two weeks into the job, Katherine was reassigned to NASA’s elite space research division. There, she was the only black female member of the staff. Despite her enormous contributions, the important research meetings were held only among white staff members. When she asked for permission to attend the meetings, her male colleagues said that “the girls” didn’t usually go."},
+{"no": 35, "school": "", "pref": "3", "type": "", "diff": "", "stem": "입사 2주 뒤 캐서린에게 일어난 일은?", "p": "3-35", "choices": ["회의 참석 허가를 받았다", "엘리트 우주 연구부로 옮겨졌다", "급여가 두 배로 올랐다", "고향으로 돌아가게 되었다"], "ans": 2, "exp": "일을 시작한 지 2주 만에 나사의 엘리트 우주 연구부로 재배치되었다고 했습니다.\n📖 Two weeks into the job, Katherine was <b>reassigned to NASA’s elite space research division</b>\n   일을 시작한 지 2주 만에 캐서린은 나사의 엘리트 우주 연구부로 배치되었다.", "b": 1, "bb": "It was not until 1953 that Katherine found a job at a NASA field center in Virginia. There, she worked as one of the “Black computers” who did complex calculations manually to support white male engineers. Though they greatly contributed to the space project, they endured a lot of discrimination, including segregation in the office and being referred to with terms like “girl” despite being professional women. Two weeks into the job, Katherine was reassigned to NASA’s elite space research division. There, she was the only black female member of the staff. Despite her enormous contributions, the important research meetings were held only among white staff members. When she asked for permission to attend the meetings, her male colleagues said that “the girls” didn’t usually go."},
+{"no": 36, "school": "", "pref": "3", "type": "", "diff": "", "stem": "중요한 연구 회의에 대해 글이 말하는 것은?", "p": "3-36", "choices": ["모두에게 공개되어 있었다", "여성만 참석할 수 있었다", "백인 직원끼리만 열렸다", "한 달에 한 번만 열렸다"], "ans": 3, "exp": "그녀의 공헌이 엄청났는데도 중요한 연구 회의는 백인 직원끼리만 열렸다고 했습니다.\n📖 the important research meetings were held <b>only among white staff members</b>\n   중요한 연구 회의는 백인 직원들끼리만 열렸다.", "b": 1, "bb": "It was not until 1953 that Katherine found a job at a NASA field center in Virginia. There, she worked as one of the “Black computers” who did complex calculations manually to support white male engineers. Though they greatly contributed to the space project, they endured a lot of discrimination, including segregation in the office and being referred to with terms like “girl” despite being professional women. Two weeks into the job, Katherine was reassigned to NASA’s elite space research division. There, she was the only black female member of the staff. Despite her enormous contributions, the important research meetings were held only among white staff members. When she asked for permission to attend the meetings, her male colleagues said that “the girls” didn’t usually go."},
+{"no": 37, "school": "", "pref": "3", "type": "", "diff": "", "stem": "윗글의 내용과 일치하는 것은?", "p": "3-37", "choices": ["캐서린은 1953년에 교사가 되었다", "흑인 계산원들은 차별을 받지 않았다", "캐서린은 회의 참석을 바로 허락받았다", "캐서린은 연구부의 유일한 흑인 여성이었다"], "ans": 4, "exp": "엘리트 연구부에서 그녀는 유일한 흑인 여성 직원이었다고 했습니다.\n📖 There, she was <b>the only black female member of the staff</b>\n   그곳에서 그녀는 직원 중 유일한 흑인 여성이었다.", "b": 1, "bb": "It was not until 1953 that Katherine found a job at a NASA field center in Virginia. There, she worked as one of the “Black computers” who did complex calculations manually to support white male engineers. Though they greatly contributed to the space project, they endured a lot of discrimination, including segregation in the office and being referred to with terms like “girl” despite being professional women. Two weeks into the job, Katherine was reassigned to NASA’s elite space research division. There, she was the only black female member of the staff. Despite her enormous contributions, the important research meetings were held only among white staff members. When she asked for permission to attend the meetings, her male colleagues said that “the girls” didn’t usually go."},
+{"no": 38, "school": "", "pref": "3", "type": "", "diff": "", "stem": "윗글의 내용과 일치하지 않는 것은?", "p": "3-38", "choices": ["캐서린은 입사 2주 만에 해고되었다", "흑인 계산원들은 사무실에서 분리되었다", "캐서린은 버지니아에서 일하게 되었다", "캐서린은 1953년에 나사에 들어갔다"], "ans": 1, "exp": "2주 뒤에 일어난 일은 해고가 아니라 엘리트 우주 연구부로의 재배치였습니다.\n📖 <b>Two weeks into the job</b>, Katherine was reassigned to NASA’s elite space research division\n   일을 시작한 지 2주 만에 캐서린은 나사의 엘리트 우주 연구부로 배치되었다.", "b": 1, "bb": "It was not until 1953 that Katherine found a job at a NASA field center in Virginia. There, she worked as one of the “Black computers” who did complex calculations manually to support white male engineers. Though they greatly contributed to the space project, they endured a lot of discrimination, including segregation in the office and being referred to with terms like “girl” despite being professional women. Two weeks into the job, Katherine was reassigned to NASA’s elite space research division. There, she was the only black female member of the staff. Despite her enormous contributions, the important research meetings were held only among white staff members. When she asked for permission to attend the meetings, her male colleagues said that “the girls” didn’t usually go."},
+{"no": 39, "school": "", "pref": "3", "type": "", "diff": "", "stem": "흑인 계산원들이 겪은 차별로 글에 제시되지 않은 것은?", "p": "3-39", "choices": ["사무실에서 분리된 것", "월급을 받지 못한 것", "소녀라는 말로 불린 것", "중요 회의에서 빠진 것"], "ans": 2, "exp": "사무실 분리, 'girl' 같은 호칭, 회의 배제는 나오지만 월급을 받지 못했다는 말은 없습니다.\n📖 they endured a lot of discrimination, including <b>segregation in the office</b> and being referred to with terms like “girl”\n   그들은 사무실 분리와 'girl' 같은 호칭으로 불리는 일을 포함해 많은 차별을 견뎠다.", "b": 1, "bb": "It was not until 1953 that Katherine found a job at a NASA field center in Virginia. There, she worked as one of the “Black computers” who did complex calculations manually to support white male engineers. Though they greatly contributed to the space project, they endured a lot of discrimination, including segregation in the office and being referred to with terms like “girl” despite being professional women. Two weeks into the job, Katherine was reassigned to NASA’s elite space research division. There, she was the only black female member of the staff. Despite her enormous contributions, the important research meetings were held only among white staff members. When she asked for permission to attend the meetings, her male colleagues said that “the girls” didn’t usually go."},
+{"no": 40, "school": "", "pref": "3", "type": "", "diff": "", "stem": "밑줄 친 '“Black computers”'가 뜻하는 바로 가장 적절한 것은?", "p": "3-40", "choices": ["검은색 전자 계산기들", "흑인이 만든 컴퓨터", "계산을 맡은 흑인 직원들", "흑인 공학자 모임"], "ans": 3, "exp": "당시 computer는 '계산하는 사람'을 뜻했습니다. 손으로 계산을 맡은 흑인 여성 직원들을 가리켜요.\n📖 she worked as one of the <b>“Black computers”</b> who did complex calculations manually\n   그녀는 복잡한 계산을 손으로 하던 '흑인 계산원' 중 한 사람으로 일했다.", "b": 1, "bb": "It was not until 1953 that Katherine found a job at a NASA field center in Virginia. There, she worked as one of the “Black computers” who did complex calculations manually to support white male engineers. Though they greatly contributed to the space project, they endured a lot of discrimination, including segregation in the office and being referred to with terms like “girl” despite being professional women. Two weeks into the job, Katherine was reassigned to NASA’s elite space research division. There, she was the only black female member of the staff. Despite her enormous contributions, the important research meetings were held only among white staff members. When she asked for permission to attend the meetings, her male colleagues said that “the girls” didn’t usually go."},
+{"no": 41, "school": "", "pref": "3", "type": "", "diff": "", "stem": "밑줄 친 'It was not until 1953 that'이 뜻하는 바로 가장 적절한 것은?", "p": "3-41", "choices": ["1953년까지만 그랬다", "1953년 전부터 그랬다", "1953년에는 아니었다", "1953년이 되어서야 그랬다"], "ans": 4, "exp": "not until은 '~가 되어서야 비로소'라는 뜻입니다. 1953년에야 겨우 자리를 얻었다는 말이에요.\n📖 <b>It was not until 1953 that</b> Katherine found a job at a NASA field center\n   1953년이 되어서야 캐서린은 나사 현장 센터에서 일자리를 얻었다.", "b": 1, "bb": "It was not until 1953 that Katherine found a job at a NASA field center in Virginia. There, she worked as one of the “Black computers” who did complex calculations manually to support white male engineers. Though they greatly contributed to the space project, they endured a lot of discrimination, including segregation in the office and being referred to with terms like “girl” despite being professional women. Two weeks into the job, Katherine was reassigned to NASA’s elite space research division. There, she was the only black female member of the staff. Despite her enormous contributions, the important research meetings were held only among white staff members. When she asked for permission to attend the meetings, her male colleagues said that “the girls” didn’t usually go."},
+{"no": 42, "school": "", "pref": "3", "type": "", "diff": "", "stem": "밑줄 친 '“the girls” didn’t usually go'가 뜻하는 바로 가장 적절한 것은?", "p": "3-42", "choices": ["여자들은 보통 안 간다는 말", "여자들이 먼저 간다는 말", "소녀들이 길을 잃었다는 말", "여자들만 회의를 연다는 말"], "ans": 1, "exp": "회의에 참석하게 해 달라는 요청에 남성 동료들이 여자들은 보통 가지 않는다고 답한 것입니다.\n📖 her male colleagues said that <b>“the girls” didn’t usually go</b>\n   남성 동료들은 '여자들'은 보통 가지 않는다고 말했다.", "b": 1, "bb": "It was not until 1953 that Katherine found a job at a NASA field center in Virginia. There, she worked as one of the “Black computers” who did complex calculations manually to support white male engineers. Though they greatly contributed to the space project, they endured a lot of discrimination, including segregation in the office and being referred to with terms like “girl” despite being professional women. Two weeks into the job, Katherine was reassigned to NASA’s elite space research division. There, she was the only black female member of the staff. Despite her enormous contributions, the important research meetings were held only among white staff members. When she asked for permission to attend the meetings, her male colleagues said that “the girls” didn’t usually go."},
+{"no": 43, "school": "", "pref": "3", "type": "", "diff": "", "stem": "문맥상 'endured'의 뜻으로 가장 적절한 것은?", "p": "3-43", "choices": ["완전히 없앴다", "참고 견뎠다", "크게 즐겼다", "미리 피했다"], "ans": 2, "exp": "차별을 많이 받으면서도 참고 견뎌 냈다는 뜻입니다.\n📖 they <b>endured</b> a lot of discrimination\n   그들은 많은 차별을 견뎌 냈다.", "b": 1, "bb": "It was not until 1953 that Katherine found a job at a NASA field center in Virginia. There, she worked as one of the “Black computers” who did complex calculations manually to support white male engineers. Though they greatly contributed to the space project, they endured a lot of discrimination, including segregation in the office and being referred to with terms like “girl” despite being professional women. Two weeks into the job, Katherine was reassigned to NASA’s elite space research division. There, she was the only black female member of the staff. Despite her enormous contributions, the important research meetings were held only among white staff members. When she asked for permission to attend the meetings, her male colleagues said that “the girls” didn’t usually go."},
+{"no": 44, "school": "", "pref": "3", "type": "", "diff": "", "stem": "문맥상 'enormous'의 뜻으로 가장 적절한 것은?", "p": "3-44", "choices": ["아주 적은", "평범한", "매우 큰", "위험한"], "ans": 3, "exp": "Despite(~에도 불구하고)와 함께 쓰여, 공헌이 아주 컸는데도 회의에서 빠졌다는 뜻입니다.\n📖 Despite her <b>enormous</b> contributions\n   그녀의 엄청난 공헌에도 불구하고.", "b": 1, "bb": "It was not until 1953 that Katherine found a job at a NASA field center in Virginia. There, she worked as one of the “Black computers” who did complex calculations manually to support white male engineers. Though they greatly contributed to the space project, they endured a lot of discrimination, including segregation in the office and being referred to with terms like “girl” despite being professional women. Two weeks into the job, Katherine was reassigned to NASA’s elite space research division. There, she was the only black female member of the staff. Despite her enormous contributions, the important research meetings were held only among white staff members. When she asked for permission to attend the meetings, her male colleagues said that “the girls” didn’t usually go."},
+{"no": 45, "school": "", "pref": "3", "type": "", "diff": "", "stem": "위 지문의 밑줄 친 빈칸에 들어갈 말로 가장 적절한 것은?", "p": "3-45", "choices": ["큰 칭찬", "적은 보수", "긴 훈련", "많은 차별"], "ans": 4, "exp": "뒤에 사무실 분리와 낮춰 부르는 호칭이 예로 이어지니 빈칸은 '많은 차별'입니다.\n📖 they endured <b>a lot of discrimination</b>, including segregation in the office\n   그들은 사무실 분리를 포함해 많은 차별을 견뎌 냈다.", "b": 1, "bb": "It was not until 1953 that Katherine found a job at a NASA field center in Virginia. There, she worked as one of the “Black computers” who did complex calculations manually to support white male engineers. Though they greatly contributed to the space project, they endured ______, including segregation in the office and being referred to with terms like “girl” despite being professional women. Two weeks into the job, Katherine was reassigned to NASA’s elite space research division. There, she was the only black female member of the staff. Despite her enormous contributions, the important research meetings were held only among white staff members. When she asked for permission to attend the meetings, her male colleagues said that “the girls” didn’t usually go."},
+{"no": 46, "school": "", "pref": "3", "type": "", "diff": "", "stem": "글쓴이가 흑인 계산원들의 처지를 차별이라고 말하는 근거는?", "p": "3-46", "choices": ["사무실 분리와 낮춘 호칭을 쓴 점", "급여가 전혀 지급되지 않은 점", "계산 도구를 쓰지 못한 점", "근무 시간이 너무 길었던 점"], "ans": 1, "exp": "차별의 예로 사무실을 갈라놓은 것과, 전문직 여성인데도 'girl'이라 부른 것을 들었습니다.\n📖 including segregation in the office and <b>being referred to with terms like “girl” despite being professional women</b>\n   전문직 여성인데도 'girl' 같은 말로 불린 것도 포함되었다.", "b": 1, "bb": "It was not until 1953 that Katherine found a job at a NASA field center in Virginia. There, she worked as one of the “Black computers” who did complex calculations manually to support white male engineers. Though they greatly contributed to the space project, they endured a lot of discrimination, including segregation in the office and being referred to with terms like “girl” despite being professional women. Two weeks into the job, Katherine was reassigned to NASA’s elite space research division. There, she was the only black female member of the staff. Despite her enormous contributions, the important research meetings were held only among white staff members. When she asked for permission to attend the meetings, her male colleagues said that “the girls” didn’t usually go."},
+{"no": 47, "school": "", "pref": "3", "type": "", "diff": "", "stem": "윗글의 요지로 가장 적절한 것은?", "p": "3-47", "choices": ["나사는 모든 직원을 공평히 대했다", "큰 공헌에도 캐서린은 차별을 받았다", "캐서린은 계산 기계를 발명하였다", "우주 계획은 교사들이 이끌었다"], "ans": 2, "exp": "공헌이 엄청났는데도 중요한 회의에서 빠지는 등 차별을 받았다는 것이 글의 핵심입니다.\n📖 <b>Despite her enormous contributions</b>, the important research meetings were held only among white staff members\n   그녀의 엄청난 공헌에도 중요한 연구 회의는 백인 직원들끼리만 열렸다.", "b": 1, "bb": "It was not until 1953 that Katherine found a job at a NASA field center in Virginia. There, she worked as one of the “Black computers” who did complex calculations manually to support white male engineers. Though they greatly contributed to the space project, they endured a lot of discrimination, including segregation in the office and being referred to with terms like “girl” despite being professional women. Two weeks into the job, Katherine was reassigned to NASA’s elite space research division. There, she was the only black female member of the staff. Despite her enormous contributions, the important research meetings were held only among white staff members. When she asked for permission to attend the meetings, her male colleagues said that “the girls” didn’t usually go."},
+{"no": 48, "school": "", "pref": "3", "type": "", "diff": "", "stem": "3번 지문의 전개 방식으로 가장 적절한 것은?", "p": "3-48", "choices": ["두 기관의 제도를 맞세워 비교한다", "실험 결과를 수치로 정리해 준다", "취업 뒤 겪은 차별을 차례로 든다", "앞으로의 계획을 예측해 보여 준다"], "ans": 3, "exp": "취업, 계산원 시절의 차별, 연구부 재배치, 회의 배제 순서로 겪은 차별을 차례로 보여 줍니다.\n📖 <b>Though they greatly contributed to the space project</b>, they endured a lot of discrimination\n   그들은 우주 계획에 크게 공헌했지만 많은 차별을 견뎌야 했다.", "b": 1, "bb": "It was not until 1953 that Katherine found a job at a NASA field center in Virginia. There, she worked as one of the “Black computers” who did complex calculations manually to support white male engineers. Though they greatly contributed to the space project, they endured a lot of discrimination, including segregation in the office and being referred to with terms like “girl” despite being professional women. Two weeks into the job, Katherine was reassigned to NASA’s elite space research division. There, she was the only black female member of the staff. Despite her enormous contributions, the important research meetings were held only among white staff members. When she asked for permission to attend the meetings, her male colleagues said that “the girls” didn’t usually go."},
+{"no": 49, "school": "", "pref": "4", "type": "", "diff": "", "stem": "캐서린이 남자 직원들에게 던진 질문은 무엇에 관한 것이었는가?", "p": "4-49", "choices": ["회의 시간이 바뀐 이유", "자신이 갈 수 없다는 법의 존재", "자신에게 주어진 업무량", "동료들의 승진 기준"], "ans": 2, "exp": "캐서린은 '내가 갈 수 없다는 법이 있나요?'라고 물었어요. 자기를 막는 규정이 실제로 있는지를 되물은 것입니다.\n📖 Katherine asked, “<b>Is there a law that says I can’t go</b>?”\n   캐서린은 “내가 갈 수 없다는 법이 있나요?”라고 물었다.", "b": 1, "bb": "Katherine asked, “Is there a law that says I can’t go?” The embarrassed male workers had no choice but to let her in. By asking questions no one had ever asked, Katherine ended a discriminatory custom. She had faced barriers, but her efforts to overcome them paid off. She felt proud and continued her work with courage. In 1960, she wrote a research paper with another engineer about how to place a spacecraft into orbit. That was the first time a woman in her division received credit as an author of a research report. Katherine’s remarkable calculations by hand were trusted more than digital computers."},
+{"no": 50, "school": "", "pref": "4", "type": "", "diff": "", "stem": "글에 따르면 캐서린이 차별적인 관행을 끝낼 수 있었던 방법은?", "p": "4-50", "choices": ["상부에 정식으로 항의해서", "동료들의 서명을 모아서", "언론에 사실을 알려서", "아무도 묻지 않던 질문을 던져서"], "ans": 4, "exp": "아무도 한 번도 물은 적 없던 질문을 함으로써 차별적 관행을 끝냈다고 했어요.\n📖 <b>By asking questions no one had ever asked</b>, Katherine ended a discriminatory custom.\n   아무도 물어본 적 없는 질문을 함으로써 캐서린은 차별적 관행을 끝냈다.", "b": 1, "bb": "Katherine asked, “Is there a law that says I can’t go?” The embarrassed male workers had no choice but to let her in. By asking questions no one had ever asked, Katherine ended a discriminatory custom. She had faced barriers, but her efforts to overcome them paid off. She felt proud and continued her work with courage. In 1960, she wrote a research paper with another engineer about how to place a spacecraft into orbit. That was the first time a woman in her division received credit as an author of a research report. Katherine’s remarkable calculations by hand were trusted more than digital computers."},
+{"no": 51, "school": "", "pref": "4", "type": "", "diff": "", "stem": "1960년에 캐서린이 다른 엔지니어와 함께 쓴 연구 논문의 주제는?", "p": "4-51", "choices": ["우주선을 궤도에 올리는 방법", "전자계산기의 오류를 줄이는 법", "달 표면의 지형을 재는 방법", "항공기 날개의 설계 원리"], "ans": 1, "exp": "1960년에 쓴 논문은 우주선을 궤도에 올려놓는 방법에 관한 것이었어요.\n📖 In 1960, she wrote a research paper with another engineer about <b>how to place a spacecraft into orbit</b>.\n   1960년에 그녀는 다른 엔지니어와 함께 우주선을 궤도에 올리는 방법에 대한 연구 논문을 썼다.", "b": 1, "bb": "Katherine asked, “Is there a law that says I can’t go?” The embarrassed male workers had no choice but to let her in. By asking questions no one had ever asked, Katherine ended a discriminatory custom. She had faced barriers, but her efforts to overcome them paid off. She felt proud and continued her work with courage. In 1960, she wrote a research paper with another engineer about how to place a spacecraft into orbit. That was the first time a woman in her division received credit as an author of a research report. Katherine’s remarkable calculations by hand were trusted more than digital computers."},
+{"no": 52, "school": "", "pref": "4", "type": "", "diff": "", "stem": "캐서린의 손 계산에 대해 글이 말하는 것은?", "p": "4-52", "choices": ["컴퓨터 검산 뒤에야 인정받았다", "속도가 느려 거의 쓰이지 않았다", "디지털 컴퓨터보다 더 신뢰받았다", "오류가 많아 자주 수정되었다"], "ans": 3, "exp": "마지막 문장에서 그녀의 손 계산이 디지털 컴퓨터보다 더 신뢰받았다고 했어요.\n📖 Katherine’s remarkable calculations by hand <b>were trusted more than digital computers</b>.\n   캐서린의 놀라운 손 계산은 디지털 컴퓨터보다 더 신뢰받았다.", "b": 1, "bb": "Katherine asked, “Is there a law that says I can’t go?” The embarrassed male workers had no choice but to let her in. By asking questions no one had ever asked, Katherine ended a discriminatory custom. She had faced barriers, but her efforts to overcome them paid off. She felt proud and continued her work with courage. In 1960, she wrote a research paper with another engineer about how to place a spacecraft into orbit. That was the first time a woman in her division received credit as an author of a research report. Katherine’s remarkable calculations by hand were trusted more than digital computers."},
+{"no": 53, "school": "", "pref": "4", "type": "", "diff": "", "stem": "윗글의 내용과 일치하는 것은?", "p": "4-53", "choices": ["캐서린은 1960년에 논문을 공동 집필했다", "남자 직원들이 캐서린을 끝내 막았다", "캐서린은 차별 앞에서 일을 그만두었다", "논문의 저자는 모두 남성으로 기록됐다"], "ans": 1, "exp": "1960년에 다른 엔지니어와 함께 논문을 썼다고 분명히 나와 있어요.\n📖 In 1960, <b>she wrote a research paper with another engineer</b> about how to place a spacecraft into orbit.\n   1960년에 그녀는 다른 엔지니어와 함께 연구 논문을 썼다.", "b": 1, "bb": "Katherine asked, “Is there a law that says I can’t go?” The embarrassed male workers had no choice but to let her in. By asking questions no one had ever asked, Katherine ended a discriminatory custom. She had faced barriers, but her efforts to overcome them paid off. She felt proud and continued her work with courage. In 1960, she wrote a research paper with another engineer about how to place a spacecraft into orbit. That was the first time a woman in her division received credit as an author of a research report. Katherine’s remarkable calculations by hand were trusted more than digital computers."},
+{"no": 54, "school": "", "pref": "4", "type": "", "diff": "", "stem": "윗글의 내용과 일치하지 않는 것은?", "p": "4-54", "choices": ["캐서린은 남자 직원들의 공간에 들어갔다", "그녀는 장벽 앞에서 자신감을 잃었다", "1960년에 공동 저자로 논문을 냈다", "그녀의 손 계산은 깊이 신뢰받았다"], "ans": 2, "exp": "그녀는 자랑스러움을 느끼고 용기 있게 일을 계속했다고 했으니, 자신감을 잃었다는 말은 어긋나요.\n📖 She <b>felt proud and continued her work with courage</b>.\n   그녀는 자랑스러움을 느끼며 용기 있게 일을 계속했다.", "b": 1, "bb": "Katherine asked, “Is there a law that says I can’t go?” The embarrassed male workers had no choice but to let her in. By asking questions no one had ever asked, Katherine ended a discriminatory custom. She had faced barriers, but her efforts to overcome them paid off. She felt proud and continued her work with courage. In 1960, she wrote a research paper with another engineer about how to place a spacecraft into orbit. That was the first time a woman in her division received credit as an author of a research report. Katherine’s remarkable calculations by hand were trusted more than digital computers."},
+{"no": 55, "school": "", "pref": "4", "type": "", "diff": "", "stem": "윗글에서 캐서린에 대해 언급되지 않은 것은?", "p": "4-55", "choices": ["논문을 함께 쓴 동료 엔지니어", "차별적 관행을 끝낸 질문", "손 계산이 받은 높은 신뢰", "그녀가 받은 학위와 전공"], "ans": 4, "exp": "논문 공동 저자, 질문, 손 계산의 신뢰는 모두 나오지만 학위나 전공 이야기는 전혀 없어요.\n📖 In 1960, she wrote a research paper <b>with another engineer</b> about how to place a spacecraft into orbit.\n   1960년에 그녀는 다른 엔지니어와 함께 연구 논문을 썼다.", "b": 1, "bb": "Katherine asked, “Is there a law that says I can’t go?” The embarrassed male workers had no choice but to let her in. By asking questions no one had ever asked, Katherine ended a discriminatory custom. She had faced barriers, but her efforts to overcome them paid off. She felt proud and continued her work with courage. In 1960, she wrote a research paper with another engineer about how to place a spacecraft into orbit. That was the first time a woman in her division received credit as an author of a research report. Katherine’s remarkable calculations by hand were trusted more than digital computers."},
+{"no": 56, "school": "", "pref": "4", "type": "", "diff": "", "stem": "밑줄 친 'had no choice but to let her in'이 뜻하는 바로 가장 적절한 것은?", "p": "4-56", "choices": ["들여보내기를 망설였다", "들여보낼 권한이 없었다", "들여보낼 수밖에 없었다", "들여보내 달라고 부탁했다"], "ans": 3, "exp": "'have no choice but to ~'는 '~할 수밖에 없다'는 뜻이에요. 질문에 막힌 직원들이 어쩔 수 없이 들여보낸 것입니다.\n📖 The embarrassed male workers <b>had no choice but to let her in</b>.\n   당황한 남자 직원들은 그녀를 들여보낼 수밖에 없었다.", "b": 1, "bb": "Katherine asked, “Is there a law that says I can’t go?” The embarrassed male workers had no choice but to let her in. By asking questions no one had ever asked, Katherine ended a discriminatory custom. She had faced barriers, but her efforts to overcome them paid off. She felt proud and continued her work with courage. In 1960, she wrote a research paper with another engineer about how to place a spacecraft into orbit. That was the first time a woman in her division received credit as an author of a research report. Katherine’s remarkable calculations by hand were trusted more than digital computers."},
+{"no": 57, "school": "", "pref": "4", "type": "", "diff": "", "stem": "밑줄 친 'her efforts to overcome them paid off'가 뜻하는 바로 가장 적절한 것은?", "p": "4-57", "choices": ["장벽을 넘는 비용을 혼자 치렀다", "노력을 포기하고 자리를 옮겼다", "장벽을 넘으려는 노력이 보답받았다", "노력의 대가를 돈으로 받았다"], "ans": 3, "exp": "'pay off'는 '성과를 거두다, 보답을 받다'라는 뜻이에요. 장벽을 넘으려던 노력이 열매를 맺었다는 말입니다.\n📖 She had faced barriers, but <b>her efforts to overcome them paid off</b>.\n   그녀는 장벽에 부딪혔지만 그것을 넘으려는 노력은 성과를 거두었다.", "b": 1, "bb": "Katherine asked, “Is there a law that says I can’t go?” The embarrassed male workers had no choice but to let her in. By asking questions no one had ever asked, Katherine ended a discriminatory custom. She had faced barriers, but her efforts to overcome them paid off. She felt proud and continued her work with courage. In 1960, she wrote a research paper with another engineer about how to place a spacecraft into orbit. That was the first time a woman in her division received credit as an author of a research report. Katherine’s remarkable calculations by hand were trusted more than digital computers."},
+{"no": 58, "school": "", "pref": "4", "type": "", "diff": "", "stem": "밑줄 친 'received credit as an author of a research report'가 뜻하는 바로 가장 적절한 것은?", "p": "4-58", "choices": ["연구 보고서의 저자로 인정받았다", "연구비를 저자 몫으로 받았다", "보고서를 대신 검토해 주었다", "보고서의 저자를 직접 뽑았다"], "ans": 1, "exp": "'receive credit as an author'는 저자로서 공을 인정받는다는 뜻이에요. 그녀 부서에서 여성으로는 처음이었습니다.\n📖 That was the first time a woman in her division <b>received credit as an author of a research report</b>.\n   그것은 그녀 부서의 여성이 연구 보고서의 저자로 인정받은 첫 번째 일이었다.", "b": 1, "bb": "Katherine asked, “Is there a law that says I can’t go?” The embarrassed male workers had no choice but to let her in. By asking questions no one had ever asked, Katherine ended a discriminatory custom. She had faced barriers, but her efforts to overcome them paid off. She felt proud and continued her work with courage. In 1960, she wrote a research paper with another engineer about how to place a spacecraft into orbit. That was the first time a woman in her division received credit as an author of a research report. Katherine’s remarkable calculations by hand were trusted more than digital computers."},
+{"no": 59, "school": "", "pref": "4", "type": "", "diff": "", "stem": "'discriminatory'의 문맥상 뜻으로 가장 적절한 것은?", "p": "4-59", "choices": ["협조적인", "차별적인", "임시적인", "전통적인"], "ans": 2, "exp": "여성을 못 들어오게 막던 관행을 가리키는 말이니 '차별적인'이 맞아요.\n📖 By asking questions no one had ever asked, Katherine ended <b>a discriminatory custom</b>.\n   아무도 물어본 적 없는 질문을 함으로써 캐서린은 차별적 관행을 끝냈다.", "b": 1, "bb": "Katherine asked, “Is there a law that says I can’t go?” The embarrassed male workers had no choice but to let her in. By asking questions no one had ever asked, Katherine ended a discriminatory custom. She had faced barriers, but her efforts to overcome them paid off. She felt proud and continued her work with courage. In 1960, she wrote a research paper with another engineer about how to place a spacecraft into orbit. That was the first time a woman in her division received credit as an author of a research report. Katherine’s remarkable calculations by hand were trusted more than digital computers."},
+{"no": 60, "school": "", "pref": "4", "type": "", "diff": "", "stem": "'remarkable'의 문맥상 뜻으로 가장 적절한 것은?", "p": "4-60", "choices": ["지루할 만큼 반복된", "서둘러 끝낸", "쉽게 흔들리는", "놀라울 만큼 뛰어난"], "ans": 4, "exp": "컴퓨터보다 더 믿을 만했다는 손 계산을 꾸미는 말이니 '놀라울 만큼 뛰어난'이 어울려요.\n📖 Katherine’s <b>remarkable</b> calculations by hand were trusted more than digital computers.\n   캐서린의 놀라운 손 계산은 디지털 컴퓨터보다 더 신뢰받았다.", "b": 1, "bb": "Katherine asked, “Is there a law that says I can’t go?” The embarrassed male workers had no choice but to let her in. By asking questions no one had ever asked, Katherine ended a discriminatory custom. She had faced barriers, but her efforts to overcome them paid off. She felt proud and continued her work with courage. In 1960, she wrote a research paper with another engineer about how to place a spacecraft into orbit. That was the first time a woman in her division received credit as an author of a research report. Katherine’s remarkable calculations by hand were trusted more than digital computers."},
+{"no": 61, "school": "", "pref": "4", "type": "", "diff": "", "stem": "위 지문의 밑줄 친 빈칸에 들어갈 말로 가장 적절한 것은?", "p": "4-61", "choices": ["자신의 제자", "학회 심사위원", "부서의 책임자", "다른 엔지니어"], "ans": 4, "exp": "1960년 논문은 혼자 쓴 것이 아니라 또 다른 엔지니어와 함께 쓴 공동 논문이었어요.\n📖 In 1960, she wrote a research paper with <b>another engineer</b> about how to place a spacecraft into orbit.\n   1960년에 그녀는 다른 엔지니어와 함께 연구 논문을 썼다.", "b": 1, "bb": "Katherine asked, “Is there a law that says I can’t go?” The embarrassed male workers had no choice but to let her in. By asking questions no one had ever asked, Katherine ended a discriminatory custom. She had faced barriers, but her efforts to overcome them paid off. She felt proud and continued her work with courage. In 1960, she wrote a research paper with ______ about how to place a spacecraft into orbit. That was the first time a woman in her division received credit as an author of a research report. Katherine’s remarkable calculations by hand were trusted more than digital computers."},
+{"no": 62, "school": "", "pref": "4", "type": "", "diff": "", "stem": "글쓴이가 1960년의 연구 논문을 특별히 언급하는 이유로 가장 적절한 것은?", "p": "4-62", "choices": ["그녀가 받은 첫 상이었기 때문", "컴퓨터를 처음 쓴 논문이기 때문", "그녀 부서 최초의 여성 저자였기 때문", "유일하게 남은 기록이기 때문"], "ans": 3, "exp": "그 논문이 그녀 부서에서 여성이 저자로 인정받은 첫 사례였기 때문이에요.\n📖 That was <b>the first time a woman in her division</b> received credit as an author of a research report.\n   그것은 그녀 부서의 여성이 연구 보고서의 저자로 인정받은 첫 번째 일이었다.", "b": 1, "bb": "Katherine asked, “Is there a law that says I can’t go?” The embarrassed male workers had no choice but to let her in. By asking questions no one had ever asked, Katherine ended a discriminatory custom. She had faced barriers, but her efforts to overcome them paid off. She felt proud and continued her work with courage. In 1960, she wrote a research paper with another engineer about how to place a spacecraft into orbit. That was the first time a woman in her division received credit as an author of a research report. Katherine’s remarkable calculations by hand were trusted more than digital computers."},
+{"no": 63, "school": "", "pref": "4", "type": "", "diff": "", "stem": "윗글의 제목으로 가장 적절한 것은?", "p": "4-63", "choices": ["질문으로 차별을 깬 수학자", "컴퓨터에 자리를 내준 계산원", "실패를 반복한 연구팀의 기록", "규정을 지켜 승진한 직원"], "ans": 1, "exp": "질문을 던져 차별적 관행을 끝내고 연구 성과까지 남긴 이야기라서 이 제목이 알맞아요.\n📖 By asking questions no one had ever asked, <b>Katherine ended a discriminatory custom</b>.\n   아무도 물어본 적 없는 질문을 함으로써 캐서린은 차별적 관행을 끝냈다.", "b": 1, "bb": "Katherine asked, “Is there a law that says I can’t go?” The embarrassed male workers had no choice but to let her in. By asking questions no one had ever asked, Katherine ended a discriminatory custom. She had faced barriers, but her efforts to overcome them paid off. She felt proud and continued her work with courage. In 1960, she wrote a research paper with another engineer about how to place a spacecraft into orbit. That was the first time a woman in her division received credit as an author of a research report. Katherine’s remarkable calculations by hand were trusted more than digital computers."},
+{"no": 64, "school": "", "pref": "4", "type": "", "diff": "", "stem": "윗글의 전개 방식으로 가장 적절한 것은?", "p": "4-64", "choices": ["통계 제시 → 반론 → 결론", "질문 → 관행 폐지 → 연구 성과", "문제 제기 → 실험 → 실패 원인", "인물 소개 → 비판 → 반박"], "ans": 2, "exp": "질문을 던진 장면에서 시작해 관행이 끝나고, 이어서 1960년 논문이라는 성과로 나아가요.\n📖 <b>In 1960</b>, she wrote a research paper with another engineer about how to place a spacecraft into orbit.\n   1960년에 그녀는 다른 엔지니어와 함께 연구 논문을 썼다.", "b": 1, "bb": "Katherine asked, “Is there a law that says I can’t go?” The embarrassed male workers had no choice but to let her in. By asking questions no one had ever asked, Katherine ended a discriminatory custom. She had faced barriers, but her efforts to overcome them paid off. She felt proud and continued her work with courage. In 1960, she wrote a research paper with another engineer about how to place a spacecraft into orbit. That was the first time a woman in her division received credit as an author of a research report. Katherine’s remarkable calculations by hand were trusted more than digital computers."},
+{"no": 65, "school": "", "pref": "5", "type": "", "diff": "", "stem": "1962년 초에 존 글렌이 준비하고 있던 일은?", "p": "5-65", "choices": ["달 표면에 착륙하는 임무", "화성 탐사선을 띄우는 계획", "미국 최초로 지구 궤도를 도는 비행", "새 전자계산기를 시험하는 일"], "ans": 3, "exp": "1962년 초, 글렌은 미국 역사상 처음으로 지구 궤도를 도는 비행을 준비하고 있었어요.\n📖 In early 1962, John Glenn, one of the pioneering American astronauts, <b>was preparing to orbit the Earth for the first time in American history</b>.\n   1962년 초, 선구적인 미국 우주 비행사 중 한 명인 존 글렌은 미국 역사상 처음으로 지구 궤도를 돌 준비를 하고 있었다.", "b": 1, "bb": "In early 1962, John Glenn, one of the pioneering American astronauts, was preparing to orbit the Earth for the first time in American history. NASA used an electronic computer, first introduced into the space program a year earlier, to calculate the spaceship’s trajectory, but it made many minor errors. Glenn, who was concerned about its accuracy, asked Katherine Johnson to double-check the machine’s figures by hand. “If she says the numbers are good,” he said, “I’m good to go.” Using only a pencil and a slide rule, Katherine spent a day and a half checking the calculations and finally made sure of them. Eventually, Glenn became the first American astronaut to orbit the Earth. Katherine was also part of the team that performed calculations for Apollo 11, which sent the first three men to the Moon in 1969, and even the plan to put people on Mars, which is still being worked on today."},
+{"no": 66, "school": "", "pref": "5", "type": "", "diff": "", "stem": "나사가 사용한 전자계산기에 대해 글이 말하는 것은?", "p": "5-66", "choices": ["작은 오류를 많이 냈다", "계산을 아예 못 했다", "손 계산보다 느렸다", "궤도 계산에 쓰이지 않았다"], "ans": 1, "exp": "궤도를 계산하는 데 썼지만 작은 오류를 많이 냈다고 했어요.\n📖 NASA used an electronic computer, first introduced into the space program a year earlier, to calculate the spaceship’s trajectory, but <b>it made many minor errors</b>.\n   나사는 1년 전에 우주 계획에 처음 도입된 전자계산기로 우주선의 궤적을 계산했지만, 그것은 작은 오류를 많이 냈다.", "b": 1, "bb": "In early 1962, John Glenn, one of the pioneering American astronauts, was preparing to orbit the Earth for the first time in American history. NASA used an electronic computer, first introduced into the space program a year earlier, to calculate the spaceship’s trajectory, but it made many minor errors. Glenn, who was concerned about its accuracy, asked Katherine Johnson to double-check the machine’s figures by hand. “If she says the numbers are good,” he said, “I’m good to go.” Using only a pencil and a slide rule, Katherine spent a day and a half checking the calculations and finally made sure of them. Eventually, Glenn became the first American astronaut to orbit the Earth. Katherine was also part of the team that performed calculations for Apollo 11, which sent the first three men to the Moon in 1969, and even the plan to put people on Mars, which is still being worked on today."},
+{"no": 67, "school": "", "pref": "5", "type": "", "diff": "", "stem": "캐서린이 검산할 때 사용한 도구는?", "p": "5-67", "choices": ["전자계산기와 연필", "계산자와 전자계산기", "자와 각도기뿐", "연필과 계산자뿐"], "ans": 4, "exp": "오직 연필 한 자루와 계산자만 가지고 계산을 확인했다고 했어요.\n📖 <b>Using only a pencil and a slide rule</b>, Katherine spent a day and a half checking the calculations and finally made sure of them.\n   오직 연필과 계산자만 사용해 캐서린은 하루 반 동안 계산을 확인하고 마침내 확신했다.", "b": 1, "bb": "In early 1962, John Glenn, one of the pioneering American astronauts, was preparing to orbit the Earth for the first time in American history. NASA used an electronic computer, first introduced into the space program a year earlier, to calculate the spaceship’s trajectory, but it made many minor errors. Glenn, who was concerned about its accuracy, asked Katherine Johnson to double-check the machine’s figures by hand. “If she says the numbers are good,” he said, “I’m good to go.” Using only a pencil and a slide rule, Katherine spent a day and a half checking the calculations and finally made sure of them. Eventually, Glenn became the first American astronaut to orbit the Earth. Katherine was also part of the team that performed calculations for Apollo 11, which sent the first three men to the Moon in 1969, and even the plan to put people on Mars, which is still being worked on today."},
+{"no": 68, "school": "", "pref": "5", "type": "", "diff": "", "stem": "아폴로 11호에 대해 글이 말하는 것은?", "p": "5-68", "choices": ["1962년에 화성에 도착했다", "1969년에 세 사람을 달로 보냈다", "캐서린이 직접 설계한 우주선이다", "계산 오류로 발사가 취소됐다"], "ans": 2, "exp": "아폴로 11호는 1969년에 최초의 세 사람을 달로 보냈고, 캐서린은 그 계산 팀에 있었어요.\n📖 Katherine was also part of the team that performed calculations for Apollo 11, which <b>sent the first three men to the Moon in 1969</b>\n   캐서린은 1969년에 최초의 세 사람을 달로 보낸 아폴로 11호의 계산을 수행한 팀의 일원이기도 했다.", "b": 1, "bb": "In early 1962, John Glenn, one of the pioneering American astronauts, was preparing to orbit the Earth for the first time in American history. NASA used an electronic computer, first introduced into the space program a year earlier, to calculate the spaceship’s trajectory, but it made many minor errors. Glenn, who was concerned about its accuracy, asked Katherine Johnson to double-check the machine’s figures by hand. “If she says the numbers are good,” he said, “I’m good to go.” Using only a pencil and a slide rule, Katherine spent a day and a half checking the calculations and finally made sure of them. Eventually, Glenn became the first American astronaut to orbit the Earth. Katherine was also part of the team that performed calculations for Apollo 11, which sent the first three men to the Moon in 1969, and even the plan to put people on Mars, which is still being worked on today."},
+{"no": 69, "school": "", "pref": "5", "type": "", "diff": "", "stem": "윗글의 내용과 일치하는 것은?", "p": "5-69", "choices": ["글렌은 검산 결과를 믿지 않았다", "전자계산기는 1961년에 도입되었다", "캐서린은 검산을 반나절에 끝냈다", "화성 계획은 이미 완성되었다"], "ans": 2, "exp": "1962년 초를 기준으로 '1년 전에' 처음 도입됐다고 했으니 1961년이에요.\n📖 NASA used an electronic computer, <b>first introduced into the space program a year earlier</b>, to calculate the spaceship’s trajectory\n   나사는 1년 전에 우주 계획에 처음 도입된 전자계산기로 우주선의 궤적을 계산했다.", "b": 1, "bb": "In early 1962, John Glenn, one of the pioneering American astronauts, was preparing to orbit the Earth for the first time in American history. NASA used an electronic computer, first introduced into the space program a year earlier, to calculate the spaceship’s trajectory, but it made many minor errors. Glenn, who was concerned about its accuracy, asked Katherine Johnson to double-check the machine’s figures by hand. “If she says the numbers are good,” he said, “I’m good to go.” Using only a pencil and a slide rule, Katherine spent a day and a half checking the calculations and finally made sure of them. Eventually, Glenn became the first American astronaut to orbit the Earth. Katherine was also part of the team that performed calculations for Apollo 11, which sent the first three men to the Moon in 1969, and even the plan to put people on Mars, which is still being worked on today."},
+{"no": 70, "school": "", "pref": "5", "type": "", "diff": "", "stem": "윗글의 내용과 일치하지 않는 것은?", "p": "5-70", "choices": ["글렌은 정확성을 걱정하고 있었다", "글렌은 미국 최초로 궤도를 돌았다", "캐서린은 검산에 반나절을 썼다", "캐서린은 화성 계획에도 참여했다"], "ans": 3, "exp": "반나절이 아니라 하루 반(a day and a half)을 들여 계산을 확인했어요.\n📖 Katherine spent <b>a day and a half</b> checking the calculations\n   캐서린은 하루 반 동안 계산을 확인했다.", "b": 1, "bb": "In early 1962, John Glenn, one of the pioneering American astronauts, was preparing to orbit the Earth for the first time in American history. NASA used an electronic computer, first introduced into the space program a year earlier, to calculate the spaceship’s trajectory, but it made many minor errors. Glenn, who was concerned about its accuracy, asked Katherine Johnson to double-check the machine’s figures by hand. “If she says the numbers are good,” he said, “I’m good to go.” Using only a pencil and a slide rule, Katherine spent a day and a half checking the calculations and finally made sure of them. Eventually, Glenn became the first American astronaut to orbit the Earth. Katherine was also part of the team that performed calculations for Apollo 11, which sent the first three men to the Moon in 1969, and even the plan to put people on Mars, which is still being worked on today."},
+{"no": 71, "school": "", "pref": "5", "type": "", "diff": "", "stem": "윗글에서 언급되지 않은 것은?", "p": "5-71", "choices": ["글렌이 궤도를 돈 횟수", "전자계산기의 오류 문제", "캐서린이 쓴 계산 도구", "아폴로 11호의 달 착륙 연도"], "ans": 1, "exp": "오류, 계산 도구, 1969년이라는 연도는 나오지만 글렌이 몇 바퀴 돌았는지는 나오지 않아요.\n📖 Katherine was also <b>part of the team that performed calculations for Apollo 11</b>\n   캐서린은 아폴로 11호의 계산을 수행한 팀의 일원이기도 했다.", "b": 1, "bb": "In early 1962, John Glenn, one of the pioneering American astronauts, was preparing to orbit the Earth for the first time in American history. NASA used an electronic computer, first introduced into the space program a year earlier, to calculate the spaceship’s trajectory, but it made many minor errors. Glenn, who was concerned about its accuracy, asked Katherine Johnson to double-check the machine’s figures by hand. “If she says the numbers are good,” he said, “I’m good to go.” Using only a pencil and a slide rule, Katherine spent a day and a half checking the calculations and finally made sure of them. Eventually, Glenn became the first American astronaut to orbit the Earth. Katherine was also part of the team that performed calculations for Apollo 11, which sent the first three men to the Moon in 1969, and even the plan to put people on Mars, which is still being worked on today."},
+{"no": 72, "school": "", "pref": "5", "type": "", "diff": "", "stem": "밑줄 친 'I’m good to go'가 뜻하는 바로 가장 적절한 것은?", "p": "5-72", "choices": ["나는 걸어서 갈 수 있다", "나는 가는 편이 더 좋다", "나는 가지 않는 게 낫다", "나는 떠날 준비가 된 것이다"], "ans": 4, "exp": "'good to go'는 '준비가 다 되었다'는 뜻이에요. 그녀가 숫자가 맞다고 하면 바로 떠나겠다는 말입니다.\n📖 “If she says the numbers are good,” he said, “<b>I’m good to go</b>.”\n   “그녀가 숫자가 맞다고 하면 나는 떠날 준비가 된 것이다”라고 그는 말했다.", "b": 1, "bb": "In early 1962, John Glenn, one of the pioneering American astronauts, was preparing to orbit the Earth for the first time in American history. NASA used an electronic computer, first introduced into the space program a year earlier, to calculate the spaceship’s trajectory, but it made many minor errors. Glenn, who was concerned about its accuracy, asked Katherine Johnson to double-check the machine’s figures by hand. “If she says the numbers are good,” he said, “I’m good to go.” Using only a pencil and a slide rule, Katherine spent a day and a half checking the calculations and finally made sure of them. Eventually, Glenn became the first American astronaut to orbit the Earth. Katherine was also part of the team that performed calculations for Apollo 11, which sent the first three men to the Moon in 1969, and even the plan to put people on Mars, which is still being worked on today."},
+{"no": 73, "school": "", "pref": "5", "type": "", "diff": "", "stem": "밑줄 친 'double-check the machine’s figures by hand'가 뜻하는 바로 가장 적절한 것은?", "p": "5-73", "choices": ["기계의 숫자를 두 배로 늘리다", "기계로 손 계산을 대신하다", "기계의 모양을 손으로 그리다", "기계의 수치를 손으로 재검산하다"], "ans": 4, "exp": "'double-check'는 다시 한 번 확인하는 것, 'by hand'는 손으로 하는 것이에요.\n📖 asked Katherine Johnson to <b>double-check the machine’s figures by hand</b>\n   캐서린 존슨에게 기계가 낸 수치를 손으로 다시 확인해 달라고 부탁했다.", "b": 1, "bb": "In early 1962, John Glenn, one of the pioneering American astronauts, was preparing to orbit the Earth for the first time in American history. NASA used an electronic computer, first introduced into the space program a year earlier, to calculate the spaceship’s trajectory, but it made many minor errors. Glenn, who was concerned about its accuracy, asked Katherine Johnson to double-check the machine’s figures by hand. “If she says the numbers are good,” he said, “I’m good to go.” Using only a pencil and a slide rule, Katherine spent a day and a half checking the calculations and finally made sure of them. Eventually, Glenn became the first American astronaut to orbit the Earth. Katherine was also part of the team that performed calculations for Apollo 11, which sent the first three men to the Moon in 1969, and even the plan to put people on Mars, which is still being worked on today."},
+{"no": 74, "school": "", "pref": "5", "type": "", "diff": "", "stem": "밑줄 친 'which is still being worked on today'가 뜻하는 바로 가장 적절한 것은?", "p": "5-74", "choices": ["오늘날에는 이미 중단되었다", "오늘날에도 여전히 진행 중이다", "오늘 하루만 작업이 멈췄다", "오늘부터 처음 시작되었다"], "ans": 2, "exp": "화성에 사람을 보내는 계획이 지금도 계속 작업되고 있다는 뜻이에요.\n📖 even the plan to put people on Mars, <b>which is still being worked on today</b>\n   오늘날에도 여전히 작업이 진행되고 있는, 사람을 화성에 보내는 계획까지도.", "b": 1, "bb": "In early 1962, John Glenn, one of the pioneering American astronauts, was preparing to orbit the Earth for the first time in American history. NASA used an electronic computer, first introduced into the space program a year earlier, to calculate the spaceship’s trajectory, but it made many minor errors. Glenn, who was concerned about its accuracy, asked Katherine Johnson to double-check the machine’s figures by hand. “If she says the numbers are good,” he said, “I’m good to go.” Using only a pencil and a slide rule, Katherine spent a day and a half checking the calculations and finally made sure of them. Eventually, Glenn became the first American astronaut to orbit the Earth. Katherine was also part of the team that performed calculations for Apollo 11, which sent the first three men to the Moon in 1969, and even the plan to put people on Mars, which is still being worked on today."},
+{"no": 75, "school": "", "pref": "5", "type": "", "diff": "", "stem": "'trajectory'의 문맥상 뜻으로 가장 적절한 것은?", "p": "5-75", "choices": ["발사 비용", "탑승 인원", "비행 궤적", "연료 용량"], "ans": 3, "exp": "우주선이 지나가는 길, 즉 궤적을 계산한다는 맥락이에요.\n📖 to calculate the spaceship’s <b>trajectory</b>\n   우주선의 궤적을 계산하기 위해.", "b": 1, "bb": "In early 1962, John Glenn, one of the pioneering American astronauts, was preparing to orbit the Earth for the first time in American history. NASA used an electronic computer, first introduced into the space program a year earlier, to calculate the spaceship’s trajectory, but it made many minor errors. Glenn, who was concerned about its accuracy, asked Katherine Johnson to double-check the machine’s figures by hand. “If she says the numbers are good,” he said, “I’m good to go.” Using only a pencil and a slide rule, Katherine spent a day and a half checking the calculations and finally made sure of them. Eventually, Glenn became the first American astronaut to orbit the Earth. Katherine was also part of the team that performed calculations for Apollo 11, which sent the first three men to the Moon in 1969, and even the plan to put people on Mars, which is still being worked on today."},
+{"no": 76, "school": "", "pref": "5", "type": "", "diff": "", "stem": "'pioneering'의 문맥상 뜻으로 가장 적절한 것은?", "p": "5-76", "choices": ["선구적인", "은퇴한", "평범한", "소심한"], "ans": 1, "exp": "아무도 가 보지 않은 길을 처음 간 우주 비행사를 가리키니 '선구적인'이 맞아요.\n📖 John Glenn, one of the <b>pioneering</b> American astronauts\n   선구적인 미국 우주 비행사 중 한 명인 존 글렌.", "b": 1, "bb": "In early 1962, John Glenn, one of the pioneering American astronauts, was preparing to orbit the Earth for the first time in American history. NASA used an electronic computer, first introduced into the space program a year earlier, to calculate the spaceship’s trajectory, but it made many minor errors. Glenn, who was concerned about its accuracy, asked Katherine Johnson to double-check the machine’s figures by hand. “If she says the numbers are good,” he said, “I’m good to go.” Using only a pencil and a slide rule, Katherine spent a day and a half checking the calculations and finally made sure of them. Eventually, Glenn became the first American astronaut to orbit the Earth. Katherine was also part of the team that performed calculations for Apollo 11, which sent the first three men to the Moon in 1969, and even the plan to put people on Mars, which is still being worked on today."},
+{"no": 77, "school": "", "pref": "5", "type": "", "diff": "", "stem": "위 지문의 밑줄 친 빈칸에 들어갈 말로 가장 적절한 것은?", "p": "5-77", "choices": ["정확성을 걱정했다", "비용을 아까워했다", "속도에 만족했다", "결과를 숨기려 했다"], "ans": 1, "exp": "기계가 작은 오류를 많이 냈기 때문에 글렌은 그 정확성을 걱정했고, 그래서 손 검산을 부탁했어요.\n📖 Glenn, who was <b>concerned about its accuracy</b>, asked Katherine Johnson to double-check the machine’s figures by hand.\n   그 정확성을 걱정한 글렌은 캐서린 존슨에게 기계의 수치를 손으로 다시 확인해 달라고 부탁했다.", "b": 1, "bb": "In early 1962, John Glenn, one of the pioneering American astronauts, was preparing to orbit the Earth for the first time in American history. NASA used an electronic computer, first introduced into the space program a year earlier, to calculate the spaceship’s trajectory, but it made many minor errors. Glenn, who was ______, asked Katherine Johnson to double-check the machine’s figures by hand. “If she says the numbers are good,” he said, “I’m good to go.” Using only a pencil and a slide rule, Katherine spent a day and a half checking the calculations and finally made sure of them. Eventually, Glenn became the first American astronaut to orbit the Earth. Katherine was also part of the team that performed calculations for Apollo 11, which sent the first three men to the Moon in 1969, and even the plan to put people on Mars, which is still being worked on today."},
+{"no": 78, "school": "", "pref": "5", "type": "", "diff": "", "stem": "글쓴이가 캐서린의 도구를 'only a pencil and a slide rule'이라고 밝힌 이유로 가장 적절한 것은?", "p": "5-78", "choices": ["도구가 비쌌음을 알리려고", "계산이 쉬웠음을 보여 주려고", "기계가 고장 났음을 설명하려고", "간단한 도구로 해낸 일을 강조하려고"], "ans": 4, "exp": "연필과 계산자뿐인 아주 단순한 도구로 기계의 계산을 확인해 냈다는 점을 두드러지게 하려는 거예요.\n📖 <b>Using only a pencil and a slide rule</b>, Katherine spent a day and a half checking the calculations and finally made sure of them.\n   오직 연필과 계산자만 사용해 캐서린은 하루 반 동안 계산을 확인하고 마침내 확신했다.", "b": 1, "bb": "In early 1962, John Glenn, one of the pioneering American astronauts, was preparing to orbit the Earth for the first time in American history. NASA used an electronic computer, first introduced into the space program a year earlier, to calculate the spaceship’s trajectory, but it made many minor errors. Glenn, who was concerned about its accuracy, asked Katherine Johnson to double-check the machine’s figures by hand. “If she says the numbers are good,” he said, “I’m good to go.” Using only a pencil and a slide rule, Katherine spent a day and a half checking the calculations and finally made sure of them. Eventually, Glenn became the first American astronaut to orbit the Earth. Katherine was also part of the team that performed calculations for Apollo 11, which sent the first three men to the Moon in 1969, and even the plan to put people on Mars, which is still being worked on today."},
+{"no": 79, "school": "", "pref": "5", "type": "", "diff": "", "stem": "윗글의 제목으로 가장 적절한 것은?", "p": "5-79", "choices": ["전자계산기가 바꾼 우주 경쟁", "사람의 손이 확인한 역사적 비행", "화성 탐사가 실패한 까닭", "우주인 선발 기준의 변화"], "ans": 2, "exp": "기계가 아니라 캐서린의 손 계산이 역사적인 비행을 가능하게 했다는 내용이에요.\n📖 Katherine spent a day and a half checking the calculations and <b>finally made sure of them</b>\n   캐서린은 하루 반 동안 계산을 확인하고 마침내 그것을 확신했다.", "b": 1, "bb": "In early 1962, John Glenn, one of the pioneering American astronauts, was preparing to orbit the Earth for the first time in American history. NASA used an electronic computer, first introduced into the space program a year earlier, to calculate the spaceship’s trajectory, but it made many minor errors. Glenn, who was concerned about its accuracy, asked Katherine Johnson to double-check the machine’s figures by hand. “If she says the numbers are good,” he said, “I’m good to go.” Using only a pencil and a slide rule, Katherine spent a day and a half checking the calculations and finally made sure of them. Eventually, Glenn became the first American astronaut to orbit the Earth. Katherine was also part of the team that performed calculations for Apollo 11, which sent the first three men to the Moon in 1969, and even the plan to put people on Mars, which is still being worked on today."},
+{"no": 80, "school": "", "pref": "5", "type": "", "diff": "", "stem": "윗글에서 'Eventually, Glenn became the first American astronaut to orbit the Earth.'가 하는 역할은?", "p": "5-80", "choices": ["새로운 문제를 처음 제기한다", "앞 내용을 반박해 뒤집는다", "검산 뒤 얻은 결과를 알려 준다", "글의 주제를 처음 소개한다"], "ans": 3, "exp": "앞에서 캐서린이 계산을 확인한 일이 나오고, 이 문장은 그 뒤에 이어진 결과를 보여 줘요.\n📖 <b>Eventually</b>, Glenn became the first American astronaut to orbit the Earth.\n   결국 글렌은 지구 궤도를 돈 최초의 미국 우주 비행사가 되었다.", "b": 1, "bb": "In early 1962, John Glenn, one of the pioneering American astronauts, was preparing to orbit the Earth for the first time in American history. NASA used an electronic computer, first introduced into the space program a year earlier, to calculate the spaceship’s trajectory, but it made many minor errors. Glenn, who was concerned about its accuracy, asked Katherine Johnson to double-check the machine’s figures by hand. “If she says the numbers are good,” he said, “I’m good to go.” Using only a pencil and a slide rule, Katherine spent a day and a half checking the calculations and finally made sure of them. Eventually, Glenn became the first American astronaut to orbit the Earth. Katherine was also part of the team that performed calculations for Apollo 11, which sent the first three men to the Moon in 1969, and even the plan to put people on Mars, which is still being worked on today."},
+{"no": 81, "school": "", "pref": "6", "type": "", "diff": "", "stem": "캐서린이 나사에서 일한 기간은?", "p": "6-81", "choices": ["15년", "20년", "41년", "33년"], "ans": 4, "exp": "1986년에 은퇴했는데, 나사에서 33년(thirty-three years)을 일한 뒤였어요.\n📖 Katherine retired in 1986 <b>after thirty-three years at NASA</b>.\n   캐서린은 나사에서 33년을 일한 뒤 1986년에 은퇴했다.", "b": 1, "bb": "Katherine retired in 1986 after thirty-three years at NASA. After that, she dedicated the rest of her life to championing access to STEM education for Black girls. For her contributions, President Barack Obama awarded her the Presidential Medal of Freedom in 2015 and said, “Katherine G. Johnson refused to be limited by society’s expectations of her gender and race while expanding the boundaries of humanity’s reach.” In 2017, NASA dedicated a building in her honor in Virginia and named it the Katherine G. Johnson Computational Research Facility. She died on February 24, 2020, at the age of 101, but her pioneering legacy will never be forgotten."},
+{"no": 82, "school": "", "pref": "6", "type": "", "diff": "", "stem": "은퇴 후 캐서린이 교육 기회를 넓히려 애쓴 대상은?", "p": "6-82", "choices": ["은퇴한 과학자들", "흑인 소녀들", "나사의 신입 직원들", "지역 고등학교 교사들"], "ans": 2, "exp": "은퇴 뒤 남은 삶을 흑인 소녀들의 교육 기회를 넓히는 데 바쳤다고 했어요.\n📖 championing access to STEM education <b>for Black girls</b>\n   흑인 소녀들의 STEM 교육 기회를 옹호하는 일.", "b": 1, "bb": "Katherine retired in 1986 after thirty-three years at NASA. After that, she dedicated the rest of her life to championing access to STEM education for Black girls. For her contributions, President Barack Obama awarded her the Presidential Medal of Freedom in 2015 and said, “Katherine G. Johnson refused to be limited by society’s expectations of her gender and race while expanding the boundaries of humanity’s reach.” In 2017, NASA dedicated a building in her honor in Virginia and named it the Katherine G. Johnson Computational Research Facility. She died on February 24, 2020, at the age of 101, but her pioneering legacy will never be forgotten."},
+{"no": 83, "school": "", "pref": "6", "type": "", "diff": "", "stem": "2017년에 나사가 한 일은?", "p": "6-83", "choices": ["그녀에게 자유의 메달을 수여", "그녀를 명예 소장으로 임명", "버지니아에 그녀 이름의 건물을 지정", "그녀의 논문을 모두 공개"], "ans": 3, "exp": "2017년에 나사는 버지니아에 그녀를 기리는 건물을 지정하고 그녀의 이름을 붙였어요.\n📖 In 2017, NASA <b>dedicated a building in her honor in Virginia</b> and named it the Katherine G. Johnson Computational Research Facility.\n   2017년에 나사는 버지니아에 그녀를 기리는 건물을 지정하고 캐서린 G. 존슨 계산 연구 시설이라고 이름 붙였다.", "b": 1, "bb": "Katherine retired in 1986 after thirty-three years at NASA. After that, she dedicated the rest of her life to championing access to STEM education for Black girls. For her contributions, President Barack Obama awarded her the Presidential Medal of Freedom in 2015 and said, “Katherine G. Johnson refused to be limited by society’s expectations of her gender and race while expanding the boundaries of humanity’s reach.” In 2017, NASA dedicated a building in her honor in Virginia and named it the Katherine G. Johnson Computational Research Facility. She died on February 24, 2020, at the age of 101, but her pioneering legacy will never be forgotten."},
+{"no": 84, "school": "", "pref": "6", "type": "", "diff": "", "stem": "오바마 대통령이 말한 캐서린의 모습은?", "p": "6-84", "choices": ["성별과 인종의 기대에 갇히지 않았다", "규칙을 철저히 지키며 일했다", "동료보다 빠르게 승진했다", "기계의 힘을 가장 앞서 믿었다"], "ans": 1, "exp": "오바마 대통령은 그녀가 성별과 인종에 대한 사회의 기대에 갇히기를 거부했다고 말했어요.\n📖 Katherine G. Johnson <b>refused to be limited by society’s expectations of her gender and race</b>\n   캐서린 G. 존슨은 자신의 성별과 인종에 대한 사회의 기대에 갇히기를 거부했다.", "b": 1, "bb": "Katherine retired in 1986 after thirty-three years at NASA. After that, she dedicated the rest of her life to championing access to STEM education for Black girls. For her contributions, President Barack Obama awarded her the Presidential Medal of Freedom in 2015 and said, “Katherine G. Johnson refused to be limited by society’s expectations of her gender and race while expanding the boundaries of humanity’s reach.” In 2017, NASA dedicated a building in her honor in Virginia and named it the Katherine G. Johnson Computational Research Facility. She died on February 24, 2020, at the age of 101, but her pioneering legacy will never be forgotten."},
+{"no": 85, "school": "", "pref": "6", "type": "", "diff": "", "stem": "윗글의 내용과 일치하는 것은?", "p": "6-85", "choices": ["그녀는 1986년에 나사에 입사했다", "건물은 2015년에 이름 붙여졌다", "그녀는 2015년에 자유의 메달을 받았다", "그녀는 101세 생일 직후 은퇴했다"], "ans": 3, "exp": "오바마 대통령이 2015년에 대통령 자유 메달을 수여했다고 나와 있어요.\n📖 President Barack Obama awarded her <b>the Presidential Medal of Freedom in 2015</b>\n   버락 오바마 대통령은 2015년에 그녀에게 대통령 자유 메달을 수여했다.", "b": 1, "bb": "Katherine retired in 1986 after thirty-three years at NASA. After that, she dedicated the rest of her life to championing access to STEM education for Black girls. For her contributions, President Barack Obama awarded her the Presidential Medal of Freedom in 2015 and said, “Katherine G. Johnson refused to be limited by society’s expectations of her gender and race while expanding the boundaries of humanity’s reach.” In 2017, NASA dedicated a building in her honor in Virginia and named it the Katherine G. Johnson Computational Research Facility. She died on February 24, 2020, at the age of 101, but her pioneering legacy will never be forgotten."},
+{"no": 86, "school": "", "pref": "6", "type": "", "diff": "", "stem": "윗글의 내용과 일치하지 않는 것은?", "p": "6-86", "choices": ["그녀는 1986년에 나사를 떠났다", "그녀 이름의 건물은 버지니아에 있다", "메달은 오바마 대통령이 수여했다", "그녀는 2020년에 91세로 세상을 떠났다"], "ans": 4, "exp": "91세가 아니라 101세였어요. 2020년 2월 24일에 101세로 세상을 떠났습니다.\n📖 She died on February 24, 2020, <b>at the age of 101</b>\n   그녀는 2020년 2월 24일 101세의 나이로 세상을 떠났다.", "b": 1, "bb": "Katherine retired in 1986 after thirty-three years at NASA. After that, she dedicated the rest of her life to championing access to STEM education for Black girls. For her contributions, President Barack Obama awarded her the Presidential Medal of Freedom in 2015 and said, “Katherine G. Johnson refused to be limited by society’s expectations of her gender and race while expanding the boundaries of humanity’s reach.” In 2017, NASA dedicated a building in her honor in Virginia and named it the Katherine G. Johnson Computational Research Facility. She died on February 24, 2020, at the age of 101, but her pioneering legacy will never be forgotten."},
+{"no": 87, "school": "", "pref": "6", "type": "", "diff": "", "stem": "윗글에서 캐서린에 대해 언급되지 않은 것은?", "p": "6-87", "choices": ["그녀가 은퇴한 해", "그녀가 받은 상금의 액수", "그녀가 세상을 떠난 날짜", "그녀 이름을 딴 건물 이름"], "ans": 2, "exp": "은퇴 연도, 사망 날짜, 건물 이름은 모두 나오지만 상금이 얼마였는지는 전혀 없어요.\n📖 named it <b>the Katherine G. Johnson Computational Research Facility</b>\n   그것을 캐서린 G. 존슨 계산 연구 시설이라고 이름 붙였다.", "b": 1, "bb": "Katherine retired in 1986 after thirty-three years at NASA. After that, she dedicated the rest of her life to championing access to STEM education for Black girls. For her contributions, President Barack Obama awarded her the Presidential Medal of Freedom in 2015 and said, “Katherine G. Johnson refused to be limited by society’s expectations of her gender and race while expanding the boundaries of humanity’s reach.” In 2017, NASA dedicated a building in her honor in Virginia and named it the Katherine G. Johnson Computational Research Facility. She died on February 24, 2020, at the age of 101, but her pioneering legacy will never be forgotten."},
+{"no": 88, "school": "", "pref": "6", "type": "", "diff": "", "stem": "밑줄 친 'dedicated the rest of her life to'가 뜻하는 바로 가장 적절한 것은?", "p": "6-88", "choices": ["남은 삶을 모두 바쳤다", "남은 삶을 조용히 보냈다", "남은 재산을 모두 기부했다", "남은 일을 후배에게 넘겼다"], "ans": 1, "exp": "'dedicate one’s life to ~'는 '~에 삶을 바치다'라는 뜻이에요.\n📖 she <b>dedicated the rest of her life to</b> championing access to STEM education for Black girls\n   그녀는 남은 삶을 흑인 소녀들의 STEM 교육 기회를 넓히는 데 바쳤다.", "b": 1, "bb": "Katherine retired in 1986 after thirty-three years at NASA. After that, she dedicated the rest of her life to championing access to STEM education for Black girls. For her contributions, President Barack Obama awarded her the Presidential Medal of Freedom in 2015 and said, “Katherine G. Johnson refused to be limited by society’s expectations of her gender and race while expanding the boundaries of humanity’s reach.” In 2017, NASA dedicated a building in her honor in Virginia and named it the Katherine G. Johnson Computational Research Facility. She died on February 24, 2020, at the age of 101, but her pioneering legacy will never be forgotten."},
+{"no": 89, "school": "", "pref": "6", "type": "", "diff": "", "stem": "밑줄 친 'expanding the boundaries of humanity’s reach'가 뜻하는 바로 가장 적절한 것은?", "p": "6-89", "choices": ["인류가 닿는 범위를 넓히는 일", "인류의 수명을 늘리는 일", "인구의 경계를 다시 긋는 일", "국가의 국경을 지키는 일"], "ans": 1, "exp": "'humanity’s reach'는 인류가 닿을 수 있는 범위예요. 우주로 그 한계를 넓혔다는 뜻입니다.\n📖 while <b>expanding the boundaries of humanity’s reach</b>\n   인류가 닿을 수 있는 범위의 경계를 넓히면서.", "b": 1, "bb": "Katherine retired in 1986 after thirty-three years at NASA. After that, she dedicated the rest of her life to championing access to STEM education for Black girls. For her contributions, President Barack Obama awarded her the Presidential Medal of Freedom in 2015 and said, “Katherine G. Johnson refused to be limited by society’s expectations of her gender and race while expanding the boundaries of humanity’s reach.” In 2017, NASA dedicated a building in her honor in Virginia and named it the Katherine G. Johnson Computational Research Facility. She died on February 24, 2020, at the age of 101, but her pioneering legacy will never be forgotten."},
+{"no": 90, "school": "", "pref": "6", "type": "", "diff": "", "stem": "밑줄 친 'her pioneering legacy will never be forgotten'이 뜻하는 바로 가장 적절한 것은?", "p": "6-90", "choices": ["그녀의 유산은 모두 기부되었다", "그녀의 기록은 곧 사라질 것이다", "그녀가 남긴 선구적 업적은 잊히지 않는다", "그녀의 이름은 이미 잊혀 버렸다"], "ans": 3, "exp": "'legacy'는 남긴 업적이나 유산이고, 그것이 결코 잊히지 않을 것이라는 뜻이에요.\n📖 her pioneering legacy <b>will never be forgotten</b>\n   그녀의 선구적인 유산은 결코 잊히지 않을 것이다.", "b": 1, "bb": "Katherine retired in 1986 after thirty-three years at NASA. After that, she dedicated the rest of her life to championing access to STEM education for Black girls. For her contributions, President Barack Obama awarded her the Presidential Medal of Freedom in 2015 and said, “Katherine G. Johnson refused to be limited by society’s expectations of her gender and race while expanding the boundaries of humanity’s reach.” In 2017, NASA dedicated a building in her honor in Virginia and named it the Katherine G. Johnson Computational Research Facility. She died on February 24, 2020, at the age of 101, but her pioneering legacy will never be forgotten."},
+{"no": 91, "school": "", "pref": "6", "type": "", "diff": "", "stem": "'retired'의 문맥상 뜻으로 가장 적절한 것은?", "p": "6-91", "choices": ["승진했다", "복귀했다", "이직했다", "은퇴했다"], "ans": 4, "exp": "33년 일한 뒤 1986년에 직장을 떠난 것이니 '은퇴했다'가 맞아요.\n📖 Katherine <b>retired</b> in 1986 after thirty-three years at NASA.\n   캐서린은 나사에서 33년을 일한 뒤 1986년에 은퇴했다.", "b": 1, "bb": "Katherine retired in 1986 after thirty-three years at NASA. After that, she dedicated the rest of her life to championing access to STEM education for Black girls. For her contributions, President Barack Obama awarded her the Presidential Medal of Freedom in 2015 and said, “Katherine G. Johnson refused to be limited by society’s expectations of her gender and race while expanding the boundaries of humanity’s reach.” In 2017, NASA dedicated a building in her honor in Virginia and named it the Katherine G. Johnson Computational Research Facility. She died on February 24, 2020, at the age of 101, but her pioneering legacy will never be forgotten."},
+{"no": 92, "school": "", "pref": "6", "type": "", "diff": "", "stem": "'contributions'의 문맥상 뜻으로 가장 적절한 것은?", "p": "6-92", "choices": ["실수", "공로", "취미", "휴가"], "ans": 2, "exp": "그 덕분에 상을 받았다는 흐름이니 '공로'라는 뜻이에요.\n📖 For her <b>contributions</b>, President Barack Obama awarded her the Presidential Medal of Freedom in 2015\n   그녀의 공로로 버락 오바마 대통령은 2015년에 그녀에게 대통령 자유 메달을 수여했다.", "b": 1, "bb": "Katherine retired in 1986 after thirty-three years at NASA. After that, she dedicated the rest of her life to championing access to STEM education for Black girls. For her contributions, President Barack Obama awarded her the Presidential Medal of Freedom in 2015 and said, “Katherine G. Johnson refused to be limited by society’s expectations of her gender and race while expanding the boundaries of humanity’s reach.” In 2017, NASA dedicated a building in her honor in Virginia and named it the Katherine G. Johnson Computational Research Facility. She died on February 24, 2020, at the age of 101, but her pioneering legacy will never be forgotten."},
+{"no": 93, "school": "", "pref": "6", "type": "", "diff": "", "stem": "위 지문의 밑줄 친 빈칸에 들어갈 말로 가장 적절한 것은?", "p": "6-93", "choices": ["예술과 음악 교육", "과학·기술 분야 교육", "외국어 회화 교육", "체육과 건강 교육"], "ans": 2, "exp": "STEM은 과학·기술·공학·수학을 가리키는 말이에요. 수학자였던 그녀가 넓히려 한 분야입니다.\n📖 she dedicated the rest of her life to championing access to <b>STEM education</b> for Black girls\n   그녀는 남은 삶을 흑인 소녀들의 STEM 교육 기회를 넓히는 데 바쳤다.", "b": 1, "bb": "Katherine retired in 1986 after thirty-three years at NASA. After that, she dedicated the rest of her life to championing access to ______ for Black girls. For her contributions, President Barack Obama awarded her the Presidential Medal of Freedom in 2015 and said, “Katherine G. Johnson refused to be limited by society’s expectations of her gender and race while expanding the boundaries of humanity’s reach.” In 2017, NASA dedicated a building in her honor in Virginia and named it the Katherine G. Johnson Computational Research Facility. She died on February 24, 2020, at the age of 101, but her pioneering legacy will never be forgotten."},
+{"no": 94, "school": "", "pref": "6", "type": "", "diff": "", "stem": "글쓴이가 2017년 건물 이름을 언급하는 이유로 가장 적절한 것은?", "p": "6-94", "choices": ["그녀의 업적이 기려졌음을 보이려고", "건물의 위치를 알려 주려고", "나사의 규모를 자랑하려고", "그녀가 설계했음을 밝히려고"], "ans": 1, "exp": "건물을 '그녀를 기려(in her honor)' 지정했다고 했으니, 업적이 공식적으로 기념되었음을 보여 주는 거예요.\n📖 In 2017, NASA dedicated a building <b>in her honor</b> in Virginia\n   2017년에 나사는 버지니아에 그녀를 기리는 건물을 지정했다.", "b": 1, "bb": "Katherine retired in 1986 after thirty-three years at NASA. After that, she dedicated the rest of her life to championing access to STEM education for Black girls. For her contributions, President Barack Obama awarded her the Presidential Medal of Freedom in 2015 and said, “Katherine G. Johnson refused to be limited by society’s expectations of her gender and race while expanding the boundaries of humanity’s reach.” In 2017, NASA dedicated a building in her honor in Virginia and named it the Katherine G. Johnson Computational Research Facility. She died on February 24, 2020, at the age of 101, but her pioneering legacy will never be forgotten."},
+{"no": 95, "school": "", "pref": "6", "type": "", "diff": "", "stem": "윗글의 제목으로 가장 적절한 것은?", "p": "6-95", "choices": ["나사를 떠난 뒤 잊힌 수학자", "건물 이름을 둘러싼 논쟁", "은퇴 뒤에도 이어진 그녀의 유산", "흑인 교육 정책의 변화 과정"], "ans": 3, "exp": "은퇴 후의 교육 활동, 수상, 기념 건물까지 그녀의 유산이 계속 이어졌다는 내용이에요.\n📖 <b>For her contributions</b>, President Barack Obama awarded her the Presidential Medal of Freedom in 2015\n   그녀의 공로로 버락 오바마 대통령은 2015년에 그녀에게 대통령 자유 메달을 수여했다.", "b": 1, "bb": "Katherine retired in 1986 after thirty-three years at NASA. After that, she dedicated the rest of her life to championing access to STEM education for Black girls. For her contributions, President Barack Obama awarded her the Presidential Medal of Freedom in 2015 and said, “Katherine G. Johnson refused to be limited by society’s expectations of her gender and race while expanding the boundaries of humanity’s reach.” In 2017, NASA dedicated a building in her honor in Virginia and named it the Katherine G. Johnson Computational Research Facility. She died on February 24, 2020, at the age of 101, but her pioneering legacy will never be forgotten."},
+{"no": 96, "school": "", "pref": "6", "type": "", "diff": "", "stem": "윗글의 전개 방식으로 가장 적절한 것은?", "p": "6-96", "choices": ["두 인물의 삶을 번갈아 비교해 서술", "주장을 먼저 내고 근거를 덧붙여 서술", "같은 사건을 여러 관점에서 되짚어 서술", "은퇴 뒤 활동과 영예를 시간 순서로 서술"], "ans": 4, "exp": "1986년 은퇴, 그 뒤의 교육 활동, 2015년 수상, 2017년 건물, 2020년 별세까지 연도 순으로 이어져요.\n📖 <b>After that</b>, she dedicated the rest of her life to championing access to STEM education for Black girls.\n   그 후 그녀는 남은 삶을 흑인 소녀들의 STEM 교육 기회를 넓히는 데 바쳤다.", "b": 1, "bb": "Katherine retired in 1986 after thirty-three years at NASA. After that, she dedicated the rest of her life to championing access to STEM education for Black girls. For her contributions, President Barack Obama awarded her the Presidential Medal of Freedom in 2015 and said, “Katherine G. Johnson refused to be limited by society’s expectations of her gender and race while expanding the boundaries of humanity’s reach.” In 2017, NASA dedicated a building in her honor in Virginia and named it the Katherine G. Johnson Computational Research Facility. She died on February 24, 2020, at the age of 101, but her pioneering legacy will never be forgotten."}
+];
+
+/* ── 안전장치 ──────────────────────────────────────────────
+   ⓐ~ⓔ 보기로 고르는 어휘·어법 문항인데 지문에 ⓐ~ⓔ 표시가 없으면
+   학생이 무엇에 밑줄이 그어졌는지 알 수 없어 풀 수 없다.
+   지문이 갖춰질 때까지 그런 문항은 출제 목록에서 빼 둔다. */
+(function dropUnmarkedVocab(){
+  function bodyOf(q){
+    if (q.bb) return q.bb;
+    if (q.body) return q.body;
+    try { if (typeof PASS !== 'undefined' && PASS && PASS[q.p]) return PASS[q.p]; } catch(e){}
+    return '';
+  }
+  var dropped = 0, i, q, t, first;
+  for (i = QUESTIONS.length - 1; i >= 0; i--) {
+    q = QUESTIONS[i];
+    t = String(q.type || '');
+    if (t.indexOf('\uc5b4\ud718') < 0 && t.indexOf('\uc5b4\ubc95') < 0) continue;   // 어휘·어법만
+    if (t.indexOf('\uad04\ud638') >= 0) continue;                                     // 괄호(네모)형은 제외
+    first = String((q.choices && q.choices[0]) || '');
+    if (!/^[\u24d0-\u24d4]/.test(first)) continue;        // ⓐ~ⓔ 보기가 아니면 그대로
+    if (bodyOf(q).indexOf('\u24d0') >= 0) continue;        // 지문에 ⓐ가 있으면 정상
+    QUESTIONS.splice(i, 1);
+    dropped++;
+  }
+  if (dropped) console.log('밑줄 표시가 없어 제외한 문항: ' + dropped + '개');
+})();
+
+// bb: 문제 유형에 맞게 빈칸·(A)(B)(C)·삽입 위치를 표시한 지문
+QUESTIONS.forEach(q=>{q.body=q.bb||PASS[q.p]||'';delete q.bb;});
+
+// Build PASSAGES array dynamically
+const PASSAGE_ORDER = ["1", "2", "3", "4", "5", "6"];
+const PASSAGES_BY_REF = {};
+QUESTIONS.forEach(q=>{
+  if(!PASSAGES_BY_REF[q.pref]) PASSAGES_BY_REF[q.pref]=[];
+  PASSAGES_BY_REF[q.pref].push(q);
+});
+
+// ── STATE ──────────────────────────────────────────
+let userName='', userSchool='', selectedRefs=new Set(), doneRefs=new Set();
+let qs=[], idx=0, cor=0, wrn=0, wrongs=[], allResults=[], answered=false, t0=0;
+let filterMode='all';
+
+// === 오늘 진행 기록 저장 (페이지 재진입 시 완료 표시 유지) ===
+const QUIZ_ID='jongchonko_1grade_ce2_lesson3_read';
+const _DAY_KEY=(function(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');})();
+const _PROG_KEY='bn_prog_'+QUIZ_ID;
+function _saveProg(){
+  try{localStorage.setItem(_PROG_KEY, JSON.stringify({day:_DAY_KEY, doneRefs:Array.from(doneRefs)}));}catch(e){}
+}
+function _loadProg(){
+  try{
+    const raw=localStorage.getItem(_PROG_KEY); if(!raw) return;
+    const data=JSON.parse(raw);
+    if(data.day!==_DAY_KEY){localStorage.removeItem(_PROG_KEY); return;}
+    if(Array.isArray(data.doneRefs)) doneRefs=new Set(data.doneRefs);
+  }catch(e){}
+}
+function _cleanupOldProgress(){
+  try{
+    for(let i=localStorage.length-1;i>=0;i--){
+      const k=localStorage.key(i);
+      if(k && (k.startsWith('bn_prog_') || k.startsWith('bn_session_'))){
+        try{const v=JSON.parse(localStorage.getItem(k)); if(v.day!==_DAY_KEY) localStorage.removeItem(k);}
+        catch(e){localStorage.removeItem(k);}
+      }
+    }
+  }catch(e){}
+}
+
+// === 학생별 누적 풀이 기록 (이 기기) — 안 푼 문제 우선 출제용 ===
+let perRef=0;   // 0 = 고른 번호의 문제를 전부 출제
+let _solved=new Set(), _wrongSet=new Set();
+function _histKey(){return 'bn_hist_'+QUIZ_ID+'_v2_'+(userSchool||'')+'_'+(userName||'');}
+function _loadHist(){
+  _solved=new Set(); _wrongSet=new Set();
+  try{const h=JSON.parse(localStorage.getItem(_histKey())||'{}'); (h.solved||[]).forEach(n=>_solved.add(n)); (h.wrong||[]).forEach(n=>_wrongSet.add(n));}catch(e){}
+}
+function _saveHist(){
+  try{localStorage.setItem(_histKey(), JSON.stringify({solved:[..._solved], wrong:[..._wrongSet]}));}catch(e){}
+}
+function _shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+// 유형 묶음 (세부 유형 → 선택 버튼)
+const TYPE_GROUPS=[
+  ['빈칸',['빈칸','빈칸(공통)','빈칸연결어','빈칸추론']],
+  ['단어 뜻',['뜻 고르기','영단어 고르기']],
+  ['유의어',['유의어 고르기','반의어 고르기']],
+  ['어휘',['어휘','어휘괄호','어휘(바꿔쓰기)','영영풀이','동의어','어휘(개수)','어휘(복수)','재진술']],
+  ['어법',['어법','어법괄호','어법(복수)','어법·의미','어법(개수)','배열(영작)']],
+  ['순서',['순서','순서(6단계)']],
+  ['문장삽입',['문장삽입']],
+  ['요약',['요약','요약(부적절)']],
+  ['무관문장',['무관문장']],
+  ['제목',['제목']],
+  ['주제',['주제']],
+  ['요지·주장',['요지','주장','목적','속담','심경','어조']],
+  ['내용일치',['내용일치','내용불일치','내용일치(도표)','내용불일치(도표)','내용불일치(개수)','내용일치(수)','내용일치(개수)','내용적용','흐름도','종합','질문응답','세부내용','예시','표정리','답할 수 없는 질문','추론','이어질내용','내용불일치(복수)','내용일치(복수)','글비교']],
+  ['밑줄의미·지칭',['밑줄의미','지칭','대명사']],
+];
+const TYPE_OF={}; TYPE_GROUPS.forEach(([g,list])=>list.forEach(t=>TYPE_OF[t]=g));
+QUESTIONS.forEach(q=>{q.tg=TYPE_OF[q.type]||'기타';});
+let selectedTypes=new Set();   // 비어 있으면 전체 유형
+function typeOk(q){return selectedTypes.size===0||selectedTypes.has(q.tg);}
+function renderTypeRow(){
+  const row=document.getElementById('typeRow'); if(!row) return;
+  row.innerHTML='';
+  const all=document.createElement('button');
+  all.className='fb'+(selectedTypes.size===0?' on':'');
+  all.innerHTML='전체 유형<small>'+QUESTIONS.length+'</small>';
+  all.onclick=()=>{selectedTypes.clear();renderTypeRow();renderPassageGrid();};
+  row.appendChild(all);
+  const groups=[...TYPE_GROUPS.map(g=>g[0])]; if(QUESTIONS.some(q=>q.tg==='기타')) groups.push('기타');
+  groups.forEach(g=>{
+    const n=QUESTIONS.filter(q=>q.tg===g).length; if(!n) return;
+    const b=document.createElement('button');
+    b.className='fb'+(selectedTypes.has(g)?' on':'');
+    b.innerHTML=g+'<small>'+n+'</small>';
+    b.onclick=()=>{ if(selectedTypes.has(g)) selectedTypes.delete(g); else selectedTypes.add(g); renderTypeRow(); renderPassageGrid(); };
+    row.appendChild(b);
+  });
+}
+function setPerRef(n,btn){perRef=0;}   // 문제 수 선택 없음 (항상 전부)
+
+// ── START ──────────────────────────────────────────
+function goPassageSelect(){
+  userSchool = document.getElementById('si').value;
+  userName = document.getElementById('ni').value.trim();
+  if(!userSchool){alert('학교를 선택해주세요!');return;}
+  if(!userName){alert('이름을 입력해주세요!');return;}
+  try{localStorage.setItem('bomnal_name',userName);localStorage.setItem('bomnal_school',userSchool);}catch(e){}
+  document.getElementById('startScreen').classList.add('hidden');
+  document.getElementById('userInfo').textContent = userName + ' · ' + userSchool;
+  _loadHist();
+  renderTypeRow();
+  renderPassageGrid();
+  document.getElementById('passageScreen').classList.remove('hidden');
+}
+
+function refInRange(ref, mode){
+  if(mode==='all') return true;
+  if(mode==='long') return parseInt(ref)>=41;
+  if(mode==='18-28'){const n=parseInt(ref);return n>=18&&n<=28;}
+  if(mode==='29-40'){const n=parseInt(ref);return n>=29&&n<=40;}
+  return true;
+}
+
+function renderPassageGrid(){
+  const grid = document.getElementById('passageGrid');
+  grid.innerHTML='';
+  PASSAGE_ORDER.forEach(ref=>{
+    if(!refInRange(ref, filterMode)) return;
+    if(!PASSAGES_BY_REF[ref]) return;
+    const list = PASSAGES_BY_REF[ref].filter(typeOk);
+    const count = list.length;
+    const d = document.createElement('div');
+    d.className='p-card'+(selectedRefs.has(ref)?' sel':'')+(doneRefs.has(ref)?' done':'')+(count===0?' off':'');
+    d.onclick=()=>togglePassage(ref, d);
+    const solvedN = list.filter(q=>_solved.has(q.no)).length;
+    d.innerHTML=`<div class="p-no">본문 ${ref}</div><div class="p-count">${count}문제</div><div class="p-solved">푼 문제 ${solvedN}/${count}</div>`
+      +(doneRefs.has(ref)?'<span class="p-badge done-badge">완료✓</span>':'')
+      +(selectedRefs.has(ref)&&!doneRefs.has(ref)?'<span class="p-badge" style="background:#f0e6d8;color:#6b4a2b;">선택</span>':'');
+    grid.appendChild(d);
+  });
+}
+
+function togglePassage(ref, el){
+  if(selectedRefs.has(ref)){selectedRefs.delete(ref);el.classList.remove('sel');}
+  else{selectedRefs.add(ref);el.classList.add('sel');}
+  renderPassageGrid();
+}
+
+function filterPassage(mode, btn){
+  filterMode=mode;
+  document.querySelectorAll('.filter-bar .fb').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  renderPassageGrid();
+}
+
+function selectAll(){
+  const visible = PASSAGE_ORDER.filter(r=>refInRange(r, filterMode) && PASSAGES_BY_REF[r] && PASSAGES_BY_REF[r].some(typeOk));
+  const allSel = visible.every(r=>selectedRefs.has(r));
+  visible.forEach(r=>{ if(allSel) selectedRefs.delete(r); else selectedRefs.add(r); });
+  renderPassageGrid();
+}
+
+function startQuiz(){
+  if(selectedRefs.size===0){alert('지문을 하나 이상 선택하세요!');return;}
+  qs=[];
+  PASSAGE_ORDER.forEach(ref=>{
+    if(selectedRefs.has(ref) && PASSAGES_BY_REF[ref]){
+      const pool=_shuffle(PASSAGES_BY_REF[ref].filter(typeOk));
+      // 안 푼 문제 → 틀렸던 문제 → 맞힌 문제 순
+      const rank=q=>!_solved.has(q.no)?0:(_wrongSet.has(q.no)?1:2);
+      pool.sort((a,b)=>rank(a)-rank(b));
+      (perRef>0?pool.slice(0,perRef):pool).forEach(q=>qs.push(q));
+    }
+  });
+  if(qs.length===0){alert('고른 번호에 해당 유형 문제가 없어요. 유형이나 번호를 다시 골라주세요.');return;}
+  idx=0; cor=0; wrn=0; wrongs=[]; allResults=[]; answered=false; t0=Date.now();
+  document.getElementById('passageScreen').classList.add('hidden');
+  document.getElementById('hdr').classList.remove('hidden');
+  document.getElementById('pw').classList.remove('hidden');
+  document.getElementById('quizArea').classList.remove('hidden');
+  document.getElementById('hs').textContent=userName+' · '+(selectedTypes.size?[...selectedTypes].join('·')+' · ':'')+selectedRefs.size+'개 번호 · '+qs.length+'문제';
+  showQ();
+}
+
+// ── QUIZ ──────────────────────────────────────────
+function escHTML(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+function markUPhrase(h, q){
+  // 보기(ⓐ~ⓖ)에 적힌 문구와 같은 부분을 지문에서 찾아 문구 전체에 밑줄
+  if (!q || !q.choices) return h;
+  for (var i = 0; i < q.choices.length; i++) {
+    var m = String(q.choices[i]).match(/^([\u24d0-\u24d6])\s*(.+)$/);
+    if (!m) continue;
+    var sym = m[1], ph = m[2].trim();
+    if (!ph || ph.indexOf(':') >= 0 || !/[A-Za-z]/.test(ph)) continue;
+    if (ph.split(/\s+/).length > 6) continue;
+    var esc = escHTML(ph).replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\s+/g, '\\s+');
+    try {
+      var re = new RegExp(sym + '\\s?' + esc);
+      if (re.test(h)) h = h.replace(re, '<b class="mk">' + sym + '<u>' + escHTML(ph) + '</u></b>');
+    } catch (e) {}
+  }
+  return h;
+}
+function markU(h){return h.replace(/([ⓐⓑⓒⓓⓔⓕⓖ])\s?([A-Za-z][A-Za-z'\-]*)/g,'<b class="mk">$1<u>$2</u></b>').replace(/(\((?:A|B|C|D)\)\s?\[[^\]]+\])/g,'<b class="mk">$1</b>').replace(/(_{6,})/g,'<b class="mk">$1</b>').replace(/(\( [①②③④⑤] \))/g,'<b class="mk">$1</b>');}
+function showQ(){
+  if(idx>=qs.length){showResult();return;}
+  answered=false;
+  const q=qs[idx];
+  document.getElementById('pf').style.width=(idx/qs.length*100).toFixed(0)+'%';
+  document.getElementById('hb').textContent=(idx+1)+'/'+qs.length;
+  const area=document.getElementById('quizArea');
+
+  const choiceHTML = q.choices.map((c,i)=>{
+    return `<button class="cb" data-idx="${i+1}"><span class="cn">${i+1}</span><span>${escHTML(c)}</span></button>`;
+  }).join('');
+
+  const schoolBadge = q.school ? `<span class="qsrc">${escHTML(q.school)}</span>` : '';
+  const typeBadge = q.type ? `<span class="qtype">${escHTML(q.type)}</span>` : '';
+
+  area.innerHTML=`
+    <div class="qc">
+      <div class="q-no-badge">
+        <span class="qno">Q${String(q.no).padStart(3,'0')}</span>
+        ${typeBadge}
+        <span class="passage-tag">본문 ${q.pref}</span>
+        ${q.diff ? `<span class="qtype" style="background:${q.diff==='쉬움'?'#e8f5e9':'#fff3e0'};color:${q.diff==='쉬움'?'#2e7d32':'#e65100'}">${q.diff}</span>` : ''}
+        ${schoolBadge}
+      </div>
+      <div class="passage-box">${markU(markUPhrase(escHTML(q.body), q))}</div>
+      <div class="q-prompt">❓ ${escHTML(q.stem)}</div>
+      <div class="choices" id="qChoices">${choiceHTML}</div>
+      <div class="fb-msg" id="fb"></div>
+    </div>`;
+
+  document.querySelectorAll('#qChoices .cb').forEach(b=>{
+    b.addEventListener('click',()=>selChoice(b, parseInt(b.dataset.idx), q.ans));
+  });
+}
+
+function selChoice(btn, sel, ans){
+  if(answered)return;
+  answered=true;
+  document.querySelectorAll('.cb').forEach(b=>b.disabled=true);
+  const fb=document.getElementById('fb');
+  const q=qs[idx];
+  if(sel===ans){
+    btn.classList.add('correct');
+    fb.className='fb-msg ok';fb.innerHTML='✅ 정답: '+ans+'번 — <strong>'+q.choices[ans-1]+'</strong>'+(window.formatMeaningHint?window.formatMeaningHint(q.choices[ans-1]):'');
+    cor++;
+    _solved.add(q.no); _wrongSet.delete(q.no); _saveHist();
+    allResults.push({no:q.no, pref:q.pref, type:q.type, school:q.school, correct:true, my:sel, ans:ans});
+  } else {
+    btn.classList.add('wrong');
+    document.querySelectorAll('.cb').forEach(b=>{if(parseInt(b.dataset.idx)===ans)b.classList.add('reveal');});
+    fb.className='fb-msg no';fb.innerHTML='❌ 내 답: '+sel+'번 — <strong>'+q.choices[sel-1]+'</strong>'+(window.formatMeaningHint?window.formatMeaningHint(q.choices[sel-1]):'')+'<br>📗 정답: '+ans+'번 — <strong>'+q.choices[ans-1]+'</strong>'+(window.formatMeaningHint?window.formatMeaningHint(q.choices[ans-1]):'');
+    wrn++;
+    wrongs.push({label:'Q'+String(q.no).padStart(3,'0')+' · '+q.pref+'번 ['+q.type+'] '+q.school, my:sel+'번', correct:ans+'번', body:q.choices[ans-1]});
+    _solved.add(q.no); _wrongSet.add(q.no); _saveHist();
+    allResults.push({no:q.no, pref:q.pref, type:q.type, school:q.school, correct:false, my:sel, ans:ans});
+  }
+  if(q.exp){const e=document.createElement('div');e.className='fb-exp';e.innerHTML='💡 '+escHTML(q.exp).replace(/&lt;b&gt;/g,'<b>').replace(/&lt;\/b&gt;/g,'</b>').replace(/\n/g,'<br>');fb.appendChild(e);}
+  // 해설을 읽을 수 있도록 '다음' 버튼으로 넘어감
+  const nb=document.createElement('button');nb.className='rbtn rbtn-p';nb.style.cssText='display:block;width:100%;margin-top:10px;';
+  nb.textContent=(idx+1>=qs.length)?'결과 보기 →':'다음 문제 →';
+  nb.onclick=()=>{idx++;_saveSession();showQ();window.scrollTo({top:0});};
+  fb.parentNode.appendChild(nb);
+}
+
+// ── RESULT ─────────────────────────────────────────
+let wrongQs = [];
+
+
+// === 진행 중 세션 저장 (같은 날 재진입 시 이어서 풀기) ===
+const _SESSION_KEY = 'bn_session_' + QUIZ_ID + '_v2';
+function _saveSession(){
+  if(typeof qs==='undefined' || !qs.length || idx>=qs.length) return;
+  try{
+    const state = {
+      day: _DAY_KEY,
+      userName: (typeof userName!=='undefined'?userName:''),
+      userSchool: (typeof userSchool!=='undefined'?userSchool:''),
+      qs, idx,
+      cor: (typeof cor!=='undefined'?cor:0),
+      wrn: (typeof wrn!=='undefined'?wrn:0),
+      wrongs: (typeof wrongs!=='undefined'?wrongs:[]),
+      allResults: (typeof allResults!=='undefined'?allResults:[]),
+      selectedRefs: (typeof selectedRefs!=='undefined'?Array.from(selectedRefs):[]),
+      doneRefs: (typeof doneRefs!=='undefined'?Array.from(doneRefs):[]),
+      selectedNos: (typeof selectedNos!=='undefined'?Array.from(selectedNos||[]):[]),
+      doneNos: (typeof doneNos!=='undefined'?Array.from(doneNos):[]),
+      quizMode: (typeof quizMode!=='undefined'?quizMode:''),
+      filterMode: (typeof filterMode!=='undefined'?filterMode:''),
+      mode: (typeof mode!=='undefined'?mode:''),
+      round: (typeof round!=='undefined'?round:''),
+      elapsedMs: (typeof t0!=='undefined' && t0)?(Date.now()-t0):0,
+      savedAt: Date.now()
+    };
+    localStorage.setItem(_SESSION_KEY, JSON.stringify(state));
+  }catch(e){}
+}
+function _loadSession(){
+  try{
+    const raw = localStorage.getItem(_SESSION_KEY); if(!raw) return null;
+    const s = JSON.parse(raw);
+    if(s.day !== _DAY_KEY){ localStorage.removeItem(_SESSION_KEY); return null; }
+    if(!s.qs || !s.qs.length || s.idx >= s.qs.length){ localStorage.removeItem(_SESSION_KEY); return null; }
+    return s;
+  }catch(e){ return null; }
+}
+function _clearSession(){ try{ localStorage.removeItem(_SESSION_KEY); }catch(e){} }
+function _restoreSessionState(s){
+  if(typeof userName!=='undefined'){ userName = s.userName||''; }
+  if(typeof userSchool!=='undefined'){ userSchool = s.userSchool||''; }
+  qs = s.qs; idx = s.idx;
+  if(typeof cor!=='undefined') cor = s.cor||0;
+  if(typeof wrn!=='undefined') wrn = s.wrn||0;
+  if(typeof wrongs!=='undefined') wrongs = s.wrongs||[];
+  if(typeof allResults!=='undefined') allResults = s.allResults||[];
+  if(typeof selectedRefs!=='undefined') selectedRefs = new Set(s.selectedRefs||[]);
+  if(typeof doneRefs!=='undefined' && Array.isArray(s.doneRefs)) doneRefs = new Set(s.doneRefs);
+  if(typeof selectedNos!=='undefined') selectedNos = new Set(s.selectedNos||[]);
+  if(typeof doneNos!=='undefined' && Array.isArray(s.doneNos)) doneNos = new Set(s.doneNos);
+  if(typeof quizMode!=='undefined' && s.quizMode) quizMode = s.quizMode;
+  if(typeof filterMode!=='undefined' && s.filterMode) filterMode = s.filterMode;
+  if(typeof mode!=='undefined' && s.mode) mode = s.mode;
+  if(typeof round!=='undefined' && s.round) round = s.round;
+  if(typeof t0!=='undefined') t0 = Date.now() - (s.elapsedMs||0);
+  if(typeof answered!=='undefined') answered = false;
+  if(typeof _loadHist==='function') _loadHist();
+}
+function _enterQuizScreen(){
+  ['startScreen','passageScreen','loginScreen','passages','hubScreen','startView'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.classList.add('hidden');
+  });
+  ['hdr','pw','quizArea','quizScreen','quizWrap','quizView'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.classList.remove('hidden');
+  });
+}
+function resumeSession(){
+  const s = _loadSession(); if(!s){ const rb=document.getElementById('resumeBox'); if(rb) rb.style.display='none'; return; }
+  _restoreSessionState(s);
+  _enterQuizScreen();
+  if(typeof showQ==='function') showQ();
+  else if(typeof renderQuestion==='function') renderQuestion();
+  else if(typeof drawQ==='function') drawQ();
+}
+function discardSession(){ _clearSession(); const rb=document.getElementById('resumeBox'); if(rb) rb.style.display='none'; }
+function checkResumePrompt(){
+  const s = _loadSession(); if(!s) return;
+  const rb = document.getElementById('resumeBox'); if(!rb) return;
+  const remain = s.qs.length - s.idx;
+  const elapsedMin = Math.round((s.elapsedMs||0)/60000);
+  const info = document.getElementById('resumeInfo');
+  if(info) info.innerHTML =
+    '<strong>'+(s.userName||'학생')+'</strong>님 · '+s.qs.length+'문제 중 <strong>'+s.idx+'번째</strong>까지 풀었어요 ('+remain+'문제 남음)<br>'+
+    '진행한 시간: '+elapsedMin+'분 · 정답 '+(s.cor||0)+' / 오답 '+(s.wrn||0);
+  rb.style.display='block';
+}
+window.resumeSession = resumeSession;
+window.discardSession = discardSession;
+
+function showResult(){
+  _clearSession();
+  document.getElementById('pf').style.width='100%';
+  document.getElementById('quizArea').classList.add('hidden');
+  const total=idx, pct=total>0?Math.round(cor/total*100):0;
+  const el=Math.round((Date.now()-t0)/60000);
+  selectedRefs.forEach(r=>doneRefs.add(r));
+  _saveProg();
+  // build wrongQs
+  const wrongNos = new Set();
+  allResults.forEach(r=>{if(!r.correct)wrongNos.add(r.no);});
+  wrongQs = qs.filter(q=>wrongNos.has(q.no));
+
+  const wHTML=wrongs.length>0
+    ?'<div class="wl"><h3>❌ 오답 ('+wrongs.length+'개)</h3>'+wrongs.map(w=>'<div class="wi"><div class="wie">'+w.label+'</div><div class="wid">내 답: '+w.my+' → 정답: '+w.correct+'</div></div>').join('')+'</div>'
+    :'<div style="color:#2e7d32;font-weight:800;padding:14px;text-align:center;">🎉 전부 정답!</div>';
+
+  const retryBtn = wrongs.length>0
+    ? `<button class="rbtn" style="background:linear-gradient(135deg,#c62828,#e91e63);color:white;" onclick="retryWrongs()">❌ 오답 다시풀기 (${wrongs.length}개)</button>`
+    : '';
+
+  const rs=document.getElementById('resultScreen');
+  rs.classList.remove('hidden');
+  rs.innerHTML=`<div class="rc">
+    <div style="font-size:12px;color:var(--muted);margin-bottom:4px;">공통영어2 3과 깊이 읽기 · ${selectedRefs.size}개 지문 · ${total}문제</div>
+    <div class="rs">${pct}점</div>
+    <div class="rsub">${userName}의 결과</div>
+    <div class="sr">
+      <div class="si"><div class="sn" style="color:#2e7d32;">${cor}</div><div class="sl">정답</div></div>
+      <div class="si"><div class="sn" style="color:#c62828;">${wrn}</div><div class="sl">오답</div></div>
+      <div class="si"><div class="sn" style="color:#6b4a2b;">${total}</div><div class="sl">총문제</div></div>
+      <div class="si"><div class="sn" style="color:#f57f17;">${el}분</div><div class="sl">소요</div></div>
+    </div>
+    ${wHTML}
+    <div class="rbtns">
+      ${retryBtn}
+      <button class="rbtn rbtn-p" onclick="goBack()">← 지문 다시 선택</button>
+      <button class="rbtn rbtn-s" onclick="bnRestart()">처음부터 🔄</button>
+    </div>
+  </div>`;
+
+  if(window._fbSave) window._fbSave({
+    submittedAt: new Date().toISOString(),
+    studentName: userName,
+    school: userSchool,
+    score: pct,
+    correct: cor,
+    wrong: wrn,
+    total: total,
+    elapsedMin: el,
+    quizType: '종촌고1_공통영어2_3과_깊이읽기',
+    mockId: QUIZ_ID,
+    qids: allResults.map(r=>r.no),
+    passages: [...selectedRefs].sort(),
+    types: [...selectedTypes],
+    details: allResults.map(r=>({
+      문제: 'Q'+String(r.no).padStart(3,'0'),
+      지문: r.pref+'번',
+      학교기출: r.school||'',
+      유형: r.type,
+      결과: r.correct ? '✅정답' : '❌오답',
+      내답: r.my+'번',
+      정답: r.ans+'번'
+    })),
+    wrongList: wrongs.map(w=>({label:w.label, my:w.my, correct:w.correct}))
+  });
+}
+
+function retryWrongs(){
+  if(wrongQs.length===0) return;
+  qs=[...wrongQs];
+  idx=0; cor=0; wrn=0; wrongs=[]; allResults=[]; answered=false; t0=Date.now();
+  document.getElementById('resultScreen').classList.add('hidden');
+  document.getElementById('quizArea').classList.remove('hidden');
+  document.getElementById('hdr').classList.remove('hidden');
+  document.getElementById('pw').classList.remove('hidden');
+  document.getElementById('hs').textContent=userName+' · 오답 다시풀기';
+  showQ();
+}
+
+function goBack(){
+  document.getElementById('resultScreen').classList.add('hidden');
+  document.getElementById('hdr').classList.add('hidden');
+  document.getElementById('pw').classList.add('hidden');
+  selectedRefs.clear();
+  renderPassageGrid();
+  document.getElementById('passageScreen').classList.remove('hidden');
+}
+
+window.addEventListener('DOMContentLoaded',()=>{
+  const n=localStorage.getItem('bomnal_name');
+  const s=localStorage.getItem('bomnal_school');
+  if(n) document.getElementById('ni').value=n;
+  if(s){
+    const sel=document.getElementById('si');
+    for(let i=0;i<sel.options.length;i++){
+      if(sel.options[i].value&&s.includes(sel.options[i].value)){sel.value=sel.options[i].value;break;}
+    }
+  }
+  _cleanupOldProgress();
+  _loadProg();
+  checkResumePrompt();
+});
+</script>
+
+<script>
+// 결과 화면에서 잘못 눌러 처음부터 돌아가는 사고가 잦아 한 번 더 묻는다
+function bnRestart(){
+  if(confirm('정말 처음부터 다시 푸시겠습니까?\n\n지금까지 푼 내용과 점수가 모두 지워지고 처음으로 돌아갑니다.')) location.reload();
+}
+</script>
+<script>
+/* 홈 화면에 추가했을 때 주소창 없이 앱처럼 열리게 한다 (안드로이드) */
+if('serviceWorker' in navigator){ window.addEventListener('load',function(){ navigator.serviceWorker.register('sw.js').catch(function(){}); }); }
+</script>
+<script src="bn_force.js"></script>
+</body>
+</html>
