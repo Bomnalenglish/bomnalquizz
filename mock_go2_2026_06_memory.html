@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<script src="bn_save.js"></script>
 <link rel="manifest" href="manifest.json"/>
 <meta name="theme-color" content="#4a6741"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
@@ -10,788 +9,306 @@
 <link rel="apple-touch-icon" href="icon-192.png"/>
 <style>html,body{overscroll-behavior-y:contain}</style>
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta http-equiv="Pragma" content="no-cache">
-<meta http-equiv="Expires" content="0">
-<title>봄날 퀴즈 | 고2 26년 6월 본문 암기</title>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>봄날 퀴즈 | 고2 26년 6월 본문암기</title>
 <script type="module" src="bn_tracker.js"></script>
-<script src="mock_word_dict.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Black+Han+Sans&family=Noto+Sans+KR:wght@300;400;700&display=swap" rel="stylesheet"/>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&family=Black+Han+Sans&display=swap');
-:root{--pri:#1565c0;--acc:#f57f17;--bg:#e3f2fd;--card:#fff;--bdr:#90caf9;--muted:#757575;--green:#2e7d32;--red:#c62828;}
-*{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Nanum Gothic',sans-serif;background:var(--bg);min-height:100vh;color:#1a1a2e;}
-.hidden{display:none!important;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--ink:#2a2a2a;--soft:#7a7570;--bg:#f5efe6;--card:#fdf8f2;--border:#e0d8ce;--accent:#5c3d1e}
+body{font-family:"Noto Sans KR",sans-serif;background:var(--bg);min-height:100vh;color:var(--ink)}
+header{background:linear-gradient(135deg,#f7efe4 0%,#f0e6d8 50%,#ece0d2 100%);padding:28px 24px 20px;text-align:center;border-bottom:1px solid var(--border)}
+.logo-row{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;margin-bottom:8px}
+.logo-circle{width:48px;height:48px;border-radius:50%;background:#f0ebe3;border:2px solid #e0d8ce;overflow:hidden;flex-shrink:0}
+.logo-circle img{width:100%;height:100%;object-fit:cover}
+.logo-title{font-family:"Black Han Sans",sans-serif;font-size:1rem;color:#5c3d1e}
+.quiz-meta{font-family:"Gowun Dodum",serif;font-size:.76rem;color:var(--soft);margin-top:2px}
+.test-badge{display:inline-block;background:#3d3d3d;color:#f0ede8;border-radius:30px;padding:3px 14px;font-size:.73rem;font-weight:700;letter-spacing:.5px;margin-top:6px}
+.score-display{font-family:"Gowun Dodum",serif;font-size:.83rem;color:var(--soft);margin-top:5px}
+#score-val{color:var(--accent);font-family:"Black Han Sans",sans-serif;font-size:.95rem}
+main{max-width:1100px;margin:0 auto;padding:20px 14px 80px}
+.prog-wrap{margin-bottom:18px}
+.prog-bg{height:5px;background:#e0d8ce;border-radius:5px;overflow:hidden}
+.prog-fill{height:5px;background:linear-gradient(90deg,#5c3d1e,#a0724a);border-radius:5px;transition:width .4s}
+.prog-text{font-family:"Gowun Dodum",serif;font-size:.72rem;color:var(--soft);margin-top:4px;text-align:right}
+.back-nav{display:inline-flex;align-items:center;gap:6px;background:white;border:1.5px solid #d0c8bc;border-radius:10px;padding:6px 13px;font-family:inherit;font-size:.78rem;color:var(--soft);cursor:pointer;margin-bottom:16px;transition:border-color .15s;text-decoration:none}
+.back-nav:hover{border-color:#3d3d3d;color:#3d3d3d}
+.sec-header{background:#3d3d3d;color:#f0ede8;font-family:"Black Han Sans",sans-serif;font-size:.88rem;padding:9px 16px;border-radius:12px;margin:24px 0 12px;letter-spacing:.4px}
+.para-block{background:var(--card);border:1.5px solid var(--border);border-radius:14px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,.04);overflow:hidden}
+.para-header{background:#f0ebe3;padding:7px 16px;border-bottom:1px solid var(--border)}
+.para-num{font-family:"Black Han Sans",sans-serif;font-size:.78rem;color:var(--accent)}
+.para-cols{display:grid;grid-template-columns:1fr 1fr;gap:0}
+@media(max-width:680px){.para-cols{grid-template-columns:1fr}}
+.para-eng{padding:14px 16px;font-size:.85rem;line-height:2.2;color:#2a2a2a;font-family:"Gowun Dodum",serif;border-right:1px solid var(--border)}
+.para-kr{padding:14px 16px;font-size:.8rem;line-height:1.95;color:#5a5050;font-family:"Gowun Dodum",serif;background:#faf6f0}
+.sel-group{display:inline-flex;align-items:center;border:1.5px solid #c0b4a4;border-radius:6px;overflow:hidden;vertical-align:middle;margin:0 2px;font-size:.82rem}
+.sel-btn{padding:2px 8px;background:#fff;border:none;cursor:pointer;font-family:"Gowun Dodum",serif;font-size:.82rem;color:#3a3a3a;transition:background .12s;line-height:1.7;white-space:nowrap}
+.sel-btn:not(:last-child){border-right:1px solid #c0b4a4}
+.sel-btn:hover{background:#f0ebe3}
+.sel-btn:disabled{cursor:not-allowed}
+.sel-btn.correct{background:#2e7d32!important;color:#fff!important}
+.sel-btn.wrong{background:#c0392b!important;color:#fff!important}
+.blank-input{display:inline-block;border:none;border-bottom:2px solid #c0a882;background:transparent;font-family:"Gowun Dodum",serif;font-size:.84rem;color:#3a3a3a;outline:none;padding:0 4px;min-width:80px;text-align:center;transition:border-color .2s;vertical-align:middle;margin:0 2px}
+.blank-input:focus{border-color:var(--accent)}
+.blank-input:disabled{color:#6a6a6a;cursor:not-allowed;border-bottom-color:#c0b4a4}
+.blank-input.correct-inp{border-bottom-color:#2e7d32;color:#2e7d32}
+.arrange-wrap{margin:8px 0;font-family:"Gowun Dodum",serif;width:100%}
+.arrange-label{font-size:.74rem;color:var(--soft);margin-bottom:4px}
+.arrange-pool{display:flex;flex-wrap:wrap;gap:5px;padding:8px;background:#f5f0ea;border-radius:8px;min-height:36px;margin-bottom:5px;border:1.5px dashed #c0b4a4}
+.arrange-answer{display:flex;flex-wrap:wrap;gap:5px;padding:8px;background:#fff;border-radius:8px;min-height:36px;border:1.5px solid #c0b4a4}
+.word-chip{display:inline-flex;align-items:center;padding:2px 8px;background:#fff;border:1.5px solid #c0a882;border-radius:20px;font-size:.76rem;cursor:pointer;transition:background .12s;user-select:none;font-family:"Gowun Dodum",serif}
+.word-chip:hover{background:#f0ebe3}
+.arrange-answer .word-chip{background:#3d3d3d;color:#fff;border-color:#3d3d3d}
+.arrange-answer .word-chip:hover{background:#555}
+.word-chip.disabled{cursor:not-allowed;opacity:.6}
+.word-chip.correct-chip{background:#2e7d32;border-color:#2e7d32;color:#fff}
+.word-chip.wrong-chip{background:#c0392b;border-color:#c0392b;color:#fff}
+.writing-wrap{margin:8px 0;width:100%}
+.writing-label{font-size:.74rem;color:var(--soft);margin-bottom:4px;font-family:"Gowun Dodum",serif}
+.writing-input{width:100%;padding:8px 11px;border:2px solid #d0c8bc;border-radius:8px;font-size:.83rem;font-family:"Gowun Dodum",serif;outline:none;background:#fff;transition:border-color .2s;resize:vertical;min-height:38px}
+.writing-input:focus{border-color:var(--accent)}
+.writing-input:disabled{background:#f5f0ea;color:#6a6a6a;cursor:not-allowed}
+.q-check-btn{margin-top:6px;padding:5px 14px;background:#3d3d3d;color:#fff;border:none;border-radius:7px;font-family:inherit;font-size:.78rem;font-weight:700;cursor:pointer;transition:opacity .2s}
+.q-check-btn:hover{opacity:.85}
+.q-check-btn:disabled{background:#b0a898;cursor:not-allowed;opacity:1}
+.q-feedback{margin-top:6px;border-radius:8px;padding:7px 11px;font-size:.78rem;line-height:1.8;display:none;font-family:"Gowun Dodum",serif}
+.q-feedback.show{display:block}
+.q-feedback.ok{background:#e8f5e9;border:1px solid #a5d6a7;color:#1b5e20}
+.q-feedback.fail{background:#ffebee;border:1px solid #ef9a9a;color:#7f0000}
+.pt-tag{display:inline-block;background:rgba(0,0,0,.12);border-radius:20px;padding:1px 7px;font-size:.68rem;font-weight:700;margin-left:4px}
+.q-tag{display:inline-block;background:#ede9e4;border-radius:20px;padding:1px 7px;font-size:.66rem;font-weight:700;color:#7a6a5a;margin-right:3px;vertical-align:middle}
+.result-card{background:var(--card);border-radius:20px;border:2px solid var(--border);padding:32px 22px;text-align:center;display:none;box-shadow:0 6px 24px rgba(0,0,0,.08);margin-top:8px}
+.result-card.show{display:block;animation:fadeUp .5s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.result-score{font-family:"Black Han Sans",sans-serif;font-size:2.6rem;color:var(--accent);margin:12px 0}
+.result-msg{font-family:"Gowun Dodum",serif;font-size:.88rem;color:var(--soft);line-height:1.8}
+.result-btns{display:flex;gap:10px;justify-content:center;margin-top:18px;flex-wrap:wrap}
+.result-btns button{padding:10px 20px;border-radius:12px;font-family:inherit;font-size:.82rem;font-weight:700;cursor:pointer;border:2px solid #3d3d3d}
+.btn-retry{background:#3d3d3d;color:#fff}.btn-retry:hover{opacity:.85}
+.btn-back{background:transparent;color:#3d3d3d}.btn-back:hover{background:#f0ede8}
 
-/* START */
-#startScreen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
-.s-card{background:var(--card);border-radius:24px;padding:36px 28px;text-align:center;max-width:520px;width:100%;box-shadow:0 8px 32px rgba(21,101,192,.15);}
-.s-card h1{font-family:'Black Han Sans',sans-serif;font-size:20px;color:var(--pri);margin-bottom:6px;}
-.s-sub{font-size:13px;color:var(--muted);margin-bottom:20px;}
-.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:18px;}
-.info-item{background:var(--bg);border-radius:10px;padding:10px;text-align:center;font-size:12px;color:var(--pri);font-weight:700;}
-.ni{width:100%;padding:11px 14px;border:2px solid var(--bdr);border-radius:12px;font-size:14px;font-family:'Nanum Gothic',sans-serif;outline:none;margin-bottom:10px;}
-.ni:focus{border-color:var(--pri);}
-.start-btn{width:100%;padding:14px;border-radius:12px;border:none;background:linear-gradient(135deg,#1565c0,#f57f17);color:white;font-size:1rem;font-weight:800;cursor:pointer;font-family:inherit;}
-
-/* PASSAGE SELECT */
-#passageScreen{padding:20px;max-width:680px;margin:0 auto;}
-.ps-header{background:linear-gradient(135deg,#1565c0,#1976d2);color:white;border-radius:16px;padding:18px 22px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;}
-.ps-title{font-family:'Black Han Sans',sans-serif;font-size:16px;}
-.ps-sub{font-size:11px;opacity:.8;margin-top:3px;}
-.user-info{background:rgba(255,255,255,.2);border-radius:10px;padding:6px 14px;font-size:12px;font-weight:700;}
-.filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
-.fb{padding:7px 16px;border:2px solid var(--pri);border-radius:20px;background:white;color:var(--pri);font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s;}
-.fb.on{background:var(--pri);color:white;}
-.passage-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-bottom:20px;}
-.p-card{background:white;border-radius:14px;padding:16px 12px;text-align:center;cursor:pointer;border:2.5px solid #e0e0e0;transition:all .18s;position:relative;}
-.p-card:hover{border-color:var(--pri);transform:translateY(-2px);box-shadow:0 6px 18px rgba(21,101,192,.12);}
-.p-card.sel{border-color:var(--pri);background:#e3f2fd;}
-.p-card.done{border-color:#4caf50;background:#e8f5e9;}
-.p-no{font-family:'Black Han Sans',sans-serif;font-size:22px;color:var(--pri);margin-bottom:4px;}
-.p-topic{font-size:10px;color:var(--muted);line-height:1.4;}
-.p-badge{position:absolute;top:6px;right:6px;font-size:9px;padding:2px 6px;border-radius:8px;font-weight:700;}
-.done-badge{background:#e8f5e9;color:#2e7d32;}
-.sel-all-btn{width:100%;padding:12px;border-radius:12px;border:2px solid var(--pri);background:white;color:var(--pri);font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;margin-bottom:10px;}
-.go-btn{width:100%;padding:14px;border-radius:12px;border:none;background:linear-gradient(135deg,#1565c0,#f57f17);color:white;font-size:1rem;font-weight:800;cursor:pointer;font-family:inherit;}
-
-/* QUIZ HEADER */
-.hdr{background:#1565c0;color:white;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
-.ht{font-family:'Black Han Sans',sans-serif;font-size:15px;}
-.hs{font-size:10px;opacity:.7;margin-top:2px;}
-.hb{background:rgba(255,255,255,.2);border-radius:16px;padding:4px 12px;font-size:12px;font-weight:700;}
-.pw{height:4px;background:#bbdefb;}.pf{height:100%;background:linear-gradient(90deg,#1565c0,#f57f17);transition:width .4s;}
-
-/* QUIZ AREA */
-#quizArea{padding:20px;max-width:680px;margin:0 auto;}
-.qc{background:white;border-radius:18px;padding:22px 20px;margin-bottom:16px;box-shadow:0 3px 16px rgba(21,101,192,.08);}
-.q-no-badge{display:inline-flex;align-items:center;gap:6px;margin-bottom:10px;}
-.qno{font-family:'Black Han Sans',sans-serif;font-size:13px;color:white;background:var(--pri);padding:3px 12px;border-radius:12px;}
-.qtype{font-size:11px;font-weight:700;padding:3px 10px;border-radius:10px;}
-.qtype.blank{background:#fff3e0;color:#e65100;}
-.qtype.tf{background:#f3e5f5;color:#6a1b9a;}
-.qtype.wc{background:#fff8e1;color:#e65100;}
-.qtype.ko{background:#e8f5e9;color:#2e7d32;}
-.ko-topic{background:#e8f5e9;border:2.5px dashed #2e7d32;border-radius:14px;padding:18px 16px;text-align:center;font-size:14px;font-weight:800;color:#1b5e20;line-height:1.9;margin-bottom:12px;}
-.ko-topic-txt{font-family:'Black Han Sans',sans-serif;font-size:17px;color:#1b5e20;letter-spacing:.3px;}
-.ko-warn{background:#fff3e0;border-left:4px solid #f57f17;border-radius:0 10px 10px 0;padding:10px 14px;font-size:12px;font-weight:700;color:#e65100;line-height:1.7;margin-bottom:14px;}
-.passage-box{background:#f8faff;border-left:4px solid var(--pri);border-radius:0 10px 10px 0;padding:14px 16px;font-size:14px;line-height:1.9;margin-bottom:14px;color:#1a237e;}
-.blank{display:inline-block;min-width:80px;border-bottom:2.5px solid var(--acc);color:transparent;background:#fff3e0;border-radius:4px;padding:0 4px;font-weight:800;vertical-align:middle;}
-.q-prompt{font-size:13px;font-weight:700;color:#1565c0;margin-bottom:10px;}
-.choices{display:grid;gap:8px;}
-.cb{background:#f5f5f5;border:2px solid #e0e0e0;border-radius:11px;padding:12px 15px;font-family:'Nanum Gothic',sans-serif;font-size:13px;font-weight:700;cursor:pointer;text-align:left;transition:all .15s;display:flex;align-items:center;gap:10px;}
-.cb:hover:not(:disabled){border-color:var(--pri);background:#e3f2fd;}
-.cb.correct{background:#e8f5e9;border-color:#2e7d32;color:#1b5e20;}
-.cb.wrong{background:#ffebee;border-color:#c62828;color:#b71c1c;}
-.cb.reveal{background:#e8f5e9;border-color:#2e7d32;}
-.cn{width:22px;height:22px;border-radius:50%;background:#90caf9;color:white;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;flex-shrink:0;}
-.tf-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-.tfb{padding:16px;border:2px solid #e0e0e0;border-radius:12px;background:#f5f5f5;font-family:'Nanum Gothic',sans-serif;font-size:15px;font-weight:800;cursor:pointer;transition:all .15s;}
-.tfb:hover:not(:disabled){transform:translateY(-2px);}
-.tfb.ob{border-color:#4caf50;color:#2e7d32;}.tfb.xb{border-color:#e91e63;color:#880e4f;}
-.tfb.correct{background:#e8f5e9;}.tfb.wrong{background:#ffebee;}
-.fb-msg{padding:10px 14px;border-radius:10px;font-size:13px;font-weight:800;margin-top:10px;display:none;}
-.fb-msg.ok{background:#e8f5e9;color:#1b5e20;display:block;}
-.fb-msg.no{background:#ffebee;color:#b71c1c;display:block;}
-
-/* RESULT */
-#resultScreen{padding:20px;max-width:600px;margin:0 auto;}
-.rc{background:white;border-radius:24px;padding:30px 22px;box-shadow:0 8px 32px rgba(21,101,192,.1);text-align:center;}
-.rs{font-family:'Black Han Sans',sans-serif;font-size:52px;color:var(--pri);line-height:1;}
-.rsub{font-size:13px;color:var(--muted);margin-top:4px;}
-.sr{display:flex;justify-content:center;gap:20px;margin-top:16px;flex-wrap:wrap;}
-.si{text-align:center;}.sn{font-family:'Black Han Sans',sans-serif;font-size:24px;}.sl{font-size:11px;color:var(--muted);margin-top:2px;}
-.wl{background:var(--bg);border-radius:14px;padding:14px;text-align:left;margin-top:14px;max-height:300px;overflow-y:auto;}
-.wl h3{font-size:12px;font-weight:800;color:var(--red);margin-bottom:8px;}
-.wi{background:white;border-radius:8px;padding:8px 12px;margin-bottom:6px;font-size:11px;border-left:3px solid #e91e63;}
-.wie{font-weight:800;color:var(--pri);}.wid{font-size:10px;color:var(--muted);margin-top:2px;}
-.rbtns{display:flex;gap:10px;justify-content:center;margin-top:18px;flex-wrap:wrap;}
-.rbtn{padding:12px 24px;border-radius:12px;border:none;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;}
-.rbtn-p{background:linear-gradient(135deg,#1565c0,#f57f17);color:white;}
-.rbtn-s{background:#f5f5f5;color:#1565c0;border:2px solid #90caf9;}
-
-@media(max-width:480px){.passage-grid{grid-template-columns:repeat(3,1fr)}.tf-btns{grid-template-columns:1fr 1fr}}
+/* 🚫 해당하지 않는(어색한) 것 고르기 - 문제 유형 시각 표시 */
+.exclude-group::before{
+  content:"🚫 어색한 것";
+  display:inline-block;font-size:9.5px;background:#fef2f2;color:#b91c1c;
+  border:1px solid #fca5a5;border-radius:5px;padding:1px 6px;margin-right:4px;
+  font-weight:800;vertical-align:middle;white-space:nowrap;letter-spacing:.2px;
+}
 </style>
+
+<style>
+:root{ --fsz:11pt; }
+body,.para-eng,.para-kr,.sec-header,.para-num,.sel-btn,.blank-input,.word-chip,.arrange-label,.q-feedback,input,button{
+  font-family:"Malgun Gothic","맑은 고딕","Apple SD Gothic Neo",AppleGothic,
+              -apple-system,BlinkMacSystemFont,sans-serif !important;
+}
+.para-eng{ font-size:var(--fsz) !important; line-height:2.1 !important; }
+.sel-btn,.word-chip{ font-size:calc(var(--fsz) - 1pt) !important; }
+.q-feedback{ font-size:calc(var(--fsz) - 1pt) !important; }
+.sel-group{ flex-wrap:wrap !important; max-width:100% !important; }
+.sel-btn{ white-space:normal !important; }
+.para-eng,.para-block{ overflow-wrap:anywhere; }
+main{ overflow-x:hidden; }
+</style>
+</head>
+<body>
+<header>
+  <div class="logo-row">
+    <div class="logo-circle"><img src="https://bomnalenglish.github.io/bomnalquizz/IMG_6063.jpg" alt="봄날" onerror="this.style.display='none'"/></div>
+    <div><div class="logo-title">봄날 BOMNAL ENGLISH</div><div class="quiz-meta">고2 26년 6월 모의고사 · 본문암기</div></div>
+  </div>
+  <div><span class="test-badge">📖 본문 빈칸 넣기 · 글의 순서</span></div>
+  <div class="score-display">현재 점수: <span id="score-val">0</span> / <span id="score-max">0</span>점</div>
+</header>
+<main>
+  <a class="back-nav" href="javascript:history.back()">← 허브로 돌아가기</a>
+  <div class="prog-wrap">
+    <div class="prog-bg"><div class="prog-fill" id="prog" style="width:0%"></div></div>
+    <div class="prog-text" id="prog-txt">0 / 0 완료</div>
+  </div>
+<div class="sec-header">✏️ 본문 빈칸 넣기 — 보기 3개에서 고르기</div>
+<div class="para-block"><div class="para-header"><span class="para-num">20번 지문</span></div><div class="para-cols"><div class="para-eng">We can <span class="q-tag">1)</span><span class="sel-group" data-qi="0" data-ans="1"><button class="sel-btn" onclick="pick(this,0,0)">something</button><button class="sel-btn" onclick="pick(this,0,1)">sometimes</button><button class="sel-btn" onclick="pick(this,0,2)">assumes</button></span> assume that the whole will be as good as each of its parts. Suppose, for example, you&#x27;re in charge of a <span class="q-tag">2)</span><span class="sel-group" data-qi="1" data-ans="2"><button class="sel-btn" onclick="pick(this,1,0)">started</button><button class="sel-btn" onclick="pick(this,1,1)">stars</button><button class="sel-btn" onclick="pick(this,1,2)">startup</button></span>, and you know that everyone you&#x27;ve brought on board is productive and efficient. It might seem logical to <span class="q-tag">3)</span><span class="sel-group" data-qi="2" data-ans="0"><button class="sel-btn" onclick="pick(this,2,0)">assume</button><button class="sel-btn" onclick="pick(this,2,1)">game</button><button class="sel-btn" onclick="pick(this,2,2)">assets</button></span> that, as a result, the startup will be productive and efficient, too ─ but this isn&#x27;t necessarily true. Therefore, the productivity of a <span class="q-tag">4)</span><span class="sel-group" data-qi="3" data-ans="0"><button class="sel-btn" onclick="pick(this,3,0)">startup</button><button class="sel-btn" onclick="pick(this,3,1)">started</button><button class="sel-btn" onclick="pick(this,3,2)">stars</button></span> can be reliably predicted by adding up the efficiency of each individual member. The fallacy of composition <span class="q-tag">5)</span><span class="sel-group" data-qi="4" data-ans="0"><button class="sel-btn" onclick="pick(this,4,0)">fails</button><button class="sel-btn" onclick="pick(this,4,1)">animals</button><button class="sel-btn" onclick="pick(this,4,2)">fairly</button></span> to allow for how the different &quot;parts&quot; interact with each other ─ if, for example, your efficient administrator and your <span class="q-tag">6)</span><span class="sel-group" data-qi="5" data-ans="2"><button class="sel-btn" onclick="pick(this,5,0)">high</button><button class="sel-btn" onclick="pick(this,5,1)">high-end</button><button class="sel-btn" onclick="pick(this,5,2)">highly</button></span> skilled head of IT each assumes the other is in charge of collating prototype test results, then you have a problem. <span class="q-tag">7)</span><span class="sel-group" data-qi="6" data-ans="1"><button class="sel-btn" onclick="pick(this,6,0)">Quality</button><button class="sel-btn" onclick="pick(this,6,1)">Equally</button><button class="sel-btn" onclick="pick(this,6,2)">Likely</button></span>, a unit composed of good people can still be working on a doomed project, and a project composed of good <span class="q-tag">8)</span><span class="sel-group" data-qi="7" data-ans="0"><button class="sel-btn" onclick="pick(this,7,0)">ideas</button><button class="sel-btn" onclick="pick(this,7,1)">deal</button><button class="sel-btn" onclick="pick(this,7,2)">areas</button></span> may lack a stable center. When assembling a team with a common goal, always check the overall view as well as the individuals involved.</div></div></div>
+<div class="para-block"><div class="para-header"><span class="para-num">21번 지문</span></div><div class="para-cols"><div class="para-eng"><span class="q-tag">9)</span><span class="sel-group" data-qi="8" data-ans="1"><button class="sel-btn" onclick="pick(this,8,0)">Means</button><button class="sel-btn" onclick="pick(this,8,1)">Humans</button><button class="sel-btn" onclick="pick(this,8,2)">Concerns</button></span> excel at visual imagery. Our brains evolved this ability to <span class="q-tag">10)</span><span class="sel-group" data-qi="9" data-ans="0"><button class="sel-btn" onclick="pick(this,9,0)">create</button><button class="sel-btn" onclick="pick(this,9,1)">rate</button><button class="sel-btn" onclick="pick(this,9,2)">state</button></span> an internal mental picture or model of the world in which we can rehearse <span class="q-tag">11)</span><span class="sel-group" data-qi="10" data-ans="0"><button class="sel-btn" onclick="pick(this,10,0)">forthcoming</button><button class="sel-btn" onclick="pick(this,10,1)">farming</button><button class="sel-btn" onclick="pick(this,10,2)">disrupting</button></span> actions, without the risks or the penalties of doing them in the real world. There are even hints from brain-imaging <span class="q-tag">12)</span><span class="sel-group" data-qi="11" data-ans="0"><button class="sel-btn" onclick="pick(this,11,0)">studies</button><button class="sel-btn" onclick="pick(this,11,1)">times</button><button class="sel-btn" onclick="pick(this,11,2)">studied</button></span> by Harvard University psychologist Steve Kosslyn showing that your brain uses the same regions to imagine a scene as when you <span class="q-tag">13)</span><span class="sel-group" data-qi="12" data-ans="0"><button class="sel-btn" onclick="pick(this,12,0)">actually</button><button class="sel-btn" onclick="pick(this,12,1)">supply</button><button class="sel-btn" onclick="pick(this,12,2)">call</button></span> view one. But evolution has seen to it that such internally generated representations are never as authentic as the real thing. This is a wise bit of <span class="q-tag">14)</span><span class="sel-group" data-qi="13" data-ans="0"><button class="sel-btn" onclick="pick(this,13,0)">self-restraint</button><button class="sel-btn" onclick="pick(this,13,1)">five-percent</button><button class="sel-btn" onclick="pick(this,13,2)">selection</button></span> on your genes&#x27; part. If your internal model of the world were a perfect substitute, then anytime you felt <span class="q-tag">15)</span><span class="sel-group" data-qi="14" data-ans="0"><button class="sel-btn" onclick="pick(this,14,0)">hungry</button><button class="sel-btn" onclick="pick(this,14,1)">hundred</button><button class="sel-btn" onclick="pick(this,14,2)">lottery</button></span> you could simply imagine yourself at a banquet, consuming a feast. You would have no <span class="q-tag">16)</span><span class="sel-group" data-qi="15" data-ans="1"><button class="sel-btn" onclick="pick(this,15,0)">innovative</button><button class="sel-btn" onclick="pick(this,15,1)">incentive</button><button class="sel-btn" onclick="pick(this,15,2)">survive</button></span> to find real food and would soon starve to death. As the Bard said, &quot;You cannot cloy the hungry edge of appetite by bare imagination of a feast.&quot;</div></div></div>
+<div class="para-block"><div class="para-header"><span class="para-num">22번 지문</span></div><div class="para-cols"><div class="para-eng">For each <span class="q-tag">17)</span><span class="sel-group" data-qi="16" data-ans="2"><button class="sel-btn" onclick="pick(this,16,0)">involve</button><button class="sel-btn" onclick="pick(this,16,1)">subjectively</button><button class="sel-btn" onclick="pick(this,16,2)">objective</button></span> probability — from one percent to 100 percent — we want to know the subjective probability weight. When we make <span class="q-tag">18)</span><span class="sel-group" data-qi="17" data-ans="2"><button class="sel-btn" onclick="pick(this,17,0)">direction</button><button class="sel-btn" onclick="pick(this,17,1)">situations</button><button class="sel-btn" onclick="pick(this,17,2)">decisions</button></span>, do we treat a one-percent chance just like one percent, or like something else? Events that could <span class="q-tag">19)</span><span class="sel-group" data-qi="18" data-ans="0"><button class="sel-btn" onclick="pick(this,18,0)">happen</button><button class="sel-btn" onclick="pick(this,18,1)">shape</button><button class="sel-btn" onclick="pick(this,18,2)">given</button></span> but aren&#x27;t likely — low-probability events — can be defined as probabilities up to about 25 <span class="q-tag">20)</span><span class="sel-group" data-qi="19" data-ans="1"><button class="sel-btn" onclick="pick(this,19,0)">rent</button><button class="sel-btn" onclick="pick(this,19,1)">percent</button><button class="sel-btn" onclick="pick(this,19,2)">point</button></span>. Low-probability events tend to factor more into decisions than they should. That is, an event that has an objective <span class="q-tag">21)</span><span class="sel-group" data-qi="20" data-ans="2"><button class="sel-btn" onclick="pick(this,20,0)">commitment</button><button class="sel-btn" onclick="pick(this,20,1)">five-percent</button><button class="sel-btn" onclick="pick(this,20,2)">one-percent</button></span> chance of occurring could subjectively seem like it has a five-percent chance of occurring. We <span class="q-tag">22)</span><span class="sel-group" data-qi="21" data-ans="2"><button class="sel-btn" onclick="pick(this,21,0)">substitute</button><button class="sel-btn" onclick="pick(this,21,1)">operate</button><button class="sel-btn" onclick="pick(this,21,2)">overestimate</button></span> the likelihood of these low-probability events. In general, the smaller the probability, the more we <span class="q-tag">23)</span><span class="sel-group" data-qi="22" data-ans="1"><button class="sel-btn" onclick="pick(this,22,0)">substitute</button><button class="sel-btn" onclick="pick(this,22,1)">overestimate</button><button class="sel-btn" onclick="pick(this,22,2)">operate</button></span> its likelihood. For example, people who play the lottery are often optimistic about winning. However, the odds of a <span class="q-tag">24)</span><span class="sel-group" data-qi="23" data-ans="1"><button class="sel-btn" onclick="pick(this,23,0)">using</button><button class="sel-btn" onclick="pick(this,23,1)">single</button><button class="sel-btn" onclick="pick(this,23,2)">struggle</button></span> ticket winning the largest, most popular U.S. lotteries are on the order of one in 175 million.</div></div></div>
+<div class="para-block"><div class="para-header"><span class="para-num">23번 지문</span></div><div class="para-cols"><div class="para-eng">Many of the <span class="q-tag">25)</span><span class="sel-group" data-qi="24" data-ans="0"><button class="sel-btn" onclick="pick(this,24,0)">barriers</button><button class="sel-btn" onclick="pick(this,24,1)">majors</button><button class="sel-btn" onclick="pick(this,24,2)">bare</button></span> to trade exist not because of a lack of markets or customers, but because there are major barriers to <span class="q-tag">26)</span><span class="sel-group" data-qi="25" data-ans="1"><button class="sel-btn" onclick="pick(this,25,0)">occurring</button><button class="sel-btn" onclick="pick(this,25,1)">getting</button><button class="sel-btn" onclick="pick(this,25,2)">resting</button></span> products to market at competitive prices. transaction costs are <span class="q-tag">27)</span><span class="sel-group" data-qi="26" data-ans="1"><button class="sel-btn" onclick="pick(this,26,0)">significantly</button><button class="sel-btn" onclick="pick(this,26,1)">significant</button><button class="sel-btn" onclick="pick(this,26,2)">scientific</button></span> for companies — not only the straight exchange costs, but also the cost of converting, paying, and hedging <span class="q-tag">28)</span><span class="sel-group" data-qi="27" data-ans="0"><button class="sel-btn" onclick="pick(this,27,0)">funds</button><button class="sel-btn" onclick="pick(this,27,1)">demands</button><button class="sel-btn" onclick="pick(this,27,2)">find</button></span> just to pay for the goods and services. Having a common currency means that many of those <span class="q-tag">29)</span><span class="sel-group" data-qi="28" data-ans="0"><button class="sel-btn" onclick="pick(this,28,0)">transaction</button><button class="sel-btn" onclick="pick(this,28,1)">extraction</button><button class="sel-btn" onclick="pick(this,28,2)">assumption</button></span> costs disappear and the savings can be reinvested back into firms&#x27; productivity and <span class="q-tag">30)</span><span class="sel-group" data-qi="29" data-ans="1"><button class="sel-btn" onclick="pick(this,29,0)">innovative</button><button class="sel-btn" onclick="pick(this,29,1)">innovation</button><button class="sel-btn" onclick="pick(this,29,2)">innovators</button></span>. Basically, useless costs turn into productive costs — with longer-term benefits to the <span class="q-tag">31)</span><span class="sel-group" data-qi="30" data-ans="1"><button class="sel-btn" onclick="pick(this,30,0)">hold</button><button class="sel-btn" onclick="pick(this,30,1)">whole</button><button class="sel-btn" onclick="pick(this,30,2)">couple</button></span> economy. By unifying some of the currencies, whole economies benefit and grow more than they would as <span class="q-tag">32)</span><span class="sel-group" data-qi="31" data-ans="2"><button class="sel-btn" onclick="pick(this,31,0)">scientists</button><button class="sel-btn" onclick="pick(this,31,1)">one-percent</button><button class="sel-btn" onclick="pick(this,31,2)">independents</button></span>. So a common currency provides for a strong economic foundation that all can benefit from.</div></div></div>
+<div class="para-block"><div class="para-header"><span class="para-num">24번 지문</span></div><div class="para-cols"><div class="para-eng">The <span class="q-tag">33)</span><span class="sel-group" data-qi="32" data-ans="2"><button class="sel-btn" onclick="pick(this,32,0)">weight</button><button class="sel-btn" onclick="pick(this,32,1)">fight</button><button class="sel-btn" onclick="pick(this,32,2)">light</button></span> from even our nearest stellar neighbour takes four <span class="q-tag">34)</span><span class="sel-group" data-qi="33" data-ans="2"><button class="sel-btn" onclick="pick(this,33,0)">yards</button><button class="sel-btn" onclick="pick(this,33,1)">year</button><button class="sel-btn" onclick="pick(this,33,2)">years</button></span> to reach us. When we look at the stars, we are looking back in time. This is an incredible gift. We can see parts of <span class="q-tag">35)</span><span class="sel-group" data-qi="34" data-ans="2"><button class="sel-btn" onclick="pick(this,34,0)">spare</button><button class="sel-btn" onclick="pick(this,34,1)">once</button><button class="sel-btn" onclick="pick(this,34,2)">space</button></span>, parts of our universe, as they were many years ago. The further we can collect <span class="q-tag">36)</span><span class="sel-group" data-qi="35" data-ans="0"><button class="sel-btn" onclick="pick(this,35,0)">light</button><button class="sel-btn" onclick="pick(this,35,1)">fight</button><button class="sel-btn" onclick="pick(this,35,2)">brought</button></span> from, the further back in time we can look. If you look at the bright star Betelgeuse, which glows in the Orion constellation, you wind time back more than six hundred <span class="q-tag">37)</span><span class="sel-group" data-qi="36" data-ans="0"><button class="sel-btn" onclick="pick(this,36,0)">years</button><button class="sel-btn" onclick="pick(this,36,1)">yards</button><button class="sel-btn" onclick="pick(this,36,2)">year</button></span>. Its reddish glow started its journey to Earth in the Middle Ages. The stars in Orion&#x27;s belt are even further away. Their <span class="q-tag">38)</span><span class="sel-group" data-qi="37" data-ans="2"><button class="sel-btn" onclick="pick(this,37,0)">brought</button><button class="sel-btn" onclick="pick(this,37,1)">fight</button><button class="sel-btn" onclick="pick(this,37,2)">light</button></span>, familiar to generations of humans, has travelled at least 1,000 years to <span class="q-tag">39)</span><span class="sel-group" data-qi="38" data-ans="1"><button class="sel-btn" onclick="pick(this,38,0)">pitch</button><button class="sel-btn" onclick="pick(this,38,1)">reach</button><button class="sel-btn" onclick="pick(this,38,2)">research</button></span> us. This means we have a chance of understanding the history of the universe because we can see the more <span class="q-tag">40)</span><span class="sel-group" data-qi="39" data-ans="2"><button class="sel-btn" onclick="pick(this,39,0)">constant</button><button class="sel-btn" onclick="pick(this,39,1)">plant</button><button class="sel-btn" onclick="pick(this,39,2)">distant</button></span> parts of it as they were in the past, thousands or millions or billions of years ago.</div></div></div>
+<div class="para-block"><div class="para-header"><span class="para-num">26번 지문</span></div><div class="para-cols"><div class="para-eng"><span class="q-tag">41)</span><span class="sel-group" data-qi="40" data-ans="2"><button class="sel-btn" onclick="pick(this,40,0)">Regard</button><button class="sel-btn" onclick="pick(this,40,1)">Factor</button><button class="sel-btn" onclick="pick(this,40,2)">Jacob</button></span> Lawrence was an American painter known for vivid scenes of African-American <span class="q-tag">42)</span><span class="sel-group" data-qi="41" data-ans="2"><button class="sel-btn" onclick="pick(this,41,0)">store</button><button class="sel-btn" onclick="pick(this,41,1)">historical</button><button class="sel-btn" onclick="pick(this,41,2)">history</button></span> and daily life. Born in Atlantic City in 1917, he moved to Harlem at 13 and studied art at Utopia Children&#x27;s Center. He used bright <span class="q-tag">43)</span><span class="sel-group" data-qi="42" data-ans="1"><button class="sel-btn" onclick="pick(this,42,0)">motors</button><button class="sel-btn" onclick="pick(this,42,1)">colors</button><button class="sel-btn" onclick="pick(this,42,2)">furthers</button></span> and simplified shapes in his paintings. The Migration Series, widely <span class="q-tag">44)</span><span class="sel-group" data-qi="43" data-ans="2"><button class="sel-btn" onclick="pick(this,43,0)">reduced</button><button class="sel-btn" onclick="pick(this,43,1)">conducted</button><button class="sel-btn" onclick="pick(this,43,2)">regarded</button></span> as Jacob Lawrence&#x27;s masterpiece, brought him national recognition. During World War Ⅱ, he <span class="q-tag">45)</span><span class="sel-group" data-qi="44" data-ans="1"><button class="sel-btn" onclick="pick(this,44,0)">services</button><button class="sel-btn" onclick="pick(this,44,1)">served</button><button class="sel-btn" onclick="pick(this,44,2)">offered</button></span> in the U.S. Coast Guard and produced many paintings, but most of them were lost. Later, he <span class="q-tag">46)</span><span class="sel-group" data-qi="45" data-ans="0"><button class="sel-btn" onclick="pick(this,45,0)">taught</button><button class="sel-btn" onclick="pick(this,45,1)">weight</button><button class="sel-btn" onclick="pick(this,45,2)">laugh</button></span> at the University of Washington for 16 years. Throughout his lifetime, he received <span class="q-tag">47)</span><span class="sel-group" data-qi="46" data-ans="2"><button class="sel-btn" onclick="pick(this,46,0)">normally</button><button class="sel-btn" onclick="pick(this,46,1)">imagery</button><button class="sel-btn" onclick="pick(this,46,2)">honorary</button></span> degrees from several universities, including Harvard. Until a few <span class="q-tag">48)</span><span class="sel-group" data-qi="47" data-ans="1"><button class="sel-btn" onclick="pick(this,47,0)">genes</button><button class="sel-btn" onclick="pick(this,47,1)">weeks</button><button class="sel-btn" onclick="pick(this,47,2)">risks</button></span> before his death, he continued to explore the lives of African-Americans through his painting.</div></div></div>
+<div class="para-block"><div class="para-header"><span class="para-num">29번 지문</span></div><div class="para-cols"><div class="para-eng">The <span class="q-tag">49)</span><span class="sel-group" data-qi="48" data-ans="2"><button class="sel-btn" onclick="pick(this,48,0)">reduced</button><button class="sel-btn" onclick="pick(this,48,1)">known</button><button class="sel-btn" onclick="pick(this,48,2)">renowned</button></span> British philosopher Alfred North Whitehead asserted that &quot;civilization advances by extending the number of <span class="q-tag">50)</span><span class="sel-group" data-qi="49" data-ans="1"><button class="sel-btn" onclick="pick(this,49,0)">generations</button><button class="sel-btn" onclick="pick(this,49,1)">operations</button><button class="sel-btn" onclick="pick(this,49,2)">violations</button></span> we can perform without thinking about them.&quot; Take, for example, the &quot;advance&quot; offered to civilization by the discount <span class="q-tag">51)</span><span class="sel-group" data-qi="50" data-ans="0"><button class="sel-btn" onclick="pick(this,50,0)">coupon</button><button class="sel-btn" onclick="pick(this,50,1)">coupons</button><button class="sel-btn" onclick="pick(this,50,2)">common</button></span>, which allows consumers to assume that they will receive a reduced purchase price by <span class="q-tag">52)</span><span class="sel-group" data-qi="51" data-ans="0"><button class="sel-btn" onclick="pick(this,51,0)">presenting</button><button class="sel-btn" onclick="pick(this,51,1)">printing</button><button class="sel-btn" onclick="pick(this,51,2)">sleeping</button></span> the coupon. The extent to which we have learned to operate mechanically on that assumption is illustrated in the <span class="q-tag">53)</span><span class="sel-group" data-qi="52" data-ans="2"><button class="sel-btn" onclick="pick(this,52,0)">difference</button><button class="sel-btn" onclick="pick(this,52,1)">persistence</button><button class="sel-btn" onclick="pick(this,52,2)">experience</button></span> of one automobile-tire company. Mailed-out coupons that — because of a printing error — offered no <span class="q-tag">54)</span><span class="sel-group" data-qi="53" data-ans="1"><button class="sel-btn" onclick="pick(this,53,0)">having</button><button class="sel-btn" onclick="pick(this,53,1)">savings</button><button class="sel-btn" onclick="pick(this,53,2)">paintings</button></span> to recipients produced just as much customer response as did error-free coupons that offered <span class="q-tag">55)</span><span class="sel-group" data-qi="54" data-ans="0"><button class="sel-btn" onclick="pick(this,54,0)">substantial</button><button class="sel-btn" onclick="pick(this,54,1)">standstill</button><button class="sel-btn" onclick="pick(this,54,2)">commercial</button></span> savings. The obvious but instructive point here is that we expect discount coupons to do <span class="q-tag">56)</span><span class="sel-group" data-qi="55" data-ans="2"><button class="sel-btn" onclick="pick(this,55,0)">mobile</button><button class="sel-btn" onclick="pick(this,55,1)">struggle</button><button class="sel-btn" onclick="pick(this,55,2)">double</button></span> duty. Not only do we expect them to save us money, we also expect them to save us the time and mental energy required to think about how to do it.</div></div></div>
+<div class="para-block"><div class="para-header"><span class="para-num">30번 지문</span></div><div class="para-cols"><div class="para-eng"><span class="q-tag">57)</span><span class="sel-group" data-qi="56" data-ans="2"><button class="sel-btn" onclick="pick(this,56,0)">Supply</button><button class="sel-btn" onclick="pick(this,56,1)">Actually</button><button class="sel-btn" onclick="pick(this,56,2)">Usually</button></span>, innovative high-tech products have low price elasticity. This means that high variation in price, an <span class="q-tag">58)</span><span class="sel-group" data-qi="57" data-ans="0"><button class="sel-btn" onclick="pick(this,57,0)">increase</button><button class="sel-btn" onclick="pick(this,57,1)">universe</button><button class="sel-btn" onclick="pick(this,57,2)">decrease</button></span> as well as a decrease, does not significantly modify demand. These high-tech products have few substitutes, meaning that the costs to <span class="q-tag">59)</span><span class="sel-group" data-qi="58" data-ans="2"><button class="sel-btn" onclick="pick(this,58,0)">search</button><button class="sel-btn" onclick="pick(this,58,1)">pitch</button><button class="sel-btn" onclick="pick(this,58,2)">switch</button></span> to another product are high. Additionally, at the first stage of the technology, buyers — either innovators or forerunners — are less <span class="q-tag">60)</span><span class="sel-group" data-qi="59" data-ans="1"><button class="sel-btn" onclick="pick(this,59,0)">sense</button><button class="sel-btn" onclick="pick(this,59,1)">sensitive</button><button class="sel-btn" onclick="pick(this,59,2)">instructive</button></span> to price than to additional performance; they often have deep pockets or are ready to spend a lot for a new innovative and outstanding product. For <span class="q-tag">61)</span><span class="sel-group" data-qi="60" data-ans="2"><button class="sel-btn" onclick="pick(this,60,0)">disturbance</button><button class="sel-btn" onclick="pick(this,60,1)">influence</button><button class="sel-btn" onclick="pick(this,60,2)">instance</button></span>, with its new product range, a high-end mobile phone manufacturer is aiming at the 3% of millionaire <span class="q-tag">62)</span><span class="sel-group" data-qi="61" data-ans="1"><button class="sel-btn" onclick="pick(this,61,0)">constantly</button><button class="sel-btn" onclick="pick(this,61,1)">households</button><button class="sel-btn" onclick="pick(this,61,2)">thousands</button></span> with assets of more than $2.5 million; those are customers who are ready to accept the price range the manufacturer has set. At that stage, the <span class="q-tag">63)</span><span class="sel-group" data-qi="62" data-ans="1"><button class="sel-btn" onclick="pick(this,62,0)">operations</button><button class="sel-btn" onclick="pick(this,62,1)">competitors</button><button class="sel-btn" onclick="pick(this,62,2)">competitive</button></span> are not interested in lowering their price significantly whatsoever, because they are chasing the same categories of customers, not sensitive to <span class="q-tag">64)</span><span class="sel-group" data-qi="63" data-ans="1"><button class="sel-btn" onclick="pick(this,63,0)">prices</button><button class="sel-btn" onclick="pick(this,63,1)">price</button><button class="sel-btn" onclick="pick(this,63,2)">source</button></span>. Furthermore, the high price of these products is often perceived as a sign of quality and reinforces a customer&#x27;s confidence in the company.</div></div></div>
+<div class="para-block"><div class="para-header"><span class="para-num">31번 지문</span></div><div class="para-cols"><div class="para-eng">One <span class="q-tag">65)</span><span class="sel-group" data-qi="64" data-ans="1"><button class="sel-btn" onclick="pick(this,64,0)">fairly</button><button class="sel-btn" onclick="pick(this,64,1)">easily</button><button class="sel-btn" onclick="pick(this,64,2)">daily</button></span> underappreciated feature of a city street or square is its &quot;future-proof&quot; nature. The <span class="q-tag">66)</span><span class="sel-group" data-qi="65" data-ans="1"><button class="sel-btn" onclick="pick(this,65,0)">constant</button><button class="sel-btn" onclick="pick(this,65,1)">ancient</button><button class="sel-btn" onclick="pick(this,65,2)">efficient</button></span> medieval squares in places like Marrakesh and Siena are still places where stuff is sold every day, even if the stuff <span class="q-tag">67)</span><span class="sel-group" data-qi="66" data-ans="2"><button class="sel-btn" onclick="pick(this,66,0)">sell</button><button class="sel-btn" onclick="pick(this,66,1)">yourself</button><button class="sel-btn" onclick="pick(this,66,2)">itself</button></span> has changed over the last five hundred years. The city square is a fairly future-proof <span class="q-tag">68)</span><span class="sel-group" data-qi="67" data-ans="1"><button class="sel-btn" onclick="pick(this,67,0)">technically</button><button class="sel-btn" onclick="pick(this,67,1)">technology</button><button class="sel-btn" onclick="pick(this,67,2)">technologies</button></span>, as is the shopping street, even in an age of online shopping. For example, the same physical store that once sold <span class="q-tag">69)</span><span class="sel-group" data-qi="68" data-ans="1"><button class="sel-btn" onclick="pick(this,68,0)">energy</button><button class="sel-btn" onclick="pick(this,68,1)">buggy</button><button class="sel-btn" onclick="pick(this,68,2)">buy</button></span> whips and typewriters might now repair damaged phones and sell bubble tea. The same <span class="q-tag">70)</span><span class="sel-group" data-qi="69" data-ans="1"><button class="sel-btn" onclick="pick(this,69,0)">automobile-tire</button><button class="sel-btn" onclick="pick(this,69,1)">infrastructure</button><button class="sel-btn" onclick="pick(this,69,2)">instructive</button></span> supports evolving uses. Jane Jacobs, the great prophet of the city economy, made much of this fact in her books, <span class="q-tag">71)</span><span class="sel-group" data-qi="70" data-ans="2"><button class="sel-btn" onclick="pick(this,70,0)">signalling</button><button class="sel-btn" onclick="pick(this,70,1)">positioning</button><button class="sel-btn" onclick="pick(this,70,2)">including</button></span> The Death and Life of Great American Cities and The Nature of Economies. As she pointed out, the great advantage of a city architecture is its ability to support <span class="q-tag">72)</span><span class="sel-group" data-qi="71" data-ans="2"><button class="sel-btn" onclick="pick(this,71,0)">changes</button><button class="sel-btn" onclick="pick(this,71,1)">changed</button><button class="sel-btn" onclick="pick(this,71,2)">change</button></span> in uses, and Jacobs correctly predicted the persistence of the city itself, unlike those who predicted the rise of the Internet would mean the death of the city.</div></div></div>
+<div class="para-block"><div class="para-header"><span class="para-num">32번 지문</span></div><div class="para-cols"><div class="para-eng">The <span class="q-tag">73)</span><span class="sel-group" data-qi="72" data-ans="1"><button class="sel-btn" onclick="pick(this,72,0)">bright</button><button class="sel-btn" onclick="pick(this,72,1)">genomics</button><button class="sel-btn" onclick="pick(this,72,2)">economic</button></span> revolution made it possible to see just how impactful touch is to plants on a deeper <span class="q-tag">74)</span><span class="sel-group" data-qi="73" data-ans="2"><button class="sel-btn" onclick="pick(this,73,0)">lively</button><button class="sel-btn" onclick="pick(this,73,1)">excel</button><button class="sel-btn" onclick="pick(this,73,2)">level</button></span>. Peering at the genes of Arabidopsis thaliana, a weedy plant in the mustard <span class="q-tag">75)</span><span class="sel-group" data-qi="74" data-ans="2"><button class="sel-btn" onclick="pick(this,74,0)">fails</button><button class="sel-btn" onclick="pick(this,74,1)">quietly</button><button class="sel-btn" onclick="pick(this,74,2)">family</button></span> and the lab rat of the plant biology world, researchers saw that touch quietly triggered such a <span class="q-tag">76)</span><span class="sel-group" data-qi="75" data-ans="2"><button class="sel-btn" onclick="pick(this,75,0)">dramatically</button><button class="sel-btn" onclick="pick(this,75,1)">problematic</button><button class="sel-btn" onclick="pick(this,75,2)">dramatic</button></span> response in their hormones and gene expression that it could substantially inhibit their growth. They <span class="q-tag">77)</span><span class="sel-group" data-qi="76" data-ans="0"><button class="sel-btn" onclick="pick(this,76,0)">stroked</button><button class="sel-btn" onclick="pick(this,76,1)">started</button><button class="sel-btn" onclick="pick(this,76,2)">connected</button></span> the arabidopsis with soft paintbrushes, and then analyzed the plants&#x27; genetic responses. Within <span class="q-tag">78)</span><span class="sel-group" data-qi="77" data-ans="0"><button class="sel-btn" onclick="pick(this,77,0)">thirty</button><button class="sel-btn" onclick="pick(this,77,1)">quality</button><button class="sel-btn" onclick="pick(this,77,2)">threat</button></span> minutes of being touched, 10 percent of the plant&#x27;s genome was altered. Clearly, the <span class="q-tag">79)</span><span class="sel-group" data-qi="78" data-ans="1"><button class="sel-btn" onclick="pick(this,78,0)">part</button><button class="sel-btn" onclick="pick(this,78,1)">plant</button><button class="sel-btn" onclick="pick(this,78,2)">plants</button></span> was reorganizing its priorities to deal with the disturbance, and rerouting energy away from the hard work of getting <span class="q-tag">80)</span><span class="sel-group" data-qi="79" data-ans="1"><button class="sel-btn" onclick="pick(this,79,0)">proper</button><button class="sel-btn" onclick="pick(this,79,1)">taller</button><button class="sel-btn" onclick="pick(this,79,2)">smaller</button></span>. Touched multiple times, arabidopsis cut its upward growth rate by as much as 30 percent.</div></div></div>
+<div class="para-block"><div class="para-header"><span class="para-num">33번 지문</span></div><div class="para-cols"><div class="para-eng"><span class="q-tag">81)</span><span class="sel-group" data-qi="80" data-ans="2"><button class="sel-btn" onclick="pick(this,80,0)">Emotion</button><button class="sel-btn" onclick="pick(this,80,1)">Location</button><button class="sel-btn" onclick="pick(this,80,2)">Evolution</button></span> will come to a standstill until something in the conditions changes: the onset of an ice age, a change in the <span class="q-tag">82)</span><span class="sel-group" data-qi="81" data-ans="2"><button class="sel-btn" onclick="pick(this,81,0)">language</button><button class="sel-btn" onclick="pick(this,81,1)">range</button><button class="sel-btn" onclick="pick(this,81,2)">average</button></span> rainfall of the area, a shift in the prevailing wind. Such changes do happen when we are dealing with a timescale as long as the <span class="q-tag">83)</span><span class="sel-group" data-qi="82" data-ans="0"><button class="sel-btn" onclick="pick(this,82,0)">evolutionary</button><button class="sel-btn" onclick="pick(this,82,1)">revolution</button><button class="sel-btn" onclick="pick(this,82,2)">evolution</button></span> one. As a consequence, evolution normally does not come to a halt, but constantly tracks the changing <span class="q-tag">84)</span><span class="sel-group" data-qi="83" data-ans="1"><button class="sel-btn" onclick="pick(this,83,0)">five-percent</button><button class="sel-btn" onclick="pick(this,83,1)">environment</button><button class="sel-btn" onclick="pick(this,83,2)">violent</button></span>. If there is a steady downward drift in the average temperature in the area, a drift that persists over <span class="q-tag">85)</span><span class="sel-group" data-qi="84" data-ans="2"><button class="sel-btn" onclick="pick(this,84,0)">countries</button><button class="sel-btn" onclick="pick(this,84,1)">reinforces</button><button class="sel-btn" onclick="pick(this,84,2)">centuries</button></span>, successive generations of animals will be propelled by a steady selection &#x27;pressure&#x27; in the <span class="q-tag">86)</span><span class="sel-group" data-qi="85" data-ans="0"><button class="sel-btn" onclick="pick(this,85,0)">direction</button><button class="sel-btn" onclick="pick(this,85,1)">reaction</button><button class="sel-btn" onclick="pick(this,85,2)">selection</button></span>, say, of growing longer coats of hair. If after a few thousand years of reduced <span class="q-tag">87)</span><span class="sel-group" data-qi="86" data-ans="0"><button class="sel-btn" onclick="pick(this,86,0)">temperature</button><button class="sel-btn" onclick="pick(this,86,1)">operate</button><button class="sel-btn" onclick="pick(this,86,2)">millionaire</button></span> the trend reverses and average temperatures creep up again, the animals will come under the <span class="q-tag">88)</span><span class="sel-group" data-qi="87" data-ans="2"><button class="sel-btn" onclick="pick(this,87,0)">affluence</button><button class="sel-btn" onclick="pick(this,87,1)">performance</button><button class="sel-btn" onclick="pick(this,87,2)">influence</button></span> of a new selection pressure, and will be pushed towards growing shorter coats again.</div></div></div>
+<div class="para-block"><div class="para-header"><span class="para-num">34번 지문</span></div><div class="para-cols"><div class="para-eng">The high <span class="q-tag">89)</span><span class="sel-group" data-qi="88" data-ans="1"><button class="sel-btn" onclick="pick(this,88,0)">prices</button><button class="sel-btn" onclick="pick(this,88,1)">price</button><button class="sel-btn" onclick="pick(this,88,2)">once</button></span> of land in metropolitan areas has implications for the efficient employment of resources. For <span class="q-tag">90)</span><span class="sel-group" data-qi="89" data-ans="1"><button class="sel-btn" onclick="pick(this,89,0)">explore</button><button class="sel-btn" onclick="pick(this,89,1)">example</button><button class="sel-btn" onclick="pick(this,89,2)">credible</button></span>, in New York City, as in many large cities, sidewalk vending carts sell everything from hot dogs to ice <span class="q-tag">91)</span><span class="sel-group" data-qi="90" data-ans="2"><button class="sel-btn" onclick="pick(this,90,0)">create</button><button class="sel-btn" onclick="pick(this,90,1)">team</button><button class="sel-btn" onclick="pick(this,90,2)">cream</button></span>. Why are these carts so popular, with over 3,000 in New York City alone? Consider the resources used to supply hot dogs: land, labor, <span class="q-tag">92)</span><span class="sel-group" data-qi="91" data-ans="0"><button class="sel-btn" onclick="pick(this,91,0)">capital</button><button class="sel-btn" onclick="pick(this,91,1)">social</button><button class="sel-btn" onclick="pick(this,91,2)">political</button></span>, entrepreneurial ability, plus intermediate goods such as hot dogs, buns, and other ingredients. Which of these do you suppose is most <span class="q-tag">93)</span><span class="sel-group" data-qi="92" data-ans="2"><button class="sel-btn" onclick="pick(this,92,0)">negative</button><button class="sel-btn" onclick="pick(this,92,1)">sensitive</button><button class="sel-btn" onclick="pick(this,92,2)">expensive</button></span> in New York City? retail space along Madison Avenue rents for an average of $550 a year per square foot. Because <span class="q-tag">94)</span><span class="sel-group" data-qi="93" data-ans="2"><button class="sel-btn" onclick="pick(this,93,0)">operate</button><button class="sel-btn" onclick="pick(this,93,1)">converting</button><button class="sel-btn" onclick="pick(this,93,2)">operating</button></span> a hot dog cart requires about 4 square yards, it could cost as much as $20,000 a year to rent that much commercial space. Aside from the necessary <span class="q-tag">95)</span><span class="sel-group" data-qi="94" data-ans="2"><button class="sel-btn" onclick="pick(this,94,0)">price</button><button class="sel-btn" onclick="pick(this,94,1)">music</button><button class="sel-btn" onclick="pick(this,94,2)">public</button></span> permits, however, space on the public sidewalk is free to vendors. Profit-maximizing <span class="q-tag">96)</span><span class="sel-group" data-qi="95" data-ans="1"><button class="sel-btn" onclick="pick(this,95,0)">ticket</button><button class="sel-btn" onclick="pick(this,95,1)">street</button><button class="sel-btn" onclick="pick(this,95,2)">treat</button></span> vendors substitute public sidewalks for costly commercial space.</div></div></div>
+<div class="para-block"><div class="para-header"><span class="para-num">35번 지문</span></div><div class="para-cols"><div class="para-eng">The <span class="q-tag">97)</span><span class="sel-group" data-qi="96" data-ans="2"><button class="sel-btn" onclick="pick(this,96,0)">useless</button><button class="sel-btn" onclick="pick(this,96,1)">produces</button><button class="sel-btn" onclick="pick(this,96,2)">process</button></span> we go through when we look at a work of art to determine if we recognize and can make sense of its content is not just a <span class="q-tag">98)</span><span class="sel-group" data-qi="97" data-ans="1"><button class="sel-btn" onclick="pick(this,97,0)">musical</button><button class="sel-btn" onclick="pick(this,97,1)">visual</button><button class="sel-btn" onclick="pick(this,97,2)">timescale</button></span> one. It is a mental process as well, largely based on the <span class="q-tag">99)</span><span class="sel-group" data-qi="98" data-ans="0"><button class="sel-btn" onclick="pick(this,98,0)">elements</button><button class="sel-btn" onclick="pick(this,98,1)">events</button><button class="sel-btn" onclick="pick(this,98,2)">parents</button></span> within and about the work we can identify and categorize. As we look and think, we may be given <span class="q-tag">100)</span><span class="sel-group" data-qi="99" data-ans="1"><button class="sel-btn" onclick="pick(this,99,0)">uses</button><button class="sel-btn" onclick="pick(this,99,1)">clues</button><button class="sel-btn" onclick="pick(this,99,2)">lives</button></span> about what the work means by where it is, when it was made, what culture it came from, who created it, or why it was made. Any information we can <span class="q-tag">101)</span><span class="sel-group" data-qi="100" data-ans="2"><button class="sel-btn" onclick="pick(this,100,0)">further</button><button class="sel-btn" onclick="pick(this,100,1)">greater</button><button class="sel-btn" onclick="pick(this,100,2)">gather</button></span> helps us understand the work&#x27;s context, that is, for what <span class="q-tag">102)</span><span class="sel-group" data-qi="101" data-ans="0"><button class="sel-btn" onclick="pick(this,101,0)">historical</button><button class="sel-btn" onclick="pick(this,101,1)">physical</button><button class="sel-btn" onclick="pick(this,101,2)">history</button></span>, social, personal, political, or scientific <span class="q-tag">103)</span><span class="sel-group" data-qi="102" data-ans="2"><button class="sel-btn" onclick="pick(this,102,0)">billions</button><button class="sel-btn" onclick="pick(this,102,1)">response</button><button class="sel-btn" onclick="pick(this,102,2)">reasons</button></span> the work of art was made. And then, using all the contextual information we have gathered, we <span class="q-tag">104)</span><span class="sel-group" data-qi="103" data-ans="2"><button class="sel-btn" onclick="pick(this,103,0)">prophet</button><button class="sel-btn" onclick="pick(this,103,1)">interfere</button><button class="sel-btn" onclick="pick(this,103,2)">interpret</button></span> the work of art&#x27;s content to discover what it means or symbolizes.</div></div></div>
+<div class="para-block"><div class="para-header"><span class="para-num">36번 지문</span></div><div class="para-cols"><div class="para-eng">For most <span class="q-tag">105)</span><span class="sel-group" data-qi="104" data-ans="0"><button class="sel-btn" onclick="pick(this,104,0)">animals</button><button class="sel-btn" onclick="pick(this,104,1)">fails</button><button class="sel-btn" onclick="pick(this,104,2)">colors</button></span> the struggle to survive takes up all their time. Finding food and drink, keeping warm and clean, <span class="q-tag">106)</span><span class="sel-group" data-qi="105" data-ans="2"><button class="sel-btn" onclick="pick(this,105,0)">avoid</button><button class="sel-btn" onclick="pick(this,105,1)">having</button><button class="sel-btn" onclick="pick(this,105,2)">avoiding</button></span> predators, migrating and reproducing use up all their energies. If they do have any time to spare, they spend it resting or sleeping. Only very <span class="q-tag">107)</span><span class="sel-group" data-qi="106" data-ans="2"><button class="sel-btn" onclick="pick(this,106,0)">long</button><button class="sel-btn" onclick="pick(this,106,1)">along</button><button class="sel-btn" onclick="pick(this,106,2)">young</button></span> animals, under the protection of their parents, have enough surplus energy to <span class="q-tag">108)</span><span class="sel-group" data-qi="107" data-ans="1"><button class="sel-btn" onclick="pick(this,107,0)">language</button><button class="sel-btn" onclick="pick(this,107,1)">engage</button><button class="sel-btn" onclick="pick(this,107,2)">charge</button></span> in lively bouts of play. This was also true for our early ancestors. The constant search for food would have put heavy demands upon them. In <span class="q-tag">109)</span><span class="sel-group" data-qi="108" data-ans="2"><button class="sel-btn" onclick="pick(this,108,0)">brain</button><button class="sel-btn" onclick="pick(this,108,1)">converting</button><button class="sel-btn" onclick="pick(this,108,2)">certain</button></span> regions, at particular times of year, the prey was sufficiently plentiful and their hunting techniques <span class="q-tag">110)</span><span class="sel-group" data-qi="109" data-ans="1"><button class="sel-btn" onclick="pick(this,109,0)">technically</button><button class="sel-btn" onclick="pick(this,109,1)">sufficiently</button><button class="sel-btn" onclick="pick(this,109,2)">efficient</button></span> advanced for them to experience a remarkable degree of prosperity. They had time on their hands. But as they slowly evolved into more and more <span class="q-tag">111)</span><span class="sel-group" data-qi="110" data-ans="2"><button class="sel-btn" onclick="pick(this,110,0)">sufficiently</button><button class="sel-btn" onclick="pick(this,110,1)">employment</button><button class="sel-btn" onclick="pick(this,110,2)">efficient</button></span> hunters, the situation changed. The secret of their success was the development of much greater <span class="q-tag">112)</span><span class="sel-group" data-qi="111" data-ans="1"><button class="sel-btn" onclick="pick(this,111,0)">experience</button><button class="sel-btn" onclick="pick(this,111,1)">intelligence</button><button class="sel-btn" onclick="pick(this,111,2)">influence</button></span>. They used brain not brawn to kill their prey. At the end of the long hunting era, before they turned to farming, they were already enjoying some degree of affluence.</div></div></div>
+<div class="para-block"><div class="para-header"><span class="para-num">37번 지문</span></div><div class="para-cols"><div class="para-eng"><span class="q-tag">113)</span><span class="sel-group" data-qi="112" data-ans="0"><button class="sel-btn" onclick="pick(this,112,0)">Think</button><button class="sel-btn" onclick="pick(this,112,1)">Thinking</button><button class="sel-btn" onclick="pick(this,112,2)">Thing</button></span> about a time when you were startled. Did you come to a sudden stop, freeze all your movements, and hold your breath as you scanned the environment for a <span class="q-tag">114)</span><span class="sel-group" data-qi="113" data-ans="0"><button class="sel-btn" onclick="pick(this,113,0)">threat</button><button class="sel-btn" onclick="pick(this,113,1)">flat</button><button class="sel-btn" onclick="pick(this,113,2)">great</button></span>? All these responses maximize our ability to avoid detection, locate the source of possible <span class="q-tag">115)</span><span class="sel-group" data-qi="114" data-ans="1"><button class="sel-btn" onclick="pick(this,114,0)">range</button><button class="sel-btn" onclick="pick(this,114,1)">danger</button><button class="sel-btn" onclick="pick(this,114,2)">gather</button></span>, and prepare to fight or flee. As sophisticated as language has become, it is still the creation of sound that might give away our <span class="q-tag">116)</span><span class="sel-group" data-qi="115" data-ans="1"><button class="sel-btn" onclick="pick(this,115,0)">creation</button><button class="sel-btn" onclick="pick(this,115,1)">location</button><button class="sel-btn" onclick="pick(this,115,2)">mission</button></span> to a potential predator. Because of this, the freeze response results in the inhibition of language in highly <span class="q-tag">117)</span><span class="sel-group" data-qi="116" data-ans="1"><button class="sel-btn" onclick="pick(this,116,0)">result</button><button class="sel-btn" onclick="pick(this,116,1)">stressful</button><button class="sel-btn" onclick="pick(this,116,2)">stress</button></span> and traumatic situations. Natural selection promoted the evolution of language but conserved the <span class="q-tag">118)</span><span class="sel-group" data-qi="117" data-ans="2"><button class="sel-btn" onclick="pick(this,117,0)">maximize</button><button class="sel-btn" onclick="pick(this,117,1)">receive</button><button class="sel-btn" onclick="pick(this,117,2)">freeze</button></span> rule. When the threat passes, we begin to relax and find our voices again, perhaps even to laugh at our own <span class="q-tag">119)</span><span class="sel-group" data-qi="118" data-ans="1"><button class="sel-btn" onclick="pick(this,118,0)">reaction</button><button class="sel-btn" onclick="pick(this,118,1)">reactions</button><button class="sel-btn" onclick="pick(this,118,2)">billions</button></span>. But what if we can never relax? What if our experiences shape our brain to be in a constant state of fear? This interference with the proper <span class="q-tag">120)</span><span class="sel-group" data-qi="119" data-ans="0"><button class="sel-btn" onclick="pick(this,119,0)">development</button><button class="sel-btn" onclick="pick(this,119,1)">develop</button><button class="sel-btn" onclick="pick(this,119,2)">employment</button></span> and integration of neural networks can result in chronic stress and even mental illness.</div></div></div>
+<div class="para-block"><div class="para-header"><span class="para-num">38번 지문</span></div><div class="para-cols"><div class="para-eng"><span class="q-tag">121)</span><span class="sel-group" data-qi="120" data-ans="1"><button class="sel-btn" onclick="pick(this,120,0)">View</button><button class="sel-btn" onclick="pick(this,120,1)">Video</button><button class="sel-btn" onclick="pick(this,120,2)">Along</button></span> gaming is one of the most studied technologies with regard to empathy. Because there have been longstanding concerns about the impact of violent <span class="q-tag">122)</span><span class="sel-group" data-qi="121" data-ans="1"><button class="sel-btn" onclick="pick(this,121,0)">view</button><button class="sel-btn" onclick="pick(this,121,1)">video</button><button class="sel-btn" onclick="pick(this,121,2)">sources</button></span> games on youth, much research has been conducted over the last couple of decades on the topic. While measuring and documenting the impact of <span class="q-tag">123)</span><span class="sel-group" data-qi="122" data-ans="0"><button class="sel-btn" onclick="pick(this,122,0)">video</button><button class="sel-btn" onclick="pick(this,122,1)">view</button><button class="sel-btn" onclick="pick(this,122,2)">labor</button></span> game violence, scientists have formulated credible explanations of how video gaming could affect empathy. Part of a normal, <span class="q-tag">124)</span><span class="sel-group" data-qi="123" data-ans="2"><button class="sel-btn" onclick="pick(this,123,0)">empathy</button><button class="sel-btn" onclick="pick(this,123,1)">halt</button><button class="sel-btn" onclick="pick(this,123,2)">healthy</button></span> reaction to witnessing violent events is to feel negative emotions, and to experience physiological arousal that is connected to fear or <span class="q-tag">125)</span><span class="sel-group" data-qi="124" data-ans="2"><button class="sel-btn" onclick="pick(this,124,0)">discount</button><button class="sel-btn" onclick="pick(this,124,1)">exist</button><button class="sel-btn" onclick="pick(this,124,2)">disgust</button></span>. With repeated exposure to violent events — such as what might happen when a person plays violent video <span class="q-tag">126)</span><span class="sel-group" data-qi="125" data-ans="1"><button class="sel-btn" onclick="pick(this,125,0)">same</button><button class="sel-btn" onclick="pick(this,125,1)">games</button><button class="sel-btn" onclick="pick(this,125,2)">places</button></span> — this normal reaction might become blunted, a phenomenon known as desensitization. The next step in this problematic process would be having <span class="q-tag">127)</span><span class="sel-group" data-qi="126" data-ans="2"><button class="sel-btn" onclick="pick(this,126,0)">unexpected</button><button class="sel-btn" onclick="pick(this,126,1)">simplified</button><button class="sel-btn" onclick="pick(this,126,2)">diminished</button></span> emotional responses to violence, which could also interfere with the ability to recognize and/or to sympathize with others, leading to reduced <span class="q-tag">128)</span><span class="sel-group" data-qi="127" data-ans="1"><button class="sel-btn" onclick="pick(this,127,0)">healthy</button><button class="sel-btn" onclick="pick(this,127,1)">empathy</button><button class="sel-btn" onclick="pick(this,127,2)">passes</button></span>. A significant body of work shows an association between extensive violent video gaming and reduced empathy in people.</div></div></div>
+<div class="para-block"><div class="para-header"><span class="para-num">39번 지문</span></div><div class="para-cols"><div class="para-eng"><span class="q-tag">129)</span><span class="sel-group" data-qi="128" data-ans="1"><button class="sel-btn" onclick="pick(this,128,0)">Resting</button><button class="sel-btn" onclick="pick(this,128,1)">Realising</button><button class="sel-btn" onclick="pick(this,128,2)">Dealing</button></span> the benefits of differentiation, some brands broadcast their social purpose before they do much actual good. Their <span class="q-tag">130)</span><span class="sel-group" data-qi="129" data-ans="1"><button class="sel-btn" onclick="pick(this,129,0)">market</button><button class="sel-btn" onclick="pick(this,129,1)">marketers</button><button class="sel-btn" onclick="pick(this,129,2)">markets</button></span> are using social purpose to boost the brand&#x27;s reputation, rather than <span class="q-tag">131)</span><span class="sel-group" data-qi="130" data-ans="0"><button class="sel-btn" onclick="pick(this,130,0)">embracing</button><button class="sel-btn" onclick="pick(this,130,1)">disrupting</button><button class="sel-btn" onclick="pick(this,130,2)">brain</button></span> the purpose itself. Making a real difference with social problems is hard enough; to <span class="q-tag">132)</span><span class="sel-group" data-qi="131" data-ans="0"><button class="sel-btn" onclick="pick(this,131,0)">succeed</button><button class="sel-btn" onclick="pick(this,131,1)">successive</button><button class="sel-btn" onclick="pick(this,131,2)">success</button></span>, it has to follow from an authentic, company-wide commitment to the purpose. Otherwise the mission is just <span class="q-tag">133)</span><span class="sel-group" data-qi="132" data-ans="2"><button class="sel-btn" onclick="pick(this,132,0)">understanding</button><button class="sel-btn" onclick="pick(this,132,1)">witnessing</button><button class="sel-btn" onclick="pick(this,132,2)">window-dressing</button></span>, or what we call &quot;purpose-washing&quot; — similar to green-washing, where purpose-driven activities serve mainly for <span class="q-tag">134)</span><span class="sel-group" data-qi="133" data-ans="0"><button class="sel-btn" onclick="pick(this,133,0)">publicity</button><button class="sel-btn" onclick="pick(this,133,1)">elasticity</button><button class="sel-btn" onclick="pick(this,133,2)">probability</button></span> purposes. We end up with what Anand Giridhardas describes in Winners Take All: &quot;social purpose that just furthers the charade of elites <span class="q-tag">135)</span><span class="sel-group" data-qi="134" data-ans="2"><button class="sel-btn" onclick="pick(this,134,0)">reorganizing</button><button class="sel-btn" onclick="pick(this,134,1)">rerouting</button><button class="sel-btn" onclick="pick(this,134,2)">disrupting</button></span> the old order without giving much back&quot;. Purpose-washing brands gain one of the benefits of social purpose, <span class="q-tag">136)</span><span class="sel-group" data-qi="135" data-ans="0"><button class="sel-btn" onclick="pick(this,135,0)">differentiation</button><button class="sel-btn" onclick="pick(this,135,1)">difference</button><button class="sel-btn" onclick="pick(this,135,2)">different</button></span>, but only for a short while. They lose out on positioning for future markets, and they might even make employees feel worse about working for them.</div></div></div>
+<div class="para-block"><div class="para-header"><span class="para-num">40번 지문</span></div><div class="para-cols"><div class="para-eng">The <span class="q-tag">137)</span><span class="sel-group" data-qi="136" data-ans="0"><button class="sel-btn" onclick="pick(this,136,0)">brain</button><button class="sel-btn" onclick="pick(this,136,1)">brain-imaging</button><button class="sel-btn" onclick="pick(this,136,2)">brawn</button></span> needs to create a model of a constant pulse — a schema — so that we know when the <span class="q-tag">138)</span><span class="sel-group" data-qi="137" data-ans="1"><button class="sel-btn" onclick="pick(this,137,0)">musical</button><button class="sel-btn" onclick="pick(this,137,1)">musicians</button><button class="sel-btn" onclick="pick(this,137,2)">music</button></span> are not conforming to it. This is similar to variations of a melody: We need to have a mental representation of what the <span class="q-tag">139)</span><span class="sel-group" data-qi="138" data-ans="2"><button class="sel-btn" onclick="pick(this,138,0)">steady</button><button class="sel-btn" onclick="pick(this,138,1)">modify</button><button class="sel-btn" onclick="pick(this,138,2)">melody</button></span> is in order to know — and appreciate — when the musician is taking liberties with it. Metrical <span class="q-tag">140)</span><span class="sel-group" data-qi="139" data-ans="2"><button class="sel-btn" onclick="pick(this,139,0)">revolution</button><button class="sel-btn" onclick="pick(this,139,1)">reaction</button><button class="sel-btn" onclick="pick(this,139,2)">extraction</button></span>, knowing what the pulse is and when we expect it to occur, is a crucial part of musical emotion. <span class="q-tag">141)</span><span class="sel-group" data-qi="140" data-ans="2"><button class="sel-btn" onclick="pick(this,140,0)">Using</button><button class="sel-btn" onclick="pick(this,140,1)">Musician</button><button class="sel-btn" onclick="pick(this,140,2)">Music</button></span> communicates to us emotionally through systematic violations of expectations. These violations can <span class="q-tag">142)</span><span class="sel-group" data-qi="141" data-ans="1"><button class="sel-btn" onclick="pick(this,141,0)">occurring</button><button class="sel-btn" onclick="pick(this,141,1)">occur</button><button class="sel-btn" onclick="pick(this,141,2)">four</button></span> in any domain — the domain of pitch, rhythm, tempo, and so on — but occur they must. <span class="q-tag">143)</span><span class="sel-group" data-qi="142" data-ans="2"><button class="sel-btn" onclick="pick(this,142,0)">Musician</button><button class="sel-btn" onclick="pick(this,142,1)">Using</button><button class="sel-btn" onclick="pick(this,142,2)">Music</button></span> is organized sound, but the organization has to involve some element of the unexpected or it is <span class="q-tag">144)</span><span class="sel-group" data-qi="143" data-ans="1"><button class="sel-btn" onclick="pick(this,143,0)">emotions</button><button class="sel-btn" onclick="pick(this,143,1)">emotionally</button><button class="sel-btn" onclick="pick(this,143,2)">emotion</button></span> flat and robotic. Too much organization may technically still be music, but it would be music that no one wants to listen to.</div></div></div>
+<div class="para-block"><div class="para-header"><span class="para-num">42번 지문</span></div><div class="para-cols"><div class="para-eng">The <span class="q-tag">145)</span><span class="sel-group" data-qi="144" data-ans="2"><button class="sel-btn" onclick="pick(this,144,0)">labor</button><button class="sel-btn" onclick="pick(this,144,1)">factor</button><button class="sel-btn" onclick="pick(this,144,2)">major</button></span> consumer of oil is transport. But consider what has happened over the last 30 years or so to the technology involved in producing the <span class="q-tag">146)</span><span class="sel-group" data-qi="145" data-ans="0"><button class="sel-btn" onclick="pick(this,145,0)">internal</button><button class="sel-btn" onclick="pick(this,145,1)">social</button><button class="sel-btn" onclick="pick(this,145,2)">interact</button></span> combustion engine. Because oil is expensive, car engines today are far more efficient in their consumption of fuel (and far less polluting) than they were in 1972. The cars that Asia buys <span class="q-tag">147)</span><span class="sel-group" data-qi="146" data-ans="0"><button class="sel-btn" onclick="pick(this,146,0)">tomorrow</button><button class="sel-btn" onclick="pick(this,146,1)">grow</button><button class="sel-btn" onclick="pick(this,146,2)">follow</button></span> will certainly not be anything like those Americans use today. Americans will not buy today&#x27;s cars tomorrow either. In fact, if the price of oil does rise much further then fuel cell <span class="q-tag">148)</span><span class="sel-group" data-qi="147" data-ans="0"><button class="sel-btn" onclick="pick(this,147,0)">technology</button><button class="sel-btn" onclick="pick(this,147,1)">technologies</button><button class="sel-btn" onclick="pick(this,147,2)">technically</button></span> (which produces energy from water!) will receive yet another momentum. The big car multinationals have already produced the prototype <span class="q-tag">149)</span><span class="sel-group" data-qi="148" data-ans="1"><button class="sel-btn" onclick="pick(this,148,0)">emotions</button><button class="sel-btn" onclick="pick(this,148,1)">motors</button><button class="sel-btn" onclick="pick(this,148,2)">hunters</button></span> – they are currently racing to try and get prices down and engine performances up. Their future profits depend upon it. <span class="q-tag">150)</span><span class="sel-group" data-qi="149" data-ans="2"><button class="sel-btn" onclick="pick(this,149,0)">Imagery</button><button class="sel-btn" onclick="pick(this,149,1)">Imagination</button><button class="sel-btn" onclick="pick(this,149,2)">Imagine</button></span> now if there is a breakthrough in fuel cell technology. What would happen to oil prices? They would fall dramatically – signalling much less demand than supply – and oil companies and OPEC oil <span class="q-tag">151)</span><span class="sel-group" data-qi="150" data-ans="1"><button class="sel-btn" onclick="pick(this,150,0)">producing</button><button class="sel-btn" onclick="pick(this,150,1)">producers</button><button class="sel-btn" onclick="pick(this,150,2)">products</button></span> would stand to lose much income. The fact that this threat is real is driving the producers to look for alternative sources of income. The &#x27;oil <span class="q-tag">152)</span><span class="sel-group" data-qi="151" data-ans="1"><button class="sel-btn" onclick="pick(this,151,0)">motors</button><button class="sel-btn" onclick="pick(this,151,1)">majors&#x27;</button><button class="sel-btn" onclick="pick(this,151,2)">major</button></span> have diversified and are now more energy companies than oil companies these days and the OPEC countries are urgently attempting to develop other industries.</div></div></div>
+<div class="sec-header">🔀 글의 순서</div>
+<div class="para-block"><div class="para-header"><span class="para-num">20번 지문 · 순서</span></div><div class="para-cols"><div class="para-eng"><div style="margin-bottom:10px">We can sometimes assume that the whole will be as good as each of its parts.</div><div style="margin:8px 0"><b>(A)</b> Suppose, for example, you&#x27;re in charge of a startup, and you know that everyone you&#x27;ve brought on board is productive and efficient. It might seem logical to assume that, as a result, the startup will be productive and efficient, too ─ but this isn&#x27;t necessarily true.</div><div style="margin:8px 0"><b>(B)</b> Equally, a unit composed of good people can still be working on a doomed project, and a project composed of good ideas may lack a stable center. When assembling a team with a common goal, always check the overall view as well as the individuals involved.</div><div style="margin:8px 0"><b>(C)</b> Therefore, the productivity of a startup can be reliably predicted by adding up the efficiency of each individual member. The fallacy of composition fails to allow for how the different &quot;parts&quot; interact with each other ─ if, for example, your efficient administrator and your highly skilled head of IT each assumes the other is in charge of collating prototype test results, then you have a problem.</div><div style="margin-top:12px">이어질 순서로 알맞은 것은? <span class="q-tag">153)</span><span class="sel-group" data-qi="152" data-ans="3"><button class="sel-btn" onclick="pick(this,152,0)">(C)-(B)-(A)</button><button class="sel-btn" onclick="pick(this,152,1)">(A)-(B)-(C)</button><button class="sel-btn" onclick="pick(this,152,2)">(C)-(A)-(B)</button><button class="sel-btn" onclick="pick(this,152,3)">(A)-(C)-(B)</button></span></div></div></div></div>
+<div class="para-block"><div class="para-header"><span class="para-num">21번 지문 · 순서</span></div><div class="para-cols"><div class="para-eng"><div style="margin-bottom:10px">Humans excel at visual imagery.</div><div style="margin:8px 0"><b>(A)</b> But evolution has seen to it that such internally generated representations are never as authentic as the real thing. This is a wise bit of self-restraint on your genes&#x27; part.</div><div style="margin:8px 0"><b>(B)</b> If your internal model of the world were a perfect substitute, then anytime you felt hungry you could simply imagine yourself at a banquet, consuming a feast. You would have no incentive to find real food and would soon starve to death. As the Bard said, &quot;You cannot cloy the hungry edge of appetite by bare imagination of a feast.&quot;</div><div style="margin:8px 0"><b>(C)</b> Our brains evolved this ability to create an internal mental picture or model of the world in which we can rehearse forthcoming actions, without the risks or the penalties of doing them in the real world. There are even hints from brain-imaging studies by Harvard University psychologist Steve Kosslyn showing that your brain uses the same regions to imagine a scene as when you actually view one.</div><div style="margin-top:12px">이어질 순서로 알맞은 것은? <span class="q-tag">154)</span><span class="sel-group" data-qi="153" data-ans="2"><button class="sel-btn" onclick="pick(this,153,0)">(A)-(C)-(B)</button><button class="sel-btn" onclick="pick(this,153,1)">(A)-(B)-(C)</button><button class="sel-btn" onclick="pick(this,153,2)">(C)-(A)-(B)</button><button class="sel-btn" onclick="pick(this,153,3)">(B)-(C)-(A)</button></span></div></div></div></div>
+<div class="para-block"><div class="para-header"><span class="para-num">22번 지문 · 순서</span></div><div class="para-cols"><div class="para-eng"><div style="margin-bottom:10px">For each objective probability — from one percent to 100 percent — we want to know the subjective probability weight.</div><div style="margin:8px 0"><b>(A)</b> In general, the smaller the probability, the more we overestimate its likelihood. For example, people who play the lottery are often optimistic about winning. However, the odds of a single ticket winning the largest, most popular U.S. lotteries are on the order of one in 175 million.</div><div style="margin:8px 0"><b>(B)</b> When we make decisions, do we treat a one-percent chance just like one percent, or like something else? Events that could happen but aren&#x27;t likely — low-probability events — can be defined as probabilities up to about 25 percent.</div><div style="margin:8px 0"><b>(C)</b> Low-probability events tend to factor more into decisions than they should. That is, an event that has an objective one-percent chance of occurring could subjectively seem like it has a five-percent chance of occurring. We overestimate the likelihood of these low-probability events.</div><div style="margin-top:12px">이어질 순서로 알맞은 것은? <span class="q-tag">155)</span><span class="sel-group" data-qi="154" data-ans="3"><button class="sel-btn" onclick="pick(this,154,0)">(A)-(C)-(B)</button><button class="sel-btn" onclick="pick(this,154,1)">(A)-(B)-(C)</button><button class="sel-btn" onclick="pick(this,154,2)">(B)-(A)-(C)</button><button class="sel-btn" onclick="pick(this,154,3)">(B)-(C)-(A)</button></span></div></div></div></div>
+<div class="para-block"><div class="para-header"><span class="para-num">23번 지문 · 순서</span></div><div class="para-cols"><div class="para-eng"><div style="margin-bottom:10px">Many of the barriers to trade exist not because of a lack of markets or customers, but because there are major barriers to getting products to market at competitive prices. transaction costs are significant for companies — not only the straight exchange costs, but also the cost of converting, paying, and hedging funds just to pay for the goods and services.</div><div style="margin:8px 0"><b>(A)</b> Having a common currency means that many of those transaction costs disappear and the savings can be reinvested back into firms&#x27; productivity and innovation.</div><div style="margin:8px 0"><b>(B)</b> Basically, useless costs turn into productive costs — with longer-term benefits to the whole economy.</div><div style="margin:8px 0"><b>(C)</b> By unifying some of the currencies, whole economies benefit and grow more than they would as independents. So a common currency provides for a strong economic foundation that all can benefit from.</div><div style="margin-top:12px">이어질 순서로 알맞은 것은? <span class="q-tag">156)</span><span class="sel-group" data-qi="155" data-ans="3"><button class="sel-btn" onclick="pick(this,155,0)">(A)-(C)-(B)</button><button class="sel-btn" onclick="pick(this,155,1)">(C)-(A)-(B)</button><button class="sel-btn" onclick="pick(this,155,2)">(B)-(A)-(C)</button><button class="sel-btn" onclick="pick(this,155,3)">(A)-(B)-(C)</button></span></div></div></div></div>
+<div class="para-block"><div class="para-header"><span class="para-num">24번 지문 · 순서</span></div><div class="para-cols"><div class="para-eng"><div style="margin-bottom:10px">The light from even our nearest stellar neighbour takes four years to reach us.</div><div style="margin:8px 0"><b>(A)</b> When we look at the stars, we are looking back in time. This is an incredible gift. We can see parts of space, parts of our universe, as they were many years ago.</div><div style="margin:8px 0"><b>(B)</b> The further we can collect light from, the further back in time we can look. If you look at the bright star Betelgeuse, which glows in the Orion constellation, you wind time back more than six hundred years. Its reddish glow started its journey to Earth in the Middle Ages.</div><div style="margin:8px 0"><b>(C)</b> The stars in Orion&#x27;s belt are even further away. Their light, familiar to generations of humans, has travelled at least 1,000 years to reach us. This means we have a chance of understanding the history of the universe because we can see the more distant parts of it as they were in the past, thousands or millions or billions of years ago.</div><div style="margin-top:12px">이어질 순서로 알맞은 것은? <span class="q-tag">157)</span><span class="sel-group" data-qi="156" data-ans="0"><button class="sel-btn" onclick="pick(this,156,0)">(A)-(B)-(C)</button><button class="sel-btn" onclick="pick(this,156,1)">(C)-(A)-(B)</button><button class="sel-btn" onclick="pick(this,156,2)">(C)-(B)-(A)</button><button class="sel-btn" onclick="pick(this,156,3)">(A)-(C)-(B)</button></span></div></div></div></div>
+<div class="para-block"><div class="para-header"><span class="para-num">26번 지문 · 순서</span></div><div class="para-cols"><div class="para-eng"><div style="margin-bottom:10px">Jacob Lawrence was an American painter known for vivid scenes of African-American history and daily life.</div><div style="margin:8px 0"><b>(A)</b> Born in Atlantic City in 1917, he moved to Harlem at 13 and studied art at Utopia Children&#x27;s Center. He used bright colors and simplified shapes in his paintings.</div><div style="margin:8px 0"><b>(B)</b> Later, he taught at the University of Washington for 16 years. Throughout his lifetime, he received honorary degrees from several universities, including Harvard. Until a few weeks before his death, he continued to explore the lives of African-Americans through his painting.</div><div style="margin:8px 0"><b>(C)</b> The Migration Series, widely regarded as Jacob Lawrence&#x27;s masterpiece, brought him national recognition. During World War Ⅱ, he served in the U.S. Coast Guard and produced many paintings, but most of them were lost.</div><div style="margin-top:12px">이어질 순서로 알맞은 것은? <span class="q-tag">158)</span><span class="sel-group" data-qi="157" data-ans="2"><button class="sel-btn" onclick="pick(this,157,0)">(B)-(A)-(C)</button><button class="sel-btn" onclick="pick(this,157,1)">(C)-(A)-(B)</button><button class="sel-btn" onclick="pick(this,157,2)">(A)-(C)-(B)</button><button class="sel-btn" onclick="pick(this,157,3)">(C)-(B)-(A)</button></span></div></div></div></div>
+<div class="para-block"><div class="para-header"><span class="para-num">29번 지문 · 순서</span></div><div class="para-cols"><div class="para-eng"><div style="margin-bottom:10px">The renowned British philosopher Alfred North Whitehead asserted that &quot;civilization advances by extending the number of operations we can perform without thinking about them.&quot;</div><div style="margin:8px 0"><b>(A)</b> The obvious but instructive point here is that we expect discount coupons to do double duty. Not only do we expect them to save us money, we also expect them to save us the time and mental energy required to think about how to do it.</div><div style="margin:8px 0"><b>(B)</b> Take, for example, the &quot;advance&quot; offered to civilization by the discount coupon, which allows consumers to assume that they will receive a reduced purchase price by presenting the coupon.</div><div style="margin:8px 0"><b>(C)</b> The extent to which we have learned to operate mechanically on that assumption is illustrated in the experience of one automobile-tire company. Mailed-out coupons that — because of a printing error — offered no savings to recipients produced just as much customer response as did error-free coupons that offered substantial savings.</div><div style="margin-top:12px">이어질 순서로 알맞은 것은? <span class="q-tag">159)</span><span class="sel-group" data-qi="158" data-ans="2"><button class="sel-btn" onclick="pick(this,158,0)">(C)-(B)-(A)</button><button class="sel-btn" onclick="pick(this,158,1)">(A)-(B)-(C)</button><button class="sel-btn" onclick="pick(this,158,2)">(B)-(C)-(A)</button><button class="sel-btn" onclick="pick(this,158,3)">(C)-(A)-(B)</button></span></div></div></div></div>
+<div class="para-block"><div class="para-header"><span class="para-num">30번 지문 · 순서</span></div><div class="para-cols"><div class="para-eng"><div style="margin-bottom:10px">Usually, innovative high-tech products have low price elasticity.</div><div style="margin:8px 0"><b>(A)</b> Additionally, at the first stage of the technology, buyers — either innovators or forerunners — are less sensitive to price than to additional performance; they often have deep pockets or are ready to spend a lot for a new innovative and outstanding product. For instance, with its new product range, a high-end mobile phone manufacturer is aiming at the 3% of millionaire households with assets of more than $2.5 million; those are customers who are ready to accept the price range the manufacturer has set.</div><div style="margin:8px 0"><b>(B)</b> This means that high variation in price, an increase as well as a decrease, does not significantly modify demand. These high-tech products have few substitutes, meaning that the costs to switch to another product are high.</div><div style="margin:8px 0"><b>(C)</b> At that stage, the competitors are not interested in lowering their price significantly whatsoever, because they are chasing the same categories of customers, not sensitive to price. Furthermore, the high price of these products is often perceived as a sign of quality and reinforces a customer&#x27;s confidence in the company.</div><div style="margin-top:12px">이어질 순서로 알맞은 것은? <span class="q-tag">160)</span><span class="sel-group" data-qi="159" data-ans="3"><button class="sel-btn" onclick="pick(this,159,0)">(C)-(B)-(A)</button><button class="sel-btn" onclick="pick(this,159,1)">(C)-(A)-(B)</button><button class="sel-btn" onclick="pick(this,159,2)">(A)-(B)-(C)</button><button class="sel-btn" onclick="pick(this,159,3)">(B)-(A)-(C)</button></span></div></div></div></div>
+<div class="para-block"><div class="para-header"><span class="para-num">31번 지문 · 순서</span></div><div class="para-cols"><div class="para-eng"><div style="margin-bottom:10px">One easily underappreciated feature of a city street or square is its &quot;future-proof&quot; nature.</div><div style="margin:8px 0"><b>(A)</b> The ancient medieval squares in places like Marrakesh and Siena are still places where stuff is sold every day, even if the stuff itself has changed over the last five hundred years. The city square is a fairly future-proof technology, as is the shopping street, even in an age of online shopping.</div><div style="margin:8px 0"><b>(B)</b> Jane Jacobs, the great prophet of the city economy, made much of this fact in her books, including The Death and Life of Great American Cities and The Nature of Economies. As she pointed out, the great advantage of a city architecture is its ability to support change in uses, and Jacobs correctly predicted the persistence of the city itself, unlike those who predicted the rise of the Internet would mean the death of the city.</div><div style="margin:8px 0"><b>(C)</b> For example, the same physical store that once sold buggy whips and typewriters might now repair damaged phones and sell bubble tea. The same infrastructure supports evolving uses.</div><div style="margin-top:12px">이어질 순서로 알맞은 것은? <span class="q-tag">161)</span><span class="sel-group" data-qi="160" data-ans="2"><button class="sel-btn" onclick="pick(this,160,0)">(B)-(A)-(C)</button><button class="sel-btn" onclick="pick(this,160,1)">(A)-(B)-(C)</button><button class="sel-btn" onclick="pick(this,160,2)">(A)-(C)-(B)</button><button class="sel-btn" onclick="pick(this,160,3)">(B)-(C)-(A)</button></span></div></div></div></div>
+<div class="para-block"><div class="para-header"><span class="para-num">32번 지문 · 순서</span></div><div class="para-cols"><div class="para-eng"><div style="margin-bottom:10px">The genomics revolution made it possible to see just how impactful touch is to plants on a deeper level.</div><div style="margin:8px 0"><b>(A)</b> Peering at the genes of Arabidopsis thaliana, a weedy plant in the mustard family and the lab rat of the plant biology world, researchers saw that touch quietly triggered such a dramatic response in their hormones and gene expression that it could substantially inhibit their growth.</div><div style="margin:8px 0"><b>(B)</b> Clearly, the plant was reorganizing its priorities to deal with the disturbance, and rerouting energy away from the hard work of getting taller. Touched multiple times, arabidopsis cut its upward growth rate by as much as 30 percent.</div><div style="margin:8px 0"><b>(C)</b> They stroked the arabidopsis with soft paintbrushes, and then analyzed the plants&#x27; genetic responses. Within thirty minutes of being touched, 10 percent of the plant&#x27;s genome was altered.</div><div style="margin-top:12px">이어질 순서로 알맞은 것은? <span class="q-tag">162)</span><span class="sel-group" data-qi="161" data-ans="3"><button class="sel-btn" onclick="pick(this,161,0)">(A)-(B)-(C)</button><button class="sel-btn" onclick="pick(this,161,1)">(B)-(A)-(C)</button><button class="sel-btn" onclick="pick(this,161,2)">(B)-(C)-(A)</button><button class="sel-btn" onclick="pick(this,161,3)">(A)-(C)-(B)</button></span></div></div></div></div>
+<div class="para-block"><div class="para-header"><span class="para-num">33번 지문 · 순서</span></div><div class="para-cols"><div class="para-eng"><div style="margin-bottom:10px">Evolution will come to a standstill until something in the conditions changes: the onset of an ice age, a change in the average rainfall of the area, a shift in the prevailing wind.</div><div style="margin:8px 0"><b>(A)</b> As a consequence, evolution normally does not come to a halt, but constantly tracks the changing environment.</div><div style="margin:8px 0"><b>(B)</b> Such changes do happen when we are dealing with a timescale as long as the evolutionary one.</div><div style="margin:8px 0"><b>(C)</b> If there is a steady downward drift in the average temperature in the area, a drift that persists over centuries, successive generations of animals will be propelled by a steady selection &#x27;pressure&#x27; in the direction, say, of growing longer coats of hair. If after a few thousand years of reduced temperature the trend reverses and average temperatures creep up again, the animals will come under the influence of a new selection pressure, and will be pushed towards growing shorter coats again.</div><div style="margin-top:12px">이어질 순서로 알맞은 것은? <span class="q-tag">163)</span><span class="sel-group" data-qi="162" data-ans="1"><button class="sel-btn" onclick="pick(this,162,0)">(C)-(A)-(B)</button><button class="sel-btn" onclick="pick(this,162,1)">(B)-(A)-(C)</button><button class="sel-btn" onclick="pick(this,162,2)">(A)-(C)-(B)</button><button class="sel-btn" onclick="pick(this,162,3)">(C)-(B)-(A)</button></span></div></div></div></div>
+<div class="para-block"><div class="para-header"><span class="para-num">34번 지문 · 순서</span></div><div class="para-cols"><div class="para-eng"><div style="margin-bottom:10px">The high price of land in metropolitan areas has implications for the efficient employment of resources.</div><div style="margin:8px 0"><b>(A)</b> For example, in New York City, as in many large cities, sidewalk vending carts sell everything from hot dogs to ice cream. Why are these carts so popular, with over 3,000 in New York City alone?</div><div style="margin:8px 0"><b>(B)</b> Because operating a hot dog cart requires about 4 square yards, it could cost as much as $20,000 a year to rent that much commercial space. Aside from the necessary public permits, however, space on the public sidewalk is free to vendors. Profit-maximizing street vendors substitute public sidewalks for costly commercial space.</div><div style="margin:8px 0"><b>(C)</b> Consider the resources used to supply hot dogs: land, labor, capital, entrepreneurial ability, plus intermediate goods such as hot dogs, buns, and other ingredients. Which of these do you suppose is most expensive in New York City? retail space along Madison Avenue rents for an average of $550 a year per square foot.</div><div style="margin-top:12px">이어질 순서로 알맞은 것은? <span class="q-tag">164)</span><span class="sel-group" data-qi="163" data-ans="1"><button class="sel-btn" onclick="pick(this,163,0)">(C)-(A)-(B)</button><button class="sel-btn" onclick="pick(this,163,1)">(A)-(C)-(B)</button><button class="sel-btn" onclick="pick(this,163,2)">(B)-(C)-(A)</button><button class="sel-btn" onclick="pick(this,163,3)">(C)-(B)-(A)</button></span></div></div></div></div>
+<div class="para-block"><div class="para-header"><span class="para-num">35번 지문 · 순서</span></div><div class="para-cols"><div class="para-eng"><div style="margin-bottom:10px">The process we go through when we look at a work of art to determine if we recognize and can make sense of its content is not just a visual one.</div><div style="margin:8px 0"><b>(A)</b> As we look and think, we may be given clues about what the work means by where it is, when it was made, what culture it came from, who created it, or why it was made.</div><div style="margin:8px 0"><b>(B)</b> It is a mental process as well, largely based on the elements within and about the work we can identify and categorize.</div><div style="margin:8px 0"><b>(C)</b> Any information we can gather helps us understand the work&#x27;s context, that is, for what historical, social, personal, political, or scientific reasons the work of art was made. And then, using all the contextual information we have gathered, we interpret the work of art&#x27;s content to discover what it means or symbolizes.</div><div style="margin-top:12px">이어질 순서로 알맞은 것은? <span class="q-tag">165)</span><span class="sel-group" data-qi="164" data-ans="3"><button class="sel-btn" onclick="pick(this,164,0)">(A)-(B)-(C)</button><button class="sel-btn" onclick="pick(this,164,1)">(B)-(C)-(A)</button><button class="sel-btn" onclick="pick(this,164,2)">(A)-(C)-(B)</button><button class="sel-btn" onclick="pick(this,164,3)">(B)-(A)-(C)</button></span></div></div></div></div>
+<div class="para-block"><div class="para-header"><span class="para-num">36번 지문 · 순서</span></div><div class="para-cols"><div class="para-eng"><div style="margin-bottom:10px">For most animals the struggle to survive takes up all their time.</div><div style="margin:8px 0"><b>(A)</b> This was also true for our early ancestors. The constant search for food would have put heavy demands upon them. In certain regions, at particular times of year, the prey was sufficiently plentiful and their hunting techniques sufficiently advanced for them to experience a remarkable degree of prosperity. They had time on their hands.</div><div style="margin:8px 0"><b>(B)</b> But as they slowly evolved into more and more efficient hunters, the situation changed. The secret of their success was the development of much greater intelligence. They used brain not brawn to kill their prey. At the end of the long hunting era, before they turned to farming, they were already enjoying some degree of affluence.</div><div style="margin:8px 0"><b>(C)</b> Finding food and drink, keeping warm and clean, avoiding predators, migrating and reproducing use up all their energies. If they do have any time to spare, they spend it resting or sleeping. Only very young animals, under the protection of their parents, have enough surplus energy to engage in lively bouts of play.</div><div style="margin-top:12px">이어질 순서로 알맞은 것은? <span class="q-tag">166)</span><span class="sel-group" data-qi="165" data-ans="1"><button class="sel-btn" onclick="pick(this,165,0)">(A)-(B)-(C)</button><button class="sel-btn" onclick="pick(this,165,1)">(C)-(A)-(B)</button><button class="sel-btn" onclick="pick(this,165,2)">(B)-(C)-(A)</button><button class="sel-btn" onclick="pick(this,165,3)">(C)-(B)-(A)</button></span></div></div></div></div>
+<div class="para-block"><div class="para-header"><span class="para-num">37번 지문 · 순서</span></div><div class="para-cols"><div class="para-eng"><div style="margin-bottom:10px">Think about a time when you were startled.</div><div style="margin:8px 0"><b>(A)</b> Did you come to a sudden stop, freeze all your movements, and hold your breath as you scanned the environment for a threat? All these responses maximize our ability to avoid detection, locate the source of possible danger, and prepare to fight or flee. As sophisticated as language has become, it is still the creation of sound that might give away our location to a potential predator.</div><div style="margin:8px 0"><b>(B)</b> But what if we can never relax? What if our experiences shape our brain to be in a constant state of fear? This interference with the proper development and integration of neural networks can result in chronic stress and even mental illness.</div><div style="margin:8px 0"><b>(C)</b> Because of this, the freeze response results in the inhibition of language in highly stressful and traumatic situations. Natural selection promoted the evolution of language but conserved the freeze rule. When the threat passes, we begin to relax and find our voices again, perhaps even to laugh at our own reactions.</div><div style="margin-top:12px">이어질 순서로 알맞은 것은? <span class="q-tag">167)</span><span class="sel-group" data-qi="166" data-ans="0"><button class="sel-btn" onclick="pick(this,166,0)">(A)-(C)-(B)</button><button class="sel-btn" onclick="pick(this,166,1)">(C)-(A)-(B)</button><button class="sel-btn" onclick="pick(this,166,2)">(B)-(A)-(C)</button><button class="sel-btn" onclick="pick(this,166,3)">(B)-(C)-(A)</button></span></div></div></div></div>
+<div class="para-block"><div class="para-header"><span class="para-num">38번 지문 · 순서</span></div><div class="para-cols"><div class="para-eng"><div style="margin-bottom:10px">Video gaming is one of the most studied technologies with regard to empathy.</div><div style="margin:8px 0"><b>(A)</b> The next step in this problematic process would be having diminished emotional responses to violence, which could also interfere with the ability to recognize and/or to sympathize with others, leading to reduced empathy. A significant body of work shows an association between extensive violent video gaming and reduced empathy in people.</div><div style="margin:8px 0"><b>(B)</b> Because there have been longstanding concerns about the impact of violent video games on youth, much research has been conducted over the last couple of decades on the topic. While measuring and documenting the impact of video game violence, scientists have formulated credible explanations of how video gaming could affect empathy.</div><div style="margin:8px 0"><b>(C)</b> Part of a normal, healthy reaction to witnessing violent events is to feel negative emotions, and to experience physiological arousal that is connected to fear or disgust. With repeated exposure to violent events — such as what might happen when a person plays violent video games — this normal reaction might become blunted, a phenomenon known as desensitization.</div><div style="margin-top:12px">이어질 순서로 알맞은 것은? <span class="q-tag">168)</span><span class="sel-group" data-qi="167" data-ans="3"><button class="sel-btn" onclick="pick(this,167,0)">(B)-(A)-(C)</button><button class="sel-btn" onclick="pick(this,167,1)">(C)-(B)-(A)</button><button class="sel-btn" onclick="pick(this,167,2)">(C)-(A)-(B)</button><button class="sel-btn" onclick="pick(this,167,3)">(B)-(C)-(A)</button></span></div></div></div></div>
+<div class="para-block"><div class="para-header"><span class="para-num">39번 지문 · 순서</span></div><div class="para-cols"><div class="para-eng"><div style="margin-bottom:10px">Realising the benefits of differentiation, some brands broadcast their social purpose before they do much actual good.</div><div style="margin:8px 0"><b>(A)</b> Their marketers are using social purpose to boost the brand&#x27;s reputation, rather than embracing the purpose itself. Making a real difference with social problems is hard enough; to succeed, it has to follow from an authentic, company-wide commitment to the purpose.</div><div style="margin:8px 0"><b>(B)</b> Purpose-washing brands gain one of the benefits of social purpose, differentiation, but only for a short while. They lose out on positioning for future markets, and they might even make employees feel worse about working for them.</div><div style="margin:8px 0"><b>(C)</b> Otherwise the mission is just window-dressing, or what we call &quot;purpose-washing&quot; — similar to green-washing, where purpose-driven activities serve mainly for publicity purposes. We end up with what Anand Giridhardas describes in Winners Take All: &quot;social purpose that just furthers the charade of elites disrupting the old order without giving much back&quot;.</div><div style="margin-top:12px">이어질 순서로 알맞은 것은? <span class="q-tag">169)</span><span class="sel-group" data-qi="168" data-ans="1"><button class="sel-btn" onclick="pick(this,168,0)">(B)-(C)-(A)</button><button class="sel-btn" onclick="pick(this,168,1)">(A)-(C)-(B)</button><button class="sel-btn" onclick="pick(this,168,2)">(C)-(A)-(B)</button><button class="sel-btn" onclick="pick(this,168,3)">(B)-(A)-(C)</button></span></div></div></div></div>
+<div class="para-block"><div class="para-header"><span class="para-num">40번 지문 · 순서</span></div><div class="para-cols"><div class="para-eng"><div style="margin-bottom:10px">The brain needs to create a model of a constant pulse — a schema — so that we know when the musicians are not conforming to it.</div><div style="margin:8px 0"><b>(A)</b> Music communicates to us emotionally through systematic violations of expectations. These violations can occur in any domain — the domain of pitch, rhythm, tempo, and so on — but occur they must.</div><div style="margin:8px 0"><b>(B)</b> This is similar to variations of a melody: We need to have a mental representation of what the melody is in order to know — and appreciate — when the musician is taking liberties with it. Metrical extraction, knowing what the pulse is and when we expect it to occur, is a crucial part of musical emotion.</div><div style="margin:8px 0"><b>(C)</b> Music is organized sound, but the organization has to involve some element of the unexpected or it is emotionally flat and robotic. Too much organization may technically still be music, but it would be music that no one wants to listen to.</div><div style="margin-top:12px">이어질 순서로 알맞은 것은? <span class="q-tag">170)</span><span class="sel-group" data-qi="169" data-ans="0"><button class="sel-btn" onclick="pick(this,169,0)">(B)-(A)-(C)</button><button class="sel-btn" onclick="pick(this,169,1)">(C)-(B)-(A)</button><button class="sel-btn" onclick="pick(this,169,2)">(C)-(A)-(B)</button><button class="sel-btn" onclick="pick(this,169,3)">(A)-(B)-(C)</button></span></div></div></div></div>
+<div class="para-block"><div class="para-header"><span class="para-num">42번 지문 · 순서</span></div><div class="para-cols"><div class="para-eng"><div style="margin-bottom:10px">The major consumer of oil is transport.</div><div style="margin:8px 0"><b>(A)</b> But consider what has happened over the last 30 years or so to the technology involved in producing the internal combustion engine. Because oil is expensive, car engines today are far more efficient in their consumption of fuel (and far less polluting) than they were in 1972. The cars that Asia buys tomorrow will certainly not be anything like those Americans use today. Americans will not buy today&#x27;s cars tomorrow either.</div><div style="margin:8px 0"><b>(B)</b> In fact, if the price of oil does rise much further then fuel cell technology (which produces energy from water!) will receive yet another momentum. The big car multinationals have already produced the prototype motors – they are currently racing to try and get prices down and engine performances up. Their future profits depend upon it. Imagine now if there is a breakthrough in fuel cell technology.</div><div style="margin:8px 0"><b>(C)</b> What would happen to oil prices? They would fall dramatically – signalling much less demand than supply – and oil companies and OPEC oil producers would stand to lose much income. The fact that this threat is real is driving the producers to look for alternative sources of income. The &#x27;oil majors&#x27; have diversified and are now more energy companies than oil companies these days and the OPEC countries are urgently attempting to develop other industries.</div><div style="margin-top:12px">이어질 순서로 알맞은 것은? <span class="q-tag">171)</span><span class="sel-group" data-qi="170" data-ans="2"><button class="sel-btn" onclick="pick(this,170,0)">(B)-(C)-(A)</button><button class="sel-btn" onclick="pick(this,170,1)">(B)-(A)-(C)</button><button class="sel-btn" onclick="pick(this,170,2)">(A)-(B)-(C)</button><button class="sel-btn" onclick="pick(this,170,3)">(C)-(A)-(B)</button></span></div></div></div></div>
+  <div style="position:sticky;bottom:0;z-index:30;padding:10px 0 14px;background:linear-gradient(to top,var(--bg) 70%,transparent)">
+    <button id="submit-btn" onclick="submitSoFar()" style="width:100%;padding:13px 16px;border:none;border-radius:12px;cursor:pointer;
+      background:linear-gradient(135deg,#8a6a3e,#5c3d1e);color:#fff;font-weight:800;font-size:.95rem;box-shadow:0 3px 10px rgba(0,0,0,.15)">
+      📤 여기까지 제출하기</button>
+    <div style="text-align:center;font-size:.76rem;color:#8a8178;margin-top:6px">다 못 풀어도 괜찮아요 — 누른 만큼 선생님께 기록됩니다</div>
+  </div>
+  <div class="result-card" id="result">
+    <div style="font-family:'Black Han Sans',sans-serif;font-size:1.1rem;color:var(--accent)">🎉 본문암기 완료!</div>
+    <div class="result-score" id="r-score"></div>
+    <div class="result-msg" id="r-msg"></div>
+    <div class="result-btns">
+      <button class="btn-retry" onclick="bnRestart()">🔄 다시 풀기</button>
+      <button class="btn-back" onclick="location.href='https://bomnalenglish.github.io/bomnalquizz/'">← 허브로</button>
+    </div>
+  </div>
+</main>
+
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import{getFirestore,collection,addDoc,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 const cfg={apiKey:"AIzaSyCxS524S8KAaF87DomPtl9sJdF-eqes404",authDomain:"bomnalvaca.firebaseapp.com",projectId:"bomnalvaca",storageBucket:"bomnalvaca.firebasestorage.app",messagingSenderId:"115868052300",appId:"1:115868052300:web:765c08867b6f1ce0987de9"};
-const app=initializeApp(cfg);
-const db=getFirestore(app);
-window._fbSave=async function(data){
-  try{await addDoc(collection(db,'quiz_results'),{...data,timestamp:serverTimestamp()});}
-  catch(e){console.warn('FB 저장 오류:',e);}
-};
+const app=initializeApp(cfg);const db=getFirestore(app);
+window._log=async(d)=>{if(d&&(d.q!==undefined||d.result==='ok'||d.result==='fail'||d.result==='partial'))return;try{await addDoc(collection(db,"quiz_results"),{...d,timestamp:serverTimestamp(),file:"mock_go2_2026_06_memory"});}catch(e){}};
 </script>
 
-<style>
-/* 단어테스트 가시성 — 맑은 고딕 11pt (지문 깊이 풀기와 같은 설정) */
-:root{ --fsz:11pt; }
-body, .ni, .cb, .si, input, select, button{
-  font-family:"Malgun Gothic","맑은 고딕","Apple SD Gothic Neo",AppleGothic,
-              -apple-system,BlinkMacSystemFont,sans-serif !important;
-}
-.passage-box{ font-size:var(--fsz) !important; line-height:1.95 !important; padding:18px 18px !important; }
-.cb{ font-size:var(--fsz) !important; line-height:1.6 !important; padding:14px 16px !important; font-weight:600 !important; }
-.q-prompt{ font-size:calc(var(--fsz) + 1pt) !important; line-height:1.55 !important; }
-.fb-msg{ font-size:var(--fsz) !important; line-height:1.7 !important; }
-.fb-exp{ font-size:var(--fsz) !important; line-height:1.8 !important; }
-.passage-box b.mk{ background:#fdf0c9; border-radius:4px; padding:0 2px; }
-</style>
-</head>
-<body>
-
-<!-- START -->
-<div id="startScreen">
-  <div class="s-card">
-    <h1>📖 고2 26년 6월 본문 암기</h1>
-    <div class="s-sub">2026년 6월 고2 모의고사 · 빈칸추론 + 어휘선택 + 주제 + 내용일치 T/F</div>
-    <div style="display:inline-block;font-size:11px;font-weight:800;color:#e65100;background:#fff3e0;border:1.5px solid #f57f17;border-radius:20px;padding:3px 12px;margin-bottom:14px;">v2 · 26.08.19 개정판 (어휘선택·한글주제 추가)</div>
-    <div class="info-grid">
-      <div class="info-item">📝 21~24 · 29~40번 (16지문)</div>
-      <div class="info-item">🎯 지문별 선택 가능</div>
-      <div class="info-item">🔲 빈칸 추론 5문항</div>
-      <div class="info-item">🔤 어휘 선택 (A)(B)(C)</div>
-      <div class="info-item">🧭 한글 주제 → 영어 주제</div>
-      <div class="info-item">✅ 내용일치 T/F 5문항</div>
-    </div>
-    
-  <div id="resumeBox" style="display:none;background:linear-gradient(135deg,#fff7e0,#fef3c7);border:2px solid #fcd34d;border-radius:14px;padding:14px 16px;margin:12px auto;text-align:left;max-width:560px;">
-    <div style="font-family:'Black Han Sans',sans-serif;font-size:1rem;color:#92400e;margin-bottom:4px;">⏸️ 풀던 시험이 있어요</div>
-    <div id="resumeInfo" style="font-size:.78rem;color:#a16207;line-height:1.5;margin-bottom:10px;"></div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;">
-      <button style="flex:1;min-width:120px;padding:11px 14px;font-size:.88rem;background:linear-gradient(135deg,#f59e0b,#d97706);color:white;border:none;border-radius:10px;font-weight:800;cursor:pointer;" onclick="resumeSession()">▶️ 이어서 풀기</button>
-      <button style="flex:1;min-width:120px;padding:11px 14px;font-size:.88rem;background:linear-gradient(135deg,#94a3b8,#64748b);color:white;border:none;border-radius:10px;font-weight:800;cursor:pointer;" onclick="discardSession()">🔄 새로 시작</button>
-    </div>
-  </div>
-    <select class="ni" id="si" style="background:white;color:#1565c0;font-weight:700;cursor:pointer;">
-      <option value="">학교 선택</option>
-      <option value="종촌고1">종촌고 1학년</option>
-      <option value="종촌고2">종촌고 2학년</option>
-      <option value="종촌고3">종촌고 3학년</option>
-      <option value="고운고1">고운고 1학년</option>
-      <option value="고운고2">고운고 2학년</option>
-      <option value="고운고3">고운고 3학년</option>
-      <option value="대성고1">대성고 1학년</option>
-      <option value="기타">기타</option>
-    </select>
-    <input type="text" class="ni" id="ni" placeholder="이름 입력" maxlength="10">
-    <button class="start-btn" onclick="goPassageSelect()">다음 → 지문 선택</button>
-  </div>
-</div>
-
-<!-- PASSAGE SELECT -->
-<div id="passageScreen" class="hidden">
-  <div class="ps-header">
-    <div>
-      <div class="ps-title">📖 지문 선택</div>
-      <div class="ps-sub">풀고 싶은 지문을 선택하세요 (복수 선택 가능)</div>
-    </div>
-    <div class="user-info" id="userInfo"></div>
-  </div>
-  <div class="filter-bar">
-    <button class="fb on" onclick="filterPassage('all',this)">전체</button>
-    <button class="fb" onclick="filterPassage('21-24',this)">21~24번</button>
-    <button class="fb" onclick="filterPassage('29-40',this)">29~40번</button>
-  </div>
-  <div class="passage-grid" id="passageGrid"></div>
-  <button class="sel-all-btn" onclick="selectAll()">전체 선택 / 해제</button>
-  <button class="go-btn" onclick="startQuiz()">선택한 지문 풀기 🚀</button>
-</div>
-
-<!-- QUIZ HEADER (sticky) -->
-<div id="hdr" class="hdr hidden">
-  <div><div class="ht">📖 고2 26년 6월 본문 암기</div><div class="hs" id="hs"></div></div>
-  <div class="hb" id="hb">0/0</div>
-</div>
-<div id="pw" class="pw hidden"><div class="pf" id="pf" style="width:0%"></div></div>
-<div id="quizArea" class="hidden"></div>
-<div id="resultScreen" class="hidden"></div>
-
 <script>
-// ── DATA ──────────────────────────────────────────
-// 각 지문: blanks = 진짜 영어 빈칸 추론, topic_q = 주제/요지 선택
-const PASSAGES = [
-  {no:21,topic:`지문 21번`,text:`Humans [excel] at visual imagery. Our brains evolved this ability to create an internal mental picture or model of the world in which we can [rehearse] forthcoming actions, without the risks or the penalties of doing them in the real world. There are even hints from brain-imaging studies by Harvard University psychologist Steve Kosslyn showing that your brain uses the same regions to imagine a scene as when you actually view one. But evolution has seen to it that such internally generated representations are never as [authentic] as the real thing. This is a wise bit of self-restraint on your genes' part. If your internal model of the world were a perfect [substitute], then anytime you felt hungry you could simply imagine yourself at a banquet, consuming a feast. You would have no [incentive] to find real food and would soon starve to death. As the Bard said, "You cannot cloy the hungry edge of appetite by bare imagination of a feast."`,blanks:[{sentence:`_____ (~에 뛰어나다)`,opts:[`excel`,`rehearse`,`authentic`,`substitute`],ans:`excel`},{sentence:`_____ (예행연습하다)`,opts:[`rehearse`,`excel`,`authentic`,`incentive`],ans:`rehearse`},{sentence:`_____ (진짜의, 진본의)`,opts:[`authentic`,`excel`,`substitute`,`incentive`],ans:`authentic`},{sentence:`_____ (대체물)`,opts:[`substitute`,`excel`,`rehearse`,`incentive`],ans:`substitute`},{sentence:`_____ (유인, 동기 부여)`,opts:[`incentive`,`excel`,`rehearse`,`authentic`],ans:`incentive`}],wc:[{w:'excel',d:'struggle'},{w:'authentic',d:'artificial'},{w:'incentive',d:'hesitation'}],topic_ko:`상상이 결코 실제만큼 진짜일 수 없게 만든 진화의 한계`,topic_q:{q:`이 글의 주제로 가장 적절한 것은?`,opts:[`evolutionary limit on the realism of mental imagery`,`the perfect substitute role of imagination in survival`,`visual imagery as proof of human cognitive evolution`,`mental images as motivation to find real food sources`,`the role of genetic mutations in human survival instincts`],ans:`evolutionary limit on the realism of mental imagery`},tf:[{stmt:`Humans can rehearse future actions through visual imagery without real-world risks.`,ans:true,exp:`본문 내용과 일치`},{stmt:`The same brain regions are involved in imagining a scene and actually viewing one.`,ans:true,exp:`본문 내용과 일치`},{stmt:`Internally generated mental representations are as authentic as the real thing.`,ans:false,exp:`본문과 다름 (never as authentic)`},{stmt:`If imagination were a perfect substitute for reality, people might starve to death.`,ans:true,exp:`본문 내용과 일치`},{stmt:`Bare imagination of a feast can satisfy the hungry edge of appetite.`,ans:false,exp:`본문과 다름`}]},
-  {no:22,topic:`지문 22번`,text:`For each [objective] probability — from one percent to 100 percent — we want to know the [subjective] probability weight. When we make decisions, do we treat a one-percent chance just like one percent, or like something else? Events that could happen but aren't likely — low-probability events — can be defined as probabilities up to about 25 percent. Low-probability events tend to factor more into decisions than they should. That is, an event that has an objective one-percent chance of occurring could subjectively seem like it has a five-percent chance of occurring. We [overestimate] the [likelihood] of these low-probability events. In general, the smaller the probability, the more we overestimate its likelihood. For example, people who play the lottery are often [optimistic] about winning. However, the odds of a single ticket winning the largest, most popular U.S. lotteries are on the order of one in 175 million.`,blanks:[{sentence:`_____ (객관적인)`,opts:[`objective`,`subjective`,`overestimate`,`likelihood`],ans:`objective`},{sentence:`_____ (주관적인)`,opts:[`subjective`,`objective`,`overestimate`,`optimistic`],ans:`subjective`},{sentence:`_____ (과대평가하다)`,opts:[`overestimate`,`objective`,`subjective`,`likelihood`],ans:`overestimate`},{sentence:`_____ (가능성)`,opts:[`likelihood`,`objective`,`subjective`,`optimistic`],ans:`likelihood`},{sentence:`_____ (낙관적인)`,opts:[`optimistic`,`objective`,`subjective`,`overestimate`],ans:`optimistic`}],wc:[{w:'objective',d:'subjective'},{w:'overestimate',d:'underestimate'},{w:'optimistic',d:'pessimistic'}],topic_ko:`낮은 확률의 사건이 일어날 가능성을 과대평가하는 경향`,topic_q:{q:`이 글의 요지로 가장 적절한 것은?`,opts:[`We tend to overestimate the likelihood of low-probability events.`,`Repeated irrational decisions raise an organization's failure rate.`,`Relying solely on luck hinders one's inner personal growth.`,`We are inclined to interpret simple events in complex ways.`,`Considering diverse possibilities leads to optimal decision-making.`],ans:`We tend to overestimate the likelihood of low-probability events.`},tf:[{stmt:`Low-probability events are defined as having probabilities up to about 25 percent.`,ans:true,exp:`본문 내용과 일치`},{stmt:`People give less weight to low-probability events than they actually deserve.`,ans:false,exp:`본문과 다름 (factor more than they should)`},{stmt:`The smaller the probability, the more strongly people overestimate its likelihood.`,ans:true,exp:`본문 내용과 일치`},{stmt:`Lottery players are typically optimistic about their chance of winning.`,ans:true,exp:`본문 내용과 일치`},{stmt:`The odds of winning major U.S. lotteries are roughly one in 175 million.`,ans:true,exp:`본문 내용과 일치`}]},
-  {no:23,topic:`지문 23번`,text:`Many of the [barriers] to trade exist not because of a lack of markets or customers, but because there are major barriers to getting products to market at [competitive] prices. [transaction] costs are [significant] for companies — not only the straight exchange costs, but also the cost of converting, paying, and hedging funds just to pay for the goods and services. Having a [common currency] means that many of those transaction costs disappear and the savings can be reinvested back into firms' productivity and innovation. Basically, useless costs turn into productive costs — with longer-term benefits to the whole economy. By unifying some of the currencies, whole economies benefit and grow more than they would as independents. So a common currency provides for a strong economic foundation that all can benefit from.`,blanks:[{sentence:`_____ (장벽, 장애물)`,opts:[`barriers`,`competitive`,`transaction`,`significant`],ans:`barriers`},{sentence:`_____ (경쟁력 있는)`,opts:[`competitive`,`barriers`,`transaction`,`common currency`],ans:`competitive`},{sentence:`_____ (거래)`,opts:[`transaction`,`barriers`,`competitive`,`significant`],ans:`transaction`},{sentence:`_____ (상당한)`,opts:[`significant`,`barriers`,`competitive`,`common currency`],ans:`significant`},{sentence:`_____ (공통 화폐)`,opts:[`common currency`,`barriers`,`competitive`,`transaction`],ans:`common currency`}],wc:[{w:'barriers',d:'gateways'},{w:'competitive',d:'excessive'},{w:'significant',d:'negligible'}],topic_ko:`공통 화폐가 가져다주는 경제적 이점`,topic_q:{q:`이 글의 주제로 가장 적절한 것은?`,opts:[`economic advantages of a common currency system`,`significance of marketing strategies for multinational firms`,`current conflicts caused by globalized financial markets`,`necessity for strict regulation of cash transactions`,`various reasons for undertaking risk in investment`],ans:`economic advantages of a common currency system`},tf:[{stmt:`Many trade barriers stem from difficulties of getting products to market at competitive prices.`,ans:true,exp:`본문 내용과 일치`},{stmt:`Transaction costs include only the direct exchange costs and nothing else.`,ans:false,exp:`본문과 다름 (also converting, paying, hedging)`},{stmt:`A common currency makes many transaction costs disappear.`,ans:true,exp:`본문 내용과 일치`},{stmt:`Savings from reduced costs can be reinvested in productivity and innovation.`,ans:true,exp:`본문 내용과 일치`},{stmt:`Unified currencies provide a strong economic foundation benefiting all participants.`,ans:true,exp:`본문 내용과 일치`}]},
-  {no:24,topic:`지문 24번`,text:`The light from even our nearest [stellar] neighbour takes four years to [reach] us. When we look at the stars, we are looking back in time. This is an [incredible] gift. We can see parts of space, parts of our universe, as they were many years ago. The further we can collect light from, the further back in time we can look. If you look at the bright star Betelgeuse, which [glows] in the Orion constellation, you wind time back more than six hundred years. Its reddish glow started its journey to Earth in the Middle Ages. The stars in Orion's belt are even further away. Their light, familiar to generations of humans, has travelled at least 1,000 years to reach us. This means we have a chance of understanding the history of the universe because we can see the more [distant] parts of it as they were in the past, thousands or millions or billions of years ago.`,blanks:[{sentence:`_____ (별의)`,opts:[`stellar`,`reach`,`incredible`,`glow`],ans:`stellar`},{sentence:`_____ (도달하다)`,opts:[`reach`,`stellar`,`incredible`,`distant`],ans:`reach`},{sentence:`_____ (놀라운, 믿기 힘든)`,opts:[`incredible`,`stellar`,`reach`,`glow`],ans:`incredible`},{sentence:`_____ (빛나다)`,opts:[`glows`,`stellar`,`reach`,`distant`],ans:`glows`},{sentence:`_____ (먼)`,opts:[`distant`,`stellar`,`reach`,`incredible`],ans:`distant`}],wc:[{w:'reach',d:'leave'},{w:'incredible',d:'ordinary'},{w:'distant',d:'nearby'}],topic_ko:`우주의 역사를 보여 주는 창으로서의 별빛`,topic_q:{q:`이 글의 제목으로 가장 적절한 것은?`,opts:[`Starlight as a Window into the History of the Universe`,`How Long Does It Take for Stars to Burn Out in Space?`,`Life Beyond Earth: The Search for Unidentified Species`,`Imagination Brings Us Closer to Understanding the Universe`,`Why Stars in the Sky Look Like They're Moving`],ans:`Starlight as a Window into the History of the Universe`},tf:[{stmt:`Light from our nearest stellar neighbour takes four years to reach us.`,ans:true,exp:`본문 내용과 일치`},{stmt:`When we look at stars, we see them exactly as they are at this moment.`,ans:false,exp:`본문과 다름 (looking back in time)`},{stmt:`Betelgeuse's reddish glow began its journey during the Middle Ages.`,ans:true,exp:`본문 내용과 일치`},{stmt:`Stars in Orion's belt are closer to Earth than Betelgeuse.`,ans:false,exp:`본문과 다름 (even further)`},{stmt:`Collecting light from farther away allows us to look further back in time.`,ans:true,exp:`본문 내용과 일치`}]},
-  {no:29,topic:`지문 29번`,text:`The [renowned] British philosopher Alfred North Whitehead asserted that "civilization advances by extending the number of operations we can perform without thinking about them." Take, for example, the "[advance]" offered to civilization by the discount coupon, which allows consumers to [assume] that they will receive a reduced purchase price by presenting the coupon. The extent to which we have learned to operate [mechanically] on that assumption is illustrated in the experience of one automobile-tire company. Mailed-out coupons that — because of a printing error — offered no savings to recipients produced just as much customer response as did error-free coupons that offered [substantial] savings. The obvious but instructive point here is that we expect discount coupons to do double duty. Not only do we expect them to save us money, we also expect them to save us the time and mental energy required to think about how to do it.`,blanks:[{sentence:`_____ (저명한)`,opts:[`renowned`,`advance`,`assume`,`mechanically`],ans:`renowned`},{sentence:`_____ (진보, 발전)`,opts:[`advance`,`renowned`,`assume`,`substantial`],ans:`advance`},{sentence:`_____ (추정하다, 가정하다)`,opts:[`assume`,`renowned`,`advance`,`mechanically`],ans:`assume`},{sentence:`_____ (기계적으로)`,opts:[`mechanically`,`renowned`,`advance`,`substantial`],ans:`mechanically`},{sentence:`_____ (상당한, 실질적인)`,opts:[`substantial`,`renowned`,`advance`,`assume`],ans:`substantial`}],wc:[{w:'renowned',d:'obscure'},{w:'assume',d:'doubt'},{w:'mechanically',d:'cautiously'}],topic_ko:`돈뿐 아니라 생각하는 수고까지 덜어 주는 할인 쿠폰`,topic_q:{q:`이 글의 요지로 가장 적절한 것은?`,opts:[`Discount coupons save us not only money but also mental energy.`,`Whitehead's theory of civilization is only true for ancient societies.`,`Printing errors on coupons always reduce consumer response rates.`,`Mental laziness is the root cause of most consumer financial losses.`,`Companies should provide larger discounts to attract more customers.`],ans:`Discount coupons save us not only money but also mental energy.`},tf:[{stmt:`Whitehead claimed civilization advances by extending operations done without thinking.`,ans:true,exp:`본문 내용과 일치`},{stmt:`Coupons with printing errors offering no savings drew fewer customer responses.`,ans:false,exp:`본문과 다름 (just as much response)`},{stmt:`We expect coupons to do double duty by saving money and mental energy.`,ans:true,exp:`본문 내용과 일치`},{stmt:`Mental energy is one of the things coupons help us save.`,ans:true,exp:`본문 내용과 일치`},{stmt:`Consumers always carefully verify discount coupons before using them.`,ans:false,exp:`본문과 다름 (mechanically assumed)`}]},
-  {no:30,topic:`지문 30번`,text:`Usually, innovative high-tech products have low price [elasticity]. This means that high variation in price, an increase as well as a decrease, does not significantly modify [demand]. These high-tech products have few [substitutes], meaning that the costs to switch to another product are high. Additionally, at the first stage of the technology, buyers — either innovators or forerunners — are less [sensitive] to price than to additional performance; they often have deep pockets or are ready to spend a lot for a new innovative and outstanding product. For instance, with its new product range, a high-end mobile phone manufacturer is aiming at the 3% of millionaire households with assets of more than $2.5 million; those are customers who are ready to accept the price range the manufacturer has set. At that stage, the competitors are not interested in lowering their price significantly whatsoever, because they are chasing the same categories of customers, not sensitive to price. Furthermore, the high price of these products is often [perceived] as a sign of quality and reinforces a customer's confidence in the company.`,blanks:[{sentence:`_____ (탄력성)`,opts:[`elasticity`,`demand`,`substitute`,`sensitive`],ans:`elasticity`},{sentence:`_____ (수요)`,opts:[`demand`,`elasticity`,`substitute`,`perceived`],ans:`demand`},{sentence:`_____ (대체품)`,opts:[`substitutes`,`elasticity`,`demand`,`sensitive`],ans:`substitutes`},{sentence:`_____ (민감한)`,opts:[`sensitive`,`elasticity`,`demand`,`perceived`],ans:`sensitive`},{sentence:`_____ (인식되다)`,opts:[`perceived`,`elasticity`,`demand`,`sensitive`],ans:`perceived`}],wc:[{w:'demand',d:'supply'},{w:'sensitive',d:'indifferent'},{w:'perceived',d:'ignored'}],topic_ko:`혁신적 첨단 제품의 가격 탄력성이 낮은 이유`,topic_q:{q:`이 글의 주제로 가장 적절한 것은?`,opts:[`why innovative high-tech products have low price elasticity`,`the importance of lowering prices in competitive markets`,`how millionaire customers shape product design choices`,`strategies to attract first-stage buyers using discounts`,`the negative impact of substitute products on innovation`],ans:`why innovative high-tech products have low price elasticity`},tf:[{stmt:`Innovative high-tech products typically show low price elasticity.`,ans:true,exp:`본문 내용과 일치`},{stmt:`Early buyers of new technology are more sensitive to price than to performance.`,ans:false,exp:`본문과 다름 (less sensitive)`},{stmt:`High-end mobile phone makers target the wealthiest 3% of households.`,ans:true,exp:`본문 내용과 일치`},{stmt:`Competitors significantly lower their prices to attract first-stage buyers.`,ans:false,exp:`본문과 다름 (not interested in lowering)`},{stmt:`A high price can be perceived as a sign of quality and boost customer confidence.`,ans:true,exp:`본문 내용과 일치`}]},
-  {no:31,topic:`지문 31번`,text:`One easily [underappreciated] feature of a city street or square is its "future-proof" nature. The ancient [medieval] squares in places like Marrakesh and Siena are still places where stuff is sold every day, even if the stuff itself has changed over the last five hundred years. The city square is a fairly future-proof technology, as is the shopping street, even in an age of online shopping. For example, the same [physical] store that once sold buggy whips and typewriters might now repair damaged phones and sell bubble tea. The same [infrastructure] supports evolving uses. Jane Jacobs, the great [prophet] of the city economy, made much of this fact in her books, including The Death and Life of Great American Cities and The Nature of Economies. As she pointed out, the great advantage of a city architecture is its ability to support change in uses, and Jacobs correctly predicted the persistence of the city itself, unlike those who predicted the rise of the Internet would mean the death of the city.`,blanks:[{sentence:`_____ (과소평가되는)`,opts:[`underappreciated`,`medieval`,`physical`,`infrastructure`],ans:`underappreciated`},{sentence:`_____ (중세의)`,opts:[`medieval`,`underappreciated`,`physical`,`prophet`],ans:`medieval`},{sentence:`_____ (물리적인, 실재하는)`,opts:[`physical`,`underappreciated`,`medieval`,`infrastructure`],ans:`physical`},{sentence:`_____ (기반 시설)`,opts:[`infrastructure`,`underappreciated`,`medieval`,`prophet`],ans:`infrastructure`},{sentence:`_____ (예언자)`,opts:[`prophet`,`underappreciated`,`medieval`,`physical`],ans:`prophet`}],wc:[{w:'underappreciated',d:'overrated'},{w:'physical',d:'virtual'},{w:'prophet',d:'opponent'}],topic_ko:`용도 변화를 받아들이는 도시 거리와 광장의 미래 대응력`,topic_q:{q:`이 글의 주제로 가장 적절한 것은?`,opts:[`the future-proof nature of city streets and squares`,`the inevitable decline of physical retail in the Internet age`,`the historical importance of medieval city squares in Europe`,`Jane Jacobs's contribution to modern architectural movements`,`how online shopping is transforming city infrastructure`],ans:`the future-proof nature of city streets and squares`},tf:[{stmt:`Medieval squares in Marrakesh and Siena are still active selling places today.`,ans:true,exp:`본문 내용과 일치`},{stmt:`The rise of online shopping has made shopping streets obsolete.`,ans:false,exp:`본문과 다름 (still future-proof)`},{stmt:`The same physical store building can support very different businesses over time.`,ans:true,exp:`본문 내용과 일치`},{stmt:`Jane Jacobs predicted that the Internet would bring about the death of cities.`,ans:false,exp:`본문과 다름 (predicted persistence)`},{stmt:`City architecture's strength lies in its ability to accommodate changing uses.`,ans:true,exp:`본문 내용과 일치`}]},
-  {no:32,topic:`지문 32번`,text:`The [genomics] revolution made it possible to see just how impactful touch is to plants on a deeper level. Peering at the genes of Arabidopsis thaliana, a weedy plant in the mustard family and the lab rat of the plant biology world, researchers saw that touch quietly [triggered] such a dramatic response in their [hormones] and gene expression that it could substantially inhibit their growth. They stroked the arabidopsis with soft paintbrushes, and then analyzed the plants' genetic responses. Within thirty minutes of being touched, 10 percent of the plant's genome was [altered]. Clearly, the plant was reorganizing its priorities to deal with the [disturbance], and rerouting energy away from the hard work of getting taller. Touched multiple times, arabidopsis cut its upward growth rate by as much as 30 percent.`,blanks:[{sentence:`_____ (유전체학)`,opts:[`genomics`,`trigger`,`hormone`,`alter`],ans:`genomics`},{sentence:`_____ (촉발하다, 유발하다)`,opts:[`triggered`,`genomics`,`hormones`,`altered`],ans:`triggered`},{sentence:`_____ (호르몬)`,opts:[`hormones`,`genomics`,`triggered`,`disturbance`],ans:`hormones`},{sentence:`_____ (바뀌다, 변경되다)`,opts:[`altered`,`genomics`,`triggered`,`hormones`],ans:`altered`},{sentence:`_____ (방해, 교란)`,opts:[`disturbance`,`genomics`,`triggered`,`altered`],ans:`disturbance`}],wc:[{w:'triggered',d:'prevented'},{w:'altered',d:'preserved'},{w:'disturbance',d:'stability'}],topic_ko:`접촉이 식물의 유전자 반응을 촉발해 성장을 억제하는 현상`,topic_q:{q:`이 글의 주제로 가장 적절한 것은?`,opts:[`how physical touch dramatically inhibits the growth of plants`,`the role of genomics in classifying weedy mustard plants`,`why arabidopsis is the most popular lab rat in plant biology`,`techniques for stroking plants to accelerate genome alteration`,`the dangers of paintbrushes for laboratory plant samples`],ans:`how physical touch dramatically inhibits the growth of plants`},tf:[{stmt:`Genomics allowed scientists to discover the deep impact of touch on plants.`,ans:true,exp:`본문 내용과 일치`},{stmt:`Within 30 minutes of being touched, 10% of arabidopsis's genome was altered.`,ans:true,exp:`본문 내용과 일치`},{stmt:`Touched plants increase their upward growth rate as a defense response.`,ans:false,exp:`본문과 다름 (cut by 30%)`},{stmt:`The plant reroutes energy away from getting taller after being touched.`,ans:true,exp:`본문 내용과 일치`},{stmt:`Touching arabidopsis multiple times can cut its growth rate by up to 30 percent.`,ans:true,exp:`본문 내용과 일치`}]},
-  {no:33,topic:`지문 33번`,text:`Evolution will come to a [standstill] until something in the conditions changes: the [onset] of an ice age, a change in the average rainfall of the area, a shift in the [prevailing] wind. Such changes do happen when we are dealing with a timescale as long as the evolutionary one. As a consequence, evolution normally does not come to a halt, but constantly tracks the changing environment. If there is a steady downward drift in the average temperature in the area, a drift that persists over centuries, [successive] generations of animals will be [propelled] by a steady selection 'pressure' in the direction, say, of growing longer coats of hair. If after a few thousand years of reduced temperature the trend reverses and average temperatures creep up again, the animals will come under the influence of a new selection pressure, and will be pushed towards growing shorter coats again.`,blanks:[{sentence:`_____ (정지, 멈춤)`,opts:[`standstill`,`onset`,`prevailing`,`successive`],ans:`standstill`},{sentence:`_____ (시작, 도래)`,opts:[`onset`,`standstill`,`prevailing`,`propelled`],ans:`onset`},{sentence:`_____ (우세한, 지배적인)`,opts:[`prevailing`,`standstill`,`onset`,`successive`],ans:`prevailing`},{sentence:`_____ (연속적인)`,opts:[`successive`,`standstill`,`onset`,`propelled`],ans:`successive`},{sentence:`_____ (추진하다, 몰고 가다)`,opts:[`propelled`,`standstill`,`onset`,`prevailing`],ans:`propelled`}],wc:[{w:'standstill',d:'acceleration'},{w:'onset',d:'end'},{w:'successive',d:'preceding'}],topic_ko:`멈추지 않고 변화하는 환경을 계속 따라가는 진화`,topic_q:{q:`이 글의 주제로 가장 적절한 것은?`,opts:[`how evolution constantly tracks the changing environment`,`why selection pressure remains identical across generations`,`the geological causes of major ice ages on Earth`,`the limits of natural selection in modern animals`,`how rainfall changes accelerate evolutionary halting`],ans:`how evolution constantly tracks the changing environment`},tf:[{stmt:`Environmental conditions can change on a timescale as long as the evolutionary one.`,ans:true,exp:`본문 내용과 일치`},{stmt:`Evolution normally comes to a complete halt regardless of environmental changes.`,ans:false,exp:`본문과 다름 (does not come to a halt)`},{stmt:`A steady drop in temperature over centuries can drive animals toward longer coats.`,ans:true,exp:`본문 내용과 일치`},{stmt:`When trends reverse and temperatures rise, animals can be pushed toward shorter coats.`,ans:true,exp:`본문 내용과 일치`},{stmt:`Selection pressure stays the same regardless of environmental shifts.`,ans:false,exp:`본문과 다름`}]},
-  {no:34,topic:`지문 34번`,text:`The high price of land in [metropolitan] areas has [implications] for the efficient employment of resources. For example, in New York City, as in many large cities, sidewalk [vending] carts sell everything from hot dogs to ice cream. Why are these carts so popular, with over 3,000 in New York City alone? Consider the [resources] used to supply hot dogs: land, labor, capital, entrepreneurial ability, plus intermediate goods such as hot dogs, buns, and other ingredients. Which of these do you suppose is most expensive in New York City? [retail] space along Madison Avenue rents for an average of $550 a year per square foot. Because operating a hot dog cart requires about 4 square yards, it could cost as much as $20,000 a year to rent that much commercial space. Aside from the necessary public permits, however, space on the public sidewalk is free to vendors. Profit-maximizing street vendors substitute public sidewalks for costly commercial space.`,blanks:[{sentence:`_____ (대도시의)`,opts:[`metropolitan`,`implication`,`vending`,`retail`],ans:`metropolitan`},{sentence:`_____ (영향, 시사점)`,opts:[`implications`,`metropolitan`,`vending`,`resources`],ans:`implications`},{sentence:`_____ (판매(의))`,opts:[`vending`,`metropolitan`,`implications`,`retail`],ans:`vending`},{sentence:`_____ (자원)`,opts:[`resources`,`metropolitan`,`implications`,`vending`],ans:`resources`},{sentence:`_____ (소매의)`,opts:[`retail`,`metropolitan`,`implications`,`vending`],ans:`retail`}],wc:[{w:'implications',d:'exceptions'},{w:'resources',d:'obstacles'},{w:'retail',d:'wholesale'}],topic_ko:`비싼 상업 공간 대신 무료인 공공 보도를 이용하는 노점상`,topic_q:{q:`이 글의 요지로 가장 적절한 것은?`,opts:[`Street vendors substitute free public sidewalks for costly commercial space.`,`Hot dog carts pollute the streets of large metropolitan cities.`,`Madison Avenue retail rents have risen too quickly in recent years.`,`Public permits should be required for all sidewalk vending carts.`,`Entrepreneurial ability is the most expensive resource in big cities.`],ans:`Street vendors substitute free public sidewalks for costly commercial space.`},tf:[{stmt:`There are more than 3,000 sidewalk vending carts in New York City.`,ans:true,exp:`본문 내용과 일치`},{stmt:`Madison Avenue retail space rents for an average of $550 per square foot per year.`,ans:true,exp:`본문 내용과 일치`},{stmt:`Renting 4 square yards of commercial space could cost up to $20,000 a year.`,ans:true,exp:`본문 내용과 일치`},{stmt:`Public sidewalk space requires high rental fees from vendors.`,ans:false,exp:`본문과 다름 (free)`},{stmt:`Vendors use public sidewalks to avoid expensive commercial space costs.`,ans:true,exp:`본문 내용과 일치`}]},
-  {no:35,topic:`지문 35번`,text:`The process we go through when we look at a work of art to [determine] if we recognize and can make sense of its content is not just a visual one. It is a mental process as well, largely based on the elements within and about the work we can [identify] and [categorize]. As we look and think, we may be given [clues] about what the work means by where it is, when it was made, what culture it came from, who created it, or why it was made. Any information we can gather helps us understand the work's [context], that is, for what historical, social, personal, political, or scientific reasons the work of art was made. And then, using all the contextual information we have gathered, we interpret the work of art's content to discover what it means or symbolizes.`,blanks:[{sentence:`_____ (결정하다, 판단하다)`,opts:[`determine`,`identify`,`categorize`,`clue`],ans:`determine`},{sentence:`_____ (식별하다)`,opts:[`identify`,`determine`,`categorize`,`context`],ans:`identify`},{sentence:`_____ (분류하다)`,opts:[`categorize`,`determine`,`identify`,`clue`],ans:`categorize`},{sentence:`_____ (단서)`,opts:[`clues`,`determine`,`identify`,`context`],ans:`clues`},{sentence:`_____ (맥락, 배경)`,opts:[`context`,`determine`,`identify`,`categorize`],ans:`context`}],wc:[{w:'determine',d:'ignore'},{w:'categorize',d:'overlook'},{w:'context',d:'appearance'}],topic_ko:`시각 정보와 맥락 정보를 함께 이용하는 미술 작품 감상`,topic_q:{q:`이 글의 주제로 가장 적절한 것은?`,opts:[`how viewers interpret art using visual and contextual information`,`the artistic techniques used by contemporary symbolic painters`,`the role of museums in providing visitor experiences`,`the historical contexts behind major art movements`,`the difference between visual and mental perception in daily life`],ans:`how viewers interpret art using visual and contextual information`},tf:[{stmt:`Looking at a work of art involves both visual perception and mental processing.`,ans:true,exp:`본문 내용과 일치`},{stmt:`Clues such as where the work was made can inform what it means.`,ans:true,exp:`본문 내용과 일치`},{stmt:`Information about the work's background helps us understand its context.`,ans:true,exp:`본문 내용과 일치`},{stmt:`To understand art, viewers should completely ignore historical context.`,ans:false,exp:`본문과 다름 (irrelevant sentence)`},{stmt:`Contextual information is used to interpret what the artwork means or symbolizes.`,ans:true,exp:`본문 내용과 일치`}]},
-  {no:36,topic:`지문 36번`,text:`For most animals the struggle to survive takes up all their time. Finding food and drink, keeping warm and clean, avoiding [predators], [migrating] and reproducing use up all their energies. If they do have any time to spare, they spend it resting or sleeping. Only very young animals, under the protection of their parents, have enough [surplus] energy to engage in lively bouts of play. This was also true for our early ancestors. The constant search for food would have put heavy demands upon them. In certain regions, at particular times of year, the prey was sufficiently plentiful and their hunting techniques sufficiently advanced for them to experience a remarkable degree of [prosperity]. They had time on their hands. But as they slowly evolved into more and more efficient hunters, the situation changed. The secret of their success was the development of much greater [intelligence]. They used brain not brawn to kill their prey. At the end of the long hunting era, before they turned to farming, they were already enjoying some degree of affluence.`,blanks:[{sentence:`_____ (포식자)`,opts:[`predators`,`migrate`,`surplus`,`prosperity`],ans:`predators`},{sentence:`_____ (이주하다)`,opts:[`migrating`,`predators`,`surplus`,`intelligence`],ans:`migrating`},{sentence:`_____ (잉여의, 남는)`,opts:[`surplus`,`predators`,`migrating`,`prosperity`],ans:`surplus`},{sentence:`_____ (번영, 번성)`,opts:[`prosperity`,`predators`,`migrating`,`intelligence`],ans:`prosperity`},{sentence:`_____ (지능)`,opts:[`intelligence`,`predators`,`migrating`,`surplus`],ans:`intelligence`}],wc:[{w:'predators',d:'offspring'},{w:'prosperity',d:'poverty'},{w:'intelligence',d:'strength'}],topic_ko:`초기 인류를 생존 투쟁에서 번영으로 이끈 지능의 발달`,topic_q:{q:`이 글의 주제로 가장 적절한 것은?`,opts:[`how growing intelligence brought early humans from struggle to prosperity`,`why most adult animals do not have surplus energy for play`,`the dietary habits of early humans before farming developed`,`the importance of brawn over brain for animal survival`,`differences between predators and prey across regions`],ans:`how growing intelligence brought early humans from struggle to prosperity`},tf:[{stmt:`Most animals spend all their time on survival activities.`,ans:true,exp:`본문 내용과 일치`},{stmt:`Young animals can engage in play because of surplus energy.`,ans:true,exp:`본문 내용과 일치`},{stmt:`Early humans never experienced periods of prosperity.`,ans:false,exp:`본문과 다름`},{stmt:`Greater intelligence was the secret of early human success in hunting.`,ans:true,exp:`본문 내용과 일치`},{stmt:`Early humans began farming first and then became efficient hunters.`,ans:false,exp:`본문과 다름 (hunting era came first)`}]},
-  {no:37,topic:`지문 37번`,text:`Think about a time when you were [startled]. Did you come to a sudden stop, freeze all your movements, and hold your breath as you [scanned] the environment for a threat? All these responses maximize our ability to avoid detection, locate the source of possible danger, and prepare to fight or flee. As sophisticated as language has become, it is still the creation of sound that might give away our location to a potential predator. Because of this, the freeze response results in the [inhibition] of language in highly stressful and [traumatic] situations. Natural selection promoted the evolution of language but conserved the freeze rule. When the threat passes, we begin to relax and find our voices again, perhaps even to laugh at our own reactions. But what if we can never relax? What if our experiences shape our brain to be in a constant state of fear? This interference with the proper development and integration of [neural] networks can result in chronic stress and even mental illness.`,blanks:[{sentence:`_____ (놀라게 하다)`,opts:[`startled`,`scan`,`inhibition`,`traumatic`],ans:`startled`},{sentence:`_____ (살피다, 훑어보다)`,opts:[`scanned`,`startled`,`inhibition`,`neural`],ans:`scanned`},{sentence:`_____ (억제)`,opts:[`inhibition`,`startled`,`scanned`,`traumatic`],ans:`inhibition`},{sentence:`_____ (외상의, 충격적인)`,opts:[`traumatic`,`startled`,`scanned`,`neural`],ans:`traumatic`},{sentence:`_____ (신경의)`,opts:[`neural`,`startled`,`scanned`,`inhibition`],ans:`neural`}],wc:[{w:'scanned',d:'ignored'},{w:'inhibition',d:'expansion'},{w:'neural',d:'muscular'}],topic_ko:`얼어붙기 반응의 진화와 만성적 스트레스의 위험`,topic_q:{q:`이 글의 주제로 가장 적절한 것은?`,opts:[`the evolutionary freeze response and risks of chronic stress`,`why human language evolved later than the fight-or-flight system`,`techniques to overcome childhood traumatic experiences`,`how to scan one's environment quickly for hidden threats`,`the connection between laughter and fear-relief mechanisms`],ans:`the evolutionary freeze response and risks of chronic stress`},tf:[{stmt:`When startled, people often freeze movements and hold their breath.`,ans:true,exp:`본문 내용과 일치`},{stmt:`Sound creation could give away one's location to a potential predator.`,ans:true,exp:`본문 내용과 일치`},{stmt:`Natural selection eliminated the freeze rule once language evolved.`,ans:false,exp:`본문과 다름 (conserved it)`},{stmt:`Once the threat passes, people relax and find their voices again.`,ans:true,exp:`본문 내용과 일치`},{stmt:`A constant state of fear may cause chronic stress and mental illness.`,ans:true,exp:`본문 내용과 일치`}]},
-  {no:38,topic:`지문 38번`,text:`Video gaming is one of the most studied technologies with regard to [empathy]. Because there have been [longstanding] concerns about the impact of violent video games on youth, much research has been conducted over the last couple of decades on the topic. While measuring and documenting the impact of video game violence, scientists have formulated [credible] explanations of how video gaming could affect empathy. Part of a normal, healthy reaction to witnessing violent events is to feel negative emotions, and to experience [physiological] arousal that is connected to fear or disgust. With repeated exposure to violent events — such as what might happen when a person plays violent video games — this normal reaction might become blunted, a phenomenon known as [desensitization]. The next step in this problematic process would be having diminished emotional responses to violence, which could also interfere with the ability to recognize and/or to sympathize with others, leading to reduced empathy. A significant body of work shows an association between extensive violent video gaming and reduced empathy in people.`,blanks:[{sentence:`_____ (공감)`,opts:[`empathy`,`longstanding`,`credible`,`physiological`],ans:`empathy`},{sentence:`_____ (오래 지속된)`,opts:[`longstanding`,`empathy`,`credible`,`desensitization`],ans:`longstanding`},{sentence:`_____ (신뢰할 만한)`,opts:[`credible`,`empathy`,`longstanding`,`physiological`],ans:`credible`},{sentence:`_____ (생리적인)`,opts:[`physiological`,`empathy`,`longstanding`,`credible`],ans:`physiological`},{sentence:`_____ (둔감화)`,opts:[`desensitization`,`empathy`,`longstanding`,`physiological`],ans:`desensitization`}],wc:[{w:'empathy',d:'apathy'},{w:'credible',d:'questionable'},{w:'desensitization',d:'sensitization'}],topic_ko:`폭력적 비디오 게임의 반복 노출이 초래하는 둔감화와 공감 감소`,topic_q:{q:`이 글의 요지로 가장 적절한 것은?`,opts:[`Repeated exposure to violent video gaming can desensitize players and reduce empathy.`,`Video game research has produced few credible findings over the last 20 years.`,`Empathy is best developed by playing video games in moderation each day.`,`Physiological arousal is unrelated to one's normal emotional responses.`,`Violent video games can effectively teach youth about social cooperation.`],ans:`Repeated exposure to violent video gaming can desensitize players and reduce empathy.`},tf:[{stmt:`Video gaming is among the most studied technologies regarding empathy.`,ans:true,exp:`본문 내용과 일치`},{stmt:`A normal reaction to witnessing violence involves negative emotions and physiological arousal.`,ans:true,exp:`본문 내용과 일치`},{stmt:`Repeated exposure to violent events can blunt normal reactions through desensitization.`,ans:true,exp:`본문 내용과 일치`},{stmt:`Extensive violent video gaming is linked to higher levels of empathy.`,ans:false,exp:`본문과 다름 (reduced empathy)`},{stmt:`Diminished emotional responses can interfere with sympathizing with others.`,ans:true,exp:`본문 내용과 일치`}]},
-  {no:39,topic:`지문 39번`,text:`Realising the benefits of [differentiation], some brands broadcast their social purpose before they do much actual good. Their marketers are using social purpose to boost the brand's [reputation], rather than embracing the purpose itself. Making a real difference with social problems is hard enough; to succeed, it has to follow from an [authentic], company-wide [commitment] to the purpose. Otherwise the mission is just window-dressing, or what we call "purpose-washing" — similar to green-washing, where purpose-driven activities serve mainly for [publicity] purposes. We end up with what Anand Giridhardas describes in Winners Take All: "social purpose that just furthers the charade of elites disrupting the old order without giving much back". Purpose-washing brands gain one of the benefits of social purpose, differentiation, but only for a short while. They lose out on positioning for future markets, and they might even make employees feel worse about working for them.`,blanks:[{sentence:`_____ (차별화)`,opts:[`differentiation`,`reputation`,`authentic`,`commitment`],ans:`differentiation`},{sentence:`_____ (평판, 명성)`,opts:[`reputation`,`differentiation`,`authentic`,`publicity`],ans:`reputation`},{sentence:`_____ (진정한, 진짜의)`,opts:[`authentic`,`differentiation`,`reputation`,`commitment`],ans:`authentic`},{sentence:`_____ (헌신, 약속)`,opts:[`commitment`,`differentiation`,`reputation`,`publicity`],ans:`commitment`},{sentence:`_____ (홍보)`,opts:[`publicity`,`differentiation`,`reputation`,`authentic`],ans:`publicity`}],wc:[{w:'reputation',d:'criticism'},{w:'authentic',d:'superficial'},{w:'publicity',d:'privacy'}],topic_ko:`겉치레가 아닌 진정성 있는 헌신에서 나와야 하는 사회적 목적`,topic_q:{q:`이 글의 요지로 가장 적절한 것은?`,opts:[`Real social impact requires authentic commitment, not purpose-washing.`,`Companies should focus on financial differentiation over social purpose.`,`Green-washing is more harmful to brands than purpose-washing.`,`Marketers gain little advantage from broadcasting social purposes.`,`Employees usually appreciate purpose-driven marketing strategies.`],ans:`Real social impact requires authentic commitment, not purpose-washing.`},tf:[{stmt:`Making a real difference on social problems requires authentic, company-wide commitment.`,ans:true,exp:`본문 내용과 일치`},{stmt:`Some brands broadcast their social purpose before doing much actual good.`,ans:true,exp:`본문 내용과 일치`},{stmt:`Purpose-washing brands gain long-lasting differentiation in the market.`,ans:false,exp:`본문과 다름 (only short while)`},{stmt:`Purpose-washing may make employees feel worse about working for the company.`,ans:true,exp:`본문 내용과 일치`},{stmt:`Purpose-washing brands lose out on positioning for future markets.`,ans:true,exp:`본문 내용과 일치`}]},
-  {no:40,topic:`지문 40번`,text:`The brain needs to create a model of a [constant] [pulse] — a [schema] — so that we know when the musicians are not conforming to it. This is similar to variations of a melody: We need to have a mental representation of what the melody is in order to know — and appreciate — when the musician is taking liberties with it. Metrical [extraction], knowing what the pulse is and when we expect it to occur, is a crucial part of musical emotion. Music communicates to us emotionally through systematic [violations] of expectations. These violations can occur in any domain — the domain of pitch, rhythm, tempo, and so on — but occur they must. Music is organized sound, but the organization has to involve some element of the unexpected or it is emotionally flat and robotic. Too much organization may technically still be music, but it would be music that no one wants to listen to.`,blanks:[{sentence:`_____ (일정한, 변함없는)`,opts:[`constant`,`pulse`,`schema`,`extraction`],ans:`constant`},{sentence:`_____ (박자, 맥박)`,opts:[`pulse`,`constant`,`schema`,`violation`],ans:`pulse`},{sentence:`_____ (도식, 스키마)`,opts:[`schema`,`constant`,`pulse`,`extraction`],ans:`schema`},{sentence:`_____ (추출)`,opts:[`extraction`,`constant`,`pulse`,`violation`],ans:`extraction`},{sentence:`_____ (위반, 어김)`,opts:[`violations`,`constant`,`pulse`,`schema`],ans:`violations`}],wc:[{w:'constant',d:'irregular'},{w:'extraction',d:'distortion'},{w:'violations',d:'confirmations'}],topic_ko:`기대를 체계적으로 위반함으로써 감정을 전달하는 음악`,topic_q:{q:`이 글의 요지로 가장 적절한 것은?`,opts:[`Music creates emotional impact when it systematically breaks expected patterns.`,`Brain schemas slow down the recognition of musical rhythm and pulse.`,`Music with too many variations becomes hard to organize and listen to.`,`Repeated listening helps the brain memorize specific musical melodies.`,`Rhythm and tempo are the only domains where musical violations occur.`],ans:`Music creates emotional impact when it systematically breaks expected patterns.`},tf:[{stmt:`The brain creates a mental model of constant pulse to detect deviations.`,ans:true,exp:`본문 내용과 일치`},{stmt:`Mental representation of a melody is needed to appreciate the musician's liberties.`,ans:true,exp:`본문 내용과 일치`},{stmt:`Music communicates emotion mainly through systematic violations of expectation.`,ans:true,exp:`본문 내용과 일치`},{stmt:`Music without any element of the unexpected is emotionally vivid and engaging.`,ans:false,exp:`본문과 다름 (flat and robotic)`},{stmt:`Too much organization may yield music that nobody wants to listen to.`,ans:true,exp:`본문 내용과 일치`}]}
-];
+const NAME=sessionStorage.getItem("bn_name")||localStorage.getItem("bn_name")||"학생";
+const SCHOOL=sessionStorage.getItem("bn_school")||localStorage.getItem("bn_school")||"고운고등학교";
+function nm(s){return (s||'').trim().toLowerCase().replace(/[?.!,'"\u2019\u201c\u201d]/g,'').replace(/\s+/g,' ');}
+let done={};let earned=0;let doneQ=0;let totalQ=0;
+const ARR_WORDS={};
+const ARR_ANS={};
+const MULTI={};
 
-// ── STATE ──────────────────────────────────────────
-let userName='', userSchool='', selectedNos=new Set(), doneNos=new Set();
-let qs=[], idx=0, cor=0, wrn=0, wrongs=[], allResults=[], answered=false, t0=0;
-let filterMode='all';
-
-// === 오늘 진행 기록 저장 (페이지 재진입 시 완료 표시 유지) ===
-const QUIZ_ID='mock_go2_2026_06_memory';
-const _DAY_KEY=(function(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');})();
-const _PROG_KEY='bn_prog_'+QUIZ_ID;
-function _saveProg(){
-  try{localStorage.setItem(_PROG_KEY, JSON.stringify({day:_DAY_KEY, doneNos:Array.from(doneNos)}));}catch(e){}
+function pick(btn,i,idx){
+  const grp=btn.closest('.sel-group');if(grp.dataset.checked)return;grp.dataset.checked='1';
+  const ans=parseInt(grp.dataset.ans);const btns=grp.querySelectorAll('.sel-btn');
+  btns.forEach(b=>b.disabled=true);
+  const ok=idx===ans;btn.classList.add(ok?'correct':'wrong');if(!ok)btns[ans].classList.add('correct');
+  if(!done[i]){done[i]=true;if(ok)earned++;doneQ++;updateUI();}
+  log('sel'+i,ok);
 }
-function _loadProg(){
-  try{
-    const raw=localStorage.getItem(_PROG_KEY); if(!raw) return;
-    const data=JSON.parse(raw);
-    if(data.day!==_DAY_KEY){localStorage.removeItem(_PROG_KEY); return;}
-    if(Array.isArray(data.doneNos)) doneNos=new Set(data.doneNos);
-  }catch(e){}
+function autoChk(i,ans){
+  if(done[i])return;
+  const inp=document.getElementById('b'+i);if(!inp)return;
+  const v=nm(inp.value), c=nm(ans);
+  if(v===c){inp.classList.add('correct-inp');inp.disabled=true;done[i]=true;earned++;doneQ++;updateUI();log('blank'+i,true);}
+  else if(v.length>1&&c.startsWith(v)){inp.style.borderBottomColor='#f0a000';}
 }
-function _cleanupOldProgress(){
-  try{
-    for(let i=localStorage.length-1;i>=0;i--){
-      const k=localStorage.key(i);
-      if(k && (k.startsWith('bn_prog_') || k.startsWith('bn_session_'))){
-        try{const v=JSON.parse(localStorage.getItem(k)); if(v.day!==_DAY_KEY) localStorage.removeItem(k);}
-        catch(e){localStorage.removeItem(k);}
-      }
-    }
-  }catch(e){}
+function toggleChip(el){
+  if(el.classList.contains('disabled'))return;
+  el.classList.toggle('picked');
 }
-
-// ── START ──────────────────────────────────────────
-function goPassageSelect(){
-  userSchool = document.getElementById('si').value;
-  userName = document.getElementById('ni').value.trim();
-  if(!userSchool){alert('학교를 선택해주세요!');return;}
-  if(!userName){alert('이름을 입력해주세요!');return;}
-  document.getElementById('startScreen').classList.add('hidden');
-  document.getElementById('userInfo').textContent = userName + ' · ' + userSchool;
-  renderPassageGrid();
-  document.getElementById('passageScreen').classList.remove('hidden');
+function checkMulti(i){
+  if(done[i])return;done[i]=true;
+  const want=MULTI[i].slice().sort((a,b)=>a-b);
+  const chips=[...document.querySelectorAll('.word-chip.pickable[data-grp="'+i+'"]')];
+  const got=chips.filter(c=>c.classList.contains('picked')).map(c=>parseInt(c.dataset.n)).sort((a,b)=>a-b);
+  const ok=want.length===got.length&&want.every((v,k)=>v===got[k]);
+  chips.forEach(c=>{const n=parseInt(c.dataset.n);c.classList.add('disabled');
+    if(want.indexOf(n)>=0)c.classList.add('correct-chip');
+    else if(c.classList.contains('picked'))c.classList.add('wrong-chip');});
+  const fb=document.getElementById('fb'+i);
+  if(fb){fb.className='q-feedback '+(ok?'ok':'fail')+' show';
+    fb.innerHTML=ok?'✅ 정답! <span class="pt-tag">+1점</span>':'❌ 오답<br><strong>정답: '+want.map(n=>'('+n+')').join(' ')+'</strong>';}
+  if(ok)earned++;doneQ++;updateUI();log('multi'+i,ok);
 }
-
-function renderPassageGrid(){
-  const grid = document.getElementById('passageGrid');
-  grid.innerHTML='';
-  PASSAGES.forEach(p=>{
-    if(filterMode==='21-24' && (p.no<21||p.no>24)) return;
-    if(filterMode==='29-40' && (p.no<29||p.no>40)) return;
-    const d = document.createElement('div');
-    d.className='p-card'+(selectedNos.has(p.no)?' sel':'')+(doneNos.has(p.no)?' done':'');
-    d.onclick=()=>togglePassage(p.no, d);
-    d.innerHTML=`<div class="p-no">${p.no}번</div><div class="p-topic">${p.topic}</div>`
-      +(doneNos.has(p.no)?'<span class="p-badge done-badge">완료✓</span>':'')
-      +(selectedNos.has(p.no)&&!doneNos.has(p.no)?'<span class="p-badge" style="background:#e3f2fd;color:#1565c0;">선택</span>':'');
-    grid.appendChild(d);
+function initArranges(){
+  Object.keys(ARR_WORDS).forEach(i=>{
+    const pool=document.getElementById('pool'+i);if(!pool)return;
+    const ws=ARR_WORDS[i].slice().sort(()=>Math.random()-.5);
+    pool.innerHTML='';
+    ws.forEach(w=>{const c=document.createElement('span');c.className='word-chip';c.textContent=w;
+      c.onclick=()=>moveTo(c,'ans'+i,'pool'+i);pool.appendChild(c);});
   });
 }
-
-function togglePassage(no, el){
-  if(selectedNos.has(no)){selectedNos.delete(no);el.classList.remove('sel');}
-  else{selectedNos.add(no);el.classList.add('sel');}
+function moveTo(chip,ansId,poolId){
+  if(chip.classList.contains('disabled'))return;
+  const ans=document.getElementById(ansId);
+  const ph=ans.querySelector(':scope > span:not(.word-chip)');if(ph)ph.remove();
+  chip.onclick=()=>moveBack(chip,ansId,poolId);ans.appendChild(chip);
 }
-
-function filterPassage(mode, btn){
-  filterMode=mode;
-  document.querySelectorAll('.filter-bar .fb').forEach(b=>b.classList.remove('on'));
-  btn.classList.add('on');
-  renderPassageGrid();
+function moveBack(chip,ansId,poolId){
+  if(chip.classList.contains('disabled'))return;
+  const pool=document.getElementById(poolId);
+  chip.onclick=()=>moveTo(chip,ansId,poolId);pool.appendChild(chip);
+  const ans=document.getElementById(ansId);
+  if(!ans.children.length)ans.innerHTML='<span style="color:#c0b4a4;font-size:.73rem">여기에 배열하세요…</span>';
 }
-
-function selectAll(){
-  const visible = PASSAGES.filter(p=>{
-    if(filterMode==='21-24') return p.no>=21&&p.no<=24;
-    if(filterMode==='29-40') return p.no>=29&&p.no<=40;
-    return true;
-  });
-  const allSel = visible.every(p=>selectedNos.has(p.no));
-  visible.forEach(p=>{ if(allSel) selectedNos.delete(p.no); else selectedNos.add(p.no); });
-  renderPassageGrid();
+function checkArr(i){
+  if(done[i])return;done[i]=true;
+  const ans=document.getElementById('ans'+i);
+  const chips=ans.querySelectorAll('.word-chip');
+  const user=[...chips].map(c=>c.textContent.trim()).join(' ');
+  const ok=nm(user)===nm(ARR_ANS[i]);
+  chips.forEach(c=>{c.classList.add(ok?'correct-chip':'wrong-chip');c.classList.add('disabled');c.onclick=null;});
+  document.getElementById('pool'+i).querySelectorAll('.word-chip').forEach(c=>{c.classList.add('disabled');c.onclick=null;});
+  const fb=document.getElementById('fb'+i);
+  if(fb){fb.className='q-feedback '+(ok?'ok':'fail')+' show';
+    fb.innerHTML=ok?'✅ 정답! <span class="pt-tag">+1점</span>':'❌ 오답<br><strong>정답: '+ARR_ANS[i]+'</strong>';}
+  const btn=ans.closest('.arrange-wrap').querySelector('.q-check-btn');if(btn)btn.setAttribute('disabled','');
+  if(ok)earned++;doneQ++;updateUI();log('arr'+i,ok);
 }
-
-function startQuiz(){
-  if(selectedNos.size===0){alert('지문을 하나 이상 선택하세요!');return;}
-  // build question list
-  qs=[];
-  PASSAGES.filter(p=>selectedNos.has(p.no)).forEach(p=>{
-    // blanks
-    p.blanks.forEach((b,i)=>qs.push({pno:p.no,topic:p.topic,type:'blank',data:b,passageText:p.text,pid:p.no+'_b'+i}));
-    // 어휘 선택 (A)(B)(C)
-    if(p.wc && p.wc.length) qs.push({pno:p.no,topic:p.topic,type:'wc',data:p.wc,passageText:p.text,pid:p.no+'_wc'});
-    // 한글 주제 확인 (채점 없음, 되돌아가기 불가)
-    if(p.topic_ko) qs.push({pno:p.no,topic:p.topic,type:'topicko',data:p.topic_ko,passageText:p.text,pid:p.no+'_tk'});
-    // topic_q
-    qs.push({pno:p.no,topic:p.topic,type:'topic',data:p.topic_q,passageText:p.text,pid:p.no+'_tq'});
-    // tf
-    p.tf.forEach((t,i)=>qs.push({pno:p.no,topic:p.topic,type:'tf',data:t,passageText:p.text,pid:p.no+'_t'+i}));
-  });
-  // shuffle within each passage group is already ordered; shuffle all
-  idx=0; cor=0; wrn=0; wrongs=[]; allResults=[]; answered=false; t0=Date.now();
-  document.getElementById('passageScreen').classList.add('hidden');
-  document.getElementById('hdr').classList.remove('hidden');
-  document.getElementById('pw').classList.remove('hidden');
-  document.getElementById('quizArea').classList.remove('hidden');
-  document.getElementById('hs').textContent=userName+' · '+selectedNos.size+'개 지문';
-  showQ();
+function log(q,ok){if(window._log)window._log({name:NAME,school:SCHOOL,q:q,result:ok?'ok':'fail',earned:ok?1:0,total:1});}
+function countTotal(){
+  return document.querySelectorAll('.sel-group').length
+       + document.querySelectorAll('.blank-input').length
+       + document.querySelectorAll('.arrange-wrap .q-check-btn').length;
 }
-
-// ── QUIZ ──────────────────────────────────────────
-function showQ(){
-  if(idx>=qs.length){showResult();return;}
-  answered=false;
-  const q=qs[idx];
-  document.getElementById('pf').style.width=(idx/qs.length*100).toFixed(0)+'%';
-  document.getElementById('hb').textContent=(idx+1)+'/'+qs.length;
-  const area=document.getElementById('quizArea');
-
-  if(q.type==='blank'){
-    const d=q.data;
-    const shuf=arr=>{const b=[...arr];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;};
-    const opts=shuf(d.opts);
-
-    // 지문에서 현재 문제의 정답만 블록 처리, 나머지 [ ]는 일반 텍스트로
-    let passageDisplay = q.passageText;
-    passageDisplay = passageDisplay.replace(/\[([^\]]+)\]/g,(match, inner)=>{
-      if(inner === d.ans || d.ans.includes(inner) || inner.includes(d.ans)){
-        return `<span style="display:inline-block;min-width:80px;background:#1565c0;color:#1565c0;border-radius:5px;padding:1px 6px;font-weight:800;letter-spacing:2px;user-select:none;">░░░░░░░</span>`;
-      }
-      // 나머지는 그냥 일반 텍스트로
-      return inner;
-    });
-
-    // 한글 힌트 제거: "_____ (~과 상관없이)" → "_____"
-    const sentenceClean = d.sentence.replace(/_____\s*\([^)]*\)/, '_____');
-    // 빈칸 문장 표시 (_____ → 파란 빈칸)
-    const blankSentence = sentenceClean.replace('_____',
-      `<span style="display:inline-block;min-width:120px;border-bottom:3px solid #1565c0;background:#bbdefb;border-radius:4px;padding:2px 10px;font-weight:800;color:#1565c0;">_____</span>`);
-
-    area.innerHTML=`
-      <div class="qc">
-        <div class="q-no-badge"><span class="qno">${q.pno}번</span><span class="qtype blank">빈칸 추론</span></div>
-        <div style="font-size:11px;font-weight:700;color:#1565c0;margin-bottom:6px;">📄 지문 — 파란 빈칸에 들어갈 말을 고르세요 (${q.topic})</div>
-        <div class="passage-box" style="font-size:13px;margin-bottom:14px;line-height:2;">${passageDisplay}</div>
-        <div style="background:#e3f2fd;border:2px solid #1565c0;border-radius:10px;padding:12px 14px;font-size:13px;font-weight:700;color:#1a237e;margin-bottom:12px;line-height:1.9;">${blankSentence}</div>
-        <div class="choices" id="qChoices"></div>
-        <div class="fb-msg" id="fb"></div>
-      </div>`;
-    const cc=document.getElementById('qChoices');
-    opts.forEach((o,i)=>{
-      const b=document.createElement('button');
-      b.className='cb';
-      const escO = String(o).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-      b.innerHTML=`<span class="cn">${i+1}</span><span class="ct">${escO}</span>`;
-      b.addEventListener('click',()=>selBlank(b,o,d.ans));
-      cc.appendChild(b);
-    });
-  } else if(q.type==='wc'){
-    const items=q.data;
-    const LB=['A','B','C','D','E'];
-    const shuf=arr=>{const b=[...arr];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;};
-    // 지문 안의 해당 단어 자리를 (A) word1 / word2 형태로 표시
-    const used={};
-    const passageDisplay=q.passageText.replace(/\[([^\]]+)\]/g,(m,inner)=>{
-      const i=items.findIndex((it,k)=>it.w===inner && !used[k]);
-      if(i>=0){
-        used[i]=true;
-        const pair=Math.random()<0.5?[items[i].w,items[i].d]:[items[i].d,items[i].w];
-        return `<span style="display:inline-block;background:#fff3e0;border:2px solid #f57f17;border-radius:8px;padding:1px 8px;font-weight:800;color:#e65100;white-space:nowrap;">(${LB[i]}) ${pair[0]} / ${pair[1]}</span>`;
-      }
-      return inner;
-    });
-    // (A)(B)(C) 조합 5개 만들기 (정답 1 + 오답 4)
-    const n=items.length, combos=[];
-    for(let m=0;m<(1<<n);m++) combos.push(items.map((it,k)=>((m>>k)&1)?it.d:it.w));
-    const ansCombo=combos[0];
-    const opts=shuf([ansCombo, ...shuf(combos.slice(1)).slice(0,4)]);
-    const fmt=c=>c.map((w,k)=>`<span style="color:#e65100;">(${LB[k]})</span> ${w}`).join(' &nbsp;·&nbsp; ');
-    const ansKey=ansCombo.join('|');
-    area.innerHTML=`
-      <div class="qc">
-        <div class="q-no-badge"><span class="qno">${q.pno}번</span><span class="qtype wc">어휘 선택 (A)(B)(C)</span></div>
-        <div style="font-size:11px;font-weight:700;color:#1565c0;margin-bottom:6px;">📄 지문 — 문맥상 낱말의 쓰임이 <b>적절한</b> 것을 고르세요 (${q.topic})</div>
-        <div class="passage-box" style="font-size:13px;margin-bottom:14px;line-height:2.1;">${passageDisplay}</div>
-        <div class="q-prompt">🔤 (A), (B), (C)의 각 네모 안에서 문맥에 맞는 낱말로 짝지어진 것은?</div>
-        <div class="choices" id="qChoices"></div>
-        <div class="fb-msg" id="fb"></div>
-      </div>`;
-    const cc=document.getElementById('qChoices');
-    opts.forEach((o,i)=>{
-      const b=document.createElement('button');
-      b.className='cb';
-      b.dataset.key=o.join('|');
-      b.innerHTML=`<span class="cn">${i+1}</span><span class="ct">${fmt(o)}</span>`;
-      b.addEventListener('click',()=>selWC(b,o,ansCombo));
-      cc.appendChild(b);
-    });
-  } else if(q.type==='topicko'){
-    const cleanText=q.passageText.replace(/\[([^\]]+)\]/g,'$1');
-    area.innerHTML=`
-      <div class="qc">
-        <div class="q-no-badge"><span class="qno">${q.pno}번</span><span class="qtype ko">주제 확인</span></div>
-        <div style="font-size:11px;font-weight:700;color:#1565c0;margin-bottom:6px;">📄 지문 (${q.topic})</div>
-        <div class="passage-box" style="font-size:13px;margin-bottom:14px;">${cleanText}</div>
-        <div class="ko-topic">이 글의 주제는<br><span class="ko-topic-txt">"${q.data}"</span><br>이다.</div>
-        <div class="ko-warn">⚠️ [다음]을 누르면 이 화면으로 <b>다시 돌아올 수 없습니다.</b><br>주제를 충분히 읽고 기억한 뒤 넘어가세요.</div>
-        <button class="go-btn" id="koNextBtn" onclick="nextFromKo()">기억했어요 · 다음 문제로 →</button>
-      </div>`;
-  } else if(q.type==='topic'){
-    const d=q.data;
-    const shuf=arr=>{const b=[...arr];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;};
-    const opts=shuf(d.opts);
-    const cleanText = q.passageText.replace(/\[([^\]]+)\]/g,'<span style="background:#fff3e0;border-bottom:2.5px solid #f57f17;font-weight:800;padding:0 3px;border-radius:3px;">$1</span>');
-    area.innerHTML=`
-      <div class="qc">
-        <div class="q-no-badge"><span class="qno">${q.pno}번</span><span class="qtype" style="background:#e8f5e9;color:#2e7d32;">주제/요지</span></div>
-        <div style="font-size:11px;font-weight:700;color:#1565c0;margin-bottom:6px;">📄 지문 (${q.topic})</div>
-        <div class="passage-box" style="font-size:13px;margin-bottom:14px;">${cleanText}</div>
-        <div class="q-prompt">🎯 ${d.q}</div>
-        <div style="font-size:11px;font-weight:700;color:#2e7d32;background:#e8f5e9;border-radius:8px;padding:7px 10px;margin-bottom:10px;">💡 앞에서 확인한 한글 주제를 떠올려 영어로 고르세요.</div>
-        <div class="choices" id="qChoices"></div>
-        <div class="fb-msg" id="fb"></div>
-      </div>`;
-    const cc=document.getElementById('qChoices');
-    opts.forEach((o,i)=>{
-      const b=document.createElement('button');
-      b.className='cb';
-      const escO = String(o).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-      b.innerHTML=`<span class="cn">${i+1}</span><span class="ct">${escO}</span>`;
-      b.addEventListener('click',()=>selBlank(b,o,d.ans));
-      cc.appendChild(b);
-    });
-  } else {
-    const d=q.data;
-    // 지문 원문에서 [ ] 제거해서 보여주기
-    const cleanText = q.passageText.replace(/\[([^\]]+)\]/g,'$1');
-    area.innerHTML=`
-      <div class="qc">
-        <div class="q-no-badge"><span class="qno">${q.pno}번</span><span class="qtype tf">내용 일치 T/F</span></div>
-        <div style="font-size:11px;font-weight:700;color:#1565c0;margin-bottom:6px;">📄 지문 (${q.topic})</div>
-        <div class="passage-box" style="font-size:13px;margin-bottom:14px;">${cleanText}</div>
-        <div class="q-prompt">✅ 다음 문장이 본문 내용과 일치하면 O, 아니면 X를 선택하세요.</div>
-        <div style="background:#fff8e1;border:2px solid #f57f17;border-radius:10px;padding:12px 14px;font-size:14px;font-weight:700;color:#333;margin:10px 0 14px;">${d.stmt}</div>
-        <div class="tf-btns">
-          <button class="tfb ob" id="btnO" onclick="selTF(this,true,${d.ans})">⭕ 일치</button>
-          <button class="tfb xb" id="btnX" onclick="selTF(this,false,${d.ans})">❌ 불일치</button>
-        </div>
-        <div class="fb-msg" id="fb"></div>
-      </div>`;
-  }
+function updateUI(){
+  totalQ=countTotal();
+  document.getElementById('score-val').textContent=earned;
+  document.getElementById('score-max').textContent=totalQ;
+  document.getElementById('prog').style.width=(doneQ/totalQ*100)+'%';
+  document.getElementById('prog-txt').textContent=doneQ+' / '+totalQ+' 완료';
+  if(doneQ>=totalQ)showResult();
 }
-
-function selBlank(btn,sel,ans){
-  if(answered)return;
-  answered=true;
-  document.querySelectorAll('.cb').forEach(b=>b.disabled=true);
-  const fb=document.getElementById('fb');
-  const q=qs[idx];
-  const typeLabel = q.type==='topic' ? '주제' : '빈칸';
-  // 방어: 양쪽 trim 비교 (공백/제로폭 문자로 인한 불일치 방지)
-  const selN = String(sel).trim(), ansN = String(ans).trim();
-  if(selN===ansN){
-    btn.classList.add('correct');
-    fb.className='fb-msg ok';fb.innerHTML='✅ 정답: <strong>'+ans+'</strong>'+(window.formatMeaningHint?window.formatMeaningHint(ans):'');
-    cor++;
-    allResults.push({pno:q.pno, type:typeLabel, correct:true, my:sel, ans:ans});
-  } else {
-    btn.classList.add('wrong');
-    document.querySelectorAll('.cb').forEach(b=>{const ct=b.querySelector('.ct'); const t=ct?ct.textContent.trim():b.textContent.trim(); if(t===ansN)b.classList.add('reveal');});
-    fb.className='fb-msg no';fb.innerHTML='❌ 내 답: <strong>'+sel+'</strong>'+(window.formatMeaningHint?window.formatMeaningHint(sel):'')+'<br>📗 정답: <strong>'+ans+'</strong>'+(window.formatMeaningHint?window.formatMeaningHint(ans):'');
-    wrn++;
-    wrongs.push({pid:q.pid, label:q.pno+'번 '+typeLabel, my:sel, correct:ans, exp:''});
-    allResults.push({pno:q.pno, type:typeLabel, correct:false, my:sel, ans:ans});
-  }
-  setTimeout(()=>{idx++;_saveSession();showQ();},sel===ans?700:1800);
-}
-
-// 한글 주제 확인 화면 → 다음 (되돌아가기 없음)
-function nextFromKo(){
-  if(answered) return;
-  answered=true;
-  const b=document.getElementById('koNextBtn'); if(b){b.disabled=true;b.textContent='다음 문제로 이동 중...';}
-  idx++; _saveSession(); showQ();
-}
-
-// (A)(B)(C) 어휘 선택
-function selWC(btn,sel,ans){
-  if(answered)return;
-  answered=true;
-  document.querySelectorAll('.cb').forEach(b=>b.disabled=true);
-  const LB=['A','B','C','D','E'];
-  const fmtPlain=c=>c.map((w,k)=>'('+LB[k]+') '+w).join(' · ');
-  const fb=document.getElementById('fb');
-  const q=qs[idx];
-  const selKey=sel.join('|'), ansKey=ans.join('|');
-  const myTxt=fmtPlain(sel), ansTxt=fmtPlain(ans);
-  if(selKey===ansKey){
-    btn.classList.add('correct');
-    fb.className='fb-msg ok';fb.innerHTML='✅ 정답: <strong>'+ansTxt+'</strong>';
-    cor++;
-    allResults.push({pno:q.pno, type:'어휘선택', correct:true, my:myTxt, ans:ansTxt});
-  } else {
-    btn.classList.add('wrong');
-    document.querySelectorAll('.cb').forEach(b=>{ if(b.dataset.key===ansKey) b.classList.add('reveal'); });
-    fb.className='fb-msg no';fb.innerHTML='❌ 내 답: <strong>'+myTxt+'</strong><br>📗 정답: <strong>'+ansTxt+'</strong>';
-    wrn++;
-    wrongs.push({pid:q.pid, label:q.pno+'번 어휘선택 (A)(B)(C)', my:myTxt, correct:ansTxt, exp:''});
-    allResults.push({pno:q.pno, type:'어휘선택', correct:false, my:myTxt, ans:ansTxt});
-  }
-  setTimeout(()=>{idx++;_saveSession();showQ();},selKey===ansKey?900:2400);
-}
-
-function selTF(btn,sel,ans){
-  if(answered)return;
-  answered=true;
-  document.querySelectorAll('.tfb').forEach(b=>b.disabled=true);
-  const fb=document.getElementById('fb');
-  const correct=(sel===ans);
-  btn.classList.add(correct?'correct':'wrong');
-  if(!correct){
-    const other=document.getElementById(sel?'btnX':'btnO');
-    other.classList.add('reveal');
-  }
-  const q=qs[idx];
-  const d=q.data;
-  if(correct){
-    fb.className='fb-msg ok';fb.textContent='✅ 정답! '+d.exp;
-    cor++;
-    allResults.push({pno:q.pno, type:'T/F', correct:true, my:sel?'O':'X', ans:ans?'O':'X', stmt:d.stmt});
-  } else {
-    fb.className='fb-msg no';fb.textContent='❌ 오답! '+d.exp;
-    wrn++;
-    wrongs.push({pid:q.pid, label:q.pno+'번 T/F', my:sel?'O':'X', correct:ans?'O':'X', exp:d.exp});
-    allResults.push({pno:q.pno, type:'T/F', correct:false, my:sel?'O':'X', ans:ans?'O':'X', stmt:d.stmt});
-  }
-  setTimeout(()=>{idx++;_saveSession();showQ();},correct?700:1800);
-}
-
-// ── RESULT ──────────────────────────────────────────
-let wrongQs = []; // 오답 문제 저장용
-
-
-// === 진행 중 세션 저장 (같은 날 재진입 시 이어서 풀기) ===
-const _SESSION_KEY = 'bn_session_' + QUIZ_ID;
-function _saveSession(){
-  if(typeof qs==='undefined' || !qs.length || idx>=qs.length) return;
-  try{
-    const state = {
-      day: _DAY_KEY,
-      userName: (typeof userName!=='undefined'?userName:''),
-      userSchool: (typeof userSchool!=='undefined'?userSchool:''),
-      qs, idx,
-      cor: (typeof cor!=='undefined'?cor:0),
-      wrn: (typeof wrn!=='undefined'?wrn:0),
-      wrongs: (typeof wrongs!=='undefined'?wrongs:[]),
-      allResults: (typeof allResults!=='undefined'?allResults:[]),
-      selectedRefs: (typeof selectedRefs!=='undefined'?Array.from(selectedRefs):[]),
-      doneRefs: (typeof doneRefs!=='undefined'?Array.from(doneRefs):[]),
-      selectedNos: (typeof selectedNos!=='undefined'?Array.from(selectedNos||[]):[]),
-      doneNos: (typeof doneNos!=='undefined'?Array.from(doneNos):[]),
-      quizMode: (typeof quizMode!=='undefined'?quizMode:''),
-      filterMode: (typeof filterMode!=='undefined'?filterMode:''),
-      mode: (typeof mode!=='undefined'?mode:''),
-      round: (typeof round!=='undefined'?round:''),
-      elapsedMs: (typeof t0!=='undefined' && t0)?(Date.now()-t0):0,
-      savedAt: Date.now()
-    };
-    localStorage.setItem(_SESSION_KEY, JSON.stringify(state));
-  }catch(e){}
-}
-function _loadSession(){
-  try{
-    const raw = localStorage.getItem(_SESSION_KEY); if(!raw) return null;
-    const s = JSON.parse(raw);
-    if(s.day !== _DAY_KEY){ localStorage.removeItem(_SESSION_KEY); return null; }
-    if(!s.qs || !s.qs.length || s.idx >= s.qs.length){ localStorage.removeItem(_SESSION_KEY); return null; }
-    return s;
-  }catch(e){ return null; }
-}
-function _clearSession(){ try{ localStorage.removeItem(_SESSION_KEY); }catch(e){} }
-function _restoreSessionState(s){
-  if(typeof userName!=='undefined'){ userName = s.userName||''; }
-  if(typeof userSchool!=='undefined'){ userSchool = s.userSchool||''; }
-  qs = s.qs; idx = s.idx;
-  if(typeof cor!=='undefined') cor = s.cor||0;
-  if(typeof wrn!=='undefined') wrn = s.wrn||0;
-  if(typeof wrongs!=='undefined') wrongs = s.wrongs||[];
-  if(typeof allResults!=='undefined') allResults = s.allResults||[];
-  if(typeof selectedRefs!=='undefined') selectedRefs = new Set(s.selectedRefs||[]);
-  if(typeof doneRefs!=='undefined' && Array.isArray(s.doneRefs)) doneRefs = new Set(s.doneRefs);
-  if(typeof selectedNos!=='undefined') selectedNos = new Set(s.selectedNos||[]);
-  if(typeof doneNos!=='undefined' && Array.isArray(s.doneNos)) doneNos = new Set(s.doneNos);
-  if(typeof quizMode!=='undefined' && s.quizMode) quizMode = s.quizMode;
-  if(typeof filterMode!=='undefined' && s.filterMode) filterMode = s.filterMode;
-  if(typeof mode!=='undefined' && s.mode) mode = s.mode;
-  if(typeof round!=='undefined' && s.round) round = s.round;
-  if(typeof t0!=='undefined') t0 = Date.now() - (s.elapsedMs||0);
-  if(typeof answered!=='undefined') answered = false;
-}
-function _enterQuizScreen(){
-  ['startScreen','passageScreen','loginScreen','passages','hubScreen','startView'].forEach(id=>{
-    const el=document.getElementById(id); if(el) el.classList.add('hidden');
-  });
-  ['hdr','pw','quizArea','quizScreen','quizWrap','quizView'].forEach(id=>{
-    const el=document.getElementById(id); if(el) el.classList.remove('hidden');
-  });
-}
-function resumeSession(){
-  const s = _loadSession(); if(!s){ const rb=document.getElementById('resumeBox'); if(rb) rb.style.display='none'; return; }
-  _restoreSessionState(s);
-  _enterQuizScreen();
-  if(typeof showQ==='function') showQ();
-  else if(typeof renderQuestion==='function') renderQuestion();
-  else if(typeof drawQ==='function') drawQ();
-}
-function discardSession(){ _clearSession(); const rb=document.getElementById('resumeBox'); if(rb) rb.style.display='none'; }
-function checkResumePrompt(){
-  const s = _loadSession(); if(!s) return;
-  const rb = document.getElementById('resumeBox'); if(!rb) return;
-  const remain = s.qs.length - s.idx;
-  const elapsedMin = Math.round((s.elapsedMs||0)/60000);
-  const info = document.getElementById('resumeInfo');
-  if(info) info.innerHTML =
-    '<strong>'+(s.userName||'학생')+'</strong>님 · '+s.qs.length+'문제 중 <strong>'+s.idx+'번째</strong>까지 풀었어요 ('+remain+'문제 남음)<br>'+
-    '진행한 시간: '+elapsedMin+'분 · 정답 '+(s.cor||0)+' / 오답 '+(s.wrn||0);
-  rb.style.display='block';
-}
-window.resumeSession = resumeSession;
-window.discardSession = discardSession;
-
 function showResult(){
-  _clearSession();
-  document.getElementById('pf').style.width='100%';
-  document.getElementById('quizArea').classList.add('hidden');
-  const total=cor+wrn, pct=total>0?Math.round(cor/total*100):0; // 주제 확인 화면은 채점 대상 제외
-  const el=Math.round((Date.now()-t0)/60000);
-  selectedNos.forEach(n=>doneNos.add(n));
-  _saveProg();
-  // 오답 문제 저장 (다시풀기용)
-  wrongQs = qs.filter((q,i)=>{
-    // wrongs 배열의 pid와 매칭
-    return wrongs.some(w=>w.pid===q.pid);
-  });
-
-  const wHTML=wrongs.length>0
-    ?'<div class="wl"><h3>❌ 오답 ('+wrongs.length+'개)</h3>'+wrongs.map(w=>'<div class="wi"><div class="wie">'+w.label+'</div><div class="wid">내 답: '+w.my+' → 정답: '+w.correct+(w.exp?' | '+w.exp:'')+'</div></div>').join('')+'</div>'
-    :'<div style="color:#2e7d32;font-weight:800;padding:14px;text-align:center;">🎉 전부 정답!</div>';
-
-  // 전체 문제 + 정답 목록 (채점 후 확인용)
-  const escAns = s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  const allHTML = allResults.length>0
-    ? '<div class="wl" style="margin-top:14px;"><h3 style="color:#1565c0;">📋 전체 문제 정답 (' + allResults.length + '개)</h3>'
-      + allResults.map((r,i)=>{
-          const okBadge = r.correct
-            ? '<span style="background:#2e7d32;color:white;padding:2px 7px;border-radius:6px;font-size:11px;font-weight:800;">O</span>'
-            : '<span style="background:#c62828;color:white;padding:2px 7px;border-radius:6px;font-size:11px;font-weight:800;">X</span>';
-          return '<div class="wi" style="border-left-color:' + (r.correct?'#2e7d32':'#c62828') + ';">'
-            + '<div class="wie">' + okBadge + ' ' + r.pno + '번 · ' + r.type + '</div>'
-            + '<div class="wid">내 답: <strong>' + escAns(r.my) + '</strong> · 정답: <strong style="color:#1565c0;">' + escAns(r.ans) + '</strong></div>'
-            + '</div>';
-        }).join('')
-      + '</div>'
-    : '';
-
-  const retryBtn = wrongs.length>0
-    ? `<button class="rbtn" style="background:linear-gradient(135deg,#c62828,#e91e63);color:white;" onclick="retryWrongs()">❌ 오답 다시풀기 (${wrongs.length}개)</button>`
-    : '';
-
-  const rs=document.getElementById('resultScreen');
-  rs.classList.remove('hidden');
-  rs.innerHTML=`<div class="rc">
-    <div style="font-size:12px;color:var(--muted);margin-bottom:4px;">고2 26년 6월 본문 암기 · ${selectedNos.size}개 지문</div>
-    <div class="rs">${pct}점</div>
-    <div class="rsub">${userName}의 결과</div>
-    <div class="sr">
-      <div class="si"><div class="sn" style="color:#2e7d32;">${cor}</div><div class="sl">정답</div></div>
-      <div class="si"><div class="sn" style="color:#c62828;">${wrn}</div><div class="sl">오답</div></div>
-      <div class="si"><div class="sn" style="color:#1565c0;">${total}</div><div class="sl">총문제</div></div>
-      <div class="si"><div class="sn" style="color:#f57f17;">${el}분</div><div class="sl">소요</div></div>
-    </div>
-    ${wHTML}
-    ${allHTML}
-    <div class="rbtns">
-      ${retryBtn}
-      <button class="rbtn rbtn-p" onclick="goBack()">← 지문 다시 선택</button>
-      <button class="rbtn rbtn-s" onclick="bnRestart()">처음부터 🔄</button>
-    </div>
-  </div>`;
-
-  if(window._fbSave) window._fbSave({
-    submittedAt: new Date().toISOString(),
-    studentName: userName,
-    school: userSchool,
-    score: pct,
-    correct: cor,
-    wrong: wrn,
-    total: total,
-    elapsedMin: el,
-    quizType: '고2_26년6월_본문암기',
-    passages: [...selectedNos].sort((a,b)=>a-b),
-    // 문제별 상세 결과: 몇 번 지문, 유형(빈칸/주제/T·F), 맞음/틀림, 내 답, 정답
-    details: allResults.map(r=>({
-      지문: r.pno+'번',
-      유형: r.type,
-      결과: r.correct ? '✅정답' : '❌오답',
-      내답: r.my,
-      정답: r.ans,
-      ...(r.stmt ? {문장: r.stmt} : {})
-    })),
-    wrongWords: wrongs.map(w=>({label:w.label, my:w.my, correct:w.correct}))
-  });
+  const pct=Math.round(earned/totalQ*100);
+  if(window._log)window._log({studentName:NAME,school:SCHOOL,score:pct,correct:earned,
+    wrong:totalQ-earned,total:totalQ,quizType:'고2 26년 6월 본문암기',completed:true});
+  document.getElementById('r-score').textContent=earned+' / '+totalQ+'점 ('+pct+'%)';
+  document.getElementById('r-msg').textContent=pct>=90?'완벽합니다! 워크북 마스터! 🌟':pct>=70?'잘했어요! 💪':pct>=50?'절반 이상! 📖':'기초부터 차근차근! 🔄';
+  document.getElementById('result').classList.add('show');
+  setTimeout(()=>window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'}),200);
 }
 
-function retryWrongs(){
-  if(wrongQs.length===0) return;
-  qs=[...wrongQs];
-  idx=0; cor=0; wrn=0; wrongs=[]; allResults=[]; answered=false; t0=Date.now();
-  document.getElementById('resultScreen').classList.add('hidden');
-  document.getElementById('quizArea').classList.remove('hidden');
-  document.getElementById('hdr').classList.remove('hidden');
-  document.getElementById('pw').classList.remove('hidden');
-  document.getElementById('hs').textContent=userName+' · 오답 다시풀기';
-  showQ();
+function submitSoFar(){
+  if(doneQ===0){ alert('아직 푼 문제가 없어요.'); return; }
+  const pct=Math.round(earned/doneQ*100);
+  if(!confirm('지금까지 푼 '+doneQ+'문제를 선생님께 제출할까요?\n\n맞은 개수 '+earned+' / '+doneQ+' ('+pct+'%)\n제출한 뒤에도 이어서 풀 수 있어요.')) return;
+  if(window._log)window._log({studentName:NAME,school:SCHOOL,score:pct,correct:earned,
+    wrong:doneQ-earned,total:doneQ,quizType:'고2 26년 6월 본문암기',completed:false,
+    진행:doneQ+' / '+totalQ});
+  const b=document.getElementById('submit-btn');
+  if(b){ b.textContent='✅ '+doneQ+'문제 제출 완료'; setTimeout(()=>{b.textContent='📤 여기까지 제출하기';},2500); }
 }
 
-function goBack(){
-  document.getElementById('resultScreen').classList.add('hidden');
-  document.getElementById('hdr').classList.add('hidden');
-  document.getElementById('pw').classList.add('hidden');
-  selectedNos.clear();
-  renderPassageGrid();
-  document.getElementById('passageScreen').classList.remove('hidden');
-}
-
-// localStorage 자동입력
-window.addEventListener('DOMContentLoaded',()=>{
-  const n=localStorage.getItem('bomnal_name');
-  const s=localStorage.getItem('bomnal_school');
-  if(n) document.getElementById('ni').value=n;
-  if(s){
-    const sel=document.getElementById('si');
-    for(let i=0;i<sel.options.length;i++){
-      if(sel.options[i].value&&s.includes(sel.options[i].value)){sel.value=sel.options[i].value;break;}
-    }
-  }
-  _cleanupOldProgress();
-  _loadProg();
-  checkResumePrompt();
-});
-</script>
-
-<script>
-// 결과 화면에서 잘못 눌러 처음부터 돌아가는 사고가 잦아 한 번 더 묻는다
 function bnRestart(){
   if(confirm('정말 처음부터 다시 푸시겠습니까?\n\n지금까지 푼 내용과 점수가 모두 지워지고 처음으로 돌아갑니다.')) location.reload();
 }
-</script>
-<script>
-/* 홈 화면에 추가했을 때 주소창 없이 앱처럼 열리게 한다 (안드로이드) */
-if('serviceWorker' in navigator){ window.addEventListener('load',function(){ navigator.serviceWorker.register('sw.js').catch(function(){}); }); }
+window.addEventListener('load',()=>{initArranges();updateUI();});
 </script>
 <script src="bn_force.js"></script>
 </body>

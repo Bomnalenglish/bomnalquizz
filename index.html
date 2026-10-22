@@ -2112,11 +2112,16 @@ const MOCK_FILES_AVAILABLE = new Set([
   'mock_go2_2025_10_voca','mock_go2_2025_10_total',
   'mock_go1_2024_10_voca',
   'mock_go1_2023_12_voca','mock_go1_2023_12_memory','mock_go1_2023_12_grammar',
+  'mock_go1_2022_09_memory','mock_go1_2024_09_memory','mock_go1_2025_09_memory',
+  'mock_go2_2024_09_memory','mock_go2_2025_10_memory',
   'mock_go1_2023_12_exam','mock_go1_2024_10_exam','mock_go1_2025_06_exam','mock_go2_2025_10_exam',
 ]);
 
 // 모의고사 파일 갱신 시 이 값을 올리면 학생 폰의 캐시가 무시되고 새 버전이 열립니다.
-const MOCK_VER = '20261023a';
+const MOCK_TYPES_HIDDEN = new Set([
+  'mock_go1_2025_06_total','mock_go2_2025_10_total',
+]);
+const MOCK_VER = '20261023b';
 
 function selectMockMonth(month){
   mockMonth = month;
@@ -2129,6 +2134,8 @@ function selectMockMonth(month){
     const exists = MOCK_FILES_AVAILABLE.has(filename);
     // 기존 "준비 중" 배지 제거
     el.querySelectorAll('.cs-badge').forEach(b=>b.remove());
+    if (MOCK_TYPES_HIDDEN.has(filename)) { el.style.display = 'none'; return; }
+    el.style.display = '';
     if (exists) {
       // ?v=날짜 : 아이폰 사파리 등에서 옛 버전이 캐시되어 그대로 뜨는 문제 방지
       el.href = BASE + filename + '.html?v=' + MOCK_VER;
