@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>봄날퀴즈 첫 화면 샘플</title>
+<style>
+:root{ --ink:#2a2a2a; --soft:#7a7570; --bg:#f5efe6; --line:#e0d8ce; --primary:#4a6741; }
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:"Noto Sans KR","Malgun Gothic","맑은 고딕","Apple SD Gothic Neo",AppleGothic,-apple-system,sans-serif;}
+.phone{max-width:430px;margin:0 auto;min-height:100vh;background:var(--bg)}
+header{background:linear-gradient(135deg,#f7efe4,#f0e6d8 50%,#ece0d2);padding:26px 22px 22px;text-align:center}
+.logo{font-size:1.18rem;font-weight:900;color:#3b2f25;letter-spacing:-.3px}
+.logo small{display:block;font-size:.68rem;font-weight:700;color:#8a7f74;letter-spacing:2px;margin-top:4px}
+main{padding:16px 16px 60px}
+.card{background:#fffdf9;border:1.5px solid var(--line);border-radius:18px;padding:16px 15px 18px;
+  box-shadow:0 2px 10px rgba(0,0,0,.04)}
+.whobar{display:flex;align-items:center;justify-content:space-between;gap:8px;background:#f2ede5;
+  border:1.5px solid var(--line);border-radius:12px;padding:8px 10px 8px 12px;margin-bottom:14px}
+.whobar span{font-size:.82rem;font-weight:800;color:#5a4a3a}
+.whobar button{flex:none;font:inherit;font-size:.72rem;font-weight:800;color:#fff;background:#8a7f74;
+  border:none;border-radius:999px;padding:6px 11px;cursor:pointer}
+h2{font-size:1.02rem;margin:2px 0 3px;font-weight:900;color:#3b2f25}
+.lead{font-size:.8rem;color:var(--soft);margin:0 0 15px}
+
+.sec{margin-top:12px}
+.sec-head{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;
+  border:2px solid var(--line);background:#fff;border-radius:14px;padding:13px 14px;cursor:pointer;
+  font:inherit;text-align:left}
+.sec-head .t{display:block;font-size:.9rem;font-weight:800;color:#2a2a2a}
+.sec-head .s{display:block;font-size:.7rem;color:var(--soft);margin-top:3px}
+.sec-head .arw{font-size:.72rem;color:#a09890;font-weight:700;white-space:nowrap}
+.sec-body{display:none;padding:10px 2px 2px}
+.sec.open .sec-body{display:block}
+.sec.open .sec-head{border-color:#c6b79f;background:#fffaf0}
+.list{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.list a{display:block;text-decoration:none;color:inherit;border:1.5px solid #d9e2ea;background:#fff;
+  border-radius:12px;padding:10px 12px}
+.list a .n{font-size:.82rem;font-weight:700}
+.list a .d{font-size:.68rem;color:var(--soft);margin-top:2px}
+.grp{grid-column:1/-1;font-size:.74rem;font-weight:800;color:#8a7f74;margin:8px 2px 0;padding-top:8px;
+  border-top:1px dashed var(--line)}
+
+.hall{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-top:10px}
+.hall button{font:inherit;cursor:pointer;border-radius:16px;padding:18px 12px;text-align:center;
+  border:2.5px solid #cbd9e6;background:linear-gradient(135deg,#f6fbff,#eaf3fb)}
+.hall button.hi{border-color:#e3cdb0;background:linear-gradient(135deg,#fffaf0,#fbf1e2)}
+.hall .e{font-size:1.5rem}
+.hall .n{font-size:.95rem;font-weight:900;margin-top:5px;color:#2a3a46}
+.hall button.hi .n{color:#5c4326}
+.hall .d{font-size:.68rem;color:var(--soft);margin-top:3px;line-height:1.4}
+
+.sep{border-top:1px solid var(--line);margin:20px 0 10px;padding-top:12px;
+  font-size:.78rem;font-weight:800;color:#a09890}
+.big{display:block;width:100%;text-align:left;border-radius:14px;padding:14px 15px;cursor:pointer;
+  border:2px solid #d0dde8;background:#fff;font:inherit;text-decoration:none;color:inherit}
+.big .n{font-size:.88rem;font-weight:800}
+.big .d{font-size:.7rem;color:var(--soft);margin-top:3px}
+.big.rec{border-color:#fcd34d;background:linear-gradient(135deg,#fff7e0,#fef3c7)}
+.big.rec .n{color:#92400e}.big.rec .d{color:#a16207}
+
+.schools{display:grid;gap:11px;margin-top:4px}
+.schools button{font:inherit;cursor:pointer;text-align:left;border-radius:16px;padding:16px 16px;
+  border:2px solid var(--line);background:#fff;display:flex;align-items:center;gap:13px}
+.schools .e{font-size:1.5rem}
+.schools .n{font-size:1rem;font-weight:900}
+.schools .d{font-size:.72rem;color:var(--soft);margin-top:2px}
+.back{background:none;border:none;color:var(--soft);font:inherit;font-size:.8rem;cursor:pointer;
+  text-decoration:underline;padding:0;margin-bottom:12px}
+.scr{display:none}.scr.on{display:block}
+.note{margin:14px 16px 40px;max-width:430px;margin-left:auto;margin-right:auto;font-size:.8rem;
+  line-height:1.75;color:#5a5048;background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.note b{color:#8a6a3e}
+</style>
+</head>
+<body>
+<div class="phone">
+<header>
+  <div class="logo">봄날 BOMNAL ENGLISH<small>E N G L I S H · M A T H</small></div>
+</header>
+<main>
+
+<!-- ───────── 로그인 직후 첫 화면 ───────── -->
+<section class="scr on" id="s-home">
+  <div class="card">
+    <div class="whobar"><span>👤 김도윤 · 종촌중학교</span><button>내가 아니에요</button></div>
+    <h2>🌸 도윤 학생, 무엇부터 할까요?</h2>
+    <p class="lead">하고 싶은 것을 눌러 주세요.</p>
+
+    <div class="sec" id="v"><button class="sec-head" onclick="tog('v')">
+      <span><span class="t">📖 봄날 보카</span><span class="s">단어장 · 레벨별</span></span>
+      <span class="arw">펼치기 ▼ 8개</span></button>
+      <div class="sec-body"><div class="list">
+        <a><div class="n">보카 1단계</div><div class="d">초등 기초 600</div></a>
+        <a><div class="n">보카 2단계</div><div class="d">초등 심화 800</div></a>
+        <a><div class="n">보카 3단계</div><div class="d">중등 기본</div></a>
+        <a><div class="n">보카 4단계</div><div class="d">중등 심화</div></a>
+      </div></div>
+    </div>
+
+    <div class="sec" id="l"><button class="sec-head" onclick="tog('l')">
+      <span><span class="t">🎧 봄날 듣기</span><span class="s">학년별 듣기평가</span></span>
+      <span class="arw">펼치기 ▼ 6개</span></button>
+      <div class="sec-body"><div class="list">
+        <a><div class="n">초4 듣기</div><div class="d">1~20회</div></a>
+        <a><div class="n">초5 듣기</div><div class="d">1~20회</div></a>
+        <a><div class="n">초6 듣기</div><div class="d">1~20회</div></a>
+        <a><div class="n">중1 듣기</div><div class="d">1~20회</div></a>
+      </div></div>
+    </div>
+
+    <div class="sec" id="r"><button class="sec-head" onclick="tog('r')">
+      <span><span class="t">📖 봄날리딩</span><span class="s">초등 독해 · 권을 고르세요</span></span>
+      <span class="arw">펼치기 ▼ 15권</span></button>
+      <div class="sec-body"><div class="list">
+        <a><div class="n">봄날리딩 1권</div><div class="d">초등 저·중학년</div></a>
+        <a><div class="n">봄날리딩 2권</div><div class="d">초등 중학년</div></a>
+        <div class="grp">봄날리딩 튜터</div>
+        <a><div class="n">튜터 1권</div><div class="d">초등 고학년</div></a>
+        <a><div class="n">튜터 2권</div><div class="d">중학 1학년</div></a>
+        <div class="grp">봄날리딩 basic</div>
+        <a><div class="n">basic 80-1</div><div class="d">초등 저학년</div></a>
+        <a><div class="n">basic 80-2</div><div class="d">초등 저·중학년</div></a>
+      </div></div>
+    </div>
+
+    <div class="sep">🏫 학교별 시험대비</div>
+    <div class="hall">
+      <button onclick="go('s-mid')"><div class="e">🎒</div><div class="n">중등관</div>
+        <div class="d">종촌중 · 고운중<br>어진중</div></button>
+      <button class="hi" onclick="go('s-high')"><div class="e">🎓</div><div class="n">고등관</div>
+        <div class="d">종촌고 · 고운고<br>대성고</div></button>
+    </div>
+
+    <div class="sep">📝 봄날 모의고사</div>
+    <button class="big"><div class="n">📝 봄날 모의고사</div>
+      <div class="d">고1·고2·고3 · 연도와 월을 골라 풀기</div></button>
+    <div style="height:9px"></div>
+    <a class="big"><div class="n">📚 부교재 허브</div>
+      <div class="d">올림포스 · 수능특강 등</div></a>
+
+    <div class="sep">📊 내 학습 기록</div>
+    <a class="big rec"><div class="n">📊 내 학습 기록 보기</div>
+      <div class="d">누적 점수 · 자주 틀린 단어 · 약한 영역</div></a>
+  </div>
+</section>
+
+<!-- ───────── 중등관 ───────── -->
+<section class="scr" id="s-mid">
+  <div class="card">
+    <button class="back" onclick="go('s-home')">← 처음 화면으로</button>
+    <h2>🎒 중등관</h2>
+    <p class="lead">다니는 학교를 누르면 바로 들어갑니다.</p>
+    <div class="schools">
+      <button onclick="go('s-in')"><div class="e">🧸</div><div><div class="n">종촌중학교</div>
+        <div class="d">1·2·3학년 · 비상(황종배) · 동아(윤)</div></div></button>
+      <button onclick="go('s-in')"><div class="e">🧸</div><div><div class="n">고운중학교</div>
+        <div class="d">1·2·3학년 · 시험범위별 자료</div></div></button>
+      <button onclick="go('s-in')"><div class="e">🧸</div><div><div class="n">어진중학교</div>
+        <div class="d">1·2·3학년 · 시험범위별 자료</div></div></button>
+    </div>
+  </div>
+</section>
+
+<!-- ───────── 고등관 ───────── -->
+<section class="scr" id="s-high">
+  <div class="card">
+    <button class="back" onclick="go('s-home')">← 처음 화면으로</button>
+    <h2>🎓 고등관</h2>
+    <p class="lead">다니는 학교를 누르면 바로 들어갑니다.</p>
+    <div class="schools">
+      <button onclick="go('s-in')"><div class="e">🧸</div><div><div class="n">종촌고등학교</div>
+        <div class="d">1·2학년 · 공통영어2 · 영어II</div></div></button>
+      <button onclick="go('s-in')"><div class="e">🧸</div><div><div class="n">고운고등학교</div>
+        <div class="d">1·2학년 · 공통영어2 · 영어II</div></div></button>
+      <button onclick="go('s-in')"><div class="e">🧸</div><div><div class="n">대성고등학교</div>
+        <div class="d">1학년 · 시험범위별 자료</div></div></button>
+    </div>
+  </div>
+</section>
+
+<!-- ───────── 학교 자료 (들어간 뒤) ───────── -->
+<section class="scr" id="s-in">
+  <div class="card">
+    <button class="back" onclick="go('s-home')">← 처음 화면으로</button>
+    <h2>🧸 종촌중학교</h2>
+    <p class="lead">여기서부터는 지금 쓰는 화면과 같습니다 — 학년 · 과 · 유형이 그대로 나옵니다.</p>
+    <div class="list" style="grid-template-columns:1fr">
+      <a><div class="n">📘 1학년 · 본문 Chapter</div><div class="d">본문·대화문 빈칸시험 · 1~6과</div></a>
+      <a><div class="n">📗 2학년 · 본문 Chapter</div><div class="d">본문·대화문 빈칸시험 · 1~6과</div></a>
+      <a><div class="n">📙 3학년 · 본문 Chapter</div><div class="d">본문·대화문 빈칸시험 · 1~6과</div></a>
+    </div>
+  </div>
+</section>
+
+</main>
+</div>
+
+<div class="note">
+  <b>달라지는 점</b><br>
+  ① 학교를 고르고 <b>입장하기</b>를 누르던 단계가 없어집니다 — 중등관·고등관을 누르고 학교를 누르면 바로 들어갑니다.<br>
+  ② 순서를 보카 → 듣기 → 리딩 → 학교별 → 모의고사 → 학습기록으로 바꿨습니다.<br>
+  ③ 보카·듣기·리딩은 접어 두고 제목만 보이게 해서, 첫 화면에서 여섯 덩어리가 한눈에 들어옵니다.<br>
+  <span style="color:#8a8178;font-size:.76rem">※ 샘플이라 글씨체가 실제 화면과 조금 다릅니다. 내용은 보여 주기용 예시입니다.</span>
+</div>
+
+<script>
+function tog(id){ document.getElementById(id).classList.toggle('open'); }
+function go(id){
+  document.querySelectorAll('.scr').forEach(function(s){ s.classList.remove('on'); });
+  document.getElementById(id).classList.add('on');
+  window.scrollTo(0,0);
+}
+</script>
+</body>
+</html>

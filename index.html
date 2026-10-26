@@ -71,7 +71,24 @@ window.__bnErr = [];
 <meta name="mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-title" content="봄날퀴즈"/>
 <link rel="apple-touch-icon" href="icon-192.png"/>
-<style>html,body{overscroll-behavior-y:contain}</style>
+<style>html,body{overscroll-behavior-y:contain}
+.hall-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-top:10px;grid-column:1/-1;}
+.hall-grid button{font:inherit;cursor:pointer;border-radius:16px;padding:18px 12px;text-align:center;
+  border:2.5px solid #cbd9e6;background:linear-gradient(135deg,#f6fbff,#eaf3fb);transition:border-color .15s,background .15s;}
+.hall-grid button.hi{border-color:#e3cdb0;background:linear-gradient(135deg,#fffaf0,#fbf1e2);}
+.hall-grid button:hover{border-color:#888;}
+.hall-grid .e{font-size:1.5rem;}
+.hall-grid .n{font-size:.95rem;font-weight:900;margin-top:5px;color:#2a3a46;}
+.hall-grid button.hi .n{color:#5c4326;}
+.hall-grid .d{font-size:.68rem;color:var(--soft);margin-top:3px;line-height:1.4;}
+.hall-list{display:grid;gap:11px;margin:4px 0 4px;text-align:left;}
+.hall-list button{font:inherit;cursor:pointer;text-align:left;border-radius:16px;padding:16px;
+  border:2px solid #e0d8ce;background:#fff;display:flex;align-items:center;gap:13px;transition:border-color .15s,background .15s;}
+.hall-list button:hover{border-color:#888;background:#f5f2ee;}
+.hall-list .e{font-size:1.5rem;}
+.hall-list .n{font-size:1rem;font-weight:900;color:var(--ink);}
+.hall-list .d{font-size:.72rem;color:var(--soft);margin-top:2px;}
+</style>
 
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -237,9 +254,21 @@ footer { text-align: center; padding: 28px; color: #aabbc8; font-size: .8rem; fo
   </div>
 </div>
 
+
+<div id="screen-hall" class="screen">
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <button class="auth-back" style="float:none;display:block;margin:0 0 12px" onclick="goHome()">← 처음 화면으로</button>
+      <h2 id="hall-title">🎒 중등관</h2>
+      <p id="hall-sub">다니는 학교를 누르면 바로 들어갑니다.</p>
+      <div class="hall-list" id="hall-list"></div>
+    </div>
+  </div>
+</div>
+
 <div id="screen-school" class="screen">
   <main>
-    <button class="back-btn" onclick="goHome()">← 학교 선택으로</button>
+    <button class="back-btn" id="school-back" onclick="backFromSchool()">← 처음 화면으로</button>
     <div class="school-banner">
       <div id="banner-emoji" style="display:none"></div>
       <div style="flex:1">
@@ -1070,9 +1099,9 @@ function renderSchoolPicker() {
     if (_p) _p.textContent = '\ud558\uace0 \uc2f6\uc740 \uac83\uc744 \ub20c\ub7ec \uc8fc\uc138\uc694.';
     if (_go) _go.style.display = 'none';
   } else {
-    if (_h) _h.textContent = '\ud83e\uddf8 \ud559\uad50\ub97c \uc120\ud0dd\ud558\uc138\uc694';
-    if (_p) _p.textContent = '\ubcf8\uc778\uc774 \ub2e4\ub2c8\ub294 \ud559\uad50\ub97c \uc120\ud0dd\ud574\uc8fc\uc138\uc694.';
-    if (_go) _go.style.display = '';
+    if (_h) _h.textContent = '\ud83c\udf38 ' + (studentName ? studentName + ' \ud559\uc0dd, ' : '') + '\ubb34\uc5c7\ubd80\ud130 \ud560\uae4c\uc694?';
+    if (_p) _p.textContent = '\ud558\uace0 \uc2f6\uc740 \uac83\uc744 \ub20c\ub7ec \uc8fc\uc138\uc694.';
+    if (_go) _go.style.display = 'none';
   }
 
   if (!isElem && studentLevel() === '') {
@@ -1091,19 +1120,6 @@ function renderSchoolPicker() {
     picker.appendChild(el);
   }
 
-  (isElem ? [] : SCHOOL_LIST).forEach(s => {
-    const btn = document.createElement("button");
-    btn.className = "sp-btn";
-    btn.dataset.id = s.id;
-    btn.innerHTML = `<div class="sp-n">${s.name}</div>`;
-    btn.onclick = () => {
-      document.querySelectorAll(".sp-btn").forEach(b => b.classList.remove("selected"));
-      btn.classList.add("selected");
-      selectedSchoolId = s.id;
-      document.getElementById("pickErr").textContent = "";
-    };
-    picker.appendChild(btn);
-  });
 
   if (isElem) {
     // 초등: 바로 시작할 수 있게 리딩·듣기를 펼쳐 둔다
@@ -1133,6 +1149,7 @@ function renderSchoolPicker() {
     addPickerSection(picker, "📖 봄날 보카",        VOCA_LEVELS,      {emoji:"📖", collapsed:true});
     addPickerSection(picker, "🎧 봄날 듣기",        LISTENING_LEVELS, {emoji:"🎧", collapsed:true});
     addPickerSection(picker, "📖 봄날 리딩 (초등)",  READING_BOOKS,    {emoji:"📖", collapsed:true, onClick:function(b){ openReading(b.level); }});
+    addHallCards(picker);
   }
 
   if (!isElem) {
@@ -2233,13 +2250,94 @@ function selectMockMonth(month){
   goStep('screen-mock-type');
 }
 
+
+/* ───────── 중등관 · 고등관 ───────── */
+var HALLS = {
+  mid:  { title:'🎒 중등관', emoji:'🎒', ids:['jongchon-mid','eojin-mid','goun-mid'] },
+  high: { title:'🎓 고등관', emoji:'🎓', ids:['jongchon-ko','goun-ko','daesung-ko'] }
+};
+var lastHall = null;
+
+function hallOf(id){
+  for (var k in HALLS) if (HALLS[k].ids.indexOf(id) >= 0) return k;
+  return null;
+}
+function hallNames(kind){
+  return HALLS[kind].ids.map(function(id){
+    var s = SCHOOL_LIST.find(function(x){ return x.id === id; });
+    return s ? s.name.replace(/(중|고등)학교$/, function(m){ return m === '중학교' ? '중' : '고'; }) : '';
+  }).filter(Boolean);
+}
+function addHallCards(picker){
+  var sep = document.createElement('div');
+  sep.style.cssText = "grid-column:1/-1;border-top:1px solid #e0d8ce;padding-top:10px;"
+    + "font-family:'Black Han Sans',sans-serif;font-size:.82rem;color:#a09890;margin-top:6px;";
+  sep.textContent = '🏫 학교별 시험대비';
+  picker.appendChild(sep);
+
+  var grid = document.createElement('div');
+  grid.className = 'hall-grid';
+  [['mid',''],['high','hi']].forEach(function(pair){
+    var kind = pair[0], cls = pair[1];
+    var b = document.createElement('button');
+    b.type = 'button';
+    if (cls) b.className = cls;
+    var ns = hallNames(kind);
+    b.innerHTML = '<div class="e">' + HALLS[kind].emoji + '</div>'
+      + '<div class="n">' + HALLS[kind].title.replace(/^\S+\s/, '') + '</div>'
+      + '<div class="d">' + ns.slice(0,2).join(' · ') + '<br>' + ns.slice(2).join(' · ') + '</div>';
+    b.onclick = function(){ openHall(kind); };
+    grid.appendChild(b);
+  });
+  picker.appendChild(grid);
+}
+function openHall(kind){
+  lastHall = kind;
+  var h = HALLS[kind];
+  document.getElementById('hall-title').textContent = h.title;
+  document.getElementById('hall-sub').textContent = '다니는 학교를 누르면 바로 들어갑니다.';
+  var box = document.getElementById('hall-list');
+  box.innerHTML = '';
+  h.ids.forEach(function(id){
+    var s = SCHOOL_LIST.find(function(x){ return x.id === id; });
+    if (!s) return;
+    var full = (typeof SCHOOLS !== 'undefined') ? SCHOOLS.find(function(x){ return x.id === id; }) : null;
+    var sub = full ? [full.sub, full.count].filter(Boolean).join(' · ') : '';
+    var mine = studentSchool && (studentSchool === s.name || studentSchool.indexOf(s.name) >= 0);
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.innerHTML = '<div class="e">' + (s.emoji || '🧸') + '</div>'
+      + '<div><div class="n">' + s.name
+      + (mine ? ' <span class="user-badge" style="font-size:.66rem;padding:2px 9px">내 학교</span>' : '')
+      + '</div><div class="d">' + sub + '</div></div>';
+    b.onclick = function(){ enterSchool(id); };
+    box.appendChild(b);
+  });
+  goStep('screen-hall');
+  var st = document.getElementById('subtitle');
+  if (st) st.textContent = h.title.replace(/^\S+\s/, '');
+}
+function enterSchool(id){
+  selectedSchoolId = id;
+  lastHall = hallOf(id) || lastHall;
+  submitSchool();
+  var bk = document.getElementById('school-back');
+  if (bk) bk.textContent = lastHall === 'high' ? '← 고등관으로' : (lastHall === 'mid' ? '← 중등관으로' : '← 처음 화면으로');
+}
+function backFromSchool(){
+  if (lastHall) openHall(lastHall); else goHome();
+}
+
 function goHome() {
   // 자동 로그인으로 들어온 경우 picker가 비어 있을 수 있으므로 항상 다시 그린다
   // (모의고사·부교재·보카 버튼이 모두 이 목록 안에 있음)
   renderSchoolPicker();
   preselectMySchool(studentSchool);
+  lastHall = null;
   goStep("screen-pick");
-  document.getElementById("subtitle").textContent = "학교를 선택하세요";
+  document.getElementById("subtitle").textContent = "무엇부터 할까요?";
+  var bk = document.getElementById('school-back');
+  if (bk) bk.textContent = '← 처음 화면으로';
 }
 function doLogout() {
   ["bn_name","bn_school","bn_auth","bn_id","bn_at","bn_lv"].forEach(k=>{sessionStorage.removeItem(k);localStorage.removeItem(k);});
