@@ -1125,11 +1125,11 @@ function renderSchoolPicker() {
     // 초등: 바로 시작할 수 있게 리딩·듣기를 펼쳐 둔다
     // 듣기는 항목이 하나뿐이라 리딩(12권) 아래로 가면 화면 밖으로 밀린다 → 위로
     var _secs = [];
-    addPickerSection(picker, "\ud83d\udcd6 \ubd04\ub0a0 \ubcf4\uce74", VOCA_LEVELS,      {emoji:"\ud83d\udcd6", collapsed:false});
+    addPickerSection(picker, "\ud83d\udcd6 \ubd04\ub0a0 \ubcf4\uce74", VOCA_LEVELS,      {emoji:"\ud83d\udcd6", collapsed:false, sub:"\ub2e8\uc5b4\uc7a5 \u00b7 \ub2e8\uacc4\ub97c \uace0\ub974\uc138\uc694", tint:["#f4faf4","#cde0cd"]});
     _secs.push(['\ud83d\udcd6 \ubcf4\uce74', picker.lastChild]);
-    addPickerSection(picker, "\ud83c\udfa7 \ubd04\ub0a0 \ub4e3\uae30", LISTENING_LEVELS, {emoji:"\ud83c\udfa7", collapsed:false});
+    addPickerSection(picker, "\ud83c\udfa7 \ubd04\ub0a0 \ub4e3\uae30", LISTENING_LEVELS, {emoji:"\ud83c\udfa7", collapsed:false, sub:"\ud559\ub144\ubcc4 \ub4e3\uae30\ud3c9\uac00", tint:["#f6f4fc","#d6cfe8"]});
     _secs.push(['\ud83c\udfa7 \ub4e3\uae30', picker.lastChild]);
-    addPickerSection(picker, "\ud83d\udcd6 \ubd04\ub0a0 \ub9ac\ub529", READING_BOOKS,    {emoji:"\ud83d\udcd6", collapsed:false, onClick:function(b){ openReading(b.level); }});
+    addPickerSection(picker, "\ud83d\udcd6 \ubd04\ub0a0 \ub9ac\ub529", READING_BOOKS,    {emoji:"\ud83d\udcda", collapsed:false, sub:"\ucd08\ub4f1 \ub3c5\ud574 \u00b7 \uad8c\uc744 \uace0\ub974\uc138\uc694", tint:["#fdf7ef","#ecd9c2"], onClick:function(b){ openReading(b.level); }});
     _secs.push(['\ud83d\udcd6 \ub9ac\ub529', picker.lastChild]);
 
     // 맨 위 바로가기 — 세 가지가 한눈에 보이고, 누르면 그 자리로 내려간다
@@ -1146,9 +1146,9 @@ function renderSchoolPicker() {
     });
     picker.insertBefore(nav, picker.firstChild);
   } else {
-    addPickerSection(picker, "📖 봄날 보카",        VOCA_LEVELS,      {emoji:"📖", collapsed:true});
-    addPickerSection(picker, "🎧 봄날 듣기",        LISTENING_LEVELS, {emoji:"🎧", collapsed:true});
-    addPickerSection(picker, "📖 봄날 리딩 (초등)",  READING_BOOKS,    {emoji:"📖", collapsed:true, onClick:function(b){ openReading(b.level); }});
+    addPickerSection(picker, "📖 봄날 보카",        VOCA_LEVELS,      {emoji:"📖", collapsed:true, sub:"단어장 · 단계를 고르세요", tint:["#f4faf4","#cde0cd"]});
+    addPickerSection(picker, "🎧 봄날 듣기",        LISTENING_LEVELS, {emoji:"🎧", collapsed:true, sub:"학년별 듣기평가", tint:["#f6f4fc","#d6cfe8"]});
+    addPickerSection(picker, "📖 봄날리딩",          READING_BOOKS,    {emoji:"📚", collapsed:true, sub:"초등 독해 · 권을 고르세요", tint:["#fdf7ef","#ecd9c2"], onClick:function(b){ openReading(b.level); }});
     addHallCards(picker);
   }
 
@@ -1240,6 +1240,10 @@ function openHub(toPicker) {
     goStep("screen-pick");
     return;
   }
+  if (FORCE_SCHOOL_ID) {                      // 중등관·고등관에서 고른 학교로 바로
+    var forced = SCHOOLS.find(function(x){ return x.id === FORCE_SCHOOL_ID; });
+    if (forced) { openSchool(forced); goStep("screen-school"); return; }
+  }
   const mySchool = SCHOOLS.find(s => s.name === studentSchool);
   if (mySchool) { openSchool(mySchool); }
   else { document.getElementById("subtitle").textContent = "학교를 선택하세요"; goStep("screen-home"); }
@@ -1266,16 +1270,43 @@ function addPickerSection(picker, label, items, opts){
   const wrap = document.createElement("div");
   wrap.style.cssText = "grid-column:1/-1;margin-top:9px;";
 
+  // 제목 줄을 중등관·고등관 카드만큼 크게 — 이모지 / 이름 / 한 줄 설명
+  const _m = String(label).match(/^(\S+)\s+(.+)$/);
+  const _emo = opts.emoji || (_m ? _m[1] : "");
+  const _name = _m ? _m[2] : String(label);
+  const _tint = opts.tint || ["#fffdf9", "#e6ddd0"];
+
   const head = document.createElement("button");
   head.type = "button";
-  head.style.cssText = "display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;"
-    + "background:#fff;border:2px solid #e0d8ce;border-radius:14px;padding:13px 14px;"
-    + "cursor:pointer;text-align:left;margin-bottom:2px;"
-    + "font-family:'Black Han Sans',sans-serif;font-size:.88rem;color:#3b2f25;";
-  const tt = document.createElement("span"); tt.textContent = label;
+  head.style.cssText = "display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;"
+    + "background:" + _tint[0] + ";border:2.5px solid " + _tint[1] + ";border-radius:16px;"
+    + "padding:16px 15px;cursor:pointer;text-align:left;margin-bottom:3px;"
+    + "font-family:inherit;transition:border-color .15s;";
+  head.onmouseenter = function(){ head.style.borderColor = "#888"; };
+  head.onmouseleave = function(){ head.style.borderColor = _tint[1]; };
+
+  const left = document.createElement("span");
+  left.style.cssText = "display:flex;align-items:center;gap:12px;min-width:0;";
+  const em = document.createElement("span");
+  em.style.cssText = "font-size:1.55rem;line-height:1;flex:none;";
+  em.textContent = _emo;
+  const txt = document.createElement("span");
+  txt.style.cssText = "min-width:0;";
+  const nm = document.createElement("span");
+  nm.style.cssText = "display:block;font-family:'Black Han Sans',sans-serif;font-size:1rem;color:#2a2a2a;";
+  nm.textContent = _name;
+  txt.appendChild(nm);
+  if (opts.sub) {
+    const sb = document.createElement("span");
+    sb.style.cssText = "display:block;font-family:'Gowun Dodum',sans-serif;font-size:.73rem;color:#8a7f74;margin-top:3px;";
+    sb.textContent = opts.sub;
+    txt.appendChild(sb);
+  }
+  left.appendChild(em); left.appendChild(txt);
+
   const ar = document.createElement("span");
-  ar.style.cssText = "font-family:'Gowun Dodum',sans-serif;font-size:.72rem;color:#b3a89a;";
-  head.appendChild(tt); head.appendChild(ar);
+  ar.style.cssText = "font-family:'Gowun Dodum',sans-serif;font-size:.74rem;color:#a09890;font-weight:700;white-space:nowrap;flex:none;";
+  head.appendChild(left); head.appendChild(ar);
 
   const body = document.createElement("div");
   body.style.cssText = "display:grid;grid-template-columns:1fr;gap:8px;padding-bottom:2px;";
@@ -2318,10 +2349,12 @@ function openHall(kind){
   var st = document.getElementById('subtitle');
   if (st) st.textContent = h.title.replace(/^\S+\s/, '');
 }
+var FORCE_SCHOOL_ID = null;
 function enterSchool(id){
   selectedSchoolId = id;
   lastHall = hallOf(id) || lastHall;
-  submitSchool();
+  FORCE_SCHOOL_ID = id;
+  try { submitSchool(); } finally { FORCE_SCHOOL_ID = null; }
   var bk = document.getElementById('school-back');
   if (bk) bk.textContent = lastHall === 'high' ? '← 고등관으로' : (lastHall === 'mid' ? '← 중등관으로' : '← 처음 화면으로');
 }
