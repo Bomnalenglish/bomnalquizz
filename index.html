@@ -92,6 +92,9 @@ window.__bnErr = [];
 
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>봄날 BOMNAL ENGLISH · Quiz Hub</title>
 <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Black+Han+Sans&family=Noto+Sans+KR:wght@300;400;700&display=swap" rel="stylesheet"/>
 <style>
@@ -2494,6 +2497,30 @@ window.addEventListener("load", () => {
 <script>
 /* 홈 화면에 추가했을 때 주소창 없이 앱처럼 열리게 한다 (안드로이드) */
 if('serviceWorker' in navigator){ window.addEventListener('load',function(){ navigator.serviceWorker.register('sw.js').catch(function(){}); }); }
+</script>
+
+<script>
+/* 허브 버전 — 이 값이 바뀌면 학생 폰이 옛 화면을 붙잡고 있어도 한 번 새로 받는다 */
+var HUB_VER = "20261028a";
+(function(){
+  try{
+    var seen = localStorage.getItem('bn_hub_ver');
+    if (seen !== HUB_VER) {
+      localStorage.setItem('bn_hub_ver', HUB_VER);
+      if (seen && !/[?&]hv=/.test(location.search)) {
+        location.replace(location.pathname + (location.search ? location.search + '&' : '?') + 'hv=' + HUB_VER);
+        return;
+      }
+    }
+  }catch(e){}
+  document.addEventListener('DOMContentLoaded', function(){
+    var f = document.querySelector('footer') || document.body;
+    var v = document.createElement('div');
+    v.style.cssText = 'text-align:center;font-size:.64rem;color:#c3bab0;padding:6px 0 14px;';
+    v.textContent = '허브 ' + HUB_VER;
+    f.appendChild(v);
+  });
+})();
 </script>
 </body>
 </html>
