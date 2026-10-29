@@ -198,6 +198,7 @@ main { max-width: 960px; margin: 0 auto; padding: 36px 20px 80px; }
 footer { text-align: center; padding: 28px; color: #aabbc8; font-size: .8rem; font-family: "Gowun Dodum", serif; }
 @media(max-width:480px){ .school-grid{grid-template-columns:1fr 1fr} .cards{grid-template-columns:1fr 1fr} .school-picker{grid-template-columns:1fr 1fr} }
 </style>
+<script src="bn_progress.js?v=1"></script>
 </head>
 <body>
 <header>
@@ -1880,12 +1881,45 @@ function openReading(level){
 
   const wrap = document.getElementById('reading-list');
   wrap.innerHTML = '';
+  bnFiles(function(){ openReading(level); });   // 서버 기록이 오면 ✅ 를 다시 칠한다
   if(!items.length){
     wrap.innerHTML = '<div style="text-align:center;color:#a09890;padding:40px 0;font-size:.9rem">아직 준비 중이에요.</div>';
     goStep('screen-reading'); return;
   }
   const units = [];
   items.forEach(function(i){ if(units.indexOf(i.unit) < 0) units.push(i.unit); });
+
+  // 어디까지 했는지 — 끝낸 지문 수와 다음에 할 지문
+  (function(){
+    if (!BN_FILES) return;
+    var doneN = 0, next = null, k;
+    for (k = 0; k < items.length; k++) {
+      if (cloudDone(items[k].file)) doneN++;
+      else if (!next) next = items[k];
+    }
+    var bar = document.createElement('div');
+    bar.style.cssText = "background:#fff8e8;border:2px solid #efd9a8;border-radius:14px;padding:13px 14px;"
+      + "margin:4px 0 6px;font-size:.84rem;color:#6b5324;line-height:1.6;";
+    var head = doneN
+      ? '📌 지문 <b>' + doneN + '개</b> 끝냈어요 (전체 ' + items.length + '개)'
+      : '✨ 아직 시작하지 않았어요 — 첫 지문부터 해 볼까요?';
+    bar.innerHTML = head;
+    if (next) {
+      var a = document.createElement('a');
+      a.href = BASE + next.file + '.html';
+      a.target = '_blank'; a.rel = 'noopener';
+      a.style.cssText = "display:block;text-align:center;margin-top:10px;padding:11px 12px;border-radius:11px;"
+        + "background:linear-gradient(135deg,#e8a33d,#c9801f);color:#fff;font-weight:800;font-size:.9rem;text-decoration:none;";
+      a.textContent = (doneN ? '이어서 ' : '') + ('0'+next.no).slice(-2) + '과 · ' + next.title + ' ▶';
+      bar.appendChild(a);
+    } else {
+      var dn = document.createElement('div');
+      dn.style.cssText = 'margin-top:6px';
+      dn.innerHTML = '🎉 이 권은 모두 끝냈어요!';
+      bar.appendChild(dn);
+    }
+    wrap.appendChild(bar);
+  })();
 
   units.forEach(function(u){
     const h = document.createElement('div');
@@ -1898,16 +1932,20 @@ function openReading(level){
     g.style.cssText = "display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px;";
     items.filter(function(i){ return i.unit === u; }).forEach(function(i){
       const a = document.createElement('a');
+      const dn = cloudDone(i.file), sn = cloudSeen(i.file);
+      const bd = dn ? '#9db894' : '#d0dde8', bg = dn ? '#eef4ec' : '#fff';
       a.href = BASE + i.file + '.html';
       a.target = '_blank'; a.rel = 'noopener';
       a.style.cssText = "display:block;text-decoration:none;border-radius:14px;padding:14px 16px;"
-        + "border:2px solid #d0dde8;background:#fff;transition:border-color .15s,background .15s;";
+        + "border:2px solid " + bd + ";background:" + bg + ";transition:border-color .15s,background .15s;";
       a.innerHTML = '<div style="font-size:.68rem;color:#a09890;font-weight:700;letter-spacing:.3px">'
-          + (String(level).charAt(0)==='t' ? 'SECTION ' : 'UNIT ') + ('0'+u).slice(-2) + ' · ' + ('0'+i.no).slice(-2) + '과</div>'
+          + (String(level).charAt(0)==='t' ? 'SECTION ' : 'UNIT ') + ('0'+u).slice(-2) + ' · ' + ('0'+i.no).slice(-2) + '과'
+          + (dn ? ' <span style="color:#4a6741">✅ ' + (dn.score!=='' ? dn.score + '점' : '완료') + '</span>'
+                : (sn ? ' <span style="color:#b08d57">이어서</span>' : '')) + '</div>'
         + '<div style="font-size:.92rem;font-weight:700;color:#2a2a2a;margin-top:5px;line-height:1.4">' + i.title + '</div>'
         + '<div style="font-size:.67rem;color:#7a7570;margin-top:6px">어휘 → 매칭 → 본문 듣기 → 문장 나누기</div>';
       a.onmouseenter = function(){ a.style.borderColor='#888'; a.style.background='#f5f2ee'; };
-      a.onmouseleave = function(){ a.style.borderColor='#d0dde8'; a.style.background='#fff'; };
+      a.onmouseleave = function(){ a.style.borderColor=bd; a.style.background=bg; };
       g.appendChild(a);
     });
     wrap.appendChild(g);
@@ -1924,10 +1962,31 @@ const LISTEN_BOOKS = [
   {grade:6, term:1, code:'e6_1', rounds:10},
   {grade:6, term:2, code:'e6_2', rounds:10},
 ];
+/* 서버에 남은 내 기록 — 기기가 바뀌어도 끝낸 회차가 그대로 보이게 */
+var BN_FILES = null, BN_FILES_BUSY = false;
+function bnFiles(after){
+  if (BN_FILES || BN_FILES_BUSY || !window.BN_PROGRESS) return;
+  BN_FILES_BUSY = true;
+  BN_PROGRESS.files().then(function(m){
+    BN_FILES = m || {}; BN_FILES_BUSY = false;
+    try { if (after) after(); } catch(e){}
+  })['catch'](function(){ BN_FILES_BUSY = false; });
+}
+function cloudDone(file){
+  try{ var r = BN_FILES && BN_FILES[file];
+       return (r && r.completed) ? { score: (r.score===null||r.score===undefined)?'' : r.score, time:r.time } : null; }
+  catch(e){ return null; }
+}
+function cloudSeen(file){
+  try{ return !!(BN_FILES && BN_FILES[file]); }catch(e){ return false; }
+}
 function listenDone(file){
+  var c = cloudDone(file);
+  if (c) return c;
   try{ const n=localStorage.getItem('bn_name')||''; const v=JSON.parse(localStorage.getItem('bnls_done:'+file+':'+n)||'null'); return v; }catch(e){ return null; }
 }
 function listenInProgress(file){
+  if (cloudSeen(file) && !cloudDone(file)) return true;
   try{ const n=localStorage.getItem('bn_name')||''; return !!localStorage.getItem('bnls_prog:'+file+':'+n); }catch(e){ return false; }
 }
 function openListen(){
@@ -1968,6 +2027,7 @@ function openListen(){
     sync(); card.appendChild(head); card.appendChild(body); wrap.appendChild(card);
   });
   goStep('screen-listen');
+  bnFiles(function(){ openListen(); });     // 서버 기록이 오면 ✅ 를 다시 칠한다
 }
 
 const LISTENING_LEVELS = [
@@ -2501,7 +2561,7 @@ if('serviceWorker' in navigator){ window.addEventListener('load',function(){ nav
 
 <script>
 /* 허브 버전 — 이 값이 바뀌면 학생 폰이 옛 화면을 붙잡고 있어도 한 번 새로 받는다 */
-var HUB_VER = "20261029a";
+var HUB_VER = "20261029b";
 (function(){
   try{
     var seen = localStorage.getItem('bn_hub_ver');

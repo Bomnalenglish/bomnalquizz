@@ -2,6 +2,7 @@
 <html lang="ko">
 <head>
 <script src="bn_save.js"></script>
+<script src="bn_progress.js?v=1"></script>
 <link rel="manifest" href="manifest.json"/>
 <meta name="theme-color" content="#4a6741"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
@@ -157,6 +158,20 @@ header{background:linear-gradient(135deg,#f7efe4,#ece0d2);padding:32px 24px 24px
 footer{text-align:center;padding:24px;color:#bbb;font-size:.75rem;font-family:'Gowun Dodum',serif;}
 @media(max-width:480px){.word-en{font-size:2rem;}.memo-en{font-size:2.3rem;}}
 </style>
+
+<style>
+/* 지난번에 어디까지 했는지 */
+#bnResume{margin:4px 0 14px}
+#bnResume .bnr-card{background:#fff8e8;border:2px solid #efd9a8;border-radius:14px;padding:13px 14px;
+  font-family:'Gowun Dodum',sans-serif;font-size:.86rem;color:#6b5324;line-height:1.65;text-align:left}
+#bnResume .bnr-card.bnr-new{background:#f2f7f2;border-color:#cadfc8;color:#44603f;text-align:center}
+#bnResume .bnr-txt b{color:#8a5a12;font-weight:800}
+#bnResume .bnr-dim{color:#a2947a;font-size:.78rem}
+#bnResume .bnr-go{width:100%;margin-top:10px;padding:11px 12px;border:none;border-radius:11px;cursor:pointer;
+  background:linear-gradient(135deg,#e8a33d,#c9801f);color:#fff;font-family:inherit;font-weight:800;font-size:.92rem;
+  box-shadow:0 3px 9px rgba(0,0,0,.13)}
+#bnResume .bnr-go:active{transform:translateY(1px)}
+</style>
 </head>
 <body>
 
@@ -193,6 +208,7 @@ footer{text-align:center;padding:24px;color:#bbb;font-size:.75rem;font-family:'G
       <div class="day-progress-bar"><div class="day-progress-fill" id="dayProgFill"></div></div>
       <div class="day-progress-text" id="dayProgText">총 30일 중 0일 완료</div>
     </div>
+    <div id="bnResume"></div>
     <div class="day-grid" id="dayGrid"></div>
     <div class="day-foot">
       <button class="auth-back" onclick="showScreen('screen-intro')" style="background:none;border:none;color:var(--soft);font-size:.82rem;cursor:pointer;text-decoration:underline;font-family:inherit;">← 처음으로</button>
@@ -1145,6 +1161,81 @@ if('serviceWorker' in navigator){ window.addEventListener('load',function(){ nav
   wrap('restartSame');
   wrap('chooseAnother');
   wrap('showDayScreen');
+})();
+</script>
+
+<script>
+/* ── 지난번에 어디까지 했는지 (서버 기록 · 기기가 바뀌어도 따라온다) ── */
+(function(){
+  if(!window.BN_PROGRESS) return;
+  var QT=''; try{ QT = LEVEL_INFO.quizType || ''; }catch(e){}
+  if(!QT) return;
+
+  function wpd(){
+    try{ if(typeof wordsPerDay!=='undefined') return wordsPerDay; }catch(e){}
+    try{ if(typeof WORDS_PER_DAY!=='undefined') return WORDS_PER_DAY; }catch(e){}
+    return 0;
+  }
+  function lastDay(){
+    try{ if(typeof totalDays==='function') return totalDays(); }catch(e){}
+    try{ if(typeof TOTAL_DAYS!=='undefined') return TOTAL_DAYS; }catch(e){}
+    return 0;
+  }
+  function fmt(d){ return d ? ((d.getMonth()+1)+'월 '+d.getDate()+'일') : ''; }
+
+  function draw(info){
+    var box=document.getElementById('bnResume');
+    if(!box) return;
+    var td=lastDay(), nx=info.next;
+    if(td && nx>td) nx=0;
+    if(!info.done.length){
+      box.innerHTML='<div class="bnr-card bnr-new">✨ 아직 끝낸 Day 가 없어요 — Day 1부터 시작해요!</div>';
+      return;
+    }
+    var mx=info.done[info.done.length-1];
+    var when=info.last && info.last.time ? ' <span class="bnr-dim">('+fmt(info.last.time)+')</span>' : '';
+    var t;
+    if(!nx)        t='🎉 <b>Day '+mx+'</b>까지 다 끝냈어요!'+when;
+    else if(nx>mx) t='📌 <b>Day '+mx+'</b>까지 끝냈어요'+when+'<br>다음은 <b>Day '+nx+'</b>예요';
+    else           t='📌 끝낸 Day <b>'+info.done.length+'개</b> · 마지막은 Day '+mx+when
+                     + '<br>아직 안 한 <b>Day '+nx+'</b>부터 하면 돼요';
+    box.innerHTML='<div class="bnr-card"><div class="bnr-txt">'+t+'</div>'
+      + (nx ? '<button type="button" class="bnr-go" id="bnrGo">Day '+nx+' 시작하기 ▶</button>' : '')
+      + '</div>';
+    if(nx){ document.getElementById('bnrGo').onclick=function(){ selectDay(nx); }; }
+  }
+
+  var busy=false;
+  function run(){
+    if(busy) return; busy=true;
+    BN_PROGRESS.days(QT, {wpd:wpd(), lastDay:lastDay()}).then(function(info){
+      busy=false;
+      var merged=[];
+      try{
+        var cur=loadDoneDays();
+        merged=cur.slice();
+        for(var i=0;i<info.done.length;i++){ if(merged.indexOf(info.done[i])<0) merged.push(info.done[i]); }
+        merged.sort(function(a,b){return a-b;});
+        if(merged.length!==cur.length) saveDoneDays(merged);
+        renderDayGrid();
+      }catch(e){ merged=info.done; }
+      var nx=1; while(merged.indexOf(nx)>=0) nx++;
+      info.done=merged; info.next=nx;
+      if(!info.last && merged.length) info.last={day:merged[merged.length-1], score:null, time:null};
+      draw(info);
+    })['catch'](function(){ busy=false; });
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', run);
+  else run();
+
+  // 하루 단어 수를 바꾸면 Day 의 뜻이 달라지므로 다시 읽는다
+  try{
+    if(typeof setWordsPerDay==='function'){
+      var _o=setWordsPerDay;
+      window.setWordsPerDay=function(n){ var r=_o.apply(null,arguments); run(); return r; };
+    }
+  }catch(e){}
+  window._bnRefreshProgress=run;
 })();
 </script>
 </body>

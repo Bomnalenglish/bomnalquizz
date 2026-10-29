@@ -94,6 +94,20 @@ details[open] .note-sum::before{content:'▾'}
 .note-expl{margin-top:6px;font-size:.72rem;color:#475569;line-height:1.8;background:#f8fafc;border-radius:8px;padding:7px 9px}
 .note-my{margin-top:6px;font-size:.72rem;color:#92400e;background:#fffbeb;border-radius:8px;padding:7px 9px;font-weight:700}
 </style>
+
+<style>
+/* 이어서 하기 */
+.rs-list{display:flex;flex-direction:column;gap:9px}
+.rs-row{display:flex;align-items:center;gap:10px;padding:12px 13px;border:2px solid #efd9a8;
+  background:#fff8e8;border-radius:13px;text-align:left}
+.rs-info{flex:1;min-width:0}
+.rs-name{font-weight:800;font-size:.86rem;color:#5c4420;line-height:1.35;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rs-past{font-size:.72rem;color:#9b8b6d;margin-top:3px}
+.rs-go{flex:none;padding:9px 13px;border-radius:10px;text-decoration:none;font-weight:800;font-size:.8rem;
+  background:linear-gradient(135deg,#e8a33d,#c9801f);color:#fff;white-space:nowrap}
+.rs-go.rs-plain{background:#fff;color:#8a5a12;border:1.5px solid #e0c48a}
+</style>
 </head>
 <body>
 <header>
@@ -139,7 +153,7 @@ if (!studentName) {
 function parseQuizMeta(d){
   const qt = d.quizType || '';
   let textbook = '기타', type = '', lesson = '';
-  if (/단어|어휘|voca|동반의어|synanm/i.test(qt)) type='어휘';
+  if (/단어|어휘|voca|보카|동반의어|synanm/i.test(qt)) type='어휘';
   if (/본문암기|memory/i.test(qt)) type='본문';
   if (/어법|grammar/i.test(qt)) type='어법';
   if (/총괄|total/i.test(qt)) type='총괄';
@@ -149,6 +163,7 @@ function parseQuizMeta(d){
   if (/서술|writing/i.test(qt)) type='서술형';
   if (/빈칸시험|챕터/i.test(qt)) type='빈칸';
   if (/리딩|reading|독해/i.test(qt)) type='독해';
+  if (/듣기|listen/i.test(qt)) type='듣기';
   if (/_오답완료/.test(qt)) type+=' ✓';
   if (/^종촌중[1-3]/.test(qt)) textbook='종촌중 '+qt.match(/^종촌중(\d)/)[1]+'학년';
   else if (/^어진중[1-3]/.test(qt)) textbook='어진중 '+qt.match(/^어진중(\d)/)[1]+'학년';
@@ -159,6 +174,7 @@ function parseQuizMeta(d){
   else if (/^고1_/.test(qt)) { const m=qt.match(/^고1_(\d+년\d+월)/); textbook='고1 모의 '+(m?m[1].replace('년','-').replace('월',''):''); }
   else if (/^고2_/.test(qt)) { const m=qt.match(/^고2_(\d+년\d+월)/); textbook='고2 모의 '+(m?m[1].replace('년','-').replace('월',''):''); }
   else if (/^.+중학교_\d학년_\d+과_/.test(qt)) { const m=qt.match(/^(.+중학교)_(\d학년)_(\d+과)_/); textbook=m[1].replace('학교','')+' '+m[2]; }
+  else if (/^봄날보카_/.test(qt)) textbook = d.levelName || '봄날보카';
   else if (qt) textbook = qt.split('_')[0] || qt.slice(0,16);
   // 차시
   const isOlym=/^올림포스/.test(qt);
@@ -169,6 +185,7 @@ function parseQuizMeta(d){
     if (cm) lesson = cm[1]+' · '+cm[2];
     else { const cm2=qt.match(/_(\d+과)/); if (cm2) lesson=cm2[1]; }
   }
+  if (!lesson && d.day) lesson = 'Day ' + d.day;
   return { textbook, type, lesson };
 }
 
@@ -181,10 +198,16 @@ async function loadAndRender(){
   const content = document.getElementById('content');
   try {
     // 본인 이름의 모든 기록 가져오기 (school 변형 가능성 → 클라이언트 측 필터)
-    const q1 = query(collection(db,'quiz_results'), where('studentName','==',studentName));
-    const snap = await getDocs(q1);
+    // 듣기평가·봄날리딩은 이름을 'name' 으로 저장해 왔다 → 두 가지를 모두 찾아 합친다
+    const [snapA, snapB] = await Promise.all([
+      getDocs(query(collection(db,'quiz_results'), where('studentName','==',studentName))),
+      getDocs(query(collection(db,'quiz_results'), where('name','==',studentName)))
+    ]);
     const records = [];
-    snap.forEach(d => {
+    const seenDoc = new Set();
+    const eat = d => {
+      if (seenDoc.has(d.id)) return;
+      seenDoc.add(d.id);
       const x = d.data();
       // per-문제 이벤트(q 필드 또는 result ok/fail) 제외
       if (x.q !== undefined || x.result === 'ok' || x.result === 'fail') return;
@@ -197,20 +220,32 @@ async function loadAndRender(){
       const time = x.timestamp && typeof x.timestamp.toDate==='function'
         ? x.timestamp.toDate()
         : (x.submittedAt ? new Date(x.submittedAt) : null);
+      const sc = (typeof x.score === 'number') ? x.score
+               : (typeof x.accuracy === 'number') ? x.accuracy : 0;
       records.push({
-        score: x.score||0,
+        score: sc,
         correct: x.correct||0,
-        wrong: x.wrongCount||x.wrong||0,
-        total: x.total||0,
-        elapsed: x.elapsedMin||0,
-        quizType: x.quizType||'',
+        wrong: (typeof x.wrongCount==='number' ? x.wrongCount
+               : (typeof x.wrong==='number' ? x.wrong : 0)),
+        total: x.totalQ||x.total||0,
+        elapsed: x.elapsedMin||x.minutes||0,
+        quizType: x.quizType || x.type || x.quiz || '',
+        file: x.file||'',
+        day: (typeof x.day === 'number') ? x.day : null,
+        wpd: (typeof x.wpd === 'number') ? x.wpd : null,
+        words: (typeof x.total === 'number') ? x.total : null,
+        levelName: x.level||'',
+        unit: x.unit,
+        quizName: x.quiz||'',
+        completed: (x.completed === true) || (x.retryDone === true),
         wrongWords: x.wrongWords||[],
         wrongNumbers: x.wrongNumbers||'',
         wrongSentences: x.wrongSentences||'',
         wrongDetails: x.wrongDetails||[],   // 문제풀이 라운드의 '내 답/정답/해설'
         time
       });
-    });
+    };
+    snapA.forEach(eat); snapB.forEach(eat);
 
     if (records.length === 0) {
       content.innerHTML = `<div class="empty">📭 아직 풀어본 시험이 없어요<br><small style="color:#94a3b8">메인 허브로 돌아가 첫 퀴즈를 시작해보세요!</small></div>`;
@@ -237,6 +272,93 @@ async function loadAndRender(){
   } catch(e) {
     content.innerHTML = `<div class="empty">⚠️ 기록을 불러오지 못했어요<br><small>${e.message}</small></div>`;
   }
+}
+
+/* ─ 어디까지 했고 다음은 어디인지 ─
+   단어장은 Day 번호로, 듣기·리딩은 파일 이름 끝 번호로 센다. */
+const VOCA_FILE = {
+  '봄날보카_Level1':'bomnal_voca_level1',
+  '봄날보카_초등BASIC300':'bomnal_voca_elementary_basic',
+  '봄날보카_워드마스터초등BASIC2022':'bomnal_voca_워드마스터_초등_basic2022',
+  '봄날보카_워드마스터초등Complete600':'bomnal_voca_초등_컴플리트',
+  '봄날보카_워드마스터중등기초800':'bomnal_voca_mid_foundation',
+  '봄날보카_워드마스터중등BASIC800':'bomnal_voca_중등_basic',
+  '봄날보카_워드마스터중등실력1852':'bomnal_voca_중등_실력',
+  '봄날보카_워드마스터중등고난도900':'bomnal_voca_중등_고난도',
+  '봄날보카_워드마스터고등BASIC1200':'bomnal_voca_고등_basic',
+  '봄날보카_워드마스터고등Complete수능2000':'bomnal_voca_고등_컴플리트_수능2000',
+  '봄날보카_워드마스터파이널2000':'bomnal_voca_고등_파이널2000',
+  '봄날보카_워드마스터하이퍼2000':'bomnal_voca_고등_하이퍼2000'
+};
+function cleanLabel(t){
+  t = String(t||'').replace(/ · 오답 미완료$/,'').trim();
+  return t.replace(/\s*\d+\s*(회|과|강)?$/,'').trim() || t;
+}
+function firstGap(nums){
+  const set = new Set(nums);
+  let n = 1;
+  while (set.has(n)) n++;
+  return n;
+}
+function buildResume(records){
+  const voca = new Map();   // quizType → {label, done:[], last}
+  const serie = new Map();  // 파일 앞부분 → {label, done:[], last, pad}
+  records.forEach(r => {
+    if (r.day && /봄날보카|보카|단어/.test(r.quizType)) {
+      const k = r.quizType;
+      if (!voca.has(k)) voca.set(k, {label: r.levelName || k.replace(/^봄날보카_/,''),
+                                     done:[], last:null, kind:'voca', vfile: VOCA_FILE[k] || ''});
+      const v = voca.get(k);
+      if (r.completed && v.done.indexOf(r.day) < 0) v.done.push(r.day);
+      if (!v.last || (r.time||0) > (v.last.time||0)) v.last = {no:r.day, time:r.time, score:r.score};
+      return;
+    }
+    const m = (r.file||'').match(/^(.+?)_(\d{2})$/);
+    if (!m) return;
+    const k = m[1], no = parseInt(m[2],10);
+    if (!serie.has(k)) {
+      const isListen = /^bomnallistening/.test(k);
+      serie.set(k, {label: cleanLabel(r.quizName || r.levelName || k),
+                    kind: isListen ? 'listen' : 'reading', prefix:k, done:[], last:null});
+    }
+    const v = serie.get(k);
+    if (r.completed && v.done.indexOf(no) < 0) v.done.push(no);
+    if (!v.last || (r.time||0) > (v.last.time||0)) v.last = {no, time:r.time, score:r.score};
+  });
+  const out = [];
+  [...voca.values(), ...serie.values()].forEach(v => {
+    v.done.sort((a,b)=>a-b);
+    v.next = firstGap(v.done);
+    out.push(v);
+  });
+  out.sort((a,b) => (b.last && b.last.time ? b.last.time : 0) - (a.last && a.last.time ? a.last.time : 0));
+  return out.slice(0, 8);
+}
+function resumeHtml(list){
+  if (!list.length) return '';
+  const unit = k => k === 'voca' ? 'Day' : (k === 'listen' ? '회' : '과');
+  const rows = list.map(v => {
+    const u = unit(v.kind);
+    const lab = v.kind === 'voca' ? (u + ' ' + v.next) : (v.next + u);
+    const past = v.done.length
+      ? `끝낸 ${u} ${v.done.length}개 · 마지막 ${v.kind==='voca' ? u+' '+v.last.no : v.last.no+u}`
+      : '아직 끝낸 것이 없어요';
+    const href = v.kind === 'voca'
+      ? (v.vfile ? encodeURIComponent(v.vfile) + '.html' : '')
+      : `${v.prefix}_${String(v.next).padStart(2,'0')}.html`;
+    return `<div class="rs-row">
+      <div class="rs-info">
+        <div class="rs-name">${escHtml(v.label)}</div>
+        <div class="rs-past">${escHtml(past)} · ${ftDate(v.last && v.last.time)}</div>
+      </div>
+      ${href ? `<a class="rs-go" href="${href}" target="_blank" rel="noopener">${lab} ▶</a>`
+             : `<span class="rs-go rs-plain">다음 ${lab}</span>`}
+    </div>`;
+  }).join('');
+  return `<div class="sec">
+      <div class="sec-title">📌 이어서 하기 <span class="sec-sub">지난번에 어디까지 했는지</span></div>
+      <div class="rs-list">${rows}</div>
+    </div>`;
 }
 
 function render(records, notes){
@@ -410,6 +532,8 @@ function render(records, notes){
         <div class="stat"><div class="stat-n" style="font-size:1.1rem">${totalTime}</div><div class="stat-l">총 학습시간</div></div>
       </div>
     </div>
+
+    ${resumeHtml(buildResume(records))}
 
     <div class="sec">
       <div class="sec-title">📜 최근 학습 <span class="sec-sub">최신 ${recentGroups.length}건</span></div>
