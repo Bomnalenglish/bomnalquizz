@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<link rel="manifest" href="manifest.json"/>
+<meta name="theme-color" content="#4a6741"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-title" content="봄날퀴즈"/>
+<link rel="apple-touch-icon" href="icon-192.png"/>
+<style>html,body{overscroll-behavior-y:contain}</style>
+
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>종촌고1 3과 워크북 (새 유형 샘플) · 봄날 ENGLISH</title>
+<script type="module" src="bn_tracker.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Black+Han+Sans&family=Noto+Sans+KR:wght@300;400;700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--ink:#2a2a2a;--soft:#7a7570;--bg:#f5efe6;--card:#fdf8f2;--border:#e0d8ce;--accent:#5c3d1e}
+body{font-family:"Noto Sans KR",sans-serif;background:var(--bg);min-height:100vh;color:var(--ink)}
+header{background:linear-gradient(135deg,#f7efe4 0%,#f0e6d8 50%,#ece0d2 100%);padding:28px 24px 20px;text-align:center;border-bottom:1px solid var(--border)}
+.logo-row{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;margin-bottom:8px}
+.logo-circle{width:48px;height:48px;border-radius:50%;background:#f0ebe3;border:2px solid #e0d8ce;overflow:hidden;flex-shrink:0}
+.logo-circle img{width:100%;height:100%;object-fit:cover}
+.logo-title{font-family:"Black Han Sans",sans-serif;font-size:1rem;color:#5c3d1e}
+.quiz-meta{font-family:"Gowun Dodum",serif;font-size:.76rem;color:var(--soft);margin-top:2px}
+.test-badge{display:inline-block;background:#3d3d3d;color:#f0ede8;border-radius:30px;padding:3px 14px;font-size:.73rem;font-weight:700;letter-spacing:.5px;margin-top:6px}
+.score-display{font-family:"Gowun Dodum",serif;font-size:.83rem;color:var(--soft);margin-top:5px}
+#score-val{color:var(--accent);font-family:"Black Han Sans",sans-serif;font-size:.95rem}
+main{max-width:1100px;margin:0 auto;padding:20px 14px 80px}
+.prog-wrap{margin-bottom:18px}
+.prog-bg{height:5px;background:#e0d8ce;border-radius:5px;overflow:hidden}
+.prog-fill{height:5px;background:linear-gradient(90deg,#5c3d1e,#a0724a);border-radius:5px;transition:width .4s}
+.prog-text{font-family:"Gowun Dodum",serif;font-size:.72rem;color:var(--soft);margin-top:4px;text-align:right}
+.back-nav{display:inline-flex;align-items:center;gap:6px;background:white;border:1.5px solid #d0c8bc;border-radius:10px;padding:6px 13px;font-family:inherit;font-size:.78rem;color:var(--soft);cursor:pointer;margin-bottom:16px;transition:border-color .15s;text-decoration:none}
+.back-nav:hover{border-color:#3d3d3d;color:#3d3d3d}
+.sec-header{background:#3d3d3d;color:#f0ede8;font-family:"Black Han Sans",sans-serif;font-size:.88rem;padding:9px 16px;border-radius:12px;margin:24px 0 12px;letter-spacing:.4px}
+.para-block{background:var(--card);border:1.5px solid var(--border);border-radius:14px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,.04);overflow:hidden}
+.para-header{background:#f0ebe3;padding:7px 16px;border-bottom:1px solid var(--border)}
+.para-num{font-family:"Black Han Sans",sans-serif;font-size:.78rem;color:var(--accent)}
+.para-cols{display:grid;grid-template-columns:1fr 1fr;gap:0}
+@media(max-width:680px){.para-cols{grid-template-columns:1fr}}
+.para-eng{padding:14px 16px;font-size:.85rem;line-height:2.2;color:#2a2a2a;font-family:"Gowun Dodum",serif;border-right:1px solid var(--border)}
+.para-kr{padding:14px 16px;font-size:.8rem;line-height:1.95;color:#5a5050;font-family:"Gowun Dodum",serif;background:#faf6f0}
+.sel-group{display:inline-flex;align-items:center;border:1.5px solid #c0b4a4;border-radius:6px;overflow:hidden;vertical-align:middle;margin:0 2px;font-size:.82rem}
+.sel-btn{padding:2px 8px;background:#fff;border:none;cursor:pointer;font-family:"Gowun Dodum",serif;font-size:.82rem;color:#3a3a3a;transition:background .12s;line-height:1.7;white-space:nowrap}
+.sel-btn:not(:last-child){border-right:1px solid #c0b4a4}
+.sel-btn:hover{background:#f0ebe3}
+.sel-btn:disabled{cursor:not-allowed}
+.sel-btn.correct{background:#2e7d32!important;color:#fff!important}
+.sel-btn.wrong{background:#c0392b!important;color:#fff!important}
+.blank-input{display:inline-block;border:none;border-bottom:2px solid #c0a882;background:transparent;font-family:"Gowun Dodum",serif;font-size:.84rem;color:#3a3a3a;outline:none;padding:0 4px;min-width:80px;text-align:center;transition:border-color .2s;vertical-align:middle;margin:0 2px}
+.blank-input:focus{border-color:var(--accent)}
+.blank-input:disabled{color:#6a6a6a;cursor:not-allowed;border-bottom-color:#c0b4a4}
+.blank-input.correct-inp{border-bottom-color:#2e7d32;color:#2e7d32}
+.arrange-wrap{margin:8px 0;font-family:"Gowun Dodum",serif;width:100%}
+.arrange-label{font-size:.74rem;color:var(--soft);margin-bottom:4px}
+.arrange-pool{display:flex;flex-wrap:wrap;gap:5px;padding:8px;background:#f5f0ea;border-radius:8px;min-height:36px;margin-bottom:5px;border:1.5px dashed #c0b4a4}
+.arrange-answer{display:flex;flex-wrap:wrap;gap:5px;padding:8px;background:#fff;border-radius:8px;min-height:36px;border:1.5px solid #c0b4a4}
+.word-chip{display:inline-flex;align-items:center;padding:2px 8px;background:#fff;border:1.5px solid #c0a882;border-radius:20px;font-size:.76rem;cursor:pointer;transition:background .12s;user-select:none;font-family:"Gowun Dodum",serif}
+.word-chip:hover{background:#f0ebe3}
+.arrange-answer .word-chip{background:#3d3d3d;color:#fff;border-color:#3d3d3d}
+.arrange-answer .word-chip:hover{background:#555}
+.word-chip.disabled{cursor:not-allowed;opacity:.6}
+.word-chip.correct-chip{background:#2e7d32;border-color:#2e7d32;color:#fff}
+.word-chip.wrong-chip{background:#c0392b;border-color:#c0392b;color:#fff}
+.writing-wrap{margin:8px 0;width:100%}
+.writing-label{font-size:.74rem;color:var(--soft);margin-bottom:4px;font-family:"Gowun Dodum",serif}
+.writing-input{width:100%;padding:8px 11px;border:2px solid #d0c8bc;border-radius:8px;font-size:.83rem;font-family:"Gowun Dodum",serif;outline:none;background:#fff;transition:border-color .2s;resize:vertical;min-height:38px}
+.writing-input:focus{border-color:var(--accent)}
+.writing-input:disabled{background:#f5f0ea;color:#6a6a6a;cursor:not-allowed}
+.q-check-btn{margin-top:6px;padding:5px 14px;background:#3d3d3d;color:#fff;border:none;border-radius:7px;font-family:inherit;font-size:.78rem;font-weight:700;cursor:pointer;transition:opacity .2s}
+.q-check-btn:hover{opacity:.85}
+.q-check-btn:disabled{background:#b0a898;cursor:not-allowed;opacity:1}
+.q-feedback{margin-top:6px;border-radius:8px;padding:7px 11px;font-size:.78rem;line-height:1.8;display:none;font-family:"Gowun Dodum",serif}
+.q-feedback.show{display:block}
+.q-feedback.ok{background:#e8f5e9;border:1px solid #a5d6a7;color:#1b5e20}
+.q-feedback.fail{background:#ffebee;border:1px solid #ef9a9a;color:#7f0000}
+.pt-tag{display:inline-block;background:rgba(0,0,0,.12);border-radius:20px;padding:1px 7px;font-size:.68rem;font-weight:700;margin-left:4px}
+.q-tag{display:inline-block;background:#ede9e4;border-radius:20px;padding:1px 7px;font-size:.66rem;font-weight:700;color:#7a6a5a;margin-right:3px;vertical-align:middle}
+.result-card{background:var(--card);border-radius:20px;border:2px solid var(--border);padding:32px 22px;text-align:center;display:none;box-shadow:0 6px 24px rgba(0,0,0,.08);margin-top:8px}
+.result-card.show{display:block;animation:fadeUp .5s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.result-score{font-family:"Black Han Sans",sans-serif;font-size:2.6rem;color:var(--accent);margin:12px 0}
+.result-msg{font-family:"Gowun Dodum",serif;font-size:.88rem;color:var(--soft);line-height:1.8}
+.result-btns{display:flex;gap:10px;justify-content:center;margin-top:18px;flex-wrap:wrap}
+.result-btns button{padding:10px 20px;border-radius:12px;font-family:inherit;font-size:.82rem;font-weight:700;cursor:pointer;border:2px solid #3d3d3d}
+.btn-retry{background:#3d3d3d;color:#fff}.btn-retry:hover{opacity:.85}
+.btn-back{background:transparent;color:#3d3d3d}.btn-back:hover{background:#f0ede8}
+
+/* 🚫 해당하지 않는(어색한) 것 고르기 - 문제 유형 시각 표시 */
+.exclude-group::before{
+  content:"🚫 어색한 것";
+  display:inline-block;font-size:9.5px;background:#fef2f2;color:#b91c1c;
+  border:1px solid #fca5a5;border-radius:5px;padding:1px 6px;margin-right:4px;
+  font-weight:800;vertical-align:middle;white-space:nowrap;letter-spacing:.2px;
+}
+</style>
+
+<style>
+/* 워크북 가시성 — 맑은 고딕 11pt (지문 깊이 풀기와 같은 설정) */
+:root{ --fsz:11pt; }
+body,.para-eng,.para-kr,.sec-header,.para-num,.sel-btn,.blank-input,.writing-input,.word-chip,.arrange-label,.q-feedback,input,button{
+  font-family:"Malgun Gothic","맑은 고딕","Apple SD Gothic Neo",AppleGothic,
+              -apple-system,BlinkMacSystemFont,sans-serif !important;
+}
+.para-eng{ font-size:var(--fsz) !important; line-height:2.1 !important; }
+.para-kr{ font-size:calc(var(--fsz) - 1pt) !important; line-height:1.9 !important; }
+.sel-btn,.word-chip{ font-size:calc(var(--fsz) - 1pt) !important; }
+.word-chip.pickable{ cursor:pointer; }
+.word-chip.picked{ background:#f6d9a8 !important; border-color:#c58a2e !important; font-weight:700; }
+.arrange-label{ font-size:calc(var(--fsz) - 1pt) !important; line-height:1.7 !important; }
+.q-feedback{ font-size:calc(var(--fsz) - 1pt) !important; }
+.sel-group{ flex-wrap:wrap !important; max-width:100% !important; }
+.sel-btn{ white-space:normal !important; }
+.para-eng,.para-kr,.para-block{ overflow-wrap:anywhere; }
+main{ overflow-x:hidden; }
+</style>
+
+<style>
+.sec-submit{margin:18px 0 6px;padding:12px 14px;background:#fffdf8;border:1px dashed #d9cfbe;border-radius:12px;}
+.sec-submit .submit-btn{width:100%;padding:12px 16px;border:none;border-radius:11px;cursor:pointer;
+  background:linear-gradient(135deg,#8a6a3e,#5c3d1e);color:#fff;font-weight:800;font-size:.93rem;
+  box-shadow:0 3px 9px rgba(0,0,0,.13);}
+.sec-submit .submit-btn:active{transform:translateY(1px)}
+.sec-submit-note{text-align:center;font-size:.75rem;color:#8a8178;margin-top:7px;}
+</style>
+
+<style>
+/* 왜 맞고 왜 틀렸는지 */
+.sel-btn.miss{ background:#fbeae5 !important; color:#b4543a !important; text-decoration:line-through; opacity:.7 }
+.sel-btn.got{ background:#e6f3ec !important; color:#2e7d4f !important; font-weight:800 }
+#whyBar{ position:fixed; left:0; right:0; bottom:0; z-index:60; transform:translateY(110%); transition:transform .18s;
+  padding:12px 14px calc(12px + env(safe-area-inset-bottom)); font-size:.86rem; line-height:1.6; font-weight:700;
+  box-shadow:0 -3px 14px rgba(0,0,0,.12) }
+#whyBar.on{ transform:translateY(0) }
+#whyBar.ok{ background:#e6f3ec; color:#1f5c38; border-top:2px solid #9ccfb1 }
+#whyBar.no{ background:#fbeae5; color:#8c3b25; border-top:2px solid #e0a894 }
+.sec-submit .retry-btn{ width:100%; margin-top:9px; padding:11px 14px; border-radius:11px; cursor:pointer;
+  border:2px solid #d9a441; background:#fff8e8; color:#8a5a12; font-weight:800; font-size:.88rem }
+</style>
+
+<style>
+/* 지문 고르기 */
+.para-block.off, .sec-header.off, .sec-submit.off{ display:none !important }
+#refPick{ position:fixed; inset:0; z-index:200; background:rgba(40,32,24,.55);
+  display:none; align-items:flex-start; justify-content:center; overflow-y:auto; padding:18px 12px 30px }
+#refPick.on{ display:flex }
+#refPick .rp-card{ width:100%; max-width:520px; background:#fffdf8; border:2px solid #e3d9ca;
+  border-radius:18px; padding:20px 18px; box-shadow:0 10px 30px rgba(0,0,0,.2) }
+#refPick .rp-title{ font-family:'Black Han Sans',sans-serif; font-size:1.12rem; color:#3b2f25; text-align:center }
+#refPick .rp-sub{ font-size:.78rem; color:#8a7f74; text-align:center; margin:6px 0 14px; line-height:1.55 }
+#refPick .rp-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(86px,1fr)); gap:8px }
+#refPick .rp-chip{ padding:10px 6px; border-radius:12px; border:2px solid #e0d8ce; background:#fff;
+  cursor:pointer; text-align:center; font-weight:800; font-size:.86rem; color:#5c5248; line-height:1.3 }
+#refPick .rp-chip small{ display:block; font-weight:600; font-size:.66rem; color:#a79c8f; margin-top:2px }
+#refPick .rp-chip.on{ border-color:#8a6a3e; background:#f6ecdb; color:#4a3419 }
+#refPick .rp-btns{ display:flex; gap:7px; margin:13px 0 4px }
+#refPick .rp-btns button{ flex:1; padding:9px 4px; border-radius:10px; border:1.5px solid #ded5c8;
+  background:#fff; cursor:pointer; font-size:.76rem; font-weight:700; color:#7a6e62 }
+#refPick .rp-warn{ min-height:17px; text-align:center; font-size:.76rem; color:#b4543a; font-weight:700 }
+#refPick .rp-start{ width:100%; margin-top:6px; padding:13px; border:none; border-radius:12px; cursor:pointer;
+  background:linear-gradient(135deg,#8a6a3e,#5c3d1e); color:#fff; font-weight:800; font-size:.98rem;
+  box-shadow:0 3px 10px rgba(0,0,0,.14) }
+#refBar{ display:flex; align-items:center; gap:9px; margin:10px 0 4px; padding:10px 12px;
+  background:#f6ecdb; border:1.5px solid #e0cdae; border-radius:12px; font-size:.79rem;
+  font-weight:700; color:#5c4420; line-height:1.45 }
+#refBar span{ flex:1; min-width:0 }
+#refBar button{ flex:none; padding:7px 11px; border-radius:9px; border:1.5px solid #c9a97a;
+  background:#fff; cursor:pointer; font-size:.74rem; font-weight:800; color:#7a5a22 }
+</style>
+
+<style>
+/* ── 정점 방식 ── */
+.sel-group.pick-wide{display:inline;}
+.sel-group.pick-wide .sel-btn{margin:2px 2px;padding:3px 8px;font-size:.88rem;border-radius:8px;}
+.para-eng{line-height:2.5;}
+.tr-ko{background:#fffdf8;border-left:4px solid #c9a961;border-radius:8px;padding:9px 12px;
+  margin:16px 0 8px;font-size:.92rem;font-weight:700;color:#3b2f25;line-height:1.6}
+.sel-group.wide{display:flex;flex-direction:column;gap:7px;margin-bottom:6px}
+.sel-group.wide .sel-btn{width:100%;text-align:left;padding:11px 13px;font-size:.9rem;line-height:1.55}
+.fix-row{background:#fdfaf4;border:1.5px solid #e6dcc9;border-radius:13px;padding:13px 14px;margin:12px 0}
+.fix-lead{font-size:.8rem;color:#8a7f74;margin-bottom:8px}
+.sel-group.words{display:block;line-height:2.4}
+.sel-group.words .sel-btn{margin:2px 1px;padding:3px 7px;font-size:.92rem;border-radius:7px;
+  background:#fff;border:1.5px solid #e2d9cb}
+.fix-why{margin-top:11px;padding-top:10px;border-top:1px dashed #ded3c0;font-size:.86rem;color:#5c4a2e;font-weight:700}
+.sel-group.mini{display:inline}
+.sel-group.mini .sel-btn{margin:0 3px;padding:4px 10px;font-size:.84rem;border-radius:8px}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo-row">
+    <div class="logo-circle"><img src="https://bomnalenglish.github.io/bomnalquizz/IMG_6063.jpg" alt="봄날" onerror="this.style.display='none'"/></div>
+    <div><div class="logo-title">봄날 BOMNAL ENGLISH</div><div class="quiz-meta">종촌고등학교 1학년 · YBM 김은형 · 공통영어2 3과 · 워크북 Check</div></div>
+  </div>
+  <div><span class="test-badge">📖 워크북 Check — 어법·어휘 · 빈칸 · 글의 순서 · 어구 배열</span></div>
+  <div class="score-display">현재 점수: <span id="score-val">0</span> / <span id="score-max">0</span>점</div>
+</header>
+<main>
+  <a class="back-nav" href="javascript:history.back()">← 허브로 돌아가기</a>
+  <div class="prog-wrap">
+    <div class="prog-bg"><div class="prog-fill" id="prog" style="width:0%"></div></div>
+    <div class="prog-text" id="prog-txt">0 / 0 완료</div>
+  </div>
+<div class="sec-header">🔤 본문 낱말 고르기 — 비슷한 말 속에서</div>
+<div class="para-block" data-ref="본문 3-1"><div class="para-header"><span class="para-num">본문 3-1</span></div><div class="para-cols"><div class="para-eng">Katherine Johnson, a "Computer" Who Looked Beyond Numbers Katherine Johnson was born on August 26, 1918, in West Virginia, in the U.S., and was the youngest of four children in a black <span class="q-tag">1)</span><span class="sel-group pick-wide" data-qi="0" data-ans="0" data-why="[&quot;family — 본문에 쓰인 낱말이에요 · 가족&quot;, &quot;category (범주, 부문) — 뜻은 비슷하지만 본문에 쓰인 말은 family&quot;, &quot;household (가족, 가정) — 뜻은 비슷하지만 본문에 쓰인 말은 family&quot;, &quot;class (분류, 등급 학급) — 뜻은 비슷하지만 본문에 쓰인 말은 family&quot;, &quot;home (집, 가정) — 뜻은 비슷하지만 본문에 쓰인 말은 family&quot;, &quot;folk (민속의, 민간의) — 뜻은 비슷하지만 본문에 쓰인 말은 family&quot;]"><button class="sel-btn" onclick="pick(this,0,0)">family</button><button class="sel-btn" onclick="pick(this,0,1)">category</button><button class="sel-btn" onclick="pick(this,0,2)">household</button><button class="sel-btn" onclick="pick(this,0,3)">class</button><button class="sel-btn" onclick="pick(this,0,4)">home</button><button class="sel-btn" onclick="pick(this,0,5)">folk</button></span>. Katherine was a math prodigy from <span class="q-tag">2)</span><span class="sel-group pick-wide" data-qi="1" data-ans="2" data-why="[&quot;advance (진보, 전진 (가격) 인상 나아가게 하다) — 뜻은 비슷하지만 본문에 쓰인 말은 early&quot;, &quot;primitive (원시의, 원시적인) — 뜻은 비슷하지만 본문에 쓰인 말은 early&quot;, &quot;early — 본문에 쓰인 낱말이에요 · 일찍&quot;, &quot;late (늦은, 지각한) — 뜻이 반대예요. 본문은 early&quot;, &quot;premature (조숙한, 시기상조의) — 뜻은 비슷하지만 본문에 쓰인 말은 early&quot;, &quot;archaic (구식의 낡은 고대의 고풍(古⾵)의) — 뜻은 비슷하지만 본문에 쓰인 말은 early&quot;, &quot;middle (중앙 중간의) — 뜻이 반대예요. 본문은 early&quot;]"><button class="sel-btn" onclick="pick(this,1,0)">advance</button><button class="sel-btn" onclick="pick(this,1,1)">primitive</button><button class="sel-btn" onclick="pick(this,1,2)">early</button><button class="sel-btn" onclick="pick(this,1,3)">late</button><button class="sel-btn" onclick="pick(this,1,4)">premature</button><button class="sel-btn" onclick="pick(this,1,5)">archaic</button><button class="sel-btn" onclick="pick(this,1,6)">middle</button></span> childhood. Reflecting on her youth, Katherine once said, "I counted everything—the steps to the road, the steps up to church, the <span class="q-tag">3)</span><span class="sel-group pick-wide" data-qi="2" data-ans="4" data-why="[&quot;issue (문제, 쟁점) — 뜻은 비슷하지만 본문에 쓰인 말은 number&quot;, &quot;figure (수치, 모습) — 뜻은 비슷하지만 본문에 쓰인 말은 number&quot;, &quot;turn (차례, 순번) — 뜻은 비슷하지만 본문에 쓰인 말은 number&quot;, &quot;routine (일과, 늘 하던 방식) — 뜻은 비슷하지만 본문에 쓰인 말은 number&quot;, &quot;number — 본문에 쓰인 낱말이에요 · 숫자, 번호&quot;]"><button class="sel-btn" onclick="pick(this,2,0)">issue</button><button class="sel-btn" onclick="pick(this,2,1)">figure</button><button class="sel-btn" onclick="pick(this,2,2)">turn</button><button class="sel-btn" onclick="pick(this,2,3)">routine</button><button class="sel-btn" onclick="pick(this,2,4)">number</button></span> of dishes, spoons, and forks I washed." She excitedly added, "I couldn't wait to get to high school to take algebra and geometry."</div></div></div>
+<div class="para-block" data-ref="본문 3-2"><div class="para-header"><span class="para-num">본문 3-2</span></div><div class="para-cols"><div class="para-eng">But Katherine's hometown had a segregated education system, and black students could not <span class="q-tag">4)</span><span class="sel-group pick-wide" data-qi="3" data-ans="1" data-why="[&quot;inscribe (새기다, 파다 쓰다) — 뜻은 비슷하지만 본문에 쓰인 말은 enter&quot;, &quot;enter — 본문에 쓰인 낱말이에요 · 입학하다&quot;, &quot;recruit (모집하다, 징집하다) — 뜻은 비슷하지만 본문에 쓰인 말은 enter&quot;, &quot;figure (수치, 모습) — 뜻은 비슷하지만 본문에 쓰인 말은 enter&quot;, &quot;record (기록하다, 기재하다) — 뜻은 비슷하지만 본문에 쓰인 말은 enter&quot;, &quot;participate (참여하다) — 뜻은 비슷하지만 본문에 쓰인 말은 enter&quot;, &quot;exit (출구) — 뜻이 반대예요. 본문은 enter&quot;]"><button class="sel-btn" onclick="pick(this,3,0)">inscribe</button><button class="sel-btn" onclick="pick(this,3,1)">enter</button><button class="sel-btn" onclick="pick(this,3,2)">recruit</button><button class="sel-btn" onclick="pick(this,3,3)">figure</button><button class="sel-btn" onclick="pick(this,3,4)">record</button><button class="sel-btn" onclick="pick(this,3,5)">participate</button><button class="sel-btn" onclick="pick(this,3,6)">exit</button></span> high school. So her father moved the <span class="q-tag">5)</span><span class="sel-group pick-wide" data-qi="4" data-ans="0" data-why="[&quot;family — 본문에 쓰인 낱말이에요 · 가족&quot;, &quot;category (범주, 부문) — 뜻은 비슷하지만 본문에 쓰인 말은 family&quot;, &quot;household (가족, 가정) — 뜻은 비슷하지만 본문에 쓰인 말은 family&quot;, &quot;class (분류, 등급 학급) — 뜻은 비슷하지만 본문에 쓰인 말은 family&quot;, &quot;home (집, 가정) — 뜻은 비슷하지만 본문에 쓰인 말은 family&quot;, &quot;folk (민속의, 민간의) — 뜻은 비슷하지만 본문에 쓰인 말은 family&quot;]"><button class="sel-btn" onclick="pick(this,4,0)">family</button><button class="sel-btn" onclick="pick(this,4,1)">category</button><button class="sel-btn" onclick="pick(this,4,2)">household</button><button class="sel-btn" onclick="pick(this,4,3)">class</button><button class="sel-btn" onclick="pick(this,4,4)">home</button><button class="sel-btn" onclick="pick(this,4,5)">folk</button></span> 200 kilometers away so that she could enter high school. After graduating from high school in 1932, she was admitted to a black college at the age of fifteen. By her junior year, she had taken all the math courses the college could <span class="q-tag">6)</span><span class="sel-group pick-wide" data-qi="5" data-ans="3" data-why="[&quot;pass (합격하다) — 뜻은 비슷하지만 본문에 쓰인 말은 offer&quot;, &quot;crack (금, 균열 (돌연한) 날카로운 소리 갈라지다) — 뜻은 비슷하지만 본문에 쓰인 말은 offer&quot;, &quot;fling (내던지다, 돌진하다) — 뜻은 비슷하지만 본문에 쓰인 말은 offer&quot;, &quot;offer — 본문에 쓰인 낱말이에요 · 제공하다, 제안하다&quot;, &quot;graduating (졸업하다, 졸업생) — 본문의 다른 자리에 쓰인 낱말이에요&quot;]"><button class="sel-btn" onclick="pick(this,5,0)">pass</button><button class="sel-btn" onclick="pick(this,5,1)">crack</button><button class="sel-btn" onclick="pick(this,5,2)">fling</button><button class="sel-btn" onclick="pick(this,5,3)">offer</button><button class="sel-btn" onclick="pick(this,5,4)">graduating</button></span>. Her mentor gladly offered special classes just for her, but he was not <span class="q-tag">7)</span><span class="sel-group pick-wide" data-qi="6" data-ans="1" data-why="[&quot;bright (밝은, 빛나는) — 뜻은 비슷하지만 본문에 쓰인 말은 happy&quot;, &quot;happy — 본문에 쓰인 낱말이에요 · 행복한&quot;, &quot;glad (기쁜) — 뜻은 비슷하지만 본문에 쓰인 말은 happy&quot;, &quot;prosperous (번영하는, 성공하는) — 뜻은 비슷하지만 본문에 쓰인 말은 happy&quot;, &quot;prepare (준비하다) — 본문의 다른 자리에 쓰인 낱말이에요&quot;]"><button class="sel-btn" onclick="pick(this,6,0)">bright</button><button class="sel-btn" onclick="pick(this,6,1)">happy</button><button class="sel-btn" onclick="pick(this,6,2)">glad</button><button class="sel-btn" onclick="pick(this,6,3)">prosperous</button><button class="sel-btn" onclick="pick(this,6,4)">prepare</button></span> when he had to tell his <span class="q-tag">8)</span><span class="sel-group pick-wide" data-qi="7" data-ans="5" data-why="[&quot;prominent (두드러진, 현저한 저명한) — 뜻은 비슷하지만 본문에 쓰인 말은 outstanding&quot;, &quot;important (중요한) — 뜻은 비슷하지만 본문에 쓰인 말은 outstanding&quot;, &quot;superior (뛰어난, 우월한) — 뜻은 비슷하지만 본문에 쓰인 말은 outstanding&quot;, &quot;conspicuous (눈에 띄는, 뚜렷한) — 뜻은 비슷하지만 본문에 쓰인 말은 outstanding&quot;, &quot;spectacular (장관을 이루는 장엄한 극적인) — 뜻은 비슷하지만 본문에 쓰인 말은 outstanding&quot;, &quot;outstanding — 본문에 쓰인 낱말이에요 · 뛰어난, 눈에 띄는&quot;]"><button class="sel-btn" onclick="pick(this,7,0)">prominent</button><button class="sel-btn" onclick="pick(this,7,1)">important</button><button class="sel-btn" onclick="pick(this,7,2)">superior</button><button class="sel-btn" onclick="pick(this,7,3)">conspicuous</button><button class="sel-btn" onclick="pick(this,7,4)">spectacular</button><button class="sel-btn" onclick="pick(this,7,5)">outstanding</button></span> student about her career opportunities. "You would make a good research mathematician," he told his seventeen-year-old student, "and I'm going to <span class="q-tag">9)</span><span class="sel-group pick-wide" data-qi="8" data-ans="1" data-why="[&quot;educate (교육하다) — 뜻은 비슷하지만 본문에 쓰인 말은 prepare&quot;, &quot;prepare — 본문에 쓰인 낱말이에요 · 준비하다&quot;, &quot;make (만들다) — 뜻은 비슷하지만 본문에 쓰인 말은 prepare&quot;, &quot;devise (고안하다, 발명하다) — 뜻은 비슷하지만 본문에 쓰인 말은 prepare&quot;, &quot;groom (신랑) — 뜻은 비슷하지만 본문에 쓰인 말은 prepare&quot;, &quot;ready (준비된) — 뜻은 비슷하지만 본문에 쓰인 말은 prepare&quot;, &quot;organize (조직하다, 준비하다) — 뜻은 비슷하지만 본문에 쓰인 말은 prepare&quot;]"><button class="sel-btn" onclick="pick(this,8,0)">educate</button><button class="sel-btn" onclick="pick(this,8,1)">prepare</button><button class="sel-btn" onclick="pick(this,8,2)">make</button><button class="sel-btn" onclick="pick(this,8,3)">devise</button><button class="sel-btn" onclick="pick(this,8,4)">groom</button><button class="sel-btn" onclick="pick(this,8,5)">ready</button><button class="sel-btn" onclick="pick(this,8,6)">organize</button></span> you for this career." Katherine asked, "Where will I find a job?" "That," he replied, "will be your problem." The path ahead was unclear and full of obstacles, but Katherine knew she had the strength to make her own way. In 1935, at the age of eighteen, Katherine graduated from college with highest honors and began her career as a teacher at a black public school. At that time, teaching was the only <span class="q-tag">10)</span><span class="sel-group pick-wide" data-qi="9" data-ans="2" data-why="[&quot;selection (선발, 선발된 것[사람들]) — 뜻은 비슷하지만 본문에 쓰인 말은 option&quot;, &quot;choice (선택) — 뜻은 비슷하지만 본문에 쓰인 말은 option&quot;, &quot;option — 본문에 쓰인 낱말이에요 · 선택, 선택권&quot;, &quot;pick (고르다) — 뜻은 비슷하지만 본문에 쓰인 말은 option&quot;, &quot;alternative (대안, 양자택일) — 뜻은 비슷하지만 본문에 쓰인 말은 option&quot;]"><button class="sel-btn" onclick="pick(this,9,0)">selection</button><button class="sel-btn" onclick="pick(this,9,1)">choice</button><button class="sel-btn" onclick="pick(this,9,2)">option</button><button class="sel-btn" onclick="pick(this,9,3)">pick</button><button class="sel-btn" onclick="pick(this,9,4)">alternative</button></span> <span class="q-tag">11)</span><span class="sel-group pick-wide" data-qi="10" data-ans="0" data-why="[&quot;available — 본문에 쓰인 낱말이에요 · 이용할[얻을] 수 있는, 시간이 있는&quot;, &quot;visible ((눈에) 보이는) — 뜻은 비슷하지만 본문에 쓰인 말은 available&quot;, &quot;free (무료의, 자유로운) — 뜻은 비슷하지만 본문에 쓰인 말은 available&quot;, &quot;ready (준비된) — 뜻은 비슷하지만 본문에 쓰인 말은 available&quot;, &quot;accessible (접근하기 쉬운, 이용 가능한) — 뜻은 비슷하지만 본문에 쓰인 말은 available&quot;, &quot;disposable (일회용의) — 뜻은 비슷하지만 본문에 쓰인 말은 available&quot;, &quot;easy (쉬운) — 뜻은 비슷하지만 본문에 쓰인 말은 available&quot;]"><button class="sel-btn" onclick="pick(this,10,0)">available</button><button class="sel-btn" onclick="pick(this,10,1)">visible</button><button class="sel-btn" onclick="pick(this,10,2)">free</button><button class="sel-btn" onclick="pick(this,10,3)">ready</button><button class="sel-btn" onclick="pick(this,10,4)">accessible</button><button class="sel-btn" onclick="pick(this,10,5)">disposable</button><button class="sel-btn" onclick="pick(this,10,6)">easy</button></span> to her.</div></div></div>
+<div class="sec-header">✍️ 해석 보고 영작 고르기 — 한 군데만 다릅니다</div>
+<div class="para-block" data-ref="본문 3-1"><div class="para-header"><span class="para-num">본문 3-1 · 영작</span></div><div class="para-cols"><div class="para-eng"><div class="tr-ko">그녀는 신이 나서 "저는 대수학과 기하학을 배우기 위해 하루빨리 고등학교에 가고 싶었어요."라고 덧붙였다.</div><span class="sel-group wide" data-qi="11" data-ans="1" data-why="[&quot;이 문장은 &lt;b&gt;부사&lt;/b&gt; 가 틀렸어요 — 동사를 꾸밀 때는 부사(-ly)&quot;, &quot;맞았어요 — 본문 그대로예요&quot;, &quot;이 문장은 &lt;b&gt;to부정사&lt;/b&gt; 가 틀렸어요 — to 뒤에는 동사원형&quot;]"><button class="sel-btn" onclick="pick(this,11,0)">She excited added, "I couldn't wait to get to high school to take algebra and geometry."</button><button class="sel-btn" onclick="pick(this,11,1)">She excitedly added, "I couldn't wait to get to high school to take algebra and geometry."</button><button class="sel-btn" onclick="pick(this,11,2)">She excitedly added, "I couldn't wait to getting to high school to take algebra and geometry."</button></span></div></div></div>
+<div class="para-block" data-ref="본문 3-2"><div class="para-header"><span class="para-num">본문 3-2 · 영작</span></div><div class="para-cols"><div class="para-eng"><div class="tr-ko">그녀의 멘토는 기꺼이 그녀만을 위한 특별 수업을 제공했지만 그는 그의 뛰어난 학생에게 그녀의 직업 기회에 대해 이야기해야만 했을 때 기쁘지 않았다.</div><span class="sel-group wide" data-qi="12" data-ans="0" data-why="[&quot;맞았어요 — 본문 그대로예요&quot;, &quot;이 문장은 &lt;b&gt;부사&lt;/b&gt; 가 틀렸어요 — 동사를 꾸밀 때는 부사(-ly)&quot;, &quot;이 문장은 &lt;b&gt;to부정사&lt;/b&gt; 가 틀렸어요 — to 뒤에는 동사원형&quot;]"><button class="sel-btn" onclick="pick(this,12,0)">Her mentor gladly offered special classes just for her, but he was not happy when he had to tell his outstanding student about her career opportunities.</button><button class="sel-btn" onclick="pick(this,12,1)">Her mentor glad offered special classes just for her, but he was not happy when he had to tell his outstanding student about her career opportunities.</button><button class="sel-btn" onclick="pick(this,12,2)">Her mentor gladly offered special classes just for her, but he was not happy when he had to telling his outstanding student about her career opportunities.</button></span></div></div></div>
+<div class="sec-header">🔎 틀린 곳 찾기 — 그리고 왜 그런지</div>
+<div class="para-block" data-ref="본문 3-1"><div class="para-header"><span class="para-num">본문 3-1 · 오류 찾기</span></div><div class="para-cols"><div class="para-eng"><div class="fix-row"><div class="fix-lead">아래 문장에서 <b>틀린 낱말 하나</b>를 짚어 보세요.</div><span class="sel-group words" data-qi="13" data-ans="0" data-why="[&quot;맞았어요 — &lt;b&gt;Reflected&lt;/b&gt; 가 아니라 &lt;b&gt;Reflecting&lt;/b&gt; 예요. 주어가 직접 하는 동작이면 현재분사(-ing)&quot;, &quot;&lt;b&gt;on&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;her&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;youth,&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;Katherine&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;once&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;said,&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;\&quot;I&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;counted&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;everything—the&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;steps&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;to&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;the&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;road,&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;the&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;steps&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;up&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;to&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;church,&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;the&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;number&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;of&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;dishes,&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;spoons,&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;and&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;forks&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;I&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;washed.\&quot;&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;]"><button class="sel-btn" onclick="pick(this,13,0)">Reflected</button><button class="sel-btn" onclick="pick(this,13,1)">on</button><button class="sel-btn" onclick="pick(this,13,2)">her</button><button class="sel-btn" onclick="pick(this,13,3)">youth,</button><button class="sel-btn" onclick="pick(this,13,4)">Katherine</button><button class="sel-btn" onclick="pick(this,13,5)">once</button><button class="sel-btn" onclick="pick(this,13,6)">said,</button><button class="sel-btn" onclick="pick(this,13,7)">"I</button><button class="sel-btn" onclick="pick(this,13,8)">counted</button><button class="sel-btn" onclick="pick(this,13,9)">everything—the</button><button class="sel-btn" onclick="pick(this,13,10)">steps</button><button class="sel-btn" onclick="pick(this,13,11)">to</button><button class="sel-btn" onclick="pick(this,13,12)">the</button><button class="sel-btn" onclick="pick(this,13,13)">road,</button><button class="sel-btn" onclick="pick(this,13,14)">the</button><button class="sel-btn" onclick="pick(this,13,15)">steps</button><button class="sel-btn" onclick="pick(this,13,16)">up</button><button class="sel-btn" onclick="pick(this,13,17)">to</button><button class="sel-btn" onclick="pick(this,13,18)">church,</button><button class="sel-btn" onclick="pick(this,13,19)">the</button><button class="sel-btn" onclick="pick(this,13,20)">number</button><button class="sel-btn" onclick="pick(this,13,21)">of</button><button class="sel-btn" onclick="pick(this,13,22)">dishes,</button><button class="sel-btn" onclick="pick(this,13,23)">spoons,</button><button class="sel-btn" onclick="pick(this,13,24)">and</button><button class="sel-btn" onclick="pick(this,13,25)">forks</button><button class="sel-btn" onclick="pick(this,13,26)">I</button><button class="sel-btn" onclick="pick(this,13,27)">washed."</button></span><div class="fix-why">➜ 주어가 직접 하는 동작이면 <span class="sel-group mini" data-qi="14" data-ans="0" data-why="[&quot;맞았어요 — 주어가 직접 하는 동작이면 현재분사(-ing)&quot;, &quot;아니에요 — 주어가 직접 하는 동작이면 현재분사(-ing)&quot;]"><button class="sel-btn" onclick="pick(this,14,0)">현재</button><button class="sel-btn" onclick="pick(this,14,1)">과거</button></span>분사</div></div><div class="fix-row"><div class="fix-lead">아래 문장에서 <b>틀린 낱말 하나</b>를 짚어 보세요.</div><span class="sel-group words" data-qi="15" data-ans="7" data-why="[&quot;&lt;b&gt;She&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;excitedly&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;added,&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;\&quot;I&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;couldn&#x27;t&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;wait&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;to&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;맞았어요 — &lt;b&gt;getting&lt;/b&gt; 가 아니라 &lt;b&gt;get&lt;/b&gt; 예요. to 뒤에는 동사원형&quot;, &quot;&lt;b&gt;to&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;high&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;school&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;to&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;take&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;algebra&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;and&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;geometry.\&quot;&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;]"><button class="sel-btn" onclick="pick(this,15,0)">She</button><button class="sel-btn" onclick="pick(this,15,1)">excitedly</button><button class="sel-btn" onclick="pick(this,15,2)">added,</button><button class="sel-btn" onclick="pick(this,15,3)">"I</button><button class="sel-btn" onclick="pick(this,15,4)">couldn't</button><button class="sel-btn" onclick="pick(this,15,5)">wait</button><button class="sel-btn" onclick="pick(this,15,6)">to</button><button class="sel-btn" onclick="pick(this,15,7)">getting</button><button class="sel-btn" onclick="pick(this,15,8)">to</button><button class="sel-btn" onclick="pick(this,15,9)">high</button><button class="sel-btn" onclick="pick(this,15,10)">school</button><button class="sel-btn" onclick="pick(this,15,11)">to</button><button class="sel-btn" onclick="pick(this,15,12)">take</button><button class="sel-btn" onclick="pick(this,15,13)">algebra</button><button class="sel-btn" onclick="pick(this,15,14)">and</button><button class="sel-btn" onclick="pick(this,15,15)">geometry."</button></span><div class="fix-why">➜ to 뒤에는 <span class="sel-group mini" data-qi="16" data-ans="0" data-why="[&quot;맞았어요 — to 뒤에는 동사원형&quot;, &quot;아니에요 — to 뒤에는 동사원형&quot;]"><button class="sel-btn" onclick="pick(this,16,0)">동사원형</button><button class="sel-btn" onclick="pick(this,16,1)">-ing</button></span></div></div></div></div></div>
+<div class="para-block" data-ref="본문 3-2"><div class="para-header"><span class="para-num">본문 3-2 · 오류 찾기</span></div><div class="para-cols"><div class="para-eng"><div class="fix-row"><div class="fix-lead">아래 문장에서 <b>틀린 낱말 하나</b>를 짚어 보세요.</div><span class="sel-group words" data-qi="17" data-ans="10" data-why="[&quot;&lt;b&gt;So&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;her&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;father&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;moved&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;the&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;family&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;200&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;kilometers&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;away&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;so&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;맞았어요 — &lt;b&gt;what&lt;/b&gt; 가 아니라 &lt;b&gt;that&lt;/b&gt; 예요. \&quot;~하기 위해\&quot; 는 so that&quot;, &quot;&lt;b&gt;she&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;could&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;enter&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;high&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;school.&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;]"><button class="sel-btn" onclick="pick(this,17,0)">So</button><button class="sel-btn" onclick="pick(this,17,1)">her</button><button class="sel-btn" onclick="pick(this,17,2)">father</button><button class="sel-btn" onclick="pick(this,17,3)">moved</button><button class="sel-btn" onclick="pick(this,17,4)">the</button><button class="sel-btn" onclick="pick(this,17,5)">family</button><button class="sel-btn" onclick="pick(this,17,6)">200</button><button class="sel-btn" onclick="pick(this,17,7)">kilometers</button><button class="sel-btn" onclick="pick(this,17,8)">away</button><button class="sel-btn" onclick="pick(this,17,9)">so</button><button class="sel-btn" onclick="pick(this,17,10)">what</button><button class="sel-btn" onclick="pick(this,17,11)">she</button><button class="sel-btn" onclick="pick(this,17,12)">could</button><button class="sel-btn" onclick="pick(this,17,13)">enter</button><button class="sel-btn" onclick="pick(this,17,14)">high</button><button class="sel-btn" onclick="pick(this,17,15)">school.</button></span><div class="fix-why">➜ "~하도록" 은 so <span class="sel-group mini" data-qi="18" data-ans="0" data-why="[&quot;맞았어요 — \&quot;~하기 위해\&quot; 는 so that&quot;, &quot;아니에요 — \&quot;~하기 위해\&quot; 는 so that&quot;]"><button class="sel-btn" onclick="pick(this,18,0)">that</button><button class="sel-btn" onclick="pick(this,18,1)">what</button></span></div></div><div class="fix-row"><div class="fix-lead">아래 문장에서 <b>틀린 낱말 하나</b>를 짚어 보세요.</div><span class="sel-group words" data-qi="19" data-ans="9" data-why="[&quot;&lt;b&gt;After&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;graduating&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;from&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;high&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;school&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;in&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;1932,&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;she&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;was&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;맞았어요 — &lt;b&gt;admitteding&lt;/b&gt; 가 아니라 &lt;b&gt;admitted&lt;/b&gt; 예요. 주어가 당하는 쪽이면 be + 과거분사&quot;, &quot;&lt;b&gt;to&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;a&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;black&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;college&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;at&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;the&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;age&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;of&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;fifteen.&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;]"><button class="sel-btn" onclick="pick(this,19,0)">After</button><button class="sel-btn" onclick="pick(this,19,1)">graduating</button><button class="sel-btn" onclick="pick(this,19,2)">from</button><button class="sel-btn" onclick="pick(this,19,3)">high</button><button class="sel-btn" onclick="pick(this,19,4)">school</button><button class="sel-btn" onclick="pick(this,19,5)">in</button><button class="sel-btn" onclick="pick(this,19,6)">1932,</button><button class="sel-btn" onclick="pick(this,19,7)">she</button><button class="sel-btn" onclick="pick(this,19,8)">was</button><button class="sel-btn" onclick="pick(this,19,9)">admitteding</button><button class="sel-btn" onclick="pick(this,19,10)">to</button><button class="sel-btn" onclick="pick(this,19,11)">a</button><button class="sel-btn" onclick="pick(this,19,12)">black</button><button class="sel-btn" onclick="pick(this,19,13)">college</button><button class="sel-btn" onclick="pick(this,19,14)">at</button><button class="sel-btn" onclick="pick(this,19,15)">the</button><button class="sel-btn" onclick="pick(this,19,16)">age</button><button class="sel-btn" onclick="pick(this,19,17)">of</button><button class="sel-btn" onclick="pick(this,19,18)">fifteen.</button></span><div class="fix-why">➜ 주어가 당하는 쪽이면 <span class="sel-group mini" data-qi="20" data-ans="0" data-why="[&quot;맞았어요 — 주어가 당하는 쪽이면 be + 과거분사&quot;, &quot;아니에요 — 주어가 당하는 쪽이면 be + 과거분사&quot;]"><button class="sel-btn" onclick="pick(this,20,0)">be + 과거분사</button><button class="sel-btn" onclick="pick(this,20,1)">be + -ing</button></span></div></div><div class="fix-row"><div class="fix-lead">아래 문장에서 <b>틀린 낱말 하나</b>를 짚어 보세요.</div><span class="sel-group words" data-qi="21" data-ans="5" data-why="[&quot;&lt;b&gt;By&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;her&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;junior&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;year,&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;she&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;맞았어요 — &lt;b&gt;has&lt;/b&gt; 가 아니라 &lt;b&gt;had&lt;/b&gt; 예요. 과거보다 더 앞선 일은 had + 과거분사&quot;, &quot;&lt;b&gt;taken&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;all&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;the&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;math&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;courses&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;the&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;college&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;could&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;offer.&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;]"><button class="sel-btn" onclick="pick(this,21,0)">By</button><button class="sel-btn" onclick="pick(this,21,1)">her</button><button class="sel-btn" onclick="pick(this,21,2)">junior</button><button class="sel-btn" onclick="pick(this,21,3)">year,</button><button class="sel-btn" onclick="pick(this,21,4)">she</button><button class="sel-btn" onclick="pick(this,21,5)">has</button><button class="sel-btn" onclick="pick(this,21,6)">taken</button><button class="sel-btn" onclick="pick(this,21,7)">all</button><button class="sel-btn" onclick="pick(this,21,8)">the</button><button class="sel-btn" onclick="pick(this,21,9)">math</button><button class="sel-btn" onclick="pick(this,21,10)">courses</button><button class="sel-btn" onclick="pick(this,21,11)">the</button><button class="sel-btn" onclick="pick(this,21,12)">college</button><button class="sel-btn" onclick="pick(this,21,13)">could</button><button class="sel-btn" onclick="pick(this,21,14)">offer.</button></span><div class="fix-why">➜ 과거완료는 과거보다 더 <span class="sel-group mini" data-qi="22" data-ans="0" data-why="[&quot;맞았어요 — 과거보다 더 앞선 일은 had + 과거분사&quot;, &quot;아니에요 — 과거보다 더 앞선 일은 had + 과거분사&quot;]"><button class="sel-btn" onclick="pick(this,22,0)">앞</button><button class="sel-btn" onclick="pick(this,22,1)">뒤</button></span>의 일을 나타낸다</div></div><div class="fix-row"><div class="fix-lead">아래 문장에서 <b>틀린 낱말 하나</b>를 짚어 보세요.</div><span class="sel-group words" data-qi="23" data-ans="18" data-why="[&quot;&lt;b&gt;Her&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;mentor&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;gladly&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;offered&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;special&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;classes&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;just&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;for&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;her,&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;but&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;he&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;was&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;not&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;happy&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;when&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;he&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;had&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;to&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;맞았어요 — &lt;b&gt;telling&lt;/b&gt; 가 아니라 &lt;b&gt;tell&lt;/b&gt; 예요. to 뒤에는 동사원형&quot;, &quot;&lt;b&gt;his&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;outstanding&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;student&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;about&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;her&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;career&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;, &quot;&lt;b&gt;opportunities.&lt;/b&gt; 는 바르게 쓰였어요 — 다른 곳을 더 보세요&quot;]"><button class="sel-btn" onclick="pick(this,23,0)">Her</button><button class="sel-btn" onclick="pick(this,23,1)">mentor</button><button class="sel-btn" onclick="pick(this,23,2)">gladly</button><button class="sel-btn" onclick="pick(this,23,3)">offered</button><button class="sel-btn" onclick="pick(this,23,4)">special</button><button class="sel-btn" onclick="pick(this,23,5)">classes</button><button class="sel-btn" onclick="pick(this,23,6)">just</button><button class="sel-btn" onclick="pick(this,23,7)">for</button><button class="sel-btn" onclick="pick(this,23,8)">her,</button><button class="sel-btn" onclick="pick(this,23,9)">but</button><button class="sel-btn" onclick="pick(this,23,10)">he</button><button class="sel-btn" onclick="pick(this,23,11)">was</button><button class="sel-btn" onclick="pick(this,23,12)">not</button><button class="sel-btn" onclick="pick(this,23,13)">happy</button><button class="sel-btn" onclick="pick(this,23,14)">when</button><button class="sel-btn" onclick="pick(this,23,15)">he</button><button class="sel-btn" onclick="pick(this,23,16)">had</button><button class="sel-btn" onclick="pick(this,23,17)">to</button><button class="sel-btn" onclick="pick(this,23,18)">telling</button><button class="sel-btn" onclick="pick(this,23,19)">his</button><button class="sel-btn" onclick="pick(this,23,20)">outstanding</button><button class="sel-btn" onclick="pick(this,23,21)">student</button><button class="sel-btn" onclick="pick(this,23,22)">about</button><button class="sel-btn" onclick="pick(this,23,23)">her</button><button class="sel-btn" onclick="pick(this,23,24)">career</button><button class="sel-btn" onclick="pick(this,23,25)">opportunities.</button></span><div class="fix-why">➜ to 뒤에는 <span class="sel-group mini" data-qi="24" data-ans="0" data-why="[&quot;맞았어요 — to 뒤에는 동사원형&quot;, &quot;아니에요 — to 뒤에는 동사원형&quot;]"><button class="sel-btn" onclick="pick(this,24,0)">동사원형</button><button class="sel-btn" onclick="pick(this,24,1)">-ing</button></span></div></div></div></div></div>
+<div style="position:sticky;bottom:0;z-index:30;padding:10px 0 14px;background:linear-gradient(to top,var(--bg) 70%,transparent)">
+    <button id="submit-btn" class="submit-btn" onclick="submitSoFar()" style="width:100%;padding:13px 16px;border:none;border-radius:12px;cursor:pointer;
+      background:linear-gradient(135deg,#8a6a3e,#5c3d1e);color:#fff;font-weight:800;font-size:.95rem;box-shadow:0 3px 10px rgba(0,0,0,.15)">
+      📤 여기까지 제출하기</button>
+    <div style="text-align:center;font-size:.76rem;color:#8a8178;margin-top:6px">다 못 풀어도 괜찮아요 — 누른 만큼 선생님께 기록됩니다</div>
+  </div>
+
+  <div class="result-card" id="result">
+    <div style="font-family:'Black Han Sans',sans-serif;font-size:1.1rem;color:var(--accent)">🎉 3과 워크북 (새 유형 샘플) 완료!</div>
+    <div class="result-score" id="r-score"></div>
+    <div class="result-msg" id="r-msg"></div>
+    <div class="result-btns">
+      <button class="btn-retry" onclick="bnRestart()">🔄 다시 풀기</button>
+      <button class="btn-back" onclick="location.href='https://bomnalenglish.github.io/bomnalquizz/'">← 허브로</button>
+    </div>
+  </div>
+</main>
+
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getFirestore,collection,addDoc,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+const cfg={apiKey:"AIzaSyCxS524S8KAaF87DomPtl9sJdF-eqes404",authDomain:"bomnalvaca.firebaseapp.com",projectId:"bomnalvaca",storageBucket:"bomnalvaca.firebasestorage.app",messagingSenderId:"115868052300",appId:"1:115868052300:web:765c08867b6f1ce0987de9"};
+const app=initializeApp(cfg);const db=getFirestore(app);
+window._log=async(d)=>{if(d&&(d.q!==undefined||d.result==='ok'||d.result==='fail'||d.result==='partial'))return;try{await addDoc(collection(db,"quiz_results"),{...d,timestamp:serverTimestamp(),file:"jongchonko_1grade_ce2_lesson3_workbook"});}catch(e){}};
+</script>
+
+<script>
+const NAME=sessionStorage.getItem("bn_name")||localStorage.getItem("bn_name")||"학생";
+const SCHOOL=sessionStorage.getItem("bn_school")||localStorage.getItem("bn_school")||"고운고등학교";
+function nm(s){return (s||'').trim().toLowerCase().replace(/[?.!,'"\u2019\u201c\u201d]/g,'').replace(/\s+/g,' ');}
+let done={};let earned=0;let doneQ=0;let totalQ=0;
+const ARR_WORDS={"146": ["Katherine Johnson, a \"Computer\" Who Looked Beyond Numbers"], "147": ["Katherine Johnson", "was born", "on August 26, 1918, in West Virginia, in the U.S.,", "and was", "the youngest", "of four children", "in a black family"], "148": ["Katherine", "was a math prodigy", "from early childhood"], "149": ["Reflecting on her youth,", "Katherine once said,", "\"I counted everything—the steps to the road,", "the steps up to church,", "the number of dishes, spoons,", "and forks I washed.\""], "150": ["she excitedly", "added,", "\"I couldn't wait", "to get", "to high school", "to take", "algebra and geometry.\""], "151": ["But Katherine's hometown", "had a segregated education system,", "and black students", "could not enter high school"], "152": ["so her father", "moved the family", "200 kilometers away", "so that she could enter high school"], "153": ["after graduating", "from high school", "in 1932,", "she was admitted", "to a black college", "at the age", "of fifteen"], "154": ["by her junior year,", "she had taken", "all the math courses", "the college could offer"], "155": ["her mentor", "gladly offered", "special classes", "just for her,", "but he", "was not happy", "when he had to tell", "his outstanding student", "about her career opportunities"], "156": ["\"you would make", "a good research mathematician,\"", "he told his seventeen-year-old student,", "and", "\"I'm going to prepare", "you for this career.\""], "157": ["Katherine asked,", "\"where will I find a job?\"", "\"that,\" he replied,", "\"will be your problem.\""], "158": ["the path", "ahead", "was unclear", "and full", "of obstacles,", "but Katherine", "knew", "she", "had", "the strength", "to make", "her own way"], "159": ["in 1935", "at the age", "of eighteen,", "Katherine", "graduated", "from college", "with highest honors", "and began", "her career", "as a teacher", "at a black public school"], "160": ["at that time,", "teaching", "was the only option", "available", "to her"], "161": ["it", "was", "not", "until 1953", "that Katherine", "found", "a job", "at a NASA field center", "in Virginia"], "162": ["there, she worked", "as one", "of the \"Black computers\"", "who did complex calculations manually", "to support", "white male engineers"], "163": ["though they", "greatly contributed", "to the space project,", "they endured", "a lot of discrimination,", "including segregation", "in the office", "and being referred", "to with terms like \"girl\"", "despite being professional women"], "164": ["two weeks", "into the job,", "Katherine", "was reassigned", "to NASA's elite space research division"], "165": ["there,", "she was", "the only black female member", "of the staff"], "166": ["despite her enormous contributions,", "the important research meetings", "were held only", "among white staff members"], "167": ["when she asked", "for permission", "to attend the meetings,", "her male colleagues said", "that \"the girls\"", "didn't usually go"], "168": ["Katherine asked", "\"is there", "a law", "that says", "I can't go?\""], "169": ["the embarrassed male workers", "had no choice", "but to let her in"], "170": ["by asking questions", "no one had ever asked,", "Katherine", "ended", "a discriminatory custom"], "171": ["she", "had faced barriers,", "but", "her efforts", "to overcome them", "paid off"], "172": ["she felt proud", "and continued her work", "with courage"], "173": ["in 1960,", "she wrote a research paper", "with another engineer", "about how to place", "a spacecraft", "into orbit"], "174": ["that", "was the first time", "a woman", "in her division", "received credit", "as an author", "of a research report"], "175": ["Katherine's remarkable calculations", "by hand", "were trusted", "more than digital computers"], "176": ["in early 1962,", "John Glenn,", "one of the pioneering American astronauts,", "was preparing", "to orbit the Earth", "for the first time", "in American history"], "177": ["NASA", "used an electronic computer,", "first introduced", "into the space program", "a year earlier,", "to calculate the spaceship's trajectory,", "but", "it made many minor errors"], "178": ["Glenn,", "who was concerned", "about its accuracy,", "asked", "Katherine Johnson", "to double-check", "the machine's figures", "by hand"], "179": ["if she says", "the numbers are good,", "he said", "I'm good to go"], "180": ["using only a pencil", "and a slide rule,", "Katherine spent a day and a half", "checking the calculations", "and finally made sure of them"], "181": ["eventually, Glenn", "became the first", "American astronaut", "to orbit", "the Earth"], "182": ["Katherine", "was also part", "of the team", "that performed calculations", "for Apollo 11,", "which sent", "the first three men", "to the Moon in 1969,", "and even", "the plan", "to put people", "on Mars,", "which is", "still being worked on", "today"], "183": ["Katherine", "retired", "in 1986", "after thirty-three years", "at NASA"], "184": ["after that,", "she dedicated", "the rest", "of her life", "to championing", "access", "to STEM education", "for Black girls"], "185": ["for her contributions,", "President Barack Obama", "awarded her", "the Presidential Medal of Freedom in 2015", "and said", "\"Katherine G. Johnson", "refused to be limited", "by society's expectations", "of her gender and race", "while expanding", "the boundaries", "of humanity's reach.\""], "186": ["in 2017", "NASA dedicated", "a building", "in her honor", "in Virginia", "and named", "it", "the Katherine G. Johnson Computational Research Facility"], "187": ["she died", "on February 24,", "at the age", "of 101", "but", "her pioneering legacy", "will never be forgotten"], "188": ["language", "has the power", "to shape", "our attitudes and behaviors"], "189": ["inclusive language", "serves as", "an important tool", "for acknowledging diversity,", "encouraging sensitivity to differences,", "and promoting equal opportunities"], "190": ["it actively contributes", "to breaking biases", "and discriminatory language", "and to building", "an welcoming environment", "of inclusivity"], "191": ["for example,", "adopting the gender-neutral term \"mail carrier\"", "instead of \"mailman\" or \"mailwoman\"", "conveys a powerful message:", "it recognizes the capabilities", "of individuals", "of either gender", "for delivering the mail"], "192": ["this seemingly minor change", "reflects", "a more extensive commitment", "to acknowledging", "the ability", "of every person,", "regardless of", "his or her gender"], "193": ["another aspect", "of inclusive communication,", "known as person-first language,", "encourages us", "to prioritize the individual", "over any defining characteristic"], "194": ["Instead of saying \"colored people,\" we should use \"people of color.\""], "195": ["similarly, opting for \"person with blindness\"", "over \"blind person\"", "highlights the unique identity and dignity", "of each individual", "while avoiding the reduction", "of a person", "to an unusual characteristic"], "196": ["in summary,", "inclusive language", "plays a crucial role", "in creating", "a fair and welcoming society,", "where every individual", "can embrace", "his or her genuine self", "without the fear of exclusion"]};
+const ARR_ANS={"146": "Katherine Johnson, a \"Computer\" Who Looked Beyond Numbers", "147": "Katherine Johnson was born on August 26, 1918, in West Virginia, in the U.S., and was the youngest of four children in a black family.", "148": "Katherine was a math prodigy from early childhood.", "149": "Reflecting on her youth, Katherine once said, \"I counted everything—the steps to the road, the steps up to church, the number of dishes, spoons, and forks I washed.\"", "150": "She excitedly added, \"I couldn't wait to get to high school to take algebra and geometry.\"", "151": "But Katherine's hometown had a segregated education system, and black students could not enter high school.", "152": "So her father moved the family 200 kilometers away so that she could enter high school.", "153": "After graduating from high school in 1932, she was admitted to a black college at the age of fifteen.", "154": "By her junior year, she had taken all the math courses the college could offer.", "155": "Her mentor gladly offered special classes just for her, but he was not happy when he had to tell his outstanding student about her career opportunities.", "156": "\"You would make a good research mathematician,\" he told his seventeen-year-old student, \"and I'm going to prepare you for this career.\"", "157": "Katherine asked, \"Where will I find a job?\" \"That,\" he replied, \"will be your problem.\"", "158": "The path ahead was unclear and full of obstacles, but Katherine knew she had the strength to make her own way.", "159": "In 1935, at the age of eighteen, Katherine graduated from college with highest honors and began her career as a teacher at a black public school.", "160": "At that time, teaching was the only option available to her.", "161": "It was not until 1953 that Katherine found a job at a NASA field center in Virginia.", "162": "There, she worked as one of the \"Black computers\" who did complex calculations manually to support white male engineers.", "163": "Though they greatly contributed to the space project, they endured a lot of discrimination, including segregation in the office and being referred to with terms like \"girl\" despite being professional women.", "164": "Two weeks into the job, Katherine was reassigned to NASA's elite space research division.", "165": "There, she was the only black female member of the staff.", "166": "Despite her enormous contributions, the important research meetings were held only among white staff members.", "167": "When she asked for permission to attend the meetings, her male colleagues said that \"the girls\" didn't usually go.", "168": "Katherine asked, \"Is there a law that says I can't go?\"", "169": "The embarrassed male workers had no choice but to let her in.", "170": "By asking questions no one had ever asked, Katherine ended a discriminatory custom.", "171": "She had faced barriers, but her efforts to overcome them paid off.", "172": "She felt proud and continued her work with courage.", "173": "In 1960, she wrote a research paper with another engineer about how to place a spacecraft into orbit.", "174": "That was the first time a woman in her division received credit as an author of a research report.", "175": "Katherine's remarkable calculations by hand were trusted more than digital computers.", "176": "In early 1962, John Glenn, one of the pioneering American astronauts, was preparing to orbit the Earth for the first time in American history.", "177": "NASA used an electronic computer, first introduced into the space program a year earlier, to calculate the spaceship's trajectory, but it made many minor errors.", "178": "Glenn, who was concerned about its accuracy, asked Katherine Johnson to double-check the machine's figures by hand.", "179": "\"If she says the numbers are good,\" he said, \"I'm good to go.\"", "180": "Using only a pencil and a slide rule, Katherine spent a day and a half checking the calculations and finally made sure of them.", "181": "Eventually, Glenn became the first American astronaut to orbit the Earth.", "182": "Katherine was also part of the team that performed calculations for Apollo 11, which sent the first three men to the Moon in 1969, and even the plan to put people on Mars, which is still being worked on today.", "183": "Katherine retired in 1986 after thirty-three years at NASA.", "184": "After that, she dedicated the rest of her life to championing access to STEM education for Black girls.", "185": "For her contributions, President Barack Obama awarded her the Presidential Medal of Freedom in 2015 and said, \"Katherine G. Johnson refused to be limited by society's expectations of her gender and race while expanding the boundaries of humanity's reach.\"", "186": "In 2017, NASA dedicated a building in her honor in Virginia and named it the Katherine G. Johnson Computational Research Facility.", "187": "She died on February 24, at the age of 101, but her pioneering legacy will never be forgotten.", "188": "Language has the power to shape our attitudes and behaviors.", "189": "Inclusive language serves as an important tool for acknowledging diversity, encouraging sensitivity to differences, and promoting equal opportunities.", "190": "It actively contributes to breaking biases and discriminatory language and to building an welcoming environment of inclusivity.", "191": "For example, adopting the gender-neutral term \"mail carrier\" instead of \"mailman\" or \"mailwoman\" conveys a powerful message: it recognizes the capabilities of individuals of either gender for delivering the mail.", "192": "This seemingly minor change reflects a more extensive commitment to acknowledging the ability of every person, regardless of his or her gender.", "193": "Another aspect of inclusive communication, known as person-first language, encourages us to prioritize the individual over any defining characteristic.", "194": "Instead of saying \"colored people,\" we should use \"people of color.\"", "195": "Similarly, opting for \"person with blindness\" over \"blind person\" highlights the unique identity and dignity of each individual while avoiding the reduction of a person to an unusual characteristic.", "196": "In summary, inclusive language plays a crucial role in creating a fair and welcoming society, where every individual can embrace his or her genuine self without the fear of exclusion."};
+const MULTI={};
+
+function pick(btn,i,idx){
+  const grp=btn.closest('.sel-group');if(grp.dataset.checked)return;grp.dataset.checked='1';
+  const ans=parseInt(grp.dataset.ans);const btns=grp.querySelectorAll('.sel-btn');
+  btns.forEach(b=>b.disabled=true);
+  const ok=idx===ans;btn.classList.add(ok?'correct':'wrong');if(!ok)btns[ans].classList.add('correct');
+  if(!done[i]){done[i]=true;if(ok)earned++;doneQ++;updateUI();}
+  log('sel'+i,ok);
+}
+function autoChk(i,ans){
+  if(done[i])return;
+  const inp=document.getElementById('b'+i);if(!inp)return;
+  const v=nm(inp.value), c=nm(ans);
+  if(v===c){inp.classList.add('correct-inp');inp.disabled=true;done[i]=true;earned++;doneQ++;updateUI();log('blank'+i,true);}
+  else if(v.length>1&&c.startsWith(v)){inp.style.borderBottomColor='#f0a000';}
+}
+function toggleChip(el){
+  if(el.classList.contains('disabled'))return;
+  el.classList.toggle('picked');
+}
+function checkMulti(i){
+  if(done[i])return;done[i]=true;
+  const want=MULTI[i].slice().sort((a,b)=>a-b);
+  const chips=[...document.querySelectorAll('.word-chip.pickable[data-grp="'+i+'"]')];
+  const got=chips.filter(c=>c.classList.contains('picked')).map(c=>parseInt(c.dataset.n)).sort((a,b)=>a-b);
+  const ok=want.length===got.length&&want.every((v,k)=>v===got[k]);
+  chips.forEach(c=>{const n=parseInt(c.dataset.n);c.classList.add('disabled');
+    if(want.indexOf(n)>=0)c.classList.add('correct-chip');
+    else if(c.classList.contains('picked'))c.classList.add('wrong-chip');});
+  const fb=document.getElementById('fb'+i);
+  if(fb){fb.className='q-feedback '+(ok?'ok':'fail')+' show';
+    fb.innerHTML=ok?'✅ 정답! <span class="pt-tag">+1점</span>':'❌ 오답<br><strong>정답: '+want.map(n=>'('+n+')').join(' ')+'</strong>';}
+  if(ok)earned++;doneQ++;updateUI();log('multi'+i,ok);
+}
+function initArranges(){
+  Object.keys(ARR_WORDS).forEach(i=>{
+    const pool=document.getElementById('pool'+i);if(!pool)return;
+    const ws=ARR_WORDS[i].slice().sort(()=>Math.random()-.5);
+    pool.innerHTML='';
+    ws.forEach(w=>{const c=document.createElement('span');c.className='word-chip';c.textContent=w;
+      c.onclick=()=>moveTo(c,'ans'+i,'pool'+i);pool.appendChild(c);});
+  });
+}
+function moveTo(chip,ansId,poolId){
+  if(chip.classList.contains('disabled'))return;
+  const ans=document.getElementById(ansId);
+  const ph=ans.querySelector(':scope > span:not(.word-chip)');if(ph)ph.remove();
+  chip.onclick=()=>moveBack(chip,ansId,poolId);ans.appendChild(chip);
+}
+function moveBack(chip,ansId,poolId){
+  if(chip.classList.contains('disabled'))return;
+  const pool=document.getElementById(poolId);
+  chip.onclick=()=>moveTo(chip,ansId,poolId);pool.appendChild(chip);
+  const ans=document.getElementById(ansId);
+  if(!ans.children.length)ans.innerHTML='<span style="color:#c0b4a4;font-size:.73rem">여기에 배열하세요…</span>';
+}
+function checkArr(i){
+  if(done[i])return;done[i]=true;
+  const ans=document.getElementById('ans'+i);
+  const chips=ans.querySelectorAll('.word-chip');
+  const user=[...chips].map(c=>c.textContent.trim()).join(' ');
+  const ok=nm(user)===nm(ARR_ANS[i]);
+  chips.forEach(c=>{c.classList.add(ok?'correct-chip':'wrong-chip');c.classList.add('disabled');c.onclick=null;});
+  document.getElementById('pool'+i).querySelectorAll('.word-chip').forEach(c=>{c.classList.add('disabled');c.onclick=null;});
+  const fb=document.getElementById('fb'+i);
+  if(fb){fb.className='q-feedback '+(ok?'ok':'fail')+' show';
+    fb.innerHTML=ok?'✅ 정답! <span class="pt-tag">+1점</span>':'❌ 오답<br><strong>정답: '+ARR_ANS[i]+'</strong>';}
+  const btn=ans.closest('.arrange-wrap').querySelector('.q-check-btn');if(btn)btn.setAttribute('disabled','');
+  if(ok)earned++;doneQ++;updateUI();log('arr'+i,ok);
+}
+function log(q,ok){if(window._log)window._log({name:NAME,school:SCHOOL,q:q,result:ok?'ok':'fail',earned:ok?1:0,total:1});}
+function countTotal(){
+  return document.querySelectorAll('.sel-group').length
+       + document.querySelectorAll('.blank-input').length
+       + document.querySelectorAll('.arrange-wrap .q-check-btn').length;
+}
+function updateUI(){
+  totalQ=countTotal();
+  document.getElementById('score-val').textContent=earned;
+  document.getElementById('score-max').textContent=totalQ;
+  document.getElementById('prog').style.width=(doneQ/totalQ*100)+'%';
+  document.getElementById('prog-txt').textContent=doneQ+' / '+totalQ+' 완료';
+  if(doneQ>=totalQ)showResult();
+}
+function showResult(){
+  const pct=Math.round(earned/totalQ*100);
+  if(window._log)window._log({studentName:NAME,school:SCHOOL,score:pct,correct:earned,
+    wrong:totalQ-earned,total:totalQ,quizType:'종촌고1 공통영어2 3과 워크북',completed:true});
+  document.getElementById('r-score').textContent=earned+' / '+totalQ+'점 ('+pct+'%)';
+  document.getElementById('r-msg').textContent=pct>=90?'완벽합니다! 워크북 마스터! 🌟':pct>=70?'잘했어요! 💪':pct>=50?'절반 이상! 📖':'기초부터 차근차근! 🔄';
+  document.getElementById('result').classList.add('show');
+  setTimeout(()=>window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'}),200);
+}
+
+function submitSoFar(){
+  if(doneQ===0){ alert('아직 푼 문제가 없어요.'); return; }
+  const pct=Math.round(earned/doneQ*100);
+  if(!confirm('지금까지 푼 '+doneQ+'문제를 선생님께 제출할까요?\n\n맞은 개수 '+earned+' / '+doneQ+' ('+pct+'%)\n제출한 뒤에도 이어서 풀 수 있어요.')) return;
+  if(window._log)window._log({studentName:NAME,school:SCHOOL,score:pct,correct:earned,
+    wrong:doneQ-earned,total:doneQ,quizType:'종촌고1 공통영어2 3과 워크북',completed:false,
+    진행:doneQ+' / '+totalQ});
+  document.querySelectorAll('#submit-btn,.submit-btn').forEach(b=>{
+    b.textContent='✅ '+doneQ+'문제 제출 완료';
+    setTimeout(()=>{b.textContent='📤 여기까지 제출하기';},2500);
+  });
+}
+
+function bnRestart(){
+  if(confirm('정말 처음부터 다시 푸시겠습니까?\n\n지금까지 푼 내용과 점수가 모두 지워지고 처음으로 돌아갑니다.')) location.reload();
+}
+window.addEventListener('load',()=>{initArranges();updateUI();});
+</script>
+<script src="bn_force.js"></script>
+
+<div id="whyBar"></div>
+<script>
+/* ── 고르기: 맞출 때까지 다시 + 왜 그런지 한 줄 ── */
+var WRONG_IDS = [];
+function _why(grp){ try{ return JSON.parse(grp.dataset.why||'[]'); }catch(e){ return []; } }
+function showWhy(text, ok){
+  var b=document.getElementById('whyBar');
+  if(!b) return;
+  b.className='on '+(ok?'ok':'no');
+  b.textContent=(ok?'✅ ':'❌ ')+text;
+  clearTimeout(window._whyT);
+  window._whyT=setTimeout(function(){ b.className=''; }, 7000);
+}
+function pick(btn,i,idx){
+  var grp=btn.closest('.sel-group');
+  if(grp.dataset.checked) return;
+  var ans=parseInt(grp.dataset.ans), why=_why(grp);
+  var btns=grp.querySelectorAll('.sel-btn');
+  if(idx===ans){
+    grp.dataset.checked='1';
+    btns.forEach(function(b){ b.disabled=true; });
+    btn.classList.add('got');
+    var first = grp.dataset.miss!=='1';
+    if(!done[i]){ done[i]=true; if(first) earned++; doneQ++; updateUI(); }
+    showWhy((first?'':'다시 맞혔어요 · ')+(why[idx]||'정답이에요'), true);
+    log('sel'+i, first);
+  }else{
+    if(grp.dataset.miss!=='1'){ grp.dataset.miss='1'; WRONG_IDS.push(i); }
+    btn.classList.add('miss'); btn.disabled=true;
+    showWhy((why[idx]||'이것은 아니에요')+'  — 다시 골라 보세요', false);
+  }
+  refreshRetry();
+}
+function wrongBefore(el){
+  var all=[].slice.call(document.querySelectorAll('.sel-group[data-miss="1"]'));
+  return all.filter(function(g){
+    return el.compareDocumentPosition(g) & Node.DOCUMENT_POSITION_PRECEDING;
+  });
+}
+function refreshRetry(){
+  [].forEach.call(document.querySelectorAll('.retry-btn'), function(b){
+    var n=wrongBefore(b).length;
+    b.style.display = n ? '' : 'none';
+    b.textContent = '↺ 틀린 것 ' + n + '개 다시 풀기';
+  });
+}
+function retryWrong(btn){
+  var gs=wrongBefore(btn);
+  if(!gs.length) return;
+  gs.forEach(function(g){
+    g.removeAttribute('data-checked'); g.removeAttribute('data-miss');
+    var bs=[].slice.call(g.querySelectorAll('.sel-btn'));
+    bs.forEach(function(b){ b.disabled=false; b.classList.remove('miss','got','correct','wrong'); });
+    for(var k=bs.length-1;k>0;k--){ var j=Math.floor(Math.random()*(k+1)); g.appendChild(bs[j]); bs.splice(j,1); }
+    bs.forEach(function(b){ g.appendChild(b); });
+  });
+  var b=document.getElementById('whyBar'); if(b) b.className='';
+  gs[0].scrollIntoView({behavior:'smooth', block:'center'});
+  refreshRetry();
+}
+window.addEventListener('load', refreshRetry);
+</script>
+
+<div id="refPick"><div class="rp-card">
+  <div class="rp-title">📌 학습할 지문 고르기</div>
+  <div class="rp-sub">우리 학교 시험범위에 드는 지문만 골라서 풀 수 있어요.<br>고른 지문만 점수에 들어갑니다.</div>
+  <div class="rp-grid" id="rpGrid"></div>
+  <div class="rp-btns">
+    <button type="button" onclick="rpAll(1)">전체 선택</button>
+    <button type="button" onclick="rpAll(0)">전체 해제</button>
+    <button type="button" onclick="rpLast()">지난번 범위</button>
+  </div>
+  <div class="rp-warn" id="rpWarn"></div>
+  <button class="rp-start" type="button" onclick="rpStart()">이 범위로 시작하기 ▶</button>
+</div></div>
+<script>
+/* ── 시험범위에 맞게 지문 골라 풀기 ── */
+var RP_KEY = 'bnRange_' + (location.pathname.split('/').pop() || 'wb');
+var RP_BLOCKS = [], RP_REFS = [], RP_CNT = {}, RP_SEL = [], RP_STARTED = false;
+
+function rpNodes(){
+  return [].slice.call(document.querySelectorAll('.sec-header,.sec-submit,.para-block'));
+}
+function rpCount(b){
+  return b.querySelectorAll('.sel-group').length
+       + b.querySelectorAll('.blank-input').length
+       + b.querySelectorAll('.arrange-wrap .q-check-btn').length;
+}
+function rpScan(){
+  RP_BLOCKS = [].slice.call(document.querySelectorAll('.para-block'));
+  RP_BLOCKS.forEach(function(b){
+    var k = b.dataset.ref;
+    if (!k) {
+      var n = b.querySelector('.para-num');
+      k = n ? n.textContent.split('·')[0].trim() : '기타';
+      b.dataset.ref = k;
+    }
+    if (RP_REFS.indexOf(k) < 0) { RP_REFS.push(k); RP_CNT[k] = 0; }
+    RP_CNT[k] += rpCount(b);
+  });
+}
+function rpSaved(){
+  try { var v = JSON.parse(localStorage.getItem(RP_KEY) || 'null');
+        return (v && v.length) ? v.filter(function(k){ return RP_REFS.indexOf(k) >= 0; }) : null; }
+  catch(e) { return null; }
+}
+function rpGrid(sel){
+  var g = document.getElementById('rpGrid');
+  g.innerHTML = '';
+  RP_REFS.forEach(function(k){
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'rp-chip' + (sel.indexOf(k) >= 0 ? ' on' : '');
+    b.dataset.ref = k;
+    b.innerHTML = '';
+    var t = document.createElement('span');
+    t.textContent = k.replace(/\s*지문\s*$/, '');
+    var s = document.createElement('small');
+    s.textContent = RP_CNT[k] + '문항';
+    b.appendChild(t); b.appendChild(s);
+    b.onclick = function(){ b.classList.toggle('on'); document.getElementById('rpWarn').textContent = ''; };
+    g.appendChild(b);
+  });
+}
+function rpPicked(){
+  return [].slice.call(document.querySelectorAll('#rpGrid .rp-chip.on')).map(function(b){ return b.dataset.ref; });
+}
+function rpAll(on){
+  [].forEach.call(document.querySelectorAll('#rpGrid .rp-chip'), function(b){ b.classList.toggle('on', !!on); });
+  document.getElementById('rpWarn').textContent = '';
+}
+function rpLast(){
+  var v = rpSaved();
+  if (!v) { document.getElementById('rpWarn').textContent = '저장된 범위가 없어요.'; return; }
+  [].forEach.call(document.querySelectorAll('#rpGrid .rp-chip'), function(b){
+    b.classList.toggle('on', v.indexOf(b.dataset.ref) >= 0);
+  });
+  document.getElementById('rpWarn').textContent = '';
+}
+function rpTrim(){
+  var nodes = rpNodes(), i, j;
+  for (i = 0; i < nodes.length; i++) {
+    var n = nodes[i];
+    if (n.classList.contains('sec-header')) {
+      var any = false;
+      for (j = i + 1; j < nodes.length; j++) {
+        if (nodes[j].classList.contains('sec-header')) break;
+        if (nodes[j].classList.contains('para-block') && !nodes[j].classList.contains('off')) { any = true; break; }
+      }
+      n.classList.toggle('off', !any);
+    } else if (n.classList.contains('sec-submit')) {
+      var any2 = false;
+      for (j = i - 1; j >= 0; j--) {
+        if (nodes[j].classList.contains('sec-submit') || nodes[j].classList.contains('sec-header')) break;
+        if (nodes[j].classList.contains('para-block') && !nodes[j].classList.contains('off')) { any2 = true; break; }
+      }
+      n.classList.toggle('off', !any2);
+    }
+  }
+}
+function rpBar(sel){
+  var bar = document.getElementById('refBar');
+  if (!bar) {
+    bar = document.createElement('div');
+    bar.id = 'refBar';
+    var sp = document.createElement('span'); sp.id = 'refBarTxt';
+    var bt = document.createElement('button'); bt.type = 'button';
+    bt.textContent = '범위 바꾸기'; bt.onclick = rpOpen;
+    bar.appendChild(sp); bar.appendChild(bt);
+    var pw = document.querySelector('.prog-wrap');
+    if (pw) pw.parentNode.insertBefore(bar, pw); else document.querySelector('main').appendChild(bar);
+  }
+  var n = 0;
+  RP_BLOCKS.forEach(function(b){ if (!b.classList.contains('off')) n += rpCount(b); });
+  var names = sel.map(function(k){ return k.replace(/\s*지문\s*$/, ''); });
+  var txt = (sel.length === RP_REFS.length) ? '전체 지문' : names.join(', ');
+  document.getElementById('refBarTxt').textContent = '📌 ' + txt + ' · ' + n + '문항';
+}
+function rpApply(sel){
+  RP_BLOCKS.forEach(function(b){ b.classList.toggle('off', sel.indexOf(b.dataset.ref) < 0); });
+  rpTrim();
+  rpBar(sel);
+  if (typeof updateUI === 'function') updateUI();
+  if (typeof refreshRetry === 'function') refreshRetry();
+}
+function rpOpen(){
+  rpGrid(RP_SEL.length ? RP_SEL : RP_REFS);
+  document.getElementById('rpWarn').textContent = '';
+  document.getElementById('refPick').classList.add('on');
+}
+function rpStart(){
+  var sel = rpPicked();
+  if (!sel.length) { document.getElementById('rpWarn').textContent = '지문을 하나 이상 골라 주세요.'; return; }
+  sel = RP_REFS.filter(function(k){ return sel.indexOf(k) >= 0; });
+  try { localStorage.setItem(RP_KEY, JSON.stringify(sel)); } catch(e) {}
+  document.getElementById('refPick').classList.remove('on');
+  var changed = sel.join('|') !== RP_SEL.join('|');
+  if (RP_STARTED && changed && typeof doneQ === 'number' && doneQ > 0) { location.reload(); return; }
+  RP_SEL = sel; RP_STARTED = true;
+  rpApply(sel);
+  window.scrollTo({ top: 0 });
+}
+/* 숨긴 지문은 세지 않는다 */
+function _rpVis(e){ var p = e.closest ? e.closest('.para-block') : null; return !p || !p.classList.contains('off'); }
+function countTotal(){
+  var all = [].slice.call(document.querySelectorAll('.sel-group'))
+    .concat([].slice.call(document.querySelectorAll('.blank-input')))
+    .concat([].slice.call(document.querySelectorAll('.arrange-wrap .q-check-btn')));
+  return all.filter(_rpVis).length;
+}
+function wrongBefore(el){
+  var all = [].slice.call(document.querySelectorAll('.sel-group[data-miss="1"]')).filter(_rpVis);
+  return all.filter(function(g){
+    return el.compareDocumentPosition(g) & Node.DOCUMENT_POSITION_PRECEDING;
+  });
+}
+(function(){
+  rpScan();
+  var sv = rpSaved();
+  RP_SEL = sv && sv.length ? sv : RP_REFS.slice();
+  rpApply(RP_SEL);
+  rpGrid(RP_SEL);
+  document.getElementById('refPick').classList.add('on');
+})();
+</script>
+
+<script>
+/* 설명 줄에 굵은 글씨를 쓸 수 있게 */
+function showWhy(text, ok){
+  var b=document.getElementById('whyBar');
+  if(!b) return;
+  b.className='on '+(ok?'ok':'no');
+  b.innerHTML=(ok?'\u2705 ':'\u274c ')+text;
+  clearTimeout(window._whyT);
+  window._whyT=setTimeout(function(){ b.className=''; }, 8000);
+}
+</script>
+</body>
+</html>
