@@ -543,16 +543,21 @@ function stopAudio(){
 }
 function sayWord(w, cb){
   stopAudio();
+  // 기기 음성을 먼저 — 누른 그 순간에 바로 말해야 아이폰이 소리를 내 준다
+  ttsSay(String(w), (ok)=>{ if(ok){ cb && cb(); return; } onlineWord(w, cb); });
+}
+function onlineWord(w, cb){
   const url = 'https://dict.youdao.com/dictvoice?audio=' + encodeURIComponent(String(w).toLowerCase()) + '&type=2';
   const my = SAY_SEQ;
   try{
-    const a = new Audio(url);
-    curAudio = a;
+    const a = SENT_AUDIO;
     a.onended = ()=>{ if(my!==SAY_SEQ) return; curAudio=null; cb&&cb(); };
-    a.onerror = ()=>{ if(my!==SAY_SEQ) return; curAudio=null; ttsSay(w, cb); };
-    a.play().catch(()=>{ if(my!==SAY_SEQ) return; curAudio=null; ttsSay(w, cb); });
-  }catch(e){ ttsSay(w, cb); }
-  // (단어는 온라인 음성 → 기기 음성 순서를 그대로 둔다)
+    a.onerror = ()=>{ if(my!==SAY_SEQ) return; curAudio=null; cb&&cb(); };
+    a.src = url;
+    curAudio = a;
+    const pr = a.play();
+    if(pr && pr.catch) pr.catch(()=>{ if(my!==SAY_SEQ) return; curAudio=null; cb&&cb(); });
+  }catch(e){ cb && cb(); }
 }
 /* 문장 읽어 주기
    cb(true)  = 소리가 실제로 끝까지 났다
@@ -561,46 +566,49 @@ function saySentence(t, cb){
   stopAudio();
   const txt = String(t == null ? '' : t).trim();
   if(!txt){ cb && cb(false); return; }
-  // 아이폰은 기기 음성(TTS)이 소리 없이 '재생 중'으로 멈추는 경우가 많아
-  // 온라인 음성을 먼저 쓰고, 그게 안 될 때만 기기 음성으로 읽는다
+  // 아이폰은 누른 그 순간에 바로 말하기를 시작해야 소리를 내 준다.
+  // 그래서 기기 음성을 먼저 부르고, 그게 안 될 때만 온라인 음성으로 간다.
   const my = SAY_SEQ;
-  onlineSay(txt, (ok)=>{
+  ttsSay(txt, (ok)=>{
     if(my!==SAY_SEQ) return;
     if(ok){ cb && cb(true); return; }
-    setTimeout(()=>{ if(my===SAY_SEQ) ttsSay(txt, cb); }, 60);
+    onlineSay(txt, cb);
   });
 }
 
 /* 기기 자체 음성(TTS) — 0.8초 안에 말하기 시작하지 않으면 온라인 음성으로 */
 function ttsSay(t, cb){
-  if(!('speechSynthesis' in window)){ onlineSay(t, cb); return; }
+  // cb(true) = 기기 음성이 끝까지 말했다 / cb(false) = 못 말했다 (부른 쪽에서 온라인 음성으로)
+  if(!('speechSynthesis' in window)){ cb && cb(false); return; }
   let vs = [];
   try{ vs = speechSynthesis.getVoices() || []; }catch(e){}
-  if(!vs.length){ onlineSay(t, cb); return; }     // 목소리가 아예 없는 기기 → 바로 온라인 음성
+  // 목소리 목록이 아직 안 올라온 기기도 있다. 목록이 비어도 그냥 말해 본다.
 
   let done = false, started = false;
   function once(ok){ if(done) return; done = true; cb && cb(ok); }
   try{
+    try{ speechSynthesis.cancel(); }catch(e){}
+    try{ speechSynthesis.resume(); }catch(e){}   // 아이폰이 멈춰 있는 경우를 푼다
     const u = new SpeechSynthesisUtterance(t);
-    u.lang='en-US'; u.rate=0.82; u.pitch=1.05;
-    const v = vs.find(x=>/en-US/.test(x.lang) && /Samantha|Google US|Aria|Jenny/i.test(x.name))
-           || vs.find(x=>/^en/.test(x.lang));
+    u.lang='en-US'; u.rate=0.82; u.pitch=1.05; u.volume=1;
+    const v = vs.find(x=>/en[-_]US/i.test(x.lang) && /Samantha|Google US|Aria|Jenny|Alex/i.test(x.name))
+           || vs.find(x=>/en[-_]US/i.test(x.lang))
+           || vs.find(x=>/^en/i.test(x.lang));
     if(v) u.voice=v;
     u.onstart = ()=>{ started = true; };
     u.onend   = ()=>{ once(true); };
-    u.onerror = ()=>{ if(!done && !started){ done = true; onlineSay(t, cb); } else once(false); };
+    u.onerror = ()=>{ once(false); };
     speechSynthesis.speak(u);
-    // 말하기가 시작됐으면 끊지 않는다. 1.5초가 지나도 시작조차 못 하면 온라인 음성으로.
+    // 2초가 지나도 말하기를 시작조차 못 하면 포기하고 온라인 음성 차례로 넘긴다
     setTimeout(()=>{
       if(done || started) return;
       let active = false;
       try{ active = speechSynthesis.speaking || speechSynthesis.pending; }catch(e){}
       if(active) return;
-      done = true;
       try{ speechSynthesis.cancel(); }catch(e){}
-      onlineSay(t, cb);
-    }, 1500);
-  }catch(e){ if(!done){ done = true; onlineSay(t, cb); } }
+      once(false);
+    }, 2000);
+  }catch(e){ once(false); }
 }
 
 /* 온라인 음성 — 단어 듣기와 같은 곳 */
@@ -627,7 +635,7 @@ try{ speechSynthesis.getVoices(); speechSynthesis.onvoiceschanged=function(){}; 
 /* 첫 터치 때 소리 재생을 미리 허용받아 둔다 (아이패드는 사용자가 누른 직후에만 소리가 난다) */
 (function primeAudio(){
   function go(){
-    try{ const u = new SpeechSynthesisUtterance(' '); u.volume = 0; speechSynthesis.speak(u); }catch(e){}
+    try{ const u = new SpeechSynthesisUtterance('a'); u.volume = 0.01; u.rate = 2; speechSynthesis.speak(u); }catch(e){}
     try{ if(!SENT_AUDIO.src){ SENT_AUDIO.src = 'data:audio/wav;base64,UklGRrQBAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YZABAACAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA'; const p = SENT_AUDIO.play(); if(p && p.catch) p.catch(()=>{}); } }catch(e){}
     document.removeEventListener('pointerdown', go, true);
     document.removeEventListener('touchstart', go, true);
@@ -796,7 +804,7 @@ function speakRound(){
   saySentence(s.en, (played)=>{
     if(my !== tok) return;
     if(played) roundEnd();
-    else setNote('\ud83d\udd08 \uc18c\ub9ac\uac00 \uc548 \ub4e4\ub9ac\uba74 \uc544\ub798 \ud83d\udd0a \ub2e4\uc2dc \ub4e3\uae30\ub97c \ub20c\ub7ec \uc8fc\uc138\uc694');
+    else setNote('\ud83d\udd08 \uc18c\ub9ac\uac00 \uc548 \ub4e4\ub9ac\uba74 \uc544\ub798 \ud83d\udd0a \ub2e4\uc2dc \ub4e3\uae30\ub97c \ub20c\ub7ec \uc8fc\uc138\uc694 (\uc544\uc774\ud3f0\uc740 \uc606\uba74 \ubb34\uc74c \uc2a4\uc704\uce58\ub3c4 \ud655\uc778)');
   });
   // 소리가 안 나오는 기기 대비 — 문장 길이만큼 기다렸다가 넘어감
   clearTimeout(tmr);
