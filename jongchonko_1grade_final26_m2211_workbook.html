@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<link rel="manifest" href="manifest.json"/>
+<meta name="theme-color" content="#4a6741"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-title" content="봄날퀴즈"/>
+<link rel="apple-touch-icon" href="icon-192.png"/>
+<style>html,body{overscroll-behavior-y:contain}</style>
+
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>2022년 11월 고1 33번 · 유혹을 차단하는 율리시스 계약</title>
+<script type="module" src="bn_tracker.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Black+Han+Sans&family=Noto+Sans+KR:wght@300;400;700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--ink:#2a2a2a;--soft:#7a7570;--bg:#f5efe6;--card:#fdf8f2;--border:#e0d8ce;--accent:#5c3d1e}
+body{font-family:"Noto Sans KR",sans-serif;background:var(--bg);min-height:100vh;color:var(--ink)}
+header{background:linear-gradient(135deg,#f7efe4 0%,#f0e6d8 50%,#ece0d2 100%);padding:28px 24px 20px;text-align:center;border-bottom:1px solid var(--border)}
+.logo-row{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;margin-bottom:8px}
+.logo-circle{width:48px;height:48px;border-radius:50%;background:#f0ebe3;border:2px solid #e0d8ce;overflow:hidden;flex-shrink:0}
+.logo-circle img{width:100%;height:100%;object-fit:cover}
+.logo-title{font-family:"Black Han Sans",sans-serif;font-size:1rem;color:#5c3d1e}
+.quiz-meta{font-family:"Gowun Dodum",serif;font-size:.76rem;color:var(--soft);margin-top:2px}
+.test-badge{display:inline-block;background:#3d3d3d;color:#f0ede8;border-radius:30px;padding:3px 14px;font-size:.73rem;font-weight:700;letter-spacing:.5px;margin-top:6px}
+.score-display{font-family:"Gowun Dodum",serif;font-size:.83rem;color:var(--soft);margin-top:5px}
+#score-val{color:var(--accent);font-family:"Black Han Sans",sans-serif;font-size:.95rem}
+main{max-width:1100px;margin:0 auto;padding:20px 14px 80px}
+.prog-wrap{margin-bottom:18px}
+.prog-bg{height:5px;background:#e0d8ce;border-radius:5px;overflow:hidden}
+.prog-fill{height:5px;background:linear-gradient(90deg,#5c3d1e,#a0724a);border-radius:5px;transition:width .4s}
+.prog-text{font-family:"Gowun Dodum",serif;font-size:.72rem;color:var(--soft);margin-top:4px;text-align:right}
+.back-nav{display:inline-flex;align-items:center;gap:6px;background:white;border:1.5px solid #d0c8bc;border-radius:10px;padding:6px 13px;font-family:inherit;font-size:.78rem;color:var(--soft);cursor:pointer;margin-bottom:16px;transition:border-color .15s;text-decoration:none}
+.back-nav:hover{border-color:#3d3d3d;color:#3d3d3d}
+.sec-header{background:#3d3d3d;color:#f0ede8;font-family:"Black Han Sans",sans-serif;font-size:.88rem;padding:9px 16px;border-radius:12px;margin:24px 0 12px;letter-spacing:.4px}
+.para-block{background:var(--card);border:1.5px solid var(--border);border-radius:14px;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,.04);overflow:hidden}
+.para-header{background:#f0ebe3;padding:7px 16px;border-bottom:1px solid var(--border)}
+.para-num{font-family:"Black Han Sans",sans-serif;font-size:.78rem;color:var(--accent)}
+.para-cols{display:grid;grid-template-columns:1fr 1fr;gap:0}
+@media(max-width:680px){.para-cols{grid-template-columns:1fr}}
+.para-eng{padding:14px 16px;font-size:.85rem;line-height:2.2;color:#2a2a2a;font-family:"Gowun Dodum",serif;border-right:1px solid var(--border)}
+.para-kr{padding:14px 16px;font-size:.8rem;line-height:1.95;color:#5a5050;font-family:"Gowun Dodum",serif;background:#faf6f0}
+.sel-group{display:inline-flex;align-items:center;border:1.5px solid #c0b4a4;border-radius:6px;overflow:hidden;vertical-align:middle;margin:0 2px;font-size:.82rem}
+.sel-btn{padding:2px 8px;background:#fff;border:none;cursor:pointer;font-family:"Gowun Dodum",serif;font-size:.82rem;color:#3a3a3a;transition:background .12s;line-height:1.7;white-space:nowrap}
+.sel-btn:not(:last-child){border-right:1px solid #c0b4a4}
+.sel-btn:hover{background:#f0ebe3}
+.sel-btn:disabled{cursor:not-allowed}
+.sel-btn.correct{background:#2e7d32!important;color:#fff!important}
+.sel-btn.wrong{background:#c0392b!important;color:#fff!important}
+.blank-input{display:inline-block;border:none;border-bottom:2px solid #c0a882;background:transparent;font-family:"Gowun Dodum",serif;font-size:.84rem;color:#3a3a3a;outline:none;padding:0 4px;min-width:80px;text-align:center;transition:border-color .2s;vertical-align:middle;margin:0 2px}
+.blank-input:focus{border-color:var(--accent)}
+.blank-input:disabled{color:#6a6a6a;cursor:not-allowed;border-bottom-color:#c0b4a4}
+.blank-input.correct-inp{border-bottom-color:#2e7d32;color:#2e7d32}
+.arrange-wrap{margin:8px 0;font-family:"Gowun Dodum",serif;width:100%}
+.arrange-label{font-size:.74rem;color:var(--soft);margin-bottom:4px}
+.arrange-pool{display:flex;flex-wrap:wrap;gap:5px;padding:8px;background:#f5f0ea;border-radius:8px;min-height:36px;margin-bottom:5px;border:1.5px dashed #c0b4a4}
+.arrange-answer{display:flex;flex-wrap:wrap;gap:5px;padding:8px;background:#fff;border-radius:8px;min-height:36px;border:1.5px solid #c0b4a4}
+.word-chip{display:inline-flex;align-items:center;padding:2px 8px;background:#fff;border:1.5px solid #c0a882;border-radius:20px;font-size:.76rem;cursor:pointer;transition:background .12s;user-select:none;font-family:"Gowun Dodum",serif}
+.word-chip:hover{background:#f0ebe3}
+.arrange-answer .word-chip{background:#3d3d3d;color:#fff;border-color:#3d3d3d}
+.arrange-answer .word-chip:hover{background:#555}
+.word-chip.disabled{cursor:not-allowed;opacity:.6}
+.word-chip.correct-chip{background:#2e7d32;border-color:#2e7d32;color:#fff}
+.word-chip.wrong-chip{background:#c0392b;border-color:#c0392b;color:#fff}
+.writing-wrap{margin:8px 0;width:100%}
+.writing-label{font-size:.74rem;color:var(--soft);margin-bottom:4px;font-family:"Gowun Dodum",serif}
+.writing-input{width:100%;padding:8px 11px;border:2px solid #d0c8bc;border-radius:8px;font-size:.83rem;font-family:"Gowun Dodum",serif;outline:none;background:#fff;transition:border-color .2s;resize:vertical;min-height:38px}
+.writing-input:focus{border-color:var(--accent)}
+.writing-input:disabled{background:#f5f0ea;color:#6a6a6a;cursor:not-allowed}
+.q-check-btn{margin-top:6px;padding:5px 14px;background:#3d3d3d;color:#fff;border:none;border-radius:7px;font-family:inherit;font-size:.78rem;font-weight:700;cursor:pointer;transition:opacity .2s}
+.q-check-btn:hover{opacity:.85}
+.q-check-btn:disabled{background:#b0a898;cursor:not-allowed;opacity:1}
+.q-feedback{margin-top:6px;border-radius:8px;padding:7px 11px;font-size:.78rem;line-height:1.8;display:none;font-family:"Gowun Dodum",serif}
+.q-feedback.show{display:block}
+.q-feedback.ok{background:#e8f5e9;border:1px solid #a5d6a7;color:#1b5e20}
+.q-feedback.fail{background:#ffebee;border:1px solid #ef9a9a;color:#7f0000}
+.pt-tag{display:inline-block;background:rgba(0,0,0,.12);border-radius:20px;padding:1px 7px;font-size:.68rem;font-weight:700;margin-left:4px}
+.q-tag{display:inline-block;background:#ede9e4;border-radius:20px;padding:1px 7px;font-size:.66rem;font-weight:700;color:#7a6a5a;margin-right:3px;vertical-align:middle}
+.result-card{background:var(--card);border-radius:20px;border:2px solid var(--border);padding:32px 22px;text-align:center;display:none;box-shadow:0 6px 24px rgba(0,0,0,.08);margin-top:8px}
+.result-card.show{display:block;animation:fadeUp .5s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.result-score{font-family:"Black Han Sans",sans-serif;font-size:2.6rem;color:var(--accent);margin:12px 0}
+.result-msg{font-family:"Gowun Dodum",serif;font-size:.88rem;color:var(--soft);line-height:1.8}
+.result-btns{display:flex;gap:10px;justify-content:center;margin-top:18px;flex-wrap:wrap}
+.result-btns button{padding:10px 20px;border-radius:12px;font-family:inherit;font-size:.82rem;font-weight:700;cursor:pointer;border:2px solid #3d3d3d}
+.btn-retry{background:#3d3d3d;color:#fff}.btn-retry:hover{opacity:.85}
+.btn-back{background:transparent;color:#3d3d3d}.btn-back:hover{background:#f0ede8}
+
+/* 🚫 해당하지 않는(어색한) 것 고르기 - 문제 유형 시각 표시 */
+.exclude-group::before{
+  content:"🚫 어색한 것";
+  display:inline-block;font-size:9.5px;background:#fef2f2;color:#b91c1c;
+  border:1px solid #fca5a5;border-radius:5px;padding:1px 6px;margin-right:4px;
+  font-weight:800;vertical-align:middle;white-space:nowrap;letter-spacing:.2px;
+}
+</style>
+
+<style>
+/* 워크북 가시성 — 맑은 고딕 11pt (지문 깊이 풀기와 같은 설정) */
+:root{ --fsz:11pt; }
+body,.para-eng,.para-kr,.sec-header,.para-num,.sel-btn,.blank-input,.writing-input,.word-chip,.arrange-label,.q-feedback,input,button{
+  font-family:"Malgun Gothic","맑은 고딕","Apple SD Gothic Neo",AppleGothic,
+              -apple-system,BlinkMacSystemFont,sans-serif !important;
+}
+.para-eng{ font-size:var(--fsz) !important; line-height:2.1 !important; }
+.para-kr{ font-size:calc(var(--fsz) - 1pt) !important; line-height:1.9 !important; }
+.sel-btn,.word-chip{ font-size:calc(var(--fsz) - 1pt) !important; }
+.word-chip.pickable{ cursor:pointer; }
+.word-chip.picked{ background:#f6d9a8 !important; border-color:#c58a2e !important; font-weight:700; }
+.arrange-label{ font-size:calc(var(--fsz) - 1pt) !important; line-height:1.7 !important; }
+.q-feedback{ font-size:calc(var(--fsz) - 1pt) !important; }
+.sel-group{ flex-wrap:wrap !important; max-width:100% !important; }
+.sel-btn{ white-space:normal !important; }
+.para-eng,.para-kr,.para-block{ overflow-wrap:anywhere; }
+main{ overflow-x:hidden; }
+</style>
+
+<style>
+.sec-submit{margin:18px 0 6px;padding:12px 14px;background:#fffdf8;border:1px dashed #d9cfbe;border-radius:12px;}
+.sec-submit .submit-btn{width:100%;padding:12px 16px;border:none;border-radius:11px;cursor:pointer;
+  background:linear-gradient(135deg,#8a6a3e,#5c3d1e);color:#fff;font-weight:800;font-size:.93rem;
+  box-shadow:0 3px 9px rgba(0,0,0,.13);}
+.sec-submit .submit-btn:active{transform:translateY(1px)}
+.sec-submit-note{text-align:center;font-size:.75rem;color:#8a8178;margin-top:7px;}
+</style>
+
+<style>
+/* 왜 맞고 왜 틀렸는지 */
+.sel-btn.miss{ background:#fbeae5 !important; color:#b4543a !important; text-decoration:line-through; opacity:.7 }
+.sel-btn.got{ background:#e6f3ec !important; color:#2e7d4f !important; font-weight:800 }
+#whyBar{ position:fixed; left:0; right:0; bottom:0; z-index:60; transform:translateY(110%); transition:transform .18s;
+  padding:12px 14px calc(12px + env(safe-area-inset-bottom)); font-size:.86rem; line-height:1.6; font-weight:700;
+  box-shadow:0 -3px 14px rgba(0,0,0,.12) }
+#whyBar.on{ transform:translateY(0) }
+#whyBar.ok{ background:#e6f3ec; color:#1f5c38; border-top:2px solid #9ccfb1 }
+#whyBar.no{ background:#fbeae5; color:#8c3b25; border-top:2px solid #e0a894 }
+.sec-submit .retry-btn{ width:100%; margin-top:9px; padding:11px 14px; border-radius:11px; cursor:pointer;
+  border:2px solid #d9a441; background:#fff8e8; color:#8a5a12; font-weight:800; font-size:.88rem }
+</style>
+
+<style>
+/* 지문 고르기 */
+.para-block.off, .sec-header.off, .sec-submit.off{ display:none !important }
+#refPick{ position:fixed; inset:0; z-index:200; background:rgba(40,32,24,.55);
+  display:none; align-items:flex-start; justify-content:center; overflow-y:auto; padding:18px 12px 30px }
+#refPick.on{ display:flex }
+#refPick .rp-card{ width:100%; max-width:520px; background:#fffdf8; border:2px solid #e3d9ca;
+  border-radius:18px; padding:20px 18px; box-shadow:0 10px 30px rgba(0,0,0,.2) }
+#refPick .rp-title{ font-family:'Black Han Sans',sans-serif; font-size:1.12rem; color:#3b2f25; text-align:center }
+#refPick .rp-sub{ font-size:.78rem; color:#8a7f74; text-align:center; margin:6px 0 14px; line-height:1.55 }
+#refPick .rp-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(86px,1fr)); gap:8px }
+#refPick .rp-chip{ padding:10px 6px; border-radius:12px; border:2px solid #e0d8ce; background:#fff;
+  cursor:pointer; text-align:center; font-weight:800; font-size:.86rem; color:#5c5248; line-height:1.3 }
+#refPick .rp-chip small{ display:block; font-weight:600; font-size:.66rem; color:#a79c8f; margin-top:2px }
+#refPick .rp-chip.on{ border-color:#8a6a3e; background:#f6ecdb; color:#4a3419 }
+#refPick .rp-btns{ display:flex; gap:7px; margin:13px 0 4px }
+#refPick .rp-btns button{ flex:1; padding:9px 4px; border-radius:10px; border:1.5px solid #ded5c8;
+  background:#fff; cursor:pointer; font-size:.76rem; font-weight:700; color:#7a6e62 }
+#refPick .rp-warn{ min-height:17px; text-align:center; font-size:.76rem; color:#b4543a; font-weight:700 }
+#refPick .rp-start{ width:100%; margin-top:6px; padding:13px; border:none; border-radius:12px; cursor:pointer;
+  background:linear-gradient(135deg,#8a6a3e,#5c3d1e); color:#fff; font-weight:800; font-size:.98rem;
+  box-shadow:0 3px 10px rgba(0,0,0,.14) }
+#refBar{ display:flex; align-items:center; gap:9px; margin:10px 0 4px; padding:10px 12px;
+  background:#f6ecdb; border:1.5px solid #e0cdae; border-radius:12px; font-size:.79rem;
+  font-weight:700; color:#5c4420; line-height:1.45 }
+#refBar span{ flex:1; min-width:0 }
+#refBar button{ flex:none; padding:7px 11px; border-radius:9px; border:1.5px solid #c9a97a;
+  background:#fff; cursor:pointer; font-size:.74rem; font-weight:800; color:#7a5a22 }
+</style>
+
+<style>
+/* 고를 곳을 한눈에 — 노란 칸 */
+.sel-group.pick-wide{display:inline-flex;flex-wrap:wrap;gap:4px;align-items:center;vertical-align:middle;
+  background:#fff6e4;border:1.8px solid #e8cf9f;border-radius:11px;padding:4px 7px;margin:2px 1px;
+  box-shadow:0 1px 2px rgba(0,0,0,.05)}
+.sel-group.pick-wide .sel-btn{margin:0;padding:4px 9px;font-size:.87rem;border-radius:7px;
+  background:#fff;border:1.3px solid #ded2bb;color:#3b2f25;font-weight:600;line-height:1.3}
+.pick-lead{background:#f3f7f3;border:1.5px solid #cfe0cf;border-radius:11px;padding:10px 12px;
+  margin:0 0 13px;font-size:.82rem;color:#3f5a3f;line-height:1.6}
+.pick-lead b{color:#2c7a4b}
+.sec-header + .para-block .para-eng{line-height:2.2}
+</style>
+
+<style>
+.pick-lead{background:#f3f7f3;border:1.5px solid #cfe0cf;border-radius:11px;padding:10px 12px;
+  margin:0 0 13px;font-size:.82rem;color:#3f5a3f;line-height:1.6}
+.pick-lead b{color:#2c7a4b}
+.para-eng{line-height:2.3}
+.sel-group.pick-wide{display:inline-flex;flex-wrap:wrap;gap:4px;align-items:center;vertical-align:middle;
+  background:#fff6e4;border:1.8px solid #e8cf9f;border-radius:11px;padding:4px 7px;margin:2px 1px}
+.sel-group.pick-wide .sel-btn{margin:0;padding:4px 9px;font-size:.87rem;border-radius:7px;
+  background:#fff;border:1.3px solid #ded2bb;color:#3b2f25;font-weight:600;line-height:1.3}
+.sel-group.pick-tight{display:inline-flex;gap:3px;align-items:center;vertical-align:middle;
+  background:#eef3f8;border:1.8px solid #c3d4e3;border-radius:10px;padding:3px 5px;margin:2px 1px}
+.sel-group.pick-tight .sel-btn{margin:0;padding:4px 9px;font-size:.87rem;border-radius:7px;
+  background:#fff;border:1.3px solid #ccd8e4;color:#27384a;font-weight:600;line-height:1.3}
+.q-tag{display:inline-block;background:#8a6a3e;color:#fff;border-radius:999px;font-size:.64rem;
+  font-weight:800;padding:2px 7px;margin-right:2px;vertical-align:middle}
+.tr-ko{background:#fffdf8;border-left:4px solid #c9a961;border-radius:8px;padding:9px 12px;
+  margin:15px 0 8px;font-size:.92rem;font-weight:700;color:#3b2f25;line-height:1.6}
+.sel-group.wide{display:flex;flex-direction:column;gap:7px;margin-bottom:6px}
+.sel-group.wide .sel-btn{width:100%;text-align:left;padding:11px 13px;font-size:.9rem;line-height:1.55;
+  border:1.5px solid #e0d8ce}
+.fix-row{background:#fdfaf4;border:1.5px solid #e6dcc9;border-radius:13px;padding:13px 14px;margin:12px 0}
+.fix-lead{font-size:.82rem;color:#6b5a44;margin-bottom:9px}
+.sel-group.words{display:block;line-height:2.5}
+.sel-group.words .sel-btn{margin:2px 1px;padding:4px 8px;font-size:.9rem;border-radius:7px;
+  background:#fff;border:1.4px solid #ddd2c0}
+.fix-why{margin-top:11px;padding-top:10px;border-top:1px dashed #ded3c0;font-size:.86rem;color:#5c4a2e;font-weight:700}
+.sel-group.mini{display:inline-flex;gap:4px;background:#fff6e4;border:1.6px solid #e8cf9f;
+  border-radius:10px;padding:3px 5px;margin:0 3px;vertical-align:middle}
+.sel-group.mini .sel-btn{margin:0;padding:4px 10px;font-size:.84rem;border-radius:7px;
+  background:#fff;border:1.3px solid #ded2bb}
+.deep-q{margin:16px 0 8px;font-size:.9rem;font-weight:700;color:#3b2f25;line-height:1.6}
+</style>
+
+<style>
+/* 단계별 쪽 */
+.stage[hidden]{display:none !important}
+#bnSteps{display:flex;gap:5px;flex-wrap:wrap;margin:12px 0 14px;padding:10px 11px;
+  background:#fdfaf4;border:1.5px solid #e4dacb;border-radius:13px}
+#bnSteps .st{flex:1 1 auto;min-width:62px;text-align:center;padding:7px 5px;border-radius:9px;
+  font-size:.7rem;font-weight:800;color:#a89b8a;background:#fff;border:1.5px solid #e8e0d4;line-height:1.35}
+#bnSteps .st.on{color:#fff;background:linear-gradient(135deg,#8a6a3e,#5c3d1e);border-color:#5c3d1e}
+#bnSteps .st.done{color:#4a6741;background:#eef4ec;border-color:#bdd3b8}
+.stage-nav{margin:18px 0 6px;padding:14px;background:#fffdf8;border:1.5px dashed #ddd2bf;border-radius:14px;text-align:center}
+.stage-nav .go{width:100%;padding:14px;border:none;border-radius:12px;cursor:pointer;
+  background:linear-gradient(135deg,#8a6a3e,#5c3d1e);color:#fff;font-weight:800;font-size:1rem;
+  font-family:inherit;box-shadow:0 3px 10px rgba(0,0,0,.14)}
+.stage-nav .go:active{transform:translateY(1px)}
+.stage-nav .note{margin-top:9px;font-size:.76rem;color:#9a8c7a;line-height:1.55}
+.stage-nav .left{color:#b4543a;font-weight:800}
+</style>
+
+<style>
+/* 종이 워크북을 그대로 옮긴 줄들 */
+.para-cols.solo{grid-template-columns:1fr}
+.para-cols.solo .para-eng{border-right:none}
+.wb-lead{background:#f3f7f3;border:1.5px solid #cfe0cf;border-radius:11px;padding:10px 12px;
+  margin:0 0 15px;font-size:.82rem;color:#3f5a3f;line-height:1.8}
+.wb-lead b{color:#2c7a4b}
+.wb-line{line-height:2.35;margin:0 0 11px;font-size:.9rem}
+.wb-exp{line-height:2.2;margin:0 0 12px;padding:9px 12px;background:#f3f7f3;border-left:4px solid #9cc0a0;
+  border-radius:9px;font-size:.84rem;color:#39513c}
+.wb-ko{margin:0 0 9px;padding:7px 11px;background:#f6f2ea;border-left:4px solid #c9a961;border-radius:8px;
+  font-size:.84rem;color:#4a4036;line-height:1.75}
+.wb-q{margin:16px 0 8px;font-size:.88rem;font-weight:700;color:#3b2f25;line-height:1.7}
+.wb-opts{margin-bottom:12px}
+.wb-free{margin:0 0 14px}
+.wb-multi{display:inline-flex;flex-wrap:wrap;gap:4px;align-items:center;vertical-align:middle;
+  background:#fff6e4;border:1.8px solid #e8cf9f;border-radius:11px;padding:5px 8px;margin:3px 1px}
+.wb-multi .word-chip{margin:0}
+.wb-blank{display:inline-flex;gap:5px;align-items:center;vertical-align:middle;margin:2px 1px}
+.wb-blank.wide{display:flex;margin:4px 0}
+.wb-blank.wide .blank-input{flex:1;min-width:0;text-align:left}
+.word-chip.pickable{cursor:pointer;user-select:none}
+.word-chip.picked{background:#8a6a3e;color:#fff;border-color:#5c3d1e}
+.word-chip.disabled{cursor:default;opacity:.95}
+.word-chip.correct-chip{background:#2e7d32;color:#fff;border-color:#1b5e20}
+.word-chip.wrong-chip{background:#c0392b;color:#fff;border-color:#8e2b21}
+.q-check-btn.mini{padding:4px 10px;font-size:.74rem;border-radius:8px;margin:0}
+.q-feedback{display:none}
+.q-feedback.show{display:block;margin-top:5px;font-size:.8rem;line-height:1.6}
+.wb-multi .q-feedback.show,.wb-blank .q-feedback.show{display:inline-block;margin:0 0 0 4px}
+.q-feedback.ok{color:#2e7d32;font-weight:700}
+.q-feedback.fail{color:#b4543a;font-weight:700}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo-row">
+    <div class="logo-circle"><img src="https://bomnalenglish.github.io/bomnalquizz/IMG_6063.jpg" alt="봄날" onerror="this.style.display='none'"/></div>
+    <div><div class="logo-title">봄날 BOMNAL ENGLISH</div><div class="quiz-meta">종촌고등학교 1학년 · 26년 2학기 기말 · 2022년 11월 고1 모의고사</div></div>
+  </div>
+  <div><span class="test-badge">📘 종이 워크북 — 어법·어휘 · 설명 빈칸 · 서술형 · 영작</span></div>
+  <div class="score-display">현재 점수: <span id="score-val">0</span> / <span id="score-max">0</span>점</div>
+</header>
+<main>
+  <a class="back-nav" href="javascript:history.back()">← 허브로 돌아가기</a>
+  <div class="prog-wrap">
+    <div class="prog-bg"><div class="prog-fill" id="prog" style="width:0%"></div></div>
+    <div class="prog-text" id="prog-txt">0 / 0 완료</div>
+  </div>
+<div id="bnSteps"><span class="st">29번</span><span class="st">31번</span><span class="st">32번</span><span class="st">33번</span></div>
+<div class="stage" data-stage="0"><div class="sec-header">📘 2022년 11월 고1 29번 · 스스로 배우는 인공 지능</div><div class="para-block" data-ref="29번"><div class="para-header"><span class="para-num">2022년 11월 고1 29번 · 스스로 배우는 인공 지능</span></div><div class="para-cols solo"><div class="para-eng"><div class="wb-lead">📘 종이 워크북 그대로예요. 칸이 나오면 바로 고르거나 써 주세요.<br>🟦 <b>파란 칸</b> — 하나만 고르기 &nbsp; 🟨 <b>노란 칸</b> — <b>맞는 것을 모두</b> 고르고 채점 &nbsp; ✏️ <b>줄 친 칸</b> — 타자로 쓰고 채점</div><div class="wb-line">You may have <span class="q-tag">1)</span><span class="sel-group pick-tight" data-qi="1" data-ans="1" data-why="[&quot;&lt;b&gt;seeing&lt;/b&gt; — 이 자리에 맞지 않아요&quot;, &quot;&lt;b&gt;seen&lt;/b&gt; — 여기에 들어갈 말이에요&quot;, &quot;&lt;b&gt;see&lt;/b&gt; — 이 자리에 맞지 않아요&quot;]"><button class="sel-btn" onclick="pick(this,1,0)">seeing</button><button class="sel-btn" onclick="pick(this,1,1)">seen</button><button class="sel-btn" onclick="pick(this,1,2)">see</button></span> headlines in the news about some of the things machines <span class="q-tag">2)</span><span class="sel-group pick-tight" data-qi="2" data-ans="1" data-why="[&quot;&lt;b&gt;to power&lt;/b&gt; — 이 자리에 맞지 않아요&quot;, &quot;&lt;b&gt;powered&lt;/b&gt; — 여기에 들어갈 말이에요&quot;, &quot;&lt;b&gt;powering&lt;/b&gt; — 이 자리에 맞지 않아요&quot;]"><button class="sel-btn" onclick="pick(this,2,0)">to power</button><button class="sel-btn" onclick="pick(this,2,1)">powered</button><button class="sel-btn" onclick="pick(this,2,2)">powering</button></span> by artificial intelligence can do.</div><div class="wb-exp">💡 may have p.p.는 ' <span class="wb-blank"><span class="q-tag">3)</span><input class="blank-input" id="b3" type="text" autocomplete="off" onkeydown="if(event.key==='Enter')chkBlank(3)"><button class="q-check-btn mini" onclick="chkBlank(3)">채점</button><span class="q-feedback" id="fb3"></span></span>'의 뜻이고, machines와 power는 <span class="q-tag">4)</span><span class="sel-group pick-tight" data-qi="4" data-ans="0" data-why="[&quot;&lt;b&gt;수동&lt;/b&gt; — 여기에 들어갈 말이에요&quot;, &quot;&lt;b&gt;능동&lt;/b&gt; — 이 자리에 맞지 않아요&quot;]"><button class="sel-btn" onclick="pick(this,4,0)">수동</button><button class="sel-btn" onclick="pick(this,4,1)">능동</button></span> 관계이므로 과거분사 powered가 machines를 뒤에서 수식한다.</div><div class="wb-q">Q. 'headline'의 영영풀이로 적절한 것.</div><div class="wb-opts"><span class="q-tag">5)</span><span class="sel-group wide" data-qi="5" data-ans="0" data-why="[&quot;&lt;b&gt;the title of a news story printed in large letters&lt;/b&gt; — 여기에 들어갈 말이에요&quot;, &quot;&lt;b&gt;a long, detailed explanation at the end of an article&lt;/b&gt; — 이 자리에 맞지 않아요&quot;]"><button class="sel-btn" onclick="pick(this,5,0)">the title of a news story printed in large letters</button><button class="sel-btn" onclick="pick(this,5,1)">a long, detailed explanation at the end of an article</button></span></div><div class="wb-line">However, if you <span class="q-tag">6)</span><span class="sel-group pick-tight" data-qi="6" data-ans="1" data-why="[&quot;&lt;b&gt;had been&lt;/b&gt; — 이 자리에 맞지 않아요&quot;, &quot;&lt;b&gt;were&lt;/b&gt; — 여기에 들어갈 말이에요&quot;, &quot;&lt;b&gt;are&lt;/b&gt; — 이 자리에 맞지 않아요&quot;]"><button class="sel-btn" onclick="pick(this,6,0)">had been</button><button class="sel-btn" onclick="pick(this,6,1)">were</button><button class="sel-btn" onclick="pick(this,6,2)">are</button></span> to consider all the tasks that AI-powered machines could actually perform, it would be quite <span class="wb-multi"><span class="q-tag">7)</span><span class="word-chip pickable" data-grp="7" data-n="1" onclick="toggleChip(this)">astonishing</span><span class="word-chip pickable" data-grp="7" data-n="2" onclick="toggleChip(this)">boring</span><span class="word-chip pickable" data-grp="7" data-n="3" onclick="toggleChip(this)">unremarkable</span><span class="word-chip pickable" data-grp="7" data-n="4" onclick="toggleChip(this)">amazing</span><span class="word-chip pickable" data-grp="7" data-n="5" onclick="toggleChip(this)">mind-blowing</span><span class="word-chip pickable" data-grp="7" data-n="6" onclick="toggleChip(this)">dull</span><span class="word-chip pickable" data-grp="7" data-n="7" onclick="toggleChip(this)">ordinary</span><span class="word-chip pickable" data-grp="7" data-n="8" onclick="toggleChip(this)">astounding</span><button class="q-check-btn mini" onclick="checkMulti(7)">채점</button><span class="q-feedback" id="fb7"></span></span>!</div><div class="wb-exp">💡 if + 주어 + were to + 동사원형은 실현 가능성이 낮은 <span class="wb-blank"><span class="q-tag">8)</span><input class="blank-input" id="b8" type="text" autocomplete="off" onkeydown="if(event.key==='Enter')chkBlank(8)"><button class="q-check-btn mini" onclick="chkBlank(8)">채점</button><span class="q-feedback" id="fb8"></span></span>의 가정을 나타내며, 주절에는 '조동사 과거형 + 동사원형'(would be)을 쓴다.</div><div class="wb-line">One of the key features of artificial intelligence are that it enables machines learn new things, rather than requiring programming specific to new tasks.</div><div class="wb-q">Q. 밑줄 친 문장에서 어법상 오류를 2개 찾아 바르게 고칠 것.</div><div class="wb-free"><span class="wb-blank wide"><span class="q-tag">9)</span><input class="blank-input" id="b9" type="text" autocomplete="off" onkeydown="if(event.key==='Enter')chkBlank(9)"><button class="q-check-btn mini" onclick="chkBlank(9)">채점</button><span class="q-feedback" id="fb9"></span></span></div><div class="wb-exp">💡 'one of + 복수명사'가 주어이면 동사는 <span class="q-tag">10)</span><span class="sel-group pick-tight" data-qi="10" data-ans="0" data-why="[&quot;&lt;b&gt;단수&lt;/b&gt; — 여기에 들어갈 말이에요&quot;, &quot;&lt;b&gt;복수&lt;/b&gt; — 이 자리에 맞지 않아요&quot;]"><button class="sel-btn" onclick="pick(this,10,0)">단수</button><button class="sel-btn" onclick="pick(this,10,1)">복수</button></span>로 받고, enable은 'enable + 목적어 + <span class="wb-blank"><span class="q-tag">11)</span><input class="blank-input" id="b11" type="text" autocomplete="off" onkeydown="if(event.key==='Enter')chkBlank(11)"><button class="q-check-btn mini" onclick="chkBlank(11)">채점</button><span class="q-feedback" id="fb11"></span></span>' 구조를 취한다.</div><div class="wb-q">Q. 'rather than requiring programming specific to new tasks'와 의미가 같은 것을 모두 고르시오.</div><div class="wb-opts"><span class="wb-multi"><span class="q-tag">12)</span><span class="word-chip pickable" data-grp="12" data-n="1" onclick="toggleChip(this)">instead of needing programming designed for each new task</span><span class="word-chip pickable" data-grp="12" data-n="2" onclick="toggleChip(this)">because they always require programming for each new task</span><span class="word-chip pickable" data-grp="12" data-n="3" onclick="toggleChip(this)">without having to be programmed for each new task</span><span class="word-chip pickable" data-grp="12" data-n="4" onclick="toggleChip(this)">rather than requiring specifically programming to new tasks</span><button class="q-check-btn mini" onclick="checkMulti(12)">채점</button><span class="q-feedback" id="fb12"></span></span></div><div class="wb-line">Therefore, the <span class="wb-multi"><span class="q-tag">13)</span><span class="word-chip pickable" data-grp="13" data-n="1" onclick="toggleChip(this)">minor</span><span class="word-chip pickable" data-grp="13" data-n="2" onclick="toggleChip(this)">central</span><span class="word-chip pickable" data-grp="13" data-n="3" onclick="toggleChip(this)">secondary</span><span class="word-chip pickable" data-grp="13" data-n="4" onclick="toggleChip(this)">core</span><span class="word-chip pickable" data-grp="13" data-n="5" onclick="toggleChip(this)">essential</span><span class="word-chip pickable" data-grp="13" data-n="6" onclick="toggleChip(this)">trivial</span><span class="word-chip pickable" data-grp="13" data-n="7" onclick="toggleChip(this)">key</span><span class="word-chip pickable" data-grp="13" data-n="8" onclick="toggleChip(this)">marginal</span><button class="q-check-btn mini" onclick="checkMulti(13)">채점</button><span class="q-feedback" id="fb13"></span></span> difference between computers of the future and <span class="q-tag">14)</span><span class="sel-group pick-tight" data-qi="14" data-ans="1" data-why="[&quot;&lt;b&gt;them&lt;/b&gt; — 이 자리에 맞지 않아요&quot;, &quot;&lt;b&gt;those&lt;/b&gt; — 여기에 들어갈 말이에요&quot;, &quot;&lt;b&gt;that&lt;/b&gt; — 이 자리에 맞지 않아요&quot;]"><button class="sel-btn" onclick="pick(this,14,0)">them</button><button class="sel-btn" onclick="pick(this,14,1)">those</button><button class="sel-btn" onclick="pick(this,14,2)">that</button></span> of the past is that future computers will be able to learn and self-improve.</div><div class="wb-exp">💡 those는 앞의 복수명사 <span class="wb-blank"><span class="q-tag">15)</span><input class="blank-input" id="b15" type="text" autocomplete="off" onkeydown="if(event.key==='Enter')chkBlank(15)"><button class="q-check-btn mini" onclick="chkBlank(15)">채점</button><span class="q-feedback" id="fb15"></span></span>의 반복을 피하기 위해 쓴 대명사이다.</div><div class="wb-ko">가까운 미래에, 스마트 가상 비서는 여러분에 대해 여러분의 가장 가까운 친구나 가족이 아는 것보다 더 많이 알게 될 것이다.</div><div class="wb-q">Q. 한글 해석에 부합하면서 어법상 오류가 없는 것을 모두 고르시오.</div><div class="wb-opts"><span class="wb-multi"><span class="q-tag">16)</span><span class="word-chip pickable" data-grp="16" data-n="1" onclick="toggleChip(this)">In the near future, smart virtual assistants will know more about you than your closest friends and family members do.</span><span class="word-chip pickable" data-grp="16" data-n="2" onclick="toggleChip(this)">In the near future, smart virtual assistants will know more about you than your closest friends and family members does.</span><span class="word-chip pickable" data-grp="16" data-n="3" onclick="toggleChip(this)">In the near future, smart virtual assistants will know more about you than your closest friends and family members know.</span><span class="word-chip pickable" data-grp="16" data-n="4" onclick="toggleChip(this)">In the near future, your closest friends and family members will know more about you than smart virtual assistants do.</span><span class="word-chip pickable" data-grp="16" data-n="5" onclick="toggleChip(this)">In the near future, your closest friends and family members will know less about you than smart virtual assistants do.</span><span class="word-chip pickable" data-grp="16" data-n="6" onclick="toggleChip(this)">In the near future, smart virtual assistants will know much about you than your closest friends and family members do.</span><button class="q-check-btn mini" onclick="checkMulti(16)">채점</button><span class="q-feedback" id="fb16"></span></span></div><div class="wb-line">Can you imagine <span class="q-tag">17)</span><span class="sel-group pick-tight" data-qi="17" data-ans="1" data-why="[&quot;&lt;b&gt;that how might change&lt;/b&gt; — 이 자리에 맞지 않아요&quot;, &quot;&lt;b&gt;how that might change&lt;/b&gt; — 여기에 들어갈 말이에요&quot;, &quot;&lt;b&gt;how might that change&lt;/b&gt; — 이 자리에 맞지 않아요&quot;]"><button class="sel-btn" onclick="pick(this,17,0)">that how might change</button><button class="sel-btn" onclick="pick(this,17,1)">how that might change</button><button class="sel-btn" onclick="pick(this,17,2)">how might that change</button></span> our lives?</div><div class="wb-exp">💡 imagine의 목적어로 쓰인 간접의문문이므로 '의문사 + <span class="wb-blank"><span class="q-tag">18)</span><input class="blank-input" id="b18" type="text" autocomplete="off" onkeydown="if(event.key==='Enter')chkBlank(18)"><button class="q-check-btn mini" onclick="chkBlank(18)">채점</button><span class="q-feedback" id="fb18"></span></span>'의 어순을 따른다.</div><div class="wb-line">These kinds of changes are exactly <span class="q-tag">19)</span><span class="sel-group pick-tight" data-qi="19" data-ans="1" data-why="[&quot;&lt;b&gt;what&lt;/b&gt; — 이 자리에 맞지 않아요&quot;, &quot;&lt;b&gt;why&lt;/b&gt; — 여기에 들어갈 말이에요&quot;, &quot;&lt;b&gt;because&lt;/b&gt; — 이 자리에 맞지 않아요&quot;]"><button class="sel-btn" onclick="pick(this,19,0)">what</button><button class="sel-btn" onclick="pick(this,19,1)">why</button><button class="sel-btn" onclick="pick(this,19,2)">because</button></span> it is so important to <span class="wb-multi"><span class="q-tag">20)</span><span class="word-chip pickable" data-grp="20" data-n="1" onclick="toggleChip(this)">ignore</span><span class="word-chip pickable" data-grp="20" data-n="2" onclick="toggleChip(this)">acknowledge</span><span class="word-chip pickable" data-grp="20" data-n="3" onclick="toggleChip(this)">overlook</span><span class="word-chip pickable" data-grp="20" data-n="4" onclick="toggleChip(this)">recognize</span><span class="word-chip pickable" data-grp="20" data-n="5" onclick="toggleChip(this)">understand</span><span class="word-chip pickable" data-grp="20" data-n="6" onclick="toggleChip(this)">neglect</span><span class="word-chip pickable" data-grp="20" data-n="7" onclick="toggleChip(this)">realize</span><span class="word-chip pickable" data-grp="20" data-n="8" onclick="toggleChip(this)">disregard</span><button class="q-check-btn mini" onclick="checkMulti(20)">채점</button><span class="q-feedback" id="fb20"></span></span> the <span class="wb-multi"><span class="q-tag">21)</span><span class="word-chip pickable" data-grp="21" data-n="1" onclick="toggleChip(this)">sources</span><span class="word-chip pickable" data-grp="21" data-n="2" onclick="toggleChip(this)">effects</span><span class="word-chip pickable" data-grp="21" data-n="3" onclick="toggleChip(this)">impacts</span><span class="word-chip pickable" data-grp="21" data-n="4" onclick="toggleChip(this)">causes</span><span class="word-chip pickable" data-grp="21" data-n="5" onclick="toggleChip(this)">roots</span><span class="word-chip pickable" data-grp="21" data-n="6" onclick="toggleChip(this)">implications</span><span class="word-chip pickable" data-grp="21" data-n="7" onclick="toggleChip(this)">consequences</span><span class="word-chip pickable" data-grp="21" data-n="8" onclick="toggleChip(this)">origins</span><button class="q-check-btn mini" onclick="checkMulti(21)">채점</button><span class="q-feedback" id="fb21"></span></span> that new technologies will have for our world.</div><div class="wb-exp">💡 보어 자리에 오는 why절은 '~하는 <span class="wb-blank"><span class="q-tag">22)</span><input class="blank-input" id="b22" type="text" autocomplete="off" onkeydown="if(event.key==='Enter')chkBlank(22)"><button class="q-check-btn mini" onclick="chkBlank(22)">채점</button><span class="q-feedback" id="fb22"></span></span>'라는 의미의 명사절이며, it은 가주어, to recognize ~가 <span class="wb-blank"><span class="q-tag">23)</span><input class="blank-input" id="b23" type="text" autocomplete="off" onkeydown="if(event.key==='Enter')chkBlank(23)"><button class="q-check-btn mini" onclick="chkBlank(23)">채점</button><span class="q-feedback" id="fb23"></span></span>이다.</div><div class="wb-ko">이러한 종류의 변화들은 정확히 새로운 기술들이 우리 세계에 미칠 영향을 인식하는 것이 아주 중요한 이유이다.</div><div class="wb-exp">💡 우리말을 참고하여 영작 (가주어 it과 why절을 사용할 것).</div><div class="arrange-wrap" id="arr24"><span class="q-tag">24)</span><div class="word-pool" id="pool24"></div><div class="arrange-answer" id="ans24"></div><button class="q-check-btn" onclick="checkArr(24)">채점</button><div class="q-feedback" id="fb24"></div></div><div class="wb-q">Q. &lt;01&gt;의 내용과 일치하면서 어법상 오류가 없는 것을 2개 고르시오.</div><div class="wb-opts"><span class="wb-multi"><span class="q-tag">25)</span><span class="word-chip pickable" data-grp="25" data-n="1" onclick="toggleChip(this)">AI-powered machines need new programming every time they perform a new task.</span><span class="word-chip pickable" data-grp="25" data-n="2" onclick="toggleChip(this)">A key feature of artificial intelligence is that it allows machines to learn new things.</span><span class="word-chip pickable" data-grp="25" data-n="3" onclick="toggleChip(this)">Computers of the past were able to learn and improve themselves.</span><span class="word-chip pickable" data-grp="25" data-n="4" onclick="toggleChip(this)">The writer emphasizes the importance of recognizing the impact of new technologies.</span><span class="word-chip pickable" data-grp="25" data-n="5" onclick="toggleChip(this)">Smart virtual assistants knows less about you than your family members.</span><button class="q-check-btn mini" onclick="checkMulti(25)">채점</button><span class="q-feedback" id="fb25"></span></span></div><div class="wb-q">Q. 다음 질문에 영어로 답하시오. (learn과 self-improve를 사용하여 한 문장으로)</div><div class="wb-line">What is the core difference between future computers and past computers?</div><div class="wb-free"><span class="wb-blank wide"><span class="q-tag">26)</span><input class="blank-input" id="b26" type="text" autocomplete="off" onkeydown="if(event.key==='Enter')chkBlank(26)"><button class="q-check-btn mini" onclick="chkBlank(26)">채점</button><span class="q-feedback" id="fb26"></span></span></div></div></div></div><div class="sec-submit"><button class="retry-btn" onclick="retryWrong(this)"></button><button class="sec-btn" onclick="submitSoFar()">여기까지 제출하기</button></div><div class="stage-nav"><button type="button" class="go" onclick="bnNext()">다음 단계 ▶ 📘</button><div class="note"><span class="left"></span><br>넘어가면 앞 단계는 다시 볼 수 없어요.</div></div></div>
+<div class="stage" data-stage="1"><div class="sec-header">📘 2022년 11월 고1 31번 · 자유를 제한하면 성과가 오른다</div><div class="para-block" data-ref="31번"><div class="para-header"><span class="para-num">2022년 11월 고1 31번 · 자유를 제한하면 성과가 오른다</span></div><div class="para-cols solo"><div class="para-eng"><div class="wb-lead">📘 종이 워크북 그대로예요. 칸이 나오면 바로 고르거나 써 주세요.<br>🟦 <b>파란 칸</b> — 하나만 고르기 &nbsp; 🟨 <b>노란 칸</b> — <b>맞는 것을 모두</b> 고르고 채점 &nbsp; ✏️ <b>줄 친 칸</b> — 타자로 쓰고 채점</div><div class="wb-line">To <span class="wb-multi"><span class="q-tag">27)</span><span class="word-chip pickable" data-grp="27" data-n="1" onclick="toggleChip(this)">obscure</span><span class="word-chip pickable" data-grp="27" data-n="2" onclick="toggleChip(this)">illustrate</span><span class="word-chip pickable" data-grp="27" data-n="3" onclick="toggleChip(this)">disguise</span><span class="word-chip pickable" data-grp="27" data-n="4" onclick="toggleChip(this)">demonstrate</span><span class="word-chip pickable" data-grp="27" data-n="5" onclick="toggleChip(this)">show</span><span class="word-chip pickable" data-grp="27" data-n="6" onclick="toggleChip(this)">conceal</span><span class="word-chip pickable" data-grp="27" data-n="7" onclick="toggleChip(this)">prove</span><span class="word-chip pickable" data-grp="27" data-n="8" onclick="toggleChip(this)">hide</span><button class="q-check-btn mini" onclick="checkMulti(27)">채점</button><span class="q-feedback" id="fb27"></span></span> how best to <span class="wb-multi"><span class="q-tag">28)</span><span class="word-chip pickable" data-grp="28" data-n="1" onclick="toggleChip(this)">reinforce</span><span class="word-chip pickable" data-grp="28" data-n="2" onclick="toggleChip(this)">conquer</span><span class="word-chip pickable" data-grp="28" data-n="3" onclick="toggleChip(this)">overcome</span><span class="word-chip pickable" data-grp="28" data-n="4" onclick="toggleChip(this)">encourage</span><span class="word-chip pickable" data-grp="28" data-n="5" onclick="toggleChip(this)">beat</span><span class="word-chip pickable" data-grp="28" data-n="6" onclick="toggleChip(this)">strengthen</span><span class="word-chip pickable" data-grp="28" data-n="7" onclick="toggleChip(this)">support</span><span class="word-chip pickable" data-grp="28" data-n="8" onclick="toggleChip(this)">defeat</span><button class="q-check-btn mini" onclick="checkMulti(28)">채점</button><span class="q-feedback" id="fb28"></span></span> the habit of delaying, Dan Ariely, a professor of psychology and behavioral economics, <span class="q-tag">29)</span><span class="sel-group pick-tight" data-qi="29" data-ans="1" data-why="[&quot;&lt;b&gt;performing&lt;/b&gt; — 이 자리에 맞지 않아요&quot;, &quot;&lt;b&gt;performed&lt;/b&gt; — 여기에 들어갈 말이에요&quot;, &quot;&lt;b&gt;was performed&lt;/b&gt; — 이 자리에 맞지 않아요&quot;]"><button class="sel-btn" onclick="pick(this,29,0)">performing</button><button class="sel-btn" onclick="pick(this,29,1)">performed</button><button class="sel-btn" onclick="pick(this,29,2)">was performed</button></span> an experiment on students in three of his classes at MIT.</div><div class="wb-exp">💡 To demonstrate는 '~을 보여 주기 위해'라는 <span class="wb-blank"><span class="q-tag">30)</span><input class="blank-input" id="b30" type="text" autocomplete="off" onkeydown="if(event.key==='Enter')chkBlank(30)"><button class="q-check-btn mini" onclick="chkBlank(30)">채점</button><span class="q-feedback" id="fb30"></span></span>의 부사적 용법이고, Dan Ariely 뒤의 a professor ~ economics는 Dan Ariely와 <span class="wb-blank"><span class="q-tag">31)</span><input class="blank-input" id="b31" type="text" autocomplete="off" onkeydown="if(event.key==='Enter')chkBlank(31)"><button class="q-check-btn mini" onclick="chkBlank(31)">채점</button><span class="q-feedback" id="fb31"></span></span>이다.</div><div class="wb-q">Q. 'the habit of delaying'과 같은 의미의 한 단어를 고르시오.</div><div class="wb-opts"><span class="q-tag">32)</span><span class="sel-group wide" data-qi="32" data-ans="1" data-why="[&quot;&lt;b&gt;perseverance&lt;/b&gt; — 이 자리에 맞지 않아요&quot;, &quot;&lt;b&gt;procrastination&lt;/b&gt; — 여기에 들어갈 말이에요&quot;, &quot;&lt;b&gt;punctuality&lt;/b&gt; — 이 자리에 맞지 않아요&quot;, &quot;&lt;b&gt;persistence&lt;/b&gt; — 이 자리에 맞지 않아요&quot;]"><button class="sel-btn" onclick="pick(this,32,0)">perseverance</button><button class="sel-btn" onclick="pick(this,32,1)">procrastination</button><button class="sel-btn" onclick="pick(this,32,2)">punctuality</button><button class="sel-btn" onclick="pick(this,32,3)">persistence</button></span></div><div class="wb-line">He <span class="q-tag">33)</span><span class="sel-group pick-tight" data-qi="33" data-ans="1" data-why="[&quot;&lt;b&gt;was assigned&lt;/b&gt; — 이 자리에 맞지 않아요&quot;, &quot;&lt;b&gt;assigned&lt;/b&gt; — 여기에 들어갈 말이에요&quot;, &quot;&lt;b&gt;assigning&lt;/b&gt; — 이 자리에 맞지 않아요&quot;]"><button class="sel-btn" onclick="pick(this,33,0)">was assigned</button><button class="sel-btn" onclick="pick(this,33,1)">assigned</button><button class="sel-btn" onclick="pick(this,33,2)">assigning</button></span> all classes three reports over the course of the semester.</div><div class="wb-line">The first class had to choose three due dates for <span class="q-tag">34)</span><span class="sel-group pick-tight" data-qi="34" data-ans="1" data-why="[&quot;&lt;b&gt;itself&lt;/b&gt; — 이 자리에 맞지 않아요&quot;, &quot;&lt;b&gt;themselves&lt;/b&gt; — 여기에 들어갈 말이에요&quot;, &quot;&lt;b&gt;them&lt;/b&gt; — 이 자리에 맞지 않아요&quot;]"><button class="sel-btn" onclick="pick(this,34,0)">itself</button><button class="sel-btn" onclick="pick(this,34,1)">themselves</button><button class="sel-btn" onclick="pick(this,34,2)">them</button></span>, up to and including the last day of class.</div><div class="wb-exp">💡 주어(The first class의 학생들)와 목적어가 같으므로 재귀대명사 <span class="wb-blank"><span class="q-tag">35)</span><input class="blank-input" id="b35" type="text" autocomplete="off" onkeydown="if(event.key==='Enter')chkBlank(35)"><button class="q-check-btn mini" onclick="chkBlank(35)">채점</button><span class="q-feedback" id="fb35"></span></span>를 쓴다.</div><div class="wb-line">The second had no deadlines — all three papers just had to submit by the last day of class.</div><div class="wb-q">Q. 밑줄 친 문장에서 어법상 오류를 찾아 바르게 고칠 것.</div><div class="wb-free"><span class="wb-blank wide"><span class="q-tag">36)</span><input class="blank-input" id="b36" type="text" autocomplete="off" onkeydown="if(event.key==='Enter')chkBlank(36)"><button class="q-check-btn mini" onclick="chkBlank(36)">채점</button><span class="q-feedback" id="fb36"></span></span></div><div class="wb-exp">💡 papers는 '제출되는' 대상이므로 <span class="q-tag">37)</span><span class="sel-group pick-tight" data-qi="37" data-ans="0" data-why="[&quot;&lt;b&gt;수동태&lt;/b&gt; — 여기에 들어갈 말이에요&quot;, &quot;&lt;b&gt;능동태&lt;/b&gt; — 이 자리에 맞지 않아요&quot;]"><button class="sel-btn" onclick="pick(this,37,0)">수동태</button><button class="sel-btn" onclick="pick(this,37,1)">능동태</button></span>를 써야 하며, '~까지'의 완료 시점은 by, 계속은 <span class="wb-blank"><span class="q-tag">38)</span><input class="blank-input" id="b38" type="text" autocomplete="off" onkeydown="if(event.key==='Enter')chkBlank(38)"><button class="q-check-btn mini" onclick="chkBlank(38)">채점</button><span class="q-feedback" id="fb38"></span></span>을 쓴다.</div><div class="wb-line">In his third class, he gave students three <span class="wb-multi"><span class="q-tag">39)</span><span class="word-chip pickable" data-grp="39" data-n="1" onclick="toggleChip(this)">vague</span><span class="word-chip pickable" data-grp="39" data-n="2" onclick="toggleChip(this)">fixed</span><span class="word-chip pickable" data-grp="39" data-n="3" onclick="toggleChip(this)">loose</span><span class="word-chip pickable" data-grp="39" data-n="4" onclick="toggleChip(this)">established</span><span class="word-chip pickable" data-grp="39" data-n="5" onclick="toggleChip(this)">firm</span><span class="word-chip pickable" data-grp="39" data-n="6" onclick="toggleChip(this)">optional</span><span class="word-chip pickable" data-grp="39" data-n="7" onclick="toggleChip(this)">set</span><span class="word-chip pickable" data-grp="39" data-n="8" onclick="toggleChip(this)">flexible</span><button class="q-check-btn mini" onclick="checkMulti(39)">채점</button><span class="q-feedback" id="fb39"></span></span> deadlines over the course of the semester.</div><div class="wb-ko">학기 말에, 그는 마감일이 정해진 학생들이 최고의 성적을 받았고, 마감일이 없는 학생들은 최하의 성적을 받았으며, 자신의 마감일을 선택할 수 있었던 학생들은 그 중간 어디쯤에 위치했다는 것을 알아냈다.</div><div class="wb-q">Q. 한글 해석에 부합하면서 어법상 오류가 없는 것을 모두 고르시오.</div><div class="wb-opts"><span class="wb-multi"><span class="q-tag">40)</span><span class="word-chip pickable" data-grp="40" data-n="1" onclick="toggleChip(this)">At the end of the semester, he found that students with set deadlines received the best grades, the students with no deadlines had the worst, and those who could choose their own deadlines fell somewhere in the middle.</span><span class="word-chip pickable" data-grp="40" data-n="2" onclick="toggleChip(this)">At the end of the semester, he found that students with no deadlines received the best grades, the students with set deadlines had the worst, and those who could choose their own deadlines fell somewhere in the middle.</span><span class="word-chip pickable" data-grp="40" data-n="3" onclick="toggleChip(this)">At the end of the semester, he discovered that students given set deadlines got the best grades, students without deadlines got the worst, and those choosing their own deadlines fell somewhere in between.</span><span class="word-chip pickable" data-grp="40" data-n="4" onclick="toggleChip(this)">At the end of the semester, he found that students with set deadlines received the best grades, the students with no deadlines had the worst, and those who could choose their own deadlines fall somewhere in the middle.</span><span class="word-chip pickable" data-grp="40" data-n="5" onclick="toggleChip(this)">At the end of the semester, he found that students with set deadlines did best, those with no deadlines did worst, and those who chose their own deadlines were in between.</span><span class="word-chip pickable" data-grp="40" data-n="6" onclick="toggleChip(this)">At the end of the semester, he found that students with set deadlines received the best grades, and that who could choose their own deadlines fell somewhere in the middle.</span><button class="q-check-btn mini" onclick="checkMulti(40)">채점</button><span class="q-feedback" id="fb40"></span></span></div><div class="wb-line">Ariely concludes that <span class="wb-multi"><span class="q-tag">41)</span><span class="word-chip pickable" data-grp="41" data-n="1" onclick="toggleChip(this)">expanding</span><span class="word-chip pickable" data-grp="41" data-n="2" onclick="toggleChip(this)">curbing</span><span class="word-chip pickable" data-grp="41" data-n="3" onclick="toggleChip(this)">extending</span><span class="word-chip pickable" data-grp="41" data-n="4" onclick="toggleChip(this)">restricting</span><span class="word-chip pickable" data-grp="41" data-n="5" onclick="toggleChip(this)">constraining</span><span class="word-chip pickable" data-grp="41" data-n="6" onclick="toggleChip(this)">broadening</span><span class="word-chip pickable" data-grp="41" data-n="7" onclick="toggleChip(this)">limiting</span><span class="word-chip pickable" data-grp="41" data-n="8" onclick="toggleChip(this)">increasing</span><button class="q-check-btn mini" onclick="checkMulti(41)">채점</button><span class="q-feedback" id="fb41"></span></span> freedom — <span class="q-tag">42)</span><span class="sel-group pick-tight" data-qi="42" data-ans="1" data-why="[&quot;&lt;b&gt;that&lt;/b&gt; — 이 자리에 맞지 않아요&quot;, &quot;&lt;b&gt;whether&lt;/b&gt; — 여기에 들어갈 말이에요&quot;, &quot;&lt;b&gt;if&lt;/b&gt; — 이 자리에 맞지 않아요&quot;]"><button class="sel-btn" onclick="pick(this,42,0)">that</button><button class="sel-btn" onclick="pick(this,42,1)">whether</button><button class="sel-btn" onclick="pick(this,42,2)">if</button></span> by the professor or by students who <span class="q-tag">43)</span><span class="sel-group pick-tight" data-qi="43" data-ans="1" data-why="[&quot;&lt;b&gt;recognizing&lt;/b&gt; — 이 자리에 맞지 않아요&quot;, &quot;&lt;b&gt;recognize&lt;/b&gt; — 여기에 들어갈 말이에요&quot;, &quot;&lt;b&gt;recognizes&lt;/b&gt; — 이 자리에 맞지 않아요&quot;]"><button class="sel-btn" onclick="pick(this,43,0)">recognizing</button><button class="sel-btn" onclick="pick(this,43,1)">recognize</button><button class="sel-btn" onclick="pick(this,43,2)">recognizes</button></span> their own tendencies to delay things — <span class="q-tag">44)</span><span class="sel-group pick-tight" data-qi="44" data-ans="1" data-why="[&quot;&lt;b&gt;improving&lt;/b&gt; — 이 자리에 맞지 않아요&quot;, &quot;&lt;b&gt;improves&lt;/b&gt; — 여기에 들어갈 말이에요&quot;, &quot;&lt;b&gt;improve&lt;/b&gt; — 이 자리에 맞지 않아요&quot;]"><button class="sel-btn" onclick="pick(this,44,0)">improving</button><button class="sel-btn" onclick="pick(this,44,1)">improves</button><button class="sel-btn" onclick="pick(this,44,2)">improve</button></span> self-control and performance.</div><div class="wb-exp">💡 whether A or B는 ' <span class="wb-blank"><span class="q-tag">45)</span><input class="blank-input" id="b45" type="text" autocomplete="off" onkeydown="if(event.key==='Enter')chkBlank(45)"><button class="q-check-btn mini" onclick="chkBlank(45)">채점</button><span class="q-feedback" id="fb45"></span></span>'의 양보 의미이고, 주어가 동명사구 restricting freedom이므로 동사는 <span class="q-tag">46)</span><span class="sel-group pick-tight" data-qi="46" data-ans="0" data-why="[&quot;&lt;b&gt;단수&lt;/b&gt; — 여기에 들어갈 말이에요&quot;, &quot;&lt;b&gt;복수&lt;/b&gt; — 이 자리에 맞지 않아요&quot;]"><button class="sel-btn" onclick="pick(this,46,0)">단수</button><button class="sel-btn" onclick="pick(this,46,1)">복수</button></span>형 improves를 쓴다. who의 선행사는 <span class="wb-blank"><span class="q-tag">47)</span><input class="blank-input" id="b47" type="text" autocomplete="off" onkeydown="if(event.key==='Enter')chkBlank(47)"><button class="q-check-btn mini" onclick="chkBlank(47)">채점</button><span class="q-feedback" id="fb47"></span></span>이므로 recognize를 쓴다.</div><div class="wb-q">Q. 빈칸 추론: 이 글의 빈칸 'restricting freedom'과 의미가 가장 가까운 것을 고르시오.</div><div class="wb-opts"><span class="q-tag">48)</span><span class="sel-group wide" data-qi="48" data-ans="2" data-why="[&quot;&lt;b&gt;giving more choices&lt;/b&gt; — 이 자리에 맞지 않아요&quot;, &quot;&lt;b&gt;removing all deadlines&lt;/b&gt; — 이 자리에 맞지 않아요&quot;, &quot;&lt;b&gt;setting limits on freedom&lt;/b&gt; — 여기에 들어갈 말이에요&quot;, &quot;&lt;b&gt;rewarding good grades&lt;/b&gt; — 이 자리에 맞지 않아요&quot;]"><button class="sel-btn" onclick="pick(this,48,0)">giving more choices</button><button class="sel-btn" onclick="pick(this,48,1)">removing all deadlines</button><button class="sel-btn" onclick="pick(this,48,2)">setting limits on freedom</button><button class="sel-btn" onclick="pick(this,48,3)">rewarding good grades</button></span></div><div class="wb-ko">교수에 의해서든 일을 미루는 자신의 성향을 인식한 학생들에 의해서든, 자유를 제한하는 것은 자기 통제와 성과를 향상시킨다.</div><div class="wb-exp">💡 우리말을 참고하여 영작 (동명사 주어와 whether A or B를 사용할 것).</div><div class="arrange-wrap" id="arr49"><span class="q-tag">49)</span><div class="word-pool" id="pool49"></div><div class="arrange-answer" id="ans49"></div><button class="q-check-btn" onclick="checkArr(49)">채점</button><div class="q-feedback" id="fb49"></div></div><div class="wb-q">Q. &lt;02&gt;의 내용과 일치하면서 어법상 오류가 없는 것을 2개 고르시오.</div><div class="wb-opts"><span class="wb-multi"><span class="q-tag">50)</span><span class="word-chip pickable" data-grp="50" data-n="1" onclick="toggleChip(this)">Ariely assigned three reports to all of his classes during the semester.</span><span class="word-chip pickable" data-grp="50" data-n="2" onclick="toggleChip(this)">The students who had no deadlines received the best grades.</span><span class="word-chip pickable" data-grp="50" data-n="3" onclick="toggleChip(this)">The students who chose their own deadlines performed the worst.</span><span class="word-chip pickable" data-grp="50" data-n="4" onclick="toggleChip(this)">According to Ariely, limiting freedom can help people control themselves better.</span><span class="word-chip pickable" data-grp="50" data-n="5" onclick="toggleChip(this)">Ariely concludes that restricting freedom reduce performance.</span><button class="q-check-btn mini" onclick="checkMulti(50)">채점</button><span class="q-feedback" id="fb50"></span></span></div><div class="wb-q">Q. 다음 질문에 영어로 답하시오. (set deadlines를 사용하여 한 문장으로)</div><div class="wb-line">Which group of students received the best grades in the experiment?</div><div class="wb-free"><span class="wb-blank wide"><span class="q-tag">51)</span><input class="blank-input" id="b51" type="text" autocomplete="off" onkeydown="if(event.key==='Enter')chkBlank(51)"><button class="q-check-btn mini" onclick="chkBlank(51)">채점</button><span class="q-feedback" id="fb51"></span></span></div></div></div></div><div class="sec-submit"><button class="retry-btn" onclick="retryWrong(this)"></button><button class="sec-btn" onclick="submitSoFar()">여기까지 제출하기</button></div><div class="stage-nav"><button type="button" class="go" onclick="bnNext()">다음 단계 ▶ 📘</button><div class="note"><span class="left"></span><br>넘어가면 앞 단계는 다시 볼 수 없어요.</div></div></div>
+<div class="stage" data-stage="2"><div class="sec-header">📘 2022년 11월 고1 32번 · 혁신은 서로를 위해 일하게 한다</div><div class="para-block" data-ref="32번"><div class="para-header"><span class="para-num">2022년 11월 고1 32번 · 혁신은 서로를 위해 일하게 한다</span></div><div class="para-cols solo"><div class="para-eng"><div class="wb-lead">📘 종이 워크북 그대로예요. 칸이 나오면 바로 고르거나 써 주세요.<br>🟦 <b>파란 칸</b> — 하나만 고르기 &nbsp; 🟨 <b>노란 칸</b> — <b>맞는 것을 모두</b> 고르고 채점 &nbsp; ✏️ <b>줄 친 칸</b> — 타자로 쓰고 채점</div><div class="wb-line">The best way <span class="q-tag">52)</span><span class="sel-group pick-tight" data-qi="52" data-ans="1" data-why="[&quot;&lt;b&gt;what&lt;/b&gt; — 이 자리에 맞지 않아요&quot;, &quot;&lt;b&gt;in which&lt;/b&gt; — 여기에 들어갈 말이에요&quot;, &quot;&lt;b&gt;which&lt;/b&gt; — 이 자리에 맞지 않아요&quot;]"><button class="sel-btn" onclick="pick(this,52,0)">what</button><button class="sel-btn" onclick="pick(this,52,1)">in which</button><button class="sel-btn" onclick="pick(this,52,2)">which</button></span> innovation changes our lives is by <span class="q-tag">53)</span><span class="sel-group pick-tight" data-qi="53" data-ans="1" data-why="[&quot;&lt;b&gt;enabled&lt;/b&gt; — 이 자리에 맞지 않아요&quot;, &quot;&lt;b&gt;enabling&lt;/b&gt; — 여기에 들어갈 말이에요&quot;, &quot;&lt;b&gt;enable&lt;/b&gt; — 이 자리에 맞지 않아요&quot;]"><button class="sel-btn" onclick="pick(this,53,0)">enabled</button><button class="sel-btn" onclick="pick(this,53,1)">enabling</button><button class="sel-btn" onclick="pick(this,53,2)">enable</button></span> people to work for each other.</div><div class="wb-exp">💡 in which는 '전치사 + 관계대명사'로 뒤에 <span class="wb-blank"><span class="q-tag">54)</span><input class="blank-input" id="b54" type="text" autocomplete="off" onkeydown="if(event.key==='Enter')chkBlank(54)"><button class="q-check-btn mini" onclick="chkBlank(54)">채점</button><span class="q-feedback" id="fb54"></span></span> 문장이 오며, 전치사 by 뒤에는 <span class="wb-blank"><span class="q-tag">55)</span><input class="blank-input" id="b55" type="text" autocomplete="off" onkeydown="if(event.key==='Enter')chkBlank(55)"><button class="q-check-btn mini" onclick="chkBlank(55)">채점</button><span class="q-feedback" id="fb55"></span></span>가 온다.</div><div class="wb-line">The main theme of human history is that we become <span class="q-tag">56)</span><span class="sel-group pick-tight" data-qi="56" data-ans="1" data-why="[&quot;&lt;b&gt;steadiness&lt;/b&gt; — 이 자리에 맞지 않아요&quot;, &quot;&lt;b&gt;steadily&lt;/b&gt; — 여기에 들어갈 말이에요&quot;, &quot;&lt;b&gt;steady&lt;/b&gt; — 이 자리에 맞지 않아요&quot;]"><button class="sel-btn" onclick="pick(this,56,0)">steadiness</button><button class="sel-btn" onclick="pick(this,56,1)">steadily</button><button class="sel-btn" onclick="pick(this,56,2)">steady</button></span> more <span class="wb-multi"><span class="q-tag">57)</span><span class="word-chip pickable" data-grp="57" data-n="1" onclick="toggleChip(this)">scattered</span><span class="word-chip pickable" data-grp="57" data-n="2" onclick="toggleChip(this)">specialized</span><span class="word-chip pickable" data-grp="57" data-n="3" onclick="toggleChip(this)">dedicated</span><span class="word-chip pickable" data-grp="57" data-n="4" onclick="toggleChip(this)">generalized</span><span class="word-chip pickable" data-grp="57" data-n="5" onclick="toggleChip(this)">broad</span><span class="word-chip pickable" data-grp="57" data-n="6" onclick="toggleChip(this)">concentrated</span><span class="word-chip pickable" data-grp="57" data-n="7" onclick="toggleChip(this)">focused</span><span class="word-chip pickable" data-grp="57" data-n="8" onclick="toggleChip(this)">unfocused</span><button class="q-check-btn mini" onclick="checkMulti(57)">채점</button><span class="q-feedback" id="fb57"></span></span> in what we produce, and steadily more <span class="wb-multi"><span class="q-tag">58)</span><span class="word-chip pickable" data-grp="58" data-n="1" onclick="toggleChip(this)">restricted</span><span class="word-chip pickable" data-grp="58" data-n="2" onclick="toggleChip(this)">wide-ranging</span><span class="word-chip pickable" data-grp="58" data-n="3" onclick="toggleChip(this)">assorted</span><span class="word-chip pickable" data-grp="58" data-n="4" onclick="toggleChip(this)">standardized</span><span class="word-chip pickable" data-grp="58" data-n="5" onclick="toggleChip(this)">varied</span><span class="word-chip pickable" data-grp="58" data-n="6" onclick="toggleChip(this)">uniform</span><span class="word-chip pickable" data-grp="58" data-n="7" onclick="toggleChip(this)">limited</span><span class="word-chip pickable" data-grp="58" data-n="8" onclick="toggleChip(this)">diversified</span><button class="q-check-btn mini" onclick="checkMulti(58)">채점</button><span class="q-feedback" id="fb58"></span></span> in what we consume:</div><div class="wb-exp">💡 형용사 more specialized를 수식하므로 부사 steadily를 쓰며, what we produce의 what은 '~하는 <span class="wb-blank"><span class="q-tag">59)</span><input class="blank-input" id="b59" type="text" autocomplete="off" onkeydown="if(event.key==='Enter')chkBlank(59)"><button class="q-check-btn mini" onclick="chkBlank(59)">채점</button><span class="q-feedback" id="fb59"></span></span>'이라는 뜻의 관계대명사이다.</div><div class="wb-line">we move away from <span class="wb-multi"><span class="q-tag">60)</span><span class="word-chip pickable" data-grp="60" data-n="1" onclick="toggleChip(this)">precarious</span><span class="word-chip pickable" data-grp="60" data-n="2" onclick="toggleChip(this)">steady</span><span class="word-chip pickable" data-grp="60" data-n="3" onclick="toggleChip(this)">solid</span><span class="word-chip pickable" data-grp="60" data-n="4" onclick="toggleChip(this)">insecure</span><span class="word-chip pickable" data-grp="60" data-n="5" onclick="toggleChip(this)">shaky</span><span class="word-chip pickable" data-grp="60" data-n="6" onclick="toggleChip(this)">secure</span><span class="word-chip pickable" data-grp="60" data-n="7" onclick="toggleChip(this)">stable</span><span class="word-chip pickable" data-grp="60" data-n="8" onclick="toggleChip(this)">unstable</span><button class="q-check-btn mini" onclick="checkMulti(60)">채점</button><span class="q-feedback" id="fb60"></span></span> self-sufficiency to safer <span class="wb-multi"><span class="q-tag">61)</span><span class="word-chip pickable" data-grp="61" data-n="1" onclick="toggleChip(this)">one-sided</span><span class="word-chip pickable" data-grp="61" data-n="2" onclick="toggleChip(this)">reciprocal</span><span class="word-chip pickable" data-grp="61" data-n="3" onclick="toggleChip(this)">mutual</span><span class="word-chip pickable" data-grp="61" data-n="4" onclick="toggleChip(this)">unilateral</span><span class="word-chip pickable" data-grp="61" data-n="5" onclick="toggleChip(this)">separate</span><span class="word-chip pickable" data-grp="61" data-n="6" onclick="toggleChip(this)">shared</span><span class="word-chip pickable" data-grp="61" data-n="7" onclick="toggleChip(this)">common</span><span class="word-chip pickable" data-grp="61" data-n="8" onclick="toggleChip(this)">individual</span><button class="q-check-btn mini" onclick="checkMulti(61)">채점</button><span class="q-feedback" id="fb61"></span></span> interdependence.</div><div class="wb-q">Q. 'self-sufficiency'의 영영풀이로 적절한 것.</div><div class="wb-opts"><span class="q-tag">62)</span><span class="sel-group wide" data-qi="62" data-ans="1" data-why="[&quot;&lt;b&gt;the state of depending on others for everything you need&lt;/b&gt; — 이 자리에 맞지 않아요&quot;, &quot;&lt;b&gt;the ability to provide everything you need for yourself without help&lt;/b&gt; — 여기에 들어갈 말이에요&quot;]"><button class="sel-btn" onclick="pick(this,62,0)">the state of depending on others for everything you need</button><button class="sel-btn" onclick="pick(this,62,1)">the ability to provide everything you need for yourself without help</button></span></div><div class="wb-line">By concentrating on serve other people's needs for forty hours a week — that we call a job — you can spend the other seventy-two hours (not counting fifty-six hours in bed) relying on the services provided to you by other people.</div><div class="wb-q">Q. 밑줄 친 문장에서 어법상 오류를 2개 찾아 바르게 고칠 것.</div><div class="wb-free"><span class="wb-blank wide"><span class="q-tag">63)</span><input class="blank-input" id="b63" type="text" autocomplete="off" onkeydown="if(event.key==='Enter')chkBlank(63)"><button class="q-check-btn mini" onclick="chkBlank(63)">채점</button><span class="q-feedback" id="fb63"></span></span></div><div class="wb-exp">💡 concentrate on의 on은 <span class="q-tag">64)</span><span class="sel-group pick-tight" data-qi="64" data-ans="0" data-why="[&quot;&lt;b&gt;전치사&lt;/b&gt; — 여기에 들어갈 말이에요&quot;, &quot;&lt;b&gt;to부정사&lt;/b&gt; — 이 자리에 맞지 않아요&quot;]"><button class="sel-btn" onclick="pick(this,64,0)">전치사</button><button class="sel-btn" onclick="pick(this,64,1)">to부정사</button></span>이므로 동명사 serving을 쓰고, 콤마·대시 뒤 계속적 용법에는 관계대명사 <span class="wb-blank"><span class="q-tag">65)</span><input class="blank-input" id="b65" type="text" autocomplete="off" onkeydown="if(event.key==='Enter')chkBlank(65)"><button class="q-check-btn mini" onclick="chkBlank(65)">채점</button><span class="q-feedback" id="fb65"></span></span>을 쓸 수 없다. 'spend + 시간 + <span class="wb-blank"><span class="q-tag">66)</span><input class="blank-input" id="b66" type="text" autocomplete="off" onkeydown="if(event.key==='Enter')chkBlank(66)"><button class="q-check-btn mini" onclick="chkBlank(66)">채점</button><span class="q-feedback" id="fb66"></span></span>' 구문이 쓰였다.</div><div class="wb-q">Q. 'relying on the services provided to you by other people'과 의미가 같은 것을 모두 고르시오.</div><div class="wb-opts"><span class="wb-multi"><span class="q-tag">67)</span><span class="word-chip pickable" data-grp="67" data-n="1" onclick="toggleChip(this)">depending on the services that other people provide for you</span><span class="word-chip pickable" data-grp="67" data-n="2" onclick="toggleChip(this)">providing services to other people for free</span><span class="word-chip pickable" data-grp="67" data-n="3" onclick="toggleChip(this)">making use of services which are offered to you by others</span><span class="word-chip pickable" data-grp="67" data-n="4" onclick="toggleChip(this)">relying on the services providing to you by other people</span><button class="q-check-btn mini" onclick="checkMulti(67)">채점</button><span class="q-feedback" id="fb67"></span></span></div><div class="wb-line">Innovation has made <span class="q-tag">68)</span><span class="sel-group pick-tight" data-qi="68" data-ans="1" data-why="[&quot;&lt;b&gt;this&lt;/b&gt; — 이 자리에 맞지 않아요&quot;, &quot;&lt;b&gt;it&lt;/b&gt; — 여기에 들어갈 말이에요&quot;, &quot;&lt;b&gt;that&lt;/b&gt; — 이 자리에 맞지 않아요&quot;]"><button class="sel-btn" onclick="pick(this,68,0)">this</button><button class="sel-btn" onclick="pick(this,68,1)">it</button><button class="sel-btn" onclick="pick(this,68,2)">that</button></span> possible to work for a fraction of a second in order to be able to <span class="q-tag">69)</span><span class="sel-group pick-tight" data-qi="69" data-ans="1" data-why="[&quot;&lt;b&gt;to afford&lt;/b&gt; — 이 자리에 맞지 않아요&quot;, &quot;&lt;b&gt;afford&lt;/b&gt; — 여기에 들어갈 말이에요&quot;, &quot;&lt;b&gt;affording&lt;/b&gt; — 이 자리에 맞지 않아요&quot;]"><button class="sel-btn" onclick="pick(this,69,0)">to afford</button><button class="sel-btn" onclick="pick(this,69,1)">afford</button><button class="sel-btn" onclick="pick(this,69,2)">affording</button></span> to turn on an electric lamp for an hour,</div><div class="wb-exp">💡 make it possible to V에서 it은 <span class="wb-blank"><span class="q-tag">70)</span><input class="blank-input" id="b70" type="text" autocomplete="off" onkeydown="if(event.key==='Enter')chkBlank(70)"><button class="q-check-btn mini" onclick="chkBlank(70)">채점</button><span class="q-feedback" id="fb70"></span></span>이고, to work ~가 진목적어이다.</div><div class="wb-line">providing the quantity of light that would have <span class="wb-multi"><span class="q-tag">71)</span><span class="word-chip pickable" data-grp="71" data-n="1" onclick="toggleChip(this)">reduced</span><span class="word-chip pickable" data-grp="71" data-n="2" onclick="toggleChip(this)">required</span><span class="word-chip pickable" data-grp="71" data-n="3" onclick="toggleChip(this)">demanded</span><span class="word-chip pickable" data-grp="71" data-n="4" onclick="toggleChip(this)">spared</span><span class="word-chip pickable" data-grp="71" data-n="5" onclick="toggleChip(this)">called for</span><span class="word-chip pickable" data-grp="71" data-n="6" onclick="toggleChip(this)">avoided</span><span class="word-chip pickable" data-grp="71" data-n="7" onclick="toggleChip(this)">saved</span><span class="word-chip pickable" data-grp="71" data-n="8" onclick="toggleChip(this)">needed</span><button class="q-check-btn mini" onclick="checkMulti(71)">채점</button><span class="q-feedback" id="fb71"></span></span> a whole day's work if you had to make it yourself by collecting and <span class="q-tag">72)</span><span class="sel-group pick-tight" data-qi="72" data-ans="1" data-why="[&quot;&lt;b&gt;refined&lt;/b&gt; — 이 자리에 맞지 않아요&quot;, &quot;&lt;b&gt;refining&lt;/b&gt; — 여기에 들어갈 말이에요&quot;, &quot;&lt;b&gt;refine&lt;/b&gt; — 이 자리에 맞지 않아요&quot;]"><button class="sel-btn" onclick="pick(this,72,0)">refined</button><button class="sel-btn" onclick="pick(this,72,1)">refining</button><button class="sel-btn" onclick="pick(this,72,2)">refine</button></span> sesame oil or lamb fat to burn in a simple lamp, as much of humanity did in the not so <span class="wb-multi"><span class="q-tag">73)</span><span class="word-chip pickable" data-grp="73" data-n="1" onclick="toggleChip(this)">immediate</span><span class="word-chip pickable" data-grp="73" data-n="2" onclick="toggleChip(this)">remote</span><span class="word-chip pickable" data-grp="73" data-n="3" onclick="toggleChip(this)">faraway</span><span class="word-chip pickable" data-grp="73" data-n="4" onclick="toggleChip(this)">near</span><span class="word-chip pickable" data-grp="73" data-n="5" onclick="toggleChip(this)">recent</span><span class="word-chip pickable" data-grp="73" data-n="6" onclick="toggleChip(this)">distant</span><span class="word-chip pickable" data-grp="73" data-n="7" onclick="toggleChip(this)">far-off</span><span class="word-chip pickable" data-grp="73" data-n="8" onclick="toggleChip(this)">close</span><button class="q-check-btn mini" onclick="checkMulti(73)">채점</button><span class="q-feedback" id="fb73"></span></span> past.</div><div class="wb-exp">💡 would have required는 과거 사실의 반대를 가정하며, collecting과 refining은 전치사 by의 목적어로 <span class="wb-blank"><span class="q-tag">74)</span><input class="blank-input" id="b74" type="text" autocomplete="off" onkeydown="if(event.key==='Enter')chkBlank(74)"><button class="q-check-btn mini" onclick="chkBlank(74)">채점</button><span class="q-feedback" id="fb74"></span></span>을 이룬다.</div><div class="wb-ko">혁신은 전등을 한 시간 동안 켤 여유를 갖기 위해 아주 짧은 시간 동안 일하는 것을 가능하게 했다.</div><div class="wb-q">Q. 한글 해석에 부합하면서 어법상 오류가 없는 것을 모두 고르시오.</div><div class="wb-opts"><span class="wb-multi"><span class="q-tag">75)</span><span class="word-chip pickable" data-grp="75" data-n="1" onclick="toggleChip(this)">Innovation has made it possible to work for a fraction of a second in order to be able to afford to turn on an electric lamp for an hour.</span><span class="word-chip pickable" data-grp="75" data-n="2" onclick="toggleChip(this)">Innovation has made possible to work for a fraction of a second in order to be able to afford to turn on an electric lamp for an hour.</span><span class="word-chip pickable" data-grp="75" data-n="3" onclick="toggleChip(this)">Thanks to innovation, it has become possible to work for a fraction of a second in order to be able to afford to turn on an electric lamp for an hour.</span><span class="word-chip pickable" data-grp="75" data-n="4" onclick="toggleChip(this)">Innovation has made it possible to work for a fraction of a second in order to be able affording to turn on an electric lamp for an hour.</span><span class="word-chip pickable" data-grp="75" data-n="5" onclick="toggleChip(this)">Innovation has made it possibly to work for a fraction of a second in order to be able to afford to turn on an electric lamp for an hour.</span><span class="word-chip pickable" data-grp="75" data-n="6" onclick="toggleChip(this)">Innovation has enabled us to work for a fraction of a second in order to be able to afford to turn on an electric lamp for an hour.</span><button class="q-check-btn mini" onclick="checkMulti(75)">채점</button><span class="q-feedback" id="fb75"></span></span></div><div class="wb-ko">인류 역사의 주요한 주제는 우리가 생산하는 것에서는 점점 더 전문화되고, 소비하는 것에서는 점점 더 다양화되는 것이다.</div><div class="wb-exp">💡 우리말을 참고하여 영작 (The main theme of human history is that으로 시작할 것).</div><div class="arrange-wrap" id="arr76"><span class="q-tag">76)</span><div class="word-pool" id="pool76"></div><div class="arrange-answer" id="ans76"></div><button class="q-check-btn" onclick="checkArr(76)">채점</button><div class="q-feedback" id="fb76"></div></div><div class="wb-q">Q. &lt;03&gt;의 내용과 일치하면서 어법상 오류가 없는 것을 2개 고르시오.</div><div class="wb-opts"><span class="wb-multi"><span class="q-tag">77)</span><span class="word-chip pickable" data-grp="77" data-n="1" onclick="toggleChip(this)">According to the writer, self-sufficiency is safer than mutual interdependence.</span><span class="word-chip pickable" data-grp="77" data-n="2" onclick="toggleChip(this)">Innovation allows people to rely on services provided by others.</span><span class="word-chip pickable" data-grp="77" data-n="3" onclick="toggleChip(this)">In the past, making your own light could have required a whole day's work.</span><span class="word-chip pickable" data-grp="77" data-n="4" onclick="toggleChip(this)">Making light by refining lamb fat took only a fraction of a second.</span><span class="word-chip pickable" data-grp="77" data-n="5" onclick="toggleChip(this)">Innovation makes people works only for themselves.</span><button class="q-check-btn mini" onclick="checkMulti(77)">채점</button><span class="q-feedback" id="fb77"></span></span></div><div class="wb-q">Q. 다음 질문에 영어로 답하시오. (each other를 사용하여 한 문장으로)</div><div class="wb-line">According to the writer, how does innovation change our lives best?</div><div class="wb-free"><span class="wb-blank wide"><span class="q-tag">78)</span><input class="blank-input" id="b78" type="text" autocomplete="off" onkeydown="if(event.key==='Enter')chkBlank(78)"><button class="q-check-btn mini" onclick="chkBlank(78)">채점</button><span class="q-feedback" id="fb78"></span></span></div></div></div></div><div class="sec-submit"><button class="retry-btn" onclick="retryWrong(this)"></button><button class="sec-btn" onclick="submitSoFar()">여기까지 제출하기</button></div><div class="stage-nav"><button type="button" class="go" onclick="bnNext()">다음 단계 ▶ 📘</button><div class="note"><span class="left"></span><br>넘어가면 앞 단계는 다시 볼 수 없어요.</div></div></div>
+<div class="stage" data-stage="3"><div class="sec-header">📘 2022년 11월 고1 33번 · 유혹을 차단하는 율리시스 계약</div><div class="para-block" data-ref="33번"><div class="para-header"><span class="para-num">2022년 11월 고1 33번 · 유혹을 차단하는 율리시스 계약</span></div><div class="para-cols solo"><div class="para-eng"><div class="wb-lead">📘 종이 워크북 그대로예요. 칸이 나오면 바로 고르거나 써 주세요.<br>🟦 <b>파란 칸</b> — 하나만 고르기 &nbsp; 🟨 <b>노란 칸</b> — <b>맞는 것을 모두</b> 고르고 채점 &nbsp; ✏️ <b>줄 친 칸</b> — 타자로 쓰고 채점</div><div class="wb-line">If you've ever made a <span class="wb-multi"><span class="q-tag">79)</span><span class="word-chip pickable" data-grp="79" data-n="1" onclick="toggleChip(this)">sound</span><span class="word-chip pickable" data-grp="79" data-n="2" onclick="toggleChip(this)">bad</span><span class="word-chip pickable" data-grp="79" data-n="3" onclick="toggleChip(this)">prudent</span><span class="word-chip pickable" data-grp="79" data-n="4" onclick="toggleChip(this)">poor</span><span class="word-chip pickable" data-grp="79" data-n="5" onclick="toggleChip(this)">foolish</span><span class="word-chip pickable" data-grp="79" data-n="6" onclick="toggleChip(this)">wise</span><span class="word-chip pickable" data-grp="79" data-n="7" onclick="toggleChip(this)">sensible</span><span class="word-chip pickable" data-grp="79" data-n="8" onclick="toggleChip(this)">unwise</span><button class="q-check-btn mini" onclick="checkMulti(79)">채점</button><span class="q-feedback" id="fb79"></span></span> choice, you might be interested in <span class="q-tag">80)</span><span class="sel-group pick-tight" data-qi="80" data-ans="1" data-why="[&quot;&lt;b&gt;to learn&lt;/b&gt; — 이 자리에 맞지 않아요&quot;, &quot;&lt;b&gt;learning&lt;/b&gt; — 여기에 들어갈 말이에요&quot;, &quot;&lt;b&gt;learn&lt;/b&gt; — 이 자리에 맞지 않아요&quot;]"><button class="sel-btn" onclick="pick(this,80,0)">to learn</button><button class="sel-btn" onclick="pick(this,80,1)">learning</button><button class="sel-btn" onclick="pick(this,80,2)">learn</button></span> how to break that habit.</div><div class="wb-exp">💡 be interested in의 in은 <span class="wb-blank"><span class="q-tag">81)</span><input class="blank-input" id="b81" type="text" autocomplete="off" onkeydown="if(event.key==='Enter')chkBlank(81)"><button class="q-check-btn mini" onclick="chkBlank(81)">채점</button><span class="q-feedback" id="fb81"></span></span>이므로 뒤에 동명사가 오며, 'how + to부정사'는 '~하는 <span class="wb-blank"><span class="q-tag">82)</span><input class="blank-input" id="b82" type="text" autocomplete="off" onkeydown="if(event.key==='Enter')chkBlank(82)"><button class="q-check-btn mini" onclick="chkBlank(82)">채점</button><span class="q-feedback" id="fb82"></span></span>'의 뜻이다.</div><div class="wb-line">One great way to <span class="wb-multi"><span class="q-tag">83)</span><span class="word-chip pickable" data-grp="83" data-n="1" onclick="toggleChip(this)">fool</span><span class="word-chip pickable" data-grp="83" data-n="2" onclick="toggleChip(this)">inform</span><span class="word-chip pickable" data-grp="83" data-n="3" onclick="toggleChip(this)">trick</span><span class="word-chip pickable" data-grp="83" data-n="4" onclick="toggleChip(this)">alert</span><span class="word-chip pickable" data-grp="83" data-n="5" onclick="toggleChip(this)">warn</span><span class="word-chip pickable" data-grp="83" data-n="6" onclick="toggleChip(this)">mislead</span><span class="word-chip pickable" data-grp="83" data-n="7" onclick="toggleChip(this)">con</span><span class="word-chip pickable" data-grp="83" data-n="8" onclick="toggleChip(this)">deceive</span><button class="q-check-btn mini" onclick="checkMulti(83)">채점</button><span class="q-feedback" id="fb83"></span></span> your brain into <span class="q-tag">84)</span><span class="sel-group pick-tight" data-qi="84" data-ans="1" data-why="[&quot;&lt;b&gt;done&lt;/b&gt; — 이 자리에 맞지 않아요&quot;, &quot;&lt;b&gt;doing&lt;/b&gt; — 여기에 들어갈 말이에요&quot;, &quot;&lt;b&gt;do&lt;/b&gt; — 이 자리에 맞지 않아요&quot;]"><button class="sel-btn" onclick="pick(this,84,0)">done</button><button class="sel-btn" onclick="pick(this,84,1)">doing</button><button class="sel-btn" onclick="pick(this,84,2)">do</button></span> so <span class="q-tag">85)</span><span class="sel-group pick-tight" data-qi="85" data-ans="1" data-why="[&quot;&lt;b&gt;being&lt;/b&gt; — 이 자리에 맞지 않아요&quot;, &quot;&lt;b&gt;is&lt;/b&gt; — 여기에 들어갈 말이에요&quot;, &quot;&lt;b&gt;are&lt;/b&gt; — 이 자리에 맞지 않아요&quot;]"><button class="sel-btn" onclick="pick(this,85,0)">being</button><button class="sel-btn" onclick="pick(this,85,1)">is</button><button class="sel-btn" onclick="pick(this,85,2)">are</button></span> to sign a "Ulysses Contract."</div><div class="wb-exp">💡 trick A into V-ing는 'A를 속여 <span class="wb-blank"><span class="q-tag">86)</span><input class="blank-input" id="b86" type="text" autocomplete="off" onkeydown="if(event.key==='Enter')chkBlank(86)"><button class="q-check-btn mini" onclick="chkBlank(86)">채점</button><span class="q-feedback" id="fb86"></span></span>'의 뜻이고, 주어의 핵심은 One great way이므로 동사는 <span class="wb-blank"><span class="q-tag">87)</span><input class="blank-input" id="b87" type="text" autocomplete="off" onkeydown="if(event.key==='Enter')chkBlank(87)"><button class="q-check-btn mini" onclick="chkBlank(87)">채점</button><span class="q-feedback" id="fb87"></span></span>를 쓴다.</div><div class="wb-line">The name of this life tip <span class="q-tag">88)</span><span class="sel-group pick-tight" data-qi="88" data-ans="1" data-why="[&quot;&lt;b&gt;come&lt;/b&gt; — 이 자리에 맞지 않아요&quot;, &quot;&lt;b&gt;comes&lt;/b&gt; — 여기에 들어갈 말이에요&quot;, &quot;&lt;b&gt;coming&lt;/b&gt; — 이 자리에 맞지 않아요&quot;]"><button class="sel-btn" onclick="pick(this,88,0)">come</button><button class="sel-btn" onclick="pick(this,88,1)">comes</button><button class="sel-btn" onclick="pick(this,88,2)">coming</button></span> from the Greek myth about Ulysses, a captain <span class="q-tag">89)</span><span class="sel-group pick-tight" data-qi="89" data-ans="1" data-why="[&quot;&lt;b&gt;which&lt;/b&gt; — 이 자리에 맞지 않아요&quot;, &quot;&lt;b&gt;whose&lt;/b&gt; — 여기에 들어갈 말이에요&quot;, &quot;&lt;b&gt;who&lt;/b&gt; — 이 자리에 맞지 않아요&quot;]"><button class="sel-btn" onclick="pick(this,89,0)">which</button><button class="sel-btn" onclick="pick(this,89,1)">whose</button><button class="sel-btn" onclick="pick(this,89,2)">who</button></span> ship sailed past the island of the Sirens,</div><div class="wb-exp">💡 whose는 소유격 관계대명사로 뒤에 <span class="wb-blank"><span class="q-tag">90)</span><input class="blank-input" id="b90" type="text" autocomplete="off" onkeydown="if(event.key==='Enter')chkBlank(90)"><button class="q-check-btn mini" onclick="chkBlank(90)">채점</button><span class="q-feedback" id="fb90"></span></span>가 바로 오고, 선행사는 a captain이다.</div><div class="wb-line">a tribe of dangerous women who lured victims to their death with their <span class="wb-multi"><span class="q-tag">91)</span><span class="word-chip pickable" data-grp="91" data-n="1" onclick="toggleChip(this)">resistible</span><span class="word-chip pickable" data-grp="91" data-n="2" onclick="toggleChip(this)">irresistible</span><span class="word-chip pickable" data-grp="91" data-n="3" onclick="toggleChip(this)">tempting</span><span class="word-chip pickable" data-grp="91" data-n="4" onclick="toggleChip(this)">repellent</span><span class="word-chip pickable" data-grp="91" data-n="5" onclick="toggleChip(this)">unappealing</span><span class="word-chip pickable" data-grp="91" data-n="6" onclick="toggleChip(this)">captivating</span><span class="word-chip pickable" data-grp="91" data-n="7" onclick="toggleChip(this)">overwhelming</span><span class="word-chip pickable" data-grp="91" data-n="8" onclick="toggleChip(this)">dull</span><button class="q-check-btn mini" onclick="checkMulti(91)">채점</button><span class="q-feedback" id="fb91"></span></span> songs.</div><div class="wb-q">Q. 'lure'의 영영풀이로 적절한 것.</div><div class="wb-opts"><span class="q-tag">92)</span><span class="sel-group wide" data-qi="92" data-ans="0" data-why="[&quot;&lt;b&gt;to persuade someone to go somewhere by offering something attractive&lt;/b&gt; — 여기에 들어갈 말이에요&quot;, &quot;&lt;b&gt;to warn someone to stay away from danger&lt;/b&gt; — 이 자리에 맞지 않아요&quot;]"><button class="sel-btn" onclick="pick(this,92,0)">to persuade someone to go somewhere by offering something attractive</button><button class="sel-btn" onclick="pick(this,92,1)">to warn someone to stay away from danger</button></span></div><div class="wb-line">Knowing that he would otherwise be unable to resist, Ulysses instructed his crew stuff their ears with cotton and tie him to the ship's mast to prevent him to turn their ship towards the Sirens.</div><div class="wb-q">Q. 밑줄 친 문장에서 어법상 오류를 2개 찾아 바르게 고칠 것.</div><div class="wb-free"><span class="wb-blank wide"><span class="q-tag">93)</span><input class="blank-input" id="b93" type="text" autocomplete="off" onkeydown="if(event.key==='Enter')chkBlank(93)"><button class="q-check-btn mini" onclick="chkBlank(93)">채점</button><span class="q-feedback" id="fb93"></span></span></div><div class="wb-exp">💡 instruct는 'instruct + 목적어 + <span class="wb-blank"><span class="q-tag">94)</span><input class="blank-input" id="b94" type="text" autocomplete="off" onkeydown="if(event.key==='Enter')chkBlank(94)"><button class="q-check-btn mini" onclick="chkBlank(94)">채점</button><span class="q-feedback" id="fb94"></span></span>', prevent는 'prevent + 목적어 + <span class="wb-blank"><span class="q-tag">95)</span><input class="blank-input" id="b95" type="text" autocomplete="off" onkeydown="if(event.key==='Enter')chkBlank(95)"><button class="q-check-btn mini" onclick="chkBlank(95)">채점</button><span class="q-feedback" id="fb95"></span></span>' 구조를 취한다. otherwise는 '(그렇게 하지) <span class="wb-blank"><span class="q-tag">96)</span><input class="blank-input" id="b96" type="text" autocomplete="off" onkeydown="if(event.key==='Enter')chkBlank(96)"><button class="q-check-btn mini" onclick="chkBlank(96)">채점</button><span class="q-feedback" id="fb96"></span></span>'의 뜻이다.</div><div class="wb-q">Q. 'Knowing that he would otherwise be unable to resist'와 의미가 같은 것을 모두 고르시오.</div><div class="wb-opts"><span class="wb-multi"><span class="q-tag">97)</span><span class="word-chip pickable" data-grp="97" data-n="1" onclick="toggleChip(this)">Because he knew that he could not resist if he did not do so</span><span class="word-chip pickable" data-grp="97" data-n="2" onclick="toggleChip(this)">Because he knew that he could easily resist the songs</span><span class="word-chip pickable" data-grp="97" data-n="3" onclick="toggleChip(this)">As he knew that, without such measures, he would fail to resist</span><span class="word-chip pickable" data-grp="97" data-n="4" onclick="toggleChip(this)">Known that he would otherwise be unable to resist</span><button class="q-check-btn mini" onclick="checkMulti(97)">채점</button><span class="q-feedback" id="fb97"></span></span></div><div class="wb-line">It worked for him and you can do the same thing by <span class="q-tag">98)</span><span class="sel-group pick-tight" data-qi="98" data-ans="1" data-why="[&quot;&lt;b&gt;locked&lt;/b&gt; — 이 자리에 맞지 않아요&quot;, &quot;&lt;b&gt;locking&lt;/b&gt; — 여기에 들어갈 말이에요&quot;, &quot;&lt;b&gt;lock&lt;/b&gt; — 이 자리에 맞지 않아요&quot;]"><button class="sel-btn" onclick="pick(this,98,0)">locked</button><button class="sel-btn" onclick="pick(this,98,1)">locking</button><button class="sel-btn" onclick="pick(this,98,2)">lock</button></span> yourself out of your <span class="wb-multi"><span class="q-tag">99)</span><span class="word-chip pickable" data-grp="99" data-n="1" onclick="toggleChip(this)">temptations</span><span class="word-chip pickable" data-grp="99" data-n="2" onclick="toggleChip(this)">dislikes</span><span class="word-chip pickable" data-grp="99" data-n="3" onclick="toggleChip(this)">allurements</span><span class="word-chip pickable" data-grp="99" data-n="4" onclick="toggleChip(this)">repulsions</span><span class="word-chip pickable" data-grp="99" data-n="5" onclick="toggleChip(this)">aversions</span><span class="word-chip pickable" data-grp="99" data-n="6" onclick="toggleChip(this)">enticements</span><span class="word-chip pickable" data-grp="99" data-n="7" onclick="toggleChip(this)">distastes</span><span class="word-chip pickable" data-grp="99" data-n="8" onclick="toggleChip(this)">attractions</span><button class="q-check-btn mini" onclick="checkMulti(99)">채점</button><span class="q-feedback" id="fb99"></span></span>.</div><div class="wb-q">Q. 빈칸 추론: 'locking yourself out of your temptations'와 의미가 가장 가까운 것을 고르시오.</div><div class="wb-opts"><span class="q-tag">100)</span><span class="sel-group wide" data-qi="100" data-ans="1" data-why="[&quot;&lt;b&gt;giving in to your desires&lt;/b&gt; — 이 자리에 맞지 않아요&quot;, &quot;&lt;b&gt;keeping yourself away from what tempts you&lt;/b&gt; — 여기에 들어갈 말이에요&quot;, &quot;&lt;b&gt;rewarding yourself often&lt;/b&gt; — 이 자리에 맞지 않아요&quot;, &quot;&lt;b&gt;trusting your own willpower&lt;/b&gt; — 이 자리에 맞지 않아요&quot;]"><button class="sel-btn" onclick="pick(this,100,0)">giving in to your desires</button><button class="sel-btn" onclick="pick(this,100,1)">keeping yourself away from what tempts you</button><button class="sel-btn" onclick="pick(this,100,2)">rewarding yourself often</button><button class="sel-btn" onclick="pick(this,100,3)">trusting your own willpower</button></span></div><div class="wb-ko">예를 들어, 만약 여러분이 휴대폰을 멀리하고 여러분의 일에 집중하고 싶다면, 여러분의 주의를 산만하게 하는 앱들을 삭제하거나 친구에게 여러분의 비밀번호를 바꿔 달라고 요청하라!</div><div class="wb-q">Q. 한글 해석에 부합하면서 어법상 오류가 없는 것을 모두 고르시오.</div><div class="wb-opts"><span class="wb-multi"><span class="q-tag">101)</span><span class="word-chip pickable" data-grp="101" data-n="1" onclick="toggleChip(this)">For example, if you want to stay off your cellphone and concentrate on your work, delete the apps that distract you or ask a friend to change your password!</span><span class="word-chip pickable" data-grp="101" data-n="2" onclick="toggleChip(this)">For example, if you want to stay off your cellphone and concentrate on your work, delete the apps that distracts you or ask a friend to change your password!</span><span class="word-chip pickable" data-grp="101" data-n="3" onclick="toggleChip(this)">For example, if you want to stay away from your cellphone and focus on your work, delete the apps which distract you or ask a friend to change your password!</span><span class="word-chip pickable" data-grp="101" data-n="4" onclick="toggleChip(this)">For example, if you want to stay off your cellphone and concentrate on your work, delete the apps that distract you or ask a friend change your password!</span><span class="word-chip pickable" data-grp="101" data-n="5" onclick="toggleChip(this)">For example, if you wish to avoid your cellphone and concentrate on your work, delete the distracting apps or ask a friend to change your password!</span><span class="word-chip pickable" data-grp="101" data-n="6" onclick="toggleChip(this)">For example, if you want to stay off your cellphone and concentrating on your work, delete the apps that distract you or ask a friend to change your password!</span><button class="q-check-btn mini" onclick="checkMulti(101)">채점</button><span class="q-feedback" id="fb101"></span></span></div><div class="wb-line">Ulysses는 자신이 배를 사이렌 쪽으로 돌리는 것을 막기 위해 선원들에게 자신을 배의 돛대에 묶으라고 지시했다.</div><div class="wb-exp">💡 우리말을 참고하여 영작 (instruct와 prevent ~ from을 사용할 것).</div><div class="arrange-wrap" id="arr102"><span class="q-tag">102)</span><div class="word-pool" id="pool102"></div><div class="arrange-answer" id="ans102"></div><button class="q-check-btn" onclick="checkArr(102)">채점</button><div class="q-feedback" id="fb102"></div></div><div class="wb-q">Q. &lt;04&gt;의 내용과 일치하면서 어법상 오류가 없는 것을 2개 고르시오.</div><div class="wb-opts"><span class="wb-multi"><span class="q-tag">103)</span><span class="word-chip pickable" data-grp="103" data-n="1" onclick="toggleChip(this)">The name "Ulysses Contract" comes from a Greek myth.</span><span class="word-chip pickable" data-grp="103" data-n="2" onclick="toggleChip(this)">Ulysses stuffed his own ears with cotton so that he could not hear the songs.</span><span class="word-chip pickable" data-grp="103" data-n="3" onclick="toggleChip(this)">The Sirens' songs were so weak that sailors could easily resist them.</span><span class="word-chip pickable" data-grp="103" data-n="4" onclick="toggleChip(this)">Ulysses asked his crew to tie him to the mast of the ship.</span><span class="word-chip pickable" data-grp="103" data-n="5" onclick="toggleChip(this)">The writer advises you to keeps the apps that distract you.</span><button class="q-check-btn mini" onclick="checkMulti(103)">채점</button><span class="q-feedback" id="fb103"></span></span></div><div class="wb-q">Q. 다음 질문에 영어로 답하시오. (lock yourself out of를 사용하여 한 문장으로)</div><div class="wb-line">According to the writer, how can you break a bad habit like Ulysses?</div><div class="wb-free"><span class="wb-blank wide"><span class="q-tag">104)</span><input class="blank-input" id="b104" type="text" autocomplete="off" onkeydown="if(event.key==='Enter')chkBlank(104)"><button class="q-check-btn mini" onclick="chkBlank(104)">채점</button><span class="q-feedback" id="fb104"></span></span></div></div></div></div><div class="sec-submit"><button class="retry-btn" onclick="retryWrong(this)"></button><button class="sec-btn" onclick="submitSoFar()">여기까지 제출하기</button></div>
+<div class="stage-nav"><button type="button" class="go" onclick="bnNext()">다 풀었어요 · 결과 보기 ▶</button><div class="note"><span class="left"></span><br>넘어가면 앞 단계는 다시 볼 수 없어요.</div></div></div>
+<div style="position:sticky;bottom:0;z-index:30;padding:10px 0 14px;background:linear-gradient(to top,var(--bg) 70%,transparent)">
+    <button id="submit-btn" class="submit-btn" onclick="submitSoFar()" style="width:100%;padding:13px 16px;border:none;border-radius:12px;cursor:pointer;
+      background:linear-gradient(135deg,#8a6a3e,#5c3d1e);color:#fff;font-weight:800;font-size:.95rem;box-shadow:0 3px 10px rgba(0,0,0,.15)">
+      📤 여기까지 제출하기</button>
+    <div style="text-align:center;font-size:.76rem;color:#8a8178;margin-top:6px">다 못 풀어도 괜찮아요 — 누른 만큼 선생님께 기록됩니다</div>
+  </div>
+
+  <div class="result-card" id="result">
+    <div style="font-family:'Black Han Sans',sans-serif;font-size:1.1rem;color:var(--accent)">🎉 📘 종이 워크북 — 어법·어휘 · 설명 빈칸 · 서술형 · 영작 완료!</div>
+    <div class="result-score" id="r-score"></div>
+    <div class="result-msg" id="r-msg"></div>
+    <div class="result-btns">
+      <button class="btn-retry" onclick="bnRestart()">🔄 다시 풀기</button>
+      <button class="btn-back" onclick="location.href='https://bomnalenglish.github.io/bomnalquizz/'">← 허브로</button>
+    </div>
+  </div>
+</main>
+
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getFirestore,collection,addDoc,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+const cfg={apiKey:"AIzaSyCxS524S8KAaF87DomPtl9sJdF-eqes404",authDomain:"bomnalvaca.firebaseapp.com",projectId:"bomnalvaca",storageBucket:"bomnalvaca.firebasestorage.app",messagingSenderId:"115868052300",appId:"1:115868052300:web:765c08867b6f1ce0987de9"};
+const app=initializeApp(cfg);const db=getFirestore(app);
+window._log=async(d)=>{if(d&&(d.q!==undefined||d.result==='ok'||d.result==='fail'||d.result==='partial'))return;try{await addDoc(collection(db,"quiz_results"),{...d,timestamp:serverTimestamp(),file:"jongchonko_1grade_ce2_lesson3_workbook"});}catch(e){}};
+</script>
+
+<script>
+const NAME=sessionStorage.getItem("bn_name")||localStorage.getItem("bn_name")||"학생";
+const SCHOOL=sessionStorage.getItem("bn_school")||localStorage.getItem("bn_school")||"고운고등학교";
+function nm(s){return (s||'').trim().toLowerCase().replace(/[?.!,'"\u2019\u201c\u201d]/g,'').replace(/\s+/g,' ');}
+let done={};let earned=0;let doneQ=0;let totalQ=0;
+const ARR_WORDS={"24": ["it is", "why", "are exactly", "these kinds of changes", "so important", "to recognize", "that new technologies will have", "the implications", "for our world"], "49": ["improves", "restricting freedom", "whether by the professor", "their own tendencies to delay things", "self-control and performance", "or by students", "who recognize"], "76": ["we become", "in what we produce", "steadily more specialized", "and", "steadily more diversified", "in what we consume"], "102": ["instructed", "Ulysses", "to tie him", "his crew", "to the ship's mast", "to prevent him", "from turning", "towards the Sirens", "their ship"]};
+const ARR_ANS={"24": "These kinds of changes are exactly why it is so important to recognize the implications that new technologies will have for our world.", "49": "Restricting freedom, whether by the professor or by students who recognize their own tendencies to delay things, improves self-control and performance.", "76": "The main theme of human history is that we become steadily more specialized in what we produce, and steadily more diversified in what we consume.", "102": "Ulysses instructed his crew to tie him to the ship's mast to prevent him from turning their ship towards the Sirens."};
+const MULTI={"7": [1, 4, 5, 8], "12": [1, 3], "13": [2, 4, 5, 7], "16": [1, 3, 5], "20": [2, 4, 5, 7], "21": [2, 3, 6, 7], "25": [2, 4], "27": [2, 4, 5, 7], "28": [2, 3, 5, 8], "39": [2, 4, 5, 7], "40": [1, 3, 5], "41": [2, 4, 5, 7], "50": [1, 4], "57": [2, 3, 6, 7], "58": [2, 3, 5, 8], "60": [1, 4, 5, 8], "61": [2, 3, 6, 7], "67": [1, 3], "71": [2, 3, 5, 8], "73": [2, 3, 6, 7], "75": [1, 3, 6], "77": [2, 3], "79": [2, 4, 5, 8], "83": [1, 3, 6, 8], "91": [2, 3, 6, 7], "97": [1, 3], "99": [1, 3, 6, 8], "101": [1, 3, 5], "103": [1, 4]};
+
+function pick(btn,i,idx){
+  const grp=btn.closest('.sel-group');if(grp.dataset.checked)return;grp.dataset.checked='1';
+  const ans=parseInt(grp.dataset.ans);const btns=grp.querySelectorAll('.sel-btn');
+  btns.forEach(b=>b.disabled=true);
+  const ok=idx===ans;btn.classList.add(ok?'correct':'wrong');if(!ok)btns[ans].classList.add('correct');
+  if(!done[i]){done[i]=true;if(ok)earned++;doneQ++;updateUI();}
+  log('sel'+i,ok);
+}
+function autoChk(i,ans){
+  if(done[i])return;
+  const inp=document.getElementById('b'+i);if(!inp)return;
+  const v=nm(inp.value), c=nm(ans);
+  if(v===c){inp.classList.add('correct-inp');inp.disabled=true;done[i]=true;earned++;doneQ++;updateUI();log('blank'+i,true);}
+  else if(v.length>1&&c.startsWith(v)){inp.style.borderBottomColor='#f0a000';}
+}
+function toggleChip(el){
+  if(el.classList.contains('disabled'))return;
+  el.classList.toggle('picked');
+}
+function checkMulti(i){
+  if(done[i])return;done[i]=true;
+  const want=MULTI[i].slice().sort((a,b)=>a-b);
+  const chips=[...document.querySelectorAll('.word-chip.pickable[data-grp="'+i+'"]')];
+  const got=chips.filter(c=>c.classList.contains('picked')).map(c=>parseInt(c.dataset.n)).sort((a,b)=>a-b);
+  const ok=want.length===got.length&&want.every((v,k)=>v===got[k]);
+  chips.forEach(c=>{const n=parseInt(c.dataset.n);c.classList.add('disabled');
+    if(want.indexOf(n)>=0)c.classList.add('correct-chip');
+    else if(c.classList.contains('picked'))c.classList.add('wrong-chip');});
+  const fb=document.getElementById('fb'+i);
+  if(fb){fb.className='q-feedback '+(ok?'ok':'fail')+' show';
+    fb.innerHTML=ok?'✅ 정답! <span class="pt-tag">+1점</span>':'❌ 오답<br><strong>정답: '+want.map(n=>'('+n+')').join(' ')+'</strong>';}
+  if(ok)earned++;doneQ++;updateUI();log('multi'+i,ok);
+}
+function initArranges(){
+  Object.keys(ARR_WORDS).forEach(i=>{
+    const pool=document.getElementById('pool'+i);if(!pool)return;
+    const ws=ARR_WORDS[i].slice().sort(()=>Math.random()-.5);
+    pool.innerHTML='';
+    ws.forEach(w=>{const c=document.createElement('span');c.className='word-chip';c.textContent=w;
+      c.onclick=()=>moveTo(c,'ans'+i,'pool'+i);pool.appendChild(c);});
+  });
+}
+function moveTo(chip,ansId,poolId){
+  if(chip.classList.contains('disabled'))return;
+  const ans=document.getElementById(ansId);
+  const ph=ans.querySelector(':scope > span:not(.word-chip)');if(ph)ph.remove();
+  chip.onclick=()=>moveBack(chip,ansId,poolId);ans.appendChild(chip);
+}
+function moveBack(chip,ansId,poolId){
+  if(chip.classList.contains('disabled'))return;
+  const pool=document.getElementById(poolId);
+  chip.onclick=()=>moveTo(chip,ansId,poolId);pool.appendChild(chip);
+  const ans=document.getElementById(ansId);
+  if(!ans.children.length)ans.innerHTML='<span style="color:#c0b4a4;font-size:.73rem">여기에 배열하세요…</span>';
+}
+function checkArr(i){
+  if(done[i])return;done[i]=true;
+  const ans=document.getElementById('ans'+i);
+  const chips=ans.querySelectorAll('.word-chip');
+  const user=[...chips].map(c=>c.textContent.trim()).join(' ');
+  const ok=nm(user)===nm(ARR_ANS[i]);
+  chips.forEach(c=>{c.classList.add(ok?'correct-chip':'wrong-chip');c.classList.add('disabled');c.onclick=null;});
+  document.getElementById('pool'+i).querySelectorAll('.word-chip').forEach(c=>{c.classList.add('disabled');c.onclick=null;});
+  const fb=document.getElementById('fb'+i);
+  if(fb){fb.className='q-feedback '+(ok?'ok':'fail')+' show';
+    fb.innerHTML=ok?'✅ 정답! <span class="pt-tag">+1점</span>':'❌ 오답<br><strong>정답: '+ARR_ANS[i]+'</strong>';}
+  const btn=ans.closest('.arrange-wrap').querySelector('.q-check-btn');if(btn)btn.setAttribute('disabled','');
+  if(ok)earned++;doneQ++;updateUI();log('arr'+i,ok);
+}
+function log(q,ok){if(window._log)window._log({name:NAME,school:SCHOOL,q:q,result:ok?'ok':'fail',earned:ok?1:0,total:1});}
+function countTotal(){
+  return document.querySelectorAll('.sel-group').length
+       + document.querySelectorAll('.blank-input').length
+       + document.querySelectorAll('.arrange-wrap .q-check-btn').length
+       + document.querySelectorAll('.wb-multi').length;
+}
+function updateUI(){
+  totalQ=countTotal();
+  document.getElementById('score-val').textContent=earned;
+  document.getElementById('score-max').textContent=totalQ;
+  document.getElementById('prog').style.width=(doneQ/totalQ*100)+'%';
+  document.getElementById('prog-txt').textContent=doneQ+' / '+totalQ+' 완료';
+  if(doneQ>=totalQ)showResult();
+}
+function showResult(){
+  const pct=Math.round(earned/totalQ*100);
+  if(window._log)window._log({studentName:NAME,school:SCHOOL,score:pct,correct:earned,
+    wrong:totalQ-earned,total:totalQ,quizType:'종촌고1 26년 기말 22년11월모고 워크북',completed:true});
+  document.getElementById('r-score').textContent=earned+' / '+totalQ+'점 ('+pct+'%)';
+  document.getElementById('r-msg').textContent=pct>=90?'완벽합니다! 워크북 마스터! 🌟':pct>=70?'잘했어요! 💪':pct>=50?'절반 이상! 📖':'기초부터 차근차근! 🔄';
+  document.getElementById('result').classList.add('show');
+  setTimeout(()=>window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'}),200);
+}
+
+function submitSoFar(){
+  if(doneQ===0){ alert('아직 푼 문제가 없어요.'); return; }
+  const pct=Math.round(earned/doneQ*100);
+  if(!confirm('지금까지 푼 '+doneQ+'문제를 선생님께 제출할까요?\n\n맞은 개수 '+earned+' / '+doneQ+' ('+pct+'%)\n제출한 뒤에도 이어서 풀 수 있어요.')) return;
+  if(window._log)window._log({studentName:NAME,school:SCHOOL,score:pct,correct:earned,
+    wrong:doneQ-earned,total:doneQ,quizType:'종촌고1 26년 기말 22년11월모고 워크북',completed:false,
+    진행:doneQ+' / '+totalQ});
+  document.querySelectorAll('#submit-btn,.submit-btn').forEach(b=>{
+    b.textContent='✅ '+doneQ+'문제 제출 완료';
+    setTimeout(()=>{b.textContent='📤 여기까지 제출하기';},2500);
+  });
+}
+
+function bnRestart(){
+  if(confirm('정말 처음부터 다시 푸시겠습니까?\n\n지금까지 푼 내용과 점수가 모두 지워지고 처음으로 돌아갑니다.')) location.reload();
+}
+window.addEventListener('load',()=>{initArranges();updateUI();});
+</script>
+<script src="bn_force.js"></script>
+
+<div id="whyBar"></div>
+<script>
+/* ── 고르기: 맞출 때까지 다시 + 왜 그런지 한 줄 ── */
+var WRONG_IDS = [];
+function _why(grp){ try{ return JSON.parse(grp.dataset.why||'[]'); }catch(e){ return []; } }
+function showWhy(text, ok){
+  var b=document.getElementById('whyBar');
+  if(!b) return;
+  b.className='on '+(ok?'ok':'no');
+  b.textContent=(ok?'✅ ':'❌ ')+text;
+  clearTimeout(window._whyT);
+  window._whyT=setTimeout(function(){ b.className=''; }, 7000);
+}
+function pick(btn,i,idx){
+  var grp=btn.closest('.sel-group');
+  if(grp.dataset.checked) return;
+  var ans=parseInt(grp.dataset.ans), why=_why(grp);
+  var btns=grp.querySelectorAll('.sel-btn');
+  if(idx===ans){
+    grp.dataset.checked='1';
+    btns.forEach(function(b){ b.disabled=true; });
+    btn.classList.add('got');
+    var first = grp.dataset.miss!=='1';
+    if(!done[i]){ done[i]=true; if(first) earned++; doneQ++; updateUI(); }
+    showWhy((first?'':'다시 맞혔어요 · ')+(why[idx]||'정답이에요'), true);
+    log('sel'+i, first);
+  }else{
+    if(grp.dataset.miss!=='1'){ grp.dataset.miss='1'; WRONG_IDS.push(i); }
+    btn.classList.add('miss'); btn.disabled=true;
+    showWhy((why[idx]||'이것은 아니에요')+'  — 다시 골라 보세요', false);
+  }
+  refreshRetry();
+}
+function wrongBefore(el){
+  var all=[].slice.call(document.querySelectorAll('.sel-group[data-miss="1"]'));
+  return all.filter(function(g){
+    return el.compareDocumentPosition(g) & Node.DOCUMENT_POSITION_PRECEDING;
+  });
+}
+function refreshRetry(){
+  [].forEach.call(document.querySelectorAll('.retry-btn'), function(b){
+    var n=wrongBefore(b).length;
+    b.style.display = n ? '' : 'none';
+    b.textContent = '↺ 틀린 것 ' + n + '개 다시 풀기';
+  });
+}
+function retryWrong(btn){
+  var gs=wrongBefore(btn);
+  if(!gs.length) return;
+  gs.forEach(function(g){
+    g.removeAttribute('data-checked'); g.removeAttribute('data-miss');
+    var bs=[].slice.call(g.querySelectorAll('.sel-btn'));
+    bs.forEach(function(b){ b.disabled=false; b.classList.remove('miss','got','correct','wrong'); });
+    for(var k=bs.length-1;k>0;k--){ var j=Math.floor(Math.random()*(k+1)); g.appendChild(bs[j]); bs.splice(j,1); }
+    bs.forEach(function(b){ g.appendChild(b); });
+  });
+  var b=document.getElementById('whyBar'); if(b) b.className='';
+  gs[0].scrollIntoView({behavior:'smooth', block:'center'});
+  refreshRetry();
+}
+window.addEventListener('load', refreshRetry);
+</script>
+
+<div id="refPick"><div class="rp-card">
+  <div class="rp-title">📌 학습할 지문 고르기</div>
+  <div class="rp-sub">우리 학교 시험범위에 드는 지문만 골라서 풀 수 있어요.<br>고른 지문만 점수에 들어갑니다.</div>
+  <div class="rp-grid" id="rpGrid"></div>
+  <div class="rp-btns">
+    <button type="button" onclick="rpAll(1)">전체 선택</button>
+    <button type="button" onclick="rpAll(0)">전체 해제</button>
+    <button type="button" onclick="rpLast()">지난번 범위</button>
+  </div>
+  <div class="rp-warn" id="rpWarn"></div>
+  <button class="rp-start" type="button" onclick="rpStart()">이 범위로 시작하기 ▶</button>
+</div></div>
+<script>
+/* ── 시험범위에 맞게 지문 골라 풀기 ── */
+var RP_KEY = 'bnRange_' + (location.pathname.split('/').pop() || 'wb');
+var RP_BLOCKS = [], RP_REFS = [], RP_CNT = {}, RP_SEL = [], RP_STARTED = false;
+
+function rpNodes(){
+  return [].slice.call(document.querySelectorAll('.sec-header,.sec-submit,.para-block'));
+}
+function rpCount(b){
+  return b.querySelectorAll('.sel-group').length
+       + b.querySelectorAll('.blank-input').length
+       + b.querySelectorAll('.arrange-wrap .q-check-btn').length
+       + b.querySelectorAll('.wb-multi').length;
+}
+function rpScan(){
+  RP_BLOCKS = [].slice.call(document.querySelectorAll('.para-block'));
+  RP_BLOCKS.forEach(function(b){
+    var k = b.dataset.ref;
+    if (!k) {
+      var n = b.querySelector('.para-num');
+      k = n ? n.textContent.split('·')[0].trim() : '기타';
+      b.dataset.ref = k;
+    }
+    if (RP_REFS.indexOf(k) < 0) { RP_REFS.push(k); RP_CNT[k] = 0; }
+    RP_CNT[k] += rpCount(b);
+  });
+}
+function rpSaved(){
+  try { var v = JSON.parse(localStorage.getItem(RP_KEY) || 'null');
+        return (v && v.length) ? v.filter(function(k){ return RP_REFS.indexOf(k) >= 0; }) : null; }
+  catch(e) { return null; }
+}
+function rpGrid(sel){
+  var g = document.getElementById('rpGrid');
+  g.innerHTML = '';
+  RP_REFS.forEach(function(k){
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'rp-chip' + (sel.indexOf(k) >= 0 ? ' on' : '');
+    b.dataset.ref = k;
+    b.innerHTML = '';
+    var t = document.createElement('span');
+    t.textContent = k.replace(/\s*지문\s*$/, '');
+    var s = document.createElement('small');
+    s.textContent = RP_CNT[k] + '문항';
+    b.appendChild(t); b.appendChild(s);
+    b.onclick = function(){ b.classList.toggle('on'); document.getElementById('rpWarn').textContent = ''; };
+    g.appendChild(b);
+  });
+}
+function rpPicked(){
+  return [].slice.call(document.querySelectorAll('#rpGrid .rp-chip.on')).map(function(b){ return b.dataset.ref; });
+}
+function rpAll(on){
+  [].forEach.call(document.querySelectorAll('#rpGrid .rp-chip'), function(b){ b.classList.toggle('on', !!on); });
+  document.getElementById('rpWarn').textContent = '';
+}
+function rpLast(){
+  var v = rpSaved();
+  if (!v) { document.getElementById('rpWarn').textContent = '저장된 범위가 없어요.'; return; }
+  [].forEach.call(document.querySelectorAll('#rpGrid .rp-chip'), function(b){
+    b.classList.toggle('on', v.indexOf(b.dataset.ref) >= 0);
+  });
+  document.getElementById('rpWarn').textContent = '';
+}
+function rpTrim(){
+  var nodes = rpNodes(), i, j;
+  for (i = 0; i < nodes.length; i++) {
+    var n = nodes[i];
+    if (n.classList.contains('sec-header')) {
+      var any = false;
+      for (j = i + 1; j < nodes.length; j++) {
+        if (nodes[j].classList.contains('sec-header')) break;
+        if (nodes[j].classList.contains('para-block') && !nodes[j].classList.contains('off')) { any = true; break; }
+      }
+      n.classList.toggle('off', !any);
+    } else if (n.classList.contains('sec-submit')) {
+      var any2 = false;
+      for (j = i - 1; j >= 0; j--) {
+        if (nodes[j].classList.contains('sec-submit') || nodes[j].classList.contains('sec-header')) break;
+        if (nodes[j].classList.contains('para-block') && !nodes[j].classList.contains('off')) { any2 = true; break; }
+      }
+      n.classList.toggle('off', !any2);
+    }
+  }
+}
+function rpBar(sel){
+  var bar = document.getElementById('refBar');
+  if (!bar) {
+    bar = document.createElement('div');
+    bar.id = 'refBar';
+    var sp = document.createElement('span'); sp.id = 'refBarTxt';
+    var bt = document.createElement('button'); bt.type = 'button';
+    bt.textContent = '범위 바꾸기'; bt.onclick = rpOpen;
+    bar.appendChild(sp); bar.appendChild(bt);
+    var pw = document.querySelector('.prog-wrap');
+    if (pw) pw.parentNode.insertBefore(bar, pw); else document.querySelector('main').appendChild(bar);
+  }
+  var n = 0;
+  RP_BLOCKS.forEach(function(b){ if (!b.classList.contains('off')) n += rpCount(b); });
+  var names = sel.map(function(k){ return k.replace(/\s*지문\s*$/, ''); });
+  var txt = (sel.length === RP_REFS.length) ? '전체 지문' : names.join(', ');
+  document.getElementById('refBarTxt').textContent = '📌 ' + txt + ' · ' + n + '문항';
+}
+function rpApply(sel){
+  RP_BLOCKS.forEach(function(b){ b.classList.toggle('off', sel.indexOf(b.dataset.ref) < 0); });
+  rpTrim();
+  rpBar(sel);
+  if (typeof updateUI === 'function') updateUI();
+  if (typeof refreshRetry === 'function') refreshRetry();
+}
+function rpOpen(){
+  rpGrid(RP_SEL.length ? RP_SEL : RP_REFS);
+  document.getElementById('rpWarn').textContent = '';
+  document.getElementById('refPick').classList.add('on');
+}
+function rpStart(){
+  var sel = rpPicked();
+  if (!sel.length) { document.getElementById('rpWarn').textContent = '지문을 하나 이상 골라 주세요.'; return; }
+  sel = RP_REFS.filter(function(k){ return sel.indexOf(k) >= 0; });
+  try { localStorage.setItem(RP_KEY, JSON.stringify(sel)); } catch(e) {}
+  document.getElementById('refPick').classList.remove('on');
+  var changed = sel.join('|') !== RP_SEL.join('|');
+  if (RP_STARTED && changed && typeof doneQ === 'number' && doneQ > 0) { location.reload(); return; }
+  RP_SEL = sel; RP_STARTED = true;
+  rpApply(sel);
+  window.scrollTo({ top: 0 });
+}
+/* 숨긴 지문은 세지 않는다 */
+function _rpVis(e){ var p = e.closest ? e.closest('.para-block') : null; return !p || !p.classList.contains('off'); }
+function countTotal(){
+  var all = [].slice.call(document.querySelectorAll('.sel-group'))
+    .concat([].slice.call(document.querySelectorAll('.blank-input')))
+    .concat([].slice.call(document.querySelectorAll('.arrange-wrap .q-check-btn')))
+    .concat([].slice.call(document.querySelectorAll('.wb-multi')));
+  return all.filter(_rpVis).length;
+}
+function wrongBefore(el){
+  var all = [].slice.call(document.querySelectorAll('.sel-group[data-miss="1"]')).filter(_rpVis);
+  return all.filter(function(g){
+    return el.compareDocumentPosition(g) & Node.DOCUMENT_POSITION_PRECEDING;
+  });
+}
+(function(){
+  rpScan();
+  var sv = rpSaved();
+  RP_SEL = sv && sv.length ? sv : RP_REFS.slice();
+  rpApply(RP_SEL);
+  rpGrid(RP_SEL);
+  document.getElementById('refPick').classList.add('on');
+})();
+</script>
+
+<script>
+/* 설명 줄에 굵은 글씨를 쓸 수 있게 */
+function showWhy(text, ok){
+  var b=document.getElementById('whyBar');
+  if(!b) return;
+  b.className='on '+(ok?'ok':'no');
+  b.innerHTML=(ok?'\u2705 ':'\u274c ')+text;
+  clearTimeout(window._whyT);
+  window._whyT=setTimeout(function(){ b.className=''; }, 8000);
+}
+</script>
+
+<script>
+/* ── 단계별 쪽 넘기기 ── */
+var BN_ST = [], BN_I = 0;
+function bnVisible(el){ var p = el.closest('.para-block'); return !p || !p.classList.contains('off'); }
+function bnLeft(st){
+  var n = 0;
+  [].forEach.call(st.querySelectorAll('.sel-group'), function(g){
+    if (bnVisible(g) && !g.dataset.checked) n++;
+  });
+  [].forEach.call(st.querySelectorAll('.arrange-wrap .q-check-btn'), function(b){
+    if (bnVisible(b) && !b.hasAttribute('disabled')) n++;
+  });
+  return n;
+}
+function bnHas(st){           /* 고른 범위에 이 단계 문제가 남아 있나 */
+  var any = false;
+  [].forEach.call(st.querySelectorAll('.sel-group, .arrange-wrap'), function(e){
+    if (bnVisible(e)) any = true;
+  });
+  return any;
+}
+function bnPaint(){
+  var bar = document.getElementById('bnSteps');
+  if (!bar) return;
+  [].forEach.call(bar.children, function(b, i){
+    b.className = 'st' + (i === BN_I ? ' on' : (i < BN_I ? ' done' : ''));
+  });
+  var st = BN_ST[BN_I];
+  if (!st) return;
+  var left = bnLeft(st), nav = st.querySelector('.stage-nav');
+  if (nav) {
+    var sp = nav.querySelector('.left');
+    if (sp) sp.textContent = left ? ('아직 ' + left + '문제 남았어요') : '이 단계를 다 풀었어요 🎉';
+  }
+}
+function bnGo(i){
+  while (i < BN_ST.length && !bnHas(BN_ST[i])) i++;      /* 고른 범위에 없는 단계는 건너뛴다 */
+  if (i >= BN_ST.length) i = BN_ST.length - 1;
+  BN_I = i;
+  BN_ST.forEach(function(s, k){ s.hidden = (k !== i); });
+  bnPaint();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  if (typeof refreshRetry === 'function') refreshRetry();
+}
+function bnNext(){
+  if (BN_I >= BN_ST.length - 1) { if (typeof showResult === 'function') showResult(); return; }
+  bnGo(BN_I + 1);
+}
+(function(){
+  BN_ST = [].slice.call(document.querySelectorAll('.stage'));
+  if (!BN_ST.length) return;
+  var bar = document.getElementById('bnSteps');
+  document.addEventListener('click', function(e){
+    if (e.target && e.target.classList && e.target.classList.contains('sel-btn')) setTimeout(bnPaint, 30);
+    if (e.target && e.target.classList && e.target.classList.contains('q-check-btn')) setTimeout(bnPaint, 30);
+  });
+  /* 범위를 고르거나 바꾸면 1단계부터 다시 */
+  if (typeof rpApply === 'function') {
+    var _ra = rpApply;
+    window.rpApply = function(){ var r = _ra.apply(null, arguments); try { bnGo(0); } catch(e){} return r; };
+  }
+  window.addEventListener('load', function(){ bnGo(0); });
+  bnGo(0);
+})();
+</script>
+
+<script>
+/* ── 타자로 쓰는 문항 채점 ── */
+var BLK = {"3": {"req": [["~했을지도 모른다"]], "show": "~했을지도 모른다"}, "8": {"req": [["미래"]], "show": "미래"}, "9": {"req": [["is"], ["to learn"]], "show": "are → is / learn → to learn"}, "11": {"req": [["to부정사"]], "show": "to부정사"}, "15": {"req": [["computers"]], "show": "computers"}, "18": {"req": [["주어 + 동사"]], "show": "주어 + 동사"}, "22": {"req": [["이유"]], "show": "이유"}, "23": {"req": [["진주어"]], "show": "진주어"}, "26": {"req": [["Future computers will be able to learn and self-improve, while past computers could not."]], "show": "Future computers will be able to learn and self-improve, while past computers could not."}, "30": {"req": [["목적"]], "show": "목적"}, "31": {"req": [["동격"]], "show": "동격"}, "35": {"req": [["themselves"]], "show": "themselves"}, "36": {"req": [["be submitted"]], "show": "submit → be submitted"}, "38": {"req": [["until"]], "show": "until"}, "45": {"req": [["A이든 B이든"]], "show": "A이든 B이든"}, "47": {"req": [["students"]], "show": "students"}, "51": {"req": [["The students with set deadlines (given by the professor) received the best grades."]], "show": "The students with set deadlines (given by the professor) received the best grades."}, "54": {"req": [["완전한"]], "show": "완전한"}, "55": {"req": [["동명사"]], "show": "동명사"}, "59": {"req": [["것"]], "show": "것"}, "63": {"req": [["serving"], ["which"]], "show": "serve → serving / that → which"}, "65": {"req": [["that"]], "show": "that"}, "66": {"req": [["V-ing"]], "show": "V-ing"}, "70": {"req": [["가목적어"]], "show": "가목적어"}, "74": {"req": [["병렬"]], "show": "병렬"}, "78": {"req": [["It changes our lives best by enabling people to work for each other."]], "show": "It changes our lives best by enabling people to work for each other."}, "81": {"req": [["전치사"]], "show": "전치사"}, "82": {"req": [["방법"]], "show": "방법"}, "86": {"req": [["~하게 하다"]], "show": "~하게 하다"}, "87": {"req": [["is"]], "show": "is"}, "90": {"req": [["명사", "ship", "명사(ship)"]], "show": "명사(ship)"}, "93": {"req": [["to stuff"], ["from turning"]], "show": "stuff → to stuff / to turn → from turning"}, "94": {"req": [["to부정사"]], "show": "to부정사"}, "95": {"req": [["from V-ing"]], "show": "from V-ing"}, "96": {"req": [["않으면"]], "show": "않으면"}, "104": {"req": [["You can break it by locking yourself out of your temptations."]], "show": "You can break it by locking yourself out of your temptations."}};
+function bnNorm(t){
+  return String(t||'').toLowerCase()
+    .replace(/[.,!?;:"'\u2018\u2019\u201c\u201d()]/g,' ')
+    .replace(/\s+/g,' ').trim();
+}
+var BLK_TRY = {};
+/* ── 여럿 고르기: 틀리면 몇 개가 어긋났는지만 알려 주고 한 번 더 ── */
+var MUL_TRY = {};
+function checkMulti(i){
+  if(done[i]) return;
+  var want = (MULTI[i]||[]).slice();
+  var chips = [].slice.call(document.querySelectorAll('.word-chip.pickable[data-grp="'+i+'"]'));
+  var got = chips.filter(function(c){ return c.classList.contains('picked'); })
+                 .map(function(c){ return parseInt(c.dataset.n,10); });
+  var fb = document.getElementById('fb'+i);
+  if(!got.length){ if(fb){fb.className='q-feedback fail show'; fb.textContent='하나 이상 골라 주세요';} return; }
+  var miss = want.filter(function(n){ return got.indexOf(n) < 0; }).length;
+  var extra = got.filter(function(n){ return want.indexOf(n) < 0; }).length;
+  var ok = !miss && !extra;
+  MUL_TRY[i] = (MUL_TRY[i]||0) + 1;
+  if(ok){
+    done[i]=true; earned++; doneQ++;
+    chips.forEach(function(c){ c.classList.add('disabled');
+      if(want.indexOf(parseInt(c.dataset.n,10))>=0) c.classList.add('correct-chip'); });
+    if(fb){ fb.className='q-feedback ok show'; fb.textContent='✅ 맞았어요'; }
+    updateUI(); log('multi'+i, true);
+    return;
+  }
+  if(MUL_TRY[i] < 2){
+    if(fb){ fb.className='q-feedback fail show';
+      fb.textContent='❌ 다시 — ' + (miss?('빠뜨린 것 '+miss+'개 '):'') + (extra?('잘못 고른 것 '+extra+'개'):''); }
+    return;
+  }
+  done[i]=true; doneQ++;
+  chips.forEach(function(c){ var n=parseInt(c.dataset.n,10); c.classList.add('disabled');
+    if(want.indexOf(n)>=0) c.classList.add('correct-chip');
+    else if(c.classList.contains('picked')) c.classList.add('wrong-chip'); });
+  if(fb){ fb.className='q-feedback fail show'; fb.textContent='초록색이 답이에요'; }
+  updateUI(); log('multi'+i, false);
+}
+function chkBlank(i){
+  if(done[i]) return;
+  var inp = document.getElementById('b'+i), fb = document.getElementById('fb'+i), k = BLK[i];
+  if(!inp || !k) return;
+  var v = bnNorm(inp.value);
+  if(!v){ if(fb){fb.className='q-feedback fail show'; fb.textContent='답을 써 주세요';} return; }
+  var ok = k.req.every(function(alts){
+    return alts.some(function(a){ return a && v.indexOf(bnNorm(a)) >= 0; });
+  });
+  BLK_TRY[i] = (BLK_TRY[i]||0) + 1;
+  if(ok){
+    done[i]=true; earned++; doneQ++; inp.disabled=true; inp.classList.add('correct-inp');
+    if(fb){ fb.className='q-feedback ok show'; fb.textContent='✅ 맞았어요'; }
+    updateUI(); log('blank'+i, true);
+  } else if(BLK_TRY[i] < 2){
+    if(fb){ fb.className='q-feedback fail show'; fb.textContent='❌ 다시 한 번 써 보세요'; }
+  } else {
+    done[i]=true; doneQ++; inp.disabled=true;
+    if(fb){ fb.className='q-feedback fail show'; fb.innerHTML='모범답안 — <b>'+k.show+'</b>'; }
+    updateUI(); log('blank'+i, false);
+  }
+}
+</script>
+</body>
+</html>
