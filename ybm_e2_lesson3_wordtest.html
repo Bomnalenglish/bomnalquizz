@@ -43,6 +43,11 @@ input,select{width:100%;padding:12px;border:2px solid var(--line);border-radius:
   font-family:inherit;font-size:.95rem;font-weight:800;color:var(--ink);cursor:pointer;line-height:1.3}
 .range button span{display:block;font-size:.72rem;font-weight:400;color:var(--soft);margin-top:3px}
 .range button.on{border-color:var(--gold);background:#fdf3df;color:var(--gold-d)}
+.range button.on::after{content:'✓';position:absolute;top:5px;right:9px;font-size:.78rem;color:var(--gold)}
+.range button{position:relative}
+.range button.all{grid-column:1 / -1}
+.pickmsg{margin-top:10px;text-align:center;font-size:.85rem;color:var(--soft)}
+.pickmsg b{color:var(--gold-d)}
 .bar{position:sticky;top:0;z-index:20;background:rgba(250,247,241,.96);
   border-bottom:1px solid var(--line);padding:9px 14px;backdrop-filter:blur(6px)}
 .bar-top{display:flex;align-items:center;justify-content:space-between;gap:10px;
@@ -110,8 +115,9 @@ input,select{width:100%;padding:12px;border:2px solid var(--line);border-radius:
           <option value="종촌고등학교">종촌고등학교</option>
         </select>
       </div>
-      <label>범위</label>
+      <label>범위 <span style="font-weight:400;color:var(--soft)">— 여러 개 골라도 돼요</span></label>
       <div class="range" id="rangeBox"></div>
+      <div class="pickmsg" id="pickMsg">고른 단어 0개</div>
       <button class="btn" id="goBtn" onclick="start()">시작하기 →</button>
     </div>
   </section>
@@ -160,7 +166,7 @@ var WORDS = [{"en": "varied", "ko": "다양한", "syn": ["diverse", "various"], 
 var QUIZ_TYPE = '영어II_3과_단어시험';
 
 var studentName = '', studentSchool = '';
-var chosen = '전체', pool = [], queue = [], qi = 0, step = 1;
+var chosen = [], pool = [], queue = [], qi = 0, step = 1;
 var wrongs = [], right = 0, answered = 0, startAt = 0, sent = false;
 var cur = null, picked = [], locked = false;
 
@@ -177,19 +183,44 @@ function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,
   $('totN').textContent = WORDS.length;
   var parts = [];
   for (var i=0;i<WORDS.length;i++) if (parts.indexOf(WORDS[i].part)<0) parts.push(WORDS[i].part);
-  var html = '<button class="on" data-r="전체">전체<span>' + WORDS.length + '단어</span></button>';
+  var html = '<button class="all" data-r="전체">전체<span>' + WORDS.length + '단어</span></button>';
   for (var k=0;k<parts.length;k++){
     var n = WORDS.filter(function(w){ return w.part===parts[k]; }).length;
     html += '<button data-r="'+esc(parts[k])+'">'+esc(parts[k])+'<span>'+n+'단어</span></button>';
   }
   $('rangeBox').innerHTML = html;
+  chosen = parts.slice();                       // 처음엔 전체
+  paintRange();
   $('rangeBox').onclick = function(e){
-    var b = e.target.closest('button'); if (!b) return;
-    var all = $('rangeBox').querySelectorAll('button');
-    for (var i=0;i<all.length;i++) all[i].classList.remove('on');
-    b.classList.add('on'); chosen = b.dataset.r;
+    var b = e.target.closest ? e.target.closest('button') : null;
+    if (!b) return;
+    var r = b.dataset.r;
+    if (r === '전체') chosen = (chosen.length === parts.length) ? [] : parts.slice();
+    else {
+      var i = chosen.indexOf(r);
+      if (i >= 0) chosen.splice(i, 1); else chosen.push(r);
+    }
+    paintRange();
   };
+  window.__parts = parts;
 })();
+
+function paintRange(){
+  var parts = window.__parts || [];
+  var bs = $('rangeBox').querySelectorAll('button');
+  for (var i=0;i<bs.length;i++){
+    var r = bs[i].dataset.r;
+    var on = (r === '전체') ? (chosen.length === parts.length && parts.length > 0)
+                            : chosen.indexOf(r) >= 0;
+    bs[i].classList.toggle('on', on);
+  }
+  var n = WORDS.filter(function(w){ return chosen.indexOf(w.part) >= 0; }).length;
+  $('pickMsg').innerHTML = n ? '고른 단어 <b>' + n + '개</b> · 문항 <b>'
+      + (n + WORDS.filter(function(w){ return chosen.indexOf(w.part)>=0 && w.syn.length>=2; }).length)
+      + '개</b>'
+    : '범위를 하나 이상 골라 주세요';
+  $('goBtn').disabled = !n;
+}
 
 /* ── 발음 ── */
 function say(){
@@ -214,7 +245,7 @@ function start(){
     studentName = n; studentSchool = $('inSchool').value;
     try { localStorage.setItem('bn_name',n); localStorage.setItem('bn_school',studentSchool); } catch(e){}
   }
-  pool = chosen==='전체' ? WORDS.slice() : WORDS.filter(function(w){ return w.part===chosen; });
+  pool = WORDS.filter(function(w){ return chosen.indexOf(w.part) >= 0; });
   if (!pool.length) return;
   step = 1; qi = 0; wrongs = []; right = 0; answered = 0; sent = false;
   startAt = Date.now();
@@ -360,7 +391,8 @@ function save(pct){
   if (sent) return; sent = true;
   var data = {
     studentName: studentName, school: studentSchool,
-    quizType: QUIZ_TYPE, level: chosen,
+    quizType: QUIZ_TYPE,
+    level: (chosen.length === (window.__parts||[]).length ? '전체' : chosen.join(', ')),
     score: pct, correct: right, wrong: wrongs.length, total: answered,
     elapsedMin: Math.round((Date.now()-startAt)/60000),
     completed: true,
