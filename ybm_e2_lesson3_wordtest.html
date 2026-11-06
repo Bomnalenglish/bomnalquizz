@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<script src="bn_save.js"></script>
+<script src="bn_progress.js?v=1"></script>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
+<meta name="theme-color" content="#4a6741"/>
+<title>봄날 퀴즈 | 영어II 3과 단어시험</title>
+<script type="module" src="bn_tracker.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f7f4ee;--card:#fffdf8;--ink:#3b352c;--soft:#8a7f74;
+  --line:#e6dac4;--gold:#8a6a3e;--gold-d:#5c3d1e;
+  --ok:#2f8f6b;--no:#c2543f;--okbg:#e4f5ed;--nobg:#fdeae6;
+}
+html,body{overscroll-behavior-y:contain}
+body{font-family:"맑은 고딕","Malgun Gothic","Apple SD Gothic Neo","Noto Sans KR",sans-serif;
+  font-size:11pt;line-height:1.65;color:var(--ink);
+  background:linear-gradient(160deg,#faf7f1,#f2ece1);min-height:100vh}
+header{background:linear-gradient(135deg,#fffdf8,#f1e7d5);padding:22px 18px 18px;
+  text-align:center;border-bottom:2px solid var(--line)}
+.h-title{font-size:1.25rem;font-weight:800;color:var(--gold-d);letter-spacing:-.3px}
+.h-sub{font-size:.86rem;color:var(--soft);margin-top:5px}
+.h-badge{display:inline-block;margin-top:9px;background:var(--gold-d);color:#fff8ec;
+  border-radius:20px;padding:5px 14px;font-size:.8rem;font-weight:700}
+main{max-width:560px;margin:0 auto;padding:18px 14px 90px}
+.card{background:var(--card);border:2px solid var(--line);border-radius:18px;
+  padding:18px 16px;box-shadow:0 3px 14px rgba(120,90,40,.07);margin-bottom:14px}
+h2{font-size:1.05rem;color:var(--gold-d);margin-bottom:6px}
+.desc{font-size:.86rem;color:var(--soft);margin-bottom:14px;line-height:1.6}
+label{display:block;font-size:.85rem;font-weight:700;color:var(--gold);margin:12px 0 6px}
+input,select{width:100%;padding:12px;border:2px solid var(--line);border-radius:12px;
+  font-family:inherit;font-size:1rem;background:#fff;color:var(--ink)}
+.btn{display:block;width:100%;padding:14px;border:none;border-radius:14px;cursor:pointer;
+  font-family:inherit;font-size:1rem;font-weight:800;letter-spacing:-.2px;
+  background:linear-gradient(135deg,#8a6a3e,#5c3d1e);color:#fff8ec;margin-top:16px}
+.btn.sub{background:#fff;color:var(--gold);border:2px solid var(--line)}
+.btn:disabled{opacity:.45}
+.range{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-top:6px}
+.range button{padding:14px 8px;border-radius:14px;border:2px solid var(--line);background:#fff;
+  font-family:inherit;font-size:.95rem;font-weight:800;color:var(--ink);cursor:pointer;line-height:1.3}
+.range button span{display:block;font-size:.72rem;font-weight:400;color:var(--soft);margin-top:3px}
+.range button.on{border-color:var(--gold);background:#fdf3df;color:var(--gold-d)}
+.bar{position:sticky;top:0;z-index:20;background:rgba(250,247,241,.96);
+  border-bottom:1px solid var(--line);padding:9px 14px;backdrop-filter:blur(6px)}
+.bar-top{display:flex;align-items:center;justify-content:space-between;gap:10px;
+  max-width:560px;margin:0 auto;font-size:.82rem;color:var(--soft)}
+.bar-top b{color:var(--gold-d);font-size:.92rem}
+.pbar{max-width:560px;margin:7px auto 0;height:8px;border-radius:9px;background:#ece3d2;overflow:hidden}
+.pfill{height:100%;width:0;background:linear-gradient(90deg,#c9a961,#8a6a3e);transition:width .3s}
+.step-tag{display:inline-block;background:#fdf3df;border:1.5px solid #e3d2ae;color:var(--gold-d);
+  border-radius:9px;padding:3px 10px;font-size:.76rem;font-weight:800;margin-bottom:12px}
+.word{font-size:2rem;font-weight:800;color:var(--gold-d);text-align:center;
+  letter-spacing:-.5px;line-height:1.25;word-break:break-word}
+.spk{display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;
+  border-radius:50%;border:2px solid var(--line);background:#fff;font-size:1.05rem;
+  cursor:pointer;margin:12px auto 0}
+.spk.on{background:#fdf3df;border-color:var(--gold)}
+.center{text-align:center}
+.gl{font-size:.82rem;color:var(--soft);text-align:center;margin-top:10px;line-height:1.55}
+.opts{display:grid;gap:9px;margin-top:16px}
+.opt{padding:14px 12px;border:2px solid var(--line);border-radius:13px;background:#fff;
+  font-family:inherit;font-size:1rem;font-weight:700;color:var(--ink);cursor:pointer;
+  text-align:center;line-height:1.45;transition:all .12s}
+.opt:hover:not(:disabled){border-color:var(--gold);background:#fffaf0}
+.opt.sel{border-color:var(--gold);background:#fdf3df;color:var(--gold-d)}
+.opt.ok{border-color:var(--ok);background:var(--okbg);color:var(--ok)}
+.opt.no{border-color:var(--no);background:var(--nobg);color:var(--no)}
+.opt:disabled{cursor:default}
+.fb{margin-top:13px;text-align:center;font-size:.92rem;font-weight:800;min-height:24px}
+.fb.ok{color:var(--ok)}.fb.no{color:var(--no)}
+.fb small{display:block;font-weight:400;color:var(--soft);font-size:.8rem;margin-top:4px}
+.res-score{font-size:2.6rem;font-weight:800;color:var(--gold-d);text-align:center;line-height:1.1}
+.res-sub{text-align:center;color:var(--soft);font-size:.9rem;margin-top:6px}
+.wrongs{margin-top:16px;border-top:1px dashed var(--line);padding-top:12px}
+.wrongs h3{font-size:.9rem;color:var(--gold);margin-bottom:8px}
+.wrow{display:flex;gap:8px;align-items:baseline;padding:5px 0;font-size:.88rem;
+  border-bottom:1px solid #f1ebdf}
+.wrow b{color:var(--gold-d);min-width:34%}
+.wrow span{color:var(--soft)}
+.send{margin-top:12px;text-align:center;font-size:.84rem;color:var(--soft)}
+.send.ok{color:var(--ok);font-weight:700}
+.hide{display:none!important}
+@media(max-width:380px){.word{font-size:1.7rem}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="h-title">영어II 3과 단어시험</div>
+  <div class="h-sub">YBM 박준언 · Lesson 3 The Varied World of Viruses<br>독해가 되는 상세어휘 · 종촌고2 · 고운고2</div>
+  <div class="h-badge">1단계 뜻 고르기 · 2단계 유의어 고르기</div>
+</header>
+
+<main>
+  <!-- 시작 -->
+  <section id="s-start">
+    <div class="card">
+      <h2 id="hello">안녕!</h2>
+      <p class="desc">단어 <b id="totN">0</b>개 중에서 범위를 고르면,<br>
+        ① 뜻 고르기 → ② 유의어 고르기 순서로 풀어요.</p>
+      <div id="nameBox" class="hide">
+        <label>이름</label>
+        <input id="inName" type="text" placeholder="예) 홍길동" autocomplete="off"/>
+        <label>학교</label>
+        <select id="inSchool">
+          <option value="고운고등학교">고운고등학교</option>
+          <option value="종촌고등학교">종촌고등학교</option>
+        </select>
+      </div>
+      <label>범위</label>
+      <div class="range" id="rangeBox"></div>
+      <button class="btn" id="goBtn" onclick="start()">시작하기 →</button>
+    </div>
+  </section>
+
+  <!-- 푸는 중 -->
+  <section id="s-quiz" class="hide">
+    <div class="bar">
+      <div class="bar-top">
+        <span id="stepName">1단계 · 뜻 고르기</span>
+        <span><b id="qPos">1 / 20</b></span>
+      </div>
+      <div class="pbar"><div class="pfill" id="pfill"></div></div>
+    </div>
+    <div class="card">
+      <span class="step-tag" id="stepTag">① 뜻 고르기</span>
+      <div class="center">
+        <div class="word" id="qWord">word</div>
+        <button class="spk" id="spkBtn" onclick="say()">🔊</button>
+      </div>
+      <div class="gl" id="qGloss"></div>
+      <div class="opts" id="opts"></div>
+      <div class="fb" id="fb"></div>
+      <button class="btn hide" id="okBtn" onclick="confirmPick()">확인 →</button>
+      <button class="btn sub hide" id="nextBtn" onclick="nextQ()">다음 →</button>
+    </div>
+  </section>
+
+  <!-- 결과 -->
+  <section id="s-done" class="hide">
+    <div class="card">
+      <div class="res-score"><span id="rScore">0</span>점</div>
+      <div class="res-sub"><span id="rRight">0</span>문제 맞고 <span id="rWrong">0</span>문제 틀렸어요</div>
+      <div class="wrongs hide" id="wrongBox">
+        <h3>틀린 것</h3>
+        <div id="wrongList"></div>
+      </div>
+      <button class="btn hide" id="retryBtn" onclick="retryWrong()">틀린 것만 다시 풀기 🔁</button>
+      <button class="btn sub" onclick="location.reload()">범위 다시 고르기</button>
+      <div class="send" id="send">결과를 선생님께 보내는 중…</div>
+    </div>
+  </section>
+</main>
+
+<script>
+var WORDS = [{"en": "varied", "ko": "다양한", "syn": ["diverse", "various"], "ant": ["uniform", "identical"], "part": "Part I", "gl": ""}, {"en": "virus", "ko": "바이러스", "syn": ["pathogen", "infectious agent"], "ant": [], "part": "Part I", "gl": ""}, {"en": "solely", "ko": "오로지", "syn": ["only", "exclusively"], "ant": ["partly", "partially"], "part": "Part I", "gl": "exclusively, entirely, and without any others"}, {"en": "suffering", "ko": "고통", "syn": ["pain", "misery"], "ant": ["happiness", "comfort"], "part": "Part I", "gl": ""}, {"en": "humanity", "ko": "인류", "syn": ["humankind", "mankind"], "ant": [], "part": "Part I", "gl": "the human race, or human beings collectively"}, {"en": "influenza", "ko": "인플루엔자, 독감", "syn": ["flu", "influenza virus"], "ant": [], "part": "Part I", "gl": "an infectious viral illness causing fever, severe aches, and catarrh; flu"}, {"en": "pandemic", "ko": "세계적 대유행", "syn": ["global outbreak", "worldwide epidemic"], "ant": [], "part": "Part I", "gl": "an outbreak of a disease prevalent over a whole country or the world"}, {"en": "be estimated to", "ko": "~로 추정되다", "syn": [], "ant": [], "part": "Part I", "gl": ""}, {"en": "smallpox", "ko": "천연두", "syn": [], "ant": [], "part": "Part I", "gl": "a serious and contagious viral disease characterized by fever and skin spots"}, {"en": "claim the lives of", "ko": "~의 목숨을 앗아가다", "syn": ["kill", "take the lives of"], "ant": ["save", "preserve"], "part": "Part I", "gl": ""}, {"en": "according to", "ko": "~에 따르면", "syn": [], "ant": [], "part": "Part I", "gl": ""}, {"en": "affect", "ko": "영향을 미치다", "syn": ["influence", "impact"], "ant": ["leave unaffected", "ignore"], "part": "Part I", "gl": ""}, {"en": "aspect", "ko": "측면", "syn": [], "ant": [], "part": "Part I", "gl": ""}, {"en": "worldwide", "ko": "전 세계적으로", "syn": ["globally", "internationally"], "ant": [], "part": "Part I", "gl": ""}, {"en": "outbreak", "ko": "발병, 발생", "syn": ["eruption", "occurrence"], "ant": ["containment", "prevention"], "part": "Part I", "gl": "the sudden or violent start of something unwelcome, such as a disease"}, {"en": "viral disease", "ko": "바이러스성 질병", "syn": ["viral infection", "virus-borne disease"], "ant": [], "part": "Part I", "gl": ""}, {"en": "be linked to", "ko": "~와 관련이 있다", "syn": ["be connected to", "be associated with"], "ant": ["be unrelated to", "be disconnected from"], "part": "Part I", "gl": "to be connected, associated, or related to something else"}, {"en": "contact with", "ko": "~와의 접촉", "syn": ["interaction with", "exposure to"], "ant": ["isolation from", "separation from"], "part": "Part I", "gl": ""}, {"en": "wild animal", "ko": "야생 동물", "syn": ["wild creature", "wildlife"], "ant": ["domestic animal"], "part": "Part I", "gl": ""}, {"en": "allow", "ko": "가능하게 하다", "syn": ["enable", "permit"], "ant": ["prevent", "prohibit"], "part": "Part I", "gl": ""}, {"en": "prior", "ko": "이전의", "syn": ["previous", "earlier"], "ant": ["later", "subsequent"], "part": "Part I", "gl": "existing or coming before in time, order, or importance"}, {"en": "immunity", "ko": "면역", "syn": ["resistance", "protection"], "ant": ["susceptibility", "vulnerability"], "part": "Part I", "gl": "the ability of an organism to resist a particular infection or toxin"}, {"en": "historically", "ko": "역사적으로", "syn": [], "ant": [], "part": "Part I", "gl": ""}, {"en": "natural barrier", "ko": "자연 장벽", "syn": ["natural obstacle", "natural boundary"], "ant": [], "part": "Part I", "gl": ""}, {"en": "prevent A from -ing", "ko": "A가 ~하지 못하게 하다", "syn": ["stop", "keep"], "ant": ["allow", "enable"], "part": "Part I", "gl": "to stop, hinder, or keep option A from carrying out a specific action"}, {"en": "infect", "ko": "감염시키다", "syn": ["contaminate", "transmit"], "ant": ["protect", "immunize"], "part": "Part I", "gl": "to affect, contaminate, or pass a disease-causing agent or virus to an organism"}, {"en": "industrialization", "ko": "산업화", "syn": ["industrial development", "modernization"], "ant": ["deindustrialization", "ruralization"], "part": "Part I", "gl": "the development of industries in a country or region on a wide scale"}, {"en": "destroy", "ko": "파괴하다", "syn": ["ruin", "demolish"], "ant": ["preserve", "protect"], "part": "Part I", "gl": "to end the existence of, ruin, or spoil something completely"}, {"en": "push A out of B", "ko": "A를 B에서 밀어내다", "syn": ["drive out of", "force out of"], "ant": ["keep in", "retain in"], "part": "Part I", "gl": ""}, {"en": "original habitat", "ko": "원래의 서식지", "syn": ["natural habitat", "native habitat"], "ant": [], "part": "Part I", "gl": ""}, {"en": "result in", "ko": "~을 초래하다", "syn": ["lead to", "bring about"], "ant": ["prevent", "avoid"], "part": "Part I", "gl": "to cause, lead to, or have a specified outcome or consequence"}, {"en": "interaction", "ko": "상호작용", "syn": ["contact", "communication"], "ant": ["isolation", "separation"], "part": "Part I", "gl": "reciprocal action, effect, or influence between two or more parties"}, {"en": "opportunity", "ko": "기회", "syn": ["chance", "occasion"], "ant": ["obstacle", "barrier"], "part": "Part I", "gl": ""}, {"en": "spread to", "ko": "~로 퍼지다", "syn": ["transmit to", "pass to"], "ant": ["be contained", "disappear"], "part": "Part I", "gl": ""}, {"en": "primary", "ko": "주된", "syn": ["main", "principal"], "ant": ["secondary", "minor"], "part": "Part I", "gl": "of chief importance, principal, or main"}, {"en": "concern", "ko": "우려", "syn": ["worry", "anxiety"], "ant": ["confidence", "reassurance"], "part": "Part I", "gl": "a matter of interest, importance, worry, or anxiety to someone"}, {"en": "harmful", "ko": "해로운", "syn": ["damaging", "detrimental"], "ant": ["beneficial", "harmless"], "part": "Part I", "gl": ""}, {"en": "presence", "ko": "존재", "syn": ["existence", "appearance"], "ant": ["absence", "disappearance"], "part": "Part I", "gl": "the state, fact, or condition of existing or being present in a place"}, {"en": "not necessarily", "ko": "반드시 ~은 아니다", "syn": ["not always", "not inevitably"], "ant": ["certainly", "definitely"], "part": "Part I", "gl": ""}, {"en": "keeper", "ko": "지키는 존재", "syn": ["guardian", "protector"], "ant": ["destroyer", "attacker"], "part": "Part II", "gl": ""}, {"en": "less commonly known", "ko": "덜 알려진", "syn": ["less familiar", "little known"], "ant": ["widely known", "well known"], "part": "Part II", "gl": ""}, {"en": "play a crucial role in", "ko": "~에서 중요한 역할을 하다", "syn": ["play an essential role in", "contribute greatly to"], "ant": ["hinder", "interfere with"], "part": "Part II", "gl": ""}, {"en": "support", "ko": "지탱하다", "syn": ["sustain", "maintain"], "ant": ["weaken", "undermine"], "part": "Part II", "gl": ""}, {"en": "researcher", "ko": "연구자", "syn": ["scientist", "investigator"], "ant": [], "part": "Part II", "gl": ""}, {"en": "recently", "ko": "최근에", "syn": ["lately", "newly"], "ant": [], "part": "Part II", "gl": ""}, {"en": "investigate", "ko": "연구하다", "syn": ["examine", "explore"], "ant": ["ignore", "neglect"], "part": "Part II", "gl": "to examine, study, or inquire into systematically"}, {"en": "sustain", "ko": "유지하다", "syn": ["support", "preserve"], "ant": ["destroy", "weaken"], "part": "Part II", "gl": "to support, maintain, or keep something going over time"}, {"en": "harm", "ko": "해를 끼치다", "syn": ["damage", "injure"], "ant": ["protect", "benefit"], "part": "Part II", "gl": "physical injury, damage, or adverse effect caused to someone or something"}, {"en": "currently", "ko": "현재", "syn": [], "ant": [], "part": "Part II", "gl": "at the present time; now"}, {"en": "act as", "ko": "~의 역할을 하다", "syn": ["serve as", "function as"], "ant": [], "part": "Part II", "gl": ""}, {"en": "regulator", "ko": "조절자", "syn": ["controller", "manager"], "ant": ["disruptor", "destabilizer"], "part": "Part II", "gl": "a person, device, or natural agent that controls or maintains a system"}, {"en": "bacterial population", "ko": "박테리아 개체군", "syn": ["bacterial community", "bacteria population"], "ant": [], "part": "Part II", "gl": ""}, {"en": "insect population", "ko": "곤충 개체군", "syn": ["insect community", "insect species"], "ant": [], "part": "Part II", "gl": ""}, {"en": "reproductive function", "ko": "번식 기능", "syn": ["reproductive ability", "breeding function"], "ant": ["infertility", "sterility"], "part": "Part II", "gl": ""}, {"en": "on one's own", "ko": "스스로", "syn": ["independently", "by oneself"], "ant": ["with help", "dependently"], "part": "Part II", "gl": "independently and without help or assistance from others"}, {"en": "steal", "ko": "빼앗다", "syn": ["take", "seize"], "ant": ["return", "give"], "part": "Part II", "gl": ""}, {"en": "organism", "ko": "생물", "syn": ["living thing", "life form"], "ant": [], "part": "Part II", "gl": "an individual animal, plant, or single-celled life form"}, {"en": "multiply", "ko": "증식하다", "syn": ["reproduce", "replicate"], "ant": ["decrease", "diminish"], "part": "Part II", "gl": "to increase greatly in number or quantity, especially by reproduction"}, {"en": "eventually", "ko": "결국", "syn": ["finally", "ultimately"], "ant": [], "part": "Part II", "gl": ""}, {"en": "newly produced", "ko": "새롭게 생성된", "syn": ["newly formed", "newly created"], "ant": [], "part": "Part II", "gl": ""}, {"en": "go on to", "ko": "계속해서 ~하다", "syn": ["proceed to", "continue to"], "ant": ["stop", "cease"], "part": "Part II", "gl": ""}, {"en": "whole process", "ko": "전체 과정", "syn": ["entire process", "complete procedure"], "ant": ["partial process", "fragment"], "part": "Part II", "gl": ""}, {"en": "control", "ko": "조절하다", "syn": ["regulate", "manage"], "ant": ["increase", "encourage"], "part": "Part II", "gl": ""}, {"en": "excessive", "ko": "과도한", "syn": ["extreme", "excessive"], "ant": ["moderate", "limited"], "part": "Part II", "gl": "more than is necessary, normal, desirable, or reasonable"}, {"en": "significance", "ko": "중요성", "syn": ["importance", "value"], "ant": ["insignificance", "triviality"], "part": "Part II", "gl": "the quality of being worthy of attention, importance, or consequence"}, {"en": "vital role", "ko": "필수적인 역할", "syn": ["essential role", "crucial role"], "ant": ["minor role", "insignificant role"], "part": "Part II", "gl": ""}, {"en": "supply", "ko": "공급하다", "syn": ["provide", "furnish"], "ant": ["withhold", "deprive"], "part": "Part II", "gl": "to provide, furnish, or make available something that is needed"}, {"en": "oxygen", "ko": "산소", "syn": [], "ant": [], "part": "Part II", "gl": "a colorless, odorless reactive gas that is essential for the respiration of living organisms"}, {"en": "plankton", "ko": "플랑크톤", "syn": [], "ant": [], "part": "Part II", "gl": "small and microscopic organisms drifting or floating in the sea or fresh water"}, {"en": "nutrient", "ko": "영양분", "syn": ["nourishment", "nutrient substance"], "ant": ["toxin", "pollutant"], "part": "Part II", "gl": "a substance that provides nourishment essential for growth and the maintenance of life"}, {"en": "release", "ko": "방출하다", "syn": ["emit", "discharge"], "ant": ["retain", "absorb"], "part": "Part II", "gl": "to allow or enable a substance to escape, drop, or be emitted"}, {"en": "bacterial remains", "ko": "박테리아의 잔해", "syn": ["bacterial residue", "bacterial debris"], "ant": [], "part": "Part II", "gl": ""}, {"en": "lead to", "ko": "~을 초래하다", "syn": ["result in", "bring about"], "ant": ["prevent", "avoid"], "part": "Part II", "gl": "to result in, cause, or bring about a specific outcome or condition"}, {"en": "lack", "ko": "부족", "syn": ["shortage", "deficiency"], "ant": ["abundance", "surplus"], "part": "Part II", "gl": "the state of being without or not having enough of something"}, {"en": "in short", "ko": "요컨대", "syn": ["in brief", "to sum up"], "ant": ["in detail", "at length"], "part": "Part II", "gl": "stated briefly or concisely; in summary"}, {"en": "make it impossible to", "ko": "~을 불가능하게 만들다", "syn": ["prevent", "hinder"], "ant": ["enable", "allow"], "part": "Part II", "gl": ""}, {"en": "survive", "ko": "살아남다", "syn": ["live", "endure"], "ant": ["perish", "die"], "part": "Part II", "gl": "to continue to live, exist, or function despite dangerous or harsh conditions"}, {"en": "species", "ko": "종", "syn": ["kind", "type"], "ant": [], "part": "Part II", "gl": "a group of living organisms consisting of similar individuals capable of exchanging genes"}, {"en": "regulate", "ko": "조절하다", "syn": ["control", "manage"], "ant": ["disrupt", "disorder"], "part": "Part II", "gl": "to control, maintain, or adjust the rate or speed of a machine or process"}, {"en": "specific", "ko": "특정한", "syn": ["particular", "certain"], "ant": ["general", "broad"], "part": "Part II", "gl": ""}, {"en": "reduce", "ko": "줄이다", "syn": ["decrease", "lessen"], "ant": ["increase", "expand"], "part": "Part II", "gl": "to make smaller, lessen, or decrease in size, amount, degree, or intensity"}, {"en": "in turn", "ko": "결과적으로", "syn": ["consequently", "as a result"], "ant": [], "part": "Part II", "gl": "as a result or consequence of a preceding series of events"}, {"en": "create room for", "ko": "~의 여지를 만들다", "syn": ["make way for", "allow"], "ant": ["prevent", "block"], "part": "Part II", "gl": ""}, {"en": "flourish", "ko": "번성하다", "syn": ["thrive", "prosper"], "ant": ["decline", "wither"], "part": "Part II", "gl": "to grow or develop in a healthy or vigorous way as the result of a particularly favorable environment"}, {"en": "chain of food", "ko": "먹이사슬", "syn": ["food chain"], "ant": [], "part": "Part II", "gl": "a series of organisms each dependent on the next as a source of food"}, {"en": "assume", "ko": "추정하다", "syn": ["suppose", "presume"], "ant": ["doubt", "question"], "part": "Part II", "gl": "to suppose, accept, or take something as true without explicit proof"}, {"en": "fulfill", "ko": "수행하다", "syn": ["carry out", "accomplish"], "ant": ["neglect", "fail"], "part": "Part II", "gl": "to carry out, achieve, or perform a task, duty, or role successfully"}, {"en": "ecosystem", "ko": "생태계", "syn": ["ecological system", "natural system"], "ant": [], "part": "Part II", "gl": "a biological community of interacting organisms and their physical environment"}, {"en": "evolution", "ko": "진화", "syn": ["development", "evolution"], "ant": ["stagnation", "extinction"], "part": "Part III", "gl": "the process by which different kinds of living organisms are thought to have developed"}, {"en": "less recognized", "ko": "덜 알려진", "syn": ["less acknowledged", "less familiar"], "ant": ["well known", "widely recognized"], "part": "Part III", "gl": ""}, {"en": "contribution to", "ko": "~에 대한 기여", "syn": ["contribution toward", "support for"], "ant": ["hindrance to", "obstruction of"], "part": "Part III", "gl": ""}, {"en": "reproductive cell", "ko": "생식세포", "syn": [], "ant": [], "part": "Part III", "gl": ""}, {"en": "host", "ko": "숙주", "syn": ["carrier", "host organism"], "ant": ["parasite", "invader"], "part": "Part III", "gl": "an animal or plant on or in which a parasite or virus lives and feeds"}, {"en": "egg", "ko": "난자", "syn": ["ovum"], "ant": ["sperm"], "part": "Part III", "gl": "the female reproductive cell or ovum in animals"}, {"en": "sperm", "ko": "정자", "syn": [], "ant": [], "part": "Part III", "gl": "the male reproductive cell or gamete"}, {"en": "pass down", "ko": "물려주다", "syn": ["hand down", "transmit"], "ant": ["withhold", "discard"], "part": "Part III", "gl": ""}, {"en": "offspring", "ko": "자손", "syn": ["descendant", "young"], "ant": ["ancestor", "predecessor"], "part": "Part III", "gl": "a person's child or children, or an animal's young or descendants"}, {"en": "insertion", "ko": "삽입", "syn": ["introduction", "incorporation"], "ant": ["removal", "deletion"], "part": "Part III", "gl": "the action of putting, placing, or embedding something into another object or sequence"}, {"en": "genome", "ko": "유전체", "syn": ["genetic material", "genetic code"], "ant": [], "part": "Part III", "gl": "the complete set of genes or genetic material present in a cell or organism"}, {"en": "significant", "ko": "중요한", "syn": ["important", "substantial"], "ant": ["insignificant", "trivial"], "part": "Part III", "gl": "sufficiently great, important, or meaningful to be worthy of attention"}, {"en": "mechanism", "ko": "메커니즘", "syn": ["process", "system"], "ant": ["disorder", "randomness"], "part": "Part III", "gl": "a natural or established process by which something takes place or is brought about"}, {"en": "evolutionary", "ko": "진화의", "syn": ["evolutionary", "developmental"], "ant": ["static", "unchanging"], "part": "Part III", "gl": "relating to, resulting from, or involving the gradual development and adaptation of species"}, {"en": "potential", "ko": "잠재력", "syn": ["capability", "possibility"], "ant": ["limitation", "inability"], "part": "Part III", "gl": "latent qualities, capacity, or possibilities that may be developed into future progress"}, {"en": "be impacted", "ko": "영향을 받다", "syn": ["be affected", "be influenced"], "ant": ["remain unaffected", "resist"], "part": "Part III", "gl": ""}, {"en": "development", "ko": "발달", "syn": ["growth", "formation"], "ant": ["decline", "deterioration"], "part": "Part III", "gl": ""}, {"en": "placenta", "ko": "태반", "syn": [], "ant": [], "part": "Part III", "gl": "a temporary vascular organ in mammals that nourishes and maintains the fetus"}, {"en": "mammal", "ko": "포유류", "syn": [], "ant": [], "part": "Part III", "gl": "a warm-blooded vertebrate animal distinguished by the possession of hair and milk production"}, {"en": "complex", "ko": "복잡한", "syn": ["complicated", "intricate"], "ant": ["simple", "uncomplicated"], "part": "Part III", "gl": "consisting of many interconnected parts; intricate or complicated"}, {"en": "organ", "ko": "기관", "syn": [], "ant": [], "part": "Part III", "gl": "a distinct structural unit in an organism that performs a specific function"}, {"en": "fetus", "ko": "태아", "syn": ["unborn baby", "embryo"], "ant": ["adult"], "part": "Part III", "gl": "an unborn offspring of a mammal, in particular an unborn human baby after eight weeks"}, {"en": "securely", "ko": "안전하게", "syn": ["safely", "firmly"], "ant": ["dangerously", "insecurely"], "part": "Part III", "gl": ""}, {"en": "facilitate", "ko": "촉진하다", "syn": ["promote", "enable"], "ant": ["hinder", "obstruct"], "part": "Part III", "gl": "to make an action or process easier, smoother, or more likely to happen"}, {"en": "exchange", "ko": "교환", "syn": ["transfer", "interchange"], "ant": ["retention", "keeping"], "part": "Part III", "gl": ""}, {"en": "waste product", "ko": "노폐물", "syn": ["waste material", "by-product"], "ant": ["nutrient", "resource"], "part": "Part III", "gl": ""}, {"en": "protect A from B", "ko": "A를 B로부터 보호하다", "syn": ["shield A from B", "defend A against B"], "ant": ["expose A to B", "endanger A"], "part": "Part III", "gl": ""}, {"en": "immune system", "ko": "면역 체계", "syn": ["immune defense", "immunity"], "ant": [], "part": "Part III", "gl": "the complex network of cells, tissues, and organs that defends the body against infections"}, {"en": "offspring", "ko": "새끼, 자손", "syn": ["young", "descendant"], "ant": ["ancestor", "predecessor"], "part": "Part III", "gl": "a person's child or children, or an animal's young or descendants"}, {"en": "vulnerable to", "ko": "~에 취약한", "syn": ["susceptible to", "exposed to"], "ant": ["resistant to", "protected from"], "part": "Part III", "gl": ""}, {"en": "predator", "ko": "포식자", "syn": ["hunter", "carnivore"], "ant": ["prey"], "part": "Part III", "gl": "an animal that naturally preys on or hunts other animals for food"}, {"en": "emergence", "ko": "출현", "syn": ["appearance", "arrival"], "ant": ["disappearance", "extinction"], "part": "Part III", "gl": "the process or fact of coming into view, existence, or prominence"}, {"en": "carry", "ko": "옮기다", "syn": ["transport", "bear"], "ant": ["leave", "abandon"], "part": "Part III", "gl": ""}, {"en": "remote ancestor", "ko": "먼 조상", "syn": ["distant ancestor", "early ancestor"], "ant": ["descendant", "offspring"], "part": "Part III", "gl": ""}, {"en": "be reported to", "ko": "~라고 보고되다", "syn": ["be said to", "be believed to"], "ant": ["be disproved", "be denied"], "part": "Part III", "gl": "to be stated, described, or documented by reliable sources or research as happening"}, {"en": "serve a key function", "ko": "핵심적인 역할을 하다", "syn": ["play a vital role", "serve an essential role"], "ant": ["hinder", "interfere with"], "part": "Part III", "gl": ""}, {"en": "vital", "ko": "필수적인", "syn": ["essential", "crucial"], "ant": ["insignificant", "unnecessary"], "part": "Part III", "gl": "absolutely necessary or essential for life, success, or proper functioning"}, {"en": "cure", "ko": "치료법", "syn": ["remedy", "treatment"], "ant": ["disease", "illness"], "part": "Part IV", "gl": "a substance, treatment, or remedy that relieves or ends a disease"}, {"en": "scientific knowledge", "ko": "과학적 지식", "syn": ["scientific understanding", "scientific information"], "ant": ["ignorance", "misunderstanding"], "part": "Part IV", "gl": ""}, {"en": "expand", "ko": "확대되다", "syn": ["grow", "increase"], "ant": ["shrink", "decrease"], "part": "Part IV", "gl": "to become or make larger or more extensive in size, scope, or range"}, {"en": "utilize", "ko": "활용하다", "syn": ["use", "employ"], "ant": ["neglect", "ignore"], "part": "Part IV", "gl": "to make practical and effective use of something"}, {"en": "battle against", "ko": "~와의 싸움", "syn": ["fight against", "struggle against"], "ant": ["surrender to", "submit to"], "part": "Part IV", "gl": ""}, {"en": "disease", "ko": "질병", "syn": ["illness", "disorder"], "ant": ["health", "wellness"], "part": "Part IV", "gl": ""}, {"en": "notable", "ko": "주목할 만한", "syn": ["remarkable", "significant"], "ant": ["ordinary", "insignificant"], "part": "Part IV", "gl": "worthy of attention or notice; remarkable or distinguished"}, {"en": "gene therapy", "ko": "유전자 치료", "syn": ["genetic therapy", "gene treatment"], "ant": [], "part": "Part IV", "gl": ""}, {"en": "cancer treatment", "ko": "암 치료", "syn": [], "ant": [], "part": "Part IV", "gl": ""}, {"en": "gene", "ko": "유전자", "syn": [], "ant": [], "part": "Part IV", "gl": "a unit of heredity which is transferred from a parent to offspring"}, {"en": "compare A to B", "ko": "A를 B에 비유하다", "syn": ["liken A to B", "equate A with B"], "ant": ["distinguish A from B", "separate A from B"], "part": "Part IV", "gl": ""}, {"en": "instruction guide", "ko": "안내서", "syn": ["manual", "guideline"], "ant": [], "part": "Part IV", "gl": ""}, {"en": "govern", "ko": "지배하다, 조절하다", "syn": ["control", "regulate"], "ant": ["ignore", "neglect"], "part": "Part IV", "gl": "to conduct the policy, actions, or affairs of; to control or influence"}, {"en": "function", "ko": "기능하다", "syn": ["operate", "work"], "ant": ["fail", "malfunction"], "part": "Part IV", "gl": "to work, operate, or perform a specified action in a proper way"}, {"en": "genetic disorder", "ko": "유전 질환", "syn": ["inherited disorder", "genetic disease"], "ant": ["health", "normality"], "part": "Part IV", "gl": "a health condition caused by one or more abnormalities in the genome"}, {"en": "step in", "ko": "개입하다", "syn": ["intervene", "get involved"], "ant": ["withdraw", "stay out"], "part": "Part IV", "gl": ""}, {"en": "essence", "ko": "본질", "syn": ["core", "nature"], "ant": ["detail", "surface"], "part": "Part IV", "gl": "the intrinsic nature or indispensable quality of something"}, {"en": "lie in", "ko": "~에 있다", "syn": ["consist in", "depend on"], "ant": ["be unrelated to", "differ from"], "part": "Part IV", "gl": "to exist, reside, or be located in a particular place, state, or aspect"}, {"en": "deliver", "ko": "전달하다", "syn": ["provide", "transmit"], "ant": ["withhold", "deny"], "part": "Part IV", "gl": ""}, {"en": "corrected", "ko": "수정된", "syn": ["corrected", "repaired"], "ant": ["incorrect", "faulty"], "part": "Part IV", "gl": "made free from error, fault, or defect; adjusted or rectified"}, {"en": "genetic instruction", "ko": "유전 정보", "syn": ["genetic code", "DNA instruction"], "ant": [], "part": "Part IV", "gl": "the coded information stored within genes that directs cellular activity"}, {"en": "enable", "ko": "가능하게 하다", "syn": ["allow", "make possible"], "ant": ["prevent", "hinder"], "part": "Part IV", "gl": "to give someone or something the authority, means, or ability to do something"}, {"en": "properly", "ko": "제대로", "syn": ["correctly", "appropriately"], "ant": ["improperly", "incorrectly"], "part": "Part IV", "gl": ""}, {"en": "process", "ko": "과정", "syn": ["procedure", "process"], "ant": ["result", "outcome"], "part": "Part IV", "gl": "a series of actions or steps taken in order to achieve a particular end"}, {"en": "specially modified", "ko": "특별히 변형된", "syn": ["specially engineered", "genetically modified"], "ant": ["natural", "unchanged"], "part": "Part IV", "gl": ""}, {"en": "carrier", "ko": "운반체", "syn": ["transporter", "vehicle"], "ant": ["blocker", "barrier"], "part": "Part IV", "gl": "an organism or substance that transfers or transmits an infectious agent or gene"}, {"en": "potentially", "ko": "잠재적으로", "syn": ["possibly", "potentially"], "ant": ["certainly not", "impossibly"], "part": "Part IV", "gl": "with the capacity or possibility to develop into something in the future"}, {"en": "fight off", "ko": "물리치다", "syn": ["resist", "overcome"], "ant": ["succumb to", "give in to"], "part": "Part IV", "gl": "to defend against, resist, or repel an attack, infection, or disease"}, {"en": "notion", "ko": "개념", "syn": ["idea", "concept"], "ant": ["fact", "reality"], "part": "Part IV", "gl": "a conception of or belief about something; a general idea"}, {"en": "natural ability", "ko": "자연적인 능력", "syn": ["innate ability", "natural capacity"], "ant": ["acquired inability", "weakness"], "part": "Part IV", "gl": ""}, {"en": "manipulate", "ko": "조작하다", "syn": ["modify", "control"], "ant": ["preserve", "leave unchanged"], "part": "Part IV", "gl": "to handle, control, or influence a person, object, or gene skillfully"}, {"en": "specifically", "ko": "구체적으로", "syn": ["particularly", "precisely"], "ant": ["generally", "broadly"], "part": "Part IV", "gl": "in a precise, detailed, or exact manner; explicitly"}, {"en": "target", "ko": "표적으로 삼다", "syn": ["aim at", "focus on"], "ant": ["ignore", "avoid"], "part": "Part IV", "gl": "to direct an action, treatment, or weapon at a specific objective or area"}, {"en": "unharmed", "ko": "해를 입지 않은", "syn": ["uninjured", "safe"], "ant": ["harmed", "injured"], "part": "Part IV", "gl": "not injured, damaged, or hurt in any way"}, {"en": "early stage", "ko": "초기 단계", "syn": [], "ant": [], "part": "Part IV", "gl": ""}, {"en": "be involved in", "ko": "~에 참여하다", "syn": ["participate in", "engage in"], "ant": ["withdraw from", "avoid"], "part": "Part IV", "gl": "to take part in, participate in, or be connected with an activity"}, {"en": "goal", "ko": "목표", "syn": ["aim", "objective"], "ant": ["aimlessness", "purposelessness"], "part": "Part IV", "gl": "an aim, ambition, or desired result that one strives to accomplish"}, {"en": "discover", "ko": "발견하다", "syn": ["find", "uncover"], "ant": ["overlook", "miss"], "part": "Part IV", "gl": ""}, {"en": "incurable", "ko": "불치의", "syn": ["untreatable", "hopeless"], "ant": ["curable", "treatable"], "part": "Part IV", "gl": "unable to be cured, healed, or restored to health by medical treatment"}, {"en": "have yet to", "ko": "아직 ~하지 못하다", "syn": ["still have to", "not yet"], "ant": ["already", "have already"], "part": "Part IV", "gl": ""}, {"en": "let alone", "ko": "~은 물론이고", "syn": ["much less", "not to mention"], "ant": ["including", "as well as"], "part": "Part IV", "gl": "used to indicate that something is far less likely or possible than another thing"}, {"en": "characteristic", "ko": "특징", "syn": ["feature", "trait"], "ant": ["sameness", "uniformity"], "part": "Part IV", "gl": "a feature or quality belonging typically to a person, place, or thing"}, {"en": "be equipped to", "ko": "~할 준비가 되어 있다", "syn": ["be prepared to", "be ready to"], "ant": ["be unable to", "be unprepared to"], "part": "Part IV", "gl": ""}, {"en": "beneficial", "ko": "유익한", "syn": ["helpful", "advantageous"], "ant": ["harmful", "detrimental"], "part": "Part IV", "gl": "producing good, helpful, advantageous, or favorable results"}, {"en": "purpose", "ko": "목적", "syn": ["goal", "objective"], "ant": [], "part": "Part IV", "gl": "the reason for which something is done, created, or exists"}, {"en": "defense against", "ko": "~에 대한 방어", "syn": ["protection against", "safeguard against"], "ant": ["exposure to", "vulnerability to"], "part": "Part IV", "gl": ""}, {"en": "viral diversity", "ko": "바이러스 다양성", "syn": ["virus diversity", "viral variation"], "ant": ["uniformity", "similarity"], "part": "Part IV", "gl": ""}, {"en": "reach an understanding of", "ko": "~을 이해하게 되다", "syn": ["gain an understanding of", "comprehend"], "ant": ["misunderstand", "overlook"], "part": "Part IV", "gl": ""}, {"en": "plague", "ko": "흑사병", "syn": [], "ant": ["health", "wellness"], "part": "Further Study", "gl": "a contagious bacterial disease characterized by fever and delirium; black death"}, {"en": "deadly", "ko": "치명적인", "syn": ["fatal", "lethal"], "ant": ["harmless", "harmless"], "part": "Further Study", "gl": "causing or capable of causing death; fatal"}, {"en": "treat", "ko": "치료하다", "syn": ["heal", "cure"], "ant": ["neglect", "ignore"], "part": "Further Study", "gl": ""}, {"en": "the sick", "ko": "환자들", "syn": ["patients", "the ill"], "ant": ["healthy people", "the well"], "part": "Further Study", "gl": "people who are affected by an illness, disease, or medical condition"}, {"en": "costume", "ko": "복장", "syn": ["outfit", "attire"], "ant": [], "part": "Further Study", "gl": "a set of clothes worn in a particular style, period, or activity"}, {"en": "polish", "ko": "광택제", "syn": [], "ant": [], "part": "Further Study", "gl": "a substance used to rub on a surface to make it smooth and shiny"}, {"en": "attach", "ko": "붙이다", "syn": ["connect", "fasten"], "ant": ["detach", "separate"], "part": "Further Study", "gl": "to join, fasten, or connect one object to another"}, {"en": "fasten", "ko": "잠그다", "syn": ["secure", "tie"], "ant": ["loosen", "unfasten"], "part": "Further Study", "gl": "to close, secure, or join securely together"}, {"en": "goat skin", "ko": "염소 가죽", "syn": [], "ant": [], "part": "Further Study", "gl": ""}, {"en": "stick", "ko": "지팡이", "syn": [], "ant": [], "part": "Further Study", "gl": ""}, {"en": "push away", "ko": "밀어내다", "syn": ["shove away", "drive away"], "ant": ["pull closer", "attract"], "part": "Further Study", "gl": ""}, {"en": "unusual", "ko": "특이한", "syn": ["strange", "uncommon"], "ant": ["ordinary", "common"], "part": "Further Study", "gl": "not habitually or commonly occurring or done; remarkable or strange"}, {"en": "mask", "ko": "가면", "syn": ["face mask", "covering"], "ant": [], "part": "Further Study", "gl": ""}, {"en": "beak", "ko": "부리", "syn": [], "ant": [], "part": "Further Study", "gl": "a bird's horny projecting jaws, or a beak-shaped protective mask component"}, {"en": "be filled with", "ko": "~으로 채워지다", "syn": ["be packed with", "contain"], "ant": ["be empty of", "lack"], "part": "Further Study", "gl": ""}, {"en": "herb", "ko": "약초", "syn": ["medicinal plant"], "ant": [], "part": "Further Study", "gl": "a plant used for flavoring, food, medicine, or perfume"}, {"en": "cause", "ko": "원인이 되다", "syn": ["bring about", "result in"], "ant": ["prevent", "avoid"], "part": "Further Study", "gl": ""}, {"en": "disrupt", "ko": "방해하다", "syn": ["disturb", "interrupt"], "ant": ["maintain", "preserve"], "part": "Further Study", "gl": "to interrupt, disturb, or cause disorder in an event, activity, or process"}, {"en": "internal balance", "ko": "내부 균형", "syn": ["inner balance", "bodily balance"], "ant": ["imbalance", "disorder"], "part": "Further Study", "gl": ""}, {"en": "filter", "ko": "걸러내다", "syn": ["purify", "screen"], "ant": ["contaminate", "pollute"], "part": "Further Study", "gl": "to pass a liquid, gas, or air through a device to remove unwanted impurities"}, {"en": "bacteria", "ko": "박테리아", "syn": ["germs", "microbes"], "ant": [], "part": "Further Study", "gl": ""}, {"en": "spread", "ko": "퍼지다", "syn": ["transmit", "circulate"], "ant": ["disappear", "be contained"], "part": "Further Study", "gl": "to extend, distribute, or reach over a wider area or population"}, {"en": "flea bite", "ko": "벼룩에 물린 상처", "syn": [], "ant": [], "part": "Further Study", "gl": ""}, {"en": "method", "ko": "방법", "syn": ["technique", "approach"], "ant": ["disorder", "randomness"], "part": "Further Study", "gl": ""}, {"en": "modern medicine", "ko": "현대 의학", "syn": ["contemporary medicine", "medical science"], "ant": ["traditional medicine", "ancient medicine"], "part": "Further Study", "gl": ""}, {"en": "detect", "ko": "발견하다", "syn": ["identify", "discover"], "ant": ["overlook", "miss"], "part": "Further Study", "gl": "to discover, identify, or notice the presence or existence of something"}, {"en": "counter", "ko": "대응하다", "syn": ["combat", "resist"], "ant": ["encourage", "support"], "part": "Further Study", "gl": "to respond, react, or act in opposition to something"}, {"en": "swiftly", "ko": "신속하게", "syn": ["rapidly", "quickly"], "ant": ["slowly", "gradually"], "part": "Further Study", "gl": "moving or acting with great speed; quickly or promptly"}, {"en": "protective gear", "ko": "보호 장비", "syn": ["protective equipment", "safety gear"], "ant": [], "part": "Further Study", "gl": ""}, {"en": "virus research", "ko": "바이러스 연구", "syn": [], "ant": [], "part": "Further Study", "gl": ""}, {"en": "patient treatment", "ko": "환자 치료", "syn": ["medical treatment", "patient care"], "ant": ["neglect", "mistreatment"], "part": "Further Study", "gl": ""}, {"en": "reliance on", "ko": "~에 대한 의존", "syn": ["dependence on", "trust in"], "ant": ["independence from", "distrust of"], "part": "Further Study", "gl": ""}, {"en": "remain unchanged", "ko": "변함없이 유지되다", "syn": ["stay the same", "remain constant"], "ant": ["change", "vary"], "part": "Further Study", "gl": ""}, {"en": "combat", "ko": "맞서 싸우다", "syn": ["fight", "battle"], "ant": ["surrender", "yield"], "part": "Further Study", "gl": "to take action to reduce, destroy, or fight against something harmful"}, {"en": "unseen", "ko": "보이지 않는", "syn": ["invisible", "hidden"], "ant": ["visible", "obvious"], "part": "Further Study", "gl": "not seen, noticed, or perceived; invisible"}];
+var QUIZ_TYPE = '영어II_3과_단어시험';
+
+var studentName = '', studentSchool = '';
+var chosen = '전체', pool = [], queue = [], qi = 0, step = 1;
+var wrongs = [], right = 0, answered = 0, startAt = 0, sent = false;
+var cur = null, picked = [], locked = false;
+
+function $(id){ return document.getElementById(id); }
+function shuffle(a){ a = a.slice(); for (var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
+function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+/* ── 이름 ── */
+(function(){
+  try { studentName=(localStorage.getItem('bn_name')||'').trim();
+        studentSchool=(localStorage.getItem('bn_school')||'').trim(); } catch(e){}
+  if (studentName) $('hello').textContent = studentName + ' 학생, 반가워요! 🌸';
+  else $('nameBox').classList.remove('hide');
+  $('totN').textContent = WORDS.length;
+  var parts = [];
+  for (var i=0;i<WORDS.length;i++) if (parts.indexOf(WORDS[i].part)<0) parts.push(WORDS[i].part);
+  var html = '<button class="on" data-r="전체">전체<span>' + WORDS.length + '단어</span></button>';
+  for (var k=0;k<parts.length;k++){
+    var n = WORDS.filter(function(w){ return w.part===parts[k]; }).length;
+    html += '<button data-r="'+esc(parts[k])+'">'+esc(parts[k])+'<span>'+n+'단어</span></button>';
+  }
+  $('rangeBox').innerHTML = html;
+  $('rangeBox').onclick = function(e){
+    var b = e.target.closest('button'); if (!b) return;
+    var all = $('rangeBox').querySelectorAll('button');
+    for (var i=0;i<all.length;i++) all[i].classList.remove('on');
+    b.classList.add('on'); chosen = b.dataset.r;
+  };
+})();
+
+/* ── 발음 ── */
+function say(){
+  if (!cur || !('speechSynthesis' in window)) return;
+  try {
+    speechSynthesis.cancel();
+    var u = new SpeechSynthesisUtterance(cur.w.en);
+    u.lang='en-US'; u.rate=.85;
+    var vs = speechSynthesis.getVoices();
+    for (var i=0;i<vs.length;i++) if (/^en/i.test(vs[i].lang||'')) { u.voice=vs[i]; break; }
+    var b = $('spkBtn'); b.classList.add('on');
+    u.onend = u.onerror = function(){ b.classList.remove('on'); };
+    speechSynthesis.speak(u);
+  } catch(e){}
+}
+
+/* ── 시작 ── */
+function start(){
+  if (!studentName){
+    var n = $('inName').value.trim();
+    if (!n){ $('inName').focus(); return; }
+    studentName = n; studentSchool = $('inSchool').value;
+    try { localStorage.setItem('bn_name',n); localStorage.setItem('bn_school',studentSchool); } catch(e){}
+  }
+  pool = chosen==='전체' ? WORDS.slice() : WORDS.filter(function(w){ return w.part===chosen; });
+  if (!pool.length) return;
+  step = 1; qi = 0; wrongs = []; right = 0; answered = 0; sent = false;
+  startAt = Date.now();
+  queue = shuffle(pool).map(function(w){ return { w:w, step:1 }; });
+  var s2 = shuffle(pool.filter(function(w){ return w.syn.length>=2; }))
+             .map(function(w){ return { w:w, step:2 }; });
+  queue = queue.concat(s2);
+  $('s-start').classList.add('hide');
+  $('s-quiz').classList.remove('hide');
+  render();
+}
+
+/* ── 문항 그리기 ── */
+function render(){
+  if (qi >= queue.length){ finish(); return; }
+  cur = queue[qi]; picked = []; locked = false;
+  step = cur.step;
+  $('stepName').textContent = step===1 ? '1단계 · 뜻 고르기' : '2단계 · 유의어 고르기';
+  $('stepTag').textContent  = step===1 ? '① 알맞은 뜻 고르기' : '② 유의어 2개 모두 고르기';
+  $('qPos').textContent = (qi+1) + ' / ' + queue.length;
+  $('pfill').style.width = (qi/queue.length*100) + '%';
+  $('qWord').textContent = cur.w.en;
+  $('qGloss').textContent = (step===1 && cur.w.gl) ? cur.w.gl : '';
+  $('fb').textContent = ''; $('fb').className = 'fb';
+  $('nextBtn').classList.add('hide');
+  $('okBtn').classList.toggle('hide', step===1);
+  $('okBtn').disabled = true;
+  var box = $('opts'); box.innerHTML = '';
+
+  if (step===1){
+    var wrong = shuffle(WORDS.filter(function(w){
+      return w.ko !== cur.w.ko && w.en !== cur.w.en; })).slice(0,3);
+    cur.opts = shuffle([cur.w.ko].concat(wrong.map(function(w){ return w.ko; })));
+    cur.ans = [cur.w.ko];
+  } else {
+    var syn = cur.w.syn.slice(0,2);
+    var ant = cur.w.ant.slice(0,2);
+    while (ant.length < 2){                      // 반의어가 모자라면 다른 단어에서 빌린다
+      var o = pool[Math.floor(Math.random()*pool.length)];
+      var cand = (o.ant.concat(o.syn)).filter(function(x){
+        return syn.indexOf(x)<0 && ant.indexOf(x)<0 && x!==cur.w.en; });
+      if (cand.length) ant.push(cand[Math.floor(Math.random()*cand.length)]);
+      else break;
+    }
+    cur.opts = shuffle(syn.concat(ant));
+    cur.ans = syn;
+  }
+  for (var i=0;i<cur.opts.length;i++){
+    var b = document.createElement('button');
+    b.className = 'opt'; b.textContent = cur.opts[i];
+    b.setAttribute('data-v', cur.opts[i]);
+    b.onclick = (function(v, el){ return function(){ tap(v, el); }; })(cur.opts[i], b);
+    box.appendChild(b);
+  }
+  if (step===1) setTimeout(say, 260);
+}
+
+function tap(v, el){
+  if (locked) return;
+  if (step===1){ picked = [v]; grade(); return; }
+  var k = picked.indexOf(v);
+  if (k>=0){ picked.splice(k,1); el.classList.remove('sel'); }
+  else {
+    if (picked.length >= 2) return;              // 유의어는 2개까지
+    picked.push(v); el.classList.add('sel');
+  }
+  $('okBtn').disabled = picked.length !== 2;
+}
+
+function confirmPick(){ if (!locked) grade(); }
+
+function grade(){
+  locked = true; answered++;
+  $('okBtn').classList.add('hide');
+  var ok = cur.ans.length === picked.length;
+  for (var i=0;i<cur.ans.length;i++) if (picked.indexOf(cur.ans[i])<0) ok = false;
+  var bs = $('opts').querySelectorAll('.opt');
+  for (var j=0;j<bs.length;j++){
+    var v = bs[j].getAttribute('data-v');
+    bs[j].disabled = true; bs[j].classList.remove('sel');
+    if (cur.ans.indexOf(v)>=0) bs[j].classList.add('ok');
+    else if (picked.indexOf(v)>=0) bs[j].classList.add('no');
+  }
+  if (ok){
+    right++;
+    $('fb').textContent = '정답이에요! 🌸';
+    $('fb').className = 'fb ok';
+  } else {
+    wrongs.push({ en:cur.w.en, ko:cur.w.ko, step:step, ans:cur.ans.join(', ') });
+    $('fb').innerHTML = '아쉬워요 — 정답은 <b>' + esc(cur.ans.join(', ')) + '</b>'
+      + (step===2 ? '<small>' + esc(cur.w.en) + ' = ' + esc(cur.w.ko) + '</small>' : '');
+    $('fb').className = 'fb no';
+  }
+  $('nextBtn').classList.remove('hide');
+  if (ok && step===1) setTimeout(function(){ if (locked) nextQ(); }, 750);
+}
+
+function nextQ(){ qi++; render(); }
+
+/* ── 결과 ── */
+function finish(){
+  $('s-quiz').classList.add('hide');
+  $('s-done').classList.remove('hide');
+  var total = answered || 1;
+  var pct = Math.round(right/total*100);
+  $('rScore').textContent = pct;
+  $('rRight').textContent = right;
+  $('rWrong').textContent = wrongs.length;
+  if (wrongs.length){
+    $('wrongBox').classList.remove('hide');
+    $('retryBtn').classList.remove('hide');
+    var h = '';
+    for (var i=0;i<wrongs.length;i++){
+      var w = wrongs[i];
+      h += '<div class="wrow"><b>' + esc(w.en) + '</b><span>'
+         + (w.step===1 ? esc(w.ko) : '유의어 ' + esc(w.ans)) + '</span></div>';
+    }
+    $('wrongList').innerHTML = h;
+  } else {
+    $('wrongBox').classList.add('hide');
+    $('retryBtn').classList.add('hide');
+  }
+  save(pct);
+}
+
+function retryWrong(){
+  var keys = {};
+  for (var i=0;i<wrongs.length;i++) keys[wrongs[i].en + '#' + wrongs[i].step] = 1;
+  var again = [];
+  for (var j=0;j<pool.length;j++){
+    if (keys[pool[j].en + '#1']) again.push({ w:pool[j], step:1 });
+    if (keys[pool[j].en + '#2']) again.push({ w:pool[j], step:2 });
+  }
+  if (!again.length) return;
+  queue = shuffle(again); qi = 0; wrongs = []; right = 0; answered = 0; sent = false;
+  $('s-done').classList.add('hide');
+  $('s-quiz').classList.remove('hide');
+  render();
+}
+
+/* ── 선생님께 보내기 ── */
+function save(pct){
+  if (sent) return; sent = true;
+  var data = {
+    studentName: studentName, school: studentSchool,
+    quizType: QUIZ_TYPE, level: chosen,
+    score: pct, correct: right, wrong: wrongs.length, total: answered,
+    elapsedMin: Math.round((Date.now()-startAt)/60000),
+    completed: true,
+    wrongWords: wrongs.map(function(w){ return { eng:w.en, kor:w.step===1 ? w.ko : '유의어 '+w.ans }; }),
+    userAgent: (navigator.userAgent||'').substring(0,100)
+  };
+  var waited = 0;
+  var t = setInterval(function(){
+    waited += 200;
+    if (window._saveResult){ clearInterval(t); window._saveResult(data); done(); }
+    else if (waited >= 2500){
+      clearInterval(t);
+      if (window._saveQuiz) window._saveQuiz(data);
+      done();
+    }
+  }, 200);
+  function done(){
+    $('send').textContent = '✅ 선생님께 결과가 전달됐어요!';
+    $('send').className = 'send ok';
+  }
+}
+
+window.addEventListener('beforeunload', function(){
+  if (!sent && answered > 0) save(Math.round(right/answered*100));
+});
+</script>
+<script src="bn_force.js"></script>
+</body>
+</html>
