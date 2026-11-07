@@ -308,7 +308,7 @@ footer { text-align: center; padding: 28px; color: #aabbc8; font-size: .8rem; fo
     <button class="back-btn" onclick="goStep('screen-pick')">← 메뉴로 돌아가기</button>
     <div class="school-banner">
       <div style="flex:1">
-        <div class="banner-name">🎧 봄날 듣기 · 초등</div>
+        <div class="banner-name" id="listen-banner">🎧 봄날 듣기 · 초등</div>
         <div class="banner-sub">학년을 누르고 풀 회차를 고르세요</div>
       </div>
     </div>
@@ -2172,12 +2172,66 @@ function openListen(){
     head.onclick=function(){ open=!open; sync(); };
     sync(); card.appendChild(head); card.appendChild(body); wrap.appendChild(card);
   });
+  const bn=document.getElementById('listen-banner');
+  if(bn) bn.textContent='🎧 봄날 듣기 · 초등';
   goStep('screen-listen');
   bnFiles(function(){ openListen(); });     // 서버 기록이 오면 ✅ 를 다시 칠한다
 }
 
+/* 봄날 듣기 · 중등 — 회차가 더 나오면 rounds 숫자만 올리면 된다 */
+const LISTEN_MID = [
+  {grade:1, code:'m1', rounds:1},
+  {grade:2, code:'m2', rounds:0},
+  {grade:3, code:'m3', rounds:0},
+];
+function openListenMid(){
+  const wrap=document.getElementById('listen-list'); wrap.innerHTML='';
+  LISTEN_MID.forEach(function(b, gi){
+    const card=document.createElement('div');
+    card.style.cssText="background:#fdf8f2;border:1px solid #e8e3dd;border-radius:16px;margin-bottom:12px;overflow:hidden;";
+    const head=document.createElement('button'); head.type='button';
+    head.style.cssText="display:flex;justify-content:space-between;align-items:center;width:100%;padding:16px 18px;background:none;border:none;cursor:pointer;font-family:inherit;text-align:left;";
+    head.innerHTML='<span style="font-family:\'Black Han Sans\',sans-serif;font-size:1.05rem;color:#2a2a2a">중'+b.grade+'</span>'
+      +'<span style="font-size:.78rem;color:#a09890" class="arw"></span>';
+    const body=document.createElement('div'); body.style.cssText="padding:0 16px 16px;";
+    if(!b.rounds){
+      const n=document.createElement('div');
+      n.style.cssText="font-size:.8rem;color:#a09890;padding:4px 2px 8px;";
+      n.textContent='아직 올라온 회차가 없어요 — 곧 열립니다';
+      body.appendChild(n);
+    } else {
+      const t=document.createElement('div');
+      t.style.cssText="font-size:.8rem;font-weight:700;color:#7a7570;margin:6px 2px 8px;";
+      t.textContent='자이스토리 총정리 모의고사 · '+b.rounds+'회';
+      body.appendChild(t);
+      const grid=document.createElement('div');
+      grid.style.cssText="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:4px;";
+      for(let r=1;r<=b.rounds;r++){
+        const file='bomnallistening_'+b.code+'_'+('0'+r).slice(-2);
+        const done=listenDone(file), prog=listenInProgress(file);
+        const a=document.createElement('a'); a.href=BASE+file+'.html'; a.target='_blank'; a.rel='noopener';
+        a.style.cssText="display:block;text-align:center;text-decoration:none;border-radius:12px;padding:10px 0 8px;border:2px solid "+(done?'#9db894':'#d0dde8')+";background:"+(done?'#eef4ec':'#fff')+";";
+        a.innerHTML='<div style="font-weight:700;color:#2a2a2a;font-size:.9rem">'+('0'+r).slice(-2)+'회</div>'
+          +'<div style="font-size:.66rem;margin-top:2px;color:'+(done?'#4a6741':(prog?'#b08d57':'#b8b0a4'))+'">'+(done?done.score+'점':(prog?'이어서':'&nbsp;'))+'</div>';
+        grid.appendChild(a);
+      }
+      body.appendChild(grid);
+    }
+    let open = gi===0;
+    function sync(){ body.style.display=open?'block':'none';
+      head.querySelector('.arw').textContent=open?'접기 ▲':(b.rounds?('펼치기 ▼ '+b.rounds+'회'):'준비 중'); }
+    head.onclick=function(){ open=!open; sync(); };
+    sync(); card.appendChild(head); card.appendChild(body); wrap.appendChild(card);
+  });
+  const bn=document.getElementById('listen-banner');
+  if(bn) bn.textContent='🎧 봄날 듣기 · 중등';
+  goStep('screen-listen');
+  bnFiles(function(){ openListenMid(); });
+}
+
 const LISTENING_LEVELS = [
   {title:'초등 듣기평가', sub:'학년 → 학기 → 회차 선택', badge:'초등', onClick:function(){ openListen(); }},
+  {title:'중등 듣기평가', sub:'자이스토리 총정리 모의고사 · 20문항 5지선다', badge:'중등', onClick:function(){ openListenMid(); }},
 ];
 
 function renderVoca(){
@@ -2707,7 +2761,7 @@ if('serviceWorker' in navigator){ window.addEventListener('load',function(){ nav
 
 <script>
 /* 허브 버전 — 이 값이 바뀌면 학생 폰이 옛 화면을 붙잡고 있어도 한 번 새로 받는다 */
-var HUB_VER = "20261107b";
+var HUB_VER = "20261108a";
 (function(){
   try{
     var seen = localStorage.getItem('bn_hub_ver');
