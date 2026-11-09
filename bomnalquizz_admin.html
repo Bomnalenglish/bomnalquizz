@@ -1159,8 +1159,12 @@ function deepNotesHtml(d){
   return wordLine+`<div class="dwl-label">📝 오답노트 (${notes.length}개)</div>`+rows;
 }
 function passagesStr(d){
-  if(!d || !d.passages || d.passages.length===0) return '';
-  return [...d.passages].sort((a,b)=>parseInt(a)-parseInt(b)).join(',')+'번';
+  if(!d) return '';
+  if(d.passages && d.passages.length)
+    return [...d.passages].sort((a,b)=>parseInt(a)-parseInt(b)).join(',')+'번';
+  // 지문 이름이 '29번' 꼴이 아닐 때(본문 1·Lesson 3 …)는 고른 이름을 그대로 보여준다
+  if(d.rangeLabel) return d.rangeLabel==='전체' ? '전체 지문' : String(d.rangeLabel);
+  return '';
 }
 function nonSecLabel(qt, d){
   if(!qt) return '-';
@@ -1295,7 +1299,9 @@ function renderTable(data){
     const lessonSet=[...new Set(allMetas.map(m=>m.lesson).filter(Boolean))]
       .sort((a,b)=>{const na=parseInt((a.match(/\d+/)||[])[0]),nb=parseInt((b.match(/\d+/)||[])[0]);
         return (isNaN(na)||isNaN(nb))?a.localeCompare(b,'ko'):na-nb;});
-    const passageInfo=meta.passages?`<span class="passage-info">${meta.passages}</span>`:'';
+    // 같은 날 여러 지문을 풀었으면 모두 보여준다 (최신 것만 보이면 어느 지문을 했는지 알 수 없다)
+    const passageSet=[...new Set(allMetas.map(m=>m.passages).filter(Boolean))];
+    const passageInfo=passageSet.length?`<span class="passage-info">${passageSet.join(' · ')}</span>`:'';
     const roundBadge=d.round>1?`<span class="round-badge">${d.round}라운드</span>`:'';
     const attemptBadge=total>1?`<span class="attempt-count" title="같은 날 ${total}회 응시">${total}회</span>`:'';
     // 유형 칩: 단일이면 그대로, 복수면 모두 표시

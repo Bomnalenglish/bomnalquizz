@@ -419,7 +419,7 @@ function updateUI(){
 function showResult(){
   const pct=Math.round(earned/totalQ*100);
   if(window._log)window._log({studentName:NAME,school:SCHOOL,score:pct,correct:earned,
-    wrong:totalQ-earned,total:totalQ,quizType:'종촌고2 26년 기말 26년9월모고 워크북',completed:true});
+    wrong:totalQ-earned,total:totalQ,quizType:'종촌고2 26년 기말 26년9월모고 워크북',passages:rpPassages(),rangeLabel:rpRangeLabel(),completed:true});
   document.getElementById('r-score').textContent=earned+' / '+totalQ+'점 ('+pct+'%)';
   document.getElementById('r-msg').textContent=pct>=90?'완벽합니다! 워크북 마스터! 🌟':pct>=70?'잘했어요! 💪':pct>=50?'절반 이상! 📖':'기초부터 차근차근! 🔄';
   document.getElementById('result').classList.add('show');
@@ -431,7 +431,7 @@ function submitSoFar(){
   const pct=Math.round(earned/doneQ*100);
   if(!confirm('지금까지 푼 '+doneQ+'문제를 선생님께 제출할까요?\n\n맞은 개수 '+earned+' / '+doneQ+' ('+pct+'%)\n제출한 뒤에도 이어서 풀 수 있어요.')) return;
   if(window._log)window._log({studentName:NAME,school:SCHOOL,score:pct,correct:earned,
-    wrong:doneQ-earned,total:doneQ,quizType:'종촌고2 26년 기말 26년9월모고 워크북',completed:false,
+    wrong:doneQ-earned,total:doneQ,quizType:'종촌고2 26년 기말 26년9월모고 워크북',passages:rpPassages(),rangeLabel:rpRangeLabel(),completed:false,
     진행:doneQ+' / '+totalQ});
   document.querySelectorAll('#submit-btn,.submit-btn').forEach(b=>{
     b.textContent='✅ '+doneQ+'문제 제출 완료';
@@ -525,6 +525,21 @@ window.addEventListener('load', refreshRetry);
 /* ── 시험범위에 맞게 지문 골라 풀기 ── */
 var RP_KEY = 'bnRange_' + (location.pathname.split('/').pop() || 'wb');
 var RP_BLOCKS = [], RP_REFS = [], RP_CNT = {}, RP_SEL = [], RP_STARTED = false;
+/* 관리자 화면에 '어느 지문을 풀었는지' 남긴다 */
+function rpPassages(){
+  var sel = (typeof RP_SEL !== 'undefined' && RP_SEL.length) ? RP_SEL : (typeof RP_REFS !== 'undefined' ? RP_REFS : []);
+  if (!sel.length) return null;
+  if (typeof RP_REFS !== 'undefined' && RP_REFS.length && sel.length === RP_REFS.length) return null;  // 전체면 '전체 지문'으로 보이게
+  var nums = sel.map(function(k){ var m = String(k).match(/^\s*(\d+(?:-\d+)?)\s*번(?:\s*지문)?\s*$/); return m ? m[1] : null; });
+  return nums.indexOf(null) < 0 ? nums : null;
+}
+function rpRangeLabel(){
+  var sel = (typeof RP_SEL !== 'undefined' && RP_SEL.length) ? RP_SEL : (typeof RP_REFS !== 'undefined' ? RP_REFS : []);
+  if (!sel.length) return '';
+  if (typeof RP_REFS !== 'undefined' && RP_REFS.length && sel.length === RP_REFS.length) return '전체';
+  return sel.join(', ');
+}
+
 
 function rpNodes(){
   return [].slice.call(document.querySelectorAll('.sec-header,.sec-submit,.para-block'));
