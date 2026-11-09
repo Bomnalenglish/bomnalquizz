@@ -1485,6 +1485,18 @@ function parseQuizMeta(d){
     return { textbook:'입학 레벨테스트', type:'레벨테스트', typeClass:'deep', lesson:d.ltLevel||d.level||'', passages:'' };
   }
   let passages = passagesStr(d) || '';
+  /* 시험범위 워크북 — '종촌고1 26년 기말 22년11월모고 워크북'처럼 띄어쓰기로 저장된다.
+     아래 밑줄(_) 기준 규칙에 걸리지 않아 차시 칸이 비어 보였다. */
+  const wb = qt.match(/^(.+?)\s+(\d{2}년)\s*(기말|중간)\s+(.+?)\s*워크북\s*$/);
+  if (wb) {
+    const who = wb[1].replace(/^(종촌고|고운고|대성고|어진중|종촌중)(\d)$/, '$1 $2학년');
+    let what = wb[4].trim();
+    const mm = what.match(/^(\d{2})년\s*(\d{1,2})월\s*모고$/);
+    if (mm) what = '20' + mm[1] + '년 ' + mm[2] + '월 모의고사';
+    else what = what.replace(/^(YBM|영어 ?II|공통영어 ?2)\s*/, '$1 ');
+    return { textbook: who + ' ' + wb[2] + ' ' + wb[3], type: '워크북',
+             typeClass: 'total', lesson: what, passages };
+  }
   // 유형 분류
   if (/단어|어휘|보카|voca|동반의어|synanm/i.test(qt)) { type='어휘'; typeClass='voca'; }
   if (/본문암기|memory/i.test(qt)) { type='본문'; typeClass='memory'; }
