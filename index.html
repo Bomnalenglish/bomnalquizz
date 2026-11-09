@@ -2135,6 +2135,27 @@ function listenInProgress(file){
   if (cloudSeen(file) && !cloudDone(file)) return true;
   try{ const n=localStorage.getItem('bn_name')||''; return !!localStorage.getItem('bnls_prog:'+file+':'+n); }catch(e){ return false; }
 }
+/* 회차 단추 — 끝낸 회차엔 완료 도장을 찍고, 다시 누르면 한 번 물어본다 */
+function listenBtn(file, label){
+  const done=listenDone(file), prog=listenInProgress(file);
+  const mark=done ? ((done.score===''||done.score===null||done.score===undefined) ? '완료' : '완료 '+done.score+'점') : '';
+  const a=document.createElement('a');
+  a.href=BASE+file+'.html'; a.target='_blank'; a.rel='noopener';
+  a.style.cssText="position:relative;display:block;text-align:center;text-decoration:none;border-radius:12px;"
+    +"padding:10px 0 8px;border:2px solid "+(done?'#7fa374':'#d0dde8')+";background:"+(done?'#e9f2e5':'#fff')+";";
+  a.innerHTML='<div style="font-weight:700;font-size:.9rem;color:'+(done?'#3f5c38':'#2a2a2a')+'">'+label+'</div>'
+    +'<div style="font-size:.66rem;margin-top:2px;font-weight:'+(done?700:400)+';color:'
+      +(done?'#4a6741':(prog?'#b08d57':'#b8b0a4'))+'">'+(done?mark:(prog?'이어서':'&nbsp;'))+'</div>'
+    +(done?'<span style="position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:50%;'
+      +'background:#5d8a52;color:#fff;font-size:.72rem;line-height:20px;font-weight:700;'
+      +'box-shadow:0 1px 3px rgba(0,0,0,.22)">✓</span>':'');
+  if(done) a.onclick=function(e){
+    if(!confirm('이미 끝낸 회차예요. ('+mark+')\n다른 회차를 고르는 게 좋아요.\n\n그래도 다시 풀까요?')){
+      e.preventDefault(); return false;
+    }
+  };
+  return a;
+}
 function openListen(){
   const wrap=document.getElementById('listen-list'); wrap.innerHTML='';
   const grades=[]; LISTEN_BOOKS.forEach(function(b){ if(grades.indexOf(b.grade)<0) grades.push(b.grade); });
@@ -2158,12 +2179,7 @@ function openListen(){
       grid.style.cssText="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:10px;";
       for(let r=1;r<=b.rounds;r++){
         const file='bomnallistening_'+b.code+'_'+('0'+r).slice(-2);
-        const done=listenDone(file), prog=listenInProgress(file);
-        const a=document.createElement('a'); a.href=BASE+file+'.html'; a.target='_blank'; a.rel='noopener';
-        a.style.cssText="display:block;text-align:center;text-decoration:none;border-radius:12px;padding:10px 0 8px;border:2px solid "+(done?'#9db894':'#d0dde8')+";background:"+(done?'#eef4ec':'#fff')+";";
-        a.innerHTML='<div style="font-weight:700;color:#2a2a2a;font-size:.9rem">'+('0'+r).slice(-2)+'회</div>'
-          +'<div style="font-size:.66rem;margin-top:2px;color:'+(done?'#4a6741':(prog?'#b08d57':'#b8b0a4'))+'">'+(done?done.score+'점':(prog?'이어서':'&nbsp;'))+'</div>';
-        grid.appendChild(a);
+        grid.appendChild(listenBtn(file, ('0'+r).slice(-2)+'회'));
       }
       body.appendChild(grid);
     });
@@ -2202,18 +2218,13 @@ function openListenMid(){
     } else {
       const t=document.createElement('div');
       t.style.cssText="font-size:.8rem;font-weight:700;color:#7a7570;margin:6px 2px 8px;";
-      t.textContent='자이스토리 듣기 총정리 모의고사 · '+b.rounds+'회';
+      t.textContent='봄날 듣기 총정리 모의고사 · '+b.rounds+'회';
       body.appendChild(t);
       const grid=document.createElement('div');
       grid.style.cssText="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:4px;";
       for(let r=1;r<=b.rounds;r++){
         const file='bomnallistening_'+b.code+'_'+('0'+r).slice(-2);
-        const done=listenDone(file), prog=listenInProgress(file);
-        const a=document.createElement('a'); a.href=BASE+file+'.html'; a.target='_blank'; a.rel='noopener';
-        a.style.cssText="display:block;text-align:center;text-decoration:none;border-radius:12px;padding:10px 0 8px;border:2px solid "+(done?'#9db894':'#d0dde8')+";background:"+(done?'#eef4ec':'#fff')+";";
-        a.innerHTML='<div style="font-weight:700;color:#2a2a2a;font-size:.9rem">'+('0'+r).slice(-2)+'회</div>'
-          +'<div style="font-size:.66rem;margin-top:2px;color:'+(done?'#4a6741':(prog?'#b08d57':'#b8b0a4'))+'">'+(done?done.score+'점':(prog?'이어서':'&nbsp;'))+'</div>';
-        grid.appendChild(a);
+        grid.appendChild(listenBtn(file, ('0'+r).slice(-2)+'회'));
       }
       body.appendChild(grid);
     }
@@ -2231,7 +2242,7 @@ function openListenMid(){
 
 const LISTENING_LEVELS = [
   {title:'초등 듣기평가', sub:'학년 → 학기 → 회차 선택', badge:'초등', onClick:function(){ openListen(); }},
-  {title:'중등 듣기평가', sub:'자이스토리 총정리 모의고사 · 20문항 5지선다', badge:'중등', onClick:function(){ openListenMid(); }},
+  {title:'중등 듣기평가', sub:'학년 → 회차 선택 · 20문항 5지선다', badge:'중등', onClick:function(){ openListenMid(); }},
 ];
 
 function renderVoca(){
@@ -2761,7 +2772,7 @@ if('serviceWorker' in navigator){ window.addEventListener('load',function(){ nav
 
 <script>
 /* 허브 버전 — 이 값이 바뀌면 학생 폰이 옛 화면을 붙잡고 있어도 한 번 새로 받는다 */
-var HUB_VER = "20261108d";
+var HUB_VER = "20261108f";
 (function(){
   try{
     var seen = localStorage.getItem('bn_hub_ver');
