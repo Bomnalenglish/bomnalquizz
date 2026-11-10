@@ -97,7 +97,7 @@ header{background:linear-gradient(135deg,#f7efe4 0%,#f0e6d8 50%,#ece0d2 100%); p
 <audio id="au" preload="auto"></audio>
 
 <script>
-const T = {"book": "봄날 리스닝 중3", "round": "01회", "base": "listen/m3_01/", "answers": [4, 3, 1, 1, 3, 2, 4, 4, 2, 3, 5, 4, 2, 4, 1, 2, 3, 5, 5, 3], "choices": 5};
+const T = {"book": "봄날 리스닝 중3", "round": "01회", "base": "https://cdn.jsdelivr.net/gh/Bomnalenglish/bomnalquizz@aeabf73eb49a447f390982d4282e8ce255a169f4/listen/m3_01/", "answers": [4, 3, 1, 1, 3, 2, 4, 4, 2, 3, 5, 4, 2, 4, 1, 2, 3, 5, 5, 3], "choices": 5};
 const N = T.answers.length;
 const NCH = T.choices || 3;
 document.title = T.book + ' ' + T.round;   // 홈 화면 바로가기 이름          // 보기 개수 (3학년 3개 · 4학년 4개)
@@ -109,6 +109,9 @@ let picks=[], firstWrong=[], qi=0, heard=false, fallback=null, startedAt=Date.no
 let mode='test', retryList=[], ri=0, replays=0;
 
 function src(i){ return T.base + 'q' + String(i+1).padStart(2,'0'); }
+/* 음원·그림은 무료 CDN에서 받는다. CDN이 막히면 깃허브 원본으로 한 번 더 시도한다. */
+function raw(u){ return u.replace('https://cdn.jsdelivr.net/gh/','https://raw.githubusercontent.com/').replace('@','/'); }
+window.raw = raw;
 
 /* ── 이어 풀기: 진행 상황을 이 기기에 저장 ── */
 const FILE=(location.pathname.split('/').pop()||'').replace('.html','');
@@ -140,10 +143,10 @@ function showMain(){
 function play(i, onEnd){
   clearTimeout(fallback);
   au.onended=null; au.onerror=null;
-  au.src = src(i)+'.mp3';
+  delete au.dataset.alt; au.src = src(i)+'.mp3';
   const done=()=>{ clearTimeout(fallback); onEnd&&onEnd(); };
   au.onended=done;
-  au.onerror=()=>{ fallback=setTimeout(done,1500); };
+  au.onerror=()=>{ if(!au.dataset.alt){ au.dataset.alt='1'; au.src=raw(src(i))+'.mp3'; var q=au.play(); if(q&&q.catch) q.catch(()=>{}); return; } fallback=setTimeout(done,1500); };
   au.onloadedmetadata=()=>{ clearTimeout(fallback); fallback=setTimeout(done,(au.duration+3)*1000); };
   const p=au.play(); if(p&&p.catch) p.catch(()=>{ fallback=setTimeout(done,3000); });
 }
@@ -194,7 +197,7 @@ function renderQ(){
     <div class="card">
       <div class="qhead"><span>${mode==='test'?'듣기 평가':'🔁 틀린 문제 다시 풀기'}</span><span>${pos} / ${tot}</span></div>
       <div class="bar"><i style="width:${(pos-1)/tot*100}%"></i></div>
-      <img class="qimg" src="${src(i)}.jpg" alt="${i+1}번 문제">
+      <img class="qimg" src="${src(i)}.jpg" alt="${i+1}번 문제" onerror="if(!this.dataset.alt){this.dataset.alt='1';this.src=raw(this.src);}">
       <div class="listen"><span class="st" id="st"><span class="pulse"></span>듣는 중…</span>
         <button id="rep" onclick="replay()">🔊 다시 듣기</button></div>
       <div class="choices">${Array.from({length:NCH},(_,k)=>k+1).map(c=>`<button class="ch" data-c="${c}" onclick="pick(${c})">${'①②③④⑤'[c-1]}</button>`).join('')}</div>
