@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<script src="bn_save.js"></script>
+<link rel="manifest" href="manifest.json"/>
+<meta name="theme-color" content="#4a6741"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-title" content="봄날퀴즈"/>
+<link rel="apple-touch-icon" href="icon-192.png"/>
+<style>html,body{overscroll-behavior-y:contain}</style>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>봄날 퀴즈 | 중2 Lesson 8 어휘 (종촌중·어진중 공통)</title>
+<script type="module" src="bn_tracker.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700;900&family=Fredoka+One&display=swap');
+:root{--primary:#5b2d8e;--secondary:#9b59b6;--accent:#f39c12;--accent2:#e67e22;--bg:#f8f4ff;--card:#fff;--text:#1b1b2f;--muted:#6b7280;--correct:#27ae60;--wrong:#c0392b;--border:#d9c4f0;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+.info-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
+.info-card{background:var(--card);border-radius:24px;padding:36px 28px;width:100%;max-width:380px;box-shadow:0 8px 32px rgba(91,45,142,.15);}
+.info-card .top-icon{font-size:48px;text-align:center;margin-bottom:12px;}
+.info-card h1{font-family:'Fredoka One',cursive;font-size:22px;color:var(--primary);text-align:center;margin-bottom:4px;}
+.info-card .sub{font-size:12px;color:var(--muted);text-align:center;margin-bottom:28px;line-height:1.6;}
+.form-label{font-size:12px;font-weight:700;color:var(--primary);margin-bottom:6px;display:block;}
+.form-select,.form-input{width:100%;padding:13px 14px;border:2px solid var(--border);border-radius:12px;font-family:'Noto Sans KR',sans-serif;font-size:14px;outline:none;transition:border-color .2s;margin-bottom:16px;background:white;color:var(--text);}
+.form-select:focus,.form-input:focus{border-color:var(--secondary);}
+.form-select.err,.form-input.err{border-color:var(--wrong);}
+.start-btn{width:100%;padding:15px;background:linear-gradient(135deg,var(--primary),#3d1a6e);color:white;border:none;border-radius:14px;font-family:'Noto Sans KR',sans-serif;font-size:16px;font-weight:700;cursor:pointer;transition:opacity .2s;box-shadow:0 4px 16px rgba(91,45,142,.3);}
+.start-btn:hover{opacity:.88;}
+.quiz-wrap{display:none;}
+.quiz-header{background:linear-gradient(135deg,var(--primary),#3d1a6e);color:white;padding:20px 16px 16px;text-align:center;position:relative;overflow:hidden;}
+.quiz-header::before{content:'';position:absolute;top:-40px;right:-40px;width:160px;height:160px;background:rgba(255,255,255,.05);border-radius:50%;}
+.lesson-badge{display:inline-block;background:var(--accent);color:white;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;letter-spacing:1px;margin-bottom:6px;}
+.quiz-header h1{font-family:'Fredoka One',cursive;font-size:24px;letter-spacing:1px;margin-bottom:2px;}
+.quiz-header .student-info{font-size:12px;opacity:.85;margin-top:2px;}
+.attempt-badge{display:inline-block;background:rgba(255,255,255,.18);border-radius:8px;padding:3px 10px;font-size:11px;margin-top:5px;}
+.section-tabs{display:flex;overflow-x:auto;gap:8px;padding:12px 14px 0;background:var(--primary);scrollbar-width:none;}
+.section-tabs::-webkit-scrollbar{display:none;}
+.tab-btn{flex-shrink:0;padding:7px 14px;border-radius:10px 10px 0 0;border:none;background:rgba(255,255,255,.13);color:rgba(255,255,255,.65);font-family:'Noto Sans KR',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;}
+.tab-btn.active{background:var(--bg);color:var(--primary);}
+.progress-wrap{padding:10px 14px 0;background:var(--bg);}
+.progress-info{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:5px;}
+.progress-bar{height:5px;background:var(--border);border-radius:10px;overflow:hidden;}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--secondary),var(--primary));border-radius:10px;transition:width .4s ease;}
+.quiz-section{display:none;padding:14px 14px 80px;}
+.quiz-section.active{display:block;}
+.section-title{font-size:14px;font-weight:700;color:var(--primary);margin-bottom:3px;display:flex;align-items:center;gap:6px;}
+.section-title .icon{width:26px;height:26px;background:var(--primary);color:white;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;}
+.section-desc{font-size:11px;color:var(--muted);margin-bottom:14px;}
+.q-card{background:var(--card);border-radius:14px;padding:18px;margin-bottom:12px;border:1.5px solid var(--border);box-shadow:0 2px 6px rgba(0,0,0,.04);}
+.q-card.correct-card{border-color:var(--correct);background:#f0fdf4;}
+.q-card.wrong-card{border-color:var(--wrong);background:#fff5f5;}
+.q-num{font-size:10px;font-weight:700;color:var(--muted);margin-bottom:5px;}
+.q-word{font-size:20px;font-weight:900;color:var(--text);margin-bottom:3px;font-family:'Fredoka One',cursive;}
+.q-word.ko{font-family:'Noto Sans KR',sans-serif;font-size:16px;font-weight:700;}
+.q-sub{font-size:11px;color:var(--muted);margin-bottom:12px;}
+.lesson-tag{display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:5px;margin-bottom:3px;}
+.lesson-tag.l1{background:#ede9fe;color:#5b2d8e;}
+.lesson-tag.l2{background:#fef3c7;color:#92400e;}
+.lesson-tag.l3{background:#dcfce7;color:#166534;}
+.lesson-tag.l4{background:#fce7f3;color:#9f1239;}
+.lesson-tag.l5{background:#cffafe;color:#155e75;}
+.lesson-tag.l6{background:#ffedd5;color:#9a3412;}
+.options{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+.opt-btn{padding:9px 11px;border:2px solid var(--border);border-radius:9px;background:white;font-family:'Noto Sans KR',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;text-align:center;color:var(--text);line-height:1.4;}
+.opt-btn:hover:not(:disabled){border-color:var(--secondary);background:#f5f0ff;}
+.opt-btn.selected-correct{background:#d1fae5;border-color:var(--correct);color:var(--correct);}
+.opt-btn.selected-wrong{background:#fee2e2;border-color:var(--wrong);color:var(--wrong);}
+.opt-btn.show-correct{background:#d1fae5;border-color:var(--correct);color:var(--correct);}
+.opt-btn:disabled{cursor:default;}
+.opt-btn.multi.selected{background:#ede9fe;border-color:var(--secondary);color:var(--primary);}
+.multi-confirm{margin-top:10px;width:100%;padding:10px;background:#f3f4f6;color:#9ca3af;border:none;border-radius:9px;font-size:12px;font-weight:700;cursor:not-allowed;transition:all .15s;}
+.multi-confirm.ready{background:var(--secondary);color:white;cursor:pointer;}
+.multi-confirm.ready:hover{background:var(--primary);}
+.opt-btn.multi.correct-sel{background:#d1fae5;border-color:var(--correct);color:var(--correct);}
+.opt-btn.multi.wrong-sel{background:#fee2e2;border-color:var(--wrong);color:var(--wrong);}
+.feedback{font-size:12px;font-weight:700;margin-top:7px;padding:5px 9px;border-radius:7px;display:none;}
+.feedback.show{display:block;}
+.feedback.ok{background:#d1fae5;color:var(--correct);}
+.feedback.no{background:#fee2e2;color:var(--wrong);}
+.float-submit{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);z-index:100;width:calc(100% - 28px);max-width:480px;padding:13px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:white;border:none;border-radius:14px;font-family:'Noto Sans KR',sans-serif;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 4px 18px rgba(243,156,18,.4);}
+.float-submit:active{transform:translateX(-50%) scale(.97);}
+.float-submit.hidden{display:none;}
+.result-screen{display:none;padding:28px 18px;text-align:center;}
+.result-screen.show{display:block;}
+.result-emoji{font-size:56px;margin-bottom:10px;}
+.result-score{font-size:44px;font-weight:900;font-family:'Fredoka One',cursive;color:var(--primary);margin-bottom:3px;}
+.result-label{font-size:13px;color:var(--muted);margin-bottom:20px;}
+.result-detail{background:white;border-radius:14px;padding:14px;margin-bottom:18px;text-align:left;}
+.result-row{display:flex;justify-content:space-between;padding:5px 0;font-size:12px;border-bottom:1px solid #f0f0f0;}
+.result-row:last-child{border-bottom:none;}
+.result-row .label{color:var(--muted);}
+.result-row .val{font-weight:700;}
+.sending-msg{font-size:13px;color:var(--muted);margin-bottom:14px;}
+.sending-msg.ok{color:var(--correct);font-weight:700;}
+.sending-msg.err{color:var(--wrong);}
+.retry-btn{width:100%;padding:13px;background:var(--primary);color:white;border:none;border-radius:14px;font-family:'Noto Sans KR',sans-serif;font-size:14px;font-weight:700;cursor:pointer;}
+</style>
+
+<script>
+// 봄날 허브에서 전달된 학생 이름 자동 적용
+(function(){
+  var saved = sessionStorage.getItem('bn_name') || localStorage.getItem('bn_name');
+  if(saved){
+    window._hubStudentName = saved;
+    // 이름 입력란이 있으면 자동 입력
+    window.addEventListener('DOMContentLoaded', function(){
+      var inputs = document.querySelectorAll('input#student-name, input#nameInput, .name-input');
+      inputs.forEach(function(el){ if(!el.value) el.value = saved; });
+    });
+  }
+})();
+</script>
+</head>
+<body>
+<div class="info-wrap" id="infoWrap">
+  <div class="info-card">
+    <div class="top-icon">🏫</div>
+    <h1>Lesson 8 어휘 퀴즈</h1>
+    <p class="sub">비상(황종배) 중학교 영어 2 · 종촌중·어진중 2학년<br>퀴즈 결과가 선생님께 자동 전달돼요!</p>
+    <label class="form-label">🏫 학교 / 학년</label>
+    <select class="form-select" id="schoolSel">
+      <option value="">학교를 선택하세요</option>
+      <option value="종촌중2">종촌중 2학년</option>
+      <option value="어진중2">어진중 2학년</option>
+    </select>
+    <label class="form-label">✏️ 이름</label>
+    <input type="text" class="form-input" id="nameInput" placeholder="이름을 입력하세요" maxlength="10">
+    <button class="start-btn" onclick="startQuiz()">퀴즈 시작 →</button>
+  </div>
+</div>
+<div class="quiz-wrap" id="quizWrap">
+  <div class="quiz-header">
+    <div class="lesson-badge">종촌중 · 2학년</div>
+    <h1>📚 Vocabulary Quiz</h1>
+    <div class="student-info" id="studentInfoDisplay"></div>
+    <div class="attempt-badge" id="attemptDisplay">첫 번째 도전!</div>
+  </div>
+  <div class="section-tabs">
+    <button class="tab-btn active" onclick="switchSection(0)">① 유의어</button>
+    <button class="tab-btn" onclick="switchSection(1)">② 반의어</button>
+    <button class="tab-btn" onclick="switchSection(2)">③ 뜻 찾기</button>
+    <button class="tab-btn" onclick="switchSection(3)">④ 다의어</button>
+    <button class="tab-btn" onclick="switchSection(4)">⑤ Phrases</button>
+    <button class="tab-btn" onclick="switchSection(5)">⑥ 영영풀이</button>
+  </div>
+  <div class="progress-wrap">
+    <div class="progress-info"><span id="progressText">0 / 0 완료</span><span id="scoreText">점수: 0</span></div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+  </div>
+  <div class="quiz-section active" id="section-0"><div class="section-title"><div class="icon">①</div> 유의어 고르기</div><div class="section-desc">주어진 단어와 의미가 가장 가까운 것을 고르세요.</div><div id="synonymQuestions"></div></div>
+  <div class="quiz-section" id="section-1"><div class="section-title"><div class="icon">②</div> 반의어 고르기</div><div class="section-desc">주어진 단어의 반의어를 고르세요.</div><div id="antonymQuestions"></div></div>
+  <div class="quiz-section" id="section-2"><div class="section-title"><div class="icon">③</div> 영단어 뜻 찾기</div><div class="section-desc">다음 영어 단어의 우리말 뜻을 고르세요.</div><div id="formQuestions"></div></div>
+  <div class="quiz-section" id="section-3"><div class="section-title"><div class="icon">④</div> 다의어 뜻 모두 선택</div><div class="section-desc">단어의 뜻을 모두 골라보세요.</div><div id="polyQuestions"></div></div>
+  <div class="quiz-section" id="section-4"><div class="section-title"><div class="icon">⑤</div> Phrases</div><div class="section-desc">주어진 표현의 올바른 뜻을 고르세요.</div><div id="phraseQuestions"></div></div>
+  <div class="quiz-section" id="section-5"><div class="section-title"><div class="icon">⑥</div> 영영풀이</div><div class="section-desc">영어 풀이를 읽고 알맞은 단어를 고르세요.</div><div id="engEngQuestions"></div></div>
+  <div class="result-screen" id="resultScreen">
+    <div class="result-emoji" id="resultEmoji">🎉</div>
+    <div class="result-score" id="resultScore">0점</div>
+    <div class="result-label" id="resultLabel"></div>
+    <div class="result-detail" id="resultDetail"></div>
+    <div class="sending-msg" id="sendingMsg">📡 결과 전송 중...</div>
+    <button id="retryWrongBtn" onclick="startRetry()" style="display:none;width:100%;padding:13px;background:var(--wrong);color:white;border:none;border-radius:14px;font-family:'Noto Sans KR',sans-serif;font-size:15px;font-weight:700;cursor:pointer;margin-bottom:10px;">❌ 오답 다시 풀기 (<span id="wrongCount">0</span>개)</button>
+    <button class="retry-btn" onclick="retryQuiz()">🔄 처음부터 다시</button>
+  </div>
+  
+  <!-- 오답 재풀이 화면 -->
+  <div id="retryScreen" style="display:none;padding:14px 14px 80px;">
+    <div style="background:var(--wrong);color:white;border-radius:14px;padding:14px 18px;margin-bottom:16px;text-align:center;">
+      <div style="font-size:12px;font-weight:700;opacity:.85">오답 재풀이 모드 · <span id="retryRoundLabel">1라운드</span></div>
+      <div style="font-family:'Fredoka One',cursive;font-size:20px;margin-top:2px">❌ → ✅ 전부 맞힐 때까지!</div>
+      <div style="font-size:11px;opacity:.75;margin-top:4px" id="retryCountLabel"></div>
+    </div>
+    <div id="retryQuestions"></div>
+  </div>
+  <button class="float-submit hidden" id="retrySubmitBtn" onclick="submitRetry()">✅ 오답 확인하기</button>
+  <button class="float-submit" id="floatSubmit" onclick="submitAll()">🎯 최종 제출하기</button>
+</div>
+<script type="module">
+import{initializeApp}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import{getFirestore,collection,addDoc,serverTimestamp}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+const cfg={apiKey:"AIzaSyCxS524S8KAaF87DomPtl9sJdF-eqes404",authDomain:"bomnalvaca.firebaseapp.com",projectId:"bomnalvaca",storageBucket:"bomnalvaca.firebasestorage.app",messagingSenderId:"115868052300",appId:"1:115868052300:web:765c08867b6f1ce0987de9"};
+const app=initializeApp(cfg);const db=getFirestore(app);
+window._saveResult=async function(data){await addDoc(collection(db,'quiz_results'),{...data,submittedAt:serverTimestamp()});};
+window._fbReady=true;
+</script>
+<script>
+const SYNONYM_DATA=[{"lesson": 8, "word": "last (a. 마지막의)", "answer": "final", "distractors": ["for example", "ride bikes", "corner"]}, {"lesson": 8, "word": "strength (n. 힘)", "answer": "power", "distractors": ["tough", "jump rope", "strength"]}, {"lesson": 8, "word": "ground (n. 땅, 바닥)", "answer": "land", "distractors": ["stair", "for example", "rough"]}, {"lesson": 8, "word": "tough (a. 힘든, 어려운)", "answer": "difficult easy", "distractors": ["balloon", "pass", "stair"]}, {"lesson": 8, "word": "rapid (a. 빠른)", "answer": "fast slow", "distractors": ["find ~ out", "be ready for ~", "checkpoint"]}, {"lesson": 8, "word": "take care of (~을 돌보다)", "answer": "look after", "distractors": ["map", "quiet", "be ready for ~"]}, {"lesson": 8, "word": "trash (n. 쓰레기)", "answer": "garbage", "distractors": ["floor", "stair", "take care of ~"]}, {"lesson": 8, "word": "for example (예를 들어)", "answer": "for instance", "distractors": ["light", "sign up", "row"]}];
+const ANTONYM_DATA=[{"lesson": 8, "word": "southern (a. 남쪽에 위치한)", "answer": "northern", "distractors": ["find ~ out", "turn ~ off", "teamwork"]}, {"lesson": 8, "word": "rough (a. 거친)", "answer": "smooth", "distractors": ["prepare", "pack", "put ~ on-"]}, {"lesson": 8, "word": "protect (v. ~을 보호하다)", "answer": "harm", "distractors": ["first aid", "course", "return"]}, {"lesson": 8, "word": "natural (a. 자연의)", "answer": "artificial", "distractors": ["nature", "journey", "turn ~ off"]}, {"lesson": 8, "word": "meaningful (a. 의미 있는)", "answer": "meaningless", "distractors": ["find ~ out", "return", "area"]}];
+const FORM_DATA=[{"lesson": 8, "word": "prepare", "pos": "동사", "answer": "준비하다", "distractors": ["노를 젓다", "응급 처치", "짐을 싸다"]}, {"lesson": 8, "word": "balloon", "pos": "명사", "answer": "풍선", "distractors": ["빠른", "팀워크", "의미 있는"]}, {"lesson": 8, "word": "during", "pos": "전사", "answer": "~동안에", "distractors": ["힘", "지속되다, 계속되다", "팀워크"]}, {"lesson": 8, "word": "practice", "pos": "동사", "answer": "연습하다", "distractors": ["선글라스", "~을 보호하다", "준비하다"]}, {"lesson": 8, "word": "light", "pos": "명사", "answer": "불, 전등", "distractors": ["모험", "힘든, 어려운", "자연"]}, {"lesson": 8, "word": "borrow", "pos": "동사", "answer": "~을 빌리다", "distractors": ["힘든, 어려운", "코너, 모퉁이", "준비하다"]}, {"lesson": 8, "word": "return", "pos": "동사", "answer": "~을 반납하다", "distractors": ["지속되다, 계속되다", "불, 전등", "(경주·경기의) 코스"]}, {"lesson": 8, "word": "pack", "pos": "동사", "answer": "짐을 싸다", "distractors": ["의미 있는", "경기, 시합", "풍선"]}, {"lesson": 8, "word": "weather", "pos": "명사", "answer": "날씨", "distractors": ["밧줄, 로프", "(경주·경기의) 코스", "~을 겪다, 경험하다"]}, {"lesson": 8, "word": "sunglasses", "pos": "명사", "answer": "선글라스", "distractors": ["남쪽에 위치한", "순간", "팀워크"]}, {"lesson": 8, "word": "sunscreen", "pos": "명사", "answer": "선크림", "distractors": ["~동안에", "거친", "~을 빌리다"]}, {"lesson": 8, "word": "snack", "pos": "명사", "answer": "간식", "distractors": ["거친", "연습하다", "준비하다"]}, {"lesson": 8, "word": "floor", "pos": "명사", "answer": "(건물의) 층", "distractors": ["~을 보호하다", "노를 젓다", "~을 빌리다"]}, {"lesson": 8, "word": "stair", "pos": "명사", "answer": "계단", "distractors": ["풍선", "지속되다, 계속되다", "짐을 싸다"]}, {"lesson": 8, "word": "around", "pos": "전사", "answer": "~을 돌아서", "distractors": ["응급 처치", "경기, 시합", "코너, 모퉁이"]}, {"lesson": 8, "word": "corner", "pos": "명사", "answer": "코너, 모퉁이", "distractors": ["빠른", "(규칙 등)을 따르다", "계단"]}, {"lesson": 8, "word": "jump rope", "pos": "명사", "answer": "줄넘기", "distractors": ["쓰레기", "팀워크", "불, 전등"]}, {"lesson": 8, "word": "match", "pos": "명사", "answer": "경기, 시합", "distractors": ["응급 처치", "~에 이르다, 도달하다", "빠른"]}, {"lesson": 8, "word": "quiet", "pos": "형사", "answer": "조용한", "distractors": ["(규칙 등)을 따르다", "빠른", "순간"]}, {"lesson": 8, "word": "last", "pos": "동사", "answer": "지속되다, 계속되다", "distractors": ["땅, 바닥", "쓰레기", "규칙"]}, {"lesson": 8, "word": "wild", "pos": "명사", "answer": "야생", "distractors": ["~을 빌리다", "노를 젓다", "의미 있는"]}, {"lesson": 8, "word": "race", "pos": "명사", "answer": "경주, 레이스", "distractors": ["힘든, 어려운", "~에 이르다, 도달하다", "도전적인"]}, {"lesson": 8, "word": "challenging", "pos": "형사", "answer": "도전적인", "distractors": ["노를 젓다", "계단", "지도"]}, {"lesson": 8, "word": "southern", "pos": "형사", "answer": "남쪽에 위치한", "distractors": ["지도", "코너, 모퉁이", "~에 이르다, 도달하다"]}, {"lesson": 8, "word": "area", "pos": "명사", "answer": "지역, 구역", "distractors": ["짐을 싸다", "준비하다", "체크포인트(중간 기록 채점소)"]}, {"lesson": 8, "word": "strength", "pos": "명사", "answer": "힘", "distractors": ["환경", "경기, 시합", "지도"]}, {"lesson": 8, "word": "teamwork", "pos": "명사", "answer": "팀워크", "distractors": ["준비하다", "선크림", "도전적인"]}, {"lesson": 8, "word": "course", "pos": "명사", "answer": "(경주·경기의) 코스", "distractors": ["여정, 여행", "불, 전등", "~을 돌아서"]}, {"lesson": 8, "word": "rough", "pos": "형사", "answer": "거친", "distractors": ["밧줄, 로프", "~에 이르다, 도달하다", "규칙"]}, {"lesson": 8, "word": "ground", "pos": "명사", "answer": "땅, 바닥", "distractors": ["선글라스", "조용한", "지도"]}, {"lesson": 8, "word": "tough", "pos": "형사", "answer": "힘든, 어려운", "distractors": ["기술", "~을 돌아서", "~에 이르다, 도달하다"]}, {"lesson": 8, "word": "row", "pos": "동사", "answer": "노를 젓다", "distractors": ["모험", "남쪽에 위치한", "응급 처치"]}, {"lesson": 8, "word": "rapid", "pos": "형사", "answer": "빠른", "distractors": ["모험", "거친", "순간"]}, {"lesson": 8, "word": "nature", "pos": "명사", "answer": "자연", "distractors": ["쓰레기", "체크포인트(중간 기록 채점소)", "노를 젓다"]}, {"lesson": 8, "word": "trash", "pos": "명사", "answer": "쓰레기", "distractors": ["지도", "~을 통과하다", "짐을 싸다"]}, {"lesson": 8, "word": "protect", "pos": "동사", "answer": "~을 보호하다", "distractors": ["불, 전등", "~동안에", "일생, 평생"]}, {"lesson": 8, "word": "natural", "pos": "형사", "answer": "자연의", "distractors": ["남쪽에 위치한", "준비하다", "환경"]}, {"lesson": 8, "word": "environment", "pos": "명사", "answer": "환경", "distractors": ["쓰레기", "(규칙 등)을 따르다", "땅, 바닥"]}, {"lesson": 8, "word": "rule", "pos": "명사", "answer": "규칙", "distractors": ["모험", "선크림", "지역, 구역"]}, {"lesson": 8, "word": "follow", "pos": "동사", "answer": "(규칙 등)을 따르다", "distractors": ["간식", "연습하다", "환경"]}, {"lesson": 8, "word": "pass", "pos": "동사", "answer": "~을 통과하다", "distractors": ["밧줄, 로프", "노를 젓다", "팀워크"]}, {"lesson": 8, "word": "skill", "pos": "명사", "answer": "기술", "distractors": ["~에 이르다, 도달하다", "경기, 시합", "~을 돌아서"]}, {"lesson": 8, "word": "rope", "pos": "명사", "answer": "밧줄, 로프", "distractors": ["자연", "지도", "거친"]}, {"lesson": 8, "word": "map", "pos": "명사", "answer": "지도", "distractors": ["지속되다, 계속되다", "~을 돌아서", "~을 빌리다"]}, {"lesson": 8, "word": "first aid", "pos": "명사", "answer": "응급 처치", "distractors": ["짐을 싸다", "~을 겪다, 경험하다", "지도"]}, {"lesson": 8, "word": "challenge", "pos": "명사", "answer": "도전", "distractors": ["힘", "규칙", "불, 전등"]}, {"lesson": 8, "word": "reach", "pos": "동사", "answer": "~에 이르다, 도달하다", "distractors": ["선글라스", "~을 보호하다", "빠른"]}, {"lesson": 8, "word": "checkpoint", "pos": "명사", "answer": "체크포인트(중간 기록 채점소)", "distractors": ["(규칙 등)을 따르다", "야생", "의미 있는"]}, {"lesson": 8, "word": "experience", "pos": "동사", "answer": "~을 겪다, 경험하다", "distractors": ["지속되다, 계속되다", "불, 전등", "체크포인트(중간 기록 채점소)"]}, {"lesson": 8, "word": "adventure", "pos": "명사", "answer": "모험", "distractors": ["짐을 싸다", "연습하다", "쓰레기"]}, {"lesson": 8, "word": "journey", "pos": "명사", "answer": "여정, 여행", "distractors": ["순간", "코너, 모퉁이", "체크포인트(중간 기록 채점소)"]}, {"lesson": 8, "word": "meaningful", "pos": "형사", "answer": "의미 있는", "distractors": ["~을 통과하다", "날씨", "(규칙 등)을 따르다"]}, {"lesson": 8, "word": "moment", "pos": "명사", "answer": "순간", "distractors": ["힘", "노를 젓다", "체크포인트(중간 기록 채점소)"]}, {"lesson": 8, "word": "lifetime", "pos": "명사", "answer": "일생, 평생", "distractors": ["~을 반납하다", "연습하다", "남쪽에 위치한"]}];
+const POLY_DATA=[{"lesson": 8, "word": "last", "answers": ["(형) 마지막의", "(형) 지난", "(동) 지속되다, 계속되다"], "all6": ["(형) 힘든, 어려운", "(동) 지속되다, 계속되다", "(동) ~에 이르다, 도달하다", "(동) ~을 따라가다", "(형) 지난", "(형) 마지막의"]}, {"lesson": 8, "word": "wild", "answers": ["(형) 야생의", "(명) 야생"], "all6": ["(동) ~을 건네주다", "(명) 인종", "(명) 줄", "(형) 야생의", "(명) 야생", "(형) 강인한, 튼튼한"]}, {"lesson": 8, "word": "race", "answers": ["(명) 경주, 레이스", "(명) 인종"], "all6": ["(형) 힘든, 어려운", "(동) ~을 지배하다, 통치하다", "(형) 강인한, 튼튼한", "(명) 규칙, 규정", "(명) 인종", "(명) 경주, 레이스"]}, {"lesson": 8, "word": "area", "answers": ["(명) 지역, 구역", "(명) 분야"], "all6": ["(명) 지역, 구역", "(동) 노를 젓다", "(명) 규칙, 규정", "(명) 분야", "(동) ~을 건네주다", "(동) ~을 통과하다"]}, {"lesson": 8, "word": "course", "answers": ["(명) (경주·경기의) 코스", "(명) 강좌, 수업"], "all6": ["(동) 노를 젓다", "(동) (손을) 뻗다", "(동) 지속되다, 계속되다", "(명) 강좌, 수업", "(명) (경주·경기의) 코스", "(동) ~을 따라가다"]}, {"lesson": 8, "word": "tough", "answers": ["(형) 힘든, 어려운", "(형) 강인한, 튼튼한"], "all6": ["(명) 지역, 구역", "(형) 야생의", "(명) 규칙, 규정", "(형) 강인한, 튼튼한", "(명) 분야", "(형) 힘든, 어려운"]}, {"lesson": 8, "word": "row", "answers": ["(동) 노를 젓다", "(명) 줄"], "all6": ["(형) 야생의", "(동) 노를 젓다", "(동) (규칙 등)을 따르다", "(명) 줄", "(동) ~을 통과하다", "(동) ~을 따라가다"]}, {"lesson": 8, "word": "rule", "answers": ["(명) 규칙, 규정", "(동) ~을 지배하다, 통치하다"], "all6": ["(동) ~에 이르다, 도달하다", "(동) ~을 지배하다, 통치하다", "(동) (규칙 등)을 따르다", "(명) 규칙, 규정", "(형) 마지막의", "(동) ~을 따라가다"]}, {"lesson": 8, "word": "follow", "answers": ["(동) (규칙 등)을 따르다", "(동) ~을 따라가다", "(동) ~을 이해하다"], "all6": ["(형) 힘든, 어려운", "(동) (규칙 등)을 따르다", "(형) 지난", "(동) 노를 젓다", "(동) ~을 따라가다", "(동) ~을 이해하다"]}, {"lesson": 8, "word": "pass", "answers": ["(동) ~을 통과하다", "(동) ~을 건네주다"], "all6": ["(동) ~을 통과하다", "(명) 강좌, 수업", "(동) ~을 지배하다, 통치하다", "(동) ~을 건네주다", "(명) 줄", "(명) 규칙, 규정"]}, {"lesson": 8, "word": "reach", "answers": ["(동) ~에 이르다, 도달하다", "(동) (손을) 뻗다"], "all6": ["(명) 강좌, 수업", "(동) (손을) 뻗다", "(형) 마지막의", "(동) ~을 따라가다", "(동) (규칙 등)을 따르다", "(동) ~에 이르다, 도달하다"]}];
+const PHRASE_DATA=[{"lesson": 8, "phrase": "be over", "answer": "끝나다, 종료되다", "distractors": ["~을 돌보다", "~을 알아내다", "~을 돌려주다"]}, {"lesson": 8, "phrase": "turn ~ off", "answer": "~을 끄다", "distractors": ["~을 통과하다, 지나가다", "~을 돌려주다", "~을 바르다"]}, {"lesson": 8, "phrase": "put ~ on-", "answer": "~을 바르다", "distractors": ["자전거를 타다", "~할 준비가 되어 있다", "불을 피우다"]}, {"lesson": 8, "phrase": "bring ~ back", "answer": "~을 돌려주다", "distractors": ["~을 돌보다", "~할 준비가 되어 있다", "적어도"]}, {"lesson": 8, "phrase": "find ~ out", "answer": "~을 알아내다", "distractors": ["등록하다, 신청하다", "자전거를 타다", "~을 돌려주다"]}, {"lesson": 8, "phrase": "go through ~", "answer": "~을 통과하다, 지나가다", "distractors": ["~할 준비가 되어 있다", "적어도", "~을 남기고 가다"]}, {"lesson": 8, "phrase": "ride bikes", "answer": "자전거를 타다", "distractors": ["~할 준비가 되어 있다", "~을 통과하다, 지나가다", "적어도"]}, {"lesson": 8, "phrase": "take care of ~", "answer": "~을 돌보다", "distractors": ["~을 통과하다, 지나가다", "~을 알아내다", "적어도"]}, {"lesson": 8, "phrase": "make fires", "answer": "불을 피우다", "distractors": ["~을 알아내다", "~을 돌려주다", "~을 끄다"]}, {"lesson": 8, "phrase": "leave ~ behind", "answer": "~을 남기고 가다", "distractors": ["~을 바르다", "끝나다, 종료되다", "~을 끄다"]}, {"lesson": 8, "phrase": "for example", "answer": "예를 들어", "distractors": ["불을 피우다", "~을 알아내다", "~을 남기고 가다"]}, {"lesson": 8, "phrase": "at least", "answer": "적어도", "distractors": ["~을 놓치다", "~을 바르다", "~을 돌려주다"]}, {"lesson": 8, "phrase": "be ready for ~", "answer": "~할 준비가 되어 있다", "distractors": ["적어도", "~을 돌보다", "~을 남기고 가다"]}, {"lesson": 8, "phrase": "miss out on ~", "answer": "~을 놓치다", "distractors": ["~을 알아내다", "끝나다, 종료되다", "예를 들어"]}, {"lesson": 8, "phrase": "sign up", "answer": "등록하다, 신청하다", "distractors": ["~을 알아내다", "~을 남기고 가다", "~을 돌보다"]}];
+const ENG_ENG_DATA=[{"lesson": 8, "definition": "coming after all the others", "answer": "last", "distractors": ["stair", "pack", "moment"]}, {"lesson": 8, "definition": "living or growing in nature, not controlled by people", "answer": "wild", "distractors": ["take care of ~", "snack", "first aid"]}, {"lesson": 8, "definition": "a competition to find out who can move the fastest", "answer": "race", "distractors": ["return", "tough", "snack"]}, {"lesson": 8, "definition": "difficult in a way that tests your ability and makes you interested", "answer": "challenging", "distractors": ["map", "prepare", "journey"]}, {"lesson": 8, "definition": "in or from the south of a country or place", "answer": "southern", "distractors": ["moment", "light", "ride bikes"]}, {"lesson": 8, "definition": "a particular part of a country, city, or other place", "answer": "area", "distractors": ["snack", "go through ~", "borrow"]}, {"lesson": 8, "definition": "the physical power that allows you to lift things or do difficult activities", "answer": "strength", "distractors": ["weather", "be over", "rapid"]}, {"lesson": 8, "definition": "the ability of a group to work well together", "answer": "teamwork", "distractors": ["rough", "take care of ~", "rope"]}, {"lesson": 8, "definition": "the route that people follow in a race", "answer": "course", "distractors": ["make fires", "rope", "lifetime"]}, {"lesson": 8, "definition": "having an uneven surface", "answer": "rough", "distractors": ["borrow", "rapid", "at least"]}, {"lesson": 8, "definition": "the surface of the earth", "answer": "ground", "distractors": ["first aid", "race", "meaningful"]}, {"lesson": 8, "definition": "difficult to do or deal with", "answer": "tough", "distractors": ["ground", "stair", "meaningful"]}, {"lesson": 8, "definition": "to move a boat through water using oars", "answer": "row", "distractors": ["leave ~ behind", "race", "wild"]}, {"lesson": 8, "definition": "happening or moving very quickly", "answer": "rapid", "distractors": ["for example", "find ~ out", "southern"]}, {"lesson": 8, "definition": "to look after someone or something and keep them safe", "answer": "take care of ~", "distractors": ["balloon", "ground", "ride bikes"]}, {"lesson": 8, "definition": "all the plants, animals, and other things in the world that people have not made", "answer": "nature", "distractors": ["map", "sunglasses", "sign up"]}, {"lesson": 8, "definition": "things that you throw away because you do not want or need them", "answer": "trash", "distractors": ["match", "return", "corner"]}, {"lesson": 8, "definition": "to keep someone or something safe from harm or damage", "answer": "protect", "distractors": ["find ~ out", "be over", "ride bikes"]}, {"lesson": 8, "definition": "existing in nature and not made by people", "answer": "natural", "distractors": ["rough", "course", "at least"]}, {"lesson": 8, "definition": "the air, water, and land in which people, animals, and plants live", "answer": "environment", "distractors": ["pass", "journey", "follow"]}, {"lesson": 8, "definition": "an official instruction about what you must or must not do", "answer": "rule", "distractors": ["prepare", "trash", "follow"]}, {"lesson": 8, "definition": "to do what a rule or instruction says", "answer": "follow", "distractors": ["moment", "ground", "make fires"]}, {"lesson": 8, "definition": "to go through or past a place", "answer": "pass", "distractors": ["skill", "tough", "southern"]}, {"lesson": 8, "definition": "an ability to do something well, especially because you have learned and practiced it", "answer": "skill", "distractors": ["pack", "follow", "sunglasses"]}, {"lesson": 8, "definition": "a very strong, thick string", "answer": "rope", "distractors": ["practice", "ride bikes", "follow"]}, {"lesson": 8, "definition": "a drawing of an area that shows roads, rivers, towns, and other features", "answer": "map", "distractors": ["first aid", "journey", "floor"]}, {"lesson": 8, "definition": "simple medical help given immediately to someone who is hurt or suddenly ill", "answer": "first aid", "distractors": ["wild", "sunglasses", "borrow"]}, {"lesson": 8, "definition": "something difficult that tests your ability or strength", "answer": "challenge", "distractors": ["return", "prepare", "rough"]}, {"lesson": 8, "definition": "to arrive at a place", "answer": "reach", "distractors": ["pack", "follow", "southern"]}, {"lesson": 8, "definition": "to have something happen to you", "answer": "experience", "distractors": ["ground", "skill", "make fires"]}, {"lesson": 8, "definition": "to lose the chance to have or do something enjoyable", "answer": "miss out on ~", "distractors": ["light", "last", "borrow"]}, {"lesson": 8, "definition": "an exciting experience that may involve danger", "answer": "adventure", "distractors": ["return", "rope", "jump rope"]}, {"lesson": 8, "definition": "an act of traveling from one place to another", "answer": "journey", "distractors": ["bring ~ back", "match", "miss out on ~"]}, {"lesson": 8, "definition": "having an important purpose or meaning", "answer": "meaningful", "distractors": ["go through ~", "lifetime", "rapid"]}, {"lesson": 8, "definition": "to put your name on a list to join an activity", "answer": "sign up", "distractors": ["rough", "around", "challenging"]}, {"lesson": 8, "definition": "a very short period of time", "answer": "moment", "distractors": ["first aid", "map", "course"]}, {"lesson": 8, "definition": "the whole period of a person’s life", "answer": "lifetime", "distractors": ["around", "sign up", "adventure"]}];
+
+let studentName='',studentSchool='';
+let state={currentSection:0,answers:{},totalQ:0,score:0,startTime:null};
+const multiSelected={};let wrongWordsMap={};
+function recordWrong(eng,correct){wrongWordsMap[eng]={eng,kor:correct,correct};}
+function shuffle(arr){const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function opts4(answer,distractors){return shuffle([answer,...distractors.slice(0,3)]);}
+function esc(s){return String(s).replace(/'/g,"\\'").replace(/"/g,'\\"');}
+
+function startQuiz(){
+  const sel=document.getElementById('schoolSel');const inp=document.getElementById('nameInput');
+  studentSchool=sel.value.trim();studentName=inp.value.trim();
+  let ok=true;
+  if(!studentSchool){sel.classList.add('err');ok=false;}else sel.classList.remove('err');
+  if(!studentName){inp.classList.add('err');ok=false;}else inp.classList.remove('err');
+  if(!ok)return;
+  document.getElementById('infoWrap').style.display='none';document.getElementById('quizWrap').style.display='block';
+  document.getElementById('studentInfoDisplay').textContent=studentSchool+' · '+studentName;
+  const key='bomnal_jc2_L6_'+studentSchool+'_'+studentName;
+  const attempts=parseInt(localStorage.getItem(key+'_cnt')||'0');const best=localStorage.getItem(key+'_best');
+  document.getElementById('attemptDisplay').textContent=attempts>0?`${attempts}번째 도전 · 최고 ${best}점`:'첫 번째 도전!';
+  state.startTime=Date.now();buildAll();
+}
+
+function buildMC(containerId,prefix,data,subText,displayFn){
+  const c=document.getElementById(containerId);const d=shuffle(data);
+  d.forEach((q,i)=>{
+    const opts=opts4(q.answer,q.distractors);
+    const wordHtml=displayFn?displayFn(q):`<div class="q-word">${q.word}</div>`;
+    c.innerHTML+=`<div class="q-card" id="${prefix}-card-${i}"><div class="q-num">Q${i+1} · <span class="lesson-tag l${q.lesson}">L${q.lesson}</span></div>${wordHtml}<div class="q-sub">${subText}</div><div class="options">${opts.map(o=>`<button class="opt-btn" onclick="answerMC('${prefix}',${i},this,'${esc(o)}','${esc(q.answer)}')">${o}</button>`).join('')}</div><div class="feedback" id="${prefix}-fb-${i}"></div></div>`;
+  });state.totalQ+=d.length;
+  return d;
+}
+
+function buildAll(){window._builtData={};
+  window._builtData['syn']=buildMC('synonymQuestions','syn',SYNONYM_DATA,'위 단어의 유의어는?');
+  window._builtData['ant']=buildMC('antonymQuestions','ant',ANTONYM_DATA,'위 단어의 반의어는?');
+  window._builtData['form']=buildMC('formQuestions','form',FORM_DATA,'다음 영어 단어의 뜻은?',q=>`<div class="lesson-tag l${q.lesson}">L${q.lesson}</div><div class="q-word">${q.word}</div>`);
+  window._builtData['poly']=buildPoly();
+  window._builtData['phr']=buildMC('phraseQuestions','phr',PHRASE_DATA,'위 표현의 뜻은?',q=>`<div class="q-word" style="font-size:16px">${q.phrase}</div>`);
+  window._builtData['ee']=buildMC('engEngQuestions','ee',ENG_ENG_DATA,'위 영영풀이에 해당하는 단어는?',q=>`<div class="q-word ko" style="font-size:13px;font-weight:600;color:#374151;line-height:1.6">"${q.definition}"</div>`);
+  updateProgress();
+}
+
+function buildPoly(){
+  const c=document.getElementById('polyQuestions');const d=shuffle(POLY_DATA);
+  d.forEach((q,i)=>{
+    const opts=shuffle(q.all6);const cnt=q.answers.length;const aj=JSON.stringify(q.answers).replace(/"/g,'&quot;');
+    c.innerHTML+=`<div class="q-card" id="poly-card-${i}"><div class="q-num">Q${i+1} · <span class="lesson-tag l${q.lesson}">L${q.lesson}</span></div><div class="q-word">${q.word}</div><div class="q-sub">이 단어의 뜻 ${cnt}개를 모두 고르세요 (<span id="poly-count-${i}">0</span>/${cnt} 선택됨)</div><div class="options" id="poly-opts-${i}" style="grid-template-columns:1fr 1fr 1fr">${opts.map(o=>`<button class="opt-btn multi" onclick="toggleMulti('poly',${i},this,'${esc(o)}',${aj.replace(/'/g,"\\'")})">${o}</button>`).join('')}</div><button id="poly-confirm-${i}" class="multi-confirm" disabled onclick="confirmMulti('poly',${i},${aj.replace(/'/g,"\\'")})">✅ 답 확인하기</button><div class="feedback" id="poly-fb-${i}"></div></div>`;
+  });state.totalQ+=d.length;
+  return d;
+}
+
+function answerMC(prefix,idx,btn,chosen,answer){
+  const key=`${prefix}-${idx}`;if(state.answers[key]?.answered)return;
+  const card=document.getElementById(`${prefix}-card-${idx}`);const fb=document.getElementById(`${prefix}-fb-${idx}`);
+  const isCorrect=chosen===answer;
+  card.querySelectorAll('.opt-btn').forEach(b=>{b.disabled=true;if(b.textContent.trim()===answer)b.classList.add('show-correct');});
+  if(isCorrect){btn.classList.remove('show-correct');btn.classList.add('selected-correct');fb.textContent='✅ 정답입니다!';fb.className='feedback show ok';card.classList.add('correct-card');state.score++;}
+  else{btn.classList.add('selected-wrong');fb.textContent=`❌ 내 답: ${chosen} / 정답: ${answer}`;fb.className='feedback show no';card.classList.add('wrong-card');const w=card.querySelector('.q-word');recordWrong(w?w.textContent.trim().split(' ')[0]:String(idx),answer);}
+  state.answers[key]={answered:true,correct:isCorrect,chosen:chosen,answer:answer};updateProgress();_saveSession();
+}
+
+function toggleMulti(prefix,idx,btn,chosen,answers){
+  const key=`${prefix}-${idx}`;if(state.answers[key]?.answered)return;
+  if(!multiSelected[key])multiSelected[key]=new Set();const sel=multiSelected[key];
+  if(btn.classList.contains('selected')){btn.classList.remove('selected');sel.delete(chosen);}else{btn.classList.add('selected');sel.add(chosen);}
+  const ce=document.getElementById(`${prefix}-count-${idx}`);if(ce)ce.textContent=sel.size;
+  const cb=document.getElementById(`${prefix}-confirm-${idx}`);
+  if(cb){const ready=sel.size===answers.length;cb.classList.toggle('ready',ready);cb.disabled=!ready;}
+}
+
+function confirmMulti(prefix,idx,answers){
+  const key=`${prefix}-${idx}`;if(state.answers[key]?.answered)return;
+  const sel=multiSelected[key]||new Set();const card=document.getElementById(`${prefix}-card-${idx}`);const fb=document.getElementById(`${prefix}-fb-${idx}`);
+  const correctSet=new Set(answers);let allCorrect=sel.size===correctSet.size&&[...sel].every(s=>correctSet.has(s));
+  card.querySelectorAll('.opt-btn').forEach(b=>{b.disabled=true;const t=b.textContent.trim();if(sel.has(t)&&correctSet.has(t))b.className='opt-btn multi correct-sel';else if(sel.has(t)&&!correctSet.has(t))b.className='opt-btn multi wrong-sel';else if(correctSet.has(t))b.className='opt-btn multi correct-sel';else b.className='opt-btn multi';});
+  if(allCorrect){fb.textContent='✅ 정답입니다!';fb.className='feedback show ok';card.classList.add('correct-card');state.score++;}
+  else{fb.textContent=`❌ 내 답: ${[...sel].join(', ')||'(없음)'} / 정답: ${answers.join(', ')}`;fb.className='feedback show no';card.classList.add('wrong-card');const w=card.querySelector('.q-word');recordWrong(w?w.textContent.trim().split(' ')[0]:String(idx),answers.join('/'));}
+  state.answers[key]={answered:true,correct:allCorrect,chosen:[...sel],correctAnswers:[...answers]};updateProgress();_saveSession();
+}
+
+function switchSection(idx){document.querySelectorAll('.quiz-section').forEach((s,i)=>s.classList.toggle('active',i===idx));document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',i===idx));state.currentSection=idx;document.getElementById('resultScreen').classList.remove('show');document.getElementById('floatSubmit').classList.remove('hidden');}
+function updateProgress(){const answered=Object.keys(state.answers).length;const total=state.totalQ;document.getElementById('progressFill').style.width=total?(answered/total*100)+'%':'0%';document.getElementById('progressText').textContent=`${answered} / ${total} 완료`;document.getElementById('scoreText').textContent=`점수: ${state.score}`;}
+
+
+// === 같은 날 이어서 풀기 (세션 저장/복원) ===
+const QUIZ_ID='jongchon_2grade_lesson8_vocab';
+const _DAY_KEY=(function(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');})();
+const _SESSION_KEY='bn_session_'+QUIZ_ID;
+function _saveSession(){
+  try{
+    if(!state||!state.startTime) return;
+    if(!state.answers||Object.keys(state.answers).length===0) return;
+    localStorage.setItem(_SESSION_KEY, JSON.stringify({
+      day:_DAY_KEY,
+      name: (typeof studentName!=='undefined'?studentName:''),
+      school: (typeof studentSchool!=='undefined'?studentSchool:''),
+      answers: state.answers,
+      score: state.score||0,
+      totalQ: state.totalQ||0,
+      currentSection: state.currentSection||0,
+      startTime: state.startTime,
+      wrongWordsMap: (typeof wrongWordsMap!=='undefined'?wrongWordsMap:{})
+    }));
+  }catch(e){}
+}
+function _loadSession(){
+  try{
+    const raw=localStorage.getItem(_SESSION_KEY); if(!raw) return null;
+    const s=JSON.parse(raw);
+    if(s.day!==_DAY_KEY){localStorage.removeItem(_SESSION_KEY); return null;}
+    if(!s.answers||Object.keys(s.answers).length===0){localStorage.removeItem(_SESSION_KEY); return null;}
+    return s;
+  }catch(e){return null;}
+}
+function _clearSession(){try{localStorage.removeItem(_SESSION_KEY);}catch(e){}}
+function _cleanupOldSessions(){
+  try{
+    for(let i=localStorage.length-1;i>=0;i--){
+      const k=localStorage.key(i);
+      if(k && k.startsWith('bn_session_')){
+        try{const v=JSON.parse(localStorage.getItem(k)); if(v.day!==_DAY_KEY) localStorage.removeItem(k);}
+        catch(e){localStorage.removeItem(k);}
+      }
+    }
+  }catch(e){}
+}
+
+let _RESUMING=false;
+function _resumeFromSession(){
+  const s=_loadSession(); if(!s) return false;
+  // 인풋 채우기 후 startQuiz 호출 → 카드 렌더링
+  const sel=document.getElementById('schoolSel');
+  const ni=document.getElementById('nameInput');
+  if(sel && s.school){
+    let matched=false;
+    for(const o of sel.options){ if(o.value===s.school){sel.value=s.school; matched=true; break;} }
+    if(!matched && sel.options.length>1) sel.value=sel.options[1].value;
+  }
+  if(ni && s.name) ni.value=s.name;
+  _RESUMING=true;
+  try{ startQuiz(); }catch(e){ _RESUMING=false; return false; }
+  _RESUMING=false;
+  // 렌더링 끝난 뒤 답한 문제 재현
+  setTimeout(()=>{
+    state.startTime = s.startTime || Date.now();
+    state.answers={}; state.score=0;
+    // 마지막으로 보던 섹션으로 전환
+    if(typeof s.currentSection==='number' && typeof switchSection==='function'){
+      try{ switchSection(s.currentSection); }catch(e){}
+    }
+    if(typeof wrongWordsMap!=='undefined' && s.wrongWordsMap){
+      for(const k of Object.keys(s.wrongWordsMap)) wrongWordsMap[k]=s.wrongWordsMap[k];
+    }
+    // 카드를 ID 위치 대신 내용(정답 텍스트)으로 찾아 셔플 재섞임 문제 회피
+    const usedCards = new Set();
+    const restored=[];
+    for(const [key, ans] of Object.entries(s.answers||{})){
+      if(!ans||!ans.answered) continue;
+      const m=key.match(/^(.+)-(\d+)$/); if(!m) continue;
+      const prefix=m[1], oldIdx=m[2];
+      // 1순위: 저장된 정답으로 카드 찾기 (Single MC: ans.answer / Multi: ans.correctAnswers)
+      let target=null;
+      const allCards = Array.from(document.querySelectorAll(`[id^="${prefix}-card-"]`));
+      if (Array.isArray(ans.chosen) && Array.isArray(ans.correctAnswers)) {
+        // 다중 선택형: 카드의 모든 opt-btn 중 ans.correctAnswers를 정확히 포함하는 것 찾기
+        const wantSet = new Set(ans.correctAnswers);
+        for (const c of allCards) {
+          if (usedCards.has(c.id)) continue;
+          const btnTexts = Array.from(c.querySelectorAll('.opt-btn')).map(b=>b.textContent.trim());
+          const matchCount = ans.correctAnswers.filter(x=>btnTexts.includes(x)).length;
+          if (matchCount === ans.correctAnswers.length) { target=c; break; }
+        }
+      } else if (typeof ans.chosen==='string' && typeof ans.answer==='string') {
+        // 단일 MC: 카드 내 정답 텍스트 버튼 존재 + chosen 버튼 존재 + 미사용
+        for (const c of allCards) {
+          if (usedCards.has(c.id)) continue;
+          const btnTexts = Array.from(c.querySelectorAll('.opt-btn')).map(b=>b.textContent.trim());
+          if (btnTexts.includes(ans.answer) && btnTexts.includes(ans.chosen)) { target=c; break; }
+        }
+      }
+      // 2순위: 위치 기반 폴백 (예전 저장 데이터 호환)
+      if (!target) {
+        const positional = document.getElementById(`${prefix}-card-${oldIdx}`);
+        if (positional && !usedCards.has(positional.id)) target = positional;
+      }
+      if (!target) continue;
+      usedCards.add(target.id);
+      const optBtns=[...target.querySelectorAll('.opt-btn')];
+      if(Array.isArray(ans.chosen)){
+        for(const c of ans.chosen){
+          const b=optBtns.find(x=>x.textContent.trim()===c);
+          if(b) b.click();
+        }
+        const idMatch = target.id.match(/-card-(\d+)$/);
+        if (idMatch) {
+          const cb=document.getElementById(`${prefix}-confirm-${idMatch[1]}`);
+          if(cb) cb.click();
+        }
+        restored.push(key);
+      } else if(typeof ans.chosen==='string' && ans.chosen){
+        const b=optBtns.find(x=>x.textContent.trim()===ans.chosen);
+        if(b){ b.click(); restored.push(key); }
+      }
+    }
+    if(typeof updateProgress==='function') updateProgress();
+  }, 220);
+  return true;
+}
+
+function _checkResumePrompt(){
+  const s=_loadSession(); if(!s) return;
+  // 시작 화면에 노란 배너 삽입
+  const host = document.getElementById('infoWrap') || document.getElementById('startScreen') || document.querySelector('.start-card') || document.body;
+  if(document.getElementById('resumeBox')) return;
+  const answered=Object.keys(s.answers||{}).length;
+  const elapsedMin = Math.max(1, Math.round((Date.now()-(s.startTime||Date.now()))/60000));
+  const box=document.createElement('div');
+  box.id='resumeBox';
+  box.style.cssText='background:linear-gradient(135deg,#fff7e0,#fef3c7);border:2px solid #fcd34d;border-radius:14px;padding:14px 16px;margin:12px 0;text-align:left;';
+  box.innerHTML = `
+    <div style="font-family:'Black Han Sans',sans-serif;font-size:1rem;color:#92400e;margin-bottom:4px;">⏸️ 풀던 시험이 있어요</div>
+    <div style="font-size:.78rem;color:#a16207;line-height:1.5;margin-bottom:10px;">
+      <strong>${s.name||'학생'}</strong>님 · ${answered}문제 답함 · 진행한 시간 ${elapsedMin}분 · 누적 정답 ${s.score||0}
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button style="flex:1;min-width:120px;padding:11px 14px;font-size:.88rem;background:linear-gradient(135deg,#f59e0b,#d97706);color:white;border:none;border-radius:10px;font-weight:800;cursor:pointer;" onclick="_resumeFromSession();this.closest('#resumeBox').remove();">▶️ 이어서 풀기</button>
+      <button style="flex:1;min-width:120px;padding:11px 14px;font-size:.88rem;background:linear-gradient(135deg,#94a3b8,#64748b);color:white;border:none;border-radius:10px;font-weight:800;cursor:pointer;" onclick="_clearSession();this.closest('#resumeBox').remove();">🔄 새로 시작</button>
+    </div>`;
+  host.insertBefore(box, host.firstChild);
+}
+window._resumeFromSession=_resumeFromSession;
+window._clearSession=_clearSession;
+document.addEventListener('DOMContentLoaded',()=>{ _cleanupOldSessions(); _checkResumePrompt(); });
+
+async function submitAll(){
+  _clearSession();
+  const answered=Object.keys(state.answers).length;
+  if(answered<state.totalQ*0.5){alert(`아직 ${state.totalQ-answered}문제가 남아있어요!`);return;}
+  document.querySelectorAll('.quiz-section').forEach(s=>s.classList.remove('active'));document.getElementById('floatSubmit').classList.add('hidden');
+  const total=state.totalQ,correct=state.score,wrong=total-correct,unanswered=total-answered,pct=Math.round(correct/total*100),elapsedMin=Math.round((Date.now()-state.startTime)/60000),wrongWords=Object.values(wrongWordsMap).slice(0,50);
+  let emoji='😢',label='다시 도전해봐요!';if(pct>=90){emoji='🏆';label='최고예요!';}else if(pct>=70){emoji='🎉';label='잘했어요! 조금만 더!';}else if(pct>=50){emoji='💪';label='절반 이상!';}
+  document.getElementById('resultEmoji').textContent=emoji;document.getElementById('resultScore').textContent=`${pct}점`;document.getElementById('resultLabel').textContent=label;
+  document.getElementById('resultDetail').innerHTML=`<div class="result-row"><span class="label">이름</span><span class="val">${studentName} (${studentSchool})</span></div><div class="result-row"><span class="label">총 문제</span><span class="val">${total}문제</span></div><div class="result-row"><span class="label">정답</span><span class="val" style="color:var(--correct)">${correct}개</span></div><div class="result-row"><span class="label">오답</span><span class="val" style="color:var(--wrong)">${wrong}개</span></div><div class="result-row"><span class="label">미응답</span><span class="val">${unanswered}개</span></div><div class="result-row"><span class="label">정답률</span><span class="val">${pct}%</span></div><div class="result-row"><span class="label">소요 시간</span><span class="val">${elapsedMin}분</span></div>`;
+  document.getElementById('resultScreen').classList.add('show');
+  const key='bomnal_jc2_L6_'+studentSchool+'_'+studentName;const cnt=parseInt(localStorage.getItem(key+'_cnt')||'0')+1;localStorage.setItem(key+'_cnt',cnt);localStorage.setItem(key+'_best',Math.max(pct,parseInt(localStorage.getItem(key+'_best')||'0')));
+  const sendEl=document.getElementById('sendingMsg');sendEl.textContent='📡 결과 전송 중...';sendEl.className='sending-msg';
+  try{let w=0;while(!window._fbReady&&w<8000){await new Promise(r=>setTimeout(r,200));w+=200;}await window._saveResult({studentName,school:studentSchool,score:pct,correct,wrong,timedOut:0,total,elapsedMin,wrongWords,quizType:'중2_L8_어휘퀴즈'});sendEl.textContent='✅ 선생님께 결과가 전달됐어요!';sendEl.className='sending-msg ok';}
+  catch(e){sendEl.textContent='⚠️ 전송 실패';sendEl.className='sending-msg err';}
+
+  retryWrongList=collectWrongItems();if(retryWrongList.length>0){document.getElementById('wrongCount').textContent=retryWrongList.length;document.getElementById('retryWrongBtn').style.display='block';}
+}
+function retryQuiz(){
+  // 결과 화면에서 '오답 다시 풀기' 대신 잘못 눌러 처음부터 돌아가는 일이 잦아 한 번 더 묻는다
+  if(!confirm('정말 처음부터 다시 푸시겠습니까?\n\n지금까지 푼 내용과 점수가 모두 지워지고 1번 문제로 돌아갑니다.\n오답만 다시 풀려면 [취소]를 누르고 \u2018\u274c 오답 다시 풀기\u2019를 누르세요.')) return;
+  location.reload();
+}
+// ============================================================
+// 오답 재풀이
+// ============================================================
+let retryRound = 0;
+let retryWrongList = [];
+
+function startRetry() {
+  retryRound++;
+  document.getElementById('resultScreen').classList.remove('show');
+  document.getElementById('retryScreen').style.display = 'block';
+  document.getElementById('retrySubmitBtn').classList.remove('hidden');
+  document.getElementById('retryRoundLabel').textContent = retryRound + '라운드';
+  document.getElementById('retryCountLabel').textContent = retryWrongList.length + '문제 남음';
+  buildRetryQuestions();
+}
+
+function buildRetryQuestions() {
+  const container = document.getElementById('retryQuestions');
+  container.innerHTML = '';
+  const shuffled = shuffle([...retryWrongList]);
+  window._retryItems = shuffled;
+  window._retryAnswers = {};
+  Object.keys(retryMultiSelected).forEach(k => delete retryMultiSelected[k]);
+
+  shuffled.forEach((item, i) => {
+    const card = document.createElement('div');
+    card.className = 'q-card';
+    card.id = 'retry-card-' + i;
+    if (item.type === 'multi') {
+      const cnt = item.answers.length;
+      const opts = shuffle([...item.allOpts]);
+      const aj = JSON.stringify(item.answers).replace(/"/g,'&quot;');
+      card.innerHTML = `
+        <div class="q-num">오답 ${i+1} · <span class="lesson-tag">재풀이</span></div>
+        <div class="q-word">${item.word}</div>
+        <div class="q-sub">이 단어의 뜻 ${cnt}개를 모두 고르세요 (<span id="retry-count-${i}">0</span>/${cnt} 선택됨)</div>
+        <div class="options" style="grid-template-columns:1fr 1fr 1fr">
+          ${opts.map(o=>`<button class="opt-btn multi" onclick="toggleRetryMulti(${i},this,'${o.replace(/'/g,"\'").replace(/"/g,'\\"')}',${aj})">${o}</button>`).join('')}
+        </div>
+        <button id="retry-confirm-${i}" class="multi-confirm" disabled onclick="confirmRetryMulti(${i},${aj})">✅ 답 확인하기</button>
+        <div class="feedback" id="retry-fb-${i}"></div>`;
+    } else {
+      const opts = opts4(item.answer, item.distractors);
+      card.innerHTML = `
+        <div class="q-num">오답 ${i+1} · <span class="lesson-tag">재풀이</span></div>
+        <div class="q-word" style="${item.wordStyle||''}">${item.word}</div>
+        <div class="q-sub">${item.subText||'알맞은 답을 고르세요'}</div>
+        <div class="options">
+          ${opts.map(o=>`<button class="opt-btn" onclick="answerRetryMC(${i},this,'${o.replace(/'/g,"\'").replace(/"/g,'\\"')}','${item.answer.replace(/'/g,"\'").replace(/"/g,'\\"')}')">${o}</button>`).join('')}
+        </div>
+        <div class="feedback" id="retry-fb-${i}"></div>`;
+    }
+    container.appendChild(card);
+  });
+}
+
+const retryMultiSelected = {};
+
+function toggleRetryMulti(idx, btn, chosen, answers) {
+  const key = 'rm-' + idx;
+  if (window._retryAnswers[idx]?.done) return;
+  if (!retryMultiSelected[key]) retryMultiSelected[key] = new Set();
+  const sel = retryMultiSelected[key];
+  if (btn.classList.contains('selected')) { btn.classList.remove('selected'); sel.delete(chosen); }
+  else { btn.classList.add('selected'); sel.add(chosen); }
+  const ce = document.getElementById('retry-count-' + idx); if (ce) ce.textContent = sel.size;
+  const cb = document.getElementById('retry-confirm-' + idx);
+  if (cb) { const ready = sel.size === answers.length; cb.classList.toggle('ready', ready); cb.disabled = !ready; }
+}
+
+function confirmRetryMulti(idx, answers) {
+  const card = document.getElementById('retry-card-' + idx);
+  const fb = document.getElementById('retry-fb-' + idx);
+  const sel = retryMultiSelected['rm-' + idx] || new Set();
+  const correctSet = new Set(answers);
+  const allCorrect = sel.size === correctSet.size && [...sel].every(s => correctSet.has(s));
+  card.querySelectorAll('.opt-btn').forEach(b => {
+    b.disabled = true;
+    const t = b.textContent.trim();
+    if (sel.has(t) && correctSet.has(t)) b.className = 'opt-btn multi correct-sel';
+    else if (sel.has(t)) b.className = 'opt-btn multi wrong-sel';
+    else if (correctSet.has(t)) b.className = 'opt-btn multi correct-sel';
+    else b.className = 'opt-btn multi';
+  });
+  fb.textContent = allCorrect ? '✅ 정답!' : `❌ 내 답: ${[...sel].join(', ')||'(없음)'} / 정답: ${answers.join(', ')}`;
+  fb.className = 'feedback show ' + (allCorrect ? 'ok' : 'no');
+  card.classList.add(allCorrect ? 'correct-card' : 'wrong-card');
+  window._retryAnswers[idx] = { done: true, correct: allCorrect };
+  checkAllRetryDone();
+}
+
+function answerRetryMC(idx, btn, chosen, answer) {
+  if (window._retryAnswers[idx]?.done) return;
+  const card = document.getElementById('retry-card-' + idx);
+  const fb = document.getElementById('retry-fb-' + idx);
+  const isCorrect = chosen === answer;
+  card.querySelectorAll('.opt-btn').forEach(b => {
+    b.disabled = true;
+    if (b.textContent.trim() === answer) b.classList.add('show-correct');
+  });
+  if (isCorrect) { btn.classList.remove('show-correct'); btn.classList.add('selected-correct'); }
+  else btn.classList.add('selected-wrong');
+  fb.textContent = isCorrect ? '✅ 정답!' : `❌ 내 답: ${chosen} / 정답: ${answer}`;
+  fb.className = 'feedback show ' + (isCorrect ? 'ok' : 'no');
+  card.classList.add(isCorrect ? 'correct-card' : 'wrong-card');
+  window._retryAnswers[idx] = { done: true, correct: isCorrect };
+  checkAllRetryDone();
+}
+
+function checkAllRetryDone() {
+  const total = window._retryItems.length;
+  const done = Object.keys(window._retryAnswers).length;
+  if (done >= total) setTimeout(submitRetry, 600);
+}
+
+function submitRetry() {
+  const items = window._retryItems || [];
+  const answers = window._retryAnswers || {};
+  const newWrong = items.filter((_, i) => !answers[i]?.correct);
+  document.getElementById('retrySubmitBtn').classList.add('hidden');
+  document.getElementById('retryScreen').style.display = 'none';
+  if (newWrong.length === 0) {
+    showRetryComplete();
+  } else {
+    retryWrongList = newWrong;
+    document.getElementById('wrongCount').textContent = newWrong.length;
+    document.getElementById('resultScreen').classList.add('show');
+    document.getElementById('retryWrongBtn').style.display = 'block';
+  }
+}
+
+async function showRetryComplete() {
+  document.getElementById('resultScreen').classList.add('show');
+  document.getElementById('resultEmoji').textContent = '🏆';
+  document.getElementById('resultScore').textContent = '완벽!';
+  document.getElementById('resultLabel').textContent = retryRound + '라운드 만에 오답 0개 달성! 🎉';
+  document.getElementById('resultDetail').innerHTML =
+    '<div class="result-row"><span class="label">이름</span><span class="val">' + studentName + ' (' + studentSchool + ')</span></div>' +
+    '<div class="result-row"><span class="label">재도전 횟수</span><span class="val">' + retryRound + '라운드</span></div>' +
+    '<div class="result-row"><span class="label">오답</span><span class="val" style="color:var(--correct);font-weight:900">0개 🎊</span></div>';
+  document.getElementById('retryWrongBtn').style.display = 'none';
+
+  // Firebase 전송 - 오답 0개 달성 기록
+  const sendEl = document.getElementById('sendingMsg');
+  sendEl.textContent = '📡 오답 완료 기록 전송 중...';
+  sendEl.className = 'sending-msg';
+  try {
+    let w=0;
+    while(!window._fbReady && w<8000){ await new Promise(r=>setTimeout(r,200)); w+=200; }
+    await window._saveResult({
+      studentName: studentName,
+      school: studentSchool,
+      score: 100,
+      correct: state.totalQ,
+      wrong: 0,
+      timedOut: 0,
+      total: state.totalQ,
+      elapsedMin: Math.round((Date.now() - state.startTime) / 60000),
+      wrongWords: [],
+      quizType: '중2_L8_어휘퀴즈_오답완료',
+    });
+    sendEl.textContent = '✅ 오답 0개 달성! 선생님께 전달됐어요 🎊';
+    sendEl.className = 'sending-msg ok';
+  } catch(e) {
+    sendEl.textContent = '⚠️ 전송 실패';
+    sendEl.className = 'sending-msg err';
+  }
+}
+
+function collectWrongItems() {
+  // Include both wrong-answered AND unanswered questions
+  const wrongKeys = [];
+  const _bd = window._builtData || {};
+  Object.keys(_bd).forEach(_pfx => {
+    const _arr = _bd[_pfx];
+    if (!Array.isArray(_arr)) return;
+    for (let _i = 0; _i < _arr.length; _i++) {
+      const _k = _pfx + '-' + _i;
+      const _a = state.answers[_k];
+      if (!_a || !_a.correct) wrongKeys.push(_k);
+    }
+  });
+  const list = [];
+  const multiPrefixes = new Set(['dual','poly']);
+  wrongKeys.forEach(key => {
+    const parts = key.split('-');
+    const prefix = parts[0];
+    const idx = parseInt(parts[1]);
+    const data = window._builtData && window._builtData[prefix];
+    if (!data || !data[idx]) return;
+    const q = data[idx];
+    if (multiPrefixes.has(prefix)) {
+      list.push({ type:'multi', word:q.word, answers:q.meanings||q.answers, allOpts:q.all4||q.all6, lesson:q.lesson||1 });
+    } else {
+      const wordTxt = q.word || q.phrase || ('"' + q.definition + '"') || '';
+      const subTxt = prefix==='ee'?'위 영영풀이에 해당하는 단어는?':prefix==='phr'?'위 표현의 뜻은?':prefix==='form'?('알맞은 뜻을 고르세요 · '+q.pos):'알맞은 답을 고르세요';
+      const wStyle = prefix==='ee'?'font-size:13px;font-weight:600;color:#374151;line-height:1.6':'';
+      list.push({ type:'mc', word:wordTxt, answer:q.answer, distractors:q.distractors, lesson:q.lesson||1, subText:subTxt, wordStyle:wStyle });
+    }
+  });
+  return list;
+}
+
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&document.getElementById('quizWrap').style.display!=='none'){const w=document.createElement('div');w.style.cssText='position:fixed;top:0;left:0;right:0;background:#c0392b;color:white;text-align:center;padding:10px;font-weight:700;z-index:9999;font-size:13px';w.textContent='⚠️ 화면을 벗어났습니다! 퀴즈에 집중하세요.';document.body.appendChild(w);setTimeout(()=>w.remove(),3000);}});
+document.addEventListener('copy',e=>e.preventDefault());document.addEventListener('contextmenu',e=>e.preventDefault());
+</script>
+
+<!-- === TTS 음성 지원 (Web Speech API) === -->
+<style>
+.tts-btn{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border:none;background:#e0e7ff;color:#3730a3;border-radius:50%;cursor:pointer;font-size:14px;padding:0;vertical-align:middle;margin-left:6px;transition:all .15s;flex-shrink:0;line-height:1;font-family:inherit;}
+.tts-btn:hover{background:#c7d2fe;transform:scale(1.05);}
+.tts-btn:active{transform:scale(0.95);}
+.tts-btn.speaking{background:#fbbf24;color:white;animation:tts-pulse 1s ease-in-out infinite;}
+@keyframes tts-pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.1);}}
+</style>
+<script>
+(function(){
+  if(window.__ttsInstalled) return; window.__ttsInstalled=true;
+  function speakText(text, btn){
+    if(!('speechSynthesis' in window)) return;
+    try{
+      window.speechSynthesis.cancel();
+      const u=new SpeechSynthesisUtterance(text);
+      u.lang='en-US';u.rate=0.85;u.pitch=1;
+      const voices=window.speechSynthesis.getVoices();
+      const en=voices.find(v=>v.lang && /^en/i.test(v.lang));
+      if(en) u.voice=en;
+      if(btn){
+        btn.classList.add('speaking');
+        u.onend=u.onerror=function(){btn.classList.remove('speaking');};
+      }
+      window.speechSynthesis.speak(u);
+    }catch(e){}
+  }
+  function ttsText(s){
+    s=String(s||'').replace(/^["“”'\s]+|["“”'\s]+$/g,'');
+    s=s.replace(/\s*🔊\s*$/,'');
+    const idx=s.search(/[ㄱ-힝]/);
+    if(idx!==-1) s=s.slice(0,idx);
+    return s.replace(/[\s\(\)\[\];,~]+$/,'').trim();
+  }
+  const SEL='.q-word,.word-en,.word-box,.word-card .word-en';
+  function inject(root){
+    (root||document).querySelectorAll(SEL).forEach(w=>{
+      if(w.dataset.tts==='1') return;
+      const raw=w.textContent.trim();
+      const txt=ttsText(raw);
+      if(!txt || !/[A-Za-z]/.test(txt)) return;
+      const btn=document.createElement('button');
+      btn.className='tts-btn';
+      btn.type='button';
+      btn.title='발음 듣기';
+      btn.setAttribute('aria-label','발음 듣기');
+      btn.textContent='🔊';
+      btn.addEventListener('click',function(e){e.stopPropagation();e.preventDefault();speakText(txt,btn);});
+      w.appendChild(document.createTextNode(' '));
+      w.appendChild(btn);
+      w.dataset.tts='1';
+    });
+  }
+  const _obs=new MutationObserver(muts=>{
+    let needs=false;
+    muts.forEach(m=>m.addedNodes.forEach(n=>{if(n.nodeType===1) needs=true;}));
+    if(needs) inject(document.body);
+  });
+  function start(){
+    _obs.observe(document.body,{childList:true,subtree:true});
+    inject(document.body);
+    if(window.speechSynthesis && window.speechSynthesis.getVoices){
+      window.speechSynthesis.getVoices();
+      if(window.speechSynthesis.onvoiceschanged===null){
+        window.speechSynthesis.onvoiceschanged=function(){};
+      }
+    }
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',start);
+  else start();
+})();
+</script>
+
+<script>
+/* 홈 화면에 추가했을 때 주소창 없이 앱처럼 열리게 한다 (안드로이드) */
+if('serviceWorker' in navigator){ window.addEventListener('load',function(){ navigator.serviceWorker.register('sw.js').catch(function(){}); }); }
+</script>
+<script src="bn_force.js"></script>
+</body>
+</html>
