@@ -439,7 +439,7 @@ function updateUI(){
 function showResult(){
   const pct=Math.round(earned/totalQ*100);
   if(window._log)window._log({studentName:NAME,school:SCHOOL,score:pct,correct:earned,
-    wrong:totalQ-earned,total:totalQ,quizType:'고1 23년 12월 본문암기',passages:rpPassages(),rangeLabel:rpRangeLabel(),completed:true});
+    wrong:totalQ-earned,total:totalQ,quizType:'고1 23년 12월 본문암기',passages:(rpDonePassages()||rpPassages()),rangeLabel:rpRangeLabel(),refScores:rpRefScores(),completed:true});
   document.getElementById('r-score').textContent=earned+' / '+totalQ+'점 ('+pct+'%)';
   document.getElementById('r-msg').textContent=pct>=90?'완벽합니다! 워크북 마스터! 🌟':pct>=70?'잘했어요! 💪':pct>=50?'절반 이상! 📖':'기초부터 차근차근! 🔄';
   document.getElementById('result').classList.add('show');
@@ -451,7 +451,7 @@ function submitSoFar(){
   const pct=Math.round(earned/doneQ*100);
   if(!confirm('지금까지 푼 '+doneQ+'문제를 선생님께 제출할까요?\n\n맞은 개수 '+earned+' / '+doneQ+' ('+pct+'%)\n제출한 뒤에도 이어서 풀 수 있어요.')) return;
   if(window._log)window._log({studentName:NAME,school:SCHOOL,score:pct,correct:earned,
-    wrong:doneQ-earned,total:doneQ,quizType:'고1 23년 12월 본문암기',passages:rpPassages(),rangeLabel:rpRangeLabel(),completed:false,
+    wrong:doneQ-earned,total:doneQ,quizType:'고1 23년 12월 본문암기',passages:(rpDonePassages()||rpPassages()),rangeLabel:rpRangeLabel(),refScores:rpRefScores(),completed:false,
     진행:doneQ+' / '+totalQ});
   document.querySelectorAll('#submit-btn,.submit-btn').forEach(b=>{
     b.textContent='✅ '+doneQ+'문제 제출 완료';
@@ -561,6 +561,64 @@ function rpRangeLabel(){
   return sel.join(', ');
 }
 
+
+/* 지문(모의고사 번호)별로 실제로 몇 문항을 풀고 몇 개 맞았는지 —
+   아이가 '전체'를 골라도 어느 번호를 손댔는지 관리자 화면에 남는다.
+   한 번에 맞히면 '맞음', 틀린 뒤 다시 골라 맞히면 '풀었음'으로만 센다
+   (채점 방식과 똑같이). 아직 못 끝낸 문항은 tried 로 센다. */
+function rpUnitStat(b){
+  var a = 0, c = 0, t = 0, tried = 0;
+  [].forEach.call(b.querySelectorAll('.sel-group'), function(g){
+    t++;
+    var mis = g.dataset.miss === '1' || !!g.querySelector('.sel-btn.wrong,.sel-btn.miss');
+    if (g.dataset.checked) { a++; if (!mis) c++; }
+    else if (mis) tried++;
+  });
+  [].forEach.call(b.querySelectorAll('.blank-input'), function(i){
+    t++;
+    var ok = i.classList.contains('correct-inp');
+    if (ok || i.disabled) { a++; if (ok) c++; }
+    else if (String(i.value || '').trim()) tried++;
+  });
+  [].forEach.call(b.querySelectorAll('.arrange-wrap'), function(w){
+    var btn = w.querySelector('.q-check-btn'); if (!btn) return;
+    t++;
+    if (btn.hasAttribute('disabled')) { a++; if (!w.querySelector('.wrong-chip')) c++; }
+  });
+  [].forEach.call(b.querySelectorAll('.wb-multi'), function(m){
+    t++;
+    var chip = m.querySelector('.word-chip[data-grp]');
+    var fb = chip ? document.getElementById('fb' + chip.dataset.grp) : null;
+    if (m.querySelector('.word-chip.disabled')) { a++; if (fb && fb.classList.contains('ok')) c++; }
+    else if (m.querySelector('.word-chip.picked')) tried++;
+  });
+  return [a, c, t, tried];
+}
+function rpRefScores(){
+  var map = {}, order = [], out = [];
+  [].forEach.call(document.querySelectorAll('.para-block'), function(b){
+    var k = String(b.dataset.ref || '').replace(/\s*지문\s*$/, '').trim();
+    if (!k) return;
+    if (!map[k]) { map[k] = { ref: k, done: 0, ok: 0, total: 0, tried: 0 }; order.push(k); }
+    var s = rpUnitStat(b);
+    map[k].done += s[0]; map[k].ok += s[1]; map[k].total += s[2]; map[k].tried += s[3];
+  });
+  order.forEach(function(k){
+    var r = map[k];
+    if (r.done > 0 || r.tried > 0) { if (!r.tried) delete r.tried; out.push(r); }
+  });
+  return out;
+}
+/* 실제로 손댄 지문 번호만 */
+function rpDonePassages(){
+  var rs = rpRefScores(), nums = [], i, m;
+  for (i = 0; i < rs.length; i++) {
+    m = String(rs[i].ref).match(/^\s*(\d+(?:-\d+)?)\s*번?\s*$/);
+    if (!m) return null;
+    nums.push(m[1]);
+  }
+  return nums.length ? nums : null;
+}
 
 function rpNodes(){
   return [].slice.call(document.querySelectorAll('.sec-header,.sec-submit,.para-block'));
