@@ -115,6 +115,11 @@ body,.para-eng,.para-kr,.sec-header,.para-num,.sel-btn,.blank-input,.writing-inp
 .sel-btn{ white-space:normal !important; }
 .para-eng,.para-kr,.para-block{ overflow-wrap:anywhere; }
 main{ overflow-x:hidden; }
+/* bn-mark — 채점 뒤 표시: 맞는 것 초록, 오류 빨강, 내가 고른 오답은 노란 테두리.
+   (고른 상태의 연한 배경이 채점 색을 덮어써서 글씨가 안 보이던 것도 같이 막는다) */
+.word-chip.correct-chip{ background:#2e7d32 !important; color:#fff !important; border-color:#1b5e20 !important; }
+.word-chip.wrong-chip{ background:#c0392b !important; color:#fff !important; border-color:#8e2b21 !important; }
+.word-chip.wrong-chip.mine{ outline:3px dashed #ffd54f !important; outline-offset:2px; }
 /* bn-fit — 폰에서 지문 칸이 화면보다 넓어져 오른쪽이 잘리던 것 (격자 칸이 내용 폭만큼 벌어짐) */
 .para-cols, .para-cols > *, .para-eng, .para-kr{ min-width:0 !important; }
 .wb-multi, .wb-blank, .arrange-wrap, .sel-group, .wb-line, .wb-exp{ max-width:100% !important; }
@@ -852,6 +857,16 @@ function bnNorm(t){
 var BLK_TRY = {};
 /* ── 여럿 고르기: 틀리면 몇 개가 어긋났는지만 알려 주고 한 번 더 ── */
 var MUL_TRY = {};
+/* 채점 뒤에는 답을 한눈에 — 맞는 것은 초록, 오류가 있는 것은 빨강(빨간펜).
+   내가 고른 것 중 틀린 것은 테두리를 진하게 해서 무엇을 골랐는지 보이게 한다. */
+function markMulti(chips, want){
+  chips.forEach(function(c){
+    var n = parseInt(c.dataset.n, 10);
+    c.classList.add('disabled');
+    if(want.indexOf(n) >= 0){ c.classList.add('correct-chip'); }
+    else { c.classList.add('wrong-chip'); if(c.classList.contains('picked')) c.classList.add('mine'); }
+  });
+}
 function checkMulti(i){
   if(done[i]) return;
   var want = (MULTI[i]||[]).slice();
@@ -866,9 +881,8 @@ function checkMulti(i){
   MUL_TRY[i] = (MUL_TRY[i]||0) + 1;
   if(ok){
     done[i]=true; earned++; doneQ++;
-    chips.forEach(function(c){ c.classList.add('disabled');
-      if(want.indexOf(parseInt(c.dataset.n,10))>=0) c.classList.add('correct-chip'); });
-    if(fb){ fb.className='q-feedback ok show'; fb.textContent='✅ 맞았어요'; }
+    markMulti(chips, want);
+    if(fb){ fb.className='q-feedback ok show'; fb.textContent='✅ 맞았어요 — 초록이 답, 빨강은 오류예요'; }
     updateUI(); log('multi'+i, true);
     return;
   }
@@ -878,10 +892,8 @@ function checkMulti(i){
     return;
   }
   done[i]=true; doneQ++;
-  chips.forEach(function(c){ var n=parseInt(c.dataset.n,10); c.classList.add('disabled');
-    if(want.indexOf(n)>=0) c.classList.add('correct-chip');
-    else if(c.classList.contains('picked')) c.classList.add('wrong-chip'); });
-  if(fb){ fb.className='q-feedback fail show'; fb.textContent='초록색이 답이에요'; }
+  markMulti(chips, want);
+  if(fb){ fb.className='q-feedback fail show'; fb.textContent='초록이 답이에요 · 빨강은 오류가 있는 것'; }
   updateUI(); log('multi'+i, false);
 }
 function chkBlank(i){
