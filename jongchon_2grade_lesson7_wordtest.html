@@ -180,13 +180,12 @@ footer{text-align:center;padding:24px;color:#d9b8c8;font-size:.78rem;font-family
 <div id="screen-intro" class="screen active">
   <div class="auth-card">
     <div class="hello" id="helloBox"></div>
-    <p id="introDesc">3단계로 단어를 재미있게 외워봐요! 😊</p>
+    <p id="introDesc">2단계로 단어를 빠르게 익혀요! 😊</p>
     <input type="text" class="name-input" id="nameInput" placeholder="이름을 입력하세요" maxlength="12"
            style="display:none" onkeydown="if(event.key==='Enter')startFromIntro()"/>
     <div class="steps">
-      <div class="step-item"><div class="step-num">1</div><div class="step-txt"><b>암기</b><br>단어·뜻·품사를 보며 발음 3번 듣기 🔊</div></div>
-      <div class="step-item"><div class="step-num">2</div><div class="step-txt"><b>4지선다 퀴즈</b><br>영어 보고 알맞은 뜻 고르기 ✏️</div></div>
-      <div class="step-item"><div class="step-num">3</div><div class="step-txt"><b>오답 반복</b><br>틀린 단어만 0개 될 때까지! 🔁</div></div>
+      <div class="step-item"><div class="step-num">1</div><div class="step-txt"><b>4지선다 퀴즈</b><br>영어 보고 알맞은 뜻 고르기 ✏️</div></div>
+      <div class="step-item"><div class="step-num">2</div><div class="step-txt"><b>오답 반복</b><br>틀린 단어만 0개 될 때까지! 🔁</div></div>
     </div>
     <button class="start-btn" onclick="startFromIntro()">시작하기 →</button>
   </div>
@@ -242,7 +241,7 @@ footer{text-align:center;padding:24px;color:#d9b8c8;font-size:.78rem;font-family
 <div id="screen-quiz" class="screen">
   <div class="quiz-wrap">
     <button class="quiz-back" onclick="backToDayFromQuiz()">← Day 선택으로</button>
-    <div class="stage-tag" id="quizStageTag">STEP 2 · 4지선다 퀴즈</div>
+    <div class="stage-tag" id="quizStageTag">4지선다 퀴즈 ✏️</div>
     <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
     <div class="progress-text" id="progressText"></div>
     <div class="word-card">
@@ -480,7 +479,7 @@ function selectDay(d){
   console.log('[Day 선택] Day '+d+' | idx '+startIndex+'~'+endIndex
     +' | 첫 단어='+(sessionWords[0]?sessionWords[0].en+'('+sessionWords[0].ko+')':'없음')
     +' | 단어수='+sessionWords.length);
-  startMemorize();
+  startQuizStage();      /* 암기(듣기) 단계는 건너뛰고 바로 4지선다 */
 }
 function dayLabel(){ return 'Day '+chosenDay; }
 
@@ -640,14 +639,13 @@ function loadWord(){
   document.getElementById('progressFill').style.width=pct+'%';
   document.getElementById('progressText').textContent=(currentIdx+1)+' / '+total;
   document.getElementById('roundBadge').textContent=round+'라운드';
-  document.getElementById('quizStageTag').textContent=round===1?'STEP 2 · 4지선다 퀴즈':'STEP 3 · 오답 반복 ('+round+'라운드)';
+  document.getElementById('quizStageTag').textContent=round===1?'4지선다 퀴즈 ✏️':'오답 반복 ('+round+'라운드) 🔁';
   document.getElementById('wordEn').textContent=currentWord.en;
   document.getElementById('feedback').textContent=''; document.getElementById('feedback').className='feedback';
   document.getElementById('nextBtn').classList.remove('show');
   document.getElementById('confirmBtn').classList.remove('show');
   selectedBtn=null;
   buildChoices();
-  setTimeout(speakWord,300);
 }
 function speakWord(){
   if(quizAudio){ try{ quizAudio.stop(); }catch(e){} quizAudio=null; }
@@ -751,7 +749,7 @@ function showDone(full){
   saveResult(full);
   quizActive=false;
 }
-function restartSame(){ resetAllState(); startTime=new Date(); startMemorize(); }
+function restartSame(){ resetAllState(); startTime=new Date(); startQuizStage(); }
 function chooseAnother(){ showDayScreen(); }
 
 /* ===== Firebase 저장 ===== */
