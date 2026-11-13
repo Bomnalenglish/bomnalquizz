@@ -112,6 +112,9 @@ header{background:linear-gradient(135deg,#f7efe4 0%,#f0e6d8 50%,#ece0d2 100%); p
 .chip.ghost{position:fixed; z-index:999; pointer-events:none; opacity:.92;
   box-shadow:0 8px 20px rgba(0,0,0,.2); transform:scale(1.08); border-color:var(--gold);}
 .chip.hidden{opacity:.2; pointer-events:none;}
+/* bn-lock — 채점이 끝난 뒤에는 낱말이 손가락을 따라오지 않게 (손가락으로 화면만 넘기게) */
+.chip.locked{touch-action:auto !important; cursor:default; pointer-events:none;}
+.chips.locked, .zone.locked{touch-action:auto !important;}
 .chip.sel{border-color:var(--gold) !important; background:#f6ecda !important; font-weight:700;
   transform:translateY(-4px); box-shadow:0 5px 12px rgba(176,141,87,.35);}
 .chips.aim{border-color:var(--gold); background:#fdfaf4;}
@@ -1056,6 +1059,21 @@ function resetParse(){
   $('pHint').textContent='';
 }
 
+/* 정답을 맞힌 뒤에는 낱말을 잠근다.
+   그러지 않으면 '다음 문장' 버튼까지 내리려고 손가락을 대는 순간
+   낱말이 끌려 나와 자리가 흐트러진다. */
+function lockParse(){
+  document.querySelectorAll('#chips .chip, .zone .chip').forEach(function(c){
+    c.onpointerdown = null;
+    c.classList.remove('sel');
+    c.classList.add('locked');
+  });
+  var pool = $('chips');
+  if(pool){ pool.onclick = null; pool.classList.add('locked'); }
+  zones().forEach(function(z){ z.onclick = null; z.classList.add('locked'); });
+  var p = $('pHint'); if(p) p.classList.add('locked');
+}
+
 function checkParse(){
   const s = pList()[idx];
   const roles = activeRoles(s);
@@ -1084,6 +1102,11 @@ function checkParse(){
     $('chkBtn').textContent = (idx===pList().length-1) ? (RETRY?'다음 ▶':'결과 보기 ▶') : '다음 문장 ▶';
     $('chkBtn').onclick = nextParse;
     saySentence(s.en);
+    lockParse();                                   /* 낱말 고정 — 이제 화면만 넘어간다 */
+    setTimeout(function(){                         /* '다음 문장' 버튼을 눈앞으로 */
+      var b=$('chkBtn');
+      if(b && b.scrollIntoView) b.scrollIntoView({block:'center', behavior:'smooth'});
+    }, 260);
   }else{
     addWrong('p', pGlobal());
     hint.className='hint';
