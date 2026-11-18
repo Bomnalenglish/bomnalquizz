@@ -587,7 +587,8 @@ let allAccessData = [];  // ★ hub_access 데이터
 // 예전에는 열 때마다 quiz_results·hub_access 컬렉션 '전체'를 읽어서 느렸고,
 // Firestore 무료 할당량(하루 5만 읽기)도 빠르게 소진됐다.
 // ① 기간 제한 쿼리(서버에서 잘라서 가져오기) ② 병렬 로드 ③ 10분 캐시 로 개선.
-const CACHE_KEY='bn_admin_cache_v9';   // v8: 등록 학교로 바로잡기   // v6: 초등 봄날리딩·봄날듣기 기록 반영   // v5: saveId 중복 제거 반영   // v3: day·level 추가 + 학교 표기 통일
+const CACHE_KEY='bn_admin_cache_v10';   // v10: 중등부 듣기 기록 반영   // v8: 등록 학교로 바로잡기   // v6: 초등 봄날리딩·봄날듣기 기록 반영   // v5: saveId 중복 제거 반영   // v3: day·level 추가 + 학교 표기 통일
+// ※ 기록을 읽는 방식(_normElem)을 고치면 이 번호를 꼭 올린다 — 안 그러면 옛 저장본이 그대로 보인다.
 
 // 챕터 시험은 학교를 '종촌중학교'로, 어휘 퀴즈는 '종촌중1'로 저장한다.
 // 표기가 갈리면 같은 학생이 두 명으로 잡히므로 '종촌중1' 형태로 통일한다.
@@ -669,7 +670,7 @@ function _getPeriodDays(){
 // IndexedDB 는 그런 한계가 없다. 담는 모양(JSON)은 예전 그대로다.
 // v7: 학교 분류(normSchool)가 바뀌었다. 저장본에는 옛 분류('종촌고')가 그대로 들어 있어
 //     키를 올려 한 번은 새로 받게 한다. 안 그러면 고쳐도 계속 안 보인다.
-const IDB_NAME='bn_admin', IDB_STORE='kv', IDB_KEY='cache_v9';
+const IDB_NAME='bn_admin', IDB_STORE='kv', IDB_KEY='cache_v10';
 const FULL_EVERY_MS=6*60*60*1000;   // 6시간마다 한 번은 통째로 다시 받는다 (다른 곳에서 지운 기록 반영)
 let _cacheFullAt=0;                  // 마지막으로 통째로 받은 시각
 function _idb(){
@@ -767,8 +768,9 @@ function _normElem(d){
   m=f.match(/^bomnallistening_m(\d)_(\d+)/);
   if(m && !d.quizType){
     const n=d.totalQ||20, c=d.correct||0, did=d.answered||n;
-    return {...d, quizType:`봄날듣기_중${m[1]}_${m[2]}회`, score:d.score||0, correct:c, total:did,
+    return {...d, quizType:`봄날듣기_중${m[1]}_${m[2]}회`, score:d.score||0, correct:c, total:n,
             wrong:Math.max(0,did-c), elapsedMin:d.minutes||0, answered:(d.answered!==undefined?d.answered:null),
+            quitMidway:(d.completed===false ? true : !!d.quitMidway),   // 중간 저장 → '미완료 8/20' 으로 보이게
             _elem:'listen', _book:'중'+m[1], _unit:+m[2]};
   }
   m=f.match(/^bomnallistening_e(\d)_(\d)_(\d+)/);
@@ -1346,8 +1348,10 @@ function renderTable(data){
     const isLT=d.quizType==='입학레벨테스트'||isGT;
     const expandable=anyHasWrong||total>1||isLT;
     const wrongCnt=(d.wrongWords&&d.wrongWords.length)||(d.wrongSentences?d.wrongSentences.split(' / ').length:0)||(d.wrongNumbers?(d.wrongNumbers.match(/번/g)||[]).length:0);
-    const isIncomplete=d.quitMidway===true;   // 중도이탈(시험 중간에 끔)
-    const incBadge=isIncomplete?`<span class="incomplete-badge" title="시험을 끝까지 풀지 않고 중간에 종료">⚠️ 미완료${d.answered!=null&&d.total?` ${d.answered}/${d.total}`:''}</span>`:'';
+    const isIncomplete=d.quitMidway===true;   // 중도이탈(시험 중간에 끔) · 듣기는 '여기까지 저장'
+    const midLabel=(d.completed===false&&d.elem==='listen')?'📤 중간 저장':'⚠️ 미완료';
+    const midTip=(d.completed===false&&d.elem==='listen')?'아이가 중간에 \'여기까지 저장\'을 누름':'시험을 끝까지 풀지 않고 중간에 종료';
+    const incBadge=isIncomplete?`<span class="incomplete-badge" title="${midTip}">${midLabel}${d.answered!=null&&d.total?` ${d.answered}/${d.total}`:''}</span>`:'';
 
     // 시도 이력 (최신순, 다회 응시일 때만)
     const historyHtml=total>1?`<div class="attempt-history">
@@ -1403,7 +1407,7 @@ function renderTable(data){
         <td class="td-textbook"><div class="textbook-name${isClinicType(d.quizType)?' is-clinic':''}" title="${meta.textbook}">${meta.textbook}</div>${isClinicType(d.quizType)&&clinicFileName(d)?`<div class="clinic-file">📄 ${clinicFileName(d)}</div>`:''}${(typeChip||attemptBadge)?'<div style="margin-top:3px;display:flex;flex-wrap:wrap;gap:3px;align-items:center">'+typeChip+attemptBadge+'</div>':''}</td>
         <td class="td-lesson">${lessonDisplay}${refHtml||(passageInfo?'<br>'+passageInfo:'')}${roundBadge}</td>
         <td class="td-time">${d.elapsed?d.elapsed+'분':'-'}</td>
-        <td class="td-score">${isGT?`<span class="sp ${gc(d.score)}">${d.correct||0}/${d.total||80}</span><div class="score-sub">${d.score}%</div>`:isLT?`<span class="sp" style="background:#fef3c7;color:#92400e">읽기 ${d.score}단계</span><div class="score-sub">/ 11단계</div>`:`<span class="sp ${gc(d.score)}">${d.score}점</span>`}<div class="score-sub">${isIncomplete?`⚠️ 중도이탈${d.answered!=null&&d.total?` (${d.answered}/${d.total})`:''}`:gl(d.score)}</div></td>
+        <td class="td-score">${isGT?`<span class="sp ${gc(d.score)}">${d.correct||0}/${d.total||80}</span><div class="score-sub">${d.score}%</div>`:isLT?`<span class="sp" style="background:#fef3c7;color:#92400e">읽기 ${d.score}단계</span><div class="score-sub">/ 11단계</div>`:`<span class="sp ${gc(d.score)}">${d.score}점</span>`}<div class="score-sub">${isIncomplete?`${(d.completed===false&&d.elem==='listen')?'📤 중간 저장':'⚠️ 중도이탈'}${d.answered!=null&&d.total?` (${d.answered}/${d.total})`:''}`:gl(d.score)}</div></td>
         <td class="td-submit">${ft(d.time)}</td>
         <td class="td-actions">
           ${isLT?`<span class="wrong-count-badge" style="background:#e0f2fe;color:#075985">${d.correct||0}/${(d.correct||0)+(d.wrong||0)}문항</span>`
