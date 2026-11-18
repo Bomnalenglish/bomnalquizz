@@ -2166,11 +2166,12 @@ function listenInProgress(file){
   try{ const n=localStorage.getItem('bn_name')||''; return !!localStorage.getItem('bnls_prog:'+file+':'+n); }catch(e){ return false; }
 }
 /* 회차 단추 — 끝낸 회차엔 완료 도장을 찍고, 다시 누르면 한 번 물어본다 */
+const LISTEN_Q = '?v=20261118';          /* 바뀐 듣기 파일이 폰에서 바로 뜨게 */
 function listenBtn(file, label){
   const done=listenDone(file), prog=listenInProgress(file);
   const mark=done ? ((done.score===''||done.score===null||done.score===undefined) ? '완료' : '완료 '+done.score+'점') : '';
   const a=document.createElement('a');
-  a.href=BASE+file+'.html'; a.target='_blank'; a.rel='noopener';
+  a.href=BASE+file+'.html'+LISTEN_Q; a.target='_blank'; a.rel='noopener';
   a.style.cssText="position:relative;display:block;text-align:center;text-decoration:none;border-radius:12px;"
     +"padding:10px 0 8px;border:2px solid "+(done?'#7fa374':'#d0dde8')+";background:"+(done?'#e9f2e5':'#fff')+";";
   a.innerHTML='<div style="font-weight:700;font-size:.9rem;color:'+(done?'#3f5c38':'#2a2a2a')+'">'+label+'</div>'

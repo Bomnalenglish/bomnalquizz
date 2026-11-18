@@ -40,6 +40,9 @@ header{background:linear-gradient(135deg,#f7efe4 0%,#f0e6d8 50%,#ece0d2 100%); p
 .btn-main:disabled{opacity:.35; cursor:default;}
 .btn-sub{background:#fff; color:#5a5550; border:2px solid #d8cfc3;}
 .btn-row{display:flex; gap:10px; justify-content:center; margin-top:18px; flex-wrap:wrap;}
+/* 중간에 저장하고 쉬기 */
+.sofar{display:block; width:100%; margin-top:10px; font-size:.95rem; padding:12px 16px;}
+.sofar-tip{text-align:center; font-size:.78rem; color:#8a8178; margin-top:6px;}
 .full{width:100%;}
 
 .intro{text-align:center;}
@@ -202,7 +205,7 @@ function renderQ(){
         <button id="rep" onclick="replay()">🔊 다시 듣기</button></div>
       <div class="choices">${Array.from({length:NCH},(_,k)=>k+1).map(c=>`<button class="ch" data-c="${c}" onclick="pick(${c})">${'①②③④⑤'[c-1]}</button>`).join('')}</div>
       <div class="hint" id="hint"></div>
-      <div class="btn-row"><button class="btn btn-main full" id="nx" disabled onclick="next()">답을 고르세요</button></div>
+      <div class="btn-row"><button class="btn btn-main full" id="nx" disabled onclick="next()">답을 고르세요</button></div>${mode==='test'?`<button class="btn btn-sub sofar" id="sofar" onclick="saveSoFar()">📤 여기까지 저장하고 쉬기</button><div class="sofar-tip">다 못 풀어도 괜찮아요 — 푼 만큼 선생님께 기록됩니다</div>`:''}
     </div>`;
   window.scrollTo(0,0);
   play(i, onHeard);
@@ -325,6 +328,39 @@ function flushPending(done){
   if(!_pend || _pendSent) return;
   _pendSent=true;
   save(_pend.right, _pend.mins, done);
+}
+
+/* ── 중간에 '여기까지 저장' ──
+   다 풀지 않고 그만두는 아이도 푼 만큼은 선생님께 기록되게 한다.
+   완료 도장(markDone)은 찍지 않으니 나중에 이어서 풀면 된다. */
+function saveSoFar(){
+  const sel = document.querySelector('.ch.sel');
+  const picked = picks.slice();
+  if(sel) picked[qi] = +sel.dataset.c;
+  const doneN = picked.filter(x=>x>0).length;
+  if(!doneN){ alert('아직 고른 답이 없어요.'); return; }
+  if(!confirm('지금까지 푼 ' + doneN + '문제를 선생님께 보낼까요?\n\n보낸 뒤에도 이어서 풀 수 있어요.')) return;
+  let right = 0; const wrongList = [];
+  for(let i=0;i<N;i++){
+    if(!picked[i]) continue;
+    if(picked[i] === T.answers[i]) right++; else wrongList.push(i+1);
+  }
+  picks = picked; saveProg();
+  const mins = Math.max(1, Math.round((Date.now()-startedAt)/60000));
+  const data = { name:student.name, studentName:student.name, school:student.school,
+    quiz: T.book + ' ' + T.round + ' · 중간 저장 (' + doneN + '/' + N + ')',
+    type: '듣기 평가 · ' + T.book,
+    file: (location.pathname.split('/').pop()||'').replace('.html',''),
+    score: Math.round(right/doneN*100), correct: right, totalQ: N, total: doneN,
+    answered: doneN, completed: false, retryDone: false,
+    wrong: wrongList.join(','), replays, minutes: mins,
+    진행: doneN + ' / ' + N,
+    date: new Date().toLocaleString('ko-KR') };
+  const b = document.getElementById('sofar');
+  if(b){ b.disabled = true; b.textContent = '보내는 중…'; }
+  const ok = () => { if(b){ b.textContent = '✅ ' + doneN + '문제 보냈어요'; setTimeout(()=>{ b.disabled=false; b.textContent='📤 여기까지 저장하고 쉬기'; }, 2500); } };
+  const no = () => { if(b){ b.disabled = false; b.textContent = '저장 실패 — 인터넷 확인'; setTimeout(()=>{ b.textContent='📤 여기까지 저장하고 쉬기'; }, 2500); } };
+  if(window._saveQuiz) window._saveQuiz(data).then(ok).catch(no); else no();
 }
 
 function save(right, mins, retryDone){
