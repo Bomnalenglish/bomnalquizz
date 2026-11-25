@@ -18,6 +18,7 @@
   --ink:#2a2a2a; --soft:#7a7570; --bg:#f5efe6; --card:#fdf8f2;
   --line:#e8e3dd; --primary:#4a6741; --red:#c0392b; --gold:#b08d57;
   --c-subj:#4a6b8a; --c-verb:#b5651d; --c-obj:#7a5c96; --c-comp:#4a6741;
+  --c-iobj:#9a7fb5; --c-dobj:#6b4f8a; --c-ocomp:#6b8f5a;
 }
 *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
 body{margin:0; background:var(--bg); font-family:"Gowun Dodum",sans-serif; color:var(--ink);}
@@ -102,6 +103,9 @@ header{background:linear-gradient(135deg,#f7efe4 0%,#f0e6d8 50%,#ece0d2 100%); p
 .z-verb .zone-head{color:var(--c-verb);} .z-verb{border-color:#dcc0a0;}
 .z-obj  .zone-head{color:var(--c-obj);}  .z-obj{border-color:#c9bcd6;}
 .z-comp .zone-head{color:var(--c-comp);} .z-comp{border-color:#b7c9b2;}
+.z-iobj .zone-head{color:var(--c-iobj);} .z-iobj{border-color:#d6cce3;}
+.z-dobj .zone-head{color:var(--c-dobj);} .z-dobj{border-color:#c2b3d2;}
+.z-ocomp .zone-head{color:var(--c-ocomp);} .z-ocomp{border-color:#c2d6b8;}
 
 .pool-label{font-size:.76rem; color:var(--soft); text-align:center; margin-bottom:7px;}
 .chips{display:flex; flex-wrap:wrap; gap:8px; justify-content:center; padding:14px; background:#fff;
@@ -130,6 +134,9 @@ header{background:linear-gradient(135deg,#f7efe4 0%,#f0e6d8 50%,#ece0d2 100%); p
 .z-verb .chip{border-color:var(--c-verb); background:#f9f0e6;}
 .z-obj  .chip{border-color:var(--c-obj);  background:#f2eef7;}
 .z-comp .chip{border-color:var(--c-comp); background:#eef4ec;}
+.z-iobj .chip{border-color:var(--c-iobj); background:#f6f2fa;}
+.z-dobj .chip{border-color:var(--c-dobj); background:#f0ecf6;}
+.z-ocomp .chip{border-color:var(--c-ocomp); background:#f0f5ec;}
 
 .hint{font-size:.85rem; color:var(--red); text-align:center; margin-top:12px; min-height:1.4em; line-height:1.5;}
 .hint.good{color:var(--primary);}
@@ -142,6 +149,9 @@ header{background:linear-gradient(135deg,#f7efe4 0%,#f0e6d8 50%,#ece0d2 100%); p
 .bd-verb .t{color:var(--c-verb);} .bd-verb .l{background:var(--c-verb);}
 .bd-obj  .t{color:var(--c-obj);}  .bd-obj  .l{background:var(--c-obj);}
 .bd-comp .t{color:var(--c-comp);} .bd-comp .l{background:var(--c-comp);}
+.bd-iobj .t{color:var(--c-iobj);} .bd-iobj .l{background:var(--c-iobj);}
+.bd-dobj .t{color:var(--c-dobj);} .bd-dobj .l{background:var(--c-dobj);}
+.bd-ocomp .t{color:var(--c-ocomp);} .bd-ocomp .l{background:var(--c-ocomp);}
 .bd-rest .t{color:#a8a098;} .bd-rest .l{background:#b8ada0;}
 
 /* 5단계 · 내용 확인 */
@@ -525,9 +535,13 @@ const ROLE = {
   subj: { key:'subj', ko:'주어', emoji:'🙋', q:'누가 / 무엇이',       cls:'z-subj' },
   verb: { key:'verb', ko:'동사', emoji:'🏃', q:'~하다 / ~이다',       cls:'z-verb' },
   obj:  { key:'obj',  ko:'목적어', emoji:'🎯', q:'무엇을 / 누구를',   cls:'z-obj'  },
-  comp: { key:'comp', ko:'보어', emoji:'🧩', q:'주어가 어떤지 설명',  cls:'z-comp' }
+  comp: { key:'comp', ko:'보어', emoji:'🧩', q:'주어가 어떤지 설명',  cls:'z-comp' },
+  // 아래 세 개는 4형식·5형식 문장에만 쓴다. 문장 자료에 iobj/dobj/ocomp가 있을 때만 칸이 나타난다
+  iobj: { key:'iobj', ko:'간접목적어', emoji:'💌', q:'누구에게',          cls:'z-iobj' },
+  dobj: { key:'dobj', ko:'직접목적어', emoji:'🎁', q:'무엇을',              cls:'z-dobj' },
+  ocomp:{ key:'ocomp',ko:'목적격보어', emoji:'🪄', q:'목적어가 어떤지 설명', cls:'z-ocomp' }
 };
-const ORDER = ['subj','verb','obj','comp'];
+const ORDER = ['subj','verb','iobj','dobj','obj','comp','ocomp'];
 
 /* ───────── 상태 ───────── */
 let student = { name:"", school:"" };
@@ -1182,7 +1196,10 @@ function checkParse(){
       (wrong.includes('주어') ? '주어는 "누가"에 해당하는 말이에요. ' : '') +
       (wrong.includes('동사') ? '동사는 "무엇을 하다/무엇이다"에 해당하는 말이에요. ' : '') +
       (wrong.includes('목적어') ? '목적어는 "무엇을/누구를"에 해당하는 말이에요. ' : '') +
-      (wrong.includes('보어') ? '보어는 주어가 "어떤지"를 설명하는 말이에요.' : '');
+      (wrong.includes('보어') ? '보어는 주어가 "어떤지"를 설명하는 말이에요. ' : '') +
+      (wrong.includes('간접목적어') ? '간접목적어는 "누구에게"에 해당하는 말이에요. ' : '') +
+      (wrong.includes('직접목적어') ? '직접목적어는 "무엇을"에 해당하는 말이에요. ' : '') +
+      (wrong.includes('목적격보어') ? '목적격보어는 목적어가 "어떤지 / 무엇이 되는지"를 설명하는 말이에요.' : '');
     setTimeout(()=>zones().forEach(z=>z.classList.remove('bad')), 420);
   }
 }
