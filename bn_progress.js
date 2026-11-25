@@ -175,6 +175,8 @@
           // 마지막 Day 는 단어가 모자랄 수 있으니 그 경우만 봐준다
           if (w && w !== opts.wpd && !(opts.lastDay && r.day === opts.lastDay)) continue;
         }
+        // 아이가 '전체초기화'를 누른 뒤로는, 그 전 기록을 진도로 치지 않는다
+        if (opts.since && (!r.time || r.time < opts.since)) continue;
         if (!r.completed) continue;              // 끝까지 푼 것만 ✅
         if (done.indexOf(r.day) < 0) done.push(r.day);
         if (!last) last = { day: r.day, score: r.score, time: r.time };

@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <script src="bn_save.js"></script>
-<script src="bn_progress.js?v=1"></script>
+<script src="bn_progress.js?v=2"></script>
 <link rel="manifest" href="manifest.json"/>
 <meta name="theme-color" content="#4a6741"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
@@ -6129,7 +6129,11 @@ function markDayDone(d){ const a=loadDoneDays(); if(!a.includes(d)){ a.push(d); 
 function resetProgress(){
   if(!confirm('학습 이력을 모두 초기화할까요?')) return;
   try{ localStorage.removeItem(progressKey()); }catch(e){}
+  // 서버에 남아 있는 지난 기록까지 '초기화 이전 것'으로 보게 한다.
+  // 이게 없으면 다음에 열 때 서버 기록이 다시 합쳐져 ✅ 가 되살아난다.
+  try{ localStorage.setItem(progressKey()+'_초기화시각', new Date().toISOString()); }catch(e){}
   renderDayGrid();
+  try{ if(window._bnResumeRefresh) window._bnResumeRefresh(); }catch(e){}
 }
 
 /* ===== Day 선택 ===== */
@@ -6558,6 +6562,10 @@ if('serviceWorker' in navigator){ window.addEventListener('load',function(){ nav
     try{ if(typeof WORDS_PER_DAY!=='undefined') return WORDS_PER_DAY; }catch(e){}
     return 0;
   }
+  // 전체초기화를 누른 시각 — 그 전 기록은 진도로 치지 않는다
+  function resetAt(){
+    try{ var v=localStorage.getItem(progressKey()+'_초기화시각'); return v ? new Date(v) : null; }catch(e){ return null; }
+  }
   function lastDay(){
     try{ if(typeof totalDays==='function') return totalDays(); }catch(e){}
     try{ if(typeof TOTAL_DAYS!=='undefined') return TOTAL_DAYS; }catch(e){}
@@ -6590,7 +6598,7 @@ if('serviceWorker' in navigator){ window.addEventListener('load',function(){ nav
   var busy=false;
   function run(){
     if(busy) return; busy=true;
-    BN_PROGRESS.days(QT, {wpd:wpd(), lastDay:lastDay()}).then(function(info){
+    BN_PROGRESS.days(QT, {wpd:wpd(), lastDay:lastDay(), since:resetAt()}).then(function(info){
       busy=false;
       var merged=[];
       try{
@@ -6607,6 +6615,7 @@ if('serviceWorker' in navigator){ window.addEventListener('load',function(){ nav
       draw(info);
     })['catch'](function(){ busy=false; });
   }
+  window._bnResumeRefresh = run;          // 전체초기화 직후 바로 다시 그린다
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', run);
   else run();
 
