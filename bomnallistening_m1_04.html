@@ -112,6 +112,9 @@ let picks=[], firstWrong=[], qi=0, heard=false, fallback=null, startedAt=Date.no
 let mode='test', retryList=[], ri=0, replays=0;
 
 function src(i){ return T.base + 'q' + String(i+1).padStart(2,'0'); }
+/* 원본에서 보기 줄이 잘려 다시 만든 그림은 사이트 안의 것을 쓴다 (CDN 주소는 옛 커밋에 묶여 있다) */
+const FIXIMG = { 9: 'listen_fix/m1_04/q09.jpg' };
+function imgSrc(i){ return FIXIMG[i+1] || (src(i) + '.jpg'); }
 /* 음원·그림은 무료 CDN에서 받는다. CDN이 막히면 깃허브 원본으로 한 번 더 시도한다. */
 function raw(u){ return u.replace('https://cdn.jsdelivr.net/gh/','https://raw.githubusercontent.com/').replace('@','/'); }
 window.raw = raw;
@@ -200,7 +203,7 @@ function renderQ(){
     <div class="card">
       <div class="qhead"><span>${mode==='test'?'듣기 평가':'🔁 틀린 문제 다시 풀기'}</span><span>${pos} / ${tot}</span></div>
       <div class="bar"><i style="width:${(pos-1)/tot*100}%"></i></div>
-      <img class="qimg" src="${src(i)}.jpg" alt="${i+1}번 문제" onerror="if(!this.dataset.alt){this.dataset.alt='1';this.src=raw(this.src);}">
+      <img class="qimg" src="${imgSrc(i)}" alt="${i+1}번 문제" onerror="if(!this.dataset.alt){this.dataset.alt='1';this.src=raw(this.src);}">
       <div class="listen"><span class="st" id="st"><span class="pulse"></span>듣는 중…</span>
         <button id="rep" onclick="replay()">🔊 다시 듣기</button></div>
       <div class="choices">${Array.from({length:NCH},(_,k)=>k+1).map(c=>`<button class="ch" data-c="${c}" onclick="pick(${c})">${'①②③④⑤'[c-1]}</button>`).join('')}</div>
