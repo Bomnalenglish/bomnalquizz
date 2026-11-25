@@ -1417,6 +1417,7 @@ function renderResult(){
     + '</div>'
     + '<div style="text-align:center;color:#7a7570;font-size:.85rem;margin-top:10px">'
     + '정확도 '+pct+'% · '+mins+'분 걸렸어요</div>'
+    + '<div style="text-align:center;font-size:.75rem;color:#a8a098;margin-top:14px" id="saveMsg">결과 저장 중…</div>'
     + '<div class="btn-row"><button class="btn btn-main" onclick="location.href=\'https://bomnalenglish.github.io/bomnalquizz/\'">← 허브로</button></div>'
     + '</div>';
   saveResult(pct, mins);
@@ -1440,7 +1441,11 @@ function saveResult(pct, mins){
     date: new Date().toLocaleString('ko-KR')
   };
   try{ if(window._log) window._log(data); }catch(e){}
-  try{ if(window.bnSave) window.bnSave(data); }catch(e){}
+  var _m = document.getElementById('saveMsg');
+  var _ok = function(){ if(_m) _m.textContent='✅ 결과가 선생님께 전달됐어요.'; };
+  var _no = function(){ if(_m) _m.textContent='결과 저장에 실패했어요. (인터넷 확인)'; };
+  if(window._saveQuiz) window._saveQuiz(data).then(_ok).catch(function(){ _saveQuizRest(data).then(_ok).catch(_no); });
+  else _saveQuizRest(data).then(_ok).catch(_no);
 }
 </script>
 </body>

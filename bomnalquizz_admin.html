@@ -587,7 +587,7 @@ let allAccessData = [];  // ★ hub_access 데이터
 // 예전에는 열 때마다 quiz_results·hub_access 컬렉션 '전체'를 읽어서 느렸고,
 // Firestore 무료 할당량(하루 5만 읽기)도 빠르게 소진됐다.
 // ① 기간 제한 쿼리(서버에서 잘라서 가져오기) ② 병렬 로드 ③ 10분 캐시 로 개선.
-const CACHE_KEY='bn_admin_cache_v11';   // v11: 봄날리딩 basic 기록 반영   // v10: 중등부 듣기 기록 반영   // v8: 등록 학교로 바로잡기   // v6: 초등 봄날리딩·봄날듣기 기록 반영   // v5: saveId 중복 제거 반영   // v3: day·level 추가 + 학교 표기 통일
+const CACHE_KEY='bn_admin_cache_v12';   // v12: 봄날리딩 basic 단계 4개 반영   // v11: 봄날리딩 basic 기록 반영   // v10: 중등부 듣기 기록 반영   // v8: 등록 학교로 바로잡기   // v6: 초등 봄날리딩·봄날듣기 기록 반영   // v5: saveId 중복 제거 반영   // v3: day·level 추가 + 학교 표기 통일
 // ※ 기록을 읽는 방식(_normElem)을 고치면 이 번호를 꼭 올린다 — 안 그러면 옛 저장본이 그대로 보인다.
 
 // 챕터 시험은 학교를 '종촌중학교'로, 어휘 퀴즈는 '종촌중1'로 저장한다.
@@ -670,7 +670,7 @@ function _getPeriodDays(){
 // IndexedDB 는 그런 한계가 없다. 담는 모양(JSON)은 예전 그대로다.
 // v7: 학교 분류(normSchool)가 바뀌었다. 저장본에는 옛 분류('종촌고')가 그대로 들어 있어
 //     키를 올려 한 번은 새로 받게 한다. 안 그러면 고쳐도 계속 안 보인다.
-const IDB_NAME='bn_admin', IDB_STORE='kv', IDB_KEY='cache_v11';
+const IDB_NAME='bn_admin', IDB_STORE='kv', IDB_KEY='cache_v12';
 const FULL_EVERY_MS=6*60*60*1000;   // 6시간마다 한 번은 통째로 다시 받는다 (다른 곳에서 지운 기록 반영)
 let _cacheFullAt=0;                  // 마지막으로 통째로 받은 시각
 function _idb(){
@@ -759,7 +759,8 @@ function _normElem(d){
   const f=String(d.file||'');
   let m=f.match(/^bomnalreadingb(\d+)_(\d+)_(\d+)/);
   if(m && !d.quizType){
-    const sc=[d.matchScore,d.parseScore,d.quizScore].map(s=>String(s||'0/0').split('/').map(Number));
+    // basic은 단계가 4개(단어 매칭·뜻 고르기·문장 완성·문장 고르기) → wordScore도 센다
+    const sc=[d.matchScore,d.wordScore,d.parseScore,d.quizScore].map(s=>String(s||'0/0').split('/').map(Number));
     const c=sc.reduce((a,x)=>a+(x[0]||0),0), n=sc.reduce((a,x)=>a+(x[1]||0),0);
     const bk=`${m[1]}-${m[2]}`;                       // 80-1, 100-3 …
     return {...d, quizType:`봄날리딩basic${bk}_${m[3]}과_리딩`,
@@ -835,8 +836,8 @@ function _toQuiz(doc){
         day:(d.day!==undefined&&d.day!==null?d.day:''),   // 봄날 보카 Day 차시
         level:d.level||'',                                 // 봄날 보카 교재명(워드마스터 중등 BASIC 등)
         elem:d._elem||'', elemBook:d._book||'', elemUnit:d._unit||0,   // 초등 봄날리딩·봄날듣기
-        rStage:(d._elem==='reading'?{m:d.matchScore||'',p:d.parseScore||'',q:d.quizScore||'',
-                 mt:d.matchTry||0,pt:d.parseTry||0,qt:d.quizTry||0}:null),   // 리딩 단계별 점수
+        rStage:(d._elem==='reading'?{m:d.matchScore||'',w:d.wordScore||'',p:d.parseScore||'',q:d.quizScore||'',
+                 mt:d.matchTry||0,wt:d.wordTry||0,pt:d.parseTry||0,qt:d.quizTry||0}:null),   // 리딩 단계별 점수
         submittedAt:d.submittedAt||null,
         time:d.timestamp
           ?(typeof d.timestamp.toDate==='function'?d.timestamp.toDate():new Date(d.timestamp))
@@ -2188,6 +2189,7 @@ function renderSectionView(){
             <div class="sec-score">${sc}${isR?'%':'점'}</div>
             ${isR&&u.best.rStage?`<div style="font-size:9.5px;color:#33691e;font-weight:700;line-height:1.5;margin-top:2px;">
                  단어 ${u.best.rStage.m}${u.best.rStage.mt?` <span style="color:#e65100">(${u.best.rStage.mt}번)</span>`:''}<br>
+                 ${u.best.rStage.w?`뜻 ${u.best.rStage.w}${u.best.rStage.wt?` <span style="color:#e65100">(${u.best.rStage.wt}번)</span>`:''}<br>`:''}
                  나누기 ${u.best.rStage.p}${u.best.rStage.pt?` <span style="color:#e65100">(${u.best.rStage.pt}번)</span>`:''}<br>
                  확인 ${u.best.rStage.q}${u.best.rStage.qt?` <span style="color:#e65100">(${u.best.rStage.qt}번)</span>`:''}</div>`:''}
             <div class="sec-time">${ts}</div></div>`;
