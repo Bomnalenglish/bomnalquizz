@@ -1,8 +1,8 @@
 /* ═══════════════════════════════════════════════════════════
    봄날 ENGLISH · 초등 포인트 도장판 (공용)
 
-   학습 하나를 처음 끝낼 때마다 도장 하나 · 10포인트.
-   도장 열 개(100포인트)마다 데스크 간식뽑기 한 번.
+   학습 하나를 처음 끝낼 때마다 5포인트. 학습 두 개(10포인트)마다 도장 하나.
+   도장 열 개(학습 스무 개 · 100포인트)마다 데스크 간식뽑기 한 번.
    포인트는 초기화하지 않고 계속 쌓는다.
 
    세는 기준은 Firestore 기록(quiz_results) 이므로 기기를 바꿔도 그대로다.
@@ -15,8 +15,9 @@
      BN_POINTS.get().then(function(p){ p.points, p.stamps, p.draws, p.items });
 ═══════════════════════════════════════════════════════════ */
 (function () {
-  var PER = 10;          // 학습 하나 = 10포인트
-  var BOARD = 10;        // 도장 열 개 = 간식뽑기 한 번
+  var PER = 5;           // 학습 하나 = 5포인트
+  var PER_STAMP = 2;     // 학습 두 개 = 도장 하나
+  var BOARD = 10;        // 도장 열 개(학습 스무 개) = 간식뽑기 한 번
   var SEEN = 'bn_pt_seen';   // 지난번에 본 포인트 (새 도장을 반짝이게)
 
   function who() {
@@ -62,10 +63,12 @@
         items.push({ key: k, label: label(r), time: r.time });
       }
       var n = items.length;
+      var st = Math.floor(n / PER_STAMP);      // 지금까지 받은 도장 수
       return {
         points: n * PER,
-        stamps: n % BOARD,
-        draws: Math.floor(n / BOARD),
+        stamps: st % BOARD,
+        draws: Math.floor(st / BOARD),
+        totalStamps: st,
         items: items.slice().reverse(),      // 최근 것이 앞으로
         count: n
       };
@@ -128,12 +131,15 @@
     style();
     var name = who();
     var grew = p.points - lastSeen();          // 지난번에 본 뒤로 새로 받은 포인트
-    var fresh = grew > 0 ? Math.min(Math.floor(grew / PER), p.stamps || BOARD) : 0;
-    var full = p.count > 0 && p.stamps === 0;  // 딱 열 칸을 채운 순간
+    var PB = PER * PER_STAMP;                  // 도장 하나에 필요한 포인트
+    var fresh = grew > 0
+      ? Math.min(Math.floor(p.points / PB) - Math.floor(lastSeen() / PB), p.stamps || BOARD)
+      : 0;
+    var full = p.totalStamps > 0 && p.stamps === 0;   // 딱 열 칸을 채운 순간
 
     var h = '<div class="bnpt"><div class="bnpt-top"><div class="bnpt-nm">'
       + (name ? esc(name) + ' 어린이' : '내 포인트')
-      + '<span>학습 하나를 끝내면 도장 하나 · 10포인트</span></div>'
+      + '<span>학습 하나를 끝내면 5포인트 · 두 개면 도장 하나</span></div>'
       + '<div class="bnpt-num">' + p.points + '<small>P</small></div></div>';
 
     h += '<div class="bnpt-b">';
@@ -141,7 +147,7 @@
       var on = full ? true : i < p.stamps;
       var nw = fresh > 0 && !full && i >= p.stamps - fresh && i < p.stamps;
       h += '<div class="bnpt-c' + (on ? ' on' : ' off') + (nw ? ' nw' : '') + '">'
-         + (on ? '🌸' : ((i + 1) * PER)) + '</div>';
+         + (on ? '🌸' : ((i + 1) * PER * PER_STAMP)) + '</div>';
     }
     h += '</div>';
 
@@ -160,7 +166,7 @@
       if (todayStr(p.items[j].time) === '오늘') today.push(p.items[j]);
     }
     if (today.length) {
-      h += '<div class="bnpt-today"><h4>오늘 받은 도장</h4>';
+      h += '<div class="bnpt-today"><h4>오늘 받은 포인트</h4>';
       for (var k = 0; k < today.length; k++) {
         h += '<div class="bnpt-row">🌸 ' + esc(today[k].label) + '<span class="d">+' + PER + 'P</span></div>';
       }
@@ -185,5 +191,5 @@
     });
   }
 
-  window.BN_POINTS = { get: get, render: render, PER: PER, BOARD: BOARD };
+  window.BN_POINTS = { get: get, render: render, PER: PER, PER_STAMP: PER_STAMP, BOARD: BOARD };
 })();
